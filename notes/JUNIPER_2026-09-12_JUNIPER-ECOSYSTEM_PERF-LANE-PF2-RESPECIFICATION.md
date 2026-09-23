@@ -148,6 +148,33 @@ pass alone is then four orders of magnitude larger than anything this lane has m
 should establish the largest cell that completes inside a chosen wall before the full sweep is
 committed, exactly as PF-1 reached 4000 epochs by probing 500 / 2000 / 5000.
 
+> ## RESULT 2026-09-23 — no knee inside the suite path's range; the in-process follow-up does not fire
+>
+> Suite: `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`. 18 cells (6 sizes ×
+> 3 round-robin passes), cascor `0d2d826`, 1-minute load 5–8, all 18 succeeded.
+>
+> - Reducer: `util/ad-hoc/2026-09-23_pf2_axis2_reduce.py`.
+> - Evidence: `~/.local/state/juniper-experiments/suites/pf2-axis2-cascor-dataset-range-20260923T142812Z/`.
+>
+> | n/spiral | wall, median (s) | `step_sum`, median (s) |
+> |---|---|---|
+> | 250 | 24.14 | 4.125 |
+> | 500 | 21.73 | 4.109 |
+> | 1,000 | 23.95 | 4.558 |
+> | 2,000 | 24.10 | 4.127 |
+> | 4,000 | 24.24 | 5.130 |
+> | 5,800 | 24.35 | 5.409 |
+>
+> - **Wall time is flat**: ×1.01 across the 23× range. It is dominated by stack bring-up, data
+>   staging, collection and plots, not by the dataset.
+> - **Training compute grows ×1.31.** The log-log slope between neighbouring sizes stays between
+>   −0.15 and 0.31: strongly sublinear, **with no knee**.
+> - **Under the owner's D4 ruling** ("in-process later, only if the curve shows a knee"), **the
+>   in-process follow-up does not fire.**
+> - **Scope:** `spiral-smoke`'s budgets. That means 2 hidden units, `output_epochs` 50, and a
+>   `step_count` of 8 in every cell, fixed by the budget and never compared. How wall time scales
+>   with dataset size at LARGER budgets is a different question from the one ruled on.
+
 ---
 
 ## 4. Axis 3 — number of spirals (the owner's preferred axis)
@@ -231,7 +258,7 @@ budgets**: the interesting transition is already complete between 2 and 6.
 | axis | calibration | status |
 |---|---|---|
 | 1 — candidate phase | none beyond floor/wall | specifiable now |
-| 2 — wide dataset range | largest completing cell at a chosen wall | **owner call first** — the range is capped at 10,000 by juniper-data (§1 correction), so 250 → 500,000 needs a decision, not a calibration |
+| 2 — wide dataset range | largest completing cell at a chosen wall | **DONE 2026-09-23.** Ruled "10,000 now, in-process later"; built capped at 5,800 (the suite path's real ceiling is 5,882, per the second §1 correction); **RUN, no knee** (§3 RESULT), so the in-process follow-up does not fire |
 | 3 — spiral count | capacity budget that lets 2…10 differentiate | **DONE 2026-09-15 (§4.1)** — axis viable, but gate on **accuracy**; sample 2,3,4,5 not 2,6,10 |
 
 **Host condition.** All three are wall-clock measurements. The host has not been quiet in four
