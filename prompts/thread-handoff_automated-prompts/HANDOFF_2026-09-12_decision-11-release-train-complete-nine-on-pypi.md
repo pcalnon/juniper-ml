@@ -307,6 +307,17 @@ them**. So this is a non-conforming *public API surface*, reachable by an extern
 live production emission. The `1.0.0` stamp also means the `dataset_id` hash keeps these from
 ever being served against a 3.0.0-contract request — the floor protects by accident.
 
+> **Correction, 2026-09-23.** The last sentence was **false** when it was written. Until
+> juniper-data#422, only the generator route hashed the version
+> (`juniper_data/core/dataset_id.py:23`). The stores built a plain `hf-<name>-<rows>` id that
+> contains neither the version nor the partitioning. What kept them apart was the `hf-` /
+> `kaggle-` namespace and the absence of any caller, not the stamp. That is still true of every
+> released wheel up to juniper-data 0.15.0. #422 (merged 2026-09-23 as `ce436819`, not yet
+> released) moved the stores onto `generate_dataset_id`. See the predecessor
+> `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md`:
+> its §10.4 records this correction, and its §10.2 re-dispositions the §5 rows this file's §3
+> dropped.
+
 **N-6 (minor, cascor)** — `juniper_cascor.__version__` is the string `"0.6.0"` while the
 distribution is **0.11.0**: a hardcoded literal drifting from `pyproject.toml`. canopy fixed this
 class by reading `importlib.metadata`.

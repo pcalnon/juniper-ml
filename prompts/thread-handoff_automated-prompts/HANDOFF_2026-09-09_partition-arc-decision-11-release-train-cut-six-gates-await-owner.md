@@ -1,6 +1,6 @@
 # HANDOFF — decision 11's release train is cut; six PyPI gates await the owner, two trains remain
 
-**Date**: 2026-09-09 · **Session**: <https://claude.ai/code/session_014FMjGiN9yK9ppfkUiBnao5>
+**Date**: 2026-09-09 (**re-evaluated 2026-09-22/23 in §10**: §1–§4 are CLOSED, and every §5 row now has a disposition or a ticket) · **Session**: <https://claude.ai/code/session_014FMjGiN9yK9ppfkUiBnao5>
 **Worktree**: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fancy-marinating-nova`
 **Branch**: `worktree-fancy-marinating-nova` (at `origin/main`; no PR of its own — every change this
 session shipped as an API-signed PR, see §0.1)
@@ -277,3 +277,261 @@ alone, as before.
 - **No consensus validation was run on this document** (the session limit terminated four sub-agents;
   spawning five more was not attempted). Treat §3's line numbers and §5's dispositions as claims to
   re-derive with §7.
+
+---
+
+## 10. RE-EVALUATION 2026-09-22/23: the release this document awaited has shipped, and every §5 row is dispositioned
+
+**Session**: <https://claude.ai/code/session_01WGFQ3uJtGMBygmuwxSSat4> ·
+**Worktree**: `juniper-ml/.claude/worktrees/rippling-wobbling-torvalds` ·
+**Branch**: `worktree-rippling-wobbling-torvalds`, fast-forwarded to `origin/main` `ba035cc9`. Every
+change shipped as an API-signed PR.
+
+**Documents REFERENCED** (more than one, so every reference carries its filename):
+
+- this file;
+- its successor `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-12_decision-11-release-train-complete-nine-on-pypi.md`
+  (its §8 is the 2026-09-21 re-evaluation, and §8.7 its disposition table);
+- `notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md`, the design of record;
+- `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md`, the plan (§6 chunks, §7
+  risks, §9 findings, §10 release record);
+- `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md`, new: the Decision 12
+  specification;
+- `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-23_partition-arc-residue-stores-conformed-canopy-advisory-decision-12-spec-unsound.md`,
+  new: this session's own handoff, which carries the goal for the next thread.
+
+**Documents CHANGED in juniper-ml** (all in juniper-ml#2043): this file (header and §10); the 2026-09-12 successor
+(a correction under its §8.4); the spec and its script
+`util/ad-hoc/2026-09-22_partition_provenance_npz_roundtrip.py` (both new); `docs/REFERENCE.md` (the
+Decision 12 and hf/kaggle entries under "What actually remains"); the plan (a dated update after §10's
+"Still open" list); and the 2026-09-23 handoff (new).
+
+### 10.1 This file's own claims, re-derived
+
+| claim | state on 2026-09-22/23 |
+| --- | --- |
+| §2: six PyPI gates await the owner | **All approved.** Each is on PyPI with a 2026-09-10 upload: data-client 0.5.0, data 0.14.0, cascor 0.11.0, canopy 0.7.0, recurrence-model 0.3.0, recurrence-client 0.3.0 |
+| §3a: recurrence app 0.5.0 | On PyPI (2026-09-11) |
+| §3b: juniper-ml 0.8.0 | On PyPI (2026-09-11), since superseded by 0.9.0 (2026-09-22) |
+| §3: model-core 0.3.2 (optional) | On PyPI (2026-09-11) |
+| §4: documentation | Done by the successor, whose header lists the files |
+
+The PyPI latest has since moved to juniper-data **0.15.0** (2026-09-22), canopy 0.8.1 (09-18) and
+juniper-ml 0.9.0 (09-22).
+
+### 10.2 §5 row by row: the residue the successor dropped
+
+The successor's carried-forward table (`HANDOFF_2026-09-12_…` §3, re-derived in its §8.1) kept three
+of §5's rows: S-1, Decision 12 and plan §9 S-7. It dropped the rest with no disposition. A shipped item
+and a dropped item read identically in a summary, so each was re-derived from source:
+
+| §5 item | disposition | evidence |
+| --- | --- | --- |
+| S-1 hf/kaggle stores | Owner ruled 2026-09-22: **conform** → juniper-data#422, **merged 2026-09-23 as `ce436819`**, closing #411. Not yet released | The ruling is recorded in #422's description (its first paragraph). #411's own body still calls the decision open |
+| S-2 | Released in model-core 0.3.2 | PyPI |
+| S-3 … S-8 (straggler scheme) | Fixed; unchanged | §5 above |
+| plan R-2, consumers accept silently | **Done** | cascor `src/api/lifecycle/manager.py:3701` (at `f6ee8de`) `def _resolve_validation_split`: refuses by default; `X_test` promotion only behind `JUNIPER_CASCOR_ALLOW_MISSING_VALIDATION_SPLIT`, warning that metrics are SELECTED-ON |
+| plan R-9, harness rejects validation | **Done** (ml#1761) | `util/experiments/run_experiment.py` `RECURRENCE_SPLITS`; `tests/test_run_experiment.py` `test_recurrence_bad_dataset_split_rejected` |
+| plan §9 S-5, juniper-ml homes | **Done**: no stale site | `util/snapshot_attribute.py` rebuilds the whole view by `np.vstack`; `prompts/agent_templates/data/ecosystem.yaml` `npz_contract` lists six keys |
+| plan §9 S-7 → canopy#559 | Owner ruled 2026-09-22: **advisory check** → juniper-canopy#663 (a re-cut of #659, which was closed), **merged 2026-09-23 as `cc3588a8`**, closing #559. Not yet released | — |
+| Chunk 5, §6.2 compensation | **Had been silently dropped** → juniper-data#424, with an owner question | canopy `src/validation_gate.py:50` disables "Fill synthetically" pending it |
+| Chunk 7 (a) plots / attribution | **Done** (see S-5) | — |
+| Chunk 7 (b) design §7 snapshot provenance | **Done.** This is NOT Decision 12: cascor tags every run's metrics | `manager.py:2035` `metrics["split"] = self._reported_split_name()` |
+| Chunk 7 (c) re-baseline, decision 4 | **Not started** → juniper-ml#2034 | — |
+| Decision 12 | Ruled 2026-09-03 → tracked juniper-data#423. Spec v1 written; review round 1 rated it **UNSOUND as written**, so it is **not ratifiable** until v2 folds the findings | `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md` §14; published in juniper-ml#2043 |
+| Decision 5 | Implemented (cascor#622) | — |
+| V-2 | **Measured 2026-08-29**; see 10.4 item 1 | design §8 |
+| V-3 | Unmeasured → juniper-cascor#677 | cascor 0.11.0 CHANGELOG |
+| cascor#582, the arc's founding issue | Still OPEN (last touched 2026-08-29), although #616, #620 and #622 shipped its fix in 0.11.0 | **Owner: close it, with V-3 (#677) as the residue?** |
+
+### 10.3 The successor's §8 findings (N-1 to N-6), today
+
+- **N-1, the bench `*_full` break**: fixed (recurrence#177). Its root cause, recurrence#178, is
+  addressed by recurrence#181 and juniper-data#426, which another session merged on 2026-09-23 with the
+  event `juniper-data-published`. This session's parallel recurrence#180 and juniper-data#425 were
+  **closed as superseded**. Two residual gaps are posted on #178: a second dispatch cancels the first,
+  and a 204 does not prove a listener. #178 is still open. **The one end-to-end attempt failed on
+  token scope.** juniper-data run 35808713744 (2026-09-23 02:01Z) re-sent 0.15.0's dispatch and got
+  `403 Resource not accessible by personal access token`. `CROSS_REPO_DISPATCH_TOKEN` reaches data,
+  cascor and canopy, but not juniper-recurrence. The fix is the owner's (10.5).
+- **N-2, unreleased majors**: **closed.**
+  - juniper-data 0.15.0 is on PyPI (2026-09-22), with `equities` and `equities_seq` at `VERSION 5.0.0`,
+    read from the wheel. data#410 is closed.
+  - Delivery: recurrence#179 widened the bench caps to `<0.16.0` (merged). juniper-deploy pins the
+    `0.15.0` image (`docker-compose.yml:164,517`, helm `values.yaml:40`). juniper-ml#2033 floors
+    `[servers]` at `juniper-data>=0.15.0` and bumps to 0.10.0: **merged, not released**. PyPI still
+    serves juniper-ml 0.9.0 with `>=0.14.0`.
+- **N-3, canopy floor**: closed. juniper-ml 0.9.0's METADATA carries `juniper-canopy>=0.8.1`.
+- **N-4, README pins**: fixed (ml#1972).
+- **N-5, hf/kaggle stores**: **fixed on main** by juniper-data#422 (merged 2026-09-23 as `ce436819`).
+  **Not released**: PyPI juniper-data 0.15.0 still ships the two-way stores. See 10.5.
+- **N-6, cascor `__version__`**: **fixed on main** by cascor#672 (merged 2026-09-23). That PR also
+  found `api.models.common._API_VERSION`, the `meta.version` of every enveloped API response, stale at
+  `0.6.0`. **Not released**: PyPI cascor 0.11.0 still ships the literal.
+
+### 10.4 Corrections to documents of record
+
+1. **§5 of this file** says "V-2 / V-3 unmeasured". V-2 was measured on 2026-08-29: the design's §8
+   reports +0.0088, 95 % CI [−0.0136, +0.0311]. Only V-3 is owed.
+2. **`HANDOFF_2026-09-12_…` §8.4 (N-5) and juniper-data#411** say "the `1.0.0` stamp is hashed into
+   `dataset_id` … the floor protects by accident". That was **false for the stores**. Until #422, only
+   the generator route hashed the version (`juniper_data/core/dataset_id.py:23`, called from
+   `api/routes/datasets.py:150`), and the stores built `hf-<name>-<rows>`. What kept them apart was the
+   `hf-` / `kaggle-` namespace and the absence of any caller. That is still true of every released
+   wheel up to 0.15.0. juniper-data#422 (merged 2026-09-23 as `ce436819`, unreleased) moved the stores
+   onto `generate_dataset_id` (`storage/external_partition.py:140`).
+3. **canopy `src/demo_mode.py`'s comment** says "rank is not what `validate_npz_contract` answers". The
+   helper does classify by `X_train`'s rank. The actual reason it cannot gate is that it fails closed.
+   Corrected by juniper-canopy#663 (merged 2026-09-23 as `cc3588a8`).
+4. **`HANDOFF_2026-09-12_…` §3 / §8.1** dropped eight of this file's §5 items without a disposition.
+   10.2 dispositions every one of them.
+
+### 10.5 In flight, and outstanding
+
+**This session's PRs: all merged.** The owner granted merge approval for them in this session's task request. That grant is per-session and does not carry forward to a successor. Each merge went through `util/safe_merge.py` after every required context was green on the head that merged.
+
+- juniper-data#422, **merged 2026-09-23 06:22Z as `ce436819`**, closing #411. It conforms the stores:
+  - three partitions, no `*_full`, `VERSION 3.0.0`;
+  - ids via `generate_dataset_id`, with the marker `"unshuffled"` in place of a null seed;
+  - train-only normalisation (decision 7), found by grounding the spec (its F-2);
+  - plain-JSON parameters, and ratios validated before any download.
+
+  It was reviewed in two adversarial rounds plus a consumer-graph lane, and CI passed 22 required
+  contexts. **BREAKING for store callers**: a lone `train_ratio=0.9` now raises before any download.
+- juniper-canopy#663, advisory `validate_npz_contract`, **merged 2026-09-23 07:12Z as `cc3588a8`**,
+  closing #559. It went BEHIND while waiting; the gate re-synced it, and the armed auto-merge net
+  merged it on green.
+- Both CHANGELOG entries landed under `[Unreleased]`, not under a released heading. That was checked
+  on each repo's `main` after the merge.
+- juniper-ml#2043 carries the Decision 12 spec, its verification script, this §10, the 2026-09-12
+  handoff's correction, and the `docs/REFERENCE.md` and partition-plan updates.
+
+**Owner decisions:**
+
+- Release cuts, which are the owner's:
+  - cascor, to ship #672;
+  - juniper-data, to ship #422 (BREAKING for store callers, so the release notes must say so);
+  - canopy, to ship #663;
+  - juniper-ml 0.10.0 (#2033).
+- juniper-data#424: does §6.2's "generate the shortfall" survive decision 9, or should canopy's
+  disabled option be retired?
+- The Decision 12 spec's OQ-1, OQ-2, OQ-3, OQ-5 and OQ-6 (OQ-4 is answered by #422). **Not yet**:
+  ruling on v1 would ratify a design that review round 1 rated unsound. Its §14 R-2 notes that §8.3 and §9.4
+  already presume OQ-2's answer.
+- Close cascor#582?
+- **Widen `CROSS_REPO_DISPATCH_TOKEN`** (a fine-grained PAT held in juniper-data). Add
+  `pcalnon/juniper-recurrence` to its repository access with **Contents: Read and write**. Until then,
+  every juniper-data release shows a red `Notify consumer repos` job after a successful publish. The
+  `pypi` job, not the run, is the publish verdict.
+
+**Agent-doable:**
+
+- **Decision 12 spec v2.** Fold the 14 unfolded findings in §14 of
+  `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md` into §1–§13: B-1 to B-7
+  (soundness) and R-1 to R-7 (executability). Four are blockers: B-1, B-2, B-3 and R-1. (C-1 to C-4
+  were citation fixes, already applied.) Then run a
+  **fresh** review round on v2, freezing the artifact while it runs. Round 1's lanes do not carry
+  over, because they reviewed a different document.
+- juniper-data#429: **every `arc_agi` artifact is unloadable through data-client**. `task_ids` is an
+  object array, and the client loads with `allow_pickle=False`; reproduced. The cached store also
+  swallows the error. Fix: a unicode array plus a fleet `allow_pickle=False` round-trip guard.
+- juniper-data-client#211: `notify-downstream` sends with a bare `curl`, so a failed dispatch reports
+  success.
+- recurrence#178:
+  - the two residual gaps: the concurrency group, and polling for the dispatched run after the 204;
+  - after the owner widens the token, re-run
+    `gh workflow run notify-consumers.yml -R pcalnon/juniper-data -f version=0.15.0`, and expect a
+    `repository_dispatch` run in juniper-recurrence.
+- juniper-ml#2034 (decision 4) and juniper-cascor#677 (V-3).
+- **Done in juniper-ml#2043**: once #422 had merged, `docs/REFERENCE.md`'s hf/kaggle entry and the "still open"
+  list in §10 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md` were
+  updated. Both are dated additions; the old text stands as history.
+- Minor, noted but not ticketed:
+  - The fallback `__version__` literals in juniper-data (`0.14.0` at 0.15.0) and cascor-worker (`0.6.0`
+    at 0.6.1) are stale. Installed metadata is correct, so only an uninstalled checkout sees them.
+  - juniper-recurrence `data.py:77`'s comment, and the docstring at `:69-71`, promise `ValueError`.
+    A `KeyError` can escape instead, from data-client's `contract.py:72`
+    (`arrays[f"{NPZ_KEY_X}_train"]`).
+  - cascor's `publish.yml` TestPyPI check imports from the checkout, not from the artifact.
+
+### 10.6 Verify the starting state
+
+```bash
+cd /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/rippling-wobbling-torvalds
+git fetch -q origin && git status --short && git log --oneline -1 origin/main
+gh pr view 422 --repo pcalnon/juniper-data    --json state,mergedAt,headRefOid
+gh pr view 663 --repo pcalnon/juniper-canopy  --json state,mergedAt,headRefOid
+gh issue view 178 --repo pcalnon/juniper-recurrence --json state --jq .state
+# PyPI truth: what is released versus merged-and-waiting
+curl -s https://pypi.org/pypi/juniper-ml/json     | python3 -c "import sys,json; print(json.load(sys.stdin)['info']['version'])"   # 0.9.0 until 0.10.0 is cut
+curl -s https://pypi.org/pypi/juniper-cascor/json | python3 -c "import sys,json; print(json.load(sys.stdin)['info']['version'])"   # 0.11.0 until #672 ships
+```
+
+### 10.7 Consensus record
+
+- **Round 1, the six code PRs.** Lane A (factual) was killed by the session limit before reporting.
+  Lane B (adversarial) and Lane C (consumer graph) reported.
+  - Lane C's two "MAJOR, live" version-drift findings were re-probed and **downgraded**: both literals
+    are `PackageNotFoundError` fallbacks, and installed metadata is correct.
+  - Lane B found the #422 defects fixed in `4574d7e1`: the unseeded-ID leak, the numpy-seed crash and
+    validation after the download. It also found the #659 defects fixed in #663.
+- **Round 2 (Lane B), on the corrections.** #663 **survives**. #422 had minor residuals, fixed in
+  `11e45297`: float32 ratios validated before conversion, and non-JSON parameter types.
+- **Spec grounding found two defects.** F-2, the decision-7 leak in the stores, is fixed in #422. F-1
+  is filed as juniper-data#429.
+- **CI found what no lane did.** canopy's unit lane runs without juniper-data-client (the conftest
+  injects a stub), so #663's first tests passed only on a dev box that has the client. Fixed by a
+  faithful fake plus a fake-versus-real agreement test. Re-verified on the merged head under a
+  simulated stub: the new file plus the eight `test_demo_mode*.py` suites and `test_sequence_dataset_viz.py`
+  gave 177 passed and 1 skipped (the agreement test, with its reason). With the real client: 178 passed.
+  The mutation check on the final test file: 8 of 10 cases fail against pre-change `main`.
+- **Spec review round 1** (2026-09-23; three independent lanes, each told to refute):
+  - **S1 (citations)**: three wrong citations, fixed in place.
+  - **S2 (soundness)**: **UNSOUND** in identity, versioning and legality. The choice of encoding and
+    the digest's construction held; B-5 (the dtype allowlist) and B-6 (canonical JSON not enforced)
+    are MAJOR findings against the same area. Seven findings, three of them blockers:
+    - the legality table refuses the stores' post-fix `fit_scope: "train"`;
+    - an unknown `schema_version` bypasses G1–G4;
+    - the id binding is skipped for every unseeded **generator** artifact.
+  - **S3 (executability)**: executable with gaps. Its blocker is §9.5's consumer census. It missed
+    juniper-ml's raw `/artifact` plot loaders and recurrence's in-process bench.
+  - **Disposition.** The session re-verified every finding against code and recorded it in the
+    spec's §14. None is folded in, following the partition plan's §9 precedent: in-place correction
+    during an open review is what produced that plan's v2/v3 defects. The spec's Status now reads
+    "not ready for ratification".
+- **Handoff validation lane H1** (2026-09-23, on frozen copies of this §10, the 2026-09-12
+  correction and the spec's §14; told to refute): **1 refuted, 13 imprecise, about 125 held**.
+  - **Refuted**: this §10 said the dispatch token's reach into juniper-recurrence was "unproven".
+    Run 35808713744 had already disproven it with a 403 (10.3 N-1). This session had found the same
+    thing in parallel and corrected the live text before the lane reported.
+  - **Imprecise**, all applied:
+    - line drift (`manager.py:3658` → `:3701`);
+    - the arc_agi condition in spec §14 B-1;
+    - "unseeded" → "unseeded generator";
+    - "the encoding held" narrowed to the choice of encoding;
+    - five, not six, open owner questions;
+    - a fourth wrong citation (spec C-4);
+    - R-7's missing locations;
+    - bench's scope in R-1;
+    - the evidence for the S-1 ruling (#422's description, not #411);
+    - two section pointers;
+    - the recurrence docstring line;
+    - a tense ("only the generator route hashes" was true until #422).
+  - **State that moved during the lane**: #422 merged while the lane ran, so every "once #422 merges"
+    line was stale by the time it reported.
+
+### 10.8 What this evidence cannot support
+
+- **No end-to-end `repository_dispatch` has succeeded.** The one attempt showed that the token does
+  **not** reach juniper-recurrence (403). Nothing yet shows that the receiver fires on a real
+  dispatch. #181's own CI ran the bench on a `pull_request` event, not on `repository_dispatch`.
+- **#422's stores were exercised with mocked sources only.** No real Hub or Kaggle download ran.
+- **The Decision 12 spec is a proposal, and round 1 found it unsound as written** (its §14). Neither
+  its verification script's 15 passes nor its golden vectors say anything about the defects in §14.
+  They exercise the encoding and the digest's construction. The gate's identity, version and legality
+  logic, and its enforcement of canonical JSON and the dtype allowlist, exist only as prose. Its OQs
+  are the owner's, and are not ripe until v2.
+- **"Merged" is not "released".** #422, #663, cascor#672 and ml#2033 are on `main` only. Until the
+  owner cuts releases, PyPI serves the behaviour this §10 calls fixed.
+- **"Released" in 10.1 means "on PyPI"** (HTTP 200 and upload time). Nothing here re-verified the
+  behaviour of those wheels. The successor's §8.5 did that for seven of the nine.
