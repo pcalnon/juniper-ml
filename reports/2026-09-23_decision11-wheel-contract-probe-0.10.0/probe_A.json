@@ -1,0 +1,201 @@
+{
+  "python": "3.12.11",
+  "prefix": "/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/25de1349-d50d-48ac-9374-fd39dd06944e/scratchpad/venvA",
+  "results": [
+    {
+      "id": "DC-1  data-client NPZ_SPLITS",
+      "status": "PASS",
+      "detail": "NPZ_SPLITS == ('train', 'val', 'test')"
+    },
+    {
+      "id": "DC-2  data-client validate tolerates _full",
+      "status": "PASS",
+      "detail": "tabular clean/legacy+_full/val-less all classify 'tabular' (no _full required, none rejected)"
+    },
+    {
+      "id": "DC-3  data-client 3-D validate + dt-less X_full",
+      "status": "PASS",
+      "detail": "3-D panel validates as 'sequence'; a dt-less legacy X_full is tolerated (not iterated)"
+    },
+    {
+      "id": "DC-4  data-client rank probe keys off X_train",
+      "status": "PASS",
+      "detail": "rank probe keys off X_train only (KeyError 'X_train'); never off X_full"
+    },
+    {
+      "id": "DC-5  data-client fake emits 6 keys",
+      "status": "PASS",
+      "detail": "fake emits exactly ['X_test', 'X_train', 'X_val', 'y_test', 'y_train', 'y_val']; whole-set size 200 == train+val+test (160+20+20); preview serves train"
+    },
+    {
+      "id": "RM-1  recurrence-model entity-major 3-D",
+      "status": "PASS",
+      "detail": "3-D multi-ticker: X_full/y_full/ticker_code_full all entity-major (18 rows); naive concat differs"
+    },
+    {
+      "id": "RM-2  recurrence-model split='full' path",
+      "status": "PASS",
+      "detail": "split='full' on an artifact with NO *_full family returns (18, 4, 2) in entity-major order"
+    },
+    {
+      "id": "RM-3  recurrence-model load_sequence_npz from disk",
+      "status": "PASS",
+      "detail": "load_sequence_npz(..., split='full') on a 12-key _full-less NPZ -> (18, 4, 2)"
+    },
+    {
+      "id": "RM-4  recurrence-model legacy _full passthrough",
+      "status": "PASS",
+      "detail": "a producer-supplied X_full is passed through byte-for-byte, never regenerated"
+    },
+    {
+      "id": "RM-5  recurrence-model val-less artifact",
+      "status": "PASS",
+      "detail": "a train/test-only (pre-val) artifact still derives a full view (12 rows), no hard failure"
+    },
+    {
+      "id": "MC-1  model-core folds are index-based",
+      "status": "PASS",
+      "detail": "walk_forward_folds is index-based (no *_full key read); fold0 eval differs by order: [100.0, 101.0, 110.0, 111.0, 120.0, 121.0] vs [10.0, 11.0, 110.0, 111.0, 210.0, 211.0]"
+    },
+    {
+      "id": "MC-2  model-core exposes no _full symbol",
+      "status": "PASS",
+      "detail": "crossval.splits exposes no *_full symbol at all; API is (n_samples, n_folds, ...)"
+    },
+    {
+      "id": "RC-1  recurrence crossval router imports",
+      "status": "PASS",
+      "detail": "juniper_recurrence.routers.crossval imports clean; routes ['/v1/crossval', '/v1/crossval/status']; module-level *_full symbols []"
+    },
+    {
+      "id": "RC-2  recurrence split field",
+      "status": "PASS",
+      "detail": "split fields: {'DatasetDescriptor.split': \"<class 'str'>\", 'DatasetRef.split': \"typing.Literal['train', 'val', 'test', 'full']\"}"
+    },
+    {
+      "id": "RC-3  recurrence main imports",
+      "status": "PASS",
+      "detail": "juniper_recurrence.main imports from the wheel; exports 6 names"
+    },
+    {
+      "id": "RC-4  recurrence load split=full end-to-end",
+      "status": "PASS",
+      "detail": "load_sequence_data(split='full') on a _full-less 3-D artifact -> 18 windows, entity-major head [0.0, 1.0, 10.0, 11.0]"
+    },
+    {
+      "id": "RL-1  recurrence-client crossval signature",
+      "status": "PASS",
+      "detail": "JuniperRecurrenceClient.crossval(self, *, n_folds: 'int', dataset_id: 'Optional[str]' = None, name: 'Optional[str]' = None, generator: 'Optional[str]' = None, params: 'Optional[dict[str, Any]]' = None, split: 'str' = 'train', scheme: 'str' = 'expanding', embargo: 'int' = 0, min_train: 'Optional[int]' = None, d: 'Optional[int]' = None, theta: 'Optional[float]' = None, ridge: \"Optional[Union[float, Literal['gcv']]]\" = None, readout: \"Optional[Literal['linear', 'rff', 'mlp']]\" = None, rff_features: 'Optional[int]' = None, rff_gamma: \"Optional[Union[float, Literal['median']]]\" = None, mlp_hidden: 'Optional[int]' = None, mlp_weight_decay: 'Optional[float]' = None, mlp_lr: 'Optional[float]' = None, mlp_max_epochs: 'Optional[int]' = None, mlp_patience: 'Optional[int]' = None, timeout: 'Optional[float]' = None) -> 'dict[str, Any]'"
+    },
+    {
+      "id": "JD-1  juniper-data generator_version floor",
+      "status": "SKIP",
+      "detail": "juniper_data not importable here (ModuleNotFoundError: No module named 'juniper_data')"
+    },
+    {
+      "id": "JD-2  juniper-data spiral emits 6 keys",
+      "status": "SKIP",
+      "detail": "juniper_data not importable here (ModuleNotFoundError: No module named 'juniper_data')"
+    },
+    {
+      "id": "JD-3  juniper-data ALL runnable generators",
+      "status": "SKIP",
+      "detail": "juniper_data not importable here (ModuleNotFoundError: No module named 'juniper_data')"
+    },
+    {
+      "id": "JD-4  juniper-data compute_shape_meta",
+      "status": "SKIP",
+      "detail": "juniper_data not importable here (ModuleNotFoundError: No module named 'juniper_data')"
+    },
+    {
+      "id": "JD-5  juniper-data partition_and_assemble",
+      "status": "SKIP",
+      "detail": "juniper_data not importable here (ModuleNotFoundError: No module named 'juniper_data')"
+    },
+    {
+      "id": "JD-8  juniper-data service -> client roundtrip",
+      "status": "SKIP",
+      "detail": "juniper_data.api.app not importable here (ModuleNotFoundError: No module named 'juniper_data')"
+    },
+    {
+      "id": "JD-6  juniper-data HF store (DEFECT PROBE)",
+      "status": "SKIP",
+      "detail": "juniper_data not importable here (ModuleNotFoundError: No module named 'juniper_data')"
+    },
+    {
+      "id": "JD-7  juniper-data Kaggle store (DEFECT PROBE)",
+      "status": "SKIP",
+      "detail": "juniper_data not importable here (ModuleNotFoundError: No module named 'juniper_data')"
+    },
+    {
+      "id": "CC-1  cascor _resolve_validation_split rules",
+      "status": "SKIP",
+      "detail": "api.lifecycle.manager not importable here (ModuleNotFoundError: No module named 'api')"
+    },
+    {
+      "id": "CC-2  cascor data_provider tolerance",
+      "status": "SKIP",
+      "detail": "spiral_problem.data_provider not importable here (ModuleNotFoundError: No module named 'spiral_problem')"
+    },
+    {
+      "id": "CC-3  cascor data_provider never requires _full",
+      "status": "SKIP",
+      "detail": "spiral_problem.data_provider not importable here (ModuleNotFoundError: No module named 'spiral_problem')"
+    },
+    {
+      "id": "CC-4  cascor x_full derived three-way",
+      "status": "SKIP",
+      "detail": "spiral_problem.spiral_problem not importable here (ModuleNotFoundError: No module named 'spiral_problem')"
+    },
+    {
+      "id": "CC-5  cascor version metadata",
+      "status": "SKIP",
+      "detail": "juniper_cascor not importable here (ModuleNotFoundError: No module named 'juniper_cascor')"
+    },
+    {
+      "id": "CC-6  cascor get_dataset three counts",
+      "status": "SKIP",
+      "detail": "api.lifecycle.manager not importable here (ModuleNotFoundError: No module named 'api')"
+    },
+    {
+      "id": "CP-1  canopy backend imports",
+      "status": "SKIP",
+      "detail": "juniper_canopy not importable here (ModuleNotFoundError: No module named 'juniper_canopy')"
+    },
+    {
+      "id": "CP-2  canopy get_dataset sums three",
+      "status": "SKIP",
+      "detail": "juniper_canopy not importable here (ModuleNotFoundError: No module named 'juniper_canopy')"
+    },
+    {
+      "id": "CP-3  canopy wheel top-level inventory",
+      "status": "SKIP",
+      "detail": "juniper_canopy not importable here (ModuleNotFoundError: No module named 'juniper_canopy')"
+    },
+    {
+      "id": "CP-4  canopy missing-module inventory (DEFECT PROBE)",
+      "status": "SKIP",
+      "detail": "juniper_canopy not importable here (ModuleNotFoundError: No module named 'juniper_canopy')"
+    },
+    {
+      "id": "CP-5  canopy validation_gate.decide (0.8.x only)",
+      "status": "SKIP",
+      "detail": "juniper_canopy not importable here (ModuleNotFoundError: No module named 'juniper_canopy')"
+    },
+    {
+      "id": "ML-1  juniper-ml is a pure meta-package",
+      "status": "PASS",
+      "detail": "juniper-ml 0.10.0: 0 importable modules, 17 extra-scoped requirements"
+    },
+    {
+      "id": "ML-2  juniper-ml resolved set",
+      "status": "PASS",
+      "detail": "installed set, every one at or above its decision-11 version: {'juniper-data-client': '0.5.0', 'juniper-cascor-client': '0.8.0', 'juniper-model-core': '0.3.2', 'juniper-recurrence': '0.5.0', 'juniper-recurrence-client': '0.3.0', 'juniper-recurrence-model': '0.3.0'}"
+    },
+    {
+      "id": "ML-3  juniper-ml [servers] floors + equities 5.0.0",
+      "status": "SKIP",
+      "detail": "distribution juniper-data not installed in this venv"
+    }
+  ]
+}
