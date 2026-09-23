@@ -4807,7 +4807,8 @@ open follow-ups; they are not a license to CI-wire the gate — that call is the
 |---------|-------------|
 | `compare_baseline` FAIL, exit 1, same YAML / seed / host | Interpretable since `ml#1733`/`ml#1743`: the branch, `outcome`, measurement and coverage checks all passed and the count still moved. Investigate the change. Cut a new tag or `--accept-work-change REASON` only once you know *why* it moved. |
 | `compare_baseline` REFUSED, "cells ended on different branches" | Not a regression. The candidate terminated differently from the baseline (`early_stopped` vs `below_threshold` is the canonical pair). Re-run, or re-cut the baseline in the branch you mean to track. |
-| `compare_baseline` REFUSED, "records no completion_reason" | The baseline predates the `ml#1733` guard (e.g. `pf1-2026-09-04`). Expected — re-cut under a new tag; use `pf1-2026-09-04b` or later. |
+| `compare_baseline` REFUSED, "records no completion_reason" | The baseline predates the `ml#1733` guard (e.g. `pf1-2026-09-04`). Expected — re-cut under a new tag. **The current PF-1 tag is `pf1-2026-09-23-blas2`**; `pf1-2026-09-04b` now REFUSES on `thread_budget` (next row). |
+| `compare_baseline` REFUSED, "host identity differs from the baseline (thread_budget)" | **Expected against `pf1-2026-09-04` / `pf1-2026-09-04b` since `ml#2002` (D2).** `spiral-smoke.yaml`'s `runtime: {blas_threads: 2}` now binds, so every new PF-1 run records a CAPPED `thread_budget` (`OMP`/`MKL`/`OPENBLAS` = `2`) where those tags recorded all-null. The refusal is correct: the condition changed. Compare against **`pf1-2026-09-23-blas2`**, the capped successor minted 2026-09-23 (cascor `0d2d826`, `step_count` 1770 in 5/5 cells, `early_stopped`). Supersession is by name, so the old tags are retained and never deleted. |
 | `compare_baseline` PASS, but several cells have no `metrics_series.csv` | **No longer possible** — A1 refuses unmeasured cells. If you see this, the reader drifted; stop and check `read_run_metrics.py`. |
 | `compare_baseline` PASS, every cell `timed_out` | **No longer possible** — A2 reads `outcome`. Same stop condition as above. |
 | `compare_baseline` REFUSED, exit 2, after a real work miss | **No longer possible** — A3 gives FAIL precedence over REFUSED. A real work miss now exits 1 even when another `--suite` is unreadable. |
@@ -4815,7 +4816,7 @@ open follow-ups; they are not a license to CI-wire the gate — that call is the
 | `compare_baseline` REFUSED, "DUPLICATE workload fingerprint(s)" | A7. Two blessed scenarios share a workload, so which one a candidate compares against is arbitrary. Re-cut the baseline from distinct workloads. |
 | `compare_baseline` FAIL, exit 1, same YAML / seed / host / **same** `completion_reason` | Treat as a work regression. The guard did not swallow it. Cut a new tag only if the move is deliberate, or waive with a reason. |
 | `compare_baseline` FAIL, exit 1, and `TRUNCATING_TERMINATIONS` is absent from the reader | Pre-#1733 checkout — a branch flip is still a false FAIL. Confirm both sides reached the same `completion_reason` by hand, or land / cherry-pick #1733. |
-| `compare_baseline` REFUSED, "baseline … records no completion_reason" | Expected for tags cut before #1733. Re-cut under a new name (`pf1-2026-09-04` → `pf1-2026-09-04b`). |
+| `compare_baseline` REFUSED, "baseline … records no completion_reason" | Expected for tags cut before #1733. Re-cut under a new name (`pf1-2026-09-04` → `pf1-2026-09-04b`; the current PF-1 tag is `pf1-2026-09-23-blas2`). |
 | `compare_baseline` REFUSED, "deterministic only WITHIN a termination branch" | Branch flip (6496 `early_stopped` vs 6095 `below_threshold`). Not a work regression. Compare like with like, or re-cut. |
 | `compare_baseline` REFUSED, "driver stopped before the workload did" | Candidate (or its cells) ended `timed_out` / `torn_down_early` / `stalled`. Raise the budget and re-run; do not gate on a truncated histogram. |
 | `make_baseline: … already exists` | No `--force`. Choose a new tag. |
@@ -5044,7 +5045,7 @@ Verified live after #1643 against the recalibrated PF-1 suite: every row `step_c
 ### `--compare-baseline` is reporting only
 
 ```bash
-python util/experiments/run_suite.py --suite util/experiments/suites/perf/<file>.yaml --compare-baseline pf1-2026-09-04
+python util/experiments/run_suite.py --suite util/experiments/suites/perf/<file>.yaml --compare-baseline pf1-2026-09-23-blas2
 ```
 
 The flag compares the just-written suite against `JUNIPER_EXP_RUN_ROOT/baselines/<TAG>/` (default root `~/.local/state/juniper-experiments`) and pastes the verdict under `## Baseline comparison`.
