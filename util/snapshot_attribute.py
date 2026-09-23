@@ -119,7 +119,9 @@ VALIDATED BY A POSITIVE CONTROL
        first-pass winner, which removed it from moon's reference class, which dropped moon's
        cross floor 1.000 -> 0.850. ``seeded_params`` now supplies ``DATASET_SEED`` to any
        generator declaring none, and leaves a declared seed alone so spiral keeps the exact
-       instance every prior analysis used.
+       instance every prior analysis used. That instance is generator 1.x's: since decision 11
+       every generator is at 3.0.0 or later and each one's rows changed (V-1), so a rebuild now
+       scores a different instance and does not reproduce the 2026-08-24 counts (juniper-ml#2034).
 
 WHAT A VERDICT MEANS
     attributed    -- one dataset clears its null floor and is separated from the runner-up.
@@ -275,7 +277,9 @@ def seeded_params(params_cls, seed: int):
     generator whose counts held steady across rebuilds. So the rule here is to RESPECT a
     generator's declared canonical instance and supply one only where the generator declines
     to: spiral keeps the exact instance every prior analysis used, and the other five become
-    reproducible without silently redefining the one that already was.
+    reproducible without silently redefining the one that already was. (Within one generator
+    version. The instance every prior analysis used is generator 1.x's, and a rebuild at 3.0.0
+    or later draws different rows: juniper-ml#2034.)
     """
     params = params_cls()
     declared = getattr(params, "seed", _NO_SEED_FIELD)
