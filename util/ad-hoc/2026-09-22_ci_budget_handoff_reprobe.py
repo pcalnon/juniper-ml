@@ -12,11 +12,11 @@ Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md
          notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md
 
-Why a script: a worktree-isolated session's shell gate refuses a command naming git that it cannot
-show stays inside the worktree -- observed: heredocs whose text contains "git" (a `.github/` path
-counts), `$(...)`, `<(...)`, running a script through `bash`, and a loop that runs `gh` over a
-variable, while plain pipes and redirects ran -- and every probe below either reads git or loops
-over nine repos. Nothing here writes to any repository -- except `slack --fetch`, which runs
+Why a script: a worktree-isolated session's shell gate refuses any command it cannot show stays
+inside the worktree -- a judgement, not a fixed list. Observed refusals: heredocs (with "git" in
+the text, a `.github/` path included, and once a python heredoc with none), `$(...)`, `<(...)`,
+running a script through `bash`, and a loop that runs `gh` over a variable; plain pipes and
+redirects ran. Every probe below either reads git or loops over nine repos. Nothing here writes to any repository -- except `slack --fetch`, which runs
 `git fetch origin main` in a sibling checkout whose `origin/main` disagrees with GitHub
 (remote-tracking refs only; no working tree is touched).
 
@@ -39,7 +39,9 @@ Subcommands. Each prints what it measured AND what could have made it read diffe
   settings    allow_update_branch / allow_auto_merge per repo
   waiter      what util/wait_for_checks.py waits when --timeout is omitted, per repo
 
-Usage (from the juniper-ml root; S is a writable directory, e.g. the session scratchpad):
+Usage (from the juniper-ml root; S is a writable directory, e.g. the session scratchpad, set
+EARLIER on the command line -- `S=<dir>; python3 ...` -- because a prefix assignment,
+`S=<dir> python3 ...`, is applied after the shell has already expanded "${S:?...}"):
     python3 util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py all --fetch --json "${S:?set S}/reprobe.json"
     python3 util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py slack --fetch
     python3 util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py soak --since 2026-09-18T00:37:10Z
@@ -47,8 +49,8 @@ Usage (from the juniper-ml root; S is a writable directory, e.g. the session scr
 `all` makes roughly 2,700 REST calls and takes several minutes; `first-pass`, `spans`, `soak` and
 `alarm` are the slow ones. The token's REST budget is shared with every other session.
 
-Exit: 0 no probe refused; 2 a probe refused, and the UNMEASURABLE line names it and why; 1 is a
-crash, not a measurement. Exit 0 is NOT "every row was measured": each probe prints what it set
+Exit: 0 no probe refused; 2 a probe refused, and the UNMEASURABLE line names it and why -- or
+the --json pre-check refused the path, before any probe ran; 1 is a crash, not a measurement. Exit 0 is NOT "every row was measured": each probe prints what it set
 aside -- unhealthy, incomplete and unmeasurable heads, cancelled runs' unreadable logs -- and a
 reader must look at those counts.
 """
@@ -352,6 +354,10 @@ def probe_first_pass(n: int = 30) -> dict:
             print(f"        {repo:<22} UNMEASURABLE -- no required contexts read")
             continue
         prs = json.loads(run(["gh", "pr", "list", "--repo", slug, "--state", "merged", "--limit", str(n), "--json", "number,headRefOid"]).stdout)
+        # The window moves with every merge, so a figure is quotable only WITH it: printed per
+        # row, and every sampled PR number goes into the JSON.
+        sample = sorted(p["number"] for p in prs)
+        window = f"#{sample[0]}-#{sample[-1]}" if sample else "empty"
         healthy, unhealthy, unmeas, incomplete, raw = [], [], [], [], []
         for pr in prs:
             sha = pr["headRefOid"]
@@ -391,8 +397,8 @@ def probe_first_pass(n: int = 30) -> dict:
                 healthy.append(rec)
         budget = sm.timeout_for(repo)
         if not healthy:
-            out.append({"repo": repo, "healthy": 0, "verdict": "UNMEASURABLE (no healthy head)"})
-            print(f"        {repo:<22} {0:>7} {len(unhealthy):>7} {len(unmeas):>6}  UNMEASURABLE -- no healthy head")
+            out.append({"repo": repo, "healthy": 0, "window": window, "sample_prs": sample, "verdict": "UNMEASURABLE (no healthy head)"})
+            print(f"        {repo:<22} {0:>7} {len(unhealthy):>7} {len(unmeas):>6}  UNMEASURABLE -- no healthy head (window {window})")
             continue
         spans = sorted(r["span"] for r in healthy)
         p90v, mxv = v2.p90(spans), spans[-1]
@@ -418,9 +424,12 @@ def probe_first_pass(n: int = 30) -> dict:
                 "worst_unhealthy_first_pass": worst_unhealthy,
                 "margin": budget - mxv,
                 "verdict": verdict,
+                "window": window,
+                "sample_prs": sample,
             }
         )
         print(f"        {repo:<22} {len(healthy):>7} {len(unhealthy):>7} {len(unmeas):>6} {p90v:>6.0f} {mxv:>6} {'#' + str(max_pr):>7} {budget:>6} {4 * p90v:>6.0f} {round(max(raw)):>7}  {verdict}")
+        print(f"            window {window}: the {len(sample)} newest merged PRs by creation, listed in the JSON; any other number in the range was not a merged PR when this ran")
         if len(healthy) < 10:
             print(f"            only {len(healthy)} healthy heads: p90 sits at or next to the max; treat both as one observation")
         for u in sorted(unhealthy, key=lambda r: -r["raw_span"]):
@@ -564,10 +573,15 @@ def probe_soak(since: str) -> dict:
         return pr_cache[sha]
 
     name = urllib.parse.quote(SOAK_JOB)
-    checks = []
+    checks, in_flight = [], []
     for sha in heads:
         for cr in gh_json(f"repos/{OWNER}/juniper-ml/commits/{sha}/check-runs?check_name={name}&filter=all&per_page=100").get("check_runs", []):
             if cr.get("started_at") and _ts(cr["started_at"]) < cutoff:
+                continue
+            if cr.get("status") != "completed":
+                # Queued or running: no conclusion and no log yet, so neither evidence nor a lost
+                # log. Scored as lost, a busy CI queue made this probe exit 2 (round 3, 2026-09-23).
+                in_flight.append({"head": sha, "check_run": cr["id"], "status": cr.get("status")})
                 continue
             # Retried like every other read: one transient failure here once scored a completed
             # run (ml#1962, which examined 2 files cleanly) as unreadable. A cancelled run's log
@@ -626,7 +640,7 @@ def probe_soak(since: str) -> dict:
     for s in pr_state.values():
         states[s] = states.get(s, 0) + 1
     print(f"[soak] `{SOAK_JOB}` on juniper-ml pull_request CI since {since}")
-    print(f"       ci.yml pull_request runs: {len(runs)} over {len(heads)} heads; soak check-runs: {len(checks)}")
+    print(f"       ci.yml pull_request runs: {len(runs)} over {len(heads)} heads; completed soak check-runs: {len(checks)}; in flight (queued or running), not scored: {len(in_flight)}")
     print(f"       logs unreadable: {len(unread)} ({sum(1 for c in unread if c['conclusion'] == 'cancelled')} of them cancelled runs); no markdown changed: {len(idle)}; UNCLASSIFIED: {len(unclassified)}")
     print(f"       runs that EXAMINED >=1 file: {len(examined)}, on {len(prs_examined)} distinct PRs {states}; files examined: {sum(c['examined_files'] for c in examined)}")
     print(f"       runs with findings: {len(flagged)}; screen exits among examined runs: " + str({k: sum(1 for c in examined if c['screen_exit'] == k) for k in (0, 1, 2, None)}))
@@ -654,6 +668,7 @@ def probe_soak(since: str) -> dict:
         "ci_runs": len(runs),
         "heads": len(heads),
         "soak_runs": len(checks),
+        "in_flight": in_flight,
         "logs_unreadable": len(unread),
         "idle_runs": len(idle),
         "examined_runs": len(examined),

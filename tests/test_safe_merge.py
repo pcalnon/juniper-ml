@@ -35,8 +35,9 @@ _spec.loader.exec_module(safe_merge)
 # the first execution of every required context, from `check-runs?filter=all` -- over the heads
 # whose first pass passed. Healthy heads per row: ml 30, data 30, cascor 29, canopy 27,
 # cascor-worker 30, data-client 30, deploy 30, recurrence 29. Independently written instruments
-# in the 2026-09-22 consensus round reproduced every row: round 1 matched seven exactly and read
-# juniper-ml on a later window; round 2 reproduced juniper-ml's pair on its own window.
+# in the 2026-09-22 consensus round reproduced every row: round 1 matched seven of these eight
+# exactly (eight of nine repos, counting cascor-client) and read juniper-ml on a later window;
+# round 2 reproduced juniper-ml's pair on its own window.
 #
 # WHY THE FIRST PASS, NOT v2's RAW SPAN. v2 (`util/ad-hoc/2026-09-08_measure_required_check_span_v2.py`)
 # reads check-runs with `filter=latest`, the latest per name WITHIN EACH WORKFLOW RUN, so an
@@ -52,7 +53,8 @@ _spec.loader.exec_module(safe_merge)
 # LOWER a max -- the unsafe side of a "budget > max" rule. The five unhealthy heads (canopy
 # #653/#651/#636, cascor #647, recurrence #175) all had first passes BELOW their repo's max.
 #
-# juniper-ml's row is the window #1981-#2014. Later reads gave (857, 1061), (733, 1061) and, at
+# juniper-ml's row is the window #1981-#2014 (#2004 lies in that range but merged after the
+# measurement; the pair is the same with it). Later reads gave (857, 1061), (733, 1061) and, at
 # 2026-09-23 00:33 UTC, (680, 1061), where the 2800 s budget exceeds 4x p90 by 80 s: #1981, a
 # 2005 s healthy pass, had slid out of the window. The pin keeps the demonstrated 2005 s and its
 # window's p90, because a window edge moving is not evidence the worst case improved. cascor's and

@@ -283,7 +283,7 @@ second happened to include.
    > **Corrected 2026-09-22.** Dropping the trailing `exit 0` does not make the check able to fail:
    > the `if` before it becomes the last command and returns 0 either way. The step must end in
    > `exit "$rc"`. The soak has also not run clean — 8 false findings from 2026-09-18 to 09-23
-   > 00:50 UTC, every one present at its PR's final head — so the evidence is currently against
+   > 00:33 UTC, every one present at its PR's final head — so the evidence is currently against
    > promotion. Decide at promotion whether rc 2 and the early `exit 0` on a failed `git diff`
    > should fail too; left as they are, a promoted check passes a run that examined nothing. Record:
    > [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)
