@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PF-2 axis 2 is RUN, with no knee, so the owner's in-process follow-up does not fire**
+  (`notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` §3 RESULT; the
+  `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml` header;
+  `util/experiments/suites/perf/README.md`; `util/ad-hoc/2026-09-23_pf2_axis2_reduce.py`, new).
+  18 of 18 cells ran over 3 round-robin passes, at 1-minute load 5-8. Wall time is flat: 24.1 s
+  at 250 points per spiral and 24.4 s at 5,800, x1.01, dominated by stack overhead. Training
+  compute (`step_sum`) grows x1.31, with log-log slopes of -0.15 to 0.31 between neighbouring
+  sizes. The D4 ruling sends the top end in-process only on a knee, so it stays on the suite path.
+  This holds at `spiral-smoke`'s budgets only. `step_count` is 8 in every cell because the
+  budget fixes it, and it is never compared.
+
 ### Fixed
 
 - **Release notes: "Breaking changes" missed three registered house styles, and both section
