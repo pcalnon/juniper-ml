@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`util/push_signed_commit.py` -- one GitHub-signed commit onto an EXISTING branch, pinned to the
+  head you built on.** `util/open_signed_pr.py` covers "new branch + PR" and refuses an existing
+  branch by design, and no existing-branch driver had ever been promoted, so copies multiplied under
+  `util/ad-hoc/`: at `7b226ca0`, twelve files commit onto an existing branch -- six with their own
+  `createCommitOnBranch` mutation (one of them a one-off probe), six reusing
+  `open_signed_pr.create_signed_commit` -- and ten of the twelve read `expectedHeadOid` LIVE, which
+  keeps GitHub's guard against a push in the next instant and discards the one that matters: a push
+  that landed while you were editing, which the whole-file upload then silently reverts. The promoted
+  tool requires `--expected-head` as a FULL 40-char sha (an abbreviation is refused before any API
+  call; GitHub does not expand one, so it reads as a lost race), sends that pin as `expectedHeadOid`,
+  refuses a missing branch (404 only) and the default branch, and reads the commit back (head moved,
+  signature verified, parent == pin, blob shas, deletions gone). It reuses `open_signed_pr`'s helpers
+  and carries no copy of the mutation. Hermetic suite `tests/test_push_signed_commit.py` (its `gh` stub enforces
+  `expectedHeadOid` like GitHub), wired into `ci.yml`; `docs/REFERENCE.md` documents both. The
+  ad-hoc drivers are **retained** as provenance (owner policy 2026-08-25) with a "Superseded" header
+  line each; retiring them is an owner decision.
+
 ## [0.10.0] - 2026-09-23
 
 ### Changed
