@@ -8,7 +8,11 @@ These are the scripts the session and its four sub-agents wrote while working th
 They were authored in the session scratchpad under `/tmp/`, which the script-placement rule
 forbids for anything that produces, modifies or analyses repository content. They were copied
 here **unmodified**, because they are the evidence behind the PRs below and editing them would
-make them something else. Hard-coded worktree paths are the ones the session used; the worktrees
+make them something else. **The one exception is CodeQL hygiene**, applied because five unresolved
+CodeQL threads blocked this retention PR from merging. Three `open()` calls moved into `with`
+blocks: `registry-repairs/my_pytest.py`, `registry-repairs/thread_cpu.py` (two calls) and
+`selection-ui/extract_js.py`. `thread_cpu.py`'s empty `except OSError` also gained a comment saying
+why it passes. None of these edits changes what a script does or prints. Hard-coded worktree paths are the ones the session used; the worktrees
 are removed after merge, so pass your own paths when re-running. Each script's docstring carries
 its own usage.
 

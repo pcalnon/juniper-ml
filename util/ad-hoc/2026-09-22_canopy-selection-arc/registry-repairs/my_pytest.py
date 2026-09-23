@@ -8,7 +8,8 @@ pids = subprocess.run(["pgrep", "-f", "pytest tests/unit/ tests/regression/"], c
 for pid in pids:
     try:
         cwd = os.readlink(f"/proc/{pid}/cwd")
-        cmd = open(f"/proc/{pid}/cmdline", "rb").read().split(b"\0")[0].decode()
+        with open(f"/proc/{pid}/cmdline", "rb") as fh:
+            cmd = fh.read().split(b"\0")[0].decode()
     except OSError:
         continue
     if cwd.startswith(MINE) and cmd.endswith("python"):

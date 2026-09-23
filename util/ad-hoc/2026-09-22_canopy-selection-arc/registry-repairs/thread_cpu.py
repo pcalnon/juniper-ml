@@ -11,11 +11,13 @@ def sample():
     out = {}
     for tid in os.listdir(f"/proc/{pid}/task"):
         try:
-            fields = open(f"/proc/{pid}/task/{tid}/stat").read().rsplit(")", 1)[1].split()
-            comm = open(f"/proc/{pid}/task/{tid}/comm").read().strip()
+            with open(f"/proc/{pid}/task/{tid}/stat") as fh:
+                fields = fh.read().rsplit(")", 1)[1].split()
+            with open(f"/proc/{pid}/task/{tid}/comm") as fh:
+                comm = fh.read().strip()
             out[tid] = (int(fields[11]) + int(fields[12]), fields[0], comm)
         except OSError:
-            pass
+            pass  # the thread exited between listdir() and the read; skip it
     return out
 
 
