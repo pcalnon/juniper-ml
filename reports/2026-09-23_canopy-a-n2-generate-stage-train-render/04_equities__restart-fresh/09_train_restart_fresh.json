@@ -1,0 +1,26 @@
+{
+  "step": "train_restart_fresh",
+  "t_utc": "2026-09-23T19:42:48.131Z",
+  "method": "POST",
+  "url": "http://127.0.0.1:8061/api/train/restart",
+  "request_body": {
+    "start_fresh": true,
+    "reset": true
+  },
+  "status": 200,
+  "response": {
+    "success": true,
+    "steps": [
+      {
+        "step": "start",
+        "ok": true,
+        "detail": "Training started (start-fresh)"
+      }
+    ],
+    "was_active": false,
+    "start_fresh": true,
+    "instant_complete": false,
+    "status": "restarted"
+  },
+  "elapsed_s": 1.085
+}

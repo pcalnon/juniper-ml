@@ -1,0 +1,249 @@
+# a_n2 slim: dropped 19434 per-candidate-epoch lines ([candidate_unit.py:...] INFO chatter) of 19682
+INFO:     127.0.0.1:53314 - "GET /v1/training/status HTTP/1.1" 200 OK
+2026-09-23 14:30:47,287 - juniper_cascor.api.websocket.control - ERROR - Command 'set_params' failed: No network exists — create a network first
+INFO:     127.0.0.1:53314 - "PATCH /v1/training/params HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53314 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53314 - "GET /v1/training/params HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53314 - "POST /v1/training/dataset HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53314 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53314 - "GET /v1/metrics/history?count=10000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53314 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53314 - "GET /v1/dataset HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53314 - "GET /v1/network HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53314 - "GET /v1/training/dataset/pending HTTP/1.1" 200 OK
+2026-09-23 14:30:47,537 - api.lifecycle.manager - INFO - Reloaded dataset 'spirals' (1000 train samples)
+2026-09-23 14:30:47,538 - api.lifecycle.manager - INFO - start_training: no network — creating 2x2 from dataset dims
+2026-09-23 14:30:48,440 - api.lifecycle.manager - INFO - Network created: 2x2
+2026-09-23 14:30:48,442 - api.lifecycle.monitor - INFO - Training started (retain_metrics=True)
+2026-09-23 14:30:48,444 - api.lifecycle.state_machine - INFO - State transition: Stopped -> Started (Output)
++[cascade_correlation.py: 621] (2026-09-23 14:30:48) [INFO] CascadeCorrelationNetwork: __init__: Initialization completed
+INFO:     127.0.0.1:53314 - "POST /v1/training/start HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
++[cascade_correlation.py: 3496] (2026-09-23 14:31:00) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:02) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847049, Worker UUID: 7e2aec50-fa74-4ace-bbba-9db193af6401, Candidate Index: 1, Candidate UUID: 095c8288-4939-40ca-999e-ec7f9e8d0e68, Correlation: 0.040456
++[cascade_correlation.py: 3576] (2026-09-23 14:31:02) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847049, Worker UUID: 7e2aec50-fa74-4ace-bbba-9db193af6401, Candidate ID: 1, Candidate UUID: 095c8288-4939-40ca-999e-ec7f9e8d0e68, Candidate Correlation: 0.040456
++[cascade_correlation.py: 3496] (2026-09-23 14:31:02) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847042, Worker UUID: fc4d9170-4f79-4045-8ab4-e1f5fa273c74, Candidate Index: 0, Candidate UUID: a36cd5f0-8a5d-4c22-8624-fe261124da82, Correlation: 0.073440
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847042, Worker UUID: fc4d9170-4f79-4045-8ab4-e1f5fa273c74, Candidate ID: 0, Candidate UUID: a36cd5f0-8a5d-4c22-8624-fe261124da82, Candidate Correlation: 0.073440
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847069, Worker UUID: e693cfa7-e3dd-42d5-be56-61be08d94202, Candidate Index: 6, Candidate UUID: 7f5ef2dd-8152-42d1-ac78-a48e410f9267, Correlation: 0.073331
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847069, Worker UUID: e693cfa7-e3dd-42d5-be56-61be08d94202, Candidate ID: 6, Candidate UUID: 7f5ef2dd-8152-42d1-ac78-a48e410f9267, Candidate Correlation: 0.073331
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3496] (2026-09-23 14:31:00) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847053, Worker UUID: 1df3db38-dea7-4ef5-ba06-2cfb3dd27ab1, Candidate Index: 2, Candidate UUID: 590a1e1f-8942-4bb2-bd54-622d52b86b77, Correlation: 0.072932
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847053, Worker UUID: 1df3db38-dea7-4ef5-ba06-2cfb3dd27ab1, Candidate ID: 2, Candidate UUID: 590a1e1f-8942-4bb2-bd54-622d52b86b77, Candidate Correlation: 0.072932
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847053, Worker UUID: bd055c16-e4c6-4937-acfc-8ad0e6c054d6, Candidate Index: 17, Candidate UUID: 94704bfd-5abe-4a39-ae14-c6eb5eb2c37f, Correlation: 0.040912
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847053, Worker UUID: bd055c16-e4c6-4937-acfc-8ad0e6c054d6, Candidate ID: 17, Candidate UUID: 94704bfd-5abe-4a39-ae14-c6eb5eb2c37f, Candidate Correlation: 0.040912
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847065, Worker UUID: 3ab2a5e6-e967-44a7-9ddc-bcf1dc8488b9, Candidate Index: 3, Candidate UUID: a2b46955-3eed-48ea-b626-53d667045387, Correlation: 0.073354
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847065, Worker UUID: 3ab2a5e6-e967-44a7-9ddc-bcf1dc8488b9, Candidate ID: 3, Candidate UUID: a2b46955-3eed-48ea-b626-53d667045387, Candidate Correlation: 0.073354
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847065, Worker UUID: f5f04cd8-4540-4e4c-9ea6-5617df4baf3d, Candidate Index: 20, Candidate UUID: 7dc6c052-7111-496b-8a5d-a7ce558ecf88, Correlation: 0.040176
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847065, Worker UUID: f5f04cd8-4540-4e4c-9ea6-5617df4baf3d, Candidate ID: 20, Candidate UUID: 7dc6c052-7111-496b-8a5d-a7ce558ecf88, Candidate Correlation: 0.040176INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847049, Worker UUID: fc808e2a-ee4b-4d40-a64e-4e0e956aa378, Candidate Index: 15, Candidate UUID: b1941fc3-b7bb-4d3a-9b31-93eed44d4bdf, Correlation: 0.072577
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847049, Worker UUID: fc808e2a-ee4b-4d40-a64e-4e0e956aa378, Candidate ID: 15, Candidate UUID: b1941fc3-b7bb-4d3a-9b31-93eed44d4bdf, Candidate Correlation: 0.072577
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847049, Worker UUID: a5b68238-28a7-4e02-83d6-9c7fca79fbf1, Candidate Index: 19, Candidate UUID: dc36fc24-c5a4-4905-910b-26b44750941a, Correlation: 0.040752
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847049, Worker UUID: a5b68238-28a7-4e02-83d6-9c7fca79fbf1, Candidate ID: 19, Candidate UUID: dc36fc24-c5a4-4905-910b-26b44750941a, Candidate Correlation: 0.040752
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847042, Worker UUID: c8afb187-a907-4da6-a653-cd152976ca87, Candidate Index: 18, Candidate UUID: 65e346cd-a6a7-42e9-8ea0-804b6d85745b, Correlation: 0.072759
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847042, Worker UUID: c8afb187-a907-4da6-a653-cd152976ca87, Candidate ID: 18, Candidate UUID: 65e346cd-a6a7-42e9-8ea0-804b6d85745b, Candidate Correlation: 0.072759
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847042, Worker UUID: c2b4022d-f61d-42be-8dc6-0114d8593cf5, Candidate Index: 23, Candidate UUID: 3ef9240b-dc66-4803-958b-72d24765aff2, Correlation: 0.040209
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847042, Worker UUID: c2b4022d-f61d-42be-8dc6-0114d8593cf5, Candidate ID: 23, Candidate UUID: 3ef9240b-dc66-4803-958b-72d24765aff2, Candidate Correlation: 0.040209
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847069, Worker UUID: 0cebb368-8993-474d-8350-686ba8e28009, Candidate Index: 16, Candidate UUID: 5ce3e528-56b4-4ac0-8e14-d6d32fe8419b, Correlation: 0.040304
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847069, Worker UUID: 0cebb368-8993-474d-8350-686ba8e28009, Candidate ID: 16, Candidate UUID: 5ce3e528-56b4-4ac0-8e14-d6d32fe8419b, Candidate Correlation: 0.040304
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
++[cascade_correlation.py: 3753] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847069, Worker UUID: 2a5d9ef2-21e2-4133-b071-2ad72f617813, Candidate Index: 21, Candidate UUID: c47096b8-e323-4c7b-8991-bb7c993e8cea, Correlation: 0.073175
++[cascade_correlation.py: 3576] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847069, Worker UUID: 2a5d9ef2-21e2-4133-b071-2ad72f617813, Candidate ID: 21, Candidate UUID: c47096b8-e323-4c7b-8991-bb7c993e8cea, Candidate Correlation: 0.073175
++[cascade_correlation.py: 3496] (2026-09-23 14:31:03) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
+...[middle elided by the A-N2 driver: slice > 3 MB]...
+correlation effectiveness: 0.147348
++[cascade_correlation.py: 3753] (2026-09-23 14:33:06) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847086, Worker UUID: e4cdcb71-a44d-415f-99b5-000cab613fcd, Candidate Index: 26, Candidate UUID: f06a62d9-c11b-42dc-8f9b-600f1eb5864a, Correlation: 0.215637
++[cascade_correlation.py: 3576] (2026-09-23 14:33:06) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847086, Worker UUID: e4cdcb71-a44d-415f-99b5-000cab613fcd, Candidate ID: 26, Candidate UUID: f06a62d9-c11b-42dc-8f9b-600f1eb5864a, Candidate Correlation: 0.215637
++[cascade_correlation.py: 3496] (2026-09-23 14:33:06) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Starting training of Candidate Units in Pool.
+
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:08) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847086, Worker UUID: 025c58cf-898d-447e-ad0e-abdac2ae3980, Candidate Index: 39, Candidate UUID: fb836c58-e510-46fb-9e92-39fe90ee3172, Correlation: 0.197360
++[cascade_correlation.py: 3576] (2026-09-23 14:33:08) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847086, Worker UUID: 025c58cf-898d-447e-ad0e-abdac2ae3980, Candidate ID: 39, Candidate UUID: fb836c58-e510-46fb-9e92-39fe90ee3172, Candidate Correlation: 0.197360
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:06) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847100, Worker UUID: 895eca5a-811c-48a6-8d82-d0afb88eaa53, Candidate Index: 25, Candidate UUID: bd5a5972-8b84-4cf5-83d0-bbf28e6ddf13, Correlation: 0.255409
++[cascade_correlation.py: 3576] (2026-09-23 14:33:06) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847100, Worker UUID: 895eca5a-811c-48a6-8d82-d0afb88eaa53, Candidate ID: 25, Candidate UUID: bd5a5972-8b84-4cf5-83d0-bbf28e6ddf13, Candidate Correlation: 0.255409
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:06) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847053, Worker UUID: 26ca39bd-4ec9-405b-89dc-9140e156a672, Candidate Index: 18, Candidate UUID: 29cd923b-40e8-4536-8539-8de9c2fb1184, Correlation: 0.251651
++[cascade_correlation.py: 3576] (2026-09-23 14:33:06) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847053, Worker UUID: 26ca39bd-4ec9-405b-89dc-9140e156a672, Candidate ID: 18, Candidate UUID: 29cd923b-40e8-4536-8539-8de9c2fb1184, Candidate Correlation: 0.251651
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:06) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847135, Worker UUID: 1ef13347-1385-48fe-b29d-3bcacd421432, Candidate Index: 28, Candidate UUID: e5f44fcf-2006-4572-bd43-43f6e0b26045, Correlation: 0.115550
++[cascade_correlation.py: 3576] (2026-09-23 14:33:06) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847135, Worker UUID: 1ef13347-1385-48fe-b29d-3bcacd421432, Candidate ID: 28, Candidate UUID: e5f44fcf-2006-4572-bd43-43f6e0b26045, Candidate Correlation: 0.115550
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847042, Worker UUID: ed99384a-1468-4688-907a-13df69155dec, Candidate Index: 27, Candidate UUID: 583e50fd-31ca-4df5-beba-dcefe9e3e368, Correlation: 0.072572
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847042, Worker UUID: ed99384a-1468-4688-907a-13df69155dec, Candidate ID: 27, Candidate UUID: 583e50fd-31ca-4df5-beba-dcefe9e3e368, Candidate Correlation: 0.072572
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847128, Worker UUID: 00679a15-b3e8-4d7a-a831-f5c9b24a53d4, Candidate Index: 30, Candidate UUID: ff78d80a-694e-4eca-849b-2f851bb04810, Correlation: 0.116231
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847128, Worker UUID: 00679a15-b3e8-4d7a-a831-f5c9b24a53d4, Candidate ID: 30, Candidate UUID: ff78d80a-694e-4eca-849b-2f851bb04810, Candidate Correlation: 0.116231
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847119, Worker UUID: 152534c9-ed6e-47b0-a0a3-7f309b0c8a5e, Candidate Index: 29, Candidate UUID: 627785bf-937e-46a1-9f0f-db144b135368, Correlation: 0.107082
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847119, Worker UUID: 152534c9-ed6e-47b0-a0a3-7f309b0c8a5e, Candidate ID: 29, Candidate UUID: 627785bf-937e-46a1-9f0f-db144b135368, Candidate Correlation: 0.107082
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847095, Worker UUID: 8ff09c98-1ae1-43d7-9a21-ac2e6734ef5a, Candidate Index: 33, Candidate UUID: a59d4444-2a10-4c9e-8e2d-b923b557383c, Correlation: 0.236379
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847095, Worker UUID: 8ff09c98-1ae1-43d7-9a21-ac2e6734ef5a, Candidate ID: 33, Candidate UUID: a59d4444-2a10-4c9e-8e2d-b923b557383c, Candidate Correlation: 0.236379
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847065, Worker UUID: 1dc92795-3fc0-4b97-ab95-83535386e6af, Candidate Index: 32, Candidate UUID: 9713bd9e-9c54-45c6-9cfc-f44b735529b6, Correlation: 0.240294
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847065, Worker UUID: 1dc92795-3fc0-4b97-ab95-83535386e6af, Candidate ID: 32, Candidate UUID: 9713bd9e-9c54-45c6-9cfc-f44b735529b6, Candidate Correlation: 0.240294
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847108, Worker UUID: da056ee0-dc65-4403-88e2-453a43a8e5f2, Candidate Index: 38, Candidate UUID: 0b9b8064-ab70-4b6a-9d28-40530027dc3b, Correlation: 0.144035
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847108, Worker UUID: da056ee0-dc65-4403-88e2-453a43a8e5f2, Candidate ID: 38, Candidate UUID: 0b9b8064-ab70-4b6a-9d28-40530027dc3b, Candidate Correlation: 0.144035
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847137, Worker UUID: 7b24c6dd-5598-4b1e-bc16-d61d8a95449d, Candidate Index: 35, Candidate UUID: 4ccc37ab-b756-4c2a-8a48-2e96b6af41aa, Correlation: 0.089993
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847137, Worker UUID: 7b24c6dd-5598-4b1e-bc16-d61d8a95449d, Candidate ID: 35, Candidate UUID: 4ccc37ab-b756-4c2a-8a48-2e96b6af41aa, Candidate Correlation: 0.089993
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847069, Worker UUID: 3d8a4d02-95d4-4f57-8c5f-6c4071014b0f, Candidate Index: 36, Candidate UUID: 4cc32e83-9546-48ad-8e38-6ffbf3f0a5bf, Correlation: 0.106770
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847069, Worker UUID: 3d8a4d02-95d4-4f57-8c5f-6c4071014b0f, Candidate ID: 36, Candidate UUID: 4cc32e83-9546-48ad-8e38-6ffbf3f0a5bf, Candidate Correlation: 0.106770
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847061, Worker UUID: fc605a3a-d599-486b-ad1b-71f4e7c2aa01, Candidate Index: 31, Candidate UUID: 2060b440-123e-4f8d-b901-656858b7c047, Correlation: 0.217925
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847061, Worker UUID: fc605a3a-d599-486b-ad1b-71f4e7c2aa01, Candidate ID: 31, Candidate UUID: 2060b440-123e-4f8d-b901-656858b7c047, Candidate Correlation: 0.217925
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847049, Worker UUID: 61217aa6-4cd7-4d9e-9e50-d11fce4107f1, Candidate Index: 34, Candidate UUID: 2a94e31e-0371-4ba8-b812-7280354d981e, Correlation: 0.169550
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847049, Worker UUID: 61217aa6-4cd7-4d9e-9e50-d11fce4107f1, Candidate ID: 34, Candidate UUID: 2a94e31e-0371-4ba8-b812-7280354d981e, Candidate Correlation: 0.169550
+
++[cascade_correlation.py: 3753] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 3847112, Worker UUID: 744e60c7-a4d8-43c2-88db-732b1bfc7a42, Candidate Index: 37, Candidate UUID: 9bca636c-c357-4c2c-8389-690e80eef453, Correlation: 0.119565
++[cascade_correlation.py: 3576] (2026-09-23 14:33:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 3847112, Worker UUID: 744e60c7-a4d8-43c2-88db-732b1bfc7a42, Candidate ID: 37, Candidate UUID: 9bca636c-c357-4c2c-8389-690e80eef453, Candidate Correlation: 0.119565
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+2026-09-23 14:33:19,328 - api.lifecycle.monitor - INFO - Cascade unit 0 added (correlation=0.0000)
+2026-09-23 14:33:19,330 - api.lifecycle.monitor - INFO - Cascade unit 1 added (correlation=0.0000)
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+2026-09-23 14:33:19,338 - api.lifecycle.monitor - INFO - Cascade unit 2 added (correlation=0.0000)
+2026-09-23 14:33:19,339 - api.lifecycle.monitor - INFO - Cascade unit 3 added (correlation=0.0000)
+2026-09-23 14:33:19,340 - api.lifecycle.monitor - INFO - Cascade unit 4 added (correlation=0.0000)
+2026-09-23 14:33:19,341 - api.lifecycle.monitor - INFO - Cascade unit 5 added (correlation=0.0000)
+2026-09-23 14:33:19,343 - api.lifecycle.monitor - INFO - Cascade unit 6 added (correlation=0.0000)
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+2026-09-23 14:33:19,346 - api.lifecycle.monitor - INFO - Cascade unit 7 added (correlation=0.0000)
+2026-09-23 14:33:19,347 - api.lifecycle.monitor - INFO - Cascade unit 8 added (correlation=0.0000)
+2026-09-23 14:33:19,348 - api.lifecycle.monitor - INFO - Cascade unit 9 added (correlation=0.0000)
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+2026-09-23 14:33:19,366 - api.lifecycle.state_machine - INFO - State transition: Started -> Completed
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+2026-09-23 14:33:19,380 - api.lifecycle.monitor - INFO - Training ended
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/metrics/history?count=10000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/dataset HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/dataset/data HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/params HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/network/topology HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/network/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "GET /v1/decision-boundary?resolution=100 HTTP/1.1" 200 OK

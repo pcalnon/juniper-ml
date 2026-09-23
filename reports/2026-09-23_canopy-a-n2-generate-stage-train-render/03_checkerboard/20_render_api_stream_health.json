@@ -1,0 +1,45 @@
+{
+  "step": "render_api_stream_health",
+  "t_utc": "2026-09-23T19:39:44.466Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/stream_health",
+  "status": 200,
+  "response": {
+    "overall": "healthy",
+    "relay": {
+      "name": "training-relay",
+      "connected": true,
+      "status": "healthy",
+      "last_activity_age_seconds": 0.7,
+      "reconnect_count": 0,
+      "last_disconnect_reason": null,
+      "frames_forwarded_total": 8575,
+      "frames_by_type": {
+        "connection_established": 1,
+        "initial_status": 1,
+        "state": 79,
+        "initial_metrics": 1,
+        "metrics": 4477,
+        "candidate_progress": 3991,
+        "cascade_add": 19,
+        "topology": 3,
+        "event": 3
+      }
+    },
+    "control": {
+      "name": "control",
+      "connected": true,
+      "status": "healthy",
+      "last_activity_age_seconds": 13.1,
+      "reconnect_count": 0,
+      "last_disconnect_reason": null,
+      "frames_forwarded_total": 4,
+      "frames_by_type": {
+        "ack": 4
+      },
+      "enabled": true
+    },
+    "mode": "service"
+  },
+  "elapsed_s": 0.004
+}

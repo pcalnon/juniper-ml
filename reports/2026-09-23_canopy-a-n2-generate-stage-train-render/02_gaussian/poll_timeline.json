@@ -1,0 +1,85 @@
+{
+  "final_status": {
+    "backend": "service",
+    "execution": "live",
+    "is_training": false,
+    "is_running": false,
+    "is_paused": false,
+    "completed": true,
+    "failed": false,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 13,
+    "hidden_units": 11,
+    "network_connected": true,
+    "monitoring_active": false,
+    "input_size": 2,
+    "output_size": 2,
+    "learning_rate": 0.1,
+    "max_hidden_units": 32,
+    "max_epochs": 860,
+    "current_step": 13,
+    "grow_iteration": 0,
+    "grow_max": 8,
+    "output_epoch": 0,
+    "output_total_epochs": 0,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "pending_dataset": null,
+    "dataset_shortfall": null,
+    "completion_reason": "early_stopped",
+    "current_dataset": {
+      "dataset_type": "gaussian"
+    }
+  },
+  "timeline": [
+    {
+      "t_s": 0.0,
+      "fsm_status": "STARTED",
+      "phase": "output",
+      "is_running": true,
+      "is_training": true,
+      "completed": false,
+      "failed": false,
+      "current_epoch": 0,
+      "hidden_units": 10,
+      "completion_reason": "early_stopped"
+    },
+    {
+      "t_s": 0.21,
+      "fsm_status": "STARTED",
+      "phase": "output",
+      "is_running": true,
+      "is_training": true,
+      "completed": false,
+      "failed": false,
+      "current_epoch": 0,
+      "hidden_units": 10,
+      "completion_reason": null
+    },
+    {
+      "t_s": 4.5,
+      "fsm_status": "STARTED",
+      "phase": "candidate",
+      "is_running": true,
+      "is_training": true,
+      "completed": false,
+      "failed": false,
+      "current_epoch": 12,
+      "hidden_units": 11,
+      "completion_reason": "early_stopped"
+    },
+    {
+      "t_s": 5.75,
+      "fsm_status": "COMPLETED",
+      "phase": "output",
+      "is_running": false,
+      "is_training": false,
+      "completed": true,
+      "failed": false,
+      "current_epoch": 13,
+      "hidden_units": 11,
+      "completion_reason": "early_stopped"
+    }
+  ]
+}

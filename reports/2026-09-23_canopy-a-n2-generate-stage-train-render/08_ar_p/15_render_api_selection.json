@@ -1,0 +1,21 @@
+{
+  "step": "render_api_selection",
+  "t_utc": "2026-09-23T19:49:44.685Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/selection",
+  "status": 200,
+  "response": {
+    "nn_model": "recurrence",
+    "backend": "recurrence",
+    "execution": "one_shot",
+    "status": "live",
+    "swapped": false,
+    "selected": true,
+    "dataset": {
+      "value": "ar_p",
+      "source": "loaded",
+      "generator": "ar_p"
+    }
+  },
+  "elapsed_s": 0.006
+}

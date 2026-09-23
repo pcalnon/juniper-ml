@@ -1,0 +1,77 @@
+{
+  "ids_before": 3,
+  "ids_after": 4,
+  "new_ids": [
+    "equities-5.0.0-efb9b8316674e4ce"
+  ],
+  "meta": {
+    "equities-5.0.0-efb9b8316674e4ce": {
+      "url": "http://127.0.0.1:8111/v1/datasets/equities-5.0.0-efb9b8316674e4ce",
+      "status": 200,
+      "elapsed_s": 0.006,
+      "body": {
+        "dataset_id": "equities-5.0.0-efb9b8316674e4ce",
+        "generator": "equities",
+        "generator_version": "5.0.0",
+        "params": {
+          "symbols": [
+            "AAPL",
+            "MSFT",
+            "GOOGL",
+            "AMZN",
+            "NVDA"
+          ],
+          "start_date": "2000-01-01",
+          "end_date": null,
+          "purchase_date": "2000-01-03",
+          "basis_price_field": "close",
+          "fundamentals_fill": "drop",
+          "regression_target": "next_close",
+          "week52_window": 252,
+          "normalize_features": true,
+          "max_symbols": 14,
+          "incomplete_rows": null,
+          "allow_truncation": false,
+          "use_cache": true,
+          "train_ratio": 0.8,
+          "val_ratio": 0.1,
+          "test_ratio": 0.1,
+          "seed": 42
+        },
+        "n_samples": 19850,
+        "n_features": 15,
+        "task_type": "classification",
+        "n_classes": 2,
+        "n_train": 15881,
+        "n_val": 1986,
+        "n_test": 1983,
+        "class_distribution": {
+          "0": 9386,
+          "1": 10464
+        },
+        "sequence": false,
+        "lookback": null,
+        "time_unit": null,
+        "dt_scaling": null,
+        "target_scaling": null,
+        "truncation": null,
+        "data_quality": null,
+        "artifact_formats": [
+          "npz"
+        ],
+        "created_at": "2026-09-23T19:41:04.277162Z",
+        "checksum": "b752449b5520ce34c875db7e98f5173c9c8db205c5069975e4d8a4cc094827d3",
+        "dataset_name": null,
+        "dataset_version": null,
+        "parent_dataset_id": null,
+        "description": null,
+        "created_by": null,
+        "tags": [],
+        "ttl_seconds": null,
+        "expires_at": null,
+        "last_accessed_at": "2026-09-23T19:41:04.353586Z",
+        "access_count": 1
+      }
+    }
+  }
+}

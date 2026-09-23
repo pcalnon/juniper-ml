@@ -1,0 +1,12 @@
+[log] [Walkthrough] Tutorial walkthrough initialized
+[log] [CascorWS] Connecting to ws://127.0.0.1:8061/ws/training
+[log] [CascorWS] WebSocket clients initialized
+[log] [WS Bridge] Handlers registered on window.cascorWS
+[log] [WS Latency] Beacon initialized (interval=60000ms)
+[log] [CascorWS] Connected
+[log] [Training WS] Status: open
+[log] [CascorWS] CSRF token acquired
+[log] [CascorWS] Connecting to ws://127.0.0.1:8061/ws/control
+[log] [CascorWS] Connected
+[log] [Control WS] Status: open
+[log] [CascorWS] Sending CSRF auth frame

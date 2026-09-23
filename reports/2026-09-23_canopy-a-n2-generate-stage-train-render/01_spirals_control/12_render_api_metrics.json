@@ -1,0 +1,46 @@
+{
+  "step": "render_api_metrics",
+  "t_utc": "2026-09-23T19:33:20.526Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/metrics",
+  "status": 200,
+  "response": {
+    "epoch": 11,
+    "metrics": {
+      "loss": 0.04743914678692818,
+      "accuracy": 0.963,
+      "val_loss": 0.046156998723745346,
+      "val_accuracy": 0.9725,
+      "f1": 0.9724998281239259,
+      "precision": 0.9728391356542617,
+      "recall": 0.9727563701832913,
+      "roc_auc": 0.9961991448075818
+    },
+    "network_topology": {
+      "hidden_units": 10
+    },
+    "phase": null,
+    "timestamp": "2026-09-23T14:33:20.531471",
+    "eval_metrics": {
+      "enabled": true,
+      "average": "macro",
+      "split": "validation",
+      "n_samples": 400,
+      "n_classes": 2,
+      "undefined": {},
+      "final": {
+        "f1": 0.9499994444382716,
+        "precision": 0.9502133712660028,
+        "recall": 0.95031345871682,
+        "roc_auc": 0.992530345471522,
+        "average": "macro",
+        "n_samples": 300,
+        "n_classes": 2,
+        "undefined": {},
+        "split": "test",
+        "final": true
+      }
+    }
+  },
+  "elapsed_s": 0.01
+}

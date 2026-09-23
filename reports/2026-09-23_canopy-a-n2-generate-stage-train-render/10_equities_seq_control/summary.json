@@ -1,0 +1,165 @@
+{
+  "case": "10_equities_seq_control",
+  "model": "recurrence",
+  "value": "equities_seq",
+  "role": "LMU incumbent control (rank-3)",
+  "tag": "",
+  "start_route": "start",
+  "started_utc": "2026-09-23T19:53:25.179Z",
+  "csrf_enabled": true,
+  "model_select": {
+    "status": 200,
+    "backend": "recurrence"
+  },
+  "effective_params_before": {
+    "nn_max_iterations": null,
+    "nn_output_epochs": null,
+    "nn_max_total_epochs": null,
+    "cn_training_iterations": null,
+    "nn_max_hidden_units": null,
+    "cn_pool_size": null,
+    "nn_patience": null
+  },
+  "stage": {
+    "status": 200,
+    "elapsed_s": 0.01,
+    "payload": {
+      "nn_dataset_type": "equities_seq",
+      "nn_dataset_params": {
+        "symbols": [
+          "AAPL",
+          "MSFT",
+          "GOOGL",
+          "AMZN",
+          "NVDA"
+        ],
+        "regression_target": "return",
+        "fundamentals_fill": "drop"
+      },
+      "nn_model": "recurrence"
+    }
+  },
+  "history_len_before": 1,
+  "start": {
+    "status": 200,
+    "elapsed_s": 0.01,
+    "response": {
+      "status": "started",
+      "ok": true,
+      "is_training": true,
+      "message": "recurrence fit started"
+    },
+    "body": {
+      "dataset": {
+        "generator": "equities_seq",
+        "params": {
+          "symbols": [
+            "AAPL",
+            "MSFT",
+            "GOOGL",
+            "AMZN",
+            "NVDA"
+          ],
+          "regression_target": "return",
+          "fundamentals_fill": "drop"
+        }
+      }
+    }
+  },
+  "train_outcome": "completed",
+  "train_wall_s": 75.38,
+  "render_status_codes": {
+    "/api/train/status": 200,
+    "/api/status": 200,
+    "/api/metrics": 200,
+    "/api/metrics/history?limit=0": 200,
+    "/api/dataset": 200,
+    "/api/state": 200,
+    "/api/selection": 200,
+    "/api/topology": 503,
+    "/api/network/stats": 503,
+    "/api/decision_boundary": 503,
+    "/api/stream_health": 200
+  },
+  "history_len_after": 1,
+  "history_last": {
+    "mse": 0.0004412238205427885,
+    "rmse": 0.021005328384550156,
+    "mae": 0.014304412824196014,
+    "r2": 0.00841966061470234,
+    "loss": 0.0004412238205427885,
+    "epoch": 1
+  },
+  "history_new_rows": 0,
+  "metrics": {
+    "mse": 0.0004412238205427885,
+    "rmse": 0.021005328384550156,
+    "mae": 0.014304412824196014,
+    "r2": 0.00841966061470234,
+    "loss": 0.0004412238205427885,
+    "epoch": 1
+  },
+  "dataset_view": {
+    "num_samples": 15561,
+    "num_features": 15,
+    "num_classes": 1,
+    "loaded": true,
+    "dataset_name": "equities_seq-5.0.0-c7916412c2344e07"
+  },
+  "current_dataset": {
+    "dataset_type": "equities_seq",
+    "symbols": [
+      "AAPL",
+      "MSFT",
+      "GOOGL",
+      "AMZN",
+      "NVDA"
+    ],
+    "regression_target": "return",
+    "fundamentals_fill": "drop"
+  },
+  "final_status": {
+    "fsm_status": "trained",
+    "phase": "complete",
+    "is_running": false,
+    "is_training": false,
+    "completed": true,
+    "failed": false,
+    "current_epoch": 1,
+    "hidden_units": null,
+    "completion_reason": "converged"
+  },
+  "topology_shape": {},
+  "generated": [
+    {
+      "dataset_id": "equities_seq-5.0.0-c7916412c2344e07",
+      "generator": "equities_seq",
+      "generator_version": "5.0.0",
+      "n_train": 15561,
+      "n_val": 1986,
+      "n_test": 1983,
+      "n_features": 15,
+      "n_classes": 2
+    }
+  ],
+  "log_slices": {
+    "data": {
+      "bytes": 1028,
+      "excerpt_lines": 5
+    },
+    "cascor": {
+      "bytes": 0,
+      "excerpt_lines": 0
+    },
+    "canopy": {
+      "bytes": 368,
+      "excerpt_lines": 2
+    },
+    "recurrence": {
+      "bytes": 559,
+      "excerpt_lines": 2
+    }
+  },
+  "case_wall_s": 75.56,
+  "finished_utc": "2026-09-23T19:54:40.738Z"
+}

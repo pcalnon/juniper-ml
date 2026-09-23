@@ -1,0 +1,21 @@
+{
+  "step": "selection_before",
+  "t_utc": "2026-09-23T19:48:35.995Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/selection",
+  "status": 200,
+  "response": {
+    "nn_model": "recurrence",
+    "backend": "recurrence",
+    "execution": "one_shot",
+    "status": "live",
+    "swapped": false,
+    "selected": true,
+    "dataset": {
+      "value": "mackey_glass",
+      "source": "loaded",
+      "generator": "mackey_glass"
+    }
+  },
+  "elapsed_s": 0.004
+}

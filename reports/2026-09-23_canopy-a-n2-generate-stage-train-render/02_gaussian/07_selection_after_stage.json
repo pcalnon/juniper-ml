@@ -1,0 +1,21 @@
+{
+  "step": "selection_after_stage",
+  "t_utc": "2026-09-23T19:38:06.797Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/selection",
+  "status": 200,
+  "response": {
+    "nn_model": "cascor",
+    "backend": "service",
+    "execution": "live",
+    "status": "live",
+    "swapped": false,
+    "selected": true,
+    "dataset": {
+      "value": "gaussian",
+      "source": "pending",
+      "generator": "gaussian"
+    }
+  },
+  "elapsed_s": 0.008
+}
