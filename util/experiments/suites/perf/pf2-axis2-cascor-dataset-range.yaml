@@ -61,6 +61,11 @@
 # budgets are left generous because a ceiling costs nothing unless it is hit. Whole suite: 18
 # cells, expect roughly 10-15 min. The owner's in-process follow-up fires only on a knee in this
 # curve (ruling §5, D4), and a range with no breach cannot show where viability ends.
+#
+# RESULT, 2026-09-23 -- RUN: 18/18 succeeded, 3 round-robin passes, load 5-8. Wall time is FLAT
+# (24.1 s at 250 -> 24.4 s at 5,800, x1.01); training compute (step_sum) grows x1.31 with log-log
+# slopes of -0.15..0.31 between neighbours. NO KNEE, so the owner's in-process follow-up does not
+# fire. Full table: PF-2 re-spec §3 RESULT; reducer util/ad-hoc/2026-09-23_pf2_axis2_reduce.py.
 schema_version: 1
 suite:
   name: pf2-axis2-cascor-dataset-range
