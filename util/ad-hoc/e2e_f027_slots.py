@@ -84,7 +84,7 @@ FIND_STORE = """
 INSTALL_WATCH = """
 () => {
   const st = window.__dashStore;
-  window.__slots = {samples: [], watched: {}, prioritized: {}, n: 0};
+  window.__slots = {samples: [], watched: {}, prioritized: {}, requested: {}, executing: {}, n: 0};
   const name = c => { const d = (c && c.callback) || c || {}; return d.output || '<?>'; };
   st.subscribe(() => {
     const s = st.getState().callbacks || {};
@@ -95,6 +95,12 @@ INSTALL_WATCH = """
     if (rec.samples.length > 40000) rec.samples.shift();
     for (const c of (s.watched || [])) { const k = name(c); rec.watched[k] = (rec.watched[k] || 0) + 1; }
     for (const c of (s.prioritized || [])) { const k = name(c); rec.prioritized[k] = (rec.prioritized[k] || 0) + 1; }
+    // 2026-09-22: ``requested`` is where a callback that is never READY lives
+    // (getReadyCallbacks will not promote it while an Input is claimed by a pending
+    // callback). The 08-23 census only named watched/prioritized, so a callback stuck
+    // before promotion was invisible to it.
+    for (const c of (s.requested || [])) { const k = name(c); rec.requested[k] = (rec.requested[k] || 0) + 1; }
+    for (const c of (s.executing || [])) { const k = name(c); rec.executing[k] = (rec.executing[k] || 0) + 1; }
   });
   return true;
 }
@@ -105,6 +111,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="F-CANOPY-027 renderer slot-saturation probe")
     ap.add_argument("--tab", default="Candidate Metrics")
     ap.add_argument("--seconds", type=int, default=60)
+    ap.add_argument("--focus", action="append", default=[], help="report every queue's samples for callbacks whose output contains this substring (repeatable)")
+    ap.add_argument("--click-id", default=None, help="element id to click once, --click-at seconds into the watch")
+    ap.add_argument("--click-at", type=float, default=20.0)
     args = ap.parse_args()
 
     from playwright.sync_api import sync_playwright
@@ -124,7 +133,13 @@ def main() -> int:
                 return 1
             page.evaluate(INSTALL_WATCH)
             log(f"subscribed; watching {args.seconds}s on tab {args.tab!r}")
-            page.wait_for_timeout(args.seconds * 1000)
+            if args.click_id and 0 < args.click_at < args.seconds:
+                page.wait_for_timeout(int(args.click_at * 1000))
+                clicked = page.evaluate("(id) => { const e = document.getElementById(id); if (!e) return false; e.click(); return true; }", args.click_id)
+                log(f"  clicked #{args.click_id} at ~{args.click_at}s: {clicked}")
+                page.wait_for_timeout(int((args.seconds - args.click_at) * 1000))
+            else:
+                page.wait_for_timeout(args.seconds * 1000)
             data = page.evaluate("() => window.__slots")
         finally:
             browser.close()
@@ -162,6 +177,24 @@ def main() -> int:
     log("=== starving in `prioritized` (samples spent waiting, never picked) ===")
     for k, v in sorted(data["prioritized"].items(), key=lambda kv: -kv[1])[:20]:
         log(f"  {v:>7}  {k[:120]}")
+
+    log("")
+    log("=== sitting in `requested` (never READY -- an Input claimed by a pending callback) ===")
+    for k, v in sorted((data.get("requested") or {}).items(), key=lambda kv: -kv[1])[:20]:
+        log(f"  {v:>7}  {k[:120]}")
+
+    n_samples = len(samples)
+    for needle in args.focus:
+        log("")
+        log(f"=== focus {needle!r}: samples in each queue (of {n_samples}) ===")
+        hit = False
+        for q in ("requested", "prioritized", "executing", "watched"):
+            for k, v in (data.get(q) or {}).items():
+                if needle in k:
+                    hit = True
+                    log(f"  {q:11s} {v:>7}  {k[:140]}")
+        if not hit:
+            log("  (in no queue at any sample: never requested during the watch)")
     return 0
 
 

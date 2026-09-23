@@ -1,0 +1,99 @@
+[t=    607ms] navigating to http://127.0.0.1:8051
+[t=    622ms]   serving: {"ok": true, "canopy": "http://127.0.0.1:8051", "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088", "build_date": "2026-09-22T19:38:01Z", "version": "0.8.1", "read_at": "2026-09-22T20:37:32Z"}
+[t=   5955ms]   welcome modal not present/visible
+[t=  14878ms] subscribed; watching 75s on tab 'Training Metrics'
+[t=  45730ms]   clicked #metrics-panel-replay-play at ~30.0s: True
+[t=  92242ms] state changes observed: 6471   samples: 6471
+[t=  92244ms] 
+[t=  92244ms] === renderer slot availability (cap 12) ===
+[t=  92244ms]   available=0      2064 samples  ( 31.9%)
+[t=  92244ms]   available=1      1025 samples  ( 15.8%)
+[t=  92244ms]   available=2       678 samples  ( 10.5%)
+[t=  92244ms]   available=3       614 samples  (  9.5%)
+[t=  92244ms]   available=4       458 samples  (  7.1%)
+[t=  92244ms]   available=5       551 samples  (  8.5%)
+[t=  92244ms]   available=6       419 samples  (  6.5%)
+[t=  92244ms]   available=7       186 samples  (  2.9%)
+[t=  92244ms]   available=8       399 samples  (  6.2%)
+[t=  92244ms]   available=9        54 samples  (  0.8%)
+[t=  92244ms]   available=11       11 samples  (  0.2%)
+[t=  92244ms]   available=12       12 samples  (  0.2%)
+[t=  92244ms]   POOL FULL (available==0): 2064/6471 samples = 31.9%
+[t=  92244ms] 
+[t=  92244ms] prioritized queue length: min=0 max=25 last=0
+[t=  92244ms] completed: 88 -> 524  (+436)
+[t=  92244ms] 
+[t=  92244ms] === slot holders (samples spent in `watched`) ===
+[t=  92245ms]      5970  ..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-sta
+[t=  92245ms]      5229  dataset-swap-events-store.data
+[t=  92245ms]      4778  metrics-panel-training-state-store.data
+[t=  92245ms]      4579  ..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.
+[t=  92245ms]      4567  button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491
+[t=  92245ms]      4083  metrics-panel-metrics-store.data
+[t=  92245ms]      3776  metrics-panel-replay-controls.style
+[t=  92245ms]      3716  ..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-pa
+[t=  92245ms]      3664  metrics-panel-phase-duration.children
+[t=  92245ms]      3515  metrics-panel-current-lr.children
+[t=  92245ms]      3289  metrics-panel-progress-detail.children
+[t=  92245ms]      1289  ws-connection-status.data
+[t=  92245ms]      1278  ws-liveness-store.data
+[t=  92245ms]      1237  ws-dataset-swap-buffer.data
+[t=  92245ms]      1141  ws-cascade-add-buffer.data
+[t=  92245ms]       969  ws-state-buffer.data
+[t=  92245ms] 
+[t=  92245ms] === starving in `prioritized` (samples spent waiting, never picked) ===
+[t=  92245ms]      1904  button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491
+[t=  92245ms]      1534  ws-liveness-store.data
+[t=  92245ms]      1250  ws-connection-status.data
+[t=  92245ms]      1154  apply-in-flight.data@8442f550632bed33ec2447ed2b988e7616554252663b4fa4ac431ebc20675d54
+[t=  92245ms]      1012  ws-dataset-swap-buffer.data
+[t=  92245ms]       998  dataset-swap-events-store.data
+[t=  92245ms]       880  metrics-store-interval.disabled@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c
+[t=  92245ms]       797  ws-cascade-add-buffer.data
+[t=  92245ms]       776  ..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.
+[t=  92245ms]       627  ws-state-buffer.data
+[t=  92245ms]       555  ws-topology-buffer.data
+[t=  92245ms]       538  replay-weight-buffer.data
+[t=  92245ms]       526  ws-metrics-buffer.data
+[t=  92245ms]       501  ..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-sta
+[t=  92245ms]       310  metrics-panel-metrics-store.data
+[t=  92245ms]       276  metrics-panel-training-state-store.data
+[t=  92245ms]       186  ..sidebar-pinned-list.children...sidebar-pinned-card.style..
+[t=  92245ms]       143  ..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.c
+[t=  92245ms]       135  metrics-panel-view-state.data
+[t=  92245ms]       135  network-visualizer-view-state.data
+[t=  92245ms] 
+[t=  92245ms] === sitting in `requested` (never READY -- an Input claimed by a pending callback) ===
+[t=  92245ms]      7482  ..ws-connection-indicator.children...ws-connection-indicator.style..
+[t=  92245ms]      6471  metrics-panel-replay-play.children
+[t=  92245ms]      6471  ..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..
+[t=  92245ms]      4030  ..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval..
+[t=  92245ms]      1777  metrics-panel-progress-detail.children
+[t=  92245ms]      1777  metrics-panel-current-lr.children
+[t=  92245ms]      1777  metrics-panel-phase-duration.children
+[t=  92245ms]      1777  ..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-pa
+[t=  92245ms]      1777  metrics-panel-replay-controls.style
+[t=  92245ms]      1512  pinned-params-store.data
+[t=  92245ms]       708  replay-weight-buffer.data
+[t=  92245ms]       387  ..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..
+[t=  92245ms]       387  replay-player-panel-last-sample-readout.children
+[t=  92245ms]       364  ..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-sta
+[t=  92245ms]       364  ws-metrics-buffer.data
+[t=  92245ms]       364  ws-topology-buffer.data
+[t=  92245ms]       364  ws-state-buffer.data
+[t=  92245ms]       364  ws-cascade-add-buffer.data
+[t=  92245ms]       364  ws-dataset-swap-buffer.data
+[t=  92245ms]       364  ws-connection-status.data
+[t=  92245ms] 
+[t=  92245ms] === focus 'replay-slider': samples in each queue (of 6471) ===
+[t=  92245ms]   requested      6471  ..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..
+[t=  92245ms] 
+[t=  92245ms] === focus 'replay-state': samples in each queue (of 6471) ===
+[t=  92245ms]   requested      4030  ..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval..
+[t=  92245ms] 
+[t=  92245ms] === focus 'replay-play': samples in each queue (of 6471) ===
+[t=  92245ms]   requested      6471  metrics-panel-replay-play.children
+[t=  92245ms]   requested       387  replay-player-panel-last-sample-readout.children
+[t=  92245ms]   prioritized      99  replay-player-panel-last-sample-readout.children
+[t=  92245ms]   watched         109  ..replay-player-panel-status.children...replay-player-session.data@3f2f882a40abfc4b25555e443502be292679355e3fa341039c7baf5dca87c7ff..
+[t=  92245ms]   watched           9  replay-player-panel-last-sample-readout.children

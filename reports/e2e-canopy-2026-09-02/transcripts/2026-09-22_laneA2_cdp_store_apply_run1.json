@@ -1,0 +1,5800 @@
+{
+ "meta": {
+  "script": "util/ad-hoc/2026-09-22_laneA2_cdp_store_apply_check.py",
+  "started_wall": 1790108440.0859246,
+  "canopy_health_before": {
+   "status": "ok",
+   "service": "juniper-canopy",
+   "timestamp": 1790108440.102853,
+   "version": "0.8.1",
+   "active_connections": 4,
+   "training_active": false,
+   "demo_mode": false,
+   "juniper_data_available": true,
+   "backend_status": "ok",
+   "backend_status_stale": false,
+   "backend_status_age_seconds": 0.417,
+   "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+   "build_date": "2026-09-22T19:38:01Z"
+  },
+  "cascor_status_before": {
+   "state_machine_status": "COMPLETED",
+   "phase": "OUTPUT",
+   "training_active": false,
+   "monitor_is_training": false,
+   "hidden_units": 58,
+   "snapshot_seq": 1282
+  },
+  "loadavg_before": "11.47 10.05 10.13 13/6473 3154891",
+  "args": {
+   "window": 60.0,
+   "metrics_window": 60.0,
+   "reentry_window": 20.0,
+   "settle": 6.0,
+   "post_load": 10.0,
+   "grace": 4.0,
+   "no_metrics_pass": false,
+   "no_reentry": false,
+   "headed": false,
+   "tag": "run1",
+   "out": null
+  },
+  "browser_version": "147.0.7727.15",
+  "install": {
+   "installed": true,
+   "tracked_ids": 65,
+   "indexed_ids": 476,
+   "subject_path": [
+    "components",
+    "props",
+    "children",
+    11,
+    "props",
+    "children",
+    1,
+    "props",
+    "children",
+    0,
+    "props",
+    "children",
+    1,
+    "props",
+    "children",
+    "props",
+    "children",
+    4
+   ]
+  },
+  "cascor_status_pass1_start": {
+   "state_machine_status": "COMPLETED",
+   "phase": "OUTPUT",
+   "training_active": false,
+   "monitor_is_training": false,
+   "hidden_units": 58,
+   "snapshot_seq": 1282
+  },
+  "cascor_status_pass1_end": {
+   "state_machine_status": "STARTED",
+   "phase": "OUTPUT",
+   "training_active": true,
+   "monitor_is_training": true,
+   "hidden_units": 58,
+   "snapshot_seq": 1371
+  },
+  "cascor_status_after": {
+   "state_machine_status": "COMPLETED",
+   "phase": "OUTPUT",
+   "training_active": false,
+   "monitor_is_training": false,
+   "hidden_units": 62,
+   "snapshot_seq": 1513
+  },
+  "canopy_health_after": {
+   "status": "ok",
+   "service": "juniper-canopy",
+   "timestamp": 1790108713.3468547,
+   "version": "0.8.1",
+   "active_connections": 3,
+   "training_active": false,
+   "demo_mode": false,
+   "juniper_data_available": true,
+   "backend_status": "ok",
+   "backend_status_stale": false,
+   "backend_status_age_seconds": 0.791,
+   "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+   "build_date": "2026-09-22T19:38:01Z"
+  },
+  "loadavg_after": "15.37 12.24 10.97 8/6263 3178934",
+  "finished_wall": 1790108713.347869
+ },
+ "log": [
+  "installed: {'installed': True, 'tracked_ids': 65, 'indexed_ids': 476, 'subject_path': ['components', 'props', 'children', 11, 'props', 'children', 1, 'props', 'children', 0, 'props', 'children', 1, 'props', 'children', 'props', 'children', 4]}",
+  "welcome modal: click error Locator.click: Timeout 15000ms exceeded.",
+  "tab candidates: attempt 1, .nav-link matches=1",
+  "tab candidates: trusted force-click returned",
+  "tab candidates: attempt 2, .nav-link matches=1",
+  "tab candidates: trusted force-click returned",
+  "tab candidates: confirmed from layout after attempt 2",
+  "tab metrics: attempt 1, .nav-link matches=1",
+  "tab metrics: trusted force-click returned",
+  "tab metrics: confirmed from layout after attempt 1",
+  "tab candidates: attempt 1, .nav-link matches=1",
+  "tab candidates: trusted force-click returned",
+  "tab candidates: confirmed from layout after attempt 1"
+ ],
+ "wire_event_counts": {
+  "dash_request": 558
+ },
+ "wire_outcomes_all": {
+  "ok": 549,
+  "unfetched": 4,
+  "pending": 5
+ },
+ "apply_log_meta": {
+  "nNotify": 18175,
+  "nLayoutChange": 2000,
+  "nReindex": 1,
+  "errors": 0,
+  "lastErr": null,
+  "installedAt": 1790108444030,
+  "capped": false
+ },
+ "index_paths": {
+  "own_walk": [
+   "components",
+   "props",
+   "children",
+   11,
+   "props",
+   "children",
+   1,
+   "props",
+   "children",
+   0,
+   "props",
+   "children",
+   1,
+   "props",
+   "children",
+   "props",
+   "children",
+   4
+  ],
+  "diagnostic_only_dash_paths_strs": [
+   "components",
+   "props",
+   "children",
+   11,
+   "props",
+   "children",
+   1,
+   "props",
+   "children",
+   0,
+   "props",
+   "children",
+   1,
+   "props",
+   "children",
+   "props",
+   "children",
+   4
+  ]
+ },
+ "analysis": {
+  "pass1_candidates": {
+   "pass": "pass1_candidates",
+   "expect_tab": "candidates",
+   "window_wall": [
+    1790108519.706,
+    1790108580.898
+   ],
+   "samples": 30,
+   "sample_errors": 0,
+   "window_s": 61.19,
+   "sample_gap_s": {
+    "n": 29,
+    "min": 1.058,
+    "median": 2.035,
+    "max": 3.57,
+    "mean": 2.11
+   },
+   "active_tab_ok_all_samples": true,
+   "active_tab_bad_samples": [],
+   "wire": {
+    "writer_requests": 27,
+    "outcomes": {
+     "carried": 27
+    },
+    "distinct_delivered_timestamps": 27,
+    "distinct_delivered_values": 27,
+    "request_gap_s": {
+     "n": 26,
+     "min": 1.57,
+     "median": 2.077,
+     "max": 3.182,
+     "mean": 2.207
+    },
+    "round_trip_s": {
+     "n": 27,
+     "min": 0.022,
+     "median": 0.029,
+     "max": 0.302,
+     "mean": 0.043
+    },
+    "active_tab_inputs": {
+     "candidates": 27
+    },
+    "changed_prop_ids": {
+     "[\"candidate-metrics-panel-update-interval.n_intervals\"]": 27
+    },
+    "tokens_agree_with_outputs_field": {
+     "True": 27
+    },
+    "n_intervals_requested": [
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31
+    ],
+    "all_dash_requests_in_window": 115,
+    "all_dash_outcomes": {
+     "ok": 115
+    }
+   },
+   "renderer_walk": {
+    "matches_per_sample": {
+     "1": 30
+    },
+    "paths_seen": [
+     "components/props/children/11/props/children/1/props/children/0/props/children/1/props/children/props/children/4"
+    ],
+    "distinct_timestamps": 1,
+    "distinct_values": 1,
+    "timestamps_seen": [
+     null
+    ],
+    "values_seen": [
+     "5465b825:2"
+    ],
+    "sample_to_sample_changes": 0,
+    "walk_ms": {
+     "n": 30,
+     "min": 2.6,
+     "median": 3.6,
+     "max": 5.7,
+     "mean": 3.83
+    },
+    "n_comp": {
+     "n": 30,
+     "min": 4705,
+     "median": 4705,
+     "max": 4705,
+     "mean": 4705.0
+    },
+    "n_obj": {
+     "n": 30,
+     "min": 17459,
+     "median": 17460,
+     "max": 17460,
+     "mean": 17459.967
+    }
+   },
+   "renderer_fiber": {
+    "fibers_per_sample": {
+     "1": 30
+    },
+    "component_names": [
+     "Zn"
+    ],
+    "distinct_timestamps": 1,
+    "distinct_values": 1,
+    "timestamps_seen": [
+     null
+    ],
+    "errors": [],
+    "fiber_ms": {
+     "n": 30,
+     "min": 4.7,
+     "median": 6.8,
+     "max": 10.8,
+     "mean": 7.003
+    },
+    "control_fibers": {
+     "metrics-panel-training-state-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "metrics-panel-metrics-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "stream-health-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     }
+    }
+   },
+   "content_search": {
+    "api_state_payload_locations_distinct_ts": {
+     "metrics-panel-training-state-store @ components/props/children/11/props/children/1/props/children/0/props/children/0/props/children/props/children/12/props/data": 1,
+     "ws-state-buffer @ components/props/children/34/props/data": 1
+    },
+    "delivered_writer_ts_found_anywhere_in_layout": 0
+   },
+   "apply_log": {
+    "subject_changes": 0,
+    "subject_change_timestamps": [],
+    "reindex_events": 0,
+    "delivered_ts_seen_in_apply_log": 0
+   },
+   "delivered_seen_by_any_read": 0,
+   "delivered_not_seen_by_any_read": 27,
+   "renderer_ts_provenance": [],
+   "control_stores": {
+    "stores_in_layout": 65,
+    "stores_changed_content_in_window": {
+     "ws-state-buffer": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 1
+     },
+     "ws-liveness-store": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 1
+     }
+    },
+    "named": {
+     "metrics-panel-metrics-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "metrics-panel-training-state-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "training-status-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "stream-health-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "candidate-metrics-panel-pool-history-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     }
+    }
+   },
+   "delivered_vs_held": {
+    "candidate-metrics-panel-training-state-store.data": {
+     "wire_carried": 27,
+     "wire_distinct": 27,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "stream-health-store.data": {
+     "wire_carried": 12,
+     "wire_distinct": 12,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "latency-display.children": {
+     "wire_carried": 28,
+     "wire_distinct": 8,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "candidate-metrics-panel-pool-history-store.data": {
+     "wire_carried": 27,
+     "wire_distinct": 2,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "connection-status.children": {
+     "wire_carried": 28,
+     "wire_distinct": 2,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "network-info-panel.children": {
+     "wire_carried": 12,
+     "wire_distinct": 2,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-epoch-display.children": {
+     "wire_carried": 28,
+     "wire_distinct": 2,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-hidden-units-display.children": {
+     "wire_carried": 28,
+     "wire_distinct": 2,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-status-display.children": {
+     "wire_carried": 28,
+     "wire_distinct": 2,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-status-display.style": {
+     "wire_carried": 28,
+     "wire_distinct": 2,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "training-status-store.data": {
+     "wire_carried": 28,
+     "wire_distinct": 2,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-metrics-store.data": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 0,
+     "held_distinct": 0,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-training-state-store.data": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "network-info-details-panel.children": {
+     "wire_carried": 12,
+     "wire_distinct": 1,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "pending-dataset-banner.is_open": {
+     "wire_carried": 12,
+     "wire_distinct": 1,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "status-indicator.style": {
+     "wire_carried": 28,
+     "wire_distinct": 1,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-phase-display.children": {
+     "wire_carried": 28,
+     "wire_distinct": 1,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-phase-display.style": {
+     "wire_carried": 28,
+     "wire_distinct": 1,
+     "held_samples": 30,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    }
+   },
+   "positive_controls_response_written": [],
+   "apply_log_changes_by_prop": {
+    "ws-connection-status.data": 29,
+    "ws-liveness-store.data": 29,
+    "ws-state-buffer.data": 2,
+    "metrics-panel-phase-duration.children": 1,
+    "metrics-panel-progress-bars.style": 1,
+    "metrics-panel-replay-controls.style": 1,
+    "ws-metrics-buffer.data": 1
+   },
+   "interval": {
+    "n_first_last": [
+     4,
+     31
+    ],
+    "ticks_per_s": 0.441,
+    "sample_to_sample_changes": 27,
+    "disabled_values": [
+     "False"
+    ],
+    "period_ms": [
+     1000
+    ]
+   },
+   "renderer_queues_context": {
+    "len_stats": {
+     "blocked": {
+      "n": 30,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "executed": {
+      "n": 30,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "executing": {
+      "n": 30,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "prioritized": {
+      "n": 30,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "requested": {
+      "n": 30,
+      "min": 3,
+      "median": 3,
+      "max": 17,
+      "mean": 3.867
+     },
+     "stored": {
+      "n": 30,
+      "min": 32,
+      "median": 32,
+      "max": 32,
+      "mean": 32.0
+     },
+     "watched": {
+      "n": 30,
+      "min": 5,
+      "median": 6,
+      "max": 11,
+      "mean": 6.033
+     }
+    },
+    "subject_seen_in": {
+     "watched": 30,
+     "requested": 2
+    }
+   },
+   "titles": {
+    "Updating...": 30
+   },
+   "tab_confirmed": true
+  },
+  "pass2_metrics": {
+   "pass": "pass2_metrics",
+   "expect_tab": "metrics",
+   "window_wall": [
+    1790108611.119,
+    1790108669.164
+   ],
+   "samples": 19,
+   "sample_errors": 0,
+   "window_s": 58.05,
+   "sample_gap_s": {
+    "n": 18,
+    "min": 1.947,
+    "median": 2.746,
+    "max": 11.855,
+    "mean": 3.225
+   },
+   "active_tab_ok_all_samples": true,
+   "active_tab_bad_samples": [],
+   "wire": {
+    "writer_requests": 0,
+    "outcomes": {},
+    "distinct_delivered_timestamps": 0,
+    "distinct_delivered_values": 0,
+    "request_gap_s": null,
+    "round_trip_s": null,
+    "active_tab_inputs": {},
+    "changed_prop_ids": {},
+    "tokens_agree_with_outputs_field": {},
+    "n_intervals_requested": [],
+    "all_dash_requests_in_window": 90,
+    "all_dash_outcomes": {
+     "ok": 90
+    }
+   },
+   "renderer_walk": {
+    "matches_per_sample": {
+     "1": 19
+    },
+    "paths_seen": [
+     "components/props/children/11/props/children/1/props/children/0/props/children/1/props/children/props/children/4"
+    ],
+    "distinct_timestamps": 1,
+    "distinct_values": 1,
+    "timestamps_seen": [
+     null
+    ],
+    "values_seen": [
+     "5465b825:2"
+    ],
+    "sample_to_sample_changes": 0,
+    "walk_ms": {
+     "n": 19,
+     "min": 2.6,
+     "median": 4.8,
+     "max": 15.1,
+     "mean": 6.247
+    },
+    "n_comp": {
+     "n": 19,
+     "min": 4710,
+     "median": 4710,
+     "max": 4710,
+     "mean": 4710.0
+    },
+    "n_obj": {
+     "n": 19,
+     "min": 17959,
+     "median": 20380,
+     "max": 42136,
+     "mean": 30238.895
+    }
+   },
+   "renderer_fiber": {
+    "fibers_per_sample": {
+     "1": 19
+    },
+    "component_names": [
+     "Zn"
+    ],
+    "distinct_timestamps": 1,
+    "distinct_values": 1,
+    "timestamps_seen": [
+     null
+    ],
+    "errors": [],
+    "fiber_ms": {
+     "n": 19,
+     "min": 4.6,
+     "median": 6.7,
+     "max": 9,
+     "mean": 6.695
+    },
+    "control_fibers": {
+     "metrics-panel-training-state-store": {
+      "distinct_values": 3,
+      "sample_to_sample_changes": 2
+     },
+     "metrics-panel-metrics-store": {
+      "distinct_values": 3,
+      "sample_to_sample_changes": 3
+     },
+     "stream-health-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     }
+    }
+   },
+   "content_search": {
+    "api_state_payload_locations_distinct_ts": {
+     "metrics-panel-training-state-store @ components/props/children/11/props/children/1/props/children/0/props/children/0/props/children/props/children/12/props/data": 1
+    },
+    "delivered_writer_ts_found_anywhere_in_layout": 0
+   },
+   "apply_log": {
+    "subject_changes": 0,
+    "subject_change_timestamps": [],
+    "reindex_events": 0,
+    "delivered_ts_seen_in_apply_log": 0
+   },
+   "delivered_seen_by_any_read": 0,
+   "delivered_not_seen_by_any_read": 0,
+   "renderer_ts_provenance": [],
+   "control_stores": {
+    "stores_in_layout": 65,
+    "stores_changed_content_in_window": {
+     "metrics-panel-metrics-store": {
+      "distinct_values": 3,
+      "sample_to_sample_changes": 3
+     },
+     "ws-liveness-store": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 2
+     },
+     "metrics-panel-training-state-store": {
+      "distinct_values": 3,
+      "sample_to_sample_changes": 2
+     },
+     "evolution-snapshots-store": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 1
+     },
+     "ws-metrics-buffer": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 1
+     },
+     "ws-topology-buffer": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 1
+     },
+     "ws-state-buffer": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 1
+     },
+     "network-visualizer-topology-store": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 1
+     },
+     "network-visualizer-topology-hash": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 1
+     },
+     "network-visualizer-new-node-highlight": {
+      "distinct_values": 2,
+      "sample_to_sample_changes": 1
+     }
+    },
+    "named": {
+     "metrics-panel-metrics-store": {
+      "distinct_values": 3,
+      "sample_to_sample_changes": 3
+     },
+     "metrics-panel-training-state-store": {
+      "distinct_values": 3,
+      "sample_to_sample_changes": 2
+     },
+     "training-status-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "stream-health-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "candidate-metrics-panel-pool-history-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     }
+    }
+   },
+   "delivered_vs_held": {
+    "latency-display.children": {
+     "wire_carried": 18,
+     "wire_distinct": 10,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-training-state-store.data": {
+     "wire_carried": 10,
+     "wire_distinct": 10,
+     "held_samples": 19,
+     "held_distinct": 3,
+     "held_changes": 2,
+     "apply_log_changes": 2
+    },
+    "stream-health-store.data": {
+     "wire_carried": 10,
+     "wire_distinct": 10,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "status-indicator.style": {
+     "wire_carried": 18,
+     "wire_distinct": 3,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "candidate-metrics-panel-loss-plot.figure": {
+     "wire_carried": 3,
+     "wire_distinct": 2,
+     "held_samples": 19,
+     "held_distinct": 3,
+     "held_changes": 2,
+     "apply_log_changes": 3
+    },
+    "metrics-panel-accuracy-plot.figure": {
+     "wire_carried": 3,
+     "wire_distinct": 2,
+     "held_samples": 19,
+     "held_distinct": 4,
+     "held_changes": 3,
+     "apply_log_changes": 3
+    },
+    "metrics-panel-loss-plot.figure": {
+     "wire_carried": 3,
+     "wire_distinct": 2,
+     "held_samples": 19,
+     "held_distinct": 4,
+     "held_changes": 3,
+     "apply_log_changes": 3
+    },
+    "metrics-panel-metrics-store.data": {
+     "wire_carried": 2,
+     "wire_distinct": 2,
+     "held_samples": 0,
+     "held_distinct": 0,
+     "held_changes": 0,
+     "apply_log_changes": 3
+    },
+    "connection-status.children": {
+     "wire_carried": 18,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-accuracy-plot.style": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 3
+    },
+    "metrics-panel-candidate-epoch-progress.label": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 2,
+     "apply_log_changes": 2
+    },
+    "metrics-panel-candidate-epoch-progress.value": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 2,
+     "apply_log_changes": 2
+    },
+    "metrics-panel-classification-metrics.style": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 3
+    },
+    "metrics-panel-current-accuracy.children": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "metrics-panel-current-epoch.children": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "metrics-panel-current-loss.children": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 3,
+     "held_changes": 2,
+     "apply_log_changes": 2
+    },
+    "metrics-panel-current-lr.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-grow-progress.label": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "metrics-panel-grow-progress.value": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "metrics-panel-hidden-units.children": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "metrics-panel-loss-plot.style": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 3
+    },
+    "metrics-panel-oneshot-result.children": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 3
+    },
+    "metrics-panel-oneshot-result.style": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 3
+    },
+    "metrics-panel-phase-duration.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 3,
+     "held_changes": 2,
+     "apply_log_changes": 2
+    },
+    "metrics-panel-progress-bars.style": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 2
+    },
+    "metrics-panel-progress-detail.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 3,
+     "held_changes": 2,
+     "apply_log_changes": 2
+    },
+    "metrics-panel-replay-controls.style": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 2,
+     "apply_log_changes": 2
+    },
+    "metrics-panel-status.children": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 2,
+     "apply_log_changes": 2
+    },
+    "metrics-panel-status.style": {
+     "wire_carried": 3,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 2,
+     "apply_log_changes": 3
+    },
+    "network-evolution-grid-container.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 4,
+     "held_changes": 3,
+     "apply_log_changes": 3
+    },
+    "network-evolution-stats.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "network-info-details-panel.children": {
+     "wire_carried": 10,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "network-info-panel.children": {
+     "wire_carried": 10,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "network-visualizer-connection-count.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "network-visualizer-graph.config": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "network-visualizer-graph.figure": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 11,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "network-visualizer-hidden-count.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "network-visualizer-input-count.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "network-visualizer-new-node-highlight.data": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "network-visualizer-output-count.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "network-visualizer-topology-hash.data": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "network-visualizer-topology-store.data": {
+     "wire_carried": 2,
+     "wire_distinct": 1,
+     "held_samples": 0,
+     "held_distinct": 0,
+     "held_changes": 0,
+     "apply_log_changes": 1
+    },
+    "pending-dataset-banner.is_open": {
+     "wire_carried": 10,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-epoch-display.children": {
+     "wire_carried": 18,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-hidden-units-display.children": {
+     "wire_carried": 18,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-phase-display.children": {
+     "wire_carried": 18,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-phase-display.style": {
+     "wire_carried": 18,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-status-display.children": {
+     "wire_carried": 18,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-status-display.style": {
+     "wire_carried": 18,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "training-status-store.data": {
+     "wire_carried": 18,
+     "wire_distinct": 1,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "candidate-metrics-panel-training-state-store.data": {
+     "wire_carried": 0,
+     "wire_distinct": 0,
+     "held_samples": 19,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    }
+   },
+   "positive_controls_response_written": [
+    "candidate-metrics-panel-loss-plot.figure",
+    "metrics-panel-accuracy-plot.figure",
+    "metrics-panel-loss-plot.figure",
+    "metrics-panel-training-state-store.data"
+   ],
+   "apply_log_changes_by_prop": {
+    "ws-connection-status.data": 20,
+    "ws-liveness-store.data": 20,
+    "metrics-panel-oneshot-result.children": 3,
+    "metrics-panel-oneshot-result.style": 3,
+    "metrics-panel-classification-metrics.style": 3,
+    "metrics-panel-loss-plot.style": 3,
+    "metrics-panel-accuracy-plot.style": 3,
+    "metrics-panel-loss-plot.figure": 3,
+    "metrics-panel-accuracy-plot.figure": 3,
+    "metrics-panel-status.style": 3,
+    "network-evolution-grid-container.children": 3,
+    "candidate-metrics-panel-loss-plot.figure": 3,
+    "metrics-panel-metrics-store.data": 3,
+    "metrics-panel-current-loss.children": 2,
+    "metrics-panel-status.children": 2,
+    "metrics-panel-progress-detail.children": 2,
+    "metrics-panel-phase-duration.children": 2,
+    "metrics-panel-progress-bars.style": 2,
+    "metrics-panel-candidate-epoch-progress.label": 2,
+    "metrics-panel-candidate-epoch-progress.value": 2
+   },
+   "interval": {
+    "n_first_last": [
+     38,
+     38
+    ],
+    "ticks_per_s": 0.0,
+    "sample_to_sample_changes": 0,
+    "disabled_values": [
+     "True"
+    ],
+    "period_ms": [
+     1000
+    ]
+   },
+   "renderer_queues_context": {
+    "len_stats": {
+     "blocked": {
+      "n": 19,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "executed": {
+      "n": 19,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "executing": {
+      "n": 19,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "prioritized": {
+      "n": 19,
+      "min": 0,
+      "median": 0,
+      "max": 5,
+      "mean": 0.316
+     },
+     "requested": {
+      "n": 19,
+      "min": 3,
+      "median": 8,
+      "max": 18,
+      "mean": 6.842
+     },
+     "stored": {
+      "n": 19,
+      "min": 32,
+      "median": 32,
+      "max": 32,
+      "mean": 32.0
+     },
+     "watched": {
+      "n": 19,
+      "min": 6,
+      "median": 10,
+      "max": 12,
+      "mean": 9.474
+     }
+    },
+    "subject_seen_in": {}
+   },
+   "titles": {
+    "Updating...": 19
+   },
+   "tab_confirmed": true
+  },
+  "pass3_reentry": {
+   "pass": "pass3_reentry",
+   "expect_tab": "candidates",
+   "window_wall": [
+    1790108687.561,
+    1790108706.764
+   ],
+   "samples": 6,
+   "sample_errors": 0,
+   "window_s": 19.2,
+   "sample_gap_s": {
+    "n": 5,
+    "min": 2.711,
+    "median": 3.601,
+    "max": 5.852,
+    "mean": 3.841
+   },
+   "active_tab_ok_all_samples": true,
+   "active_tab_bad_samples": [],
+   "wire": {
+    "writer_requests": 7,
+    "outcomes": {
+     "carried": 7
+    },
+    "distinct_delivered_timestamps": 7,
+    "distinct_delivered_values": 7,
+    "request_gap_s": {
+     "n": 6,
+     "min": 1.899,
+     "median": 2.63,
+     "max": 3.772,
+     "mean": 2.705
+    },
+    "round_trip_s": {
+     "n": 7,
+     "min": 0.023,
+     "median": 0.031,
+     "max": 0.038,
+     "mean": 0.031
+    },
+    "active_tab_inputs": {
+     "candidates": 7
+    },
+    "changed_prop_ids": {
+     "[\"candidate-metrics-panel-update-interval.n_intervals\"]": 7
+    },
+    "tokens_agree_with_outputs_field": {
+     "True": 7
+    },
+    "n_intervals_requested": [
+     40,
+     41,
+     42,
+     43,
+     44,
+     45,
+     46
+    ],
+    "all_dash_requests_in_window": 34,
+    "all_dash_outcomes": {
+     "ok": 34
+    }
+   },
+   "renderer_walk": {
+    "matches_per_sample": {
+     "1": 6
+    },
+    "paths_seen": [
+     "components/props/children/11/props/children/1/props/children/0/props/children/1/props/children/props/children/4"
+    ],
+    "distinct_timestamps": 1,
+    "distinct_values": 1,
+    "timestamps_seen": [
+     null
+    ],
+    "values_seen": [
+     "5465b825:2"
+    ],
+    "sample_to_sample_changes": 0,
+    "walk_ms": {
+     "n": 6,
+     "min": 5.9,
+     "median": 8,
+     "max": 18.3,
+     "mean": 9.067
+    },
+    "n_comp": {
+     "n": 6,
+     "min": 4710,
+     "median": 4710,
+     "max": 4710,
+     "mean": 4710.0
+    },
+    "n_obj": {
+     "n": 6,
+     "min": 42136,
+     "median": 42136,
+     "max": 42136,
+     "mean": 42136.0
+    }
+   },
+   "renderer_fiber": {
+    "fibers_per_sample": {
+     "1": 6
+    },
+    "component_names": [
+     "Zn"
+    ],
+    "distinct_timestamps": 1,
+    "distinct_values": 1,
+    "timestamps_seen": [
+     null
+    ],
+    "errors": [],
+    "fiber_ms": {
+     "n": 6,
+     "min": 4.9,
+     "median": 7,
+     "max": 7.7,
+     "mean": 6.533
+    },
+    "control_fibers": {
+     "metrics-panel-training-state-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "metrics-panel-metrics-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "stream-health-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     }
+    }
+   },
+   "content_search": {
+    "api_state_payload_locations_distinct_ts": {
+     "metrics-panel-training-state-store @ components/props/children/11/props/children/1/props/children/0/props/children/0/props/children/props/children/12/props/data": 1
+    },
+    "delivered_writer_ts_found_anywhere_in_layout": 0
+   },
+   "apply_log": {
+    "subject_changes": 0,
+    "subject_change_timestamps": [],
+    "reindex_events": 0,
+    "delivered_ts_seen_in_apply_log": 0
+   },
+   "delivered_seen_by_any_read": 0,
+   "delivered_not_seen_by_any_read": 7,
+   "renderer_ts_provenance": [],
+   "control_stores": {
+    "stores_in_layout": 65,
+    "stores_changed_content_in_window": {},
+    "named": {
+     "metrics-panel-metrics-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "metrics-panel-training-state-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "training-status-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "stream-health-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     },
+     "candidate-metrics-panel-pool-history-store": {
+      "distinct_values": 1,
+      "sample_to_sample_changes": 0
+     }
+    }
+   },
+   "delivered_vs_held": {
+    "candidate-metrics-panel-training-state-store.data": {
+     "wire_carried": 7,
+     "wire_distinct": 7,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "stream-health-store.data": {
+     "wire_carried": 4,
+     "wire_distinct": 4,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "latency-display.children": {
+     "wire_carried": 6,
+     "wire_distinct": 3,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "candidate-metrics-panel-pool-history-store.data": {
+     "wire_carried": 7,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "connection-status.children": {
+     "wire_carried": 6,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-candidate-epoch-progress.label": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-candidate-epoch-progress.value": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-current-lr.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-grow-progress.label": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-grow-progress.value": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-phase-duration.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 2,
+     "held_changes": 1,
+     "apply_log_changes": 1
+    },
+    "metrics-panel-progress-bars.style": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 1
+    },
+    "metrics-panel-progress-detail.children": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "metrics-panel-replay-controls.style": {
+     "wire_carried": 1,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 1
+    },
+    "network-info-details-panel.children": {
+     "wire_carried": 4,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "network-info-panel.children": {
+     "wire_carried": 4,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "pending-dataset-banner.is_open": {
+     "wire_carried": 4,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "status-indicator.style": {
+     "wire_carried": 6,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-epoch-display.children": {
+     "wire_carried": 6,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-hidden-units-display.children": {
+     "wire_carried": 6,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-phase-display.children": {
+     "wire_carried": 6,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-phase-display.style": {
+     "wire_carried": 6,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-status-display.children": {
+     "wire_carried": 6,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "top-status-display.style": {
+     "wire_carried": 6,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    },
+    "training-status-store.data": {
+     "wire_carried": 6,
+     "wire_distinct": 1,
+     "held_samples": 6,
+     "held_distinct": 1,
+     "held_changes": 0,
+     "apply_log_changes": 0
+    }
+   },
+   "positive_controls_response_written": [],
+   "apply_log_changes_by_prop": {
+    "ws-connection-status.data": 9,
+    "ws-liveness-store.data": 9,
+    "sidebar-meta-params-card.style": 1,
+    "sidebar-nn-section.style": 1,
+    "sidebar-nn-top-params.style": 1,
+    "sidebar-nn-growth-triggers.style": 1,
+    "sidebar-nn-multi-node-layers.style": 1,
+    "sidebar-nn-spiral-dataset.style": 1,
+    "sidebar-nn-cn-divider.style": 1,
+    "sidebar-cn-section.style": 1,
+    "sidebar-cn-pool-params.style": 1,
+    "sidebar-cn-pool-training.style": 1,
+    "sidebar-cn-multi-candidate.style": 1,
+    "sidebar-apply-section.style": 1,
+    "sidebar-params-divider.style": 1,
+    "sidebar-network-info-section.style": 1,
+    "nn-subsection-collapse.is_open": 1,
+    "cn-subsection-collapse.is_open": 1,
+    "sidebar-meta-params-header.children": 1,
+    "metrics-panel-phase-duration.children": 1
+   },
+   "interval": {
+    "n_first_last": [
+     40,
+     46
+    ],
+    "ticks_per_s": 0.312,
+    "sample_to_sample_changes": 5,
+    "disabled_values": [
+     "False"
+    ],
+    "period_ms": [
+     1000
+    ]
+   },
+   "renderer_queues_context": {
+    "len_stats": {
+     "blocked": {
+      "n": 6,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "executed": {
+      "n": 6,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "executing": {
+      "n": 6,
+      "min": 0,
+      "median": 0,
+      "max": 0,
+      "mean": 0.0
+     },
+     "prioritized": {
+      "n": 6,
+      "min": 0,
+      "median": 0,
+      "max": 14,
+      "mean": 2.333
+     },
+     "requested": {
+      "n": 6,
+      "min": 3,
+      "median": 3,
+      "max": 4,
+      "mean": 3.333
+     },
+     "stored": {
+      "n": 6,
+      "min": 32,
+      "median": 32,
+      "max": 32,
+      "mean": 32.0
+     },
+     "watched": {
+      "n": 6,
+      "min": 5,
+      "median": 10,
+      "max": 12,
+      "mean": 8.333
+     }
+    },
+    "subject_seen_in": {
+     "prioritized": 1,
+     "watched": 5
+    }
+   },
+   "titles": {
+    "Updating...": 6
+   },
+   "tab_confirmed": true
+  }
+ },
+ "verdict_pass1_mechanical": {
+  "verdict": "INDETERMINATE",
+  "reasons": [
+   "delivered=27 held_values=1 controls=0"
+  ]
+ },
+ "raw": {
+  "pass1_candidates": [
+   {
+    "t": 1790108519706,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 4,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 11,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108521620,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 5,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 11,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108524549,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 6,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108526388,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 7,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108528461,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 8,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 4,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108530526,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 9,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108532468,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 10,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108533526,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 11,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 17,
+     "subject_in": [
+      "requested",
+      "watched"
+     ],
+     "stored": 32,
+     "watched": 6
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108535064,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 11,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108536942,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 12,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108539368,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 13,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108541006,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 14,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108542781,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 15,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108545442,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 16,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108547140,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 17,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108549141,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 18,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108551011,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 19,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108552718,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 20,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108555270,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 21,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108557149,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 22,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108559184,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 23,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108561141,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 24,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108563199,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 25,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108565669,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 26,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 4,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108567955,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 27,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 12,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108570324,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 28,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108572592,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 29,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108574771,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 30,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108577328,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 31,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 4,
+     "subject_in": [
+      "requested",
+      "watched"
+     ],
+     "stored": 32,
+     "watched": 5
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108580898,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 31,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "8d644652:23942"
+     ],
+     "metrics-panel-training-state-store": [
+      "1bb3cf63:1751"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 7,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   }
+  ],
+  "pass2_metrics": [
+   {
+    "t": 1790108611119,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d56fa675:26325"
+     ],
+     "metrics-panel-training-state-store": [
+      "bc09d06c:910"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 5,
+     "requested": 5,
+     "stored": 32,
+     "watched": 12
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108614891,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d56fa675:26325"
+     ],
+     "metrics-panel-training-state-store": [
+      "bc09d06c:910"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 1,
+     "requested": 5,
+     "stored": 32,
+     "watched": 12
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108618761,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "bc09d06c:910"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 5,
+     "stored": 32,
+     "watched": 11
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108621507,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "bc09d06c:910"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 5,
+     "stored": 32,
+     "watched": 12
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108623826,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "4bab0e54:26677"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 18,
+     "stored": 32,
+     "watched": 9
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108626939,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "4bab0e54:26677"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 11,
+     "stored": 32,
+     "watched": 8
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108629494,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "4bab0e54:26677"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 8,
+     "stored": 32,
+     "watched": 10
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108631469,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "4bab0e54:26677"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 8,
+     "stored": 32,
+     "watched": 11
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108633739,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "4bab0e54:26677"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 8,
+     "stored": 32,
+     "watched": 10
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108636233,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "4bab0e54:26677"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 9,
+     "stored": 32,
+     "watched": 10
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108648088,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 8,
+     "stored": 32,
+     "watched": 8
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108650696,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 8,
+     "stored": 32,
+     "watched": 8
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108652643,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 8,
+     "stored": 32,
+     "watched": 9
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108654773,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "590fbf51:884"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 9,
+     "stored": 32,
+     "watched": 6
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108658078,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "70b9a5b6:1752"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 10
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108660857,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "70b9a5b6:1752"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 11
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108663548,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "70b9a5b6:1752"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 11
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108666405,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "70b9a5b6:1752"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108669164,
+    "tab": [
+     "metrics"
+    ],
+    "iv_n": 38,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "70b9a5b6:1752"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 6
+    },
+    "title": "Updating...",
+    "error": null
+   }
+  ],
+  "pass3_reentry": [
+   {
+    "t": 1790108687561,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 40,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "4cff362e:1753"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 14,
+     "subject_in": [
+      "prioritized"
+     ],
+     "requested": 3,
+     "stored": 32,
+     "watched": 12
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108693413,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 41,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "4cff362e:1753"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 11,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108697117,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 42,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "4cff362e:1753"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 10,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108700718,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 43,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "4cff362e:1753"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 4,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108703429,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 44,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "4cff362e:1753"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 4,
+     "stored": 32,
+     "watched": 6,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   },
+   {
+    "t": 1790108706764,
+    "tab": [
+     "candidates"
+    ],
+    "iv_n": 46,
+    "subj_walk": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "subj_fiber": [
+     [
+      null,
+      "5465b825:2"
+     ]
+    ],
+    "controls": {
+     "metrics-panel-metrics-store": [
+      "d65d5ad6:28503"
+     ],
+     "metrics-panel-training-state-store": [
+      "4cff362e:1753"
+     ],
+     "training-status-store": [
+      "53503db5:35"
+     ],
+     "stream-health-store": [
+      "1efc38a3:605"
+     ],
+     "candidate-metrics-panel-pool-history-store": [
+      "741638a5:2"
+     ]
+    },
+    "queues": {
+     "blocked": 0,
+     "executed": 0,
+     "executing": 0,
+     "prioritized": 0,
+     "requested": 3,
+     "stored": 32,
+     "watched": 5,
+     "subject_in": [
+      "watched"
+     ]
+    },
+    "title": "Updating...",
+    "error": null
+   }
+  ],
+  "writer_requests": [
+   {
+    "wall": 1790108447.268846,
+    "mono": 1267709.580045,
+    "mono_resp": 1267709.992156,
+    "mono_done": 1267709.58684,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 1,
+    "active_tab_input": "metrics",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 28,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": null,
+    "carried_h": null,
+    "carried_tokens": []
+   },
+   {
+    "wall": 1790108509.368357,
+    "mono": 1267771.679548,
+    "mono_resp": 1267773.702582,
+    "mono_done": 1267771.70687,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 1,
+    "active_tab_input": "candidates",
+    "changed": [
+     "visualization-tabs.active_tab"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108509.3896341,
+    "carried_h": "b606b1daeadb",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108512.646008,
+    "mono": 1267774.957151,
+    "mono_resp": 1267778.9762,
+    "mono_done": 1267775.012656,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 2,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108512.6939743,
+    "carried_h": "2fe4373e8461",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108513.468409,
+    "mono": 1267775.779497,
+    "mono_resp": 1267780.994098,
+    "mono_done": 1267775.809596,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 3,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3319,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108513.492576,
+    "carried_h": "10e98135fd31",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108517.159233,
+    "mono": 1267779.470364,
+    "mono_resp": 1267783.115146,
+    "mono_done": 1267779.498496,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 4,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108517.1811244,
+    "carried_h": "3813d1d1803b",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108520.079412,
+    "mono": 1267782.390565,
+    "mono_resp": 1267784.118423,
+    "mono_done": 1267782.418705,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 5,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108520.1015162,
+    "carried_h": "dcb2e2760ecd",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108522.750287,
+    "mono": 1267785.061397,
+    "mono_resp": 1267788.677525,
+    "mono_done": 1267785.104976,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 6,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108522.7841358,
+    "carried_h": "be18679b6886",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108524.685921,
+    "mono": 1267786.997106,
+    "mono_resp": 1267789.654588,
+    "mono_done": 1267787.022485,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 7,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3319,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108524.705406,
+    "carried_h": "c63c3cb3409f",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108526.559088,
+    "mono": 1267788.870061,
+    "mono_resp": 1267791.739495,
+    "mono_done": 1267788.895233,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 8,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108526.5780234,
+    "carried_h": "861cef6d2167",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108528.618105,
+    "mono": 1267790.929192,
+    "mono_resp": 1267793.70912,
+    "mono_done": 1267790.959465,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 9,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108528.6416821,
+    "carried_h": "452e674dbb02",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108530.786226,
+    "mono": 1267793.097241,
+    "mono_resp": 1267794.975661,
+    "mono_done": 1267793.1193,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 10,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108530.8031347,
+    "carried_h": "fa506a5dd259",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108533.565925,
+    "mono": 1267795.877107,
+    "mono_resp": 1267798.506673,
+    "mono_done": 1267795.90372,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 11,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108533.5861435,
+    "carried_h": "a2a168eb1ea0",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108535.255709,
+    "mono": 1267797.566759,
+    "mono_resp": 1267799.824282,
+    "mono_done": 1267797.591091,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 12,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108535.2749891,
+    "carried_h": "2fd2f1673a4a",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108537.070624,
+    "mono": 1267799.381783,
+    "mono_resp": 1267801.527067,
+    "mono_done": 1267799.408451,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 13,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108537.0902612,
+    "carried_h": "79ed95f06a8e",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108539.730308,
+    "mono": 1267802.041504,
+    "mono_resp": 1267804.70513,
+    "mono_done": 1267802.067913,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 14,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108539.7495344,
+    "carried_h": "360f134301fb",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108541.299848,
+    "mono": 1267803.610972,
+    "mono_resp": 1267806.846846,
+    "mono_done": 1267803.643958,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 15,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108541.3255997,
+    "carried_h": "735a12bac1a5",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108542.91688,
+    "mono": 1267805.227942,
+    "mono_resp": 1267807.88522,
+    "mono_done": 1267805.254297,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 16,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108542.9368057,
+    "carried_h": "fa2dabdbd1cb",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108545.67559,
+    "mono": 1267807.986657,
+    "mono_resp": 1267809.712139,
+    "mono_done": 1267808.014742,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 17,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108545.6973689,
+    "carried_h": "74028b0f37c6",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108547.429721,
+    "mono": 1267809.740871,
+    "mono_resp": 1267811.789508,
+    "mono_done": 1267809.765906,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 18,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108547.4492753,
+    "carried_h": "7a3cffe94370",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108549.271776,
+    "mono": 1267811.582892,
+    "mono_resp": 1267813.270652,
+    "mono_done": 1267811.609706,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 19,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108549.2931416,
+    "carried_h": "b1488f087bf6",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108551.231798,
+    "mono": 1267813.542834,
+    "mono_resp": 1267815.359928,
+    "mono_done": 1267813.581157,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 20,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108551.2613966,
+    "carried_h": "819d9cbd733d",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108552.852128,
+    "mono": 1267815.163192,
+    "mono_resp": 1267817.408231,
+    "mono_done": 1267815.196118,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 21,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108552.8770814,
+    "carried_h": "61ec7858e84c",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108555.533866,
+    "mono": 1267817.84487,
+    "mono_resp": 1267820.683277,
+    "mono_done": 1267817.874081,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 22,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108555.5553029,
+    "carried_h": "0a57e0aebbeb",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108557.345394,
+    "mono": 1267819.656542,
+    "mono_resp": 1267822.699375,
+    "mono_done": 1267819.682508,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 23,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108557.3652928,
+    "carried_h": "b1c8b3f8c6c1",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108559.344685,
+    "mono": 1267821.655843,
+    "mono_resp": 1267824.724323,
+    "mono_done": 1267821.695151,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 24,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108559.3753374,
+    "carried_h": "877bcd04213d",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108561.505039,
+    "mono": 1267823.816205,
+    "mono_resp": 1267827.11053,
+    "mono_done": 1267823.847541,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 25,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108561.5262787,
+    "carried_h": "67748ba84152",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108563.581911,
+    "mono": 1267825.893025,
+    "mono_resp": 1267829.456761,
+    "mono_done": 1267825.922676,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 26,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108563.6048539,
+    "carried_h": "f687655f1395",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108566.057803,
+    "mono": 1267828.368937,
+    "mono_resp": 1267831.659334,
+    "mono_done": 1267828.670895,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 27,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3319,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108566.343823,
+    "carried_h": "afb6a3c6d17f",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108568.785283,
+    "mono": 1267831.096373,
+    "mono_resp": 1267834.04366,
+    "mono_done": 1267831.133486,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 28,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108568.8140683,
+    "carried_h": "db89b654f088",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108571.491019,
+    "mono": 1267833.80206,
+    "mono_resp": 1267836.257632,
+    "mono_done": 1267833.835978,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 29,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3320,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108571.5187435,
+    "carried_h": "67841022b607",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108574.282667,
+    "mono": 1267836.593863,
+    "mono_resp": 1267842.254851,
+    "mono_done": 1267836.66518,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 30,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3317,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108574.3323205,
+    "carried_h": "600d5dcf6543",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108577.464271,
+    "mono": 1267839.775432,
+    "mono_resp": 1267845.378814,
+    "mono_done": 1267839.845928,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 31,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3586,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108577.512226,
+    "carried_h": "d95bc0a7b978",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108581.07519,
+    "mono": 1267843.386366,
+    "mono_resp": 1267848.097393,
+    "mono_done": 1267843.413359,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 32,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3589,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108581.0973673,
+    "carried_h": "a21beb8aa287",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108584.323596,
+    "mono": 1267846.634594,
+    "mono_resp": 1267850.902275,
+    "mono_done": 1267846.674484,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 33,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 3844,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108584.3527324,
+    "carried_h": "7e324301941f",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108586.927324,
+    "mono": 1267849.238449,
+    "mono_resp": 1267854.122201,
+    "mono_done": 1267849.270682,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 34,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4086,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108586.9532855,
+    "carried_h": "0490235c0016",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108590.432385,
+    "mono": 1267852.743484,
+    "mono_resp": 1267856.763553,
+    "mono_done": 1267852.76891,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 35,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4300,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108590.4521558,
+    "carried_h": "8ee8a12326ea",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108593.036187,
+    "mono": 1267855.347392,
+    "mono_resp": 1267859.365674,
+    "mono_done": 1267855.380808,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 36,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4300,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108593.0623598,
+    "carried_h": "b6e8da786ba1",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108596.05289,
+    "mono": 1267858.364058,
+    "mono_resp": 1267861.427827,
+    "mono_done": 1267858.387941,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 37,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4300,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108596.0709093,
+    "carried_h": "75bc18644a85",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108597.675462,
+    "mono": 1267859.986545,
+    "mono_resp": 1267863.48846,
+    "mono_done": 1267859.994165,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 37,
+    "active_tab_input": "metrics",
+    "changed": [
+     "visualization-tabs.active_tab"
+    ],
+    "body_bytes": 28,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": null,
+    "carried_h": null,
+    "carried_tokens": []
+   },
+   {
+    "wall": 1790108601.319856,
+    "mono": 1267863.630897,
+    "mono_resp": 1267865.485674,
+    "mono_done": 1267863.638416,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 38,
+    "active_tab_input": "metrics",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 28,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": null,
+    "carried_h": null,
+    "carried_tokens": []
+   },
+   {
+    "wall": 1790108682.373086,
+    "mono": 1267944.68428,
+    "mono_resp": 1267947.959753,
+    "mono_done": 1267944.728985,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 38,
+    "active_tab_input": "candidates",
+    "changed": [
+     "visualization-tabs.active_tab"
+    ],
+    "body_bytes": 4300,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108682.4114301,
+    "carried_h": "402457d3801a",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108687.077705,
+    "mono": 1267949.388706,
+    "mono_resp": 1267954.709641,
+    "mono_done": 1267949.414682,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 39,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4299,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108687.098309,
+    "carried_h": "e888c192f3ec",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108690.29307,
+    "mono": 1267952.604236,
+    "mono_resp": 1267957.090031,
+    "mono_done": 1267952.627165,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 40,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4300,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108690.3108644,
+    "carried_h": "c5870e6a27ca",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108692.191616,
+    "mono": 1267954.502801,
+    "mono_resp": 1267957.09086,
+    "mono_done": 1267954.537507,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 41,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4300,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108692.2171547,
+    "carried_h": "fb8344e23300",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108695.964079,
+    "mono": 1267958.275155,
+    "mono_resp": 1267961.069291,
+    "mono_done": 1267958.313292,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 42,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4300,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108695.9918485,
+    "carried_h": "0f14b5242dde",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108698.425781,
+    "mono": 1267960.73675,
+    "mono_resp": 1267963.631652,
+    "mono_done": 1267960.762779,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 43,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4299,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108698.445943,
+    "carried_h": "d9706d4c25ae",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108701.596058,
+    "mono": 1267963.907245,
+    "mono_resp": 1267968.210998,
+    "mono_done": 1267963.936967,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 44,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4300,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108701.6157236,
+    "carried_h": "41b01813fbb5",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108703.890224,
+    "mono": 1267966.201155,
+    "mono_resp": 1267970.341406,
+    "mono_done": 1267966.231892,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 45,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4300,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108703.9138703,
+    "carried_h": "ad3187f44a0a",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108706.520692,
+    "mono": 1267968.831828,
+    "mono_resp": 1267972.094958,
+    "mono_done": 1267968.867124,
+    "status": 200,
+    "outcome": "ok",
+    "n_intervals": 46,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": 4299,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": 1790108706.547977,
+    "carried_h": "3d12a4a9f389",
+    "carried_tokens": [
+     "candidate-metrics-panel-pool-history-store.data",
+     "candidate-metrics-panel-training-state-store.data"
+    ]
+   },
+   {
+    "wall": 1790108708.781188,
+    "mono": 1267971.092094,
+    "mono_resp": 1267973.72776,
+    "mono_done": 1267971.118275,
+    "status": 200,
+    "outcome": "unfetched",
+    "n_intervals": 47,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": null,
+    "fetch_err": "CDPSession.send: Target page, context or browser has been closed",
+    "fail": null,
+    "carried_ts": null,
+    "carried_h": null,
+    "carried_tokens": []
+   },
+   {
+    "wall": 1790108711.07097,
+    "mono": 1267973.382048,
+    "mono_resp": 1267975.449586,
+    "mono_done": null,
+    "status": 200,
+    "outcome": "pending",
+    "n_intervals": 48,
+    "active_tab_input": "candidates",
+    "changed": [
+     "candidate-metrics-panel-update-interval.n_intervals"
+    ],
+    "body_bytes": null,
+    "fetch_err": null,
+    "fail": null,
+    "carried_ts": null,
+    "carried_h": null,
+    "carried_tokens": []
+   }
+  ],
+  "apply_log_subject_and_named": [
+   {
+    "t": 1790108444033,
+    "kind": "init",
+    "id": "training-status-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108444033,
+    "kind": "init",
+    "id": "stream-health-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108444033,
+    "kind": "init",
+    "id": "metrics-panel-metrics-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108444033,
+    "kind": "init",
+    "id": "metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108444033,
+    "kind": "init",
+    "id": "candidate-metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": null,
+    "h": "5465b825:2"
+   },
+   {
+    "t": 1790108444033,
+    "kind": "init",
+    "id": "candidate-metrics-panel-pool-history-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108444706,
+    "kind": "change",
+    "id": "stream-health-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108445287,
+    "kind": "change",
+    "id": "metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": 1790108444.2948012,
+    "h": null
+   },
+   {
+    "t": 1790108450940,
+    "kind": "change",
+    "id": "metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": 1790108449.876501,
+    "h": null
+   },
+   {
+    "t": 1790108451031,
+    "kind": "change",
+    "id": "stream-health-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108472753,
+    "kind": "change",
+    "id": "metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": 1790106969.330874,
+    "h": null
+   },
+   {
+    "t": 1790108474584,
+    "kind": "change",
+    "id": "metrics-panel-metrics-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108513820,
+    "kind": "change",
+    "id": "metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": 1790108508.8850734,
+    "h": null
+   },
+   {
+    "t": 1790108588694,
+    "kind": "change",
+    "id": "metrics-panel-metrics-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108601317,
+    "kind": "change",
+    "id": "metrics-panel-metrics-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108601498,
+    "kind": "change",
+    "id": "metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": 1790108588.6932397,
+    "h": null
+   },
+   {
+    "t": 1790108617557,
+    "kind": "change",
+    "id": "metrics-panel-metrics-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108623236,
+    "kind": "change",
+    "id": "metrics-panel-metrics-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108623590,
+    "kind": "change",
+    "id": "metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": 1790108589.8932202,
+    "h": null
+   },
+   {
+    "t": 1790108647448,
+    "kind": "change",
+    "id": "metrics-panel-metrics-store",
+    "prop": "data",
+    "ts": null,
+    "h": null
+   },
+   {
+    "t": 1790108656424,
+    "kind": "change",
+    "id": "metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": 1790108650.086823,
+    "h": null
+   },
+   {
+    "t": 1790108687075,
+    "kind": "change",
+    "id": "metrics-panel-training-state-store",
+    "prop": "data",
+    "ts": 1790108681.6125355,
+    "h": null
+   }
+  ]
+ }
+}

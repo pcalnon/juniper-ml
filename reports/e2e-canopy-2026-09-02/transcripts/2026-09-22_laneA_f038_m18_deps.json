@@ -1,0 +1,114 @@
+{
+  "script": {
+    "path": "util/ad-hoc/2026-09-22_laneA_f038_m18_check.py",
+    "sha256_16": "c574376c11df5321",
+    "argv": [
+      "deps"
+    ],
+    "step": "deps"
+  },
+  "provenance": {
+    "captured_utc": "2026-09-22T21:07:42.646+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 2,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "callbacks_total": 179,
+  "any_callback_websocket_flag": [
+    "False"
+  ],
+  "dash_config": {
+    "dash_version": "4.2.0",
+    "validate_callbacks": false,
+    "websocket": null,
+    "serve_locally": true,
+    "requests_pathname_prefix": "/dashboard/",
+    "ui": false
+  },
+  "dash_config_has_websocket_key": false,
+  "writers_of_metrics_store": [
+    {
+      "output": "metrics-panel-metrics-store.data",
+      "inputs": [
+        "metrics-store-interval.n_intervals",
+        "metrics-panel-display-mode-store.data"
+      ],
+      "state": [
+        "ws-liveness-store.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": false,
+      "clientside": false,
+      "websocket": false
+    },
+    {
+      "output": "metrics-panel-metrics-store.data@15586d300aa70069205f6b6c4219bfbeb86bfb1346f8fa1c90efa1e3e429297a",
+      "inputs": [
+        "ws-metrics-buffer.data"
+      ],
+      "state": [
+        "metrics-panel-display-mode-store.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": true,
+      "clientside": false,
+      "websocket": false
+    }
+  ],
+  "writers_of_replay_state": [
+    {
+      "output": "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval..",
+      "inputs": [
+        "metrics-panel-replay-play.n_clicks",
+        "metrics-panel-replay-step-back.n_clicks",
+        "metrics-panel-replay-step-forward.n_clicks",
+        "metrics-panel-replay-start.n_clicks",
+        "metrics-panel-replay-end.n_clicks",
+        "metrics-panel-speed-1x.n_clicks",
+        "metrics-panel-speed-2x.n_clicks",
+        "metrics-panel-speed-4x.n_clicks",
+        "metrics-panel-replay-slider.value"
+      ],
+      "state": [
+        "metrics-panel-replay-state.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": true,
+      "clientside": false,
+      "websocket": false
+    },
+    {
+      "output": "metrics-panel-replay-state.data@20746ef195c5a2fd48cbd84d7caa62edc7fea9908e0b01043dc8e8cb041486e2",
+      "inputs": [
+        "metrics-panel-replay-interval.n_intervals"
+      ],
+      "state": [
+        "metrics-panel-replay-state.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": true,
+      "clientside": false,
+      "websocket": false
+    }
+  ],
+  "readers_of_replay_state_as_input": [
+    "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+    "metrics-panel-replay-play.children"
+  ],
+  "callbacks_with_replay_slider_value_as_input": [
+    "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+  ]
+}

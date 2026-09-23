@@ -1,0 +1,4403 @@
+{
+ "script": "util/ad-hoc/2026-09-22_laneA1_candidate_panel_dom_check.py",
+ "argv": [
+  "--no-grow",
+  "--min-seconds",
+  "45",
+  "--body-budget",
+  "30",
+  "--out",
+  "reports/e2e-canopy-2026-09-02/transcripts/2026-09-22_laneA1_dryrun_idle_2.json"
+ ],
+ "canopy": "http://127.0.0.1:8051",
+ "cascor": "http://127.0.0.1:8202",
+ "started_utc": "2026-09-22T20:18:24Z",
+ "preflight": {
+  "t": 1790108304.4918802,
+  "canopy_health": {
+   "status": "ok",
+   "service": "juniper-canopy",
+   "timestamp": 1790108304.4932117,
+   "version": "0.8.1",
+   "active_connections": 4,
+   "training_active": false,
+   "demo_mode": false,
+   "juniper_data_available": true,
+   "backend_status": "ok",
+   "backend_status_stale": false,
+   "backend_status_age_seconds": 0.2,
+   "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+   "build_date": "2026-09-22T19:38:01Z"
+  },
+  "cascor": {
+   "fsm": "COMPLETED",
+   "fsm_phase": "OUTPUT",
+   "training_active": false,
+   "hidden_units": 58
+  },
+  "api_state": {
+   "status": "Completed",
+   "phase": "output",
+   "candidate_pool_status": "Inactive",
+   "candidate_pool_phase": "Idle",
+   "candidate_pool_size": 8,
+   "candidate_epoch": 0,
+   "candidate_total_epochs": 0,
+   "current_epoch": 64,
+   "max_hidden_units": 58
+  },
+  "api_status": {
+   "is_training": false,
+   "is_running": false,
+   "completed": true,
+   "fsm_status": "COMPLETED",
+   "phase": "output",
+   "current_epoch": 64,
+   "hidden_units": 58
+  },
+  "loadavg": [
+   8.4990234375,
+   8.97998046875,
+   9.84326171875
+  ],
+  "cpu_count": 16,
+  "other_headless_renderers_before_launch": "2"
+ },
+ "preexisting_window": false,
+ "nav": {
+  "url": "http://127.0.0.1:8051/dashboard/",
+  "attached_s": 3.2
+ },
+ "mount": {
+  "first": {
+   "t_ms": 1790108308623,
+   "text": {
+    "candidate-metrics-panel-status-badge": "",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0",
+    "candidate-metrics-panel-pool-info": "",
+    "top-status-display": "Stopped",
+    "top-phase-display": "Idle",
+    "top-epoch-display": "0",
+    "top-hidden-units-display": "0",
+    "candidate-metrics-panel-history-icon": "\u25bc"
+   },
+   "title": "Updating...",
+   "tab_selector": "role=tab",
+   "active_tabs": [
+    "Training Metrics"
+   ],
+   "cand_tab": {
+    "aria_selected": null,
+    "cls": "nav-link"
+   },
+   "badge_visible": false,
+   "badge_pane_cls": "fade tab-pane"
+  },
+  "rendered": {
+   "t_ms": 1790108318549,
+   "text": {
+    "candidate-metrics-panel-status-badge": "Inactive",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0",
+    "candidate-metrics-panel-pool-info": "No active candidate pool",
+    "top-status-display": "Stopped",
+    "top-phase-display": "Idle",
+    "top-epoch-display": "0",
+    "top-hidden-units-display": "0",
+    "candidate-metrics-panel-history-icon": "\u25bc"
+   },
+   "title": "Updating...",
+   "tab_selector": "role=tab",
+   "active_tabs": [
+    "Training Metrics"
+   ],
+   "cand_tab": {
+    "aria_selected": null,
+    "cls": "nav-link"
+   },
+   "badge_visible": false,
+   "badge_pane_cls": "fade tab-pane"
+  },
+  "badge_rendered": true
+ },
+ "modal": {
+  "seen": true,
+  "click": {
+   "method": "trusted locator.click(force=True)",
+   "s": 20.88
+  },
+  "dismissed": true,
+  "hidden_after_s": 23.15,
+  "visible_after": false
+ },
+ "tab": {
+  "role_tab_matches": 1,
+  "how_found": "get_by_role('tab', name='Candidate Metrics', exact=True)",
+  "before_click": {
+   "tag": "A",
+   "role": "tab",
+   "aria_selected": null,
+   "cls": "nav-link",
+   "text": "Candidate Metrics",
+   "id": "react-aria5615213190-:r0:-tab-null",
+   "tablist": "visualization-tabs",
+   "outer": "<a role=\"tab\" id=\"react-aria5615213190-:r0:-tab-null\" aria-controls=\"react-aria5615213190-:r0:-tabpane-null\" tabindex=\"-1\" class=\"nav-link\" href=\"#\" style=\"cursor: pointer;\">Candidate Metrics</a>"
+  },
+  "snapshot_before_click": {
+   "t_ms": 1790108358243,
+   "text": {
+    "candidate-metrics-panel-status-badge": "Inactive",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0",
+    "candidate-metrics-panel-pool-info": "No active candidate pool",
+    "top-status-display": "Stopped",
+    "top-phase-display": "Idle",
+    "top-epoch-display": "0",
+    "top-hidden-units-display": "0",
+    "candidate-metrics-panel-history-icon": "\u25bc"
+   },
+   "title": "Updating...",
+   "tab_selector": "role=tab",
+   "active_tabs": [
+    "Training Metrics"
+   ],
+   "cand_tab": {
+    "aria_selected": null,
+    "cls": "nav-link"
+   },
+   "badge_visible": false,
+   "badge_pane_cls": "fade tab-pane"
+  },
+  "click": {
+   "method": "trusted locator.click(force=True)",
+   "s": 7.32
+  },
+  "after_click": {
+   "tag": "A",
+   "role": "tab",
+   "aria_selected": null,
+   "cls": "active nav-link",
+   "text": "Candidate Metrics",
+   "id": "react-aria5615213190-:r0:-tab-null",
+   "tablist": "visualization-tabs",
+   "outer": "<a role=\"tab\" id=\"react-aria5615213190-:r0:-tab-null\" aria-controls=\"react-aria5615213190-:r0:-tabpane-null\" tabindex=\"-1\" class=\"active nav-link\" href=\"#\" style=\"cursor: pointer;\">Candidate Metrics</a>"
+  },
+  "snapshot_after_click": {
+   "t_ms": 1790108380282,
+   "text": {
+    "candidate-metrics-panel-status-badge": "Inactive",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0",
+    "candidate-metrics-panel-pool-info": "No active candidate pool",
+    "top-status-display": "Stopped",
+    "top-phase-display": "Idle",
+    "top-epoch-display": "0",
+    "top-hidden-units-display": "0",
+    "candidate-metrics-panel-history-icon": "\u25bc"
+   },
+   "title": "Updating...",
+   "tab_selector": "role=tab",
+   "active_tabs": [
+    "Candidate Metrics"
+   ],
+   "cand_tab": {
+    "aria_selected": null,
+    "cls": "active nav-link"
+   },
+   "badge_visible": true,
+   "badge_pane_cls": "fade tab-pane active show"
+  },
+  "verified": true,
+  "verify_s": 14.71,
+  "verification_rule": "tab element aria-selected=='true' or class 'active'; the badge's enclosing .tab-pane has class 'active'; badge.checkVisibility() true; and the only active tab in that tablist is 'Candidate Metrics'"
+ },
+ "observer_install": "installed",
+ "t0": 1790108381.9071224,
+ "stop_reason": "done",
+ "final_snapshot": {
+  "t_ms": 1790108431477,
+  "text": {
+   "candidate-metrics-panel-status-badge": "Inactive",
+   "candidate-metrics-panel-phase": "Idle",
+   "candidate-metrics-panel-pool-size": "0",
+   "candidate-metrics-panel-pool-info": "No active candidate pool",
+   "top-status-display": "Stopped",
+   "top-phase-display": "Idle",
+   "top-epoch-display": "0",
+   "top-hidden-units-display": "0",
+   "candidate-metrics-panel-history-icon": "\u25b6"
+  },
+  "title": "Updating...",
+  "tab_selector": "role=tab",
+  "active_tabs": [
+   "Candidate Metrics"
+  ],
+  "cand_tab": {
+   "aria_selected": null,
+   "cls": "active nav-link"
+  },
+  "badge_visible": true,
+  "badge_pane_cls": "fade tab-pane active show"
+ },
+ "body_read": {
+  "selected": 4,
+  "read": 4,
+  "seconds": 8.61,
+  "budget_s": 30.0
+ },
+ "growth": {
+  "launched": false,
+  "mode": "no-grow"
+ },
+ "analysis": {
+  "n_samples": 26,
+  "n_samples_server_training": 0,
+  "crosstab_badge_vs_candidate_pool_status": [
+   {
+    "dom": "Inactive",
+    "server": "Inactive",
+    "n": 26
+   }
+  ],
+  "crosstab_phase_vs_candidate_pool_phase": [
+   {
+    "dom": "Idle",
+    "server": "Idle",
+    "n": 26
+   }
+  ],
+  "crosstab_pool_size_vs_candidate_pool_size": [
+   {
+    "dom": "0",
+    "server": 8,
+    "n": 26
+   }
+  ],
+  "crosstab_top_status_vs_status": [
+   {
+    "dom": "Stopped",
+    "server": "Completed",
+    "n": 26
+   }
+  ],
+  "distinct_dom_values": {
+   "candidate-metrics-panel-status-badge": [
+    "Inactive"
+   ],
+   "candidate-metrics-panel-phase": [
+    "Idle"
+   ],
+   "candidate-metrics-panel-pool-size": [
+    "0"
+   ],
+   "top-status-display": [
+    "Stopped"
+   ],
+   "top-phase-display": [
+    "Idle"
+   ],
+   "top-epoch-display": [
+    "0"
+   ],
+   "top-hidden-units-display": [
+    "0"
+   ],
+   "candidate-metrics-panel-history-icon": [
+    "\u25b6",
+    "\u25bc"
+   ]
+  },
+  "distinct_pool_info_values": [
+   "No active candidate pool"
+  ],
+  "distinct_server_values": {
+   "status": [
+    "Completed"
+   ],
+   "candidate_pool_status": [
+    "Inactive"
+   ],
+   "candidate_pool_phase": [
+    "Idle"
+   ],
+   "candidate_pool_size": [
+    "8"
+   ]
+  },
+  "during_server_training": {
+   "candidate-metrics-panel-status-badge": [],
+   "candidate-metrics-panel-phase": [],
+   "candidate-metrics-panel-pool-size": [],
+   "top-status-display": [],
+   "top-phase-display": [],
+   "top-epoch-display": [],
+   "top-hidden-units-display": [],
+   "candidate-metrics-panel-history-icon": []
+  },
+  "during_server_training_pool_info": [],
+  "active_tab_per_sample": {
+   "[\"Candidate Metrics\"]": 26
+  },
+  "badge_visible_per_sample": {
+   "True": 26
+  },
+  "samples_off_mount_during_training": 0,
+  "sample_gap_s": {
+   "max": 3.86,
+   "median": 1.57
+  },
+  "dom_eval_ms": {
+   "max": 2408,
+   "median": 1457.0
+  },
+  "server_timeline_n": 50,
+  "server_timeline_training_entries": 0,
+  "server_training_intervals_rel_s": [],
+  "server_timeline_distinct": {
+   "status": [
+    "Completed"
+   ],
+   "candidate_pool_status": [
+    "Inactive"
+   ],
+   "candidate_pool_phase": [
+    "Idle"
+   ],
+   "candidate_pool_size": [
+    "8"
+   ]
+  },
+  "cascor_fsm_distinct": [
+   "COMPLETED/OUTPUT"
+  ],
+  "observer_changes_per_id": {
+   "candidate-metrics-panel-status-badge": 1,
+   "candidate-metrics-panel-phase": 1,
+   "candidate-metrics-panel-pool-size": 1,
+   "candidate-metrics-panel-pool-info": 1,
+   "top-status-display": 1,
+   "top-phase-display": 1,
+   "top-epoch-display": 1,
+   "top-hidden-units-display": 1,
+   "candidate-metrics-panel-history-icon": 4,
+   "__tab": 1
+  },
+  "observer_distinct_values": {
+   "candidate-metrics-panel-status-badge": [
+    "Inactive"
+   ],
+   "candidate-metrics-panel-phase": [
+    "Idle"
+   ],
+   "candidate-metrics-panel-pool-size": [
+    "0"
+   ],
+   "candidate-metrics-panel-pool-info": [
+    "No active candidate pool"
+   ],
+   "top-status-display": [
+    "Stopped"
+   ],
+   "top-phase-display": [
+    "Idle"
+   ],
+   "top-epoch-display": [
+    "0"
+   ],
+   "top-hidden-units-display": [
+    "0"
+   ],
+   "candidate-metrics-panel-history-icon": [
+    "\u25b6",
+    "\u25bc"
+   ],
+   "__tab": [
+    "Candidate Metrics"
+   ]
+  },
+  "observer_panel_changes": {
+   "candidate-metrics-panel-status-badge": [
+    [
+     -0.002,
+     "Inactive"
+    ]
+   ],
+   "candidate-metrics-panel-phase": [
+    [
+     -0.002,
+     "Idle"
+    ]
+   ],
+   "candidate-metrics-panel-pool-size": [
+    [
+     -0.002,
+     "0"
+    ]
+   ]
+  },
+  "observer_tab_changes": [
+   [
+    -0.002,
+    "Candidate Metrics"
+   ]
+  ],
+  "observer_panel_changes_inside_server_training": [],
+  "observer_control_changes_after_growth_launch": {
+   "top-status-display": 0,
+   "top-phase-display": 0,
+   "top-epoch-display": 0,
+   "top-hidden-units-display": 0,
+   "candidate-metrics-panel-history-icon": 0
+  },
+  "observer_control_changes_after_install": {
+   "top-status-display": 0,
+   "top-phase-display": 0,
+   "top-epoch-display": 0,
+   "top-hidden-units-display": 0,
+   "candidate-metrics-panel-history-icon": 3
+  },
+  "observer_hist_icon_changes": [
+   [
+    -0.002,
+    "\u25bc"
+   ],
+   [
+    16.267,
+    "\u25b6"
+   ],
+   [
+    27.523,
+    "\u25bc"
+   ],
+   [
+    40.618,
+    "\u25b6"
+   ]
+  ],
+  "active_control_toggle_to_icon_change": [
+   {
+    "toggle_t_rel": 8.6,
+    "ok": true,
+    "icon_changed_at_rel": 16.267,
+    "to": "\u25b6"
+   },
+   {
+    "toggle_t_rel": 21.23,
+    "ok": true,
+    "icon_changed_at_rel": 27.523,
+    "to": "\u25bc"
+   },
+   {
+    "toggle_t_rel": 32.84,
+    "ok": true,
+    "icon_changed_at_rel": 40.618,
+    "to": "\u25b6"
+   }
+  ],
+  "crosstab_top_status_vs_fsm_status": [
+   {
+    "dom": "Stopped",
+    "server": "COMPLETED",
+    "n": 26
+   }
+  ],
+  "crosstab_top_hidden_units_vs_hidden_units": [
+   {
+    "dom": "0",
+    "server": 58,
+    "n": 26
+   }
+  ],
+  "wire_candidate_outputs": {
+   "..candidate-metrics-panel-history-collapse.is_open...candidate-metrics-panel-history-icon.children..": {
+    "requests": 3,
+    "responses": 3,
+    "failed": 0
+   },
+   "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   },
+   "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   },
+   "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..": {
+    "requests": 36,
+    "responses": 35,
+    "failed": 0
+   },
+   "candidate-metrics-panel-history-section.children": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   },
+   "candidate-metrics-panel-loss-plot.figure": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   },
+   "candidate-metrics-panel-pool-info.children": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   }
+  },
+  "wire_top_status_outputs": {
+   "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..": {
+    "requests": 53,
+    "responses": 52
+   }
+  },
+  "wire_total": {
+   "requests": 323,
+   "responses": 317,
+   "failed": 0
+  },
+  "wire_store_pool_status_values": {
+   "Inactive": 3
+  },
+  "wire_badge_children_values": {
+   "Inactive": 1
+  },
+  "wire_pool_size_children_values": {
+   "0": 1
+  }
+ },
+ "active_control_toggles": [
+  {
+   "t": 1790108390.5024798,
+   "ok": true,
+   "s": 1.82,
+   "t_rel": 8.6
+  },
+  {
+   "t": 1790108403.1369162,
+   "ok": true,
+   "s": 1.27,
+   "t_rel": 21.23
+  },
+  {
+   "t": 1790108414.7482245,
+   "ok": true,
+   "s": 1.81,
+   "t_rel": 32.84
+  }
+ ],
+ "samples": [
+  {
+   "i": 0,
+   "t": 1790108381.9071267,
+   "el": 0.0,
+   "dom_ms": 2088,
+   "srv_t": 1790108383.995234,
+   "dom": {
+    "t_ms": 1790108383992,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 1,
+   "t": 1790108384.011131,
+   "el": 2.1,
+   "dom_ms": 1426,
+   "srv_t": 1790108385.4371917,
+   "dom": {
+    "t_ms": 1790108385434,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 2,
+   "t": 1790108385.4556735,
+   "el": 3.55,
+   "dom_ms": 1419,
+   "srv_t": 1790108386.874232,
+   "dom": {
+    "t_ms": 1790108386871,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 3,
+   "t": 1790108386.8916671,
+   "el": 4.98,
+   "dom_ms": 1266,
+   "srv_t": 1790108388.1571717,
+   "dom": {
+    "t_ms": 1790108388154,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 4,
+   "t": 1790108388.1741414,
+   "el": 6.27,
+   "dom_ms": 1282,
+   "srv_t": 1790108389.4563947,
+   "dom": {
+    "t_ms": 1790108389453,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 5,
+   "t": 1790108389.4818566,
+   "el": 7.57,
+   "dom_ms": 997,
+   "srv_t": 1790108390.4790037,
+   "dom": {
+    "t_ms": 1790108390476,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 6,
+   "t": 1790108392.3191617,
+   "el": 10.41,
+   "dom_ms": 2045,
+   "srv_t": 1790108394.3637614,
+   "dom": {
+    "t_ms": 1790108394360,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 7,
+   "t": 1790108394.3798802,
+   "el": 12.47,
+   "dom_ms": 1266,
+   "srv_t": 1790108395.6462097,
+   "dom": {
+    "t_ms": 1790108395644,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 8,
+   "t": 1790108395.6620495,
+   "el": 13.75,
+   "dom_ms": 1177,
+   "srv_t": 1790108396.8393936,
+   "dom": {
+    "t_ms": 1790108396836,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 9,
+   "t": 1790108396.8555834,
+   "el": 14.95,
+   "dom_ms": 1700,
+   "srv_t": 1790108398.5554078,
+   "dom": {
+    "t_ms": 1790108398552,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 10,
+   "t": 1790108398.572327,
+   "el": 16.67,
+   "dom_ms": 1674,
+   "srv_t": 1790108400.245877,
+   "dom": {
+    "t_ms": 1790108400242,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 11,
+   "t": 1790108400.2657955,
+   "el": 18.36,
+   "dom_ms": 1518,
+   "srv_t": 1790108401.783817,
+   "dom": {
+    "t_ms": 1790108401781,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 12,
+   "t": 1790108401.8079064,
+   "el": 19.9,
+   "dom_ms": 1309,
+   "srv_t": 1790108403.1167274,
+   "dom": {
+    "t_ms": 1790108403113,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 13,
+   "t": 1790108404.4093015,
+   "el": 22.5,
+   "dom_ms": 1548,
+   "srv_t": 1790108405.957352,
+   "dom": {
+    "t_ms": 1790108405954,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 14,
+   "t": 1790108405.9767866,
+   "el": 24.07,
+   "dom_ms": 1347,
+   "srv_t": 1790108407.3242755,
+   "dom": {
+    "t_ms": 1790108407321,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 15,
+   "t": 1790108407.3469768,
+   "el": 25.44,
+   "dom_ms": 1225,
+   "srv_t": 1790108408.5724614,
+   "dom": {
+    "t_ms": 1790108408567,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 16,
+   "t": 1790108408.5929747,
+   "el": 26.69,
+   "dom_ms": 1141,
+   "srv_t": 1790108409.7343662,
+   "dom": {
+    "t_ms": 1790108409731,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 17,
+   "t": 1790108409.756777,
+   "el": 27.85,
+   "dom_ms": 1413,
+   "srv_t": 1790108411.169417,
+   "dom": {
+    "t_ms": 1790108411166,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 18,
+   "t": 1790108411.190058,
+   "el": 29.28,
+   "dom_ms": 1488,
+   "srv_t": 1790108412.6782699,
+   "dom": {
+    "t_ms": 1790108412675,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 19,
+   "t": 1790108412.7039552,
+   "el": 30.8,
+   "dom_ms": 2022,
+   "srv_t": 1790108414.7255855,
+   "dom": {
+    "t_ms": 1790108414723,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 20,
+   "t": 1790108416.5603023,
+   "el": 34.65,
+   "dom_ms": 2408,
+   "srv_t": 1790108418.9685264,
+   "dom": {
+    "t_ms": 1790108418965,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 21,
+   "t": 1790108418.9857085,
+   "el": 37.08,
+   "dom_ms": 1569,
+   "srv_t": 1790108420.5551543,
+   "dom": {
+    "t_ms": 1790108420551,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 22,
+   "t": 1790108420.5828154,
+   "el": 38.68,
+   "dom_ms": 1655,
+   "srv_t": 1790108422.2375102,
+   "dom": {
+    "t_ms": 1790108422235,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 23,
+   "t": 1790108422.2537658,
+   "el": 40.35,
+   "dom_ms": 1933,
+   "srv_t": 1790108424.187072,
+   "dom": {
+    "t_ms": 1790108424184,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 24,
+   "t": 1790108424.204352,
+   "el": 42.3,
+   "dom_ms": 1759,
+   "srv_t": 1790108425.9636052,
+   "dom": {
+    "t_ms": 1790108425960,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  },
+  {
+   "i": 25,
+   "t": 1790108425.9798243,
+   "el": 44.07,
+   "dom_ms": 1051,
+   "srv_t": 1790108427.0309181,
+   "dom": {
+    "t_ms": 1790108427028,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "srv_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   }
+  }
+ ],
+ "server_timeline": [
+  {
+   "t_rel": -0.0,
+   "t": 1790108381.9069319,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 1.0,
+   "t": 1790108382.9070342,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 2.0,
+   "t": 1790108383.907137,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 3.0,
+   "t": 1790108384.907244,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 4.0,
+   "t": 1790108385.9073544,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 5.0,
+   "t": 1790108386.9074738,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 6.0,
+   "t": 1790108387.9075875,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 7.0,
+   "t": 1790108388.9077103,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 8.0,
+   "t": 1790108389.907827,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 9.0,
+   "t": 1790108390.907944,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 10.0,
+   "t": 1790108391.908052,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 11.0,
+   "t": 1790108392.9081678,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 12.0,
+   "t": 1790108393.9082816,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 13.0,
+   "t": 1790108394.9084368,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 14.0,
+   "t": 1790108395.9085333,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 15.0,
+   "t": 1790108396.9085977,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 16.0,
+   "t": 1790108397.908708,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 17.0,
+   "t": 1790108398.9088042,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 18.0,
+   "t": 1790108399.9089115,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 19.0,
+   "t": 1790108400.9090095,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 20.0,
+   "t": 1790108401.9091094,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 21.0,
+   "t": 1790108402.9092064,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 22.0,
+   "t": 1790108403.9093175,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 23.0,
+   "t": 1790108404.9094288,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 24.0,
+   "t": 1790108405.9095435,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 25.0,
+   "t": 1790108406.9096282,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 26.0,
+   "t": 1790108407.9097261,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 27.0,
+   "t": 1790108408.9098325,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 28.0,
+   "t": 1790108409.9105196,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 29.0,
+   "t": 1790108410.9106243,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 30.0,
+   "t": 1790108411.9107196,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 31.0,
+   "t": 1790108412.9108183,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 32.0,
+   "t": 1790108413.910937,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 33.0,
+   "t": 1790108414.9110422,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 34.0,
+   "t": 1790108415.911137,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 35.0,
+   "t": 1790108416.9112272,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 36.0,
+   "t": 1790108417.9113226,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 37.0,
+   "t": 1790108418.9114332,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 38.0,
+   "t": 1790108419.911552,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 39.0,
+   "t": 1790108420.9116623,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 40.0,
+   "t": 1790108421.9117606,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 41.0,
+   "t": 1790108422.9118814,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 42.0,
+   "t": 1790108423.9119911,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 43.0,
+   "t": 1790108424.9121082,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 44.01,
+   "t": 1790108425.9122176,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 45.01,
+   "t": 1790108426.91232,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 46.01,
+   "t": 1790108427.9124212,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 47.01,
+   "t": 1790108428.9125204,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 48.01,
+   "t": 1790108429.9126096,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 49.01,
+   "t": 1790108430.9127119,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "api_status": {
+    "is_training": false,
+    "is_running": false,
+    "completed": true,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 64,
+    "hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  }
+ ],
+ "observer": {
+  "installed_ms": 1790108381905,
+  "log": [
+   {
+    "t_ms": 1790108381905,
+    "why": "install",
+    "changed": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "candidate-metrics-panel-history-icon": "\u25bc",
+     "__tab": "Candidate Metrics"
+    }
+   },
+   {
+    "t_ms": 1790108398174,
+    "why": "mutation",
+    "changed": {
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    }
+   },
+   {
+    "t_ms": 1790108409430,
+    "why": "mutation",
+    "changed": {
+     "candidate-metrics-panel-history-icon": "\u25bc"
+    }
+   },
+   {
+    "t_ms": 1790108422525,
+    "why": "mutation",
+    "changed": {
+     "candidate-metrics-panel-history-icon": "\u25b6"
+    }
+   }
+  ]
+ },
+ "wire_candidate_events": [
+  {
+   "t": 1790108310.8876557,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -71.019
+  },
+  {
+   "t": 1790108311.7641172,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": -70.143
+  },
+  {
+   "t": 1790108313.3703375,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..",
+   "t_rel": -68.537
+  },
+  {
+   "t": 1790108313.4483929,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..",
+   "t_rel": -68.459
+  },
+  {
+   "t": 1790108313.477445,
+   "kind": "request",
+   "output": "candidate-metrics-panel-pool-info.children",
+   "t_rel": -68.43
+  },
+  {
+   "t": 1790108313.578028,
+   "kind": "request",
+   "output": "candidate-metrics-panel-history-section.children",
+   "t_rel": -68.329
+  },
+  {
+   "t": 1790108314.1545784,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..",
+   "http": 200,
+   "t_rel": -67.753
+  },
+  {
+   "t": 1790108314.1549628,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..",
+   "http": 200,
+   "t_rel": -67.752
+  },
+  {
+   "t": 1790108314.1552975,
+   "kind": "response",
+   "output": "candidate-metrics-panel-pool-info.children",
+   "http": 200,
+   "t_rel": -67.752
+  },
+  {
+   "t": 1790108314.1556485,
+   "kind": "response",
+   "output": "candidate-metrics-panel-history-section.children",
+   "http": 200,
+   "t_rel": -67.751
+  },
+  {
+   "t": 1790108324.27835,
+   "kind": "request",
+   "output": "candidate-metrics-panel-loss-plot.figure",
+   "t_rel": -57.629
+  },
+  {
+   "t": 1790108325.4596093,
+   "kind": "response",
+   "output": "candidate-metrics-panel-loss-plot.figure",
+   "http": 200,
+   "t_rel": -56.448
+  },
+  {
+   "t": 1790108364.8643372,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -17.043
+  },
+  {
+   "t": 1790108366.0225296,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": -15.885
+  },
+  {
+   "t": 1790108370.3061733,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -11.601
+  },
+  {
+   "t": 1790108372.4829974,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -9.424
+  },
+  {
+   "t": 1790108375.5242956,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": -6.383
+  },
+  {
+   "t": 1790108375.5272095,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": -6.38
+  },
+  {
+   "t": 1790108375.778775,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -6.128
+  },
+  {
+   "t": 1790108378.0439646,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -3.863
+  },
+  {
+   "t": 1790108379.1846552,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": -2.722
+  },
+  {
+   "t": 1790108380.2301424,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -1.677
+  },
+  {
+   "t": 1790108381.3422983,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": -0.565
+  },
+  {
+   "t": 1790108383.3096592,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 1.403
+  },
+  {
+   "t": 1790108383.5612605,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 1.654
+  },
+  {
+   "t": 1790108384.8924677,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 2.985
+  },
+  {
+   "t": 1790108385.1835787,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 3.276
+  },
+  {
+   "t": 1790108386.5556867,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 4.649
+  },
+  {
+   "t": 1790108386.7783837,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 4.871
+  },
+  {
+   "t": 1790108387.9830062,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 6.076
+  },
+  {
+   "t": 1790108388.9335313,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 7.026
+  },
+  {
+   "t": 1790108390.0822113,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 8.175
+  },
+  {
+   "t": 1790108390.4274433,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 8.52
+  },
+  {
+   "t": 1790108391.601013,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 9.694
+  },
+  {
+   "t": 1790108392.0345113,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 10.127
+  },
+  {
+   "t": 1790108392.4324372,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-history-collapse.is_open...candidate-metrics-panel-history-icon.children..",
+   "t_rel": 10.525
+  },
+  {
+   "t": 1790108393.5601256,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 11.653
+  },
+  {
+   "t": 1790108394.2704277,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 12.363
+  },
+  {
+   "t": 1790108394.8073962,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-history-collapse.is_open...candidate-metrics-panel-history-icon.children..",
+   "http": 200,
+   "t_rel": 12.9
+  },
+  {
+   "t": 1790108396.272642,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 14.366
+  },
+  {
+   "t": 1790108396.360102,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 14.453
+  },
+  {
+   "t": 1790108398.0878744,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 16.181
+  },
+  {
+   "t": 1790108398.4217017,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 16.515
+  },
+  {
+   "t": 1790108399.870732,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 17.964
+  },
+  {
+   "t": 1790108400.1894445,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 18.282
+  },
+  {
+   "t": 1790108401.7013996,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 19.794
+  },
+  {
+   "t": 1790108401.7029662,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 19.796
+  },
+  {
+   "t": 1790108402.9676056,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 21.06
+  },
+  {
+   "t": 1790108403.7807484,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 21.874
+  },
+  {
+   "t": 1790108404.5202372,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-history-collapse.is_open...candidate-metrics-panel-history-icon.children..",
+   "t_rel": 22.613
+  },
+  {
+   "t": 1790108405.6372447,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 23.73
+  },
+  {
+   "t": 1790108405.6877625,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 23.781
+  },
+  {
+   "t": 1790108406.6981928,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-history-collapse.is_open...candidate-metrics-panel-history-icon.children..",
+   "http": 200,
+   "t_rel": 24.791
+  },
+  {
+   "t": 1790108406.7014573,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 24.794
+  },
+  {
+   "t": 1790108408.2260952,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 26.319
+  },
+  {
+   "t": 1790108410.5147333,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 28.608
+  },
+  {
+   "t": 1790108410.522389,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 28.615
+  },
+  {
+   "t": 1790108412.0010235,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 30.094
+  },
+  {
+   "t": 1790108412.2184339,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 30.311
+  },
+  {
+   "t": 1790108414.2359936,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 32.329
+  },
+  {
+   "t": 1790108414.5109227,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 32.604
+  },
+  {
+   "t": 1790108416.168243,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 34.261
+  },
+  {
+   "t": 1790108416.4270456,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 34.52
+  },
+  {
+   "t": 1790108416.6921418,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-history-collapse.is_open...candidate-metrics-panel-history-icon.children..",
+   "t_rel": 34.785
+  },
+  {
+   "t": 1790108418.528455,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 36.621
+  },
+  {
+   "t": 1790108418.6546452,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 36.748
+  },
+  {
+   "t": 1790108419.4679635,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-history-collapse.is_open...candidate-metrics-panel-history-icon.children..",
+   "http": 200,
+   "t_rel": 37.561
+  },
+  {
+   "t": 1790108420.1774898,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 38.27
+  },
+  {
+   "t": 1790108420.409955,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 38.503
+  },
+  {
+   "t": 1790108421.9647806,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 40.058
+  },
+  {
+   "t": 1790108422.234219,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 40.327
+  },
+  {
+   "t": 1790108424.0736806,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 42.167
+  },
+  {
+   "t": 1790108424.0751286,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 42.168
+  },
+  {
+   "t": 1790108425.4988177,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 43.592
+  },
+  {
+   "t": 1790108425.8594484,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 43.952
+  },
+  {
+   "t": 1790108426.9697206,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 45.063
+  },
+  {
+   "t": 1790108427.8511567,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 45.944
+  },
+  {
+   "t": 1790108429.9733682,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 48.066
+  },
+  {
+   "t": 1790108431.478356,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 49.571
+  },
+  {
+   "t": 1790108431.7003098,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 49.793
+  },
+  {
+   "t": 1790108432.4725392,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 50.565
+  },
+  {
+   "t": 1790108314.1545784,
+   "kind": "body",
+   "output": "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..",
+   "http": 200,
+   "bytes": 333,
+   "values": {
+    "candidate-metrics-panel-status-badge": "Inactive",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0"
+   },
+   "t_rel": -67.753
+  },
+  {
+   "t": 1790108433.854289,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 51.947
+  },
+  {
+   "t": 1790108434.2296896,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 52.323
+  },
+  {
+   "t": 1790108425.8594484,
+   "kind": "body",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 43.952
+  },
+  {
+   "t": 1790108436.0563529,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 54.149
+  },
+  {
+   "t": 1790108436.1726246,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 54.266
+  },
+  {
+   "t": 1790108426.9697206,
+   "kind": "body",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 45.063
+  },
+  {
+   "t": 1790108438.2040403,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "t_rel": 56.297
+  },
+  {
+   "t": 1790108439.7226691,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 57.816
+  },
+  {
+   "t": 1790108431.478356,
+   "kind": "body",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 49.571
+  }
+ ],
+ "wire_counts": {
+  "requests": {
+   "..theme-state.data...dark-mode-toggle.children..": 1,
+   "..experimental-functions-toggle.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-flags-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-functions-alert.children@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..": 2,
+   "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..": 53,
+   "dataset-swap-events-store.data": 26,
+   "loaded-snapshot-swap-events-store.data": 1,
+   "..start-button.disabled...start-button.children...pause-button.disabled...pause-button.children...stop-button.disabled...stop-button.children...resume-button.disabled...resume-button.children...reset-button.disabled...reset-button.children...apply-dataset-button.disabled..": 1,
+   "..nn-growth-preset-epochs-input.disabled...nn-growth-convergence-threshold-input.disabled..": 2,
+   "..cn-training-iterations-input.disabled...cn-training-convergence-threshold-input.disabled..": 2,
+   "..cn-top-candidates-input.disabled...cn-random-candidates-input.disabled..": 2,
+   "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..": 26,
+   "..apply-params-button.disabled...params-status.children..": 2,
+   "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 3,
+   "metrics-panel-layout-dropdown.options": 1,
+   "metrics-panel-training-state-store.data": 11,
+   "network-visualizer-topology-store.data": 2,
+   "..network-evolution-grid-container.children...network-evolution-stats.children..": 1,
+   "decision-boundary-boundary-data.data": 2,
+   "decision-boundary-dataset-data.data": 2,
+   "..dataset-plotter-seq-group-signals.style...dataset-plotter-seq-group-windows.style..": 1,
+   "dataset-plotter-dataset-store.data": 2,
+   "worker-panel-workers-store.data": 2,
+   "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..": 2,
+   "..replay-player-panel-idle.style...replay-player-panel-active.style...replay-player-panel-snapshot-id.children...replay-player-panel-fsm-badge.children...replay-player-panel-scrubber.min...replay-player-panel-scrubber.max...replay-player-panel-scrubber.value...replay-player-panel-range.min...replay-player-panel-range.max...replay-player-panel-range.value...replay-player-panel-epoch-readout.children...replay-player-panel-range-readout.children...replay-player-panel-speed.value...replay-player-panel-speed-readout.children...replay-player-panel-weights-badge.children...replay-player-panel-weights-badge.style..": 1,
+   "..network-editor-panel-idle.style...network-editor-panel-active.style...network-editor-panel-idle-fsm-badge.children...network-editor-panel-topology-store.data..": 1,
+   "..redis-panel-status-badge.children...redis-panel-status-badge.color...redis-panel-mode-badge.children...redis-panel-mode-badge.color...redis-panel-error-display.children...redis-panel-version.children...redis-panel-uptime.children...redis-panel-clients.children...redis-panel-latency.children...redis-panel-memory.children...redis-panel-ops-sec.children...redis-panel-hit-rate.children...redis-panel-keyspace.children..": 1,
+   "..cassandra-panel-status-badge.children...cassandra-panel-status-badge.color...cassandra-panel-mode-badge.children...cassandra-panel-mode-badge.color...cassandra-panel-contact-points.children...cassandra-panel-keyspace.children...cassandra-panel-hosts-table.children...cassandra-panel-keyspace-count.children...cassandra-panel-table-count.children...cassandra-panel-replication-strategies.children...cassandra-panel-error-area.children..": 1,
+   "network-visualizer-raw-topology-store.data": 2,
+   "hdf5-snapshots-panel-detail-panel.children": 1,
+   "..hdf5-snapshots-panel-restore-modal.is_open...hdf5-snapshots-panel-restore-modal-body.children...hdf5-snapshots-panel-restore-pending-id.data..": 2,
+   "train-gate-notice.children": 1,
+   "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309": 2,
+   "last-button-click.data": 1,
+   "training-control-outcome-alert.children": 1,
+   "..dataset-shortfall-modal.is_open...dataset-shortfall-modal-body.children...dataset-shortfall-context.data..": 1,
+   "network-visualizer-stats-bar.style": 1,
+   "dataset-plotter-stats-summary.style": 1,
+   "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..": 36,
+   "..dataset-plotter-dataset-selector.options...dataset-plotter-dataset-selector.value..": 1,
+   "..nn-max-iterations-input.value...nn-max-total-epochs-input.value...nn-learning-rate-input.value...nn-max-hidden-units-input.value...nn-multi-node-layers-checkbox.value...nn-growth-trigger-radio.value...nn-growth-preset-epochs-input.value...nn-growth-convergence-threshold-input.value...nn-patience-input.value...nn-spiral-rotations-input.value...nn-spiral-number-input.value...nn-dataset-elements-input.value...nn-dataset-noise-input.value...cn-pool-size-input.value...cn-correlation-threshold-input.value...cn-selected-candidates-input.value...cn-training-complete-radio.value...cn-training-iterations-input.value...cn-training-convergence-threshold-input.value...cn-patience-input.value...cn-multi-candidate-checkbox.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...cn-candidate-selection-radio.value...cn-top-candidates-input.value...cn-random-candidates-input.value...nn-output-epochs-input.value...nn-optimizer-type-dropdown.value...nn-activation-function-dropdown.value...nn-init-output-weights-dropdown.value...applied-params-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..": 1,
+   "model-class-store.data": 1,
+   "..nn-dataset-type-dropdown.options...nn-dataset-type-dropdown.value...dataset-gate-notice.children..": 1,
+   "network-visualizer-selection-info.style@bba8d96724560bd4a65d4c287bce63ac0687d5b7fef980c67619277eb3ea4915": 1,
+   "..hdf5-snapshots-panel-table-body.children...hdf5-snapshots-panel-status.children...hdf5-snapshots-panel-empty-state.style...hdf5-snapshots-panel-snapshots-store.data..": 1,
+   "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..": 1,
+   "metrics-panel-progress-detail.children": 3,
+   "metrics-panel-phase-duration.children": 3,
+   "metrics-panel-current-lr.children": 3,
+   "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..": 3,
+   "..dataset-plotter-seq-signal-select.options...dataset-plotter-seq-signal-select.value...dataset-plotter-seq-window-single.options...dataset-plotter-seq-window-single.value...dataset-plotter-seq-signal-single.options...dataset-plotter-seq-signal-single.value...dataset-plotter-seq-window-multi.options...dataset-plotter-seq-window-multi.value..": 1,
+   "dataset-plotter-seq-controls.style": 1,
+   "..worker-panel-status-badge.children...worker-panel-status-badge.color...worker-panel-error-display.children...worker-panel-total.children...worker-panel-idle.children...worker-panel-busy.children...worker-panel-stale.children...worker-panel-tasks-done.children...worker-panel-avg-health.children...worker-panel-worker-list.children..": 1,
+   "..network-editor-panel-topology-readout.children...network-editor-panel-remove-idx.options..": 1,
+   "metrics-panel-replay-controls.style": 3,
+   "..dataset-plotter-seq-char-dt-hist.figure...dataset-plotter-seq-char-target-dist.figure...dataset-plotter-seq-char-stats.children...dataset-plotter-seq-char-companion.style..": 1,
+   "..dataset-plotter-seq-grid-plot.figure...dataset-plotter-seq-grid-container.style..": 1,
+   "..decision-boundary-plot.figure...decision-boundary-status.children..": 1,
+   "pinned-params-store.data": 2,
+   "replay-player-panel-control-trigger.data": 1,
+   "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..": 1,
+   "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..": 1,
+   "candidate-metrics-panel-pool-info.children": 1,
+   "candidate-metrics-panel-history-section.children": 1,
+   "..nn-dataset-section-title.children...nn-dataset-typed-fields.style...nn-dataset-schema-params.children..": 1,
+   "..nn-multi-node-layers-checkbox.value@ca5428fc4be8facddd90f385a34d8c1ce20881788f34f266d642848951e663f1...cn-multi-candidate-checkbox.value@ca5428fc4be8facddd90f385a34d8c1ce20881788f34f266d642848951e663f1..": 1,
+   "..cn-candidate-selection-radio.style...cn-top-candidates-input.disabled@0ff0dbefef4a130bdb46a16babc7bcf91cddd5234db36713451773a44b0d3ffb...cn-random-candidates-input.disabled@0ff0dbefef4a130bdb46a16babc7bcf91cddd5234db36713451773a44b0d3ffb..": 1,
+   "parameters-panel-params-store.data": 1,
+   "..replay-player-panel-status.children...replay-player-session.data@3f2f882a40abfc4b25555e443502be292679355e3fa341039c7baf5dca87c7ff..": 1,
+   "..dataset-plotter-scatter-plot.figure...dataset-plotter-distribution-plot.figure...dataset-plotter-sample-count.children...dataset-plotter-feature-count.children...dataset-plotter-class-count.children...dataset-plotter-balance-info.children..": 1,
+   "..dataset-plotter-seq-target-plot.figure...dataset-plotter-seq-target-plot.style..": 1,
+   "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 52,
+   "metrics-panel-metrics-store.data": 15,
+   "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..": 1,
+   "hdf5-snapshots-panel-selected-id.data": 1,
+   "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...network-visualizer-output-count.children...network-visualizer-connection-count.children...network-visualizer-topology-hash.data...network-visualizer-new-node-highlight.data..": 1,
+   "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metrics-panel-accuracy-plot.style..": 1,
+   "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-panel-current-accuracy.children...metrics-panel-hidden-units.children...metrics-panel-status.children...metrics-panel-status.style..": 1,
+   "candidate-metrics-panel-loss-plot.figure": 1,
+   "metrics-panel-view-state.data": 1,
+   "network-visualizer-view-state.data": 1,
+   "..sidebar-meta-params-card.style...sidebar-nn-section.style...sidebar-nn-top-params.style...sidebar-nn-growth-triggers.style...sidebar-nn-multi-node-layers.style...sidebar-nn-spiral-dataset.style...sidebar-nn-cn-divider.style...sidebar-cn-section.style...sidebar-cn-pool-params.style...sidebar-cn-pool-training.style...sidebar-cn-multi-candidate.style...sidebar-apply-section.style...sidebar-params-divider.style...sidebar-network-info-section.style...nn-subsection-collapse.is_open@f423fbcde5be4def0fb795766ad7840137a0765bca14f6318a676a15902b0450...cn-subsection-collapse.is_open@f423fbcde5be4def0fb795766ad7840137a0765bca14f6318a676a15902b0450...sidebar-meta-params-header.children..": 1,
+   "..sidebar-col.width...visualization-col.width..": 1,
+   "..candidate-metrics-panel-history-collapse.is_open...candidate-metrics-panel-history-icon.children..": 3
+  },
+  "responses": {
+   "..theme-state.data...dark-mode-toggle.children..": 1,
+   "..experimental-functions-toggle.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-flags-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-functions-alert.children@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..": 2,
+   "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..": 52,
+   "dataset-swap-events-store.data": 25,
+   "loaded-snapshot-swap-events-store.data": 1,
+   "..start-button.disabled...start-button.children...pause-button.disabled...pause-button.children...stop-button.disabled...stop-button.children...resume-button.disabled...resume-button.children...reset-button.disabled...reset-button.children...apply-dataset-button.disabled..": 1,
+   "..nn-growth-preset-epochs-input.disabled...nn-growth-convergence-threshold-input.disabled..": 2,
+   "..cn-training-iterations-input.disabled...cn-training-convergence-threshold-input.disabled..": 2,
+   "..cn-top-candidates-input.disabled...cn-random-candidates-input.disabled..": 2,
+   "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..": 25,
+   "..apply-params-button.disabled...params-status.children..": 2,
+   "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 3,
+   "metrics-panel-layout-dropdown.options": 1,
+   "metrics-panel-training-state-store.data": 11,
+   "network-visualizer-topology-store.data": 2,
+   "..network-evolution-grid-container.children...network-evolution-stats.children..": 1,
+   "decision-boundary-boundary-data.data": 2,
+   "decision-boundary-dataset-data.data": 2,
+   "..dataset-plotter-seq-group-signals.style...dataset-plotter-seq-group-windows.style..": 1,
+   "dataset-plotter-dataset-store.data": 2,
+   "worker-panel-workers-store.data": 2,
+   "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..": 2,
+   "..replay-player-panel-idle.style...replay-player-panel-active.style...replay-player-panel-snapshot-id.children...replay-player-panel-fsm-badge.children...replay-player-panel-scrubber.min...replay-player-panel-scrubber.max...replay-player-panel-scrubber.value...replay-player-panel-range.min...replay-player-panel-range.max...replay-player-panel-range.value...replay-player-panel-epoch-readout.children...replay-player-panel-range-readout.children...replay-player-panel-speed.value...replay-player-panel-speed-readout.children...replay-player-panel-weights-badge.children...replay-player-panel-weights-badge.style..": 1,
+   "..network-editor-panel-idle.style...network-editor-panel-active.style...network-editor-panel-idle-fsm-badge.children...network-editor-panel-topology-store.data..": 1,
+   "..redis-panel-status-badge.children...redis-panel-status-badge.color...redis-panel-mode-badge.children...redis-panel-mode-badge.color...redis-panel-error-display.children...redis-panel-version.children...redis-panel-uptime.children...redis-panel-clients.children...redis-panel-latency.children...redis-panel-memory.children...redis-panel-ops-sec.children...redis-panel-hit-rate.children...redis-panel-keyspace.children..": 1,
+   "..cassandra-panel-status-badge.children...cassandra-panel-status-badge.color...cassandra-panel-mode-badge.children...cassandra-panel-mode-badge.color...cassandra-panel-contact-points.children...cassandra-panel-keyspace.children...cassandra-panel-hosts-table.children...cassandra-panel-keyspace-count.children...cassandra-panel-table-count.children...cassandra-panel-replication-strategies.children...cassandra-panel-error-area.children..": 1,
+   "network-visualizer-raw-topology-store.data": 2,
+   "hdf5-snapshots-panel-detail-panel.children": 1,
+   "..hdf5-snapshots-panel-restore-modal.is_open...hdf5-snapshots-panel-restore-modal-body.children...hdf5-snapshots-panel-restore-pending-id.data..": 2,
+   "train-gate-notice.children": 1,
+   "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309": 2,
+   "last-button-click.data": 1,
+   "training-control-outcome-alert.children": 1,
+   "..dataset-shortfall-modal.is_open...dataset-shortfall-modal-body.children...dataset-shortfall-context.data..": 1,
+   "network-visualizer-stats-bar.style": 1,
+   "dataset-plotter-stats-summary.style": 1,
+   "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..": 35,
+   "..dataset-plotter-dataset-selector.options...dataset-plotter-dataset-selector.value..": 1,
+   "..nn-max-iterations-input.value...nn-max-total-epochs-input.value...nn-learning-rate-input.value...nn-max-hidden-units-input.value...nn-multi-node-layers-checkbox.value...nn-growth-trigger-radio.value...nn-growth-preset-epochs-input.value...nn-growth-convergence-threshold-input.value...nn-patience-input.value...nn-spiral-rotations-input.value...nn-spiral-number-input.value...nn-dataset-elements-input.value...nn-dataset-noise-input.value...cn-pool-size-input.value...cn-correlation-threshold-input.value...cn-selected-candidates-input.value...cn-training-complete-radio.value...cn-training-iterations-input.value...cn-training-convergence-threshold-input.value...cn-patience-input.value...cn-multi-candidate-checkbox.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...cn-candidate-selection-radio.value...cn-top-candidates-input.value...cn-random-candidates-input.value...nn-output-epochs-input.value...nn-optimizer-type-dropdown.value...nn-activation-function-dropdown.value...nn-init-output-weights-dropdown.value...applied-params-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..": 1,
+   "model-class-store.data": 1,
+   "..nn-dataset-type-dropdown.options...nn-dataset-type-dropdown.value...dataset-gate-notice.children..": 1,
+   "network-visualizer-selection-info.style@bba8d96724560bd4a65d4c287bce63ac0687d5b7fef980c67619277eb3ea4915": 1,
+   "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..": 1,
+   "metrics-panel-progress-detail.children": 3,
+   "metrics-panel-phase-duration.children": 3,
+   "metrics-panel-current-lr.children": 3,
+   "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..": 3,
+   "..dataset-plotter-seq-signal-select.options...dataset-plotter-seq-signal-select.value...dataset-plotter-seq-window-single.options...dataset-plotter-seq-window-single.value...dataset-plotter-seq-signal-single.options...dataset-plotter-seq-signal-single.value...dataset-plotter-seq-window-multi.options...dataset-plotter-seq-window-multi.value..": 1,
+   "dataset-plotter-seq-controls.style": 1,
+   "..worker-panel-status-badge.children...worker-panel-status-badge.color...worker-panel-error-display.children...worker-panel-total.children...worker-panel-idle.children...worker-panel-busy.children...worker-panel-stale.children...worker-panel-tasks-done.children...worker-panel-avg-health.children...worker-panel-worker-list.children..": 1,
+   "..network-editor-panel-topology-readout.children...network-editor-panel-remove-idx.options..": 1,
+   "metrics-panel-replay-controls.style": 3,
+   "..dataset-plotter-seq-char-dt-hist.figure...dataset-plotter-seq-char-target-dist.figure...dataset-plotter-seq-char-stats.children...dataset-plotter-seq-char-companion.style..": 1,
+   "..dataset-plotter-seq-grid-plot.figure...dataset-plotter-seq-grid-container.style..": 1,
+   "..decision-boundary-plot.figure...decision-boundary-status.children..": 1,
+   "pinned-params-store.data": 2,
+   "replay-player-panel-control-trigger.data": 1,
+   "..hdf5-snapshots-panel-table-body.children...hdf5-snapshots-panel-status.children...hdf5-snapshots-panel-empty-state.style...hdf5-snapshots-panel-snapshots-store.data..": 1,
+   "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..": 1,
+   "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..": 1,
+   "candidate-metrics-panel-pool-info.children": 1,
+   "candidate-metrics-panel-history-section.children": 1,
+   "..nn-dataset-section-title.children...nn-dataset-typed-fields.style...nn-dataset-schema-params.children..": 1,
+   "..nn-multi-node-layers-checkbox.value@ca5428fc4be8facddd90f385a34d8c1ce20881788f34f266d642848951e663f1...cn-multi-candidate-checkbox.value@ca5428fc4be8facddd90f385a34d8c1ce20881788f34f266d642848951e663f1..": 1,
+   "..cn-candidate-selection-radio.style...cn-top-candidates-input.disabled@0ff0dbefef4a130bdb46a16babc7bcf91cddd5234db36713451773a44b0d3ffb...cn-random-candidates-input.disabled@0ff0dbefef4a130bdb46a16babc7bcf91cddd5234db36713451773a44b0d3ffb..": 1,
+   "parameters-panel-params-store.data": 1,
+   "..replay-player-panel-status.children...replay-player-session.data@3f2f882a40abfc4b25555e443502be292679355e3fa341039c7baf5dca87c7ff..": 1,
+   "..dataset-plotter-scatter-plot.figure...dataset-plotter-distribution-plot.figure...dataset-plotter-sample-count.children...dataset-plotter-feature-count.children...dataset-plotter-class-count.children...dataset-plotter-balance-info.children..": 1,
+   "..dataset-plotter-seq-target-plot.figure...dataset-plotter-seq-target-plot.style..": 1,
+   "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 51,
+   "metrics-panel-metrics-store.data": 14,
+   "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..": 1,
+   "hdf5-snapshots-panel-selected-id.data": 1,
+   "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...network-visualizer-output-count.children...network-visualizer-connection-count.children...network-visualizer-topology-hash.data...network-visualizer-new-node-highlight.data..": 1,
+   "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metrics-panel-accuracy-plot.style..": 1,
+   "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-panel-current-accuracy.children...metrics-panel-hidden-units.children...metrics-panel-status.children...metrics-panel-status.style..": 1,
+   "candidate-metrics-panel-loss-plot.figure": 1,
+   "metrics-panel-view-state.data": 1,
+   "network-visualizer-view-state.data": 1,
+   "..sidebar-meta-params-card.style...sidebar-nn-section.style...sidebar-nn-top-params.style...sidebar-nn-growth-triggers.style...sidebar-nn-multi-node-layers.style...sidebar-nn-spiral-dataset.style...sidebar-nn-cn-divider.style...sidebar-cn-section.style...sidebar-cn-pool-params.style...sidebar-cn-pool-training.style...sidebar-cn-multi-candidate.style...sidebar-apply-section.style...sidebar-params-divider.style...sidebar-network-info-section.style...nn-subsection-collapse.is_open@f423fbcde5be4def0fb795766ad7840137a0765bca14f6318a676a15902b0450...cn-subsection-collapse.is_open@f423fbcde5be4def0fb795766ad7840137a0765bca14f6318a676a15902b0450...sidebar-meta-params-header.children..": 1,
+   "..sidebar-col.width...visualization-col.width..": 1,
+   "..candidate-metrics-panel-history-collapse.is_open...candidate-metrics-panel-history-icon.children..": 3
+  },
+  "failed": {}
+ },
+ "console": [
+  {
+   "t": 1790108305.400013,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790108305.4125345,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790108307.908501,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790108308.3463476,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790108311.7690158,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790108312.0561907,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790108313.1667073,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790108313.9242897,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790108321.9608004,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790108324.716599,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790108345.9244275,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790108347.8042736,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790108361.763985,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790108363.1013405,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790108390.7312653,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790108392.4334168,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790108403.1674323,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790108404.5206482,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  }
+ ]
+}

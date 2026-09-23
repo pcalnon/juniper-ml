@@ -1,0 +1,112 @@
+{
+  "cascor": "http://127.0.0.1:8202",
+  "ws_url": "ws://127.0.0.1:8202/ws/training",
+  "snapshot": "snapshot_20260909T002658Z",
+  "frames_before": [
+    {
+      "t": 0.0,
+      "type": "connection_established"
+    },
+    {
+      "t": 5.0,
+      "type": "initial_status"
+    },
+    {
+      "t": 5.0,
+      "type": "state"
+    },
+    {
+      "t": 5.0,
+      "type": "initial_metrics"
+    }
+  ],
+  "frames_after": [
+    {
+      "t": 0.73,
+      "type": "state"
+    },
+    {
+      "t": 25.99,
+      "type": "ping"
+    }
+  ],
+  "close": null,
+  "cascor_git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+  "transport_before": {
+    "active_connections": 2,
+    "pending_connections": 0,
+    "send_failures": 0,
+    "messages_sent_by_type": {
+      "connection_established": 2,
+      "initial_status": 2,
+      "state": 3,
+      "initial_metrics": 2,
+      "ping": 12
+    }
+  },
+  "trigger": {
+    "http": 200,
+    "body": {
+      "status": "success",
+      "data": {
+        "snapshot_id": "snapshot_20260909T002658Z",
+        "operation": "resume",
+        "fsm_state": "RESUME_READY",
+        "time_index": {
+          "default": "end",
+          "snapshot_window": {
+            "start_epoch": 0,
+            "end_epoch": 56
+          }
+        },
+        "training_params": {
+          "learning_rate": 0.01,
+          "candidate_learning_rate": 0.005,
+          "max_hidden_units": 52,
+          "epochs_max": 157325,
+          "max_iterations": 1000,
+          "patience": 50,
+          "candidate_pool_size": 8,
+          "correlation_threshold": 0.01,
+          "convergence_threshold": 0.001,
+          "candidate_patience": 50,
+          "candidate_convergence_threshold": 0.001,
+          "candidate_epochs": 3000,
+          "output_epochs": 25,
+          "init_output_weights": "zero",
+          "optimizer_type": "Adam",
+          "activation_function_name": "Tanh",
+          "auto_snap_best": false,
+          "auto_snap_min_epochs": 50,
+          "multi_candidate": false,
+          "candidate_selection": "top",
+          "selected_candidates": 1,
+          "top_candidates": 1,
+          "random_candidates": 0
+        },
+        "status": "ready",
+        "resume_point_epoch": 56
+      },
+      "meta": {
+        "timestamp": 1790106088.2789927,
+        "version": "0.6.0"
+      }
+    }
+  },
+  "socket_open_at_end": true,
+  "send_after_trigger_ok": true,
+  "transport_after": {
+    "active_connections": 1,
+    "pending_connections": 0,
+    "send_failures": 0,
+    "messages_sent_by_type": {
+      "connection_established": 2,
+      "initial_status": 2,
+      "state": 5,
+      "initial_metrics": 2,
+      "ping": 17
+    }
+  },
+  "verdict": "STATE-RECEIVED",
+  "why": "frames after the trigger: ['state', 'ping']; send_failures delta 0, active_connections after 1. The broadcast reached this subscriber: no drop on this transition."
+}
