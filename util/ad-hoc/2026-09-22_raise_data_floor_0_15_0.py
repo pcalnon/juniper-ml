@@ -51,7 +51,7 @@ _OLD_PIN = "juniper-data>=0.14.0"
 _NEW_PIN = "juniper-data>=0.15.0"
 _OLD_VER = "0.9.0"
 _NEW_VER = "0.10.0"
-_RELEASE_DATE = "2026-09-22"
+_RELEASE_DATE = "2026-09-23"  # UTC: the ceremony stamps notes with the UTC date (ceremony._today)
 
 #: (path, exact old text, exact new text, expected occurrences)
 _EDITS: list[tuple[str, str, str, int]] = [
