@@ -97,6 +97,39 @@ def display_name(pypi_name: str) -> str:
 
 # ── CHANGELOG [Unreleased] parsing (category -> bullets) ─────────────────────
 
+#: A Keep-a-Changelog ``###`` heading: the category word, then whatever the author appended to it.
+_CATEGORY_HEADING_RE = re.compile(r"^###\s+([A-Za-z]+)(.*)$")
+
+
+def heading_key(line: str) -> "str | None":
+    """The section key for a ``###`` heading line, or ``None`` when ``line`` is not one.
+
+    An unqualified heading keys by its category word (``### Fixed`` -> ``Fixed``), as it always
+    has. A QUALIFIED heading keys by its full text (``### Changed (potentially breaking)`` ->
+    ``Changed (potentially breaking)``). Until 2026-09-22 both section parsers kept only the first
+    word, so the qualifier never reached the Release body or the breaking verdict. That exact
+    heading appears five times across four registered CHANGELOGs (juniper-cascor twice,
+    juniper-canopy, juniper-cascor-client, juniper-data), and three of those sections
+    (canopy 0.5.0, cascor-client 0.4.0, data 0.7.0) render ``### Changed`` under
+    "Breaking changes: NO" by the old rule. The first-word key mangled ordinary headings too:
+    ``### Technical Notes`` rendered as ``### Technical``, ``### Files Changed`` as ``### Files``.
+    Keying by the full text also keeps a qualified block apart from an unqualified block of the
+    same category, so the qualifier labels only the bullets it was written over. A "qualifier"
+    of punctuation alone (``### Changed:``) is not one.
+    """
+    m = _CATEGORY_HEADING_RE.match(line.strip())
+    if not m:
+        return None
+    if not any(ch.isalnum() for ch in m.group(2)):
+        return m.group(1)
+    return line.strip()[3:].strip()
+
+
+def category_word(key: str) -> str:
+    """The Keep-a-Changelog category a section key belongs to (``Changed (...)`` -> ``Changed``)."""
+    m = re.match(r"[A-Za-z]+", key)
+    return m.group(0) if m else key
+
 
 def _split_bullets(body_lines: list) -> list:
     """Group a category body's lines into top-level bullets (marker-stripped, continuations
@@ -144,13 +177,13 @@ def parse_unreleased(changelog_text: str) -> "OrderedDict[str, list]":
     for line in lines[start:]:
         if re.match(r"^##\s", line) and not re.match(r"^###", line):
             break  # next version section ends [Unreleased]
-        hm = re.match(r"^###\s+([A-Za-z]+)", line.strip())
-        if hm:
+        key = heading_key(line)
+        if key is not None:
             if current_cat is not None:
                 bullets = _split_bullets(body)
                 if bullets:
                     result.setdefault(current_cat, []).extend(bullets)
-            current_cat = hm.group(1)
+            current_cat = key
             body = []
             continue
         if current_cat is not None:
@@ -167,7 +200,7 @@ def is_security_release(sections: "OrderedDict[str, list] | dict | list | None")
     if not sections:
         return False
     keys = sections.keys() if hasattr(sections, "keys") else sections
-    return any(str(k).lower() == SECURITY_CATEGORY for k in keys)
+    return any(category_word(str(k)).lower() == SECURITY_CATEGORY for k in keys)
 
 
 # ── template access ──────────────────────────────────────────────────────────
@@ -255,16 +288,66 @@ def _is_breaking(sections: "OrderedDict[str, list]") -> bool:
     So: also honour the uppercase ``BREAKING`` marker the CHANGELOGs already use. Deliberately
     case-SENSITIVE -- lowercase "breaking" appears in ordinary prose ("breaks consumers at
     import time") and matching it would flip well-behaved releases to YES.
+
+    That fix was drawn from the two releases it was built for, and it missed the house styles of
+    registered repos. Re-measured the same day over all 237 version sections of the 18 registry
+    packages (``util/ad-hoc/2026-09-22_breaking_marker_corpus_diff.py``), a marker is any of:
+
+    * a section whose category word is ``Breaking`` -- juniper-canopy's
+      ``### Breaking Changes in [0.0.4]``;
+    * a heading QUALIFIER that says breaking, in any case -- ``### Changed (potentially
+      breaking)``, five headings across four registered CHANGELOGs. Both parsers used to key a heading by
+      its first word, dropping the qualifier before anything could read it; ``heading_key`` now
+      keeps it, so it also reaches the rendered body;
+    * a bullet or sub-bullet line that OPENS with ``breaking change(s)``, optionally emphasised,
+      in any case -- juniper-canopy's ``**Breaking Change:** ...`` and ``Breaking change: ...``,
+      which carry no uppercase ``BREAKING`` at all. Anchored to label position, so prose such as
+      "this is not a breaking change" cannot trip it (``_LABEL_RE``);
+    * an uppercase whole-word ``BREAKING`` anywhere in a bullet.
+
+    In every form, ``non-`` / ``not`` / ``no`` directly before the word negates it -- a substring
+    test read ``NON-BREAKING`` as a break.
     """
-    if "removed" in {k.lower() for k in sections}:
+    words = {category_word(k).lower() for k in sections}
+    if "removed" in words or "breaking" in words:
         return True
-    return any("BREAKING" in bullet for bullets in sections.values() for bullet in bullets)
+    if any(_says_breaking(k[len(category_word(k)) :], case_sensitive=False) for k in sections):
+        return True
+    return any(_has_breaking_marker(bullet) for bullets in sections.values() for bullet in bullets)
+
+
+#: A breaking marker in LABEL position -- the start of a bullet or sub-bullet line, optionally
+#: emphasised: ``**Breaking Change:**``, ``Breaking change:``, ``Breaking changes in ...``. Matched
+#: case-insensitively because it is anchored; prose rarely OPENS a line with it.
+_LABEL_RE = re.compile(r"^(?:[-*+]\s+)?(?:\*{1,2}|_{1,2})?\s*breaking[ -]changes?\b", re.IGNORECASE)
+
+#: The word itself, as a whole word -- uppercase only (bullets) or any case (heading qualifiers).
+_UPPER_RE = re.compile(r"(?<![A-Za-z])BREAKING(?![A-Za-z])")
+_ANY_CASE_RE = re.compile(r"(?<![A-Za-z])breaking(?![A-Za-z])", re.IGNORECASE)
+
+#: A negation directly before the word, itself a whole word: ``NON-BREAKING``, ``not breaking``,
+#: ``No breaking``. The boundary matters -- "piano breaking" is not "no breaking".
+_NEGATED_RE = re.compile(r"(?:^|[^A-Za-z])(?:non-|not\s|no\s)$", re.IGNORECASE)
+
+
+def _says_breaking(text: str, *, case_sensitive: bool) -> bool:
+    """True when ``text`` contains the whole word "breaking" (uppercase only when ``case_sensitive``)
+    in at least one occurrence that is not negated."""
+    pattern = _UPPER_RE if case_sensitive else _ANY_CASE_RE
+    return any(not _NEGATED_RE.search(text[: m.start()]) for m in pattern.finditer(text))
+
+
+def _has_breaking_marker(text: str) -> bool:
+    """True when ``text`` (one bullet, continuation lines included) carries a breaking marker."""
+    if any(_LABEL_RE.match(line.strip()) for line in text.splitlines()):
+        return True
+    return _says_breaking(text, case_sensitive=True)
 
 
 def _render_standard(pypi_name: str, version: str, bump: str, date: str, sections: "OrderedDict[str, list]", template_text: str, repo_root: "Path | None", changelog_url: "str | None" = None, final: bool = False) -> str:
     rtype = release_type(bump)
     breaking = "YES" if _is_breaking(sections) else "NO"
-    focus = ", ".join(dict.fromkeys(_FOCUS.get(k.lower(), k.lower()) for k in sections)) or "maintenance"
+    focus = ", ".join(dict.fromkeys(_FOCUS.get(category_word(k).lower(), category_word(k).lower()) for k in sections)) or "maintenance"
     name = display_name(pypi_name)
     lines: list = [
         f"# {name} v{version} Release Notes",
