@@ -57,6 +57,28 @@ a request past them is a 422, not a clamp.
 > tested), raise `MAX_POINTS` in juniper-data as its own decision, or run outside the suite
 > harness.
 >
+> ## ⚠ SECOND CORRECTION 2026-09-23 — the suite path does not reach 10,000 either; it stops at 5,882
+>
+> The paragraph above, and the owner menu built from it (D4, ruled 2026-09-22 as "10,000 now"),
+> treat `MAX_POINTS` as the ceiling on the **request**. It is the ceiling on the **total rows per
+> spiral**. juniper-data's additive sizing (`juniper_data/core/split.py`) treats
+> `n_points_per_spiral` as the TRAIN count, adds the val and test partitions on top, and
+> re-validates the inflated count against `MAX_POINTS`. At the suite's split (`train_ratio` 0.8,
+> `test_ratio` 0.2, default `val_percent`) the inflation is 1.7×. So a request of 10,000 becomes
+> 17,000 internally and is rejected. Bisected in the JuniperData env: **5,882 accepted, 5,883
+> rejected**.
+>
+> **Found by running the top cell, not by reading.** The 10,000 probe ended `torn_down_early`
+> after 17.6 s. juniper-data answered **400 "Invalid request parameters"** and logged the cause
+> only at DEBUG. That is not the 422 this section predicts: the field check passes (10000 ≤
+> 10000), generation then raises a pydantic `ValidationError`, and the API's `ValueError`
+> handler turns it into a generic 400. A client cannot learn the real bound from the response.
+> That is a juniper-data defect in its own right.
+>
+> Axis 2 is built as `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`, capped
+> at **5,800** (about 23×; 425 → about 9,860 total rows per spiral). Every "10,000" in this
+> document means total rows, not a request.
+>
 > **How the error was made**, because the shape recurs: the 2026-09-10 probe note correctly
 > records that *`POST /v1/training/start` materialises the in-process spiral generator*. That is
 > true of **that route**, which the listener probes used directly. The experiment driver stages
