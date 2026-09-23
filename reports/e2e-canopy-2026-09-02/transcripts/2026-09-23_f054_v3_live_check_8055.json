@@ -1,0 +1,424 @@
+{
+  "probe": "2026-09-23_f054_v2_live_check.py",
+  "canopy": "http://127.0.0.1:8055",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8055",
+    "git_sha": "a967a5bd46dd831e7a17f5f6774e5704750c1ea0",
+    "build_date": "2026-09-23T15:12:06Z",
+    "version": "0.6.0",
+    "read_at": "2026-09-23T15:15:47Z"
+  },
+  "trials": [
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176594409,
+      "index_before": 2,
+      "final": [
+        1790176596422,
+        "paused",
+        4,
+        1
+      ],
+      "latency_ms": 2013,
+      "paused_index": 4,
+      "verdict": "APPLIED",
+      "pool_at_click": 2,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 2,
+      "dom": {
+        "label": "\u25b6",
+        "position": "4 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 1
+    },
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176631990,
+      "index_before": 6,
+      "final": [
+        1790176633670,
+        "paused",
+        8,
+        1
+      ],
+      "latency_ms": 1680,
+      "paused_index": 8,
+      "verdict": "APPLIED",
+      "pool_at_click": 11,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "8 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 1
+    },
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176667917,
+      "index_before": 11,
+      "final": [
+        1790176668721,
+        "paused",
+        12,
+        1
+      ],
+      "latency_ms": 804,
+      "paused_index": 12,
+      "verdict": "APPLIED",
+      "pool_at_click": 11,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 4,
+      "dom": {
+        "label": "\u25b6",
+        "position": "12 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 1
+    },
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176704013,
+      "index_before": 14,
+      "final": [
+        1790176705125,
+        "paused",
+        15,
+        1
+      ],
+      "latency_ms": 1112,
+      "paused_index": 15,
+      "verdict": "APPLIED",
+      "pool_at_click": 11,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "15 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 1
+    },
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176738701,
+      "index_before": 17,
+      "final": [
+        1790176740407,
+        "paused",
+        19,
+        1
+      ],
+      "latency_ms": 1706,
+      "paused_index": 19,
+      "verdict": "APPLIED",
+      "pool_at_click": 10,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "19 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 1
+    },
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176778943,
+      "index_before": 21,
+      "final": [
+        1790176780909,
+        "paused",
+        23,
+        4
+      ],
+      "latency_ms": 1966,
+      "paused_index": 23,
+      "verdict": "APPLIED",
+      "pool_at_click": 10,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "23 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 4
+    },
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176814145,
+      "index_before": 25,
+      "final": [
+        1790176815651,
+        "paused",
+        27,
+        4
+      ],
+      "latency_ms": 1506,
+      "paused_index": 27,
+      "verdict": "APPLIED",
+      "pool_at_click": 10,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "27 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 4
+    },
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176848947,
+      "index_before": 29,
+      "final": [
+        1790176851176,
+        "paused",
+        31,
+        4
+      ],
+      "latency_ms": 2229,
+      "paused_index": 31,
+      "verdict": "APPLIED",
+      "pool_at_click": 11,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "31 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 4
+    },
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176884374,
+      "index_before": 33,
+      "final": [
+        1790176886164,
+        "paused",
+        35,
+        4
+      ],
+      "latency_ms": 1790,
+      "paused_index": 35,
+      "verdict": "APPLIED",
+      "pool_at_click": 10,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "35 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 4
+    },
+    {
+      "kind": "pause",
+      "pct": 0,
+      "t_click": 1790176919689,
+      "index_before": 37,
+      "final": [
+        1790176921909,
+        "paused",
+        39,
+        4
+      ],
+      "latency_ms": 2220,
+      "paused_index": 39,
+      "verdict": "APPLIED",
+      "pool_at_click": 11,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "39 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 4
+    },
+    {
+      "kind": "step",
+      "pct": 0,
+      "t_click": 1790176954094,
+      "index_before": 42,
+      "final": [
+        1790176956480,
+        "paused",
+        44,
+        4
+      ],
+      "latency_ms": 2386,
+      "paused_index": 44,
+      "verdict": "APPLIED",
+      "pool_at_click": 6,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "44 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 4
+    },
+    {
+      "kind": "step",
+      "pct": 0,
+      "t_click": 1790176989539,
+      "index_before": 46,
+      "final": [
+        1790176991631,
+        "paused",
+        49,
+        4
+      ],
+      "latency_ms": 2092,
+      "paused_index": 49,
+      "verdict": "APPLIED",
+      "pool_at_click": 11,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "49 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 4
+    },
+    {
+      "kind": "seek",
+      "pct": 30,
+      "setprops": {
+        "ok": true,
+        "via": "memoizedProps.setProps",
+        "hops": 30535
+      },
+      "t_click": 1790177023412,
+      "index_before": 51,
+      "final": [
+        1790177025339,
+        "paused",
+        34,
+        4
+      ],
+      "latency_ms": 1927,
+      "paused_index": 34,
+      "expected_index": 34,
+      "verdict": "APPLIED",
+      "pool_at_click": 11,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "34 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 4
+    },
+    {
+      "kind": "seek",
+      "pct": 70,
+      "setprops": {
+        "ok": true,
+        "via": "memoizedProps.setProps",
+        "hops": 30535
+      },
+      "t_click": 1790177057075,
+      "index_before": 36,
+      "final": [
+        1790177058466,
+        "paused",
+        80,
+        4
+      ],
+      "latency_ms": 1391,
+      "paused_index": 80,
+      "expected_index": 80,
+      "verdict": "APPLIED",
+      "pool_at_click": 10,
+      "click_seen_in_prioritized": true,
+      "click_executed": true,
+      "recovered": false,
+      "max_step_while_playing": 1,
+      "steps_while_playing": 3,
+      "dom": {
+        "label": "\u25b6",
+        "position": "80 / 115"
+      },
+      "dom_agrees": true,
+      "speed_state": 4
+    }
+  ],
+  "store_len": 116,
+  "fill_wait_s": 9.3,
+  "watch": {
+    "found": true
+  },
+  "console_errors": [],
+  "console_error_count": 0,
+  "summary": {
+    "non_void": 14,
+    "verdicts": {
+      "APPLIED": 14
+    },
+    "pause_latency_ms_median": 1748.0,
+    "pause_latency_ms_max": 2229,
+    "pool_ge_1_at_click": 14,
+    "recovered": 0,
+    "max_step_while_playing_4x": 1,
+    "dom_agrees": 14
+  },
+  "overall": "PASS"
+}

@@ -3,6 +3,7 @@
 **Session**: container-registry rollout — the owner-gated tail, plus a defect found by running the
 predecessor's own verification command
 **Predecessor**: `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`
+**Status**: **SUPERSEDED** by `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md`; the arc's current tip is `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`. Do not act on the remaining-work list below. Since this was written, Wave 3 completed, a post-#179 worker image exists, and Wave 4 moved to a `dockerhub` environment (Option B of §3 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`, juniper-ml#2009). Re-checked 2026-09-22 from `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`'s status banner.
 
 ---
 
@@ -31,7 +32,7 @@ or `util/` are inside `juniper-ml/`. **Times are UTC**; worktree names carry LOC
 
 | PR | merge SHA | what |
 | --- | --- | --- |
-| juniper-cascor#646 | `b374f285` | the last two stale `juniper-ci-tools` pins → `>=0.9.0,<0.10.0`, plus one `AGENTS.md` line #645 left behind |
+| juniper-cascor#646 | `43785fe0` | the last two stale `juniper-ci-tools` pins → `>=0.9.0,<0.10.0`, plus one `AGENTS.md` line #645 left behind. *Corrected 2026-09-22: this cell read `b374f285`, the PR's HEAD commit; `mergeCommit.oid` is `43785fe0`* |
 | juniper-ml#1909 | `4f566d37` | the ci-tools drift guard widened (25 of 54 live pins → 54 of 54) **and** the doc-tools sibling's matching false exclusion |
 | juniper-ml#1910 | `364cb568` | the OQ-1 ruling + a refreshed plan `Status:` + `util/ad-hoc/2026-09-11_materialize_release_proposal.py` |
 | juniper-canopy#620 | `4006e749` | release **proposal** v0.7.0 → 0.8.0 |
@@ -169,7 +170,7 @@ installs `juniper-ci-tools>=0.6.0,<0.7.0` for `juniper-coverage-gap-map`. Its wo
 
 ```bash
 cd /home/pcalnon/Development/python/Juniper
-gh pr view 646  --repo pcalnon/juniper-cascor        --json mergeCommit --jq .mergeCommit.oid[0:12]   # b374f285d173
+gh pr view 646  --repo pcalnon/juniper-cascor        --json mergeCommit --jq .mergeCommit.oid[0:12]   # 43785fe0428e (corrected 2026-09-22; b374f285d173 is the head commit)
 gh pr view 1909 --repo pcalnon/juniper-ml            --json mergeCommit --jq .mergeCommit.oid[0:12]   # 4f566d379cb5
 gh pr view 1910 --repo pcalnon/juniper-ml            --json mergeCommit --jq .mergeCommit.oid[0:12]   # 364cb5682a5f
 gh pr view 620  --repo pcalnon/juniper-canopy        --json mergeCommit --jq .mergeCommit.oid[0:12]   # 4006e749d05c

@@ -10,6 +10,7 @@ Status: ad-hoc — investigation
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 Related: util/open_signed_pr.py (whose createCommitOnBranch mutation this reuses);
          juniper-cascor#632 (the PR this was built to extend)
+Superseded: for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
 
 WHY. ``util/open_signed_pr.py`` refuses when the branch already exists -- by design,
 it never force-updates a ref it did not create. But a PR that needs a SECOND signed

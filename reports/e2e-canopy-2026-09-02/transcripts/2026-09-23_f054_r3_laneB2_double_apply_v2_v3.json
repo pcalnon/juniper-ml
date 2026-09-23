@@ -1,0 +1,1741 @@
+{
+ "probe": "2026-09-23_f054_r3_laneB2_double_apply_v2_v3.py",
+ "latency_s": 2.5,
+ "trials": 10,
+ "arms": {
+  "v3a": {
+   "summary": {
+    "arm": "v3a",
+    "ref": "a967a5bd",
+    "K": 13,
+    "speed": "4x",
+    "sat_ms_per_50": 0,
+    "fan": 3,
+    "delay0_ms": 60,
+    "trials": 10,
+    "latency_s": 2.5,
+    "verdicts": {
+     "HELD": 10
+    },
+    "trials_with_race_run": 1,
+    "trials_with_double_toggle": 0,
+    "trials_with_pause_applied_by_count": 4,
+    "pause_ms_median": 86.5,
+    "pool_full_fraction": 0.458
+   },
+   "trials": [
+    {
+     "trial": 0,
+     "verdict": "HELD",
+     "pause_ms": 62,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176565036,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 2,
+       "seenPlay": 1,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 1,
+     "verdict": "HELD",
+     "pause_ms": 48,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176577056,
+       "trig": [
+        "replay-interval.n_intervals",
+        "replay-play.n_clicks"
+       ],
+       "play": 4,
+       "seenPlay": 3,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 2,
+     "verdict": "HELD",
+     "pause_ms": 404,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176589406,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 6,
+       "seenPlay": 5,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176589406,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 6,
+       "seenPlay": 5,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 3,
+     "verdict": "HELD",
+     "pause_ms": 58,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176601412,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 7,
+       "seenPlay": 7,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176601454,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 8,
+       "seenPlay": 7,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 4,
+     "verdict": "HELD",
+     "pause_ms": 206,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176614182,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 10,
+       "seenPlay": 9,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176614182,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 10,
+       "seenPlay": 9,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 5,
+     "verdict": "HELD",
+     "pause_ms": 150,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176628173,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 12,
+       "seenPlay": 11,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 6,
+     "verdict": "HELD",
+     "pause_ms": 31,
+     "undone_ms": null,
+     "double_runs": [
+      {
+       "t": 1790176640458,
+       "trig": [
+        "replay-interval.n_intervals",
+        "replay-play.n_clicks"
+       ],
+       "play": 14,
+       "seenPlay": 14,
+       "modeIn": "paused",
+       "modeOut": "NU"
+      }
+     ],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176640436,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 14,
+       "seenPlay": 13,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176640436,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 14,
+       "seenPlay": 13,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      },
+      {
+       "t": 1790176640458,
+       "trig": [
+        "replay-interval.n_intervals",
+        "replay-play.n_clicks"
+       ],
+       "play": 14,
+       "seenPlay": 14,
+       "modeIn": "paused",
+       "modeOut": "NU"
+      }
+     ]
+    },
+    {
+     "trial": 7,
+     "verdict": "HELD",
+     "pause_ms": 83,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176653465,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 16,
+       "seenPlay": 15,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 8,
+     "verdict": "HELD",
+     "pause_ms": 219,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176666670,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 18,
+       "seenPlay": 17,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176666670,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 18,
+       "seenPlay": 17,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 9,
+     "verdict": "HELD",
+     "pause_ms": 90,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176678915,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 20,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    }
+   ]
+  },
+  "v2a": {
+   "summary": {
+    "arm": "v2a",
+    "ref": "85415f3c",
+    "K": 13,
+    "speed": "4x",
+    "sat_ms_per_50": 0,
+    "fan": 3,
+    "delay0_ms": 60,
+    "trials": 10,
+    "latency_s": 2.5,
+    "verdicts": {
+     "HELD": 8,
+     "UNDONE": 2
+    },
+    "trials_with_race_run": 2,
+    "trials_with_double_toggle": 2,
+    "trials_with_pause_applied_by_count": 4,
+    "pause_ms_median": 157.5,
+    "pool_full_fraction": 0.437
+   },
+   "trials": [
+    {
+     "trial": 0,
+     "verdict": "HELD",
+     "pause_ms": 83,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176700624,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 1,
+       "seenPlay": 1,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176700686,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 2,
+       "seenPlay": 1,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 1,
+     "verdict": "HELD",
+     "pause_ms": 112,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176713209,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 4,
+       "seenPlay": 3,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 2,
+     "verdict": "HELD",
+     "pause_ms": 165,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176726051,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 6,
+       "seenPlay": 5,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 3,
+     "verdict": "HELD",
+     "pause_ms": 620,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176740003,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 8,
+       "seenPlay": 7,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176740003,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 8,
+       "seenPlay": 7,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 4,
+     "verdict": "HELD",
+     "pause_ms": 197,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176752224,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 10,
+       "seenPlay": 9,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 5,
+     "verdict": "HELD",
+     "pause_ms": 329,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176764503,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 12,
+       "seenPlay": 11,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176764194,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 11,
+       "seenPlay": 11,
+       "modeIn": "playing",
+       "modeOut": "NU"
+      },
+      {
+       "t": 1790176764503,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 12,
+       "seenPlay": 11,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 6,
+     "verdict": "HELD",
+     "pause_ms": 45,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176777373,
+       "trig": [
+        "replay-interval.n_intervals",
+        "replay-play.n_clicks"
+       ],
+       "play": 14,
+       "seenPlay": 13,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 7,
+     "verdict": "UNDONE",
+     "pause_ms": 66,
+     "undone_ms": 92,
+     "double_runs": [
+      {
+       "t": 1790176790045,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "paused",
+       "modeOut": "playing"
+      }
+     ],
+     "double_toggles": [
+      {
+       "t": 1790176790045,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "paused",
+       "modeOut": "playing"
+      }
+     ],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176790016,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 15,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176790016,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 15,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      },
+      {
+       "t": 1790176790045,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "paused",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176790337,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176790897,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176791709,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176792132,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176792312,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176792561,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176792881,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176793113,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176793487,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176794262,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176794324,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176794938,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176795056,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176795384,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176795582,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176796437,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176796673,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176797004,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176797064,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176797315,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176797863,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176797877,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 16,
+       "modeIn": "playing",
+       "modeOut": "NU"
+      }
+     ]
+    },
+    {
+     "trial": 8,
+     "verdict": "UNDONE",
+     "pause_ms": 84,
+     "undone_ms": 310,
+     "double_runs": [
+      {
+       "t": 1790176803466,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "paused",
+       "modeOut": "playing"
+      }
+     ],
+     "double_toggles": [
+      {
+       "t": 1790176803466,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "paused",
+       "modeOut": "playing"
+      }
+     ],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176803238,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 18,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176803238,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 18,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      },
+      {
+       "t": 1790176803466,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "paused",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176804167,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176804229,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176804481,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176804967,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176805029,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176805596,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176805770,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176806354,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176806476,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176806881,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176807035,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176807744,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176807785,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "NU"
+      },
+      {
+       "t": 1790176808001,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176808454,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176808518,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176808827,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176809298,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176809500,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176809850,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176810035,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176810724,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176810785,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790176811036,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 19,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      }
+     ]
+    },
+    {
+     "trial": 9,
+     "verdict": "HELD",
+     "pause_ms": 150,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176815410,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 22,
+       "seenPlay": 21,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    }
+   ]
+  },
+  "v3b": {
+   "summary": {
+    "arm": "v3b",
+    "ref": "a967a5bd",
+    "K": 13,
+    "speed": "4x",
+    "sat_ms_per_50": 0,
+    "fan": 3,
+    "delay0_ms": 60,
+    "trials": 10,
+    "latency_s": 2.5,
+    "verdicts": {
+     "HELD": 10
+    },
+    "trials_with_race_run": 0,
+    "trials_with_double_toggle": 0,
+    "trials_with_pause_applied_by_count": 4,
+    "pause_ms_median": 149.0,
+    "pool_full_fraction": 0.449
+   },
+   "trials": [
+    {
+     "trial": 0,
+     "verdict": "HELD",
+     "pause_ms": 59,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176837128,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 2,
+       "seenPlay": 1,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 1,
+     "verdict": "HELD",
+     "pause_ms": 112,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176849687,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 4,
+       "seenPlay": 3,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 2,
+     "verdict": "HELD",
+     "pause_ms": 75,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176862723,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 6,
+       "seenPlay": 5,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 3,
+     "verdict": "HELD",
+     "pause_ms": 544,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176875577,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 8,
+       "seenPlay": 7,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176875577,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 8,
+       "seenPlay": 7,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 4,
+     "verdict": "HELD",
+     "pause_ms": 108,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176888658,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 10,
+       "seenPlay": 9,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 5,
+     "verdict": "HELD",
+     "pause_ms": 210,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176900899,
+       "trig": [
+        "replay-interval.n_intervals",
+        "replay-play.n_clicks"
+       ],
+       "play": 12,
+       "seenPlay": 11,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 6,
+     "verdict": "HELD",
+     "pause_ms": 186,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176913203,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 14,
+       "seenPlay": 13,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176913203,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 14,
+       "seenPlay": 13,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 7,
+     "verdict": "HELD",
+     "pause_ms": 391,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176925805,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 15,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176925805,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 16,
+       "seenPlay": 15,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 8,
+     "verdict": "HELD",
+     "pause_ms": 38,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176939206,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 18,
+       "seenPlay": 17,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 9,
+     "verdict": "HELD",
+     "pause_ms": 823,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176952535,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 20,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176952535,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 20,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    }
+   ]
+  },
+  "v2b": {
+   "summary": {
+    "arm": "v2b",
+    "ref": "85415f3c",
+    "K": 13,
+    "speed": "4x",
+    "sat_ms_per_50": 0,
+    "fan": 3,
+    "delay0_ms": 60,
+    "trials": 10,
+    "latency_s": 2.5,
+    "verdicts": {
+     "HELD": 10
+    },
+    "trials_with_race_run": 0,
+    "trials_with_double_toggle": 0,
+    "trials_with_pause_applied_by_count": 4,
+    "pause_ms_median": 236.0,
+    "pool_full_fraction": 0.427
+   },
+   "trials": [
+    {
+     "trial": 0,
+     "verdict": "HELD",
+     "pause_ms": 744,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176973121,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 2,
+       "seenPlay": 1,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176973121,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 2,
+       "seenPlay": 1,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      },
+      {
+       "t": 1790176973143,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 2,
+       "seenPlay": 2,
+       "modeIn": "paused",
+       "modeOut": "NU"
+      }
+     ]
+    },
+    {
+     "trial": 1,
+     "verdict": "HELD",
+     "pause_ms": 449,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790176984840,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 4,
+       "seenPlay": 3,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790176984840,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 4,
+       "seenPlay": 3,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 2,
+     "verdict": "HELD",
+     "pause_ms": 44,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790176997914,
+       "trig": [
+        "replay-interval.n_intervals",
+        "replay-play.n_clicks"
+       ],
+       "play": 6,
+       "seenPlay": 5,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 3,
+     "verdict": "HELD",
+     "pause_ms": 274,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790177010196,
+       "trig": [
+        "replay-play.n_clicks",
+        "replay-interval.n_intervals"
+       ],
+       "play": 8,
+       "seenPlay": 7,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 4,
+     "verdict": "HELD",
+     "pause_ms": 198,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790177023909,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 10,
+       "seenPlay": 9,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      },
+      {
+       "t": 1790177024004,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 10,
+       "seenPlay": 10,
+       "modeIn": "paused",
+       "modeOut": "NU"
+      }
+     ]
+    },
+    {
+     "trial": 5,
+     "verdict": "HELD",
+     "pause_ms": 425,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790177036729,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 12,
+       "seenPlay": 11,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790177036729,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 12,
+       "seenPlay": 11,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 6,
+     "verdict": "HELD",
+     "pause_ms": 364,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [
+      {
+       "t": 1790177048866,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 14,
+       "seenPlay": 13,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ],
+     "runs": [
+      {
+       "t": 1790177048866,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 14,
+       "seenPlay": 13,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 7,
+     "verdict": "HELD",
+     "pause_ms": 57,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790177061453,
+       "trig": [
+        "replay-interval.n_intervals"
+       ],
+       "play": 15,
+       "seenPlay": 15,
+       "modeIn": "playing",
+       "modeOut": "playing"
+      },
+      {
+       "t": 1790177061496,
+       "trig": [
+        "replay-play.n_clicks"
+       ],
+       "play": 16,
+       "seenPlay": 15,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 8,
+     "verdict": "HELD",
+     "pause_ms": 142,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790177074758,
+       "trig": [
+        "replay-interval.n_intervals",
+        "replay-play.n_clicks"
+       ],
+       "play": 18,
+       "seenPlay": 17,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    },
+    {
+     "trial": 9,
+     "verdict": "HELD",
+     "pause_ms": 34,
+     "undone_ms": null,
+     "double_runs": [],
+     "double_toggles": [],
+     "pause_by_count_runs": [],
+     "runs": [
+      {
+       "t": 1790177087567,
+       "trig": [
+        "replay-interval.n_intervals",
+        "replay-play.n_clicks"
+       ],
+       "play": 20,
+       "seenPlay": 19,
+       "modeIn": "playing",
+       "modeOut": "paused"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

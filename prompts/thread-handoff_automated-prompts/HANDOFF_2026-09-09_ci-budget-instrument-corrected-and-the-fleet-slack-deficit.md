@@ -11,8 +11,9 @@ this document was re-anchored three times while being written.
 
 > **RE-EVALUATED 2026-09-22 — read § Re-evaluation 2026-09-22 at the foot before acting on
 > anything above it.** The §1 prompt is superseded by a re-evaluated one, placed above the
-> original in §1. This re-evaluation lands in **ml#2017**, together with the fixes it describes,
-> so on `main` the two arrive together.
+> original in §1. This re-evaluation landed in **ml#2017**, together with the fixes it describes
+> (merged 2026-09-23 01:17 UTC). Consensus round 3 finished after that merge; its record and
+> fixes came in a follow-up PR.
 >
 > - **All ten §3 items are now closed, ruled, or informational** (item 3). The owner ruled on the
 >   four owner items (1, 6, 8, 9) and on item 4's approach, and the 2026-09-17 arc executed them,
@@ -25,7 +26,7 @@ this document was re-anchored three times while being written.
 >   the three raises; whether a budget should absorb runner queue in general is still an owner
 >   decision. The arc's v2 span instrument also had a second defect: executions after the first
 >   pass inflate the span. Sizing now uses the `first-pass` instrument.
-> - **The advisory structure soak is not ready to promote**: by 2026-09-23 00:50 UTC, 10
+> - **The advisory structure soak is not ready to promote**: by 2026-09-23 00:33 UTC, 10
 >   distinct findings, 2 true and 8 false, all 8 still present at their PR's final head. Both
 >   documented promotion recipes also produced a check that could never fail; ml#2017 corrects
 >   them.
@@ -49,31 +50,33 @@ informational. What is left: surface OWNER DECISIONS 1-5 to the owner, and do NO
 PREFLIGHT -- every figure below decays within days; re-measure before acting on any of them.
   git fetch origin
   gh pr view 2017 --repo pcalnon/juniper-ml --json state,mergedAt,mergeCommit
-    # Expect MERGED. This document and the probe script below land IN ml#2017, so on main it has
-    # merged. If you are reading this on the PR branch instead: ml#2017 lands only once
-    # § Validation record 2026-09-22 in this file records every consensus round as complete,
-    # and its merge-approval request must put OWNER DECISION 2 to the owner, because ml#2017
-    # ships the raises that decision is about. Until it merges, item 10 and the three re-pinned
-    # budgets are NOT on main.
-  git log --oneline <ml#2017 mergeCommit>..origin/main   # non-empty = figures below predate main
+    # Expect MERGED: the owner merged it 2026-09-23 01:17 UTC as 7b226ca0, while consensus
+    # round 3 was still running. This document and the probe script landed IN it; round 3 and
+    # every later round came in the follow-up, ml#2035.
+  git log --oneline -3 origin/main -- prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md
+    # Names ml#2017's merge and the follow-up. Its figures date from 2026-09-22/23, and main has
+    # moved since: re-measure before acting on any of them.
   gh pr list --repo pcalnon/juniper-ml
   python3 util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py all --fetch \
       --json "${S:?set S to the session scratchpad}/reprobe.json"
-    # Shell variables do not survive between tool calls: set S in the same command, or write the
-    # scratchpad path literally. An unset S would aim the file at /reprobe.json; ${S:?} stops
-    # that, and the script checks the file is writable before any probe runs. --fetch lets
-    # `slack` fetch a sibling whose local origin/main disagrees with GitHub; without it `slack`
-    # reports that sibling as unmeasurable. ~2,700 REST calls, several minutes.
+    # Shell variables do not survive between tool calls, so write the scratchpad path literally,
+    # or set S EARLIER on the same command line: `S=<dir>; python3 ...`. The prefix form
+    # `S=<dir> python3 ...` does not work -- the shell expands the argument before the
+    # assignment applies. An unset S would aim the file at /reprobe.json; ${S:?} stops that, and
+    # the script checks the file is writable before any probe runs. --fetch lets `slack` fetch a
+    # sibling whose local origin/main disagrees with GitHub; without it `slack` reports that
+    # sibling as unmeasurable. ~2,700 REST calls, several minutes.
     # Exit 0 = no probe refused. It is NOT "every row was measured": each probe prints what it
     # set aside (unhealthy, incomplete and unmeasurable heads; cancelled runs' unreadable logs),
-    # so read those counts. 2 = a probe refused, named on the UNMEASURABLE line -- never read it
-    # as clean. 1 = a crash. If the script is ABSENT, stop: python exits 2 on a missing file too,
-    # and that is not a probe result.
-    # Sandbox: a worktree-isolated session refuses a command naming git that it cannot show
-    # stays in the worktree. Refused this arc: heredocs whose text contains "git" (a .github/
-    # path counts), $(...), <(...), running a script through `bash`, and loops that run gh over a
-    # variable. Plain pipes, plain redirects and `cd <this worktree> && git ...` ran. That is
-    # why the probes are one script.
+    # so read those counts. 2 = a probe refused, named on the UNMEASURABLE line, or the --json
+    # pre-check refused the path -- never read it as clean. 1 = a crash. If the script is ABSENT,
+    # stop: python exits 2 on a missing file too, and that is not a probe result.
+    # Sandbox: a worktree-isolated session refuses any command it cannot show stays in the
+    # worktree -- a judgement, not a fixed list. Refused this arc: heredocs (with "git" in the
+    # text, a .github/ path included, and once a python heredoc with none), $(...), <(...),
+    # running a script through `bash`, and loops that run gh over a variable. Plain pipes, plain
+    # redirects and `cd <this worktree> && git ...` ran. So put anything non-trivial in a script
+    # file and run it with python3 -- that is why the probes are one script.
 
 THIS DOCUMENT IS
 prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md
@@ -98,21 +101,30 @@ OWNER DECISIONS -- a session cannot take these
        HOLD. ml#2017's three maxima (data 2589, data-client 2565, deploy 965) were mostly runner
        queue: for 64-82% of each span no job on the head was running while one waited, and two
        came from one 09-21 burst. Queue-free, all three fit their OLD budgets. util/safe_merge.py
-       says "do NOT raise a budget to absorb a queue". Every re-measure of an already-pinned
-       budget has raised it; the one lowering (2026-09-08: deploy and recurrence from the 2400 s
-       default to 700 s) went stale for recurrence within a day.
-       SHIP. The juniper-ml entry's WITHDRAWN (1) note (2026-09-10) reads that paragraph as
-       covering PRE-start queue, which the span excludes by construction -- an interpretation;
-       the paragraph itself was not edited. The enforced rule ("budget > observed max, <= 4x
-       p90") has no queue exemption, and the 2026-09-09 raises (ml 1500->2800, recurrence
-       700->2000) followed it. Holding costs something: under the old budgets those three healthy
-       PRs are refused, and a refusal disarms the auto-merge net.
+       says "do NOT raise a budget to absorb a queue", and that paragraph's own example (run
+       34293438446, ml#1828) was WITHIN-span queue: jobs waited up to 12 minutes for runners
+       after the first required context had started. No re-measure has lowered an already-pinned
+       budget: every change to one was a raise (09-22: 3 raised, 6 stood). AGAINST IT: budgets
+       set below the default have not held -- recurrence's 700 s (2026-09-08) went stale within a
+       day, as did the default's own 2026-08-19 cut to 900 s, and deploy's 700 s was exceeded by
+       a healthy pass within about two days (deploy#211, 965 s, 2026-09-11), unnoticed until
+       2026-09-22. Only ml's 900 s (pinned 2026-08-20) lasted: 16 days, until it refused
+       ml#1754.
+       SHIP. The enforced rule ("budget > observed max, <= 4x p90") has no queue exemption, and
+       the 2026-09-09 raises (ml 1500->2800, recurrence 700->2000) followed it. Holding costs
+       something: under the old budgets those three healthy PRs are refused, and a refusal
+       disarms the auto-merge net. AGAINST IT: both 09-09 raises came in the same commit
+       (ml#1851) that wrote the "do NOT raise" paragraph -- ml's to cover the very PR whose
+       refusal that paragraph calls "the design working" -- and that commit read the paragraph as
+       covering PRE-start queue only, which the span excludes by construction. The 2026-09-10
+       WITHDRAWN (1) note kept that reading and replaced only its reasoning; the paragraph itself
+       was never edited.
      Options: keep the raises as shipped and decide only what a repo at the ceiling does; size on
      queue-free span; size on uncontended heads; raise the ceiling (at rising risk above ~3600 s,
      the worker lease -- util/safe_merge.py calls it a risk threshold, not a hard bound); or keep
      the auto-merge net armed on a timeout refusal instead of disarming it.
   3. Promote `Markdown Structure (advisory soak)` to a required check? THE EVIDENCE SAYS NOT
-     YET. From ml#1955's wiring (2026-09-18 00:37 UTC) to 2026-09-23 00:50 UTC it flagged 10
+     YET. From ml#1955's wiring (2026-09-18 00:37 UTC) to 2026-09-23 00:33 UTC it flagged 10
      distinct findings: 2 true, 8 false. All 8 false ones were still present at their PR's FINAL
      head, so a required version would have wrongly blocked 8 of the 62 PRs it examined, and
      neither check has a waiver. Six are C4 reading a deliberate heading rename as a LOST
@@ -121,8 +133,12 @@ OWNER DECISIONS -- a session cannot take these
      and add the job's name as a required context IN THE RULESET, never via the Quality Gate's
      `needs:`. Deleting the `exit 0` alone leaves a check that cannot fail. Decide in the same
      change whether rc 2 ("refused to report") fails, and whether the EARLY `exit 0` on a failed
-     `git diff` does: left as it is, a promoted check passes a run that examined nothing. See the
-     PROMOTION PATH comment in .github/workflows/ci.yml.
+     `git diff` does: left as it is, a promoted check passes a run that examined nothing. And
+     move its diff base to HEAD^1, the test-merge commit's first parent:
+     github.event.pull_request.base.sha can lag it, so the screen also examines markdown only
+     main changed (#1980 changed one markdown file and was screened on 8), and a required check
+     would block a PR for another PR's damage. None of the 10 findings is of that kind -- each is
+     on a file its own PR changed. See the PROMOTION PATH comment in .github/workflows/ci.yml.
   4. Put juniper-cascor-client back into the CI-budget pin? Ruled OUT on 2026-09-15.
      Re-measured 2026-09-22: p90 1264 / max 1626, so its 3300 s now sits inside (1626, 5056]
      and the row would pass.
@@ -145,25 +161,64 @@ NON-OWNER WORK
      clears all 11: pair each lost heading with a GAINED heading at the same level and the same
      leading identifier (section number, APD-... id, "Option A", "F."). Keep flagging (a) a
      heading whose line survives INSIDE a fence -- the #1749 swallow -- and (b) a renamed heading
-     whose OLD anchor is still linked from any tracked file: the required link checker verifies
-     same-file anchors only, so a cross-file link to a renamed heading breaks silently today.
-     C2: require whitespace after the command word (`\b` lets `git)` match), and skip a
-     command-looking line only when the line before it IN THE SAME PARAGRAPH is prose -- not
-     itself command-looking, not a heading, not a fence. N contiguous commands must still count
-     N: that is the duplicated-block damage (ml#1799) C2's multiplicity fix exists for.
+     whose OLD anchor is still linked from a tracked MARKDOWN file: the required link checker
+     verifies same-file anchors only, so a cross-file link to a renamed heading breaks silently
+     today. Only markdown links count: #1983's own link-migration helper,
+     util/ad-hoc/2026-09-21_register_close_cascor005.py, holds its old anchor as a Python string.
+     C2 GOAL: a wrapped prose line must not read as a command (#1980, #2007), and a command left
+     outside a fence -- by a removed fence pair or a duplicated block (ml#1799) -- must. Rounds
+     2 to 5 each found the previous candidate rule wrong or mis-transcribed, so the RULE is
+     yours; the ACCEPTANCE below is what binds. A candidate, as round 5 re-ran it: command words
+     match only when followed by whitespace or end of line (`(?=\s|$)`), with
+     `python3?(\.\d+)?` so bare `python`, `python3` and `python3.14` all count; and a
+     command-looking line is skipped as prose only when ALL of these hold -- the line before it,
+     in the same paragraph (a heading ends one), ends mid-sentence (a letter, digit or `,` once
+     trailing `*_\`` is stripped); that line holds no shell token (` -x`, `--`, `|`, `>`, `$`,
+     `=`, `&&`) and is not itself command-looking, a heading or a fence; and the line after it
+     is not command-looking. Drop any clause and it fails: without "not command-looking" the
+     multiplicity test reads 0, without "a heading ends one" it misses 4 of the 22 fences
+     below, without the next-line clause three glued commands count 2, and with `python3(...)`
+     in place of `python3?(...)` it misses 6. As written it missed none of the 22, passed every
+     fixture, kept #1969, and cleared #1980 (through the whitespace rule) and #2007 (through
+     the skip). Its costs: it fires on a wrapped line that starts a new sentence with a command
+     word; it cannot see a one-command fence removed under mid-sentence prose, which is #2007's
+     own shape; and it cannot see a DUPLICATED paragraph of prose plus one glued command, so it
+     fails that control below and needs one more clause.
      ACCEPTANCE: `python3 -m unittest -v tests/test_md_structure_check.py` stays green, with
      two tests passing UNEDITED: test_C4_reports_a_lost_heading_even_when_another_is_gained and
-     test_C2_counts_multiplicity_so_duplicated_commands_are_seen. Add negative controls per
-     class: a rename passes; an unrelated loss plus gain still fails; a swallowed heading still
-     fails; `git status` outside a fence still fires C2; three contiguous unfenced commands
-     still count 3; prose `git).` and `make the` do not fire.
+     test_C2_counts_multiplicity_so_duplicated_commands_are_seen. Negative controls per class:
+     a rename passes; an unrelated loss plus gain still fails; a swallowed heading still fails;
+     `git status` outside a fence still fires C2; three contiguous unfenced commands still
+     count 3, both after a blank line and glued to mid-sentence prose; a duplicated paragraph of
+     prose plus one glued command still fires, as today's screen does; and, in their own
+     contexts -- glued to mid-sentence prose, as #1980 and #2007 have them -- `git).` and
+     `make the` do not fire. And a CORPUS control, pinned at ba035cc9: count a fenced block
+     when the line above its opening fence is non-blank and is not a fence, heading, table row
+     or command line, and the block holds a line the screen treats as a command. There are 22:
+     round 3 counted them, round 4 re-counted with its own code but round 3's definition, and
+     round 5 with its own definition, the one above. Round 2's candidate could not see 10 of them
+     and round 3's 6, among them notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md
+     line 115 -- its only command line, `git add .env.enc`, sits under `sops -e ...`, which the
+     screen does not treat as a command -- and five `**Interface.**` blocks in
+     notes/JUNIPER_2026-06-25_JUNIPER-ML_AGENT-SUITE-CONVENIENCE-UTILITIES-DESIGN.md. Remove
+     each fence pair, one at a time: C2 must fire for every one, with at most two exemptions,
+     each carrying a written reason. The same holds for the fence that opens directly under a
+     heading at notes/observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md
+     line 621, which the corpus definition leaves out.
      REPLAY every live finding. The soak probe prints `replay: head <sha> base <sha>` for each
      flagged run; the base is also in that job's log ("examining N changed markdown file(s)
-     against <sha>"). The screen reads the base with `git show` and the head from the working
-     tree, both in the CURRENT directory. So make a detached worktree at the flagged head (under
-     the centralized worktrees/ directory) and, from inside it, run the NEW screen by ABSOLUTE
-     path -- a relative path runs that head's OLD screen:
+     against <sha>"). Most flagged heads are not local, and their PR branches are deleted, so
+     `git fetch origin` does not bring them: fetch each with `git fetch origin pull/<N>/head`.
+     The screen reads the base with `git show` and the head from the working tree, both in the
+     CURRENT directory. So make a detached worktree at the flagged head (under the centralized
+     worktrees/ directory; a worktree-isolated session allowed
+     `git -C <this worktree> worktree add --detach <dir> <head>`) and, from inside it, run the
+     NEW screen by ABSOLUTE path -- a relative path runs that head's OLD screen:
        python3 <dev tree>/util/ad-hoc/2026-09-05_md_structure_check.py --base <base sha> <path>
+     Round 3 ran exactly this with the CURRENT screen, and #2024 and #1980 reproduced as logged.
+     Replaying at the PR head is faithful for these ten: in none of the 33 flagged runs did main
+     change the flagged file between the PR head and the test merge (round 4's direct check),
+     although CI's base can lag (OWNER 3). Remove the replay worktrees afterwards.
      The 8 false findings must clear and the 2 true ones must still fire. Then get it
      independently validated per
      notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md before
@@ -174,13 +229,17 @@ NON-OWNER WORK
      2000), cascor-worker 341 (2059 vs 2400). deploy's 1400 would fail "<= 4x p90" if its p90
      fell back to 262.
      DELIVERABLE AND DECISION RULE. If every row reads OK, record the date, n and each row's
-     window, and stop. If any row reads BELOW HEALTHY MAX or ABOVE 4x p90, do NOT re-pin while
+     window (first-pass prints it under each row, and lists every sampled PR in --json) as a
+     dated line under § Re-evaluation 2026-09-22 of this file, in a PR, and stop. If any row
+     reads BELOW HEALTHY MAX or ABOVE 4x p90, do NOT re-pin while
      OWNER DECISION 2 is open. Report the repo, the max PR and that head's queue share
      (util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/laneB2/span_decompose.py <repo> <pr>) to
      the owner as input to that decision.
      ALREADY TRIPPED, AND REPORTED: at 2026-09-23 00:33 UTC juniper-ml read p90 680 / max 1061
-     (#2003), so its 2800 s is ABOVE 4x p90 (2720) by 80 s. That is the window sliding: the
-     pinned (910, 2005) came from #1981-#2014, and #1981's 2005 s pass has left the window.
+     (#2003) over #1991-#2026, so its 2800 s is ABOVE 4x p90 (2720) by 80 s. That is the window
+     sliding: the pinned (910, 2005) came from the 30-PR sample #1981-#2014 (less #2004 and
+     #2013, then unmerged, #2012, still open, and #1994, an issue), and #1981's 2005 s pass has
+     left the window.
 
 The planning-slack margin is INFORMATIONAL: four repos are negative, and docs/REFERENCE.md
 "Memory-Budget Slack (Planning)" says not to start a relocation for that reason. The lockfile
@@ -212,6 +271,16 @@ MEASUREMENT TRAPS THIS RE-EVALUATION PAID FOR
     returns [] for a PR CLOSED WITHOUT MERGING (#1971), so fall back to a search by the SHA.
   - A 30-head window moves with every merge: juniper-ml's p90 read 910, 857, 733 and 680 within
     hours on 2026-09-22/23. Quote a figure with its window, or not at all.
+  - Stamp a probe's figures with the moment IT enumerated, never the moment you read the output:
+    the soak re-read was labelled 00:50 for data enumerated at 00:33, and four clean runs fell
+    in the gap. Under `all`, the run's `measured_at` is its START; a later probe enumerates
+    minutes after it, so use that probe's own time -- printed as `[<probe>] started`, and kept
+    in the JSON under `probe_started_at`.
+  - A queued or running job has no conclusion and no log yet: it is in flight, not lost. The
+    soak probe scored it as a lost log, and exited 2 whenever CI was busy, until round 3.
+  - A PR can be merged while its validation round is still running -- here, by the owner, after
+    every required check passed. Record the round in a follow-up; do not leave "in progress" on
+    main.
 
 USE THE RIGHT TOOL -- pairs that differ by one word
   CI span    : ..._reprobe.py first-pass. v2 inflates on later executions; v1
@@ -241,16 +310,20 @@ MERGING IN THIS LANE -- re-verified 2026-09-22
 
 GIT STATE AT HANDOFF
   This re-evaluation was written in worktree .claude/worktrees/ancient-yawning-biscuit and
-  lands in ml#2017 (branch fix/ci-budget-arc-2026-09-22-waiter-default-and-stale-budgets). The
-  worktree's LOCAL branch is worktree-ancient-yawning-biscuit, not the PR branch: e3186919 plus
-  18d3d5e3, an UNSIGNED local-only commit used for screen testing that was never pushed and
-  must not be. Its modified tracked files are ml#2017's content, uncommitted and identical to
-  the PR head: it was pushed through the API, so nothing there is unpushed. Under
-  util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/, laneA2/span_all_attempts.py,
-  laneA2/queue_share.py, laneB2/span_decompose.py, round2-laneA/r2a_spans.py and
-  round2-laneA/r2a_common.py are tracked in ml#2017; everything else there is untracked lane
-  scratch (unreviewed agent code). Do not remove worktrees without the
-  cleanup procedure: `git status --porcelain` is blind to ignored artifacts.
+  landed in ml#2017 (branch fix/ci-budget-arc-2026-09-22-waiter-default-and-stale-budgets) and
+  its follow-up for round 3 on, ml#2035 (branch fix/ci-budget-arc-2026-09-23-round-3-follow-up).
+  The worktree's LOCAL branch is worktree-ancient-yawning-biscuit, not a PR branch: e3186919
+  plus 18d3d5e3, an UNSIGNED local-only commit used for screen testing that was never pushed and
+  must not be. Its working tree holds the content of both PRs, uncommitted (the files each PR
+  added are untracked there); both were pushed through the API, so nothing is unpushed. Its copy of
+  round2-laneA/r2a_spans.py predates the owner's CodeQL fix (6f17aea5), so never upload it.
+  Under util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/ these are TRACKED:
+  laneA2/span_all_attempts.py, laneA2/queue_share.py, laneB2/span_decompose.py,
+  round2-laneA/r2a_spans.py, round2-laneA/r2a_common.py, round3-fix/check_first_pass_window.py,
+  round3-fix/check_soak_in_flight.py and round4-fix/archive_round_reports.py. Everything else
+  there is untracked lane scratch (unreviewed agent code). Every lane's final report is archived
+  verbatim in reports/2026-09-22_ci-budget-reeval-consensus/. Do not remove worktrees without
+  the cleanup procedure: `git status --porcelain` is blind to ignored artifacts.
 ```
 
 **The original 2026-09-09 prompt — SUPERSEDED, kept verbatim for the record:**
@@ -648,10 +721,15 @@ Notes on the rows that need more than a cell:
    execution, over heads whose first pass passed, and drops no head for a repeat.
    - **Independently reproduced.** Instruments written separately in the consensus rounds
      reproduced every row. Round 1 matched 8 of 9 repos exactly; its ninth, juniper-ml, had read
-     a later window. Round 2 reproduced juniper-ml's (910, 2005) on its own window, #1981–#2014.
+     a later window. Round 2 reproduced juniper-ml's (910, 2005) on its own window: the 30
+     newest merged PRs between 20:08 and 20:18 UTC on 2026-09-22 -- #1981–#2014 less #2004 and
+     #2013 (merged later), #2012 (still open) and #1994 (an issue). Under the probe's "30 newest
+     merged" rule a merged #2004 would push #1981 out, so "the range #1981–#2014" does not name
+     the sample.
    - **juniper-ml's window keeps moving.** One head at its edge (#1981, a healthy 2005 s pass)
-     nearly doubles the max. Later reads gave (857, 1061), (733, 1061) and, at 2026-09-23
-     00:33 UTC, (680, 1061), where 2800 s exceeds 4× p90 (2720) by 80 s. The pin keeps the
+     nearly doubles the max. Later reads gave (857, 1061) and (733, 1061), both reproduced in
+     round 2, and at 2026-09-23 00:33 UTC (680, 1061) over #1991–#2026, reproduced in round 3,
+     where 2800 s exceeds 4× p90 (2720) by 80 s. The pin keeps the
      demonstrated 2005 s: a window edge moving is not evidence the worst case improved.
      cascor's and canopy's pinned maxima also fell by a window move (2561 → 2221, 2370 → 2174)
      and are not held, because those were v2 figures, not known healthy passes.
@@ -660,8 +738,9 @@ Notes on the rows that need more than a cell:
    one-fact-in-many-sections shape item 7 fixed. ml#2017 corrects it.
 4. **The advisory soak is not ready to promote, and two of its mechanisms were broken.**
    - **What it saw.** It has run on every juniper-ml PR head since ml#1955 wired it (2026-09-18
-     00:37 UTC). At the census (2026-09-22, before 21:22 UTC): 191 runs. 12 logs are
-     unreadable, all of them runs cancelled by concurrency. 17 changed no markdown. 162 examined
+     00:37 UTC). At the census (2026-09-22, before 21:22 UTC): 191 soak check-runs (a run's
+     re-attempts each add one). 12 logs are unreadable, all of them runs cancelled by
+     concurrency. 17 changed no markdown. 162 examined
      367 files on 57 distinct PRs: 50 merged, 6 open, and #1971, closed without merging. (A
      first census read a thirteenth log as unreadable; it was transient, and on retry that run
      had examined 2 files cleanly. A second census counted 56 PRs, because `commits/<sha>/pulls`
@@ -671,13 +750,15 @@ Notes on the rows that need more than a cell:
    - **All 7 false findings were still present at their PR's final head.** Eight PRs were
      flagged at their final head, and only #1969's finding was true, so a required version
      would have wrongly blocked 7 of the 57 PRs. Neither check has a waiver.
-   - **Re-read 2026-09-23 00:50 UTC: one more false finding.** 210 runs; 13 unreadable, all
-     cancelled; 19 changed no markdown; 178 examined 429 files on 62 PRs (56 merged, 5 open,
-     1 closed). ml#2024 renamed `### F. Dropped by THIS document and restored 2026-09-22 by a
-     peer re-probe` in place, to `### F. Found by a peer re-probe, 2026-09-22 — mostly dropped by
-     THIS document, not all of it`, and C4 read it as LOST at the final head (merged 23:55 UTC).
-     No tracked file links the old anchor. That makes **10 distinct findings, 2 true and 8
-     false**: 8 wrong blocks in 62 PRs.
+   - **Re-read 2026-09-23 00:33 UTC: one more false finding.** (The probe's own `measured_at`;
+     it was first labelled 00:50, the time it was read, and round 3 caught that.) 210 soak
+     check-runs; 13 unreadable, all cancelled; 19 changed no markdown; 178 examined 429 files on
+     62 PRs (56 merged, 5 open, 1 closed). ml#2024 renamed `### F. Dropped by THIS document and
+     restored 2026-09-22 by a peer re-probe` in place, to `### F. Found by a peer re-probe,
+     2026-09-22 — mostly dropped by THIS document, not all of it`, and C4 read it as LOST at the
+     final head (merged 23:55 UTC). No tracked file links the old anchor. That makes **10
+     distinct findings, 2 true and 8 false**: 8 wrong blocks in 62 PRs. By 00:50 four more heads
+     had run, all clean (65 PRs, still 10 findings).
    - **True:**
      - ml#1999: a table row cut off from its table (C3) at heads `ea4c3596` / `25c001bd` /
        `276db114`. It was fixed before merge.
@@ -701,8 +782,10 @@ Notes on the rows that need more than a cell:
      | #2009 | `### 5.2B Environment secrets (Option B, recommended)` | `### 5.2B Environment secrets (Option B) — THE PATH, ruled 2026-09-22` |
      | #2024 | `### F. Dropped by THIS document and restored 2026-09-22 by a peer re-probe` | `### F. Found by a peer re-probe, 2026-09-22 — mostly dropped by THIS document, not all of it` |
 
-     No in-repo link pointed at any old anchor. The required link checker could not have said
-     so: it verifies same-file anchors only.
+     No markdown file links any old anchor. The one other occurrence is a Python string:
+     `OLD_ANCHOR` in `util/ad-hoc/2026-09-21_register_close_cascor005.py`, #1983's own
+     link-migration helper. The required link checker could not have said so: it verifies
+     same-file anchors only.
    - **False, C2 — two wrapped prose lines:**
      - #1980: `git). A table that…`. The `\b` after `git` matches `)`.
      - #2007: `make the credential stop working.` This is the only one of the two that ml#1955's
@@ -850,6 +933,125 @@ above or in the file named:
   2400 s is fixed in ml#2017 (item 10). The #1806 same-second close/reopen is recorded under
   item 8, and the backtest's date under What moved 4.
 
+### Corrections from consensus round 3
+
+Round 3 was briefed on the round-2 corrections only, against `f0b3cc73`. ml#2017 merged while
+it ran, so these landed in a follow-up PR:
+
+- **The soak re-read carried the wrong stamp.** Its figures are the 00:33 UTC state, the
+  probe's own `measured_at`, not 00:50, when they were read. Restamped everywhere; the findings
+  do not change.
+- **The soak probe exited 2 whenever CI was busy.** A queued or running soak job has no log
+  yet, and the probe scored it as a lost one. In-flight jobs are now listed, not scored.
+- **NON-OWNER 1 could not pass its own acceptance.** Rule (b) would have kept #1983 flagged,
+  because #1983's link-migration script holds the old anchor as a Python string; it is now
+  scoped to markdown links. Its C2 rule skipped the first command of a run glued to prose, so
+  three counted two, and it skipped a command under a lead-in ending in `:`, the shape a removed
+  fence leaves. Both are fixed, with controls. Its replay now says how to fetch a deleted PR's
+  head.
+- **CI's soak base can lag the test-merge commit.** `github.event.pull_request.base.sha` is not
+  always the merge's first parent, so the screen also examined markdown only main changed
+  (#1980 changed one markdown file; eight were screened). No finding is affected, since each
+  of the ten is on a file its own PR changed, but a promoted check must diff against HEAD^1
+  (OWNER 3, and the PROMOTION PATH comment in `.github/workflows/ci.yml`).
+- **OWNER DECISION 2 still misstated both sides.** "Every re-measure of an already-pinned
+  budget has raised it" was false (six stood on 09-22), and there were two lowerings, not one.
+  HOLD lacked its strongest fact: the "do NOT raise" paragraph's own example, ml#1828, was
+  within-span queue. And SHIP's pre-start reading came from the same 09-09 commit that wrote the
+  paragraph and raised ml's budget for that PR; the 09-10 note only kept it. Corrected here and
+  in the dissent comment in `util/safe_merge.py`.
+- **NON-OWNER 2 did not say where its record goes, and first-pass printed no window.** Both
+  fixed: the window prints under each row, and the JSON lists every sampled PR.
+- **The PREFLIGHT** kept a pre-merge clause that could no longer be reached, allowed a prefix
+  assignment of `S` that aborts, omitted a second exit-2 source, and presented the sandbox's
+  refusals as fixed rules rather than a judgement.
+- **The watcher** split a PROBE-ERROR over two lines, the first taken by the waiter's budget
+  announcement, and let a later TIMEOUT downgrade an earlier PROBE-ERROR's exit 2 to 1. The
+  second predates ml#2017.
+- **Wording**: soak check-runs, not runs; round 1 matched seven of the eight pinned rows; #2004
+  sits inside juniper-ml's window range but merged after the measurement.
+- **ml#2017's own description** still described its first commit (a `rerun-split` probe that no
+  longer exists, per-row figures from a withdrawn rule). It was rewritten on GitHub after the
+  merge, and says so.
+- **Accepted, not changed**: no mutation covers the reprobe's `sys.modules` registration
+  (round 2 judged that safe), and the 857 and 733 readings rest on lane scratch output,
+  reproduced in round 2 but not committed.
+
+### Corrections from consensus round 4
+
+Round 4 was briefed on the round-3 corrections only, against `0ffe15dc` (ml#2035). Its two lanes
+converged on one defect, and each correction was re-derived before use:
+
+- **NON-OWNER 1's C2 rule could not see the fence it cited.** The SOPS guide's block holds `cp`,
+  a `#` comment, `sops -e ...` and `git add .env.enc`; the screen does not treat `cp` or `sops`
+  as commands, so the one command line sits under a line round 3's rule called prose. Of the 22
+  fences that open directly under a prose line, that rule could not see 6. C2 is now a goal and
+  binding acceptance -- including a corpus control over all 22 -- with round 4's simulated
+  candidate offered, not required. The stated "remaining cost" was wrong, and #1980 clears
+  through the whitespace rule, not the skip.
+- **The walkthrough's promotion recipe lacked the HEAD^1 base** that `.github/workflows/ci.yml`
+  and OWNER 3 carry; `notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md`
+  §7 now has it.
+- **OWNER DECISION 2**: "both past lowerings went stale within a day" was false -- ml's 900 s
+  (pinned 2026-08-20) lasted 16 days -- and "ml's came in the same commit" implied recurrence's
+  did not, when both did. (Round 4 also wrote that deploy's 700 s "held 14" days; round 5 found
+  a healthy pass exceeded it within about two days.) Each side now carries one "against it",
+  so neither case holds the only concession. Here and in `util/safe_merge.py`.
+- **juniper-ml's window was named by a number range that is not its sample.** #2013 also lies in
+  #1981–#2014, and under the probe's "30 newest" rule a merged #2004 would push #1981 out. The
+  sample is now named as what it was: the 30 newest merged PRs between 20:08 and 20:18 UTC.
+- **`tests/test_safe_merge.py` still asserted two reasons withdrawn on 2026-09-10** ("This is
+  contention", "Its CI got heavier", and "which `safe_merge` waits through" as the line between
+  stretch and pre-start queue). A dated WITHDRAWN note now follows them.
+- **The replay's fidelity was argued, not checked.** It now rests on round 4's direct check: in
+  none of the 33 flagged runs did main change the flagged file between the PR head and the test
+  merge.
+- **Smaller**: the reprobe stamps each probe separately (`probe_started_at`) and names an
+  all-in-flight soak as such; the PREFLIGHT reads this file's history from `origin/main`; GIT
+  STATE lists every tracked lane script; both round-3 checks now assert exact values.
+- **Accepted, not changed**: first-pass's no-healthy-head branch is exercised by no check.
+
+### Corrections from consensus round 5
+
+Round 5 was one reviewer, briefed on the round-4 corrections only, against `bdd60b20` (ml#2035).
+Each correction was re-derived before use:
+
+- **NON-OWNER 1's C2 candidate was not the rule round 4 simulated.** The transcription dropped
+  three clauses -- the previous line is not command-looking, and not a heading or fence; the
+  next line is not command-looking -- and named `python3(\.\d+)?` where round 4 ran `python3?`.
+  Round 5 re-ran each gap separately: without the first clause the multiplicity test reads 0,
+  counting a heading as "the same paragraph" misses 4 of the 22 fences, without the next-line
+  clause three glued commands count 2, and the regex as written misses 6. With every clause
+  and `python3?(\.\d+)?(?=\s|$)` it misses none. The candidate is now written as round 5 re-ran
+  it, with those results.
+- **Deploy's 700 s did not "hold 14" days** (a round-4 correction). A healthy pass exceeded it
+  about two days after the pin: deploy#211, 965 s, merged 2026-09-11, the maximum that forced
+  the 09-22 raise. Fourteen days was only the time to the next re-measure. So of the four cuts
+  OWNER DECISION 2 names -- the default's to 900 s, ml's pin at 900 s, recurrence's and
+  deploy's at 700 s -- three went stale within about two days, and only ml's held, for 16 days,
+  until it refused ml#1754. Corrected in OWNER DECISION 2 and in the dissent
+  comment in `util/safe_merge.py`.
+- **The C2 ACCEPTANCE was weaker than its GOAL.** Even the simulated rule cannot see a
+  duplicated paragraph of prose plus one glued command -- the ml#1799 shape the GOAL names --
+  or a one-command fence removed under mid-sentence prose, and the text named only its
+  false-positive cost. The `make the` control passes only in #2007's own glued, mid-sentence
+  context; one fence that holds commands opens directly under a heading and so sits outside the
+  corpus; the exemption list had no bound, and "22" had no definition or commit. The ACCEPTANCE
+  now adds the duplicated-paragraph control, names each control's context, pins the definition
+  at `ba035cc9`, allows at most two exemptions with written reasons, and adds the heading fence.
+  The candidate's costs now include both blind spots.
+- **The archive was not verbatim.** It was taken from the task notifications, which
+  HTML-escape `<`, `>` and `&`, so 13 of 15 files matched the lanes' own last messages only
+  after unescaping, and code spans showed `&gt;` literally. The archiver now copies each lane's
+  final message from its own session transcript and refuses one that disagrees with the
+  notification; every file was re-taken, and the README says so.
+- **Smaller**: the Round 5 line said a merged PR would take its record; the Round 4 record
+  omitted round 4 lane B's "FIXED in the text, but it does not work" and lane A's borrowed
+  definition of "22"; juniper-ml's window, "#1981-#2014 less #2004 and #2013", is 30 PRs only
+  because #2012 was still open and #1994 is an issue, which it now says; and
+  `check_first_pass_window.py` claimed more than it checks -- `sorted` holds by construction,
+  and a window that agrees with its own sample passes.
+
 ### What remains outstanding
 
 - **Owner**: the five OWNER DECISIONS in the first §1 block.
@@ -942,8 +1144,63 @@ implicit `None`. The owner committed a fix on the PR (`9c7f5618`, a `raise` afte
 merged `main` into the branch, and bumped `AGENTS.md`'s date (`e4cd051b`). The soak re-read
 found a tenth finding, ml#2024, adjudicated false.
 
-**Round 3** — briefed on the round-2 corrections only: *in progress; this subsection is
-completed before merge.*
+**During round 3**, the owner committed CodeQL's unused-import fix to the round-2 lane script
+(`6f17aea5`) and merged ml#2017 at 2026-09-23 01:17 UTC (`7b226ca0`), with every required check
+green and this subsection still reading "in progress". The PREFLIGHT's landing gate was not
+honoured; its round-3 record and fixes therefore came in a follow-up PR.
+
+**Round 3 — three agents, briefed on the round-2 corrections only, against `f0b3cc73`.**
+
+- **Lane A** re-derived nine claims with its own code: the soak re-read, #2024, juniper-ml's
+  first pass at 00:33 UTC, #1139, #1806, the Cursor PR counts, the alarm, the watcher, and the
+  cross-file agreement of every figure. Seven held as stated; the soak stamp did not.
+- **Lane B** hunted what the round-2 fixes broke. It ran the watcher's TIMEOUT path, executed
+  the replay procedure in detached worktrees (#2024 and #1980 reproduced as logged), simulated
+  the C2 rule over tracked markdown, and walked every round-2 finding: all fixed or recorded,
+  except the two listed as accepted above.
+- **Rubric:** the `prompt-validator` re-scored the first §1 block (iteration 3): PASS, with every
+  iteration-2 finding resolved and seven minor residues.
+
+**What round 3 changed**: every item under "Corrections from consensus round 3", each
+re-derived before use. No budget and no disposition changed: the soak is still not ready to
+promote, and every owner decision stands as framed. It changed one NUMBER (the stamp) and
+several ACTIONS, so §4 of the procedure calls for another round.
+
+**Round 4 — two agents, briefed on the round-3 corrections only, against `0ffe15dc` (ml#2035).**
+Both were cut off by the session usage limit and resumed in place after it reset, so each kept
+its own reading and neither saw the other's.
+
+- **Lane A** re-derived the nine claims round 3 introduced with its own code: the budget
+  history, run 34293438446, the paragraph's authorship, the soak's lagging base, the ten
+  findings' files, the fence census, the windows, the soak stamp and cross-file agreement. Five
+  held, three held in part, none was refuted, and the cross-file table found four
+  disagreements. It disclosed that it took the corpus's "22" definition from round 3's lane-B
+  census script before counting with its own code; round 5 reproduced 22 under its own
+  definition.
+- **Lane B** hunted what the round-3 fixes broke: it simulated the new C2 rule over the corpus,
+  drove the watcher with a fake waiter through every stderr and exit-order case, tested the
+  probe fixes and both checks, and walked every round-3 finding: all fixed or recorded, except
+  ml#2017's description (now recorded above) and round 3's C2 rule, which it marked "FIXED in
+  the text, but it does not work".
+
+**What round 4 changed**: every item under "Corrections from consensus round 4". No number and
+no disposition changed. It changed ACTIONS -- NON-OWNER 1's C2 acceptance, the walkthrough's
+recipe -- so §4 of the procedure calls for another round.
+
+**Round 5 — one reviewer, briefed on the round-4 corrections only, against `bdd60b20`
+(ml#2035)**, doing both jobs of a late round: re-deriving every new claim with its own code, and
+hunting what the corrections broke. Of its eight items, four held and four held in part; nothing
+was refuted outright. It found that round 4's C2 candidate had been transcribed without two of
+the clauses round 4 simulated and with the wrong regex, that deploy's 700 s had not "held 14"
+days, that the archive carried the notifications' HTML escaping, and six smaller points -- all
+under "Corrections from consensus round 5".
+
+**What round 5 changed**: one NUMBER (deploy's 700 s was exceeded within about two days, not
+14) and ACTIONS (NON-OWNER 1's candidate and acceptance). No disposition changed. So §4 calls for
+round 6.
+
+**Round 6** -- briefed on the round-5 corrections only: recorded here while ml#2035 is open, or
+in a follow-up PR if it has merged.
 
 **What this evidence CANNOT support**:
 - that budgets sized on a 30-head window stay valid; two re-measures 13 days apart both raised
@@ -952,6 +1209,8 @@ completed before merge.*
   spans would size differently, and that is OWNER DECISION 2;
 - that the owner's SHIP ruling settles that question: it covers the three raises only;
 - that the soak's false-positive rate generalises beyond five days and 62 PRs;
+- that CI's soak screened only each PR's own markdown: its base can lag, and the ten findings
+  stand because each is on a file its own PR changed, not because the base was right;
 - the backtest's 2026-09-16 date, which rests on ml#1955's word alone;
 - that no other residue was dropped. Round 2 found three round-1 findings lost from the fix
   list; others would look identical in a summary;
@@ -980,3 +1239,43 @@ completed before merge.*
   `…/laneA2/queue_share.py`, `…/laneB2/span_decompose.py`, `…/round2-laneA/r2a_spans.py` and
   `…/round2-laneA/r2a_common.py` (new): the consensus lanes' instruments behind the reproduced
   spans and the queue shares.
+
+### Files changed 2026-09-23 (the round-3 follow-up)
+
+- this file;
+- `util/safe_merge.py` and `tests/test_safe_merge.py`: comments only (OWNER DECISION 2's two
+  cases, juniper-ml's window, round 1's match count);
+- `.github/workflows/ci.yml`: the soak comment only (the stamp, the HEAD^1 base);
+- `notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md`: the soak stamp;
+- `util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py`: in-flight soak jobs, first-pass
+  windows, docstring;
+- `util/ad-hoc/watch_prs_until_terminal.bash`: one-line PROBE-ERROR, exit precedence;
+- `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round3-fix/check_first_pass_window.py`
+  (new): the check that first-pass records its window;
+- `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round3-fix/check_soak_in_flight.py` (new):
+  a hermetic check that the soak probe lists a queued job as in flight, whose control -- the
+  same probe with that guard deleted -- reproduces round 3's exit-2 refusal.
+
+Round 3's lane scripts stay untracked, as unreviewed agent code: the figures they reproduced
+came from the tracked reprobe.
+
+Added for round 4, in the same PR:
+- `reports/2026-09-22_ci-budget-reeval-consensus/` (new): every lane's final report, rounds 1-4,
+  verbatim, with a README; a subagent's report otherwise lives only in a local session
+  transcript;
+- `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round4-fix/archive_round_reports.py` (new):
+  the archiver, which refuses credential-shaped text;
+- the round-4 corrections above, in this file, `util/safe_merge.py`, `tests/test_safe_merge.py`,
+  `notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md`,
+  `util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py` and both `round3-fix/` checks.
+
+Added for round 5, in the same PR:
+- `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round4-fix/archive_round_reports.py`:
+  copies each lane's final message from the lane's own session transcript, and refuses one that
+  disagrees with the task notification;
+- `reports/2026-09-22_ci-budget-reeval-consensus/`: every report re-taken that way, `round5.md`
+  added, and the README's account of the source corrected;
+- the round-5 corrections above, in this file, `util/safe_merge.py` and
+  `tests/test_safe_merge.py` (comments only), and
+  `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round3-fix/check_first_pass_window.py`
+  (its comment).

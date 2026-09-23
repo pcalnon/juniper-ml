@@ -88,7 +88,9 @@ for spec in "$@"; do
     out="$(python3 "$WAITER" --pr "$pr" --repo "$repo" --owner "$OWNER" \
         --json "${timeout_args[@]}" 2>"$errf")"
     waiter_rc=$?
-    err="$(<"$errf")"
+    # One line per PR: drop the budget announcement, which would otherwise take the first line
+    # and most of the 200-character cap, and fold what is left -- the actual cause -- onto one line.
+    err="$(grep -v '^wait budget:' "$errf" | tr '\n' ' ')"
     rm -f "$errf"
 
     if ! jq -e . >/dev/null 2>&1 <<<"$out"; then
@@ -120,7 +122,10 @@ for spec in "$@"; do
         absent="$(jq -r '(.absent // []) | join(", ")' <<<"$out")"
         waited="$(jq -r '.timeout // "?"' <<<"$out")"
         echo "TIMEOUT ${repo}#${pr} after ${waited}s — NOT a verdict. running=[${running}] absent=[${absent}]"
-        rc=1
+        # Never downgrade: an earlier PROBE-ERROR's 2 must survive a later TIMEOUT.
+        if [[ "$rc" -eq 0 ]]; then
+            rc=1
+        fi
         continue
     fi
 

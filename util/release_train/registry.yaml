@@ -27,6 +27,14 @@
 #                   dynamic -> read __version__ from the import package's _version.py
 #   tag_pattern     last-release-tag glob ("v*" | "juniper-<pkg>-v*"); the diff base
 #                   is the tag whose stripped version == the current PyPI version.
+#   latest          OPTIONAL, default false. true marks the ONE package per repo whose
+#                   Release takes that repo's "Latest" badge: the ceremony cuts it with
+#                   `gh release create --latest`, and every other package with
+#                   --latest=false (publish procedure S11.4). Exactly one entry per repo
+#                   carries it: each repo's v*-tagged package, and in juniper-recurrence,
+#                   which has none, the app. Until 2026-09-23 the ceremony passed
+#                   --latest=false on EVERY cut, so six repos' badges fell behind,
+#                   juniper-ml's own among them (v0.6.0 against v0.10.0).
 #   archive_name    central juniper-ml/notes/releases/ filename template ({version} slot).
 #   trigger.now     current publish trigger (release = release:published; tag = push:tags).
 #   trigger.target  Phase-0 normalization target (all -> release; F-4).
@@ -62,6 +70,7 @@ packages:
     path: "."
     version_source: static
     tag_pattern: "v*"
+    latest: true
     archive_name: "RELEASE_NOTES_v{version}.md"
     trigger: {now: release, target: release}
     verify: {now: fallback, target: fallback}   # meta keeps the documented extras-resolution exception (audit S3.4)
@@ -162,6 +171,7 @@ packages:
     path: "."                     # app scope = repo minus the two co-located subpkg dirs
     version_source: static
     tag_pattern: "v*"
+    latest: true
     archive_name: "RELEASE_NOTES_juniper-cascor_v{version}.md"
     trigger: {now: release, target: release}
     verify: {now: fallback, target: strict}
@@ -204,6 +214,7 @@ packages:
     path: "."
     version_source: static
     tag_pattern: "v*"
+    latest: true
     archive_name: "RELEASE_NOTES_juniper-canopy_v{version}.md"
     trigger: {now: release, target: release}
     verify: {now: strict, target: strict}
@@ -216,6 +227,7 @@ packages:
     path: "."
     version_source: static
     tag_pattern: "v*"
+    latest: true
     archive_name: "RELEASE_NOTES_juniper-cascor-client_v{version}.md"
     trigger: {now: release, target: release}
     verify: {now: fallback, target: strict}
@@ -228,6 +240,7 @@ packages:
     path: "."
     version_source: static
     tag_pattern: "v*"
+    latest: true
     archive_name: "RELEASE_NOTES_juniper-cascor-worker_v{version}.md"
     trigger: {now: release, target: release}
     verify: {now: fallback, target: strict}
@@ -240,6 +253,7 @@ packages:
     path: "."
     version_source: static
     tag_pattern: "v*"
+    latest: true
     archive_name: "RELEASE_NOTES_juniper-data_v{version}.md"
     trigger: {now: release, target: release}
     verify: {now: fallback, target: strict}
@@ -252,6 +266,7 @@ packages:
     path: "."
     version_source: static
     tag_pattern: "v*"
+    latest: true
     archive_name: "RELEASE_NOTES_juniper-data-client_v{version}.md"
     trigger: {now: release, target: release}
     verify: {now: fallback, target: strict}
@@ -265,6 +280,7 @@ packages:
     path: "juniper-recurrence/"
     version_source: dynamic       # dynamic=["version"] -> juniper_recurrence/_version.py __version__
     tag_pattern: "juniper-recurrence-v*"
+    latest: true                  # the app: this repo has no v*-tagged package, so its badge follows the service
     archive_name: "RELEASE_NOTES_juniper-recurrence_v{version}.md"
     main_ci_workflow: "ci-recurrence-app.yml"   # no repo-wide ci.yml; path-scoped app lane (juniper-recurrence/**)
     trigger: {now: tag, target: release}     # F-4: still push:tags today

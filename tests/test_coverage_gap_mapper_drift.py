@@ -50,7 +50,7 @@ documented **manual-verify** invocation an operator runs against a real repo::
     # From a target repo with a real test command (e.g. juniper-cascor's
     # cascor-model package, whose CI has no per-file coverage gate):
     cd <target-repo>
-    pip install "juniper-ci-tools>=0.6.0,<0.7.0"
+    pip install "juniper-ci-tools>=0.9.0,<0.10.0"
     juniper-coverage-gap-map --repo-root . --package <pkg> \\
         --test-command "python -m pytest"
     # -> prints the per-file distribution, the files below 90%, and each

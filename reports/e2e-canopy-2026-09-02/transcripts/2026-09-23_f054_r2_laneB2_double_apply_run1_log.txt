@@ -1,0 +1,55 @@
+arm k0sat: K=0 speed=4x sat=35ms/50ms L=2.5s
+  [k0sat] trial 0: HELD pause_ms=94 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 2, 1, 'playing', 'paused')]
+  [k0sat] trial 1: HELD pause_ms=64 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 4, 3, 'playing', 'paused')]
+  [k0sat] trial 2: HELD pause_ms=64 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 6, 5, 'playing', 'paused')]
+  [k0sat] trial 3: HELD pause_ms=29 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 8, 7, 'playing', 'paused')]
+  [k0sat] trial 4: HELD pause_ms=58 undone_ms=None by_count=0 double=0 runs=[(['replay-interval.n_intervals'], 9, 9, 'playing', 'playing'), (['replay-play.n_clicks'], 10, 9, 'playing', 'paused')]
+  [k0sat] trial 5: HELD pause_ms=65 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 12, 11, 'playing', 'paused')]
+  [k0sat] trial 6: HELD pause_ms=59 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 14, 13, 'playing', 'paused')]
+  [k0sat] trial 7: HELD pause_ms=58 undone_ms=None by_count=0 double=0 runs=[(['replay-interval.n_intervals'], 15, 15, 'playing', 'playing'), (['replay-play.n_clicks'], 16, 15, 'playing', 'paused')]
+  [k0sat] trial 8: HELD pause_ms=52 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 18, 17, 'playing', 'paused')]
+  [k0sat] trial 9: HELD pause_ms=59 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 20, 19, 'playing', 'paused')]
+  [k0sat] SUMMARY {"arm": "k0sat", "K": 0, "speed": "4x", "sat_ms_per_50": 35, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 0, "pause_ms_median": 59.0, "pool_full_fraction": 0.0}
+arm k13: K=13 speed=4x sat=0ms/50ms L=2.5s
+  [k13] trial 0: HELD pause_ms=301 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 2, 1, 'playing', 'paused')]
+  [k13] trial 1: HELD pause_ms=53 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 4, 3, 'playing', 'paused')]
+  [k13] trial 2: HELD pause_ms=203 undone_ms=None by_count=0 double=0 runs=[(['replay-interval.n_intervals', 'replay-play.n_clicks'], 6, 5, 'playing', 'paused')]
+  [k13] trial 3: HELD pause_ms=43 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 8, 7, 'playing', 'paused')]
+  [k13] trial 4: HELD pause_ms=48 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 10, 9, 'playing', 'paused')]
+  [k13] trial 5: HELD pause_ms=248 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 12, 11, 'playing', 'paused')]
+  [k13] trial 6: HELD pause_ms=508 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 14, 13, 'playing', 'paused')]
+  [k13] trial 7: HELD pause_ms=786 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 16, 15, 'playing', 'paused')]
+  [k13] trial 8: HELD pause_ms=31 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 18, 17, 'playing', 'paused')]
+  [k13] trial 9: HELD pause_ms=58 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 20, 19, 'playing', 'paused')]
+  [k13] SUMMARY {"arm": "k13", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 130.5, "pool_full_fraction": 0.43}
+arm k13sat: K=13 speed=4x sat=35ms/50ms L=2.5s
+  [k13sat] trial 0: HELD pause_ms=256 undone_ms=None by_count=0 double=0 runs=[(['replay-interval.n_intervals'], 1, 1, 'playing', 'playing'), (['replay-play.n_clicks'], 2, 1, 'playing', 'paused')]
+  [k13sat] trial 1: HELD pause_ms=150 undone_ms=None by_count=0 double=0 runs=[(['replay-interval.n_intervals'], 3, 3, 'playing', 'playing'), (['replay-play.n_clicks'], 4, 3, 'playing', 'paused')]
+  [k13sat] trial 2: HELD pause_ms=166 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 6, 5, 'playing', 'paused')]
+  [k13sat] trial 3: HELD pause_ms=66 undone_ms=None by_count=0 double=0 runs=[(['replay-interval.n_intervals'], 7, 7, 'playing', 'playing'), (['replay-play.n_clicks'], 8, 7, 'playing', 'paused')]
+  [k13sat] trial 4: HELD pause_ms=786 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 10, 9, 'playing', 'paused')]
+  [k13sat] trial 5: HELD pause_ms=108 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 12, 11, 'playing', 'paused'), (['replay-interval.n_intervals'], 12, 12, 'paused', 'NU')]
+  [k13sat] trial 6: HELD pause_ms=29 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 14, 13, 'playing', 'paused')]
+  [k13sat] trial 7: HELD pause_ms=255 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 16, 15, 'playing', 'paused')]
+  [k13sat] trial 8: HELD pause_ms=210 undone_ms=None by_count=0 double=0 runs=[(['replay-interval.n_intervals', 'replay-play.n_clicks'], 18, 17, 'playing', 'paused')]
+  [k13sat] trial 9: HELD pause_ms=53 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 20, 19, 'playing', 'paused')]
+  [k13sat] SUMMARY {"arm": "k13sat", "K": 13, "speed": "4x", "sat_ms_per_50": 35, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 1, "pause_ms_median": 158.0, "pool_full_fraction": 0.419}
+arm k16sat: K=16 speed=4x sat=35ms/50ms L=2.5s
+  [k16sat] trial 0: HELD pause_ms=306 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 2, 1, 'playing', 'paused')]
+  [k16sat] trial 1: HELD pause_ms=605 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 4, 3, 'playing', 'paused')]
+  [k16sat] trial 2: HELD pause_ms=519 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 6, 5, 'playing', 'paused')]
+  [k16sat] trial 3: HELD pause_ms=151 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 8, 7, 'playing', 'paused')]
+  [k16sat] trial 4: HELD pause_ms=256 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 10, 9, 'playing', 'paused')]
+  [k16sat] trial 5: HELD pause_ms=351 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 12, 11, 'playing', 'paused')]
+  [k16sat] trial 6: HELD pause_ms=1106 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 14, 13, 'playing', 'paused')]
+  [k16sat] trial 7: HELD pause_ms=411 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 16, 15, 'playing', 'paused')]
+  [k16sat] trial 8: HELD pause_ms=260 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 18, 17, 'playing', 'paused'), (['replay-interval.n_intervals'], 18, 18, 'paused', 'NU')]
+  [k16sat] trial 9: HELD pause_ms=550 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 20, 19, 'playing', 'paused')]
+  [k16sat] SUMMARY {"arm": "k16sat", "K": 16, "speed": "4x", "sat_ms_per_50": 35, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 7, "pause_ms_median": 381.0, "pool_full_fraction": 0.826}
+{"arm": "k0sat", "K": 0, "speed": "4x", "sat_ms_per_50": 35, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 0, "pause_ms_median": 59.0, "pool_full_fraction": 0.0}
+{"arm": "k13", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 130.5, "pool_full_fraction": 0.43}
+{"arm": "k13sat", "K": 13, "speed": "4x", "sat_ms_per_50": 35, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 1, "pause_ms_median": 158.0, "pool_full_fraction": 0.419}
+{"arm": "k16sat", "K": 16, "speed": "4x", "sat_ms_per_50": 35, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 7, "pause_ms_median": 381.0, "pool_full_fraction": 0.826}
+-> /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/6280349a-397b-4e22-9fc5-a32818ed1f58/scratchpad/laneB2/r2/double_apply_run1.json
+exit=0
+8.20 8.13 7.79 4/6032 1498447

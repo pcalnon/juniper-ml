@@ -22,6 +22,35 @@ all work pushed to PR branch `docs/canopy-e2e-phase7-2026-09-22`)
 
 ---
 
+## ★ RE-EVALUATED 2026-09-23 (session <https://claude.ai/code/session_01T5Xf9KiKob1c8yuZzqBCac>)
+
+The status is recorded in the ledger (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`),
+**Phase 8**. Against this handoff's own list:
+
+- **Item 1 (F-CANOPY-054): DONE, but not the way item 1 says.** "Make `replay_tick` clientside" alone would
+  have made it worse. The merged controls callback read `replay-state.data` as an Input, so every clientside
+  tick re-requests it and evicts any click in flight: clean room CLICK-DROPPED 3/3. The ban on folding the
+  tick into the merged callback holds only for a SERVER callback. canopy#670 runs the whole block in ONE
+  clientside callback, the state's only writer. Live results, both measured with the same check:
+  - on the parent, F054-UNDONE 3/3;
+  - on the fix, PAUSE-HELD 3/3;
+  - the replay probe scored M-METRICS-11..16/-18 PASS 7/7.
+- **Residue this handoff's list dropped.** Both items are still owed, and the ledger's Phase 8 list carries
+  them:
+  - item 6 kept only the first half of the ledger's item 7, dropping "an evicted request's `completeJob`
+    re-enables the lane during its successor's flight";
+  - item 8 dropped "F-038's browser-level test gap".
+- Items 2–8 are otherwise unchanged. Phase 8 adds one data point to item 2: on the fix leg a CLIENTSIDE
+  click took 1.4–2.4 s to apply. It also adds one owner question: the metrics replay drives no chart.
+- **Key context, updated.**
+  - Subagents were available again on 2026-09-23.
+  - The two verify legs were `:8055` (canopy#670 head `c0530279`) and `:8056` (parent `2f973ca2`); both
+    were taken down after the measurement.
+  - `MEMORY.md` was being compacted by a concurrent session on 2026-09-23 (24,994 bytes at 01:04), so this
+    session left it alone.
+
+---
+
 ## Goal
 
 Continue the juniper-canopy E2E validation arc from Phase 7 of the ledger

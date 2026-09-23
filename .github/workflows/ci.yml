@@ -701,6 +701,16 @@ jobs:
           # on the refs POST (ml#770 R7), and that every refusal path writes nothing.
           # util/ is outside every pre-commit Python hook's scope, so this is the gate.
           python3 -m unittest -v tests/test_open_signed_pr.py
+          # tests/test_push_signed_commit.py: util/push_signed_commit.py -- the EXISTING-branch
+          # sibling of open_signed_pr.py (one signed commit onto an open PR's branch), promoted
+          # so the ad-hoc copies stop multiplying. Hermetic (gh is a PATH stub that ENFORCES
+          # expectedHeadOid like GitHub): pins the required FULL-sha --expected-head (a short
+          # sha refused before any API call), expectedHeadOid == the PINNED sha rather than a
+          # fresh read (a racing push must be refused, not clobbered), the missing-branch /
+          # default-branch / moved-head refusals, dry-run writing nothing, and the read-back
+          # (head moved, signature verified, parent == pin, blob shas, deletions gone).
+          # util/ is outside every pre-commit Python hook's scope, so this is the gate.
+          python3 -m unittest -v tests/test_push_signed_commit.py
           # tests/test_wait_for_checks.py: util/wait_for_checks.py -- the shared
           # required-context CI waiter. Hermetic (gh is a PATH stub replaying a
           # SCRIPTED SEQUENCE of rollups, one per poll). Pins the two traps that
@@ -1625,7 +1635,7 @@ jobs:
   #
   # THE LIVE SOAK HAS SINCE FOUND WHAT THE BACKTEST COULD NOT SEE: the backtest scored merged
   # commits, and none of its 40 exercised C2 or C4. Live record 2026-09-18 00:37 to 2026-09-23
-  # 00:50 UTC, every PR head: 10 distinct findings, 2 true and 8 false, and all 8 false ones were
+  # 00:33 UTC, every PR head: 10 distinct findings, 2 true and 8 false, and all 8 false ones were
   # still present at their PR's FINAL head -- a required version would have wrongly blocked 8 of
   # the 62 PRs it examined. Six are C4 reading a deliberate heading rename ("... — NOT CHOSEN", a
   # strikethrough, a corrected figure) as a LOST heading; two are C2 firing on a wrapped prose
@@ -1638,8 +1648,12 @@ jobs:
   # the step's FINAL `exit 0` with `exit "$rc"` and adding this job's NAME as a required context.
   # Deleting that `exit 0` is NOT enough: the `if` before it is then the last command and returns
   # 0 either way, so the check still cannot fail. Decide at the same time whether rc 2 ("refused to
-  # report") should fail, and whether the early `exit 0` on a failed diff should. Until then this
-  # job is green by construction and reports through annotations and the job summary.
+  # report") should fail, and whether the early `exit 0` on a failed diff should. And change the
+  # base to HEAD^1, the test-merge commit's first parent: `github.event.pull_request.base.sha` can
+  # lag it, and then the screen also examines markdown only main changed (#1980 changed one
+  # markdown file and was screened on 8) -- a required check would block a PR for another PR's
+  # damage. Until then this job is green by construction and reports through annotations and the
+  # job summary.
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   markdown-structure-advisory:
     name: Markdown Structure (advisory soak)
@@ -1891,10 +1905,10 @@ jobs:
       # Wave 2 of the dep-docs PyPI migration (plan
       # notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md):
       # invoke the PyPI-published juniper-ci-tools console script
-      # instead of the inline util/generate_dep_docs.sh. The inline
-      # script will be removed from the tree in Wave 4 once the new
-      # step has soaked. Pinned <0.2.0 so a future major bump can be
-      # adopted deliberately per-repo.
+      # instead of the inline util/generate_dep_docs.sh, which Wave 4
+      # deleted from the tree (#298). Pinned to one minor
+      # (>=0.9.0,<0.10.0) so each new minor is adopted deliberately
+      # per-repo.
       - name: Install juniper-ci-tools
         run: |
           python -m pip install --upgrade "pip>=26.1.1"

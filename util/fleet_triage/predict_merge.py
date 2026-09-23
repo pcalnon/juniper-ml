@@ -54,7 +54,7 @@ report); 2 on usage / precondition error (bad args, unresolved ref, no ``gh``,
 
 Requires: ``gh`` on PATH (PR discovery), and -- for the two compositional-loss screens --
 the ``juniper-ci-tools`` package (>=0.8.0) installed so ``juniper-symbol-loss-check`` /
-``juniper-docs-additions-check`` are on PATH (``pip install 'juniper-ci-tools>=0.8.0,<0.9.0'``).
+``juniper-docs-additions-check`` are on PATH (``pip install 'juniper-ci-tools>=0.9.0,<0.10.0'``).
 If a console script is absent, that screen degrades to ``skip`` (never crashes the report);
 the fast-gate battery + verdict logic still run.
 
@@ -177,7 +177,7 @@ def _ast_symbol_screen(clone: Path, base_ref: str, result_ref: str, changed: lis
     if not any(p.endswith((".py", ".bash")) for p in changed):
         return {"status": "pass", "lost": []}  # nothing screenable in the delta -> skip the subprocess
     if shutil.which(_SYMBOL_LOSS_CHECK) is None:
-        return {"status": "skip", "lost": [], "detail": f"{_SYMBOL_LOSS_CHECK} unavailable -- pip install 'juniper-ci-tools>=0.8.0,<0.9.0'"}
+        return {"status": "skip", "lost": [], "detail": f"{_SYMBOL_LOSS_CHECK} unavailable -- pip install 'juniper-ci-tools>=0.9.0,<0.10.0'"}
     cp = _run([_SYMBOL_LOSS_CHECK, "--repo-root", str(clone), "--base", base_ref, "--head", result_ref, "--json"])
     if cp.returncode == 2 or not cp.stdout.strip():
         return {"status": "skip", "lost": [], "detail": (cp.stderr.strip() or "symbol-loss screen error")[-300:]}
@@ -231,7 +231,7 @@ def _docs_additions_only_screen(clone: Path, base_ref: str, result_ref: str, cha
     if not md_files:
         return {"status": "pass", "deletions": [], "waived": []}  # nothing screenable -> skip the subprocess
     if shutil.which(_DOCS_ADDITIONS_CHECK) is None:
-        return {"status": "skip", "deletions": [], "waived": [], "detail": f"{_DOCS_ADDITIONS_CHECK} unavailable -- pip install 'juniper-ci-tools>=0.8.0,<0.9.0'"}
+        return {"status": "skip", "deletions": [], "waived": [], "detail": f"{_DOCS_ADDITIONS_CHECK} unavailable -- pip install 'juniper-ci-tools>=0.9.0,<0.10.0'"}
     cp = _run([_DOCS_ADDITIONS_CHECK, "--repo-root", str(clone), "--base", base_ref, "--head", result_ref, "--files", *md_files, "--json"])
     if cp.returncode == 2 or not cp.stdout.strip():
         return {"status": "skip", "deletions": [], "waived": [], "detail": (cp.stderr.strip() or "docs-deletion screen error")[-300:]}

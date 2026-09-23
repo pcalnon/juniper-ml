@@ -1,0 +1,39 @@
+# D1 scope check: does the BLAS width of a LARGE first output pass reach the work count?
+#
+# Project:     juniper-ml
+# Sub-Project: ad-hoc tooling
+# Author:      Paul Calnon
+# Created:     2026-09-23
+# Status:      ad-hoc -- investigation
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Related:     notes/JUNIPER_2026-09-23_JUNIPER-ECOSYSTEM_PERF-LANE-D1-EPOCH-COUNT-DEBT.md §4-§5
+#
+# The D1 debt measurement found a cap of 2 bit-identical to the old default on a 320-row workload.
+# Its open question was scope: a workload whose FIRST output pass is large enough to parallelise
+# could differ between the default (training thread at the runtime width until re-pinned) and the
+# cap. This suite runs PF-2 axis 2's top cell -- 5,800 points per spiral, ~19,700 rows after
+# juniper-data's 1.7x split inflation, ~60x the debt workload -- twice:
+#   * runtime.blas_threads: 2     -> the three BLAS variables exported as 2 (what the flip does)
+#   * runtime.blas_threads: null  -> nothing exported: cascor's own default. Run against a cascor
+#                                    tree from BEFORE the flip (0d2d826), that is the old "do
+#                                    nothing" default, whose first output pass runs at the runtime
+#                                    width.
+# `null` CLEARS the key (run_suite `_set_dotted` writes None); that is the only way to express an
+# unpinned cell. Compared on step_count and completion_reason, the WORK half of the gate, which
+# is contention-immune. Wall time is recorded, and it is not the question here.
+# The repeat key leads so the two widths interleave.
+schema_version: 1
+suite:
+  name: d1-scope-large-first-pass
+  description: "D1 scope: blas_threads 2 vs unset at 5,800 points per spiral (pre-flip cascor)"
+  app: cascor
+  # ABSOLUTE, matching the other util/ad-hoc suites: a relative walk from a session worktree
+  # lands outside the ecosystem.
+  base_config: [/home/pcalnon/Development/python/Juniper/juniper-cascor/conf/experiments/spiral-smoke.yaml]
+  seed_policy: fixed
+execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 2400, stall_seconds: 1200, max_wall_seconds: 2000}
+matrix:
+  experiment.description: ["D1 scope pass 1", "D1 scope pass 2"]
+  dataset.params.n_points_per_spiral: [5800]
+  runtime.blas_threads: [2, null]
+outputs: {suite_dir: null, aggregate: [csv, markdown]}

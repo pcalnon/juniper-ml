@@ -7,7 +7,183 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PF-2 axis 2 is RUN, with no knee, so the owner's in-process follow-up does not fire**
+  (`notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` §3 RESULT; the
+  `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml` header;
+  `util/experiments/suites/perf/README.md`; `util/ad-hoc/2026-09-23_pf2_axis2_reduce.py`, new).
+  18 of 18 cells ran over 3 round-robin passes, at 1-minute load 5-8. Wall time is flat: 24.1 s
+  at 250 points per spiral and 24.4 s at 5,800, x1.01, dominated by stack overhead. Training
+  compute (`step_sum`) grows x1.31, with log-log slopes of -0.15 to 0.31 between neighbouring
+  sizes. The D4 ruling sends the top end in-process only on a knee, so it stays on the suite path.
+  This holds at `spiral-smoke`'s budgets only. `step_count` is 8 in every cell because the
+  budget fixes it, and it is never compared.
+
+### Fixed
+
+- **The release-train ceremony cut every Release with `--latest=false`, so six repos' "Latest"
+  badges fell behind** (`util/release_train/ceremony.py`, `util/release_train/detect.py`,
+  `util/release_train/registry.yaml`). The flag was right for juniper-ml's sub-packages and wrong
+  for everything else, the meta-package included, although §11.4 of
+  `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` gives it `--latest`. On
+  2026-09-23 the badges read juniper-ml v0.6.0 (newest v0.10.0), juniper-data v0.13.0 (v0.15.0),
+  juniper-data-client v0.4.2 (v0.5.0), juniper-cascor v0.10.0 (v0.11.0), juniper-canopy v0.5.0
+  (v0.8.1) and juniper-recurrence `juniper-recurrence-model-v0.1.4` (`juniper-recurrence-v0.5.0`).
+  The registry now marks one package per repo `latest: true`. Seven are the `v*`-tagged packages,
+  and the eighth is juniper-recurrence's app, since that repo has no `v*` tag. The ceremony cuts that
+  package with `--latest` and every other with `--latest=false`. Only a YAML boolean `true` counts,
+  so a quoted `"true"` reads false. Tests pin the whole chain, from the entry to the plan, the
+  `cut_release` action, `create_release`'s kwarg and the gh argv, plus exactly one flagged package
+  per repo. Five mutations, one per link and one on the registry data, each fail the new tests. The
+  six badges were moved by hand the same day, on the owner's approval. That fires nothing, because
+  all 24 release-triggered workflows in the nine repos subscribe to `published` only
+  (`util/ad-hoc/2026-09-23_release_trigger_types_census.py`, new). The procedure's §11.7 records it.
+- **Release notes: "Breaking changes" missed three registered house styles, and both section
+  parsers dropped every heading qualifier from the rendered body** (`util/release_train/notes_render.py`,
+  `util/release_train/ceremony.py`). The rule honoured only `### Removed` and an uppercase
+  `BREAKING`. juniper-canopy's CHANGELOG has zero uppercase `BREAKING` and marks breaks with
+  `**Breaking Change:**` / `Breaking change:` labels, often on sub-bullets, and with
+  `### Breaking Changes in [...]` headings. A substring test also read `NON-BREAKING` as a break.
+  Separately, `parse_unreleased` (drafts) and `changelog_version_section` (finals) keyed a `###`
+  heading by its first word only. So `### Changed (potentially breaking)`, which appears five times
+  across four registered CHANGELOGs, rendered as `### Changed` under "Breaking changes: NO", and
+  `### Technical Notes` rendered as `### Technical`. A shared `heading_key()` now keys a qualified
+  heading by its full text. An unqualified heading keeps its first-word key, so today's output is
+  byte-identical. The verdict reads labels, headings, qualifiers and uppercase markers, and honours
+  `non-` / `not` / `no` negation at a word boundary. Also fixed: `changelog_version_section("0.3.2")`
+  returned 0.3.21's section, because the version pattern ended in an optional `\]`. That was
+  harmless for a forward cut and wrong for any re-render. Measured over all 226 version sections of
+  the 18 registry packages (`util/ad-hoc/2026-09-22_breaking_marker_corpus_diff.py`): 6 verdict
+  flips, all NO -> YES and all genuine, and zero YES -> NO. 21 new tests;
+  `util/ad-hoc/2026-09-22_breaking_marker_mutation_check.py` kills 10/10 mutants.
+  `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` gains §11.7: the ceremony
+  as actually run, and five failure shapes with their controls.
+
 ## [0.10.0] - 2026-09-23
+
+### Added
+
+- **The 2026-09-17 D6 instrument and note are committed.** For five days they existed only in a
+  worktree that nothing protected
+  (`util/ad-hoc/2026-09-17_epochs_completed_spread.py`,
+  `notes/JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md`, both new).
+  0.9.0's entry said `.claude/worktrees/optimized-giggling-koala` was locked. **It was not**:
+  its `.git/worktrees/` metadata has no `locked` file, so `git worktree remove` would have
+  deleted the only copy of both files. The instrument is committed unchanged except for one
+  unused `import statistics`, which CodeQL flagged and which blocked the merge. It is kept
+  because it is the provenance of the retained
+  `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json`. Under the
+  ad-hoc retention policy (`util/ad-hoc/README.md`) retirement is owner-directed only, so
+  committing was the only move open to a session. The note is verbatim under a banner. The
+  banner names `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md` as
+  the record, and says the older instrument reads `torch.get_num_threads()` and has no ICV
+  reading or control arm, so it cannot separate an inert axis from a real invariance. That
+  note's §1 now records the resolution.
+
+- **`util/push_signed_commit.py` -- one GitHub-signed commit onto an EXISTING branch, pinned to the
+  head you built on.** `util/open_signed_pr.py` covers "new branch + PR" and refuses an existing
+  branch by design, and no existing-branch driver had ever been promoted, so copies multiplied under
+  `util/ad-hoc/`: at `7b226ca0`, twelve files commit onto an existing branch -- six with their own
+  `createCommitOnBranch` mutation (one of them a one-off probe), six reusing
+  `open_signed_pr.create_signed_commit` -- and ten of the twelve read `expectedHeadOid` LIVE, which
+  keeps GitHub's guard against a push in the next instant and discards the one that matters: a push
+  that landed while you were editing, which the whole-file upload then silently reverts. The promoted
+  tool requires `--expected-head` as a FULL 40-char sha (an abbreviation is refused before any API
+  call; GitHub does not expand one, so it reads as a lost race), sends that pin as `expectedHeadOid`,
+  refuses a missing branch (404 only) and the default branch, and reads the commit back (head moved,
+  signature verified, parent == pin, blob shas, deletions gone). It reuses `open_signed_pr`'s helpers
+  and carries no copy of the mutation. Hermetic suite `tests/test_push_signed_commit.py` (its `gh` stub enforces
+  `expectedHeadOid` like GitHub), wired into `ci.yml`; `docs/REFERENCE.md` documents both. The
+  ad-hoc drivers are **retained** as provenance (owner policy 2026-08-25) with a "Superseded" header
+  line each; retiring them is an owner decision.
+
+- **PF-2 axis 2 is built, and the suite path's real ceiling is 5,882 points per spiral, not the
+  10,000 it was ruled on** (`util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`,
+  new). The owner ruled D4's axis-2 range on 2026-09-22 as "10,000 now, in-process later". Running
+  the top cell found the ceiling is lower: juniper-data's additive sizing treats
+  `n_points_per_spiral` as the TRAIN count and adds val and test on top, 1.7x at the suite's split,
+  and `MAX_POINTS` (10,000) bounds that inflated TOTAL. A request of 10,000 becomes an internal
+  17,000 and is rejected. Bisected: 5,882 accepted, 5,883 rejected. The rejection is a 400 "Invalid
+  request parameters" with the cause logged only at DEBUG (a juniper-data defect: the field check
+  passes and generation then fails), so the cell reads `torn_down_early` after about 18 s. The
+  suite therefore sweeps 250 → 5,800 (about 23x, not 40x). It runs three **round-robin** passes:
+  the repeat key leads the matrix, so every size runs once per pass. That is the loaded-host
+  ordering `run_suite` can express, since it has no shuffle. Calibrated: the 5,800 cell completed
+  in 44.3 s at 1-minute load 22-28, about 45x inside the wall budget, so this axis reports the
+  shape of wall time against size, not where viability ends. The PF-2 re-spec
+  (`notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md`) carries a second
+  §1 correction.
+
+- **D1's epoch-count debt is paid: a BLAS cap of 2 leaves every count, and every bit, where the
+  old default put it** (`notes/JUNIPER_2026-09-23_JUNIPER-ECOSYSTEM_PERF-LANE-D1-EPOCH-COUNT-DEBT.md`,
+  `util/ad-hoc/2026-09-23_d1_epoch_count_sweep.py`, `util/ad-hoc/2026-09-23_d1_epoch_debt_reduce.py`,
+  all new). The owner ruled D1 on 2026-09-23 as "pay the debt, then flip": change cascor's
+  `configure_blas_threads()` default from "do nothing" to 2 only if the cap does not move the epoch
+  count. The 09-16 width sweep emitted stage counts rather than epoch counts. Every structural
+  count it had was also pinned to its budget: 4 of 4 hidden units in all 39 arms, and an output
+  loop with no early exit. So it could not have seen #531's count channel at all. The new
+  instrument calibrates its budgets first, so that 94 of 100 candidates early-stop, and it adds a
+  seed-change positive control. **Verdict CLEAR** (3 interleaved repeats, all five arms
+  deterministic): a cap of 2 reproduces today's default bit-for-bit. Every per-candidate count,
+  every phase's winning candidate and the final loss (0.0067392201) match. The seed control and a
+  training thread held at 16 throughout both move the counts, so #531's count channel is real,
+  and the new default steers away from it. The flip is juniper-cascor#683.
+
+- **D2 implemented — the experiment `runtime:` block BINDS, where all three of its keys were
+  previously accepted and discarded** (`util/experiments/run_suite.py` `runtime_block_env`,
+  `util/experiment_stack.bash` `cascor_up`). `run_experiment` validated `blas_threads`,
+  `num_processes` and `eval_metrics_enabled` and **nothing read any of them**, so a suite that
+  capped threads ran 16-wide and a matrix that *varied* the key measured one configuration N
+  times. `eval_metrics_enabled` was the worst of the three because the schema *herds* authors
+  into it: `service:` rejects it with *"belongs in `runtime:` (process env)"*. Implemented via
+  the environment route the owner ruled for, resolved **before the first `--up`** so a bad
+  value refuses the suite rather than one cell. A width the **suite names** beats the H-11
+  parallel budget (this is what makes PF-3's axis expressible); a width merely **inherited**
+  from a base config does not, so no parallel run can silently oversubscribe itself.
+  **PF-3's inert-axis blocker is discharged** — it is still gated on D3's one-cell check, on
+  cascor's `min(process_count, pool)` worker clamp making two of its twelve cells duplicates,
+  and on a quiet host.
+  > **Two consequences an operator must know.** (1) `spiral-smoke.yaml` carries
+  > `runtime: {blas_threads: 2}`, so a new PF-1 run now records a non-null `thread_budget`
+  > while baselines `pf1-2026-09-04` and `pf1-2026-09-04b` recorded all-null. `thread_budget`
+  > is a `HOST_IDENTITY_FIELDS` member, so `compare_baseline` will **REFUSE** (exit 2) against
+  > both. That refusal is *correct* — the condition genuinely changed — but **both baselines
+  > need re-cutting** and until then a REFUSED verdict is expected, not a tooling fault.
+  > (2) Eighteen committed cascor suites inherit a now-binding block; the nine built on
+  > `util/ad-hoc/2026-08-16_h2h_wide_nrot3.yaml` set `eval_metrics_enabled: false`, which now
+  > genuinely disables the service's F1/precision/recall/ROC-AUC pass. Re-runs of those are no
+  > longer comparable to their archived evidence.
+
+- **D6's gate discharged — `epochs_completed` has ZERO spread, and D6's premise is refuted**
+  (`notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`, new;
+  `util/ad-hoc/2026-09-22_d6_epochs_completed_spread.py`, new). 5 thread widths × 4 epoch budgets
+  × 5 repeats = **100 observations, max within-cell spread `0`**, every budget resolving to a
+  single value ({10, 50, 68, 68}) at **1-minute load 32.26** — the most loaded host any
+  measurement in this lane has used. D6 was gated on the story that *ambient load moves the
+  count*; load does not move it, and neither does thread width, which is the mechanism by which
+  load would have had to act. The axis was verified live (`omp_get_max_threads()` tracks the
+  request w1→1 … w16→16), so this is a real invariance and not an inert axis. **The historical
+  `52` is therefore an observation of unknown provenance, not evidence of instability** — the
+  leading suspect is a different tree, which this measurement cannot separate.
+  Whether to *build* the exact-match gate remains the owner's call: only 2 of the 4 cells would
+  be real assertions (at budgets 10 and 50 the count equals the request), and the gate's
+  reference is tree-sensitive by construction.
+
+- **The measurement existed already, UNCOMMITTED, and three searches missed it.** A complete
+  09-17 sweep sat at `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/`,
+  and its instrument *and* a write-up reaching the same conclusion both exist — untracked in
+  `.claude/worktrees/optimized-giggling-koala` (`util/ad-hoc/2026-09-17_epochs_completed_spread.py`,
+  `notes/JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md`). **The
+  09-17 session obeyed every placement rule and simply never committed.** So the lesson is not
+  the `/tmp` one: **`util/ad-hoc/` placement protects work from `/tmp` reaping, not from never
+  being committed**, and to `git`, to CI and to the next session an uncommitted file in a
+  sibling worktree is indistinguishable from one that does not exist. That worktree is locked;
+  the lock is currently the only thing preserving it. **Owner action**: commit those two files,
+  or retire them in favour of this one. Also recorded, because the shape recurs: this session's
+  searches used `d6-epochs-spread` / `epochs_spread`, patterns taken from the *evidence
+  directory's* name, and the instrument is `epochs_completed_spread` — neither is a substring.
+  A sweep whose pattern comes from the artifact you already hold will not find the one you do not.
 
 ### Changed
 
@@ -35,62 +211,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   site's exact text, requires exactly one match apiece, and refuses to open this section unless
   `[Unreleased]` is empty.
 
+- **Owner rulings recorded for the four `Not decided:` clauses of D1, D2, D4 and D6**
+  (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`, new §5 plus
+  a pointer under each clause). D2: `blas_threads` / `num_processes` / `eval_metrics_enabled`
+  ratified as-is, with no second knob. D4 axis 2: 10,000 now, in-process later (the suite path's
+  real ceiling then turned out to be 5,882). D6: build the gate advisory first. D1 was ruled
+  twice, because the first menu described the process default as new work when cascor already
+  had it, defaulting to "do nothing" for cascor#531's reason.
+
+- **PF-3 re-shaped, and D3's one-cell check passed**
+  (`util/experiments/suites/perf/pf3-cascor-pool-scaling.yaml`). The matrix is now a 14-cell
+  triangle instead of the 4x3 = 12 rectangle:
+  - np > pool is dropped, because cascor's `min(process_count, len(tasks))` clamp makes those
+    cells duplicates;
+  - np=1 is kept as an explicitly labelled SEQUENTIAL control, because it takes a different code
+    path;
+  - np is extended to 8 and 16, because the suite's second purpose, oversubscription onset,
+    cannot appear at np <= 4 on 16 logical CPUs.
+
+  D3's check, on c001 (pool 2, np 2), passed. `thread_env` records `CASCOR_NUM_PROCESSES` "2",
+  and the service log shows `Training 2 candidates with 2 processes`, so delivery was proven, not
+  just recording.
+
+- **PF-1's successor baseline is `pf1-2026-09-23-blas2`** (state outside the repo; docs:
+  `docs/REFERENCE.md`, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`,
+  `util/experiments/suites/perf/README.md`). It is capped at `blas_threads: 2`, which
+  `spiral-smoke.yaml` now binds, and pinned to cascor `0d2d826`. `step_count` is 1770 in all 5
+  cells, `early_stopped`, with speed sd 3.1%. It records the same 1770 as the unpinned
+  `pf1-2026-09-04b`. Comparing against `-04b` now correctly REFUSES on `thread_budget`, and the
+  troubleshooting rows say so. The old tags are retained, because supersession is by name.
+
+### Fixed
+
+- **`run_suite.py`'s docstring promised the wrong exit status.** It said "0 = every executed cell
+  succeeded"; `aggregate()` returns 0 only when every cell in the FULL expansion has succeeded,
+  as `docs/REFERENCE.md` § "Resume, --only, and exit codes" documents. A one-cell `--only` check
+  therefore exits 1 on success, by design. Docstring only; no behaviour change.
+
+- **The thread-width sweep's "initial pass" column is NOT the initial pass** — correction added
+  to `notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md` §2.
+  `util/ad-hoc/2026-09-16_thread_width_arm.py` sums **every** `train_output_layer` stage, and
+  cascor emits that name once per output pass — five per run — so `initial_pass_seconds` is
+  *first pass + all later passes*. Reconciles to four decimals (`thread w16`: 2.1772 first +
+  9.7991 later = 11.9759 reported). **`later_passes_seconds` and `candidate_seconds` are clean**,
+  so D1's width comparison and cascor#531's non-reproduction stand. What changes: the **−33%**
+  capping figure is computed on totals and **understates** the true benefit — recomputed from
+  first-pass figures it is **−49.2%** (2.2838 s → 1.1593 s, medians of 3) — and §2.1's "3.3×
+  gap at identical OpenMP width" is an artifact — on true first passes `thread w16` and
+  `env w16` are 2.1772 vs 2.0404, within noise. The mechanism claim survives; its attribution
+  to the initial pass does not. Separately, both D1's and D2's gates demanded **epoch counts**
+  and the arm emits **stage** counts — the string `epoch` appears in none of the 40 evidence
+  files, though the arm's docstring claims otherwise — so "the penalty does not reproduce"
+  rests on wall time alone and cannot separate *no effect* from *two effects cancelling*.
+
 ## [0.9.0] - 2026-09-22
 
 ### Added
 
-- **D2 implemented — the experiment `runtime:` block BINDS, where all three of its keys were
-  previously accepted and discarded** (`util/experiments/run_suite.py` `runtime_block_env`,
-  `util/experiment_stack.bash` `cascor_up`). `run_experiment` validated `blas_threads`,
-  `num_processes` and `eval_metrics_enabled` and **nothing read any of them**, so a suite that
-  capped threads ran 16-wide and a matrix that *varied* the key measured one configuration N
-  times. `eval_metrics_enabled` was the worst of the three because the schema *herds* authors
-  into it: `service:` rejects it with *"belongs in `runtime:` (process env)"*. Implemented via
-  the environment route the owner ruled for, resolved **before the first `--up`** so a bad
-  value refuses the suite rather than one cell. A width the **suite names** beats the H-11
-  parallel budget (this is what makes PF-3's axis expressible); a width merely **inherited**
-  from a base config does not, so no parallel run can silently oversubscribe itself.
-  **PF-3's inert-axis blocker is discharged** — it is still gated on D3's one-cell check, on
-  cascor's `min(process_count, pool)` worker clamp making two of its twelve cells duplicates,
-  and on a quiet host.
-  > **Two consequences an operator must know.** (1) `spiral-smoke.yaml` carries
-  > `runtime: {blas_threads: 2}`, so a new PF-1 run now records a non-null `thread_budget`
-  > while baselines `pf1-2026-09-04` and `pf1-2026-09-04b` recorded all-null. `thread_budget`
-  > is a `HOST_IDENTITY_FIELDS` member, so `compare_baseline` will **REFUSE** (exit 2) against
-  > both. That refusal is *correct* — the condition genuinely changed — but **both baselines
-  > need re-cutting** and until then a REFUSED verdict is expected, not a tooling fault.
-  > (2) Eighteen committed cascor suites inherit a now-binding block; the nine built on
-  > `util/ad-hoc/2026-08-16_h2h_wide_nrot3.yaml` set `eval_metrics_enabled: false`, which now
-  > genuinely disables the service's F1/precision/recall/ROC-AUC pass. Re-runs of those are no
-  > longer comparable to their archived evidence.
-- **D6's gate discharged — `epochs_completed` has ZERO spread, and D6's premise is refuted**
-  (`notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`, new;
-  `util/ad-hoc/2026-09-22_d6_epochs_completed_spread.py`, new). 5 thread widths × 4 epoch budgets
-  × 5 repeats = **100 observations, max within-cell spread `0`**, every budget resolving to a
-  single value ({10, 50, 68, 68}) at **1-minute load 32.26** — the most loaded host any
-  measurement in this lane has used. D6 was gated on the story that *ambient load moves the
-  count*; load does not move it, and neither does thread width, which is the mechanism by which
-  load would have had to act. The axis was verified live (`omp_get_max_threads()` tracks the
-  request w1→1 … w16→16), so this is a real invariance and not an inert axis. **The historical
-  `52` is therefore an observation of unknown provenance, not evidence of instability** — the
-  leading suspect is a different tree, which this measurement cannot separate.
-  Whether to *build* the exact-match gate remains the owner's call: only 2 of the 4 cells would
-  be real assertions (at budgets 10 and 50 the count equals the request), and the gate's
-  reference is tree-sensitive by construction.
-- **The measurement existed already, UNCOMMITTED, and three searches missed it.** A complete
-  09-17 sweep sat at `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/`,
-  and its instrument *and* a write-up reaching the same conclusion both exist — untracked in
-  `.claude/worktrees/optimized-giggling-koala` (`util/ad-hoc/2026-09-17_epochs_completed_spread.py`,
-  `notes/JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md`). **The
-  09-17 session obeyed every placement rule and simply never committed.** So the lesson is not
-  the `/tmp` one: **`util/ad-hoc/` placement protects work from `/tmp` reaping, not from never
-  being committed**, and to `git`, to CI and to the next session an uncommitted file in a
-  sibling worktree is indistinguishable from one that does not exist. That worktree is locked;
-  the lock is currently the only thing preserving it. **Owner action**: commit those two files,
-  or retire them in favour of this one. Also recorded, because the shape recurs: this session's
-  searches used `d6-epochs-spread` / `epochs_spread`, patterns taken from the *evidence
-  directory's* name, and the instrument is `epochs_completed_spread` — neither is a substring.
-  A sweep whose pattern comes from the artifact you already hold will not find the one you do not.
 - **Thread-width sweep — D1 and D2's gating measurement**
   (`notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`, new;
   `util/ad-hoc/2026-09-16_thread_width_{arm,sweep}.py`, new). 6 widths × 2 mechanisms × 3 repeats
@@ -219,21 +396,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **The thread-width sweep's "initial pass" column is NOT the initial pass** — correction added
-  to `notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md` §2.
-  `util/ad-hoc/2026-09-16_thread_width_arm.py` sums **every** `train_output_layer` stage, and
-  cascor emits that name once per output pass — five per run — so `initial_pass_seconds` is
-  *first pass + all later passes*. Reconciles to four decimals (`thread w16`: 2.1772 first +
-  9.7991 later = 11.9759 reported). **`later_passes_seconds` and `candidate_seconds` are clean**,
-  so D1's width comparison and cascor#531's non-reproduction stand. What changes: the **−33%**
-  capping figure is computed on totals and **understates** the true benefit — recomputed from
-  first-pass figures it is **−49.2%** (2.2838 s → 1.1593 s, medians of 3) — and §2.1's "3.3×
-  gap at identical OpenMP width" is an artifact — on true first passes `thread w16` and
-  `env w16` are 2.1772 vs 2.0404, within noise. The mechanism claim survives; its attribution
-  to the initial pass does not. Separately, both D1's and D2's gates demanded **epoch counts**
-  and the arm emits **stage** counts — the string `epoch` appears in none of the 40 evidence
-  files, though the arm's docstring claims otherwise — so "the penalty does not reproduce"
-  rests on wall time alone and cannot separate *no effect* from *two effects cancelling*.
 - **README.md's `Ecosystem Compatibility` pin table shipped to PyPI advertising the 0.6.0 floors.** The file carries TWO
   pin tables and only one was guarded. `tests/test_pyproject_extras.py` pinned the
   "Available Extras" table to `pyproject.toml`, so that one tracked the decision-11 bump
