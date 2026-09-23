@@ -420,6 +420,21 @@ behavioural drop-in for the current probe. The probe dispatches on `ndim == 3` o
 function validates a full contract, so swapping them could turn a permissive path strict. That needs
 checking before the swap, and the ticket says so.
 
+#### S-7 note 2026-09-23: two facts above have moved
+
+The ticket's closure is recorded in §10's "Update, 2026-09-23" block: the owner ruled for an
+**advisory** check, and canopy#663 (`cc3588a8`) built it. This note corrects the two facts above
+that a reader would otherwise quote as current:
+
+- **The pin.** canopy#647 (`e65ea938`, merged 2026-09-21) raised it to
+  `juniper-data-client>=0.5.0,<0.6.0`. That is now `juniper-canopy/pyproject.toml:192`; the `:148`
+  above is the 2026-09-01 line.
+- **The comment.** The same change rewrote it (`juniper-canopy/src/demo_mode.py:1973-1991`). It now
+  states in its own text that the "absent from the pinned / published client (0.4.x)" claim is
+  **false in both halves**, so do not re-report the comment as false.
+
+Verified against canopy's `origin/main` on 2026-09-23.
+
 ### The failure mode this document keeps exhibiting
 
 Across three rounds the *conclusions* mostly survived and the *evidence* did not: E-3 cited the
@@ -451,6 +466,19 @@ it is the meta-package whose floors make the other eight reachable by `pip insta
 | `juniper-recurrence` (app) | **0.5.0** | floors on model `>=0.3.0`; `requirements.lock` re-locked (recurrence#163) |
 | `juniper-model-core` | **0.3.2** | publishes the `crossval/splits.py` docstring fix stranded on `main` since ml#1829 |
 | `juniper-ml` (meta) | **0.8.0** | floors seven of the eight above, plus `juniper-cascor-client>=0.8.0` for the base-URL guard. `juniper-model-core` is the eighth and is **admitted, not floored** — see below |
+
+**Superseded since: re-probed against PyPI on 2026-09-23.** The table above records the version that
+*first* carried decision 11, and it stays as that record. Rewriting its cells would make it false about
+2026-09-10/11. Three rows no longer name what a fresh `pip install` serves, and for canopy the
+difference is the whole point:
+
+| package | first carried decision 11 | now | why it moved |
+| --- | --- | --- | --- |
+| `juniper-data` | 0.14.0 | **0.15.0** | `equities` / `equities_seq` go to `generator_version` 5.0.0: data#395 (the owner rulings) took them to 4.0.0 and data#404 (its regression fix) to 5.0.0. PyPI never served 4.0.0. The published wheels read 3.0.0 in 0.14.0 and 5.0.0 in 0.15.0. |
+| `juniper-canopy` | 0.7.0 | **0.8.1** | Every wheel from 0.5.0 through 0.8.0 ships zero top-level modules and cannot import its own dashboard (canopy#631), so 0.7.0 carried decision 11 without being able to deliver it. |
+| `juniper-ml` (meta) | 0.8.0 | **0.9.0**, then **0.10.0** | 0.9.0 floors canopy at `>=0.8.1`. 0.10.0 (ml#2033) floors data at `>=0.15.0`, because `>=0.14.0` left an installed 0.14.0 in place. v0.10.0 was cut 2026-09-23 at `288de462`; re-probe `/pypi/juniper-ml/0.10.0/json` before quoting it as installable. |
+
+The other six rows still name the current PyPI release (simple API, 2026-09-22).
 
 **`juniper-model-core` is floored by nobody — but a fresh install still gets it.** juniper-ml's `[tools]`
 extra pins it `>=0.1.0,<0.4.0`, which *admits* 0.3.2 without *requiring* it. Both halves were measured in a
