@@ -12,12 +12,13 @@ Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md
          notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md
 
-Why a script: a worktree-isolated session's shell gate refuses any command line that names git
-inside a pipeline, loop, redirect or `python -c` string -- and also a loop that runs `gh` over a
-variable -- and every probe below either reads git or loops over nine repos. Nothing here writes
-to any repository -- except `slack --fetch`, which runs `git fetch origin main` in a sibling
-checkout whose `origin/main` disagrees with GitHub (remote-tracking refs only; no working tree is
-touched).
+Why a script: a worktree-isolated session's shell gate refuses a command naming git that it cannot
+show stays inside the worktree -- observed: heredocs whose text contains "git" (a `.github/` path
+counts), `$(...)`, `<(...)`, running a script through `bash`, and a loop that runs `gh` over a
+variable, while plain pipes and redirects ran -- and every probe below either reads git or loops
+over nine repos. Nothing here writes to any repository -- except `slack --fetch`, which runs
+`git fetch origin main` in a sibling checkout whose `origin/main` disagrees with GitHub
+(remote-tracking refs only; no working tree is touched).
 
 Subcommands. Each prints what it measured AND what could have made it read differently:
 
@@ -31,24 +32,25 @@ Subcommands. Each prints what it measured AND what could have made it read diffe
   first-pass  THE SIZING INSTRUMENT: each head's FIRST PASS (the first execution of every
               required context), over healthy heads, against REPO_TIMEOUTS
   alarm       pr-budget-alarm.yml on each repo's default branch, SLACK_WEBHOOK_URL presence, and
-              every run's breach level, read from whether its Slack step ran
+              every run's level, read from its own `PR budget: ... level=` log line
   soak        every run of `Markdown Structure (advisory soak)` on juniper-ml pull requests since
               it was wired: what it examined, what it flagged, and on which PRs
   lockfile    EVERY PR the lockfile workflow opened, and what pull_request CI each one got
   settings    allow_update_branch / allow_auto_merge per repo
   waiter      what util/wait_for_checks.py waits when --timeout is omitted, per repo
 
-Usage (from the juniper-ml root; S is any existing directory, e.g. the session scratchpad):
-    python3 util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py all --json "$S/reprobe.json"
+Usage (from the juniper-ml root; S is a writable directory, e.g. the session scratchpad):
+    python3 util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py all --fetch --json "${S:?set S}/reprobe.json"
     python3 util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py slack --fetch
     python3 util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py soak --since 2026-09-18T00:37:10Z
 
-`all` makes roughly 2,500 REST calls and takes several minutes; `first-pass`, `spans`, `soak` and
+`all` makes roughly 2,700 REST calls and takes several minutes; `first-pass`, `spans`, `soak` and
 `alarm` are the slow ones. The token's REST budget is shared with every other session.
 
-Exit: 0 every probe measured every row; 2 at least one probe or row could not be measured (a
-vacuous result is refused, never scored -- the UNMEASURABLE line names it); 1 is a crash, not a
-measurement.
+Exit: 0 no probe refused; 2 a probe refused, and the UNMEASURABLE line names it and why; 1 is a
+crash, not a measurement. Exit 0 is NOT "every row was measured": each probe prints what it set
+aside -- unhealthy, incomplete and unmeasurable heads, cancelled runs' unreadable logs -- and a
+reader must look at those counts.
 """
 
 from __future__ import annotations
@@ -298,9 +300,17 @@ def first_pass_of(executions: list[dict]) -> tuple[list[dict], list[dict]]:
     Why the FIRST execution: the budget is spent on one pass. A later execution of a context --
     a re-run attempt after a failure, a workflow run started by a later PR event such as
     `Guard PR base branch` on `edited` -- is not part of the pass `safe_merge` waited on. The
-    rule this replaced dropped a whole head whenever any context ran twice, which set aside 13
-    heads whose only repeat was a successful `Guard PR base branch` run: dropping heads can only
-    LOWER a max, the unsafe direction for a "budget > max" rule.
+    rule this replaced dropped a whole head whenever a same-name check-run STARTED after another
+    had COMPLETED; it set aside 18 heads, 13 of them healthy (their only repeat was a successful
+    `Guard PR base branch` run), and dropping heads can only LOWER a max -- the unsafe direction
+    for a "budget > max" rule.
+
+    Known biases, stated rather than hidden. Earliest-wins is the opposite of the waiter's
+    newest-wins (util/wait_for_checks.py classify): a first run cancelled by concurrency and
+    replaced by a success makes the head UNHEALTHY here, which drops it -- so the caller prints
+    every unhealthy head's first-pass span, and a reader can see whether any exceeds the healthy
+    max. An execution with no `started_at` (cancelled while still queued) is skipped, which
+    promotes the next execution to "first" and leaves that queue wait out of the span.
     """
     seen, dedup = set(), []
     for e in executions:
@@ -342,21 +352,33 @@ def probe_first_pass(n: int = 30) -> dict:
             print(f"        {repo:<22} UNMEASURABLE -- no required contexts read")
             continue
         prs = json.loads(run(["gh", "pr", "list", "--repo", slug, "--state", "merged", "--limit", str(n), "--json", "number,headRefOid"]).stdout)
-        healthy, unhealthy, unmeas, raw = [], [], [], []
+        healthy, unhealthy, unmeas, incomplete, raw = [], [], [], [], []
         for pr in prs:
             sha = pr["headRefOid"]
             crs = gh_pages(f"repos/{slug}/commits/{sha}/check-runs?filter=all", key="check_runs")
             execs = [{"name": c["name"], "started": _ts(c["started_at"]), "completed": _ts(c["completed_at"]), "conclusion": c.get("conclusion")} for c in crs if c["name"] in required]
             have = {e["name"] for e in execs}
-            # A required context reported only as a legacy commit status: one record per context,
-            # earliest create to latest update, judged on its final state.
+            # A required context reported only as a legacy commit status becomes ONE execution:
+            # a status is a series of records (pending, then success), not a series of runs, so
+            # its first record's create time to its last record's update, judged on the FINAL
+            # state. One execution per RECORD would read pending-then-success as "=pending".
+            by_ctx: dict = {}
             for s in gh_pages(f"repos/{slug}/commits/{sha}/statuses"):
                 if s["context"] in required and s["context"] not in have:
-                    execs.append({"name": s["context"], "started": _ts(s["created_at"]), "completed": _ts(s["updated_at"]), "conclusion": s.get("state")})
+                    by_ctx.setdefault(s["context"], []).append(s)
+            for ctx, recs in by_ctx.items():
+                recs.sort(key=lambda s: s["created_at"])
+                execs.append({"name": ctx, "started": _ts(recs[0]["created_at"]), "completed": _ts(recs[-1]["updated_at"]), "conclusion": recs[-1].get("state")})
             first, dedup = first_pass_of(execs)
             span = _span(first)
             if span is None:
                 unmeas.append(pr["number"])
+                continue
+            missing = sorted(required - {e["name"] for e in first})
+            if missing:
+                # Coverage guard: a head without every required context is scored on a SHORTER
+                # span than a full pass -- the unsafe direction -- so it is listed, never scored.
+                incomplete.append({"pr": pr["number"], "missing": missing[:4], "n_missing": len(missing)})
                 continue
             raw_span = _span(dedup)
             raw.append(raw_span)
@@ -386,6 +408,7 @@ def probe_first_pass(n: int = 30) -> dict:
                 "healthy": len(healthy),
                 "unhealthy": unhealthy,
                 "unmeasurable": unmeas,
+                "incomplete": incomplete,
                 "p90": round(p90v),
                 "max": mxv,
                 "max_pr": max_pr,
@@ -398,11 +421,17 @@ def probe_first_pass(n: int = 30) -> dict:
             }
         )
         print(f"        {repo:<22} {len(healthy):>7} {len(unhealthy):>7} {len(unmeas):>6} {p90v:>6.0f} {mxv:>6} {'#' + str(max_pr):>7} {budget:>6} {4 * p90v:>6.0f} {round(max(raw)):>7}  {verdict}")
+        if len(healthy) < 10:
+            print(f"            only {len(healthy)} healthy heads: p90 sits at or next to the max; treat both as one observation")
         for u in sorted(unhealthy, key=lambda r: -r["raw_span"]):
             print(f"            not healthy #{u['pr']}: first pass {u['span']} s, raw {u['raw_span']} s -- {', '.join(u['first_pass_not_passed'][:4])}")
-    print("        could it read differently? yes -- a budget at or below the healthy max prints BELOW HEALTHY MAX, and an unhealthy")
-    print("        head whose first pass ran longer than the healthy max is printed above with its span. The sample is the last n")
-    print("        merged PRs by CREATION order, so it moves with every merge.")
+        for i in incomplete:
+            print(f"            incomplete #{i['pr']}: {i['n_missing']} required context(s) never reported ({', '.join(i['missing'])}) -- not scored")
+        for u in unmeas:
+            print(f"            unmeasurable #{u}: no required context on the head")
+    print("        could it read differently? yes -- a budget at or below the healthy max prints BELOW HEALTHY MAX; unhealthy,")
+    print("        incomplete and unmeasurable heads are listed, with each unhealthy first pass's span, so a head set aside")
+    print("        cannot hide a longer pass. The sample is the last n merged PRs by CREATION order, so it moves with every merge.")
     bad = [r["repo"] for r in out if str(r.get("verdict", "")).startswith("UNMEASURABLE")]
     if bad:
         raise Unmeasurable(f"first-pass: could not measure {bad}")
@@ -412,9 +441,22 @@ def probe_first_pass(n: int = 30) -> dict:
 # --------------------------------------------------------------------------------------------
 # alarm
 # --------------------------------------------------------------------------------------------
+_ALARM_LEVEL = re.compile(r"PR budget: total=(\d+) cursor=(\d+) warn=(\d+) alarm=(\d+) level=(OK|WARN|ALARM)")
+
+
 def probe_alarm() -> dict:
+    """Every pr-budget-alarm run on every repo, and the level THAT RUN measured.
+
+    The level comes from the run's own expanded log line `PR budget: total=N cursor=N warn=N
+    alarm=N level=L` -- digits, so the echoed script text cannot match. It is printed only after
+    the PR query succeeds: the workflow sets level=OK WITHOUT printing it when `gh pr list`
+    fails, so a run with no such line is UNMEASURED, never OK. The Slack step's conclusion is
+    read beside it as a cross-check (it runs exactly when level != OK). An earlier version read
+    the Slack step alone, which also reads "skipped" for a run that measured nothing, and fetched
+    one page of 50 runs when juniper-ml had 54.
+    """
     rows = []
-    print(f"[alarm] pr-budget-alarm.yml per repo; a run BREACHED iff its `{ALARM_SLACK_STEP} ...` step ran (it is skipped at level OK)")
+    print("[alarm] pr-budget-alarm.yml per repo; each run's level from its own `PR budget: ... level=` line, Slack step as cross-check")
     for repo in REPOS:
         meta = gh_json(f"repos/{OWNER}/{repo}")
         branch = meta["default_branch"]
@@ -422,33 +464,39 @@ def probe_alarm() -> dict:
         present = wf.returncode == 0
         secrets = run(["gh", "secret", "list", "--repo", f"{OWNER}/{repo}"], check=False)
         has_webhook = ("SLACK_WEBHOOK_URL" in [ln.split("\t")[0] for ln in secrets.stdout.splitlines()]) if secrets.returncode == 0 else None
-        runs, levels = [], {}
-        missing_step = 0
+        runs, levels, disagree = [], {}, []
         if present:
-            for r in gh_json(f"repos/{OWNER}/{repo}/actions/workflows/pr-budget-alarm.yml/runs?per_page=50").get("workflow_runs", []):
+            for r in gh_pages(f"repos/{OWNER}/{repo}/actions/workflows/pr-budget-alarm.yml/runs", key="workflow_runs"):
                 if r["status"] != "completed":
                     continue
-                steps = [s for j in gh_json(f"repos/{OWNER}/{repo}/actions/runs/{r['id']}/jobs").get("jobs", []) for s in j.get("steps", [])]
-                slack = next((s for s in steps if s["name"].startswith(ALARM_SLACK_STEP)), None)
-                if slack is None:
-                    missing_step += 1
-                    level = "UNREADABLE"
-                else:
-                    level = "OK" if slack["conclusion"] == "skipped" else f"BREACH (slack step {slack['conclusion']})"
-                runs.append({"id": r["id"], "created": r["created_at"], "conclusion": r["conclusion"], "level": level})
+                jobs = gh_json(f"repos/{OWNER}/{repo}/actions/runs/{r['id']}/jobs").get("jobs", [])
+                slack = next((s for j in jobs for s in j.get("steps", []) if s["name"].startswith(ALARM_SLACK_STEP)), None)
+                level = "UNMEASURED"
+                for j in jobs:
+                    log = run(["gh", "api", f"repos/{OWNER}/{repo}/actions/jobs/{j['id']}/logs"], check=False)
+                    m = _ALARM_LEVEL.search(log.stdout)
+                    if m:
+                        level = m.group(5)
+                        break
+                slack_ran = None if slack is None else slack["conclusion"] != "skipped"
+                if level in ("OK", "WARN", "ALARM") and slack_ran is not None and slack_ran != (level != "OK"):
+                    disagree.append(r["id"])
+                runs.append({"id": r["id"], "created": r["created_at"], "level": level, "slack_step_ran": slack_ran})
                 levels[level] = levels.get(level, 0) + 1
-        rows.append({"repo": repo, "alarm_present": present, "slack_webhook_secret": has_webhook, "runs": runs, "levels": levels, "missing_step": missing_step})
+        rows.append({"repo": repo, "alarm_present": present, "slack_webhook_secret": has_webhook, "runs": runs, "levels": levels, "level_vs_slack_step_disagree": disagree})
         hook = {True: "yes", False: "NO", None: "unreadable"}[has_webhook]
         span = f"{runs[-1]['created'][:10]}..{runs[0]['created'][:10]}" if runs else "-"
         print(f"        {repo:<22} alarm={'present' if present else 'MISSING':<8} webhook={hook:<10} runs={len(runs):<3} {span:<22} {levels}")
         for r in runs:
-            if r["level"] not in ("OK",):
-                print(f"            {r['created']} run {r['id']}: {r['level']}")
-    print("        could it read differently? yes -- a run whose Slack step ran prints BREACH, and a missing file, secret or step prints as")
-    print("        such. On a repo WITH the webhook a breach posts to Slack and leaves no annotation, which is why this reads the step.")
-    bad = [r["repo"] for r in rows if not r["alarm_present"] or r["slack_webhook_secret"] is None or r["missing_step"]]
+            if r["level"] != "OK":
+                print(f"            {r['created']} run {r['id']}: level {r['level']} (slack step ran: {r['slack_step_ran']})")
+        for d in disagree:
+            print(f"            run {d}: level line and Slack step DISAGREE")
+    print("        could it read differently? yes -- WARN/ALARM runs print above, and a run whose PR query failed prints UNMEASURED.")
+    print("        On a repo WITH the webhook a breach posts to Slack and leaves no annotation, so annotations are not read at all.")
+    bad = [r["repo"] for r in rows if not r["alarm_present"] or r["slack_webhook_secret"] is None or r["levels"].get("UNMEASURED") or r["level_vs_slack_step_disagree"]]
     if bad:
-        raise Unmeasurable(f"alarm: file, secret list or Slack step unreadable on {bad}")
+        raise Unmeasurable(f"alarm: missing file, unreadable secret list, an UNMEASURED run, or a level/step disagreement on {bad}")
     return {"rows": rows}
 
 
@@ -504,9 +552,15 @@ def probe_soak(since: str) -> dict:
 
     def prs_of(sha: str) -> list[int]:
         # A workflow run's `pull_requests` is EMPTY once its PR has merged, so it undercounts
-        # the denominator roughly fourfold; the commit's own PR association does not.
+        # the denominator roughly fourfold. `commits/<sha>/pulls` fixes that for merged and open
+        # PRs but returns [] for a PR CLOSED WITHOUT MERGING (ml#1971 on 2026-09-22), so fall
+        # back to searching PRs for the SHA.
         if sha not in pr_cache:
-            pr_cache[sha] = sorted(p["number"] for p in (gh_json(f"repos/{OWNER}/juniper-ml/commits/{sha}/pulls") or []))
+            found = sorted(p["number"] for p in (gh_json(f"repos/{OWNER}/juniper-ml/commits/{sha}/pulls") or []))
+            if not found:
+                hits = gh_json(f"search/issues?q={sha}+repo:{OWNER}/juniper-ml+type:pr").get("items", [])
+                found = sorted(i["number"] for i in hits)
+            pr_cache[sha] = found
         return pr_cache[sha]
 
     name = urllib.parse.quote(SOAK_JOB)
@@ -523,12 +577,15 @@ def probe_soak(since: str) -> dict:
                 if log.returncode == 0 or cr.get("conclusion") == "cancelled" or attempt == 3:
                     break
                 time.sleep(2 * attempt)
-            examined = re.search(r"examining (\d+) changed markdown file", log.stdout)
+            examined = re.search(r"examining (\d+) changed markdown file\(s\) against ([0-9a-f]{40})", log.stdout)
             nothing = re.search(r"no markdown changed against [0-9a-f]{7,40} -- nothing to examine", log.stdout) is not None
             findings, rc = _soak_findings(log.stdout) if log.returncode == 0 else ([], None)
             checks.append(
                 {
                     "head": sha,
+                    # The BASE the screen compared against -- what a replay needs, and recorded
+                    # nowhere else but this log line and the job summary.
+                    "base": examined.group(2) if examined else None,
                     "prs": prs_of(sha) if examined or findings else [],
                     "check_run": cr["id"],
                     "conclusion": cr.get("conclusion"),
@@ -552,23 +609,32 @@ def probe_soak(since: str) -> dict:
     for c in checks:
         for f in c["findings"]:
             key = (tuple(c["prs"]), f["path"], f["check"], tuple(f["items"]))
-            d = distinct.setdefault(key, {"runs": 0, "heads": set()})
+            d = distinct.setdefault(key, {"runs": 0, "heads": set(), "head_base": {}})
             d["runs"] += 1
             d["heads"].add(c["head"][:8])
+            d["head_base"][c["head"]] = c["base"]
     # Was each flagged PR still flagged at its FINAL head -- i.e. would a required version of this
     # check have blocked the merge itself, not just an intermediate push?
     final_head: dict = {}
-    for pr in sorted({p for c in flagged for p in c["prs"]}):
-        final_head[pr] = gh_json(f"repos/{OWNER}/juniper-ml/pulls/{pr}")["head"]["sha"]
+    pr_state: dict = {}
+    for pr in sorted({p for c in examined for p in c["prs"]}):
+        meta = gh_json(f"repos/{OWNER}/juniper-ml/pulls/{pr}")
+        final_head[pr] = meta["head"]["sha"]
+        pr_state[pr] = "merged" if meta.get("merged_at") else meta["state"]
     flagged_at_final = sorted({p for c in flagged for p in c["prs"] if final_head.get(p) == c["head"]})
+    states: dict = {}
+    for s in pr_state.values():
+        states[s] = states.get(s, 0) + 1
     print(f"[soak] `{SOAK_JOB}` on juniper-ml pull_request CI since {since}")
     print(f"       ci.yml pull_request runs: {len(runs)} over {len(heads)} heads; soak check-runs: {len(checks)}")
-    print(f"       logs unreadable: {len(unread)}; no markdown changed: {len(idle)}; UNCLASSIFIED: {len(unclassified)}")
-    print(f"       runs that EXAMINED >=1 file: {len(examined)}, on {len(prs_examined)} distinct PRs; files examined: {sum(c['examined_files'] for c in examined)}")
+    print(f"       logs unreadable: {len(unread)} ({sum(1 for c in unread if c['conclusion'] == 'cancelled')} of them cancelled runs); no markdown changed: {len(idle)}; UNCLASSIFIED: {len(unclassified)}")
+    print(f"       runs that EXAMINED >=1 file: {len(examined)}, on {len(prs_examined)} distinct PRs {states}; files examined: {sum(c['examined_files'] for c in examined)}")
     print(f"       runs with findings: {len(flagged)}; screen exits among examined runs: " + str({k: sum(1 for c in examined if c['screen_exit'] == k) for k in (0, 1, 2, None)}))
     print(f"       DISTINCT findings (PR, file, check, items): {len(distinct)}; PRs flagged at their FINAL head: {flagged_at_final}")
     for (prs, path, check, items), v in sorted(distinct.items(), key=lambda kv: (kv[0][0], kv[0][1])):
-        print(f"         PR {list(prs)} {check} {path}  runs={v['runs']} heads={sorted(v['heads'])}")
+        print(f"         PR {list(prs)} {check} {path}  runs={v['runs']}")
+        for head, base in sorted(v["head_base"].items()):
+            print(f"             replay: head {head} base {base}")
         for it in items[:6]:
             print(f"             {it}")
     for c in unclassified:
@@ -579,6 +645,10 @@ def probe_soak(since: str) -> dict:
         raise Unmeasurable("no soak check-runs found -- refusing to report a clean soak")
     if unclassified:
         raise Unmeasurable(f"soak: {len(unclassified)} readable log(s) neither examined a file nor said why")
+    lost = [c for c in unread if c["conclusion"] != "cancelled"]
+    if lost:
+        # A cancelled run's log is legitimately gone; a COMPLETED run's is evidence we did not read.
+        raise Unmeasurable(f"soak: {len(lost)} completed run(s) whose log could not be read after retries: {[c['check_run'] for c in lost]}")
     return {
         "since": since,
         "ci_runs": len(runs),
@@ -590,7 +660,8 @@ def probe_soak(since: str) -> dict:
         "prs_examined": prs_examined,
         "files_examined": sum(c["examined_files"] for c in examined),
         "runs_with_findings": len(flagged),
-        "distinct_findings": [{"prs": list(p), "path": pa, "check": ch, "items": list(it), "runs": v["runs"], "heads": sorted(v["heads"])} for (p, pa, ch, it), v in distinct.items()],
+        "pr_states": states,
+        "distinct_findings": [{"prs": list(p), "path": pa, "check": ch, "items": list(it), "runs": v["runs"], "replay": v["head_base"]} for (p, pa, ch, it), v in distinct.items()],
         "flagged_at_final_head": flagged_at_final,
         "checks": checks,
     }
@@ -604,7 +675,8 @@ def probe_lockfile() -> dict:
 
     The first draft of this probe read the five newest PRs and concluded "4 of 4 GITHUB_TOKEN PRs
     were parked, not suppressed". The branch has carried 18 GITHUB_TOKEN PRs, and five of them got
-    no `pull_request` run at all -- a correct predicate over an incomplete set.
+    no `pull_request` run when opened -- a correct predicate over an incomplete set. This probe
+    reads the OPENING commit only: #1139 got runs later, on the owner's merge-from-main push.
     """
     prs = json.loads(run(["gh", "pr", "list", "--repo", f"{OWNER}/juniper-ml", "--head", LOCKFILE_BRANCH, "--state", "all", "--limit", "200", "--json", "number,author,createdAt,state"]).stdout)
     if not prs:
@@ -617,8 +689,8 @@ def probe_lockfile() -> dict:
         wr = gh_json(f"repos/{OWNER}/juniper-ml/actions/runs?head_sha={opening}&event=pull_request&per_page=50").get("workflow_runs", []) if opening else []
         bot = [r for r in wr if r["actor"]["login"].endswith("[bot]")]
         human = [r for r in wr if not r["actor"]["login"].endswith("[bot]")]
-        # The run LIST shows the LATEST attempt, and a conclusion is not evidence (closing a PR
-        # flips a parked run to `failure`); whether attempt 1 ran any JOB is.
+        # The run LIST shows the LATEST attempt, and a conclusion is not evidence (#1806's parked
+        # runs flipped to `failure` around a close/reopen); whether attempt 1 ran any JOB is.
         ran, released_by = 0, set()
         for r in bot:
             if gh_json(f"repos/{OWNER}/juniper-ml/actions/runs/{r['id']}/attempts/1/jobs").get("total_count", 0) > 0:
@@ -666,25 +738,39 @@ def probe_settings() -> dict:
 def probe_waiter() -> dict:
     """What `util/wait_for_checks.py` actually waits when --timeout is omitted, per repo.
 
-    The first draft compared the module's DEFAULT_TIMEOUT constant against the budgets -- which
-    reads "8 of 9" whether or not the CLI uses those budgets, so it could not tell the fix from
-    the defect. This calls the CLI's own resolver.
+    Driven through the CLI's own `main()`, with `wait_for` stubbed so no PR is read: the stub
+    records the timeout main() hands it. Two earlier drafts could not tell the fix from the
+    defect -- one compared the DEFAULT_TIMEOUT constant against the table, the next called
+    resolve_timeout() directly, which still passes with main() reverted to the flat default.
     """
+    import contextlib
+    import io
+
     waiter = load_module("wait_for_checks_probe", ROOT / "util/wait_for_checks.py")
     sm = load_module("safe_merge_probe2", ROOT / "util/safe_merge.py")
-    if not hasattr(waiter, "resolve_timeout"):
-        raise Unmeasurable("util/wait_for_checks.py has no resolve_timeout -- the omitted --timeout still waits a flat default")
+    seen: dict = {}
+
+    def fake_wait_for(owner, repo, pr, **kw):
+        seen["timeout"] = kw.get("timeout")
+        return {"status": "green", "stalled": False, "pr_state": "OPEN", "merge_state": "CLEAN", "url": "", "contexts": [], "done": [], "running": [], "absent": [], "failed": [], "polls": 0}
+
+    waiter.wait_for = fake_wait_for
     rows = []
-    print("[waiter] util/wait_for_checks.py with --timeout omitted: the seconds it waits, and where they come from")
+    print("[waiter] util/wait_for_checks.py main() with --timeout omitted: the seconds it hands wait_for, and their source")
     for repo in REPOS + ["juniper-not-a-measured-repo"]:
-        seconds, source = waiter.resolve_timeout(repo)
-        agree = seconds == sm.timeout_for(repo)
-        rows.append({"repo": repo, "seconds": seconds, "source": source, "matches_safe_merge": agree})
-        print(f"           {repo:<28} {seconds:>5}s  {'==' if agree else '!='} safe_merge  ({source})")
-    print("           could it read differently? yes -- a CLI still waiting a flat constant prints the same seconds for every repo")
-    print("           and != against safe_merge's table, or a FALLBACK source.")
-    if not all(r["matches_safe_merge"] for r in rows):
-        raise Unmeasurable("waiter: the omitted-timeout budget disagrees with util/safe_merge.py for some repo")
+        seen.clear()
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            rc = waiter.main(["--pr", "1", "--repo", repo, "--json"])
+        payload = json.loads(out.getvalue() or "{}")
+        expected = sm.timeout_for(repo)
+        ok = rc == 0 and seen.get("timeout") == expected == payload.get("timeout") and "wait budget:" in err.getvalue()
+        rows.append({"repo": repo, "waited": seen.get("timeout"), "expected": expected, "source": payload.get("timeout_source"), "ok": ok})
+        print(f"           {repo:<28} waits {seen.get('timeout')!s:>5}s  {'==' if ok else '!='} safe_merge {expected}s  ({payload.get('timeout_source')})")
+    print("           could it read differently? yes -- a main() that ignores the resolver hands wait_for a flat constant, which")
+    print("           prints != for every repo whose budget differs from it.")
+    if not all(r["ok"] for r in rows):
+        raise Unmeasurable("waiter: main() with --timeout omitted does not wait util/safe_merge.py's budget for some repo")
     return {"rows": rows}
 
 
@@ -697,12 +783,17 @@ def main(argv=None) -> int:
     ap.add_argument("--fetch", action="store_true", help="slack: fetch a sibling whose origin/main disagrees with GitHub")
     ap.add_argument("--since", default=SOAK_WIRED, help=f"soak: ISO-8601 UTC lower bound (default {SOAK_WIRED}, when the job was wired)")
     ap.add_argument("-n", type=int, default=30, help="spans / first-pass: merged heads per repo (default 30)")
-    ap.add_argument("--json", type=Path, help="also write every result to this JSON file (its directory must exist)")
+    ap.add_argument("--json", type=Path, help="also write every result to this JSON file (checked writable before any probe runs)")
     args = ap.parse_args(argv)
-    if args.json and not args.json.parent.is_dir():
-        # Checked BEFORE the probes run: failing at the final write threw away minutes of work.
-        print(f"error: --json directory {args.json.parent} does not exist", file=sys.stderr)
-        return 2
+    if args.json:
+        # Proven writable BEFORE the probes run, by writing it: failing at the final write threw
+        # away minutes of work, and a directory check alone passed an unset `$S`, whose
+        # "/reprobe.json" has an existing but unwritable parent.
+        try:
+            args.json.write_text("{}\n", encoding="utf-8")
+        except OSError as exc:
+            print(f"error: cannot write --json {args.json}: {exc}", file=sys.stderr)
+            return 2
 
     chosen = PROBES if args.probe == "all" else [args.probe]
     results: dict = {"measured_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}

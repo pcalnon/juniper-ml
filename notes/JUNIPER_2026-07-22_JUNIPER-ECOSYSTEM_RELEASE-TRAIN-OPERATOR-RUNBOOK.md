@@ -985,7 +985,8 @@ owner-only) and nothing outside pull-request merges.
    > **Observed 2026-09-22 on the same token path** (juniper-ml's 18 `GITHUB_TOKEN` lockfile PRs,
    > census in `HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`
    > § Re-evaluation 2026-09-22): all ran zero jobs at opening, but in two shapes. 5 got no
-   > `pull_request` run at all, and 13 had their runs **created and parked at `action_required`**.
+   > `pull_request` run when opened (one, #1139, got runs only after the owner pushed main into
+   > its branch), and 13 had their runs **created and parked at `action_required`**.
    > For a parked PR the cheapest re-trigger is re-running those runs from the Actions tab, which is
    > how 12 of the 13 were released.
 2. **Issues permission (HALT-issue degradation) — RETIRED 2026-07-30.** Owner-verified: the App's

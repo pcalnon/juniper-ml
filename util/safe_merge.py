@@ -231,26 +231,32 @@ DEFAULT_TIMEOUT = 2400  # unmeasured repos: the "standard" tier
 # Sizing rule, both halves now enforced by `KillResilienceTest`: the budget must CLEAR the
 # observed max and stay inside 4x p90. Values are picked mid-window, not guessed.
 #
-# If a repo starts refusing healthy PRs, re-run the v2 tool with `-n 30` and record `n`
-# alongside whatever you write here -- the 2026-09-05 juniper-ml re-tier could not be
-# reproduced because its sample size was never written down.
+# If a repo starts refusing healthy PRs, re-measure with
+# `util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py first-pass` -- NOT raw v2, which pins
+# re-run tails (canopy 33,299 s) that no budget can satisfy -- and record `n` alongside whatever
+# you write here: the 2026-09-05 juniper-ml re-tier could not be reproduced because its sample
+# size was never written down.
 #
 # RE-MEASURED 2026-09-22, n=30 merged heads per repo, and THREE BUDGETS HAD GONE STALE AGAIN:
 # juniper-data 2589 > 2400, juniper-data-client 2565 > 2400, juniper-deploy 965 > 700. Each max
 # is a single healthy pass -- every workflow run on attempt 1, each required context run once,
-# none failed -- and each was mostly RUNNER QUEUE: 64-82% of the span had no required job
+# none failed -- and each was mostly RUNNER QUEUE: 64-82% of the span had no job on the head
 # running while one waited (91-99% of the critical path, by another measure). data#405 and
 # data-client#206 ran in the same 2026-09-21 13:10-13:56 UTC burst. Raised below, mid-window
 # as before.
 #
-# DISSENT RECORDED, NOT RESOLVED. Raising a budget to cover a queue-dominated span sits against
-# the paragraph below ("do NOT raise a budget to absorb a queue"). That paragraph was narrowed
-# on 2026-09-10 to PRE-start queue (the juniper-ml entry, WITHDRAWN (1)), the "> observed max"
-# rule the tests enforce has no queue exemption, and the 2026-09-09 raises of ml and recurrence
-# followed the same rule -- so the raises follow the rule as written. But queue-free, all three
-# spans fit their OLD budgets; every re-measure so far has only raised budgets; and four of nine
-# now sit at TIMEOUT_CEILING, where the next stale one CANNOT be raised. Whether a budget should
-# absorb within-span contention at all is an OWNER decision, recorded in
+# THE OWNER RULED 2026-09-22 TO SHIP THOSE THREE RAISES, over a recorded dissent. The case for
+# holding: the paragraph below says "do NOT raise a budget to absorb a queue"; queue-free, all
+# three spans fit their OLD budgets; every re-measure of an already-pinned budget has raised it
+# (the one lowering, 2026-09-08's pinning of deploy and recurrence from the 2400 s default to
+# 700 s, went stale for recurrence within a day); and four of nine budgets now sit at
+# TIMEOUT_CEILING, where the next stale one cannot be raised. The case for shipping: the juniper-ml
+# entry's WITHDRAWN (1) note (2026-09-10) reads that paragraph as covering PRE-start queue only,
+# which the span excludes by construction; the "> observed max" rule the tests enforce has no
+# queue exemption; the 2026-09-09 raises of ml and recurrence followed the same rule; and holding
+# refuses healthy PRs during contention, where a refusal disarms the auto-merge net. The GENERAL
+# question -- should a budget absorb within-span contention, and what happens when a repo at the
+# ceiling goes stale -- stays open, recorded in
 # prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md.
 #
 # v2 HAS A SECOND DEFECT, and it is why canopy and recurrence are NOT raised. It reads
@@ -303,9 +309,12 @@ REPO_TIMEOUTS = {
     # What is not withdrawn: 1500 REFUSED ml#1828 live, on a PR whose 17 required contexts
     # every one passed.
     #
-    # 09-22: p90 910, max 2005 (30 healthy heads, window #1981-#2015) -> window (2005, 3640].
-    # 2800 stands. Two merges later the window read p90 733 / max 1061: #1981, a 2005 s healthy
-    # pass, had slid out -- one head at the window's edge halves this max.
+    # 09-22: p90 910, max 2005 (30 healthy heads, window #1981-#2014) -> window (2005, 3640].
+    # 2800 stands. Later reads gave p90 857, then 733, then 680 (2026-09-23 00:33 UTC), each with
+    # max 1061: #1981, a 2005 s healthy pass, had slid out -- one head at the window's edge halves
+    # this max. At 680, 2800 exceeds 4x p90 (2720) by 80 s. NOT re-pinned: a window edge moving is
+    # not evidence the worst case improved, and while the handoff's OWNER DECISION 2 is open a
+    # stale-reading row goes to the owner rather than being re-pinned.
     "juniper-ml": 2800,
     # RAISED 2400 -> 3300 on 09-22: p90 1651, max 2589 (#405, a single healthy pass) -> window
     # (2589, 6604], mid 4596, so TIMEOUT_CEILING binds first. Was p90 955 / max 2126 on 09-09.
@@ -369,7 +378,7 @@ REPO_TIMEOUTS = {
     # clears the max by only 334 s -- the thinnest margin in the table, in seconds. Raw v2 read
     # 9,886 s off #175, whose first pass was NOT healthy: two run sets fired 1 s apart,
     # concurrency cancelled part of one and four aggregator checks failed, and the cancelled
-    # pre-commit run was re-run 2.5 h later -- the PR merged 4 s after it passed.
+    # pre-commit run was re-run 2.7 h later -- the PR merged 4 s after it passed.
     "juniper-recurrence": 2000,
 }
 

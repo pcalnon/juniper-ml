@@ -96,6 +96,25 @@ def run_suite(target_text: str) -> tuple[int, str]:
         return proc.returncode, "; ".join(tail[-6:])
 
 
+PROBE = "util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py"
+
+
+def run_probe(target_text: str) -> tuple[int, str]:
+    """The re-evaluation's `waiter` probe against a (possibly mutated) waiter, in a temp tree.
+
+    The probe is cited as evidence that the CLI waits the measured budget, so it must itself go
+    red on the defect: two earlier versions of it passed with main() reverted to the flat default.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        tree = Path(td)
+        (tree / "util" / "ad-hoc").mkdir(parents=True)
+        (tree / "util" / "wait_for_checks.py").write_text(target_text, encoding="utf-8")
+        shutil.copy2(ROOT / "util" / "safe_merge.py", tree / "util" / "safe_merge.py")
+        shutil.copy2(ROOT / PROBE, tree / PROBE)
+        proc = subprocess.run([sys.executable, str(tree / PROBE), "waiter"], cwd=tree, capture_output=True, text=True, check=False)  # nosec B603
+        return proc.returncode, (proc.stderr.strip().splitlines() or [""])[-1][:140]
+
+
 def main() -> int:
     original = (ROOT / TARGET).read_text(encoding="utf-8")
     rc, summary = run_suite(original)
@@ -113,6 +132,14 @@ def main() -> int:
         verdict = "KILLED" if rc != 0 else "SURVIVED"
         ok &= rc != 0
         print(f"[{verdict}] {name}: exit {rc} -- {summary}")
+
+    # The probe's own discrimination: green on the fix, red on the flat default.
+    name, old, new = MUTATIONS[0]
+    rc_ctl, _ = run_probe(original)
+    rc_mut, tail = run_probe(original.replace(old, new))
+    probe_ok = rc_ctl == 0 and rc_mut == 2
+    ok &= probe_ok
+    print(f"[{'KILLED' if probe_ok else 'SURVIVED'}] reprobe `waiter` vs '{name}': control exit {rc_ctl}, mutant exit {rc_mut} -- {tail}")
     print("ALL MUTATIONS KILLED" if ok else "AT LEAST ONE MUTATION SURVIVED OR COULD NOT BE APPLIED")
     return 0 if ok else 1
 

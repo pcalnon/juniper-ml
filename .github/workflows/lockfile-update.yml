@@ -17,7 +17,8 @@
 #    A PR opened with the built-in GITHUB_TOKEN gets NO executed checks. Every
 #    one of the 18 this workflow opened that way on juniper-ml (#325..#1932,
 #    census 2026-09-22) ran zero jobs at opening, in two shapes: 5 got no
-#    `pull_request` run at all (#325/#328/#339/#389, and #1139 on 2026-08-17),
+#    `pull_request` run when opened (#325/#328/#339/#389/#1139; #1139, opened
+#    2026-08-17, got runs only after the owner pushed main into its branch),
 #    and 13 had their runs CREATED but parked at `action_required` with zero
 #    jobs. No check fails and none reports, so the absence looks like a quiet
 #    week rather than a gap. 12 of the 13 parked ones were released by the owner

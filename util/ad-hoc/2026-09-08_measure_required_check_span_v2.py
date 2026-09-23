@@ -100,15 +100,16 @@ check-run per name WITHIN EACH WORKFLOW RUN. Two consequences:
     juniper-canopy#653      first pass FAILED at 10:08Z; two jobs re-run at 19:01Z   33,299 s
     juniper-recurrence#175  two run sets fired 1 s apart; concurrency cancelled 5
                             required contexts and 4 aggregators failed; the cancelled
-                            pre-commit run was re-run 2.5 h later, merge 4 s after it  9,886 s
+                            pre-commit run was re-run 2.7 h later, merge 4 s after it  9,886 s
 
 A later execution is not part of the pass `safe_merge` waited on, and both figures exceed
 4x p90, so the sizing rule cannot be satisfied over them. The raw max printed here is an
 upper bound, not the healthy worst case. Size budgets from
 `util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py first-pass`: each head's FIRST PASS (the
 first execution of every required context, over `filter=all`), over heads whose first pass
-passed. It drops no head for a repeat -- an earlier rule that did set aside 13 heads whose
-only repeat was a successful `Guard PR base branch` run, and dropping heads can only LOWER a
+passed. It drops no head for a repeat. An earlier rule dropped a head whenever a same-name
+check-run started after another had completed; it set aside 18 heads, 13 of them healthy (their
+only repeat was a successful `Guard PR base branch` run), and dropping heads can only LOWER a
 max, the unsafe direction for a "budget > max" rule.
 
 Usage
