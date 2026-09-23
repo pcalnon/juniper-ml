@@ -52,9 +52,11 @@ evidence and the traps in each fix are in SECTION 8; these are the summaries.
    is that ZERO tests exercise those columns. (§8.1)
 
 2. `run_suite.py` `expand_cells` raises RAW exceptions on operator-typeable YAML,
-   exiting 1 where its own docstring contract says 2 -- colliding with the documented
-   meaning of 1, "suite completed with failed cells". Four shapes reproduce; `matrix:`
-   and `exclude:` exit 2 cleanly, which is the contrast that makes it a defect. (§8.2)
+   exiting 1 where the contract says 2 -- colliding with the documented meaning of 1,
+   "suite completed with failed cells". Four shapes reproduce; `matrix:` and `exclude:`
+   exit 2 cleanly, which is the contrast that makes it a defect. The contract is stated
+   in TWO places -- run_suite.py:28-29 AND docs/REFERENCE.md:5136-5146 -- and broken
+   against both; an earlier draft said "only the docstring". (§8.2)
 
 3. `_emit_stats` (run_experiment.py:1166-1186) fails SILENTLY: it sets
    manifest["stats_error"], never changes the exit code, and nothing reads the receipt
@@ -112,11 +114,13 @@ Key context:
 | --- | --- |
 | branch | `worktree-gentle-kindling-pascal`, tracking `origin/main`. **The only working-tree change is THIS FILE, untracked** — committing and PR-ing it is the first outstanding task (§7) |
 | `origin/main` | re-measure — it took 6 merges in the 70 minutes this session watched it |
-| this session's PRs | **#2000, #2001, #2010 — all MERGED** (`57e84be8`, `e6419175`, `e3186919`) |
+| this session's PRs | **#2000, #2001, #2010, #2016, #2026 — all MERGED** (`57e84be8`, `e6419175`, `e3186919`, `d0582a21`, `370c51eb`) |
 | post-merge CI | **18 success / 5 skipped on all three** — `57e84be8`, `e6419175`, `e3186919` |
 | markdown structure debt | **ZERO** — denominator drifts (1084 on 09-15, 1119 and 1127 on 09-22). Re-run; do not quote a total |
 | falsy-guard population | **take a floor from ONE tool.** `next_batch` → **75 guards / 18 files** (non-ad-hoc); `triage --blind-spot` → **73 + 7 = 80** on its own criterion. They differ by 2 (`util/release_train/propose.py:918`, `:1070`). Do **not** add across them |
 | open PRs authored here | none |
+| the five open items | **FILED as `APD-ML-002`–`-006`** (ml#2026) — UNPARKED, and per §1 of the register **not thereby actionable**; they need an owner decision before code |
+| `MEMORY.md` | compaction ATTEMPTED and **REVERTED** — it deleted hazard hooks the owner's rule protects. Back at ~26 KB; closing the gap needs an owner call (§7) |
 
 ### Verification commands
 
@@ -271,8 +275,13 @@ directory — the repo root contains a same-named package dir), and the memory i
 **Changed**: this file,
 `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_structure-screen-was-blind-to-its-founding-incident-and-five-open-items-in-run-suite.md`,
 and `MEMORY.md` (one pointer folded into the existing cursor-fleet line; the memory files
-`project_cursor_fleet_round2_arc_closed_2026-09-11.md` and
-`reference_mutation_check_stale_pyc_and_piped_exit.md` were also updated).
+`project_cursor_fleet_round2_arc_closed_2026-09-11.md`,
+`reference_mutation_check_stale_pyc_and_piped_exit.md` and
+`reference_count_unit_and_criterion_must_match.md` were also updated).
+Merged in ml#2026: `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` (five new
+§4.9 rows, a park block, three corrected §2 counts and a corrected §4.9 preamble),
+`util/ad-hoc/2026-09-11_memory_index_preserve.py` (run-time-dated digest heading), and the new
+`util/ad-hoc/2026-09-22_memory_index_trim_tails.py` (hazard-tail guard).
 Merged earlier today — ml#2000: `util/ad-hoc/2026-09-05_markdown_structure_check.py`,
 `tests/test_markdown_structure_screen.py`,
 `util/ad-hoc/2026-09-22_structure_screen_ml1746_regression.py`; ml#2001:
@@ -294,21 +303,44 @@ ml#2010: that same predecessor handoff again and
 - **The five open items in §1 were not fixed.** They are a `util/experiments/` arc, not a
   falsy-guard arc, and item 1 is coupled to three guards that are only safe while it stays
   broken. Fixing them piecemeal would activate a defect class silently.
-- **The five items were NOT filed in the defect register**, and that is a gap rather than a
-  ruling. `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` defines its
-  inclusion criterion as *"a concrete, actionable problem a maintainer could ticket: a bug,
-  … a missing guard, a stale comment that misleads, dead code"* — all five qualify, and
-  item 5 is literally dead code. That same register carries a resident warning against
-  exactly this: *"A rule that lives only in the document that hands off the work stops
-  existing the first time one successor omits it."* **Filing them is outstanding work.**
+- ~~**The five items were NOT filed in the defect register**~~ — **FILED 2026-09-22 as
+  `APD-ML-002`–`-006` in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`
+  §4.9 (ml#2026, `370c51eb`).** They are **UNPARKED but NOT thereby actionable**: §1 of that
+  register is explicit that *"Unparked ≠ actionable"* and that *"the set of rows a session
+  may action without asking the owner first is empty"*. **They need an owner decision before
+  code is written.** Validation of the filing corrected three counts in §2 that went stale
+  the moment the rows landed — "thirty filed", "twelve are open", **"27 open in all,
+  15 primer + 12 post-primer"** — and removed `juniper-ml` from the "no open row at all"
+  list, which `util/ad-hoc/register_open_set.py` now contradicts directly (`APD-ML  5`).
+  Nothing caught that: `register_status_crosscheck.py` is ID-keyed on `**FIXED` and printed
+  `AGREE` throughout.
 - **The remaining falsy guards were not swept**, by standing decision. The bar is in-file
   evidence, and `util/ad-hoc/2026-09-22_falsy_guard_next_batch.py` now measures it; §1
   names the two candidates it currently selects.
-- **`MEMORY.md` was not compacted.** It is **25,843 bytes** against the owner's 20 KB
-  target — a **~29% overshoot**, not the ~12% an earlier draft of this file claimed. Several
-  sessions write it concurrently, so `stat` it rather than quoting any figure, including
-  this one. Compact by RETIRING entries, never by stripping hooks. One pointer was folded
-  into an existing line here rather than added as a new one.
+- **`MEMORY.md` was compacted 26,002 → 19,813 bytes on 2026-09-22 and the compaction was
+  REVERTED.** It passed both existing gates — `LOSSES: 0` and link set 209 → 209 with none
+  dropped — and was still wrong. `feedback_memory_index_target_is_20kb.md` lists `titles`
+  and `hooks` as **separate** budget rows: the title is the link text, the **hook is the
+  `—` tail**, and the memory names *"NEVER run it"*, *"`_is_dirty` fails OPEN"* and
+  *"exit 0 ≠ merged"* as the reason the index is worth loading. The trim deleted the first
+  two. Its closing sentence is the ruling: *"treat 20 KB as a ceiling to drift back toward
+  as entries genuinely close, **not a number to hit this week by deleting live warnings**."*
+  Index restored; all four hazard hooks verified back; link set intact.
+  > **BOTH GATES ARE WEAKER THAN THEY READ, and this is the durable finding.** The lossless
+  > verifier's condition 2 is *"the whole line survives verbatim in a topic file"* — exactly
+  > what `2026-09-11_memory_index_preserve.py` guarantees — so it confirms the preserve step
+  > ran; its discriminating phrase branch fired on **0 of 88 lines**, and its
+  > `MIN_PHRASE_CHARS = 24` split on `.` shreds PR numbers and version pins below the
+  > threshold. **Neither gate reads hook TEXT**, only link targets: a mutation emptying a
+  > hazard hook to `[]` passes both. Fix those before reusing this method.
+  > **`2026-09-22_memory_index_trim_tails.py` now refuses to drop a hazard tail at any
+  > length**, and `2026-09-11_memory_index_preserve.py`'s digest heading is dated at run
+  > time (it was hard-coded `2026-09-11`, filing 57 of that day's appends eleven days early).
+  **STILL OUTSTANDING, and it needs YOU**: the index is back over target and the
+  non-destructive levers are spent — retirement is 1 unreachable of 288, and moving detail
+  to topic files is done. Closing the gap means deciding which *linked, closed-arc* entries
+  may retire, which the owner memory warns is a false-positive machine when automated
+  (a "closed" marker anywhere on a grouped line tags every entry on it).
 - **The `env_floor_drift_check` reason string was not reworked.** A malformed pyproject now
   correctly exits 2, but says *"no juniper-\* version floors declared"* — true, yet it
   describes a declaration gap rather than a malformed document.
@@ -321,7 +353,9 @@ ml#2010: that same predecessor handoff again and
 ## 8. The five open items — mechanism, evidence, and the trap in each fix
 
 Every line number here was re-probed 2026-09-22. `util/experiments/run_suite.py` was
-rewritten by ml#2002 (`f8ffaa48`) **mid-session**, so re-grep before editing.
+rewritten by ml#2002 (`f8ffaa48`) **mid-session** (**+190 / −5**, not the "195 lines" an
+earlier draft reported — that figure added the deletions to the insertions), so re-grep
+before editing.
 
 ### 8.1 `_headline_metrics` can never match — and four of its six names do not exist
 
@@ -337,7 +371,9 @@ n_epochs, stopped_reason, dataset_descriptor, theta, readout, crossval}`. **Inte
 `513e7df2` (ml#1032), and `build_stats`' cascor block is byte-identical there.
 
 **The trap.** Only **two** of the six names exist at *any* depth in the 413-file corpus:
-`cascor.final.val_accuracy` (348 files) and `recurrence.final_metrics.r2` /
+`cascor.final.val_accuracy` (the KEY is present in 369 files and carries a NUMBER in 348 —
+only the 348 could ever be read, since the reader requires `isinstance(…, (int, float))`)
+and `recurrence.final_metrics.r2` /
 `recurrence.crossval.*.r2` (38). `final_accuracy`, `test_accuracy`, `train_r2` and `cv_r2`
 appear **nowhere, at any depth**. A one-level unwrap harvests 2 of 6 and looks like a fix.
 
@@ -352,8 +388,10 @@ fix.
 
 **So the one-PR argument is COVERAGE, not safety**: `tests/test_run_suite.py`,
 `tests/test_run_suite_gate_metrics.py` and `tests/test_run_suite_uncountable_report.py`
-contain **zero** references to `metrics` / `metric_keys` / `_headline_metrics`. Those
-columns have never been exercised with data, so the fix ships their first tests.
+contain **zero** references to the registry `metrics` key, to `metric_keys`, or to
+`_headline_metrics` — they do mention `metrics_scraped`, `_gate_metrics` and
+`metrics_series.csv`, which are different things. Those columns have never been exercised
+with data, so the fix ships their first tests.
 
 ### 8.2 `expand_cells` raises raw exceptions where the contract promises exit 2
 
@@ -370,16 +408,23 @@ columns have never been exercised with data, so the fix ships their first tests.
 > *"include entries must be mappings with an 'overrides' key"*. An earlier draft listed it;
 > it only becomes a raw `TypeError` when paired with `overrides`. Quote the paired form.
 
-Mechanism: `main:875-880` is `try: … except SuiteError: return 2`; anything else escapes
+Mechanism: `main`'s `try:` at `:874` / `except SuiteError` at `:882` returns 2 at `:884`
+(and `main` has **five** `return 2` sites — `:884`, `:916`, `:925`, `:965`, `:972` — three of
+which are not `SuiteError` paths); anything else escapes
 `sys.exit(main())` and CPython exits **1**. The contract is `run_suite.py:28-29` —
 *"2 = misuse / suite-validation error"*, *"1 = suite completed with failed cells"* — printed
-by `--help` via `description=__doc__` at `:859`. **The collision is exact.** Note it lives
-only there: `docs/REFERENCE.md` § Suite Driver and
-`docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md:41-53` do not restate the exit codes.
+by `--help` via `description=__doc__` at `:860`. **The collision is exact.**
+> **CORRECTED 2026-09-22: "it lives only there" was FALSE.** `docs/REFERENCE.md:5136`
+> carries *"### Resume, `--only`, and exit codes"* with a three-row table at `:5142-5146`
+> whose `2` reads *"Suite YAML / `--only` / `--resume` dir / **materialise validation**"* —
+> precisely the promise `expand_cells` breaks, on the surface operators actually read.
+> **The defect is BIGGER than first filed and a fix must repair both surfaces.**
+> (`docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md:41-53` genuinely does not restate them for
+> `run_suite`; its "exit 0/1/2" at `:46` belongs to `compare_baseline.py`.)
 
 ### 8.3 `_emit_stats` fails silently and nothing reads the receipt
 
-`run_experiment.py:1166-1186`. `except Exception` at `:1183` sets `manifest["stats_error"]`
+`run_experiment.py:1166-1185`. `except Exception` at `:1182` sets `manifest["stats_error"]`
 at `:1184`; the exit code is never touched, because the call sites `:1756` / `:2103` are
 inside a `finally:` opened at `:1703` / `:2052`, after `exit_code` is fixed at `:1679-1698` /
 `:2030-2047`.
@@ -392,7 +437,7 @@ And `_headline_metrics` returns `{}` for a missing `stats.json` (`:583-584`) —
 value a healthy one returns** — so the loss is indistinguishable from success downstream.
 
 > **Correction to an earlier draft**: the manifest's `artifacts` list does **not** come back
-> empty. It is seeded with the config copy at `:1582` / `:1916` and assigned at `:1186`,
+> empty. It is seeded with the config copy at `:1582` / `:1916` and assigned at `:1185`,
 > *outside* the try. What is lost is exactly `stats.json` and `summary.md`; and since
 > `_write_json(stats_path)` at `:1175` precedes `render_summary_md` at `:1179`, a
 > render-only failure loses `summary.md` alone.
@@ -412,7 +457,7 @@ since the endpoint's first commit, so no older service ever served it unpinned.
 `:216-217` consume the *same* `crossval_full` payload in the *same* driver run and guard
 *exactly these two keys* with `isinstance(..., Mapping)`. A sibling module already treats
 them as untrusted; `stats_summary.py` is the outlier. (`folds` is guarded locally too, at
-`:242-243`.) `--recurrence-url` (`run_experiment.py:2158`) also lets an operator aim the
+**`stats_summary.py`**`:242-243` — not `plots_recurrence.py`, which is only 235 lines long.) `--recurrence-url` (`run_experiment.py:2158`) also lets an operator aim the
 driver at an arbitrary base URL.
 
 **Severity is §8.3's class, not a crash**: `render_summary_md` raises only on a *truthy*
@@ -423,7 +468,7 @@ non-mapping, `_emit_stats` catches it, `stats.json` is already written — so th
 
 `stats_summary.py:340`: `scraped.get("target_file_written", scraped.get("present"))`.
 
-Both mechanism halves hold: `_metrics_scraped` (`run_experiment.py:353-400`) emits
+Both mechanism halves hold: `_metrics_scraped` (`run_experiment.py:353-403`) emits
 `target_file_written` at `:378` and never `present`; and the only production caller of
 `render_summary_md` is `_emit_stats` (`:1179`), fed the dict `build_stats` just returned from
 the live in-memory manifest — no disk round-trip exists anywhere in `util/`, `scripts/` or
