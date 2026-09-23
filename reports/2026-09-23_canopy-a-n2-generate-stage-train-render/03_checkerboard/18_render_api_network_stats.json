@@ -1,0 +1,40 @@
+{
+  "step": "render_api_network_stats",
+  "t_utc": "2026-09-23T19:39:44.304Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/network/stats",
+  "status": 200,
+  "response": {
+    "threshold_function": "sigmoid",
+    "optimizer": "sgd",
+    "total_nodes": 0,
+    "total_edges": 0,
+    "total_connections": 0,
+    "weight_statistics": {
+      "total_weights": 0,
+      "positive_weights": 0,
+      "negative_weights": 0,
+      "zero_weights": 0,
+      "mean": 0.0,
+      "std_dev": 0.0,
+      "variance": 0.0,
+      "skewness": 0.0,
+      "kurtosis": 0.0,
+      "median": 0.0,
+      "mad": 0.0,
+      "median_ad": 0.0,
+      "iqr": 0.0,
+      "q1": 0.0,
+      "q3": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "z_score_distribution": {
+        "within_1_sigma": 0,
+        "within_2_sigma": 0,
+        "within_3_sigma": 0,
+        "beyond_3_sigma": 0
+      }
+    }
+  },
+  "elapsed_s": 0.008
+}

@@ -1,0 +1,56 @@
+{
+  "final_status": {
+    "backend": "recurrence",
+    "execution": "one_shot",
+    "is_training": false,
+    "is_running": false,
+    "is_paused": false,
+    "completed": true,
+    "failed": false,
+    "fsm_status": "trained",
+    "phase": "complete",
+    "network_connected": true,
+    "monitoring_active": false,
+    "pending_dataset": null,
+    "current_dataset": {
+      "dataset_type": "equities_seq",
+      "symbols": [
+        "AAPL",
+        "MSFT",
+        "GOOGL",
+        "AMZN",
+        "NVDA"
+      ],
+      "regression_target": "return",
+      "fundamentals_fill": "drop"
+    },
+    "current_epoch": 1,
+    "completion_reason": "converged"
+  },
+  "timeline": [
+    {
+      "t_s": 0.0,
+      "fsm_status": "training",
+      "phase": "fitting",
+      "is_running": true,
+      "is_training": true,
+      "completed": false,
+      "failed": false,
+      "current_epoch": null,
+      "hidden_units": null,
+      "completion_reason": null
+    },
+    {
+      "t_s": 75.37,
+      "fsm_status": "trained",
+      "phase": "complete",
+      "is_running": false,
+      "is_training": false,
+      "completed": true,
+      "failed": false,
+      "current_epoch": 1,
+      "hidden_units": null,
+      "completion_reason": "converged"
+    }
+  ]
+}

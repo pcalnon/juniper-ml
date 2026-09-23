@@ -1,0 +1,10 @@
+INFO:     127.0.0.1:55536 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+2026-09-23 14:53:25,415 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [1/5] AAPL -> 4318 rows
+2026-09-23 14:53:25,521 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [2/5] MSFT -> 4252 rows
+2026-09-23 14:53:25,647 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [3/5] GOOGL -> 2667 rows
+2026-09-23 14:53:25,775 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [4/5] AMZN -> 4316 rows
+2026-09-23 14:53:25,892 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [5/5] NVDA -> 4297 rows
+INFO:     127.0.0.1:55538 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:55538 - "GET /v1/datasets/equities_seq-5.0.0-c7916412c2344e07/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47816 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47820 - "GET /v1/datasets/equities_seq-5.0.0-c7916412c2344e07 HTTP/1.1" 200 OK

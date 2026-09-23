@@ -1,0 +1,37 @@
+{
+  "welcome_modal": "not closed (TimeoutError)",
+  "samples": [
+    {
+      "t_s": 16.0,
+      "top_status": "Stopped",
+      "top_phase": "Idle",
+      "top_epoch": "0",
+      "top_hidden_units": "0",
+      "network_info": "Input Nodes: 0 |  | Hidden Units: 0 |  | Output Nodes: 0 |  | Training Step: 1 |  | Epoch (in phase): \u2014 |  | Iteration: \u2014 |  | Training Phase: Idle |  | Network Connected: Yes |  | Monitoring: Inactive"
+    },
+    {
+      "t_s": 25.0,
+      "top_status": "Stopped",
+      "top_phase": "Idle",
+      "top_epoch": "0",
+      "top_hidden_units": "0",
+      "network_info": "<error TimeoutError>"
+    },
+    {
+      "t_s": 35.2,
+      "top_status": "Stopped",
+      "top_phase": "Idle",
+      "top_epoch": "1",
+      "top_hidden_units": "<error TimeoutError>",
+      "network_info": "Input Nodes: 0 |  | Hidden Units: 0 |  | Output Nodes: 0 |  | Training Step: 1 |  | Epoch (in phase): \u2014 |  | Iteration: \u2014 |  | Training Phase: Idle |  | Network Connected: Yes |  | Monitoring: Inactive"
+    },
+    {
+      "t_s": 49.5,
+      "top_status": "Completed \u2014 converged",
+      "top_phase": "Complete",
+      "top_epoch": "1",
+      "top_hidden_units": "0",
+      "network_info": "Input Nodes: 0 |  | Hidden Units: 0 |  | Output Nodes: 0 |  | Training Step: 1 |  | Epoch (in phase): \u2014 |  | Iteration: \u2014 |  | Training Phase: Idle |  | Network Connected: Yes |  | Monitoring: Inactive"
+    }
+  ]
+}

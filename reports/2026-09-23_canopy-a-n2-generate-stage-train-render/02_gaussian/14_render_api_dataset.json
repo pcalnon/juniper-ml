@@ -1,0 +1,46 @@
+{
+  "step": "render_api_dataset",
+  "t_utc": "2026-09-23T19:38:13.661Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/dataset",
+  "status": 200,
+  "response": {
+    "num_samples": 170,
+    "num_features": 2,
+    "num_classes": 2,
+    "loaded": true,
+    "train_samples": 100,
+    "val_samples": 40,
+    "test_samples": 30,
+    "inputs": {
+      "_truncated_by_a_n2_slim": true,
+      "rows": 100,
+      "cols": 2,
+      "first_3": [
+        [
+          -3.334456205368042,
+          1.3000445365905762
+        ],
+        [
+          3.84030818939209,
+          -1.7273204326629639
+        ],
+        [
+          3.4675092697143555,
+          -0.8592924475669861
+        ]
+      ]
+    },
+    "targets": {
+      "_truncated_by_a_n2_slim": true,
+      "rows": 100,
+      "cols": null,
+      "first_3": [
+        1,
+        0,
+        0
+      ]
+    }
+  },
+  "elapsed_s": 0.012
+}

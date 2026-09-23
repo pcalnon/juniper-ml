@@ -1,0 +1,19 @@
+{
+  "step": "train_start",
+  "t_utc": "2026-09-23T19:48:36.032Z",
+  "method": "POST",
+  "url": "http://127.0.0.1:8061/api/train/start",
+  "request_body": {
+    "dataset": {
+      "generator": "irregular_sine"
+    }
+  },
+  "status": 200,
+  "response": {
+    "status": "started",
+    "ok": true,
+    "is_training": true,
+    "message": "recurrence fit started"
+  },
+  "elapsed_s": 0.007
+}

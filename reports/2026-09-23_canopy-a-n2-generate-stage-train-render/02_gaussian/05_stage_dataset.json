@@ -1,0 +1,21 @@
+{
+  "step": "stage_dataset",
+  "t_utc": "2026-09-23T19:38:06.782Z",
+  "method": "POST",
+  "url": "http://127.0.0.1:8061/api/stage_dataset",
+  "request_body": {
+    "nn_dataset_type": "gaussian",
+    "nn_model": "cascor"
+  },
+  "status": 200,
+  "response": {
+    "status": "success",
+    "data": {
+      "status": "staged",
+      "config": {
+        "dataset_type": "gaussian"
+      }
+    }
+  },
+  "elapsed_s": 0.01
+}

@@ -2303,7 +2303,7 @@ owner's two criteria:
 
 | # | Step | Gate before proceeding |
 | --- | --- | --- |
-| 1 | SMART test `sda` — **DONE 2026-09-23, PASSED** (note 10.2a). Restore-drill the CURRENT set — **still outstanding** | the drill passes on the current passphrase |
+| 1 | SMART test `sda` — **DONE 2026-09-23, PASSED** (note 10.2a). Restore-drill the CURRENT set — outstanding, and **discharged by AC-4's pre-recovery drill inside §8 P0 step 11**, not before P0 (note 10.2c) | AC-4's first drill passes on the current passphrase |
 | 2 | Scrub the leaked copies: the S-7 file, the `.env` comment block, and D-8's journal scrub after P1 | S-3, S-6 and S-7 counts all read zero |
 | 3 | Mint the new passphrase; place it at `/etc/credstore/duplicati-passphrase` root:root 0600 | never in `.env`, never on argv, never echoed |
 | 4 | Copy the 877 volumes to staging on **`nvme0n1p5` (`/`)** — **not** `sda` (note 10.2b); ≈203 GiB required | per-file hashes match the source |
@@ -2313,7 +2313,8 @@ owner's two criteria:
 | 8 | Delete-forever the old ciphertext server-side (Dropbox retains deleted files 30 d on Basic/Plus/Family, 180 d on Professional) | only after step 7 is verified |
 
 **Step 1 is first, is not optional, and is currently HALF DONE**: the SMART half passed on
-2026-09-23, the restore drill has not run, so step 2 is not yet unblocked. Steps 4–7 remain a bulk
+2026-09-23; the drill half is AC-4's and runs inside P0 (note 10.2c), so step 2 is not unblocked and
+**the next action in this arc is §8's P0 recovery, not anything in §10.2**. Steps 4–7 remain a bulk
 rewrite of the only local copy of 202.8 GiB. A rotation that loses the data it was protecting has
 failed at the thing it was for.
 
@@ -2329,6 +2330,20 @@ failed at the thing it was for.
   under/over-limit count of 0/0. Age is the only soft spot and it reads better than the hours suggest —
   28,941 power-on hours (~3.3 years) but only **1,803 Head Flying Hours** and ~10.4 TB written in life.
   This **closes** the §12 / D-12a carried item "sda SMART never read".
+- **(10.2c)** **Step 1's drill cannot precede P0, and does not add a second drill.** The SMART half ran
+  early and correctly; the drill half cannot, for a reason that is easy to miss because the two halves sit
+  in one row. A drill needs a **job index**, and P0 step 0(c) already records that the index must come from
+  **P0 step 1's freeze** — `--no-local-db` rebuilds it from all 877 dindex volumes and was measured at
+  ">30 minutes for a single small file here, without completing"
+  (`util/ad-hoc/duplicati_drill_run.py`). The distinction that makes a drill possible at all is that the
+  **server** database is the file locked under an unmatched key (§5.4), while the **job** index —
+  `BMXWPAOGLP.sqlite`, last written 09-18 — is a separate file and is what a drill reads. So the drill is
+  **AC-4's first one** — from `duplicati-20260918T140000Z`, the pre-recovery fileset — run at §8 P0 step 11
+  alongside the post-recovery drill. §10.2 step 1 names that drill as its gate; it does not ask for another.
+  Its terms are §3.3 item 6's and are not negotiable by whoever runs it: never pass
+  `--restore-with-local-blocks` (`--no-local-blocks` is **deprecated** in 2.4.0.0 because not using local
+  blocks is now the default), select by `--time=`, compare **SHA-256 and length** on ≥ 15 files, include a
+  negative control that must fail, and treat the **exit code as not evidence**.
 - **(10.2b)** **Staging goes on `nvme0n1p5` (`/`), not on `sda`.** `sda1` has 3.1 TiB free and is the
   obvious-looking target, which is exactly the trap: it holds the sole local copy, so staging there puts
   the original and the re-encrypted copy in **one failure domain** for the whole of steps 4–7. The clean

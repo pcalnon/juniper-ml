@@ -1,0 +1,55 @@
+/opt/miniforge3/lib/python3.12/importlib/__init__.py:90: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  return _bootstrap._gcd_import(name[level:], package, level)
+2026-09-23 15:51:19,354 [INFO] juniper_data: JuniperData API v0.15.0 starting
+2026-09-23 15:51:19,354 [WARNING] juniper_data: juniper-data is running OPEN — no API-key authentication is configured and require_auth is False, so protected routes will serve UNAUTHENTICATED. Set require_auth=True and populate the API-key secret to fail closed in a secured deployment.
+2026-09-23 15:51:19,354 [INFO] juniper_data: Storage path: /tmp/d11-jd-store-woxoa92p/datasets
+2026-09-23 15:51:19,405 [INFO] httpx: HTTP Request: POST http://testserver/v1/datasets "HTTP/1.1 201 Created"
+2026-09-23 15:51:19,413 [INFO] httpx: HTTP Request: GET http://testserver/v1/datasets/spiral-3.0.0-fb4517bc5b50e8e8/artifact "HTTP/1.1 200 OK"
+2026-09-23 15:51:19,413 [INFO] juniper_data: JuniperData API shutting down
+2026-09-23 15:51:20,819 [WARNING] api.lifecycle.manager: §6.1 rule 2 override taken — No validation split in the dataset artifact: X_test was promoted to the in-loop signal, so early stopping selected on the same rows the reported metrics come from. Those metrics are SELECTED-ON, not held-out, and are not comparable to a run with a real X_val.
+/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/25de1349-d50d-48ac-9374-fd39dd06944e/scratchpad/venvB/lib/python3.12/site-packages/cascor_constants/constants_hdf5/constants_hdf5.py:166: RuntimeWarning: JUNIPER_CASCOR_SNAPSHOTS_DIR is not set and cascor_constants was imported from an installed package, so there is no project root to derive a snapshot directory from. Falling back to /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/wiggly-imagining-pine/cascor-snapshots. Set JUNIPER_CASCOR_SNAPSHOTS_DIR to the shared snapshot root for this host.
+  _HDF5_PROJECT_SNAPSHOTS_DIR = _hdf5_resolve_snapshots_dir(_HDF5_PROJECT_SNAPSHOTS_DIR_OVERRIDE)
+python: 3.12.11   prefix: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/25de1349-d50d-48ac-9374-fd39dd06944e/scratchpad/venvB
+====================================================================================================
+  [PASS] DC-1  data-client NPZ_SPLITS: NPZ_SPLITS == ('train', 'val', 'test')
+  [PASS] DC-2  data-client validate tolerates _full: tabular clean/legacy+_full/val-less all classify 'tabular' (no _full required, none rejected)
+  [PASS] DC-3  data-client 3-D validate + dt-less X_full: 3-D panel validates as 'sequence'; a dt-less legacy X_full is tolerated (not iterated)
+  [PASS] DC-4  data-client rank probe keys off X_train: rank probe keys off X_train only (KeyError 'X_train'); never off X_full
+  [PASS] DC-5  data-client fake emits 6 keys: fake emits exactly ['X_test', 'X_train', 'X_val', 'y_test', 'y_train', 'y_val']; whole-set size 200 == train+val+test (160+20+20); preview serves train
+  [SKIP] RM-1  recurrence-model entity-major 3-D: juniper_recurrence_model not importable here (ModuleNotFoundError: No module named 'juniper_recurrence_model')
+  [SKIP] RM-2  recurrence-model split='full' path: juniper_recurrence_model not importable here (ModuleNotFoundError: No module named 'juniper_recurrence_model')
+  [SKIP] RM-3  recurrence-model load_sequence_npz from disk: juniper_recurrence_model not importable here (ModuleNotFoundError: No module named 'juniper_recurrence_model')
+  [SKIP] RM-4  recurrence-model legacy _full passthrough: juniper_recurrence_model not importable here (ModuleNotFoundError: No module named 'juniper_recurrence_model')
+  [SKIP] RM-5  recurrence-model val-less artifact: juniper_recurrence_model not importable here (ModuleNotFoundError: No module named 'juniper_recurrence_model')
+  [SKIP] MC-1  model-core folds are index-based: juniper_recurrence_model not importable here (ModuleNotFoundError: No module named 'juniper_recurrence_model')
+  [PASS] MC-2  model-core exposes no _full symbol: crossval.splits exposes no *_full symbol at all; API is (n_samples, n_folds, ...)
+  [SKIP] RC-1  recurrence crossval router imports: juniper_recurrence not importable here (ModuleNotFoundError: No module named 'juniper_recurrence')
+  [SKIP] RC-2  recurrence split field: juniper_recurrence not importable here (ModuleNotFoundError: No module named 'juniper_recurrence')
+  [SKIP] RC-3  recurrence main imports: juniper_recurrence not importable here (ModuleNotFoundError: No module named 'juniper_recurrence')
+  [SKIP] RC-4  recurrence load split=full end-to-end: juniper_recurrence not importable here (ModuleNotFoundError: No module named 'juniper_recurrence')
+  [SKIP] RL-1  recurrence-client crossval signature: juniper_recurrence_client not importable here (ModuleNotFoundError: No module named 'juniper_recurrence_client')
+  [PASS] JD-1  juniper-data generator_version floor: 16 generators, all >= 3.0.0: {'arc_agi': '3.0.0', 'ar_p': '3.0.0', 'checkerboard': '3.0.0', 'circles': '3.0.0', 'csv_import': '3.0.0', 'delay_product': '3.0.0', 'equities_seq': '5.0.0', 'equities': '5.0.0', 'gaussian': '3.0.0', 'irregular_sine': '3.0.0', 'mackey_glass': '3.0.0', 'mnist': '3.0.0', 'moon': '3.0.0', 'multi_sine': '3.0.0', 'spiral': '3.0.0', 'xor': '3.0.0'}
+  [PASS] JD-2  juniper-data spiral emits 6 keys: spiral generate() -> ['X_test', 'X_train', 'X_val', 'y_test', 'y_train', 'y_val'], all float32, no *_full
+  [PASS] JD-3  juniper-data ALL runnable generators: ran 11 generators clean (['ar_p', 'checkerboard', 'circles', 'delay_product', 'gaussian', 'irregular_sine', 'mackey_glass', 'moon', 'multi_sine', 'spiral', 'xor']); skipped {'arc_agi': 'ImportError', 'csv_import': 'ValidationError', 'equities_seq': 'ImportError', 'equities': 'ImportError', 'mnist': 'ImportError'}
+  [PASS] JD-4  juniper-data compute_shape_meta: n_samples = train+val+test (16); legacy _full tolerated; val-less -> n_val=0
+  [PASS] JD-5  juniper-data partition_and_assemble: partition_and_assemble -> ['X_test', 'X_train', 'X_val', 'y_test', 'y_train', 'y_val']; partitions sum to 30
+  [PASS] JD-8  juniper-data service -> client roundtrip: POST /v1/datasets -> GET /artifact serves exactly ['X_test', 'X_train', 'X_val', 'y_test', 'y_train', 'y_val'] (generator_version=3.0.0, n_samples=204==204); data-client validates it as 'tabular'
+  [PASS] JD-6  juniper-data HF store (DEFECT PROBE): dataset_id='hf-stub-dataset-20' generator_version='1.0.0' returned keys=['X_full', 'X_test', 'X_train', 'y_full', 'y_test', 'y_train'] | RETIRED-FAMILY-EMITTED=['X_full', 'y_full'] | VAL-KEYS=NONE | PERSISTED NPZ keys=['X_full', 'X_test', 'X_train', 'y_full', 'y_test', 'y_train']
+  [PASS] JD-7  juniper-data Kaggle store (DEFECT PROBE): arrays dict literal = ['X_train', 'y_train', 'X_test', 'y_test', 'X_full', 'y_full']; generator_version = ['1.0.0'] (AST of the INSTALLED module; loader needs the undeclared 'kaggle' dep)
+  [PASS] CC-1  cascor _resolve_validation_split rules: rule1 uses X_val; rule3 refuses unconditionally (override ignored); rule2 refuses by default and warns under the env override
+  [PASS] CC-2  cascor data_provider tolerance: three pairs returned; clean (8, 4, 4), legacy+_full (8, 4, 4), val-less (8, None, 4) (no raise, val is None)
+  [PASS] CC-3  cascor data_provider never requires _full: no X_full read; an artifact CARRYING X_full is not rejected either (tolerate, never require, never forbid)
+  [PASS] CC-4  cascor x_full derived three-way: x_full derived as: _full_x = [self.x_train] + ([self.x_val] if self.x_val is not None else []) + [self.x_test]
+  [PASS] CC-5  cascor version metadata: dist version 0.11.0; juniper_cascor.__version__ = 0.6.0
+  [PASS] CC-6  cascor get_dataset three counts: get_dataset -> {'loaded': True, 'train_samples': 18, 'val_samples': 6, 'test_samples': 6, 'input_features': 2, 'output_features': 2}; a val-less run reports val_samples=0 (not omitted, not fabricated)
+  [PASS] CP-1  canopy backend imports: backend.service_backend imported: backend.service_backend
+  [PASS] CP-2  canopy get_dataset sums three: INSPECTED /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/25de1349-d50d-48ac-9374-fd39dd06944e/scratchpad/venvB/lib/python3.12/site-packages/backend/service_backend.py: get_dataset sums train+val+test; no two-way sum present
+  [PASS] CP-3  canopy wheel top-level inventory: juniper-canopy wheel top-level entries: ['audit_log.py', 'backend', 'canopy_constants.py', 'communication', 'config_manager.py', 'csrf.py', 'dataset_import.py', 'dataset_schema.py', 'demo_mode.py', 'discovery.py', 'frontend', 'health.py', 'juniper_canopy', 'logger', 'main.py', 'middleware.py', 'model_registry.py', 'observability.py', 'provenance.py', 'secrets_util.py', 'security.py', 'settings.py', 'validation_gate.py', 'ws_security.py']
+  [PASS] CP-4  canopy missing-module inventory (DEFECT PROBE): juniper-canopy 0.8.1 imports 2 top-level modules it does not ship: ['cassandra', 'redis']
+  [PASS] CP-5  canopy validation_gate.decide (0.8.x only): decide(): val present -> no gate; val_samples=0 -> GATE (4 options); val_samples absent -> no gate (cannot-tell is a warning, not a block)
+  [PASS] ML-1  juniper-ml is a pure meta-package: juniper-ml 0.10.0: 0 importable modules, 17 extra-scoped requirements
+  [SKIP] ML-2  juniper-ml resolved set: distribution juniper-recurrence not installed in this venv
+  [PASS] ML-3  juniper-ml [servers] floors + equities 5.0.0: {'juniper-data': '0.15.0', 'juniper-canopy': '0.8.1', 'juniper-cascor': '0.11.0'}; {'equities_seq': '5.0.0', 'equities': '5.0.0'}
+====================================================================================================
+PASS=27  FAIL=0  SKIP=12
+NOTE: 12 check(s) SKIPPED here -- a SKIP is not a pass; cover them with --union across venvs

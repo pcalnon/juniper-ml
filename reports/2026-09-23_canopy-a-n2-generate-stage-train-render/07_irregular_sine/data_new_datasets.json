@@ -1,0 +1,71 @@
+{
+  "ids_before": 6,
+  "ids_after": 7,
+  "new_ids": [
+    "irregular_sine-3.0.0-4a5904b53d15aa7d"
+  ],
+  "meta": {
+    "irregular_sine-3.0.0-4a5904b53d15aa7d": {
+      "url": "http://127.0.0.1:8111/v1/datasets/irregular_sine-3.0.0-4a5904b53d15aa7d",
+      "status": 200,
+      "elapsed_s": 0.006,
+      "body": {
+        "dataset_id": "irregular_sine-3.0.0-4a5904b53d15aa7d",
+        "generator": "irregular_sine",
+        "generator_version": "3.0.0",
+        "params": {
+          "n_steps": 2000,
+          "lookback": 32,
+          "horizon": 1,
+          "sample_dt": 1.0,
+          "train_ratio": 0.8,
+          "val_ratio": 0.1,
+          "seed": 0,
+          "scaling": "identity",
+          "jitter": 0.5,
+          "n_components": 3,
+          "frequencies": null,
+          "amplitudes": null,
+          "phases": null,
+          "noise_std": 0.0
+        },
+        "n_samples": 1968,
+        "n_features": 1,
+        "task_type": "regression",
+        "n_classes": null,
+        "n_train": 1574,
+        "n_val": 197,
+        "n_test": 197,
+        "class_distribution": null,
+        "sequence": true,
+        "lookback": 32,
+        "time_unit": "steps",
+        "dt_scaling": {
+          "method": "identity"
+        },
+        "target_scaling": {
+          "y": {
+            "method": "identity"
+          }
+        },
+        "truncation": null,
+        "data_quality": null,
+        "artifact_formats": [
+          "npz"
+        ],
+        "created_at": "2026-09-23T19:48:36.060620Z",
+        "checksum": "1371eb7da798afdd9ce2b7e2de2b8be0df9ac5b2c78912ca8e4dc8213272cd7f",
+        "dataset_name": null,
+        "dataset_version": null,
+        "parent_dataset_id": null,
+        "description": null,
+        "created_by": null,
+        "tags": [],
+        "ttl_seconds": null,
+        "expires_at": null,
+        "last_accessed_at": "2026-09-23T19:48:36.075462Z",
+        "access_count": 1
+      }
+    }
+  }
+}

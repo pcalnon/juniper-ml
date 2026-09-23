@@ -1,0 +1,25 @@
+# Preflight: the OTHER session's isolated stack, recorded before this run touched anything.
+# Verbatim tool output from this session's transcript.
+
+## 2026-09-23T19:14:05Z  ss -ltnp (filtered to 8101|8202|8051|8055|8056|8111|8212|8061|8221)
+LISTEN 0      2048        127.0.0.1:8101       0.0.0.0:*    users:(("python",pid=2856834,fd=12))
+LISTEN 0      2048        127.0.0.1:8056       0.0.0.0:*    users:(("python",pid=1073982,fd=18))
+LISTEN 0      2048        127.0.0.1:8051       0.0.0.0:*    users:(("python",pid=2858037,fd=16))
+LISTEN 0      2048        127.0.0.1:8055       0.0.0.0:*    users:(("python",pid=1831170,fd=19))
+LISTEN 0      2048        127.0.0.1:8202       0.0.0.0:*    users:(("uvicorn",pid=2857489,fd=13))
+
+## 2026-09-23T19:14Z  ps -o pid,ppid,etimes,cmd -p 2856834,2857489,2858037
+    PID    PPID ELAPSED CMD
+2856834   13362   84983 python -m juniper_data --host 127.0.0.1 --port 8101
+2857489   13362   84973 /opt/miniforge3/envs/JuniperCascor1/bin/python3.14 /opt/miniforge3/envs/JuniperCascor1/bin/uvicorn api.app:create_app --factory --host 127.0.0.1 --port 8202
+2858037   13362   84964 python main.py
+
+## 2026-09-23T19:25:11Z  ss -ltnp, immediately before `--up` (8111/8212/8061/8221 free)
+LISTEN 0      2048        127.0.0.1:8101  0.0.0.0:* users:(("python",pid=2856834,fd=12))
+LISTEN 0      2048        127.0.0.1:8056  0.0.0.0:* users:(("python",pid=3754863,fd=18))
+LISTEN 0      2048        127.0.0.1:8051  0.0.0.0:* users:(("python",pid=2858037,fd=16))
+LISTEN 0      2048        127.0.0.1:8055  0.0.0.0:* users:(("python",pid=3746650,fd=18))
+LISTEN 0      2048        127.0.0.1:8202  0.0.0.0:* users:(("uvicorn",pid=2857489,fd=13))
+
+# Note: the :8055 / :8056 canopy instances changed pid between 19:14Z and 19:25Z (1831170 -> 3746650,
+# 1073982 -> 3754863): some other session restarted them. Not touched by this run.
