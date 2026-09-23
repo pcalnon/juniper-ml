@@ -6,6 +6,7 @@ Application : cross-repo tooling (ad-hoc)
 Author      : Paul Calnon
 Version     : 0.1.0
 License     : MIT License
+Superseded  : for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
 
 Add a GitHub-signed follow-up commit to an EXISTING PR branch on any Juniper repo.
 

@@ -313,7 +313,9 @@ The 2026-09-08 session lost the fixture to a host reboot (`/tmp` is tmpfs; the t
   summary to `${RUN_DIR}/relay_repair_sequence.txt`; read that before the per-step artifacts. `2026-09-08_post_growth_sequence.bash` is the same idea for
   the idle-fixture instruments (storestorm, dataset seq, cardsprobe, the f035 re-drive, the two probes, supersession run 2).
 - **`2026-09-08_append_signed_commit.py`** is the verb `open_signed_pr.py` refuses by design: one GitHub-signed commit onto an EXISTING branch, pinned to
-  the branch's current head. Built to extend juniper-cascor#632 after the first fix proved incomplete.
+  the branch's current head. Built to extend juniper-cascor#632 after the first fix proved incomplete. **Superseded for new use by
+  `util/push_signed_commit.py`**, which pins `expectedHeadOid` to the head your edits are based on (`--expected-head`) rather than to a live read; this
+  script and its sibling existing-branch drivers are retained as provenance.
 - **`2026-09-09_tab_crosstalk_probe.py`** answers whether two canopy pages in ONE browser context keep the tabs they selected. They do NOT: canopy
   persists the active tab in `layout-state-store`, a `dcc.Store(storage_type="local")`, and a clientside callback drives `visualization-tabs.active_tab`
   from it — so localStorage, which every page of one context shares, makes the LAST page to pick a tab move all the others. Verdicts `CROSSTALK` /
