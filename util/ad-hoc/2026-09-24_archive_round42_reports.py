@@ -69,6 +69,12 @@ MISSING = {
     # 8f86dec2: round 2 of the API primer's correction (v2, juniper-ml#2075).
     "a7631c36ca821d652": ("8f86dec2", "primer-correction-round2-laneA-reprobe.md"),
     "ad32dacf1c456fe8b": ("8f86dec2", "primer-correction-round2-laneB-refute.md"),
+    # 8f86dec2: round 1 of juniper-data#438, the fix-forward of #428's round 3.
+    "a66ebaf4cc1925e56": ("8f86dec2", "data438-round1-laneA-reprobe.md"),
+    "a48b63fe2cf4ce38b": ("8f86dec2", "data438-round1-laneB-refute.md"),
+    # 8f86dec2: the post-merge validation of juniper-ml#2080 (register fix-forward) and #2075 v3 (primer).
+    "a3212838e6d1674b7": ("8f86dec2", "ml2080-round1-laneA-reprobe.md"),
+    "a833573c5bbdf2a36": ("8f86dec2", "ml2080-round1-laneB-refute.md"),
     # bc31e993: the earlier rounds juniper-ml#2072 did not archive.
     "a6a4a26ed6b92d6e5": ("bc31e993", "ml2032-round1-laneA-reprobe.md"),
     "ab4b18fe07b799e1b": ("bc31e993", "ml2032-round1-laneB-attack.md"),
