@@ -1,0 +1,1693 @@
+﻿2026-09-24T01:40:09.6401354Z Current runner version: '2.337.0'
+2026-09-24T01:40:09.6433595Z ##[group]Runner Image Provisioner
+2026-09-24T01:40:09.6434900Z Hosted Compute Agent
+2026-09-24T01:40:09.6435678Z Version: 20260828.587
+2026-09-24T01:40:09.6436688Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-24T01:40:09.6437694Z Build Date: 2026-08-28T16:44:25Z
+2026-09-24T01:40:09.6438666Z Worker ID: {afa9052c-8e59-43e4-a7e2-44a5409c30a4}
+2026-09-24T01:40:09.6439649Z Azure Region: eastus
+2026-09-24T01:40:09.6440613Z ##[endgroup]
+2026-09-24T01:40:09.6442624Z ##[group]Operating System
+2026-09-24T01:40:09.6443534Z Ubuntu
+2026-09-24T01:40:09.6444198Z 24.04.5
+2026-09-24T01:40:09.6444955Z LTS
+2026-09-24T01:40:09.6445659Z ##[endgroup]
+2026-09-24T01:40:09.6446571Z ##[group]Runner Image
+2026-09-24T01:40:09.6447368Z Image: ubuntu-24.04
+2026-09-24T01:40:09.6448165Z Version: 20260907.300.1
+2026-09-24T01:40:09.6450111Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-24T01:40:09.6452453Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+2026-09-24T01:40:09.6453847Z ##[endgroup]
+2026-09-24T01:40:09.6455443Z ##[group]GITHUB_TOKEN Permissions
+2026-09-24T01:40:09.6457888Z Contents: read
+2026-09-24T01:40:09.6458767Z Metadata: read
+2026-09-24T01:40:09.6459557Z ##[endgroup]
+2026-09-24T01:40:09.6462517Z Secret source: Actions
+2026-09-24T01:40:09.6463821Z Cache mode: write
+2026-09-24T01:40:09.6464832Z Prepare workflow directory
+2026-09-24T01:40:09.6960708Z Prepare all required actions
+2026-09-24T01:40:09.7027662Z Getting action download info
+2026-09-24T01:40:09.9244264Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-09-24T01:40:10.0839410Z Download action repository 'actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97' (SHA:5fda3b95a4ea91299a34e894583c3862153e4b97)
+2026-09-24T01:40:10.2376768Z Download action repository 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a' (SHA:043fb46d1a93c77aae656e7c1c64a875d1fc6a0a)
+2026-09-24T01:40:10.4039830Z Download action repository 'codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5' (SHA:303a32d7a59b442fa8d48b6a1cc6825c09c847a5)
+2026-09-24T01:40:10.6143998Z Getting action download info
+2026-09-24T01:40:10.6885907Z Download action repository 'actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd' (SHA:ed597411d8f924073f98dfc5c65a23a2325f34cd)
+2026-09-24T01:40:10.9047243Z Complete job name: Unit Tests + Coverage (Python 3.13 on ubuntu-latest)
+2026-09-24T01:40:10.9849726Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-09-24T01:40:10.9850944Z with:
+2026-09-24T01:40:10.9851369Z   fetch-depth: 1
+2026-09-24T01:40:10.9851828Z   repository: pcalnon/juniper-canopy
+2026-09-24T01:40:10.9855872Z   token: ***
+2026-09-24T01:40:10.9856332Z   ssh-strict: true
+2026-09-24T01:40:10.9856772Z   ssh-user: git
+2026-09-24T01:40:10.9857204Z   persist-credentials: true
+2026-09-24T01:40:10.9857741Z   clean: true
+2026-09-24T01:40:10.9858187Z   sparse-checkout-cone-mode: true
+2026-09-24T01:40:10.9858693Z   fetch-tags: false
+2026-09-24T01:40:10.9859142Z   show-progress: true
+2026-09-24T01:40:10.9859570Z   lfs: false
+2026-09-24T01:40:10.9860175Z   submodules: false
+2026-09-24T01:40:10.9860646Z   set-safe-directory: true
+2026-09-24T01:40:10.9861136Z   allow-unsafe-pr-checkout: false
+2026-09-24T01:40:10.9861878Z env:
+2026-09-24T01:40:10.9862294Z   ENV_NAME: juniper-canopy
+2026-09-24T01:40:10.9862773Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:40:10.9863307Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:40:10.9863759Z ##[endgroup]
+2026-09-24T01:40:11.0780932Z Syncing repository: pcalnon/juniper-canopy
+2026-09-24T01:40:11.0782808Z ##[group]Getting Git version info
+2026-09-24T01:40:11.0783625Z Working directory is '/home/runner/work/juniper-canopy/juniper-canopy'
+2026-09-24T01:40:11.0784785Z [command]/usr/bin/git version
+2026-09-24T01:40:11.0860256Z git version 2.55.0
+2026-09-24T01:40:11.0879164Z ##[endgroup]
+2026-09-24T01:40:11.0889668Z Temporarily overriding HOME='/home/runner/work/_temp/6320621c-6af6-40ab-99b7-8205871f8bb6' before making global git config changes
+2026-09-24T01:40:11.0891551Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-24T01:40:11.0895421Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/juniper-canopy/juniper-canopy
+2026-09-24T01:40:11.0939838Z Deleting the contents of '/home/runner/work/juniper-canopy/juniper-canopy'
+2026-09-24T01:40:11.0943339Z ##[group]Determining repository object format
+2026-09-24T01:40:11.0944800Z ##[endgroup]
+2026-09-24T01:40:11.0945613Z ##[group]Initializing the repository
+2026-09-24T01:40:11.0948606Z [command]/usr/bin/git init /home/runner/work/juniper-canopy/juniper-canopy
+2026-09-24T01:40:11.1044014Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-24T01:40:11.1045635Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-24T01:40:11.1047247Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-24T01:40:11.1048476Z hint: call:
+2026-09-24T01:40:11.1049139Z hint:
+2026-09-24T01:40:11.1050166Z hint: 	git config --global init.defaultBranch <name>
+2026-09-24T01:40:11.1050985Z hint:
+2026-09-24T01:40:11.1051980Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-24T01:40:11.1053375Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-24T01:40:11.1054318Z hint:
+2026-09-24T01:40:11.1054823Z hint: 	git branch -m <name>
+2026-09-24T01:40:11.1055351Z hint:
+2026-09-24T01:40:11.1056224Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-24T01:40:11.1058157Z Initialized empty Git repository in /home/runner/work/juniper-canopy/juniper-canopy/.git/
+2026-09-24T01:40:11.1060351Z [command]/usr/bin/git remote add origin https://github.com/pcalnon/juniper-canopy
+2026-09-24T01:40:11.1107074Z ##[endgroup]
+2026-09-24T01:40:11.1108458Z ##[group]Disabling automatic garbage collection
+2026-09-24T01:40:11.1110139Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-24T01:40:11.1138080Z ##[endgroup]
+2026-09-24T01:40:11.1139225Z ##[group]Setting up auth
+2026-09-24T01:40:11.1140235Z Removing SSH command configuration
+2026-09-24T01:40:11.1143568Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-24T01:40:11.1173041Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-24T01:40:11.1559042Z Removing HTTP extra header
+2026-09-24T01:40:11.1565604Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-24T01:40:11.1598845Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-24T01:40:11.1814603Z Removing includeIf entries pointing to credentials config files
+2026-09-24T01:40:11.1816335Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-24T01:40:11.1847694Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-24T01:40:11.2067307Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-24T01:40:11.2102958Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/juniper-canopy/juniper-canopy/.git.path /home/runner/work/_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config
+2026-09-24T01:40:11.2131885Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/juniper-canopy/juniper-canopy/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config
+2026-09-24T01:40:11.2162336Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config
+2026-09-24T01:40:11.2191349Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config
+2026-09-24T01:40:11.2217758Z ##[endgroup]
+2026-09-24T01:40:11.2218856Z ##[group]Fetching the repository
+2026-09-24T01:40:11.2224168Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e9053227b4a1409f253005b4093e42e7187b52bd:refs/remotes/origin/main
+2026-09-24T01:40:12.1669116Z From https://github.com/pcalnon/juniper-canopy
+2026-09-24T01:40:12.1672555Z  * [new ref]         e9053227b4a1409f253005b4093e42e7187b52bd -> origin/main
+2026-09-24T01:40:12.1680165Z [command]/usr/bin/git branch --list --remote origin/main
+2026-09-24T01:40:12.1705424Z   origin/main
+2026-09-24T01:40:12.1713408Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-09-24T01:40:12.1736541Z e9053227b4a1409f253005b4093e42e7187b52bd
+2026-09-24T01:40:12.1741345Z ##[endgroup]
+2026-09-24T01:40:12.1742592Z ##[group]Determining the checkout info
+2026-09-24T01:40:12.1743962Z ##[endgroup]
+2026-09-24T01:40:12.1745254Z [command]/usr/bin/git sparse-checkout disable
+2026-09-24T01:40:12.1792437Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-24T01:40:12.1824793Z ##[group]Checking out the ref
+2026-09-24T01:40:12.1826477Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-09-24T01:40:12.2705986Z Switched to a new branch 'main'
+2026-09-24T01:40:12.2709656Z branch 'main' set up to track 'origin/main'.
+2026-09-24T01:40:12.2721779Z ##[endgroup]
+2026-09-24T01:40:12.2767025Z [command]/usr/bin/git log -1 --format=%H
+2026-09-24T01:40:12.2791504Z e9053227b4a1409f253005b4093e42e7187b52bd
+2026-09-24T01:40:12.3152974Z ##[group]Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+2026-09-24T01:40:12.3154550Z with:
+2026-09-24T01:40:12.3155404Z   python-version: 3.13
+2026-09-24T01:40:12.3156341Z   cache: pip
+2026-09-24T01:40:12.3157210Z   check-latest: false
+2026-09-24T01:40:12.3166238Z   token: ***
+2026-09-24T01:40:12.3167145Z   update-environment: true
+2026-09-24T01:40:12.3168180Z   allow-prereleases: false
+2026-09-24T01:40:12.3169194Z   freethreaded: false
+2026-09-24T01:40:12.3170328Z env:
+2026-09-24T01:40:12.3171166Z   ENV_NAME: juniper-canopy
+2026-09-24T01:40:12.3172173Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:40:12.3173163Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:40:12.3174118Z ##[endgroup]
+2026-09-24T01:40:12.4298433Z ##[group]Installed versions
+2026-09-24T01:40:12.4370996Z Successfully set up CPython (3.13.15)
+2026-09-24T01:40:12.4373414Z ##[endgroup]
+2026-09-24T01:40:12.5340951Z [command]/opt/hostedtoolcache/Python/3.13.15/x64/bin/pip cache dir
+2026-09-24T01:40:13.0971940Z /home/runner/.cache/pip
+2026-09-24T01:40:13.1889135Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.13.15-pip-2f3cedaae3bb27c91e123e3fa24ece00b90551fa48fc29fccc9489407d9d6b37
+2026-09-24T01:40:13.7096029Z Received 78755913 of 78755913 (100.0%), 162.2 MBs/sec
+2026-09-24T01:40:13.7096488Z Cache Size: ~75 MB (78755913 B)
+2026-09-24T01:40:13.7166816Z [command]/usr/bin/tar -xf /home/runner/work/_temp/524cb36d-1c09-4a13-b946-bb0356503a60/cache.tzst -P -C /home/runner/work/juniper-canopy/juniper-canopy --use-compress-program unzstd
+2026-09-24T01:40:13.8474680Z Cache restored successfully
+2026-09-24T01:40:13.8520192Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.13.15-pip-2f3cedaae3bb27c91e123e3fa24ece00b90551fa48fc29fccc9489407d9d6b37
+2026-09-24T01:40:13.8687813Z ##[group]Run echo "╔════════════════════════════════════════════════════════════╗"
+2026-09-24T01:40:13.8688400Z [36;1mecho "╔════════════════════════════════════════════════════════════╗"[0m
+2026-09-24T01:40:13.8689091Z [36;1mecho "║    Juniper Canopy - Install Dependencies                   ║"[0m
+2026-09-24T01:40:13.8689501Z [36;1mecho "║    Python 3.13 on ubuntu-latest ║"[0m
+2026-09-24T01:40:13.8690301Z [36;1mecho "╚════════════════════════════════════════════════════════════╝"[0m
+2026-09-24T01:40:13.8690713Z [36;1mpython -m pip install --upgrade "pip>=26.1.1"[0m
+2026-09-24T01:40:13.8691119Z [36;1m# METRICS-MON R3.7: torch wheel resolution differs by OS.[0m
+2026-09-24T01:40:13.8691624Z [36;1m# Linux uses the CPU-only PyTorch index to avoid pulling CUDA[0m
+2026-09-24T01:40:13.8692070Z [36;1m# wheels; macOS finds its native wheels via the default PyPI[0m
+2026-09-24T01:40:13.8692471Z [36;1m# index — the CPU-only Linux index has no macOS-arm64 wheels.[0m
+2026-09-24T01:40:13.8692861Z [36;1mif [ "Linux" = "macOS" ]; then[0m
+2026-09-24T01:40:13.8693125Z [36;1m  pip install torch[0m
+2026-09-24T01:40:13.8693367Z [36;1melse[0m
+2026-09-24T01:40:13.8693723Z [36;1m  pip install torch --index-url https://download.pytorch.org/whl/cpu[0m
+2026-09-24T01:40:13.8694110Z [36;1mfi[0m
+2026-09-24T01:40:13.8694423Z [36;1m# conf/requirements_ci.txt is NOT installed here. It is generator output[0m
+2026-09-24T01:40:13.8694952Z [36;1m# (juniper-generate-dep-docs) -- a pip freeze in which most lines are transitives[0m
+2026-09-24T01:40:13.8695523Z [36;1m# declared as direct -- so installing it pulled packages no lane uses and coupled this[0m
+2026-09-24T01:40:13.8696075Z [36;1m# job to their version conflicts (juniper-ml#1994). The declared surface lives in[0m
+2026-09-24T01:40:13.8696609Z [36;1m# pyproject extras, which is what the security job and every sibling repo install.[0m
+2026-09-24T01:40:13.8697112Z [36;1m# Install project as editable so source-tree path resolution works.[0m
+2026-09-24T01:40:13.8697561Z [36;1m# CL2 (juniper-ml training-runtime defects plan §7/§13): install the[0m
+2026-09-24T01:40:13.8698025Z [36;1m# [juniper-cascor] extra so the REAL juniper-cascor-client (>=0.7.0) is[0m
+2026-09-24T01:40:13.8698543Z [36;1m# present in this required lane. Without it src/tests/conftest.py injects[0m
+2026-09-24T01:40:13.8699023Z [36;1m# a stub and src/tests/unit/backend/test_stream_liveness.py (the 510-line[0m
+2026-09-24T01:40:13.8699487Z [36;1m# N2 stream-liveness + CL2 seam suite) silently importorskips — it had[0m
+2026-09-24T01:40:13.8700095Z [36;1m# only ever run in client-equipped local envs. With the extra the suite[0m
+2026-09-24T01:40:13.8700577Z [36;1m# executes here, and the floor-drift preflight + coverage gate below both[0m
+2026-09-24T01:40:13.8700985Z [36;1m# exercise the real cascor-client seam path.[0m
+2026-09-24T01:40:13.8701340Z [36;1mpip install -e ".[test,juniper-cascor,observability]"[0m
+2026-09-24T01:40:13.8701770Z [36;1m# h5py is an OPTIONAL runtime dependency: the HDF5 snapshot routes in[0m
+2026-09-24T01:40:13.8702205Z [36;1m# src/main.py lazy-import it and soft-fail with a 500 "h5py not[0m
+2026-09-24T01:40:13.8702632Z [36;1m# available" guard when it is absent, so it is intentionally NOT a hard[0m
+2026-09-24T01:40:13.8703088Z [36;1m# project dependency (kept out of pyproject / the lockfile / the base[0m
+2026-09-24T01:40:13.8703537Z [36;1m# conf/requirements_ci.txt to keep the base install slim). The per-file[0m
+2026-09-24T01:40:13.8703993Z [36;1m# coverage gate below measures the whole src tree, so the coverage lane[0m
+2026-09-24T01:40:13.8704435Z [36;1m# installs h5py explicitly to exercise (and cover) the snapshot code[0m
+2026-09-24T01:40:13.8704868Z [36;1m# paths. Scoped to this job only — the integration / ui / build jobs do[0m
+2026-09-24T01:40:13.8705285Z [36;1m# not run the snapshot unit tests and keep the slim install.[0m
+2026-09-24T01:40:13.8705618Z [36;1mpip install "h5py>=3.0"[0m
+2026-09-24T01:40:13.8748351Z shell: /usr/bin/bash -e {0}
+2026-09-24T01:40:13.8748621Z env:
+2026-09-24T01:40:13.8748825Z   ENV_NAME: juniper-canopy
+2026-09-24T01:40:13.8749125Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:40:13.8749351Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:40:13.8749768Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:40:13.8750450Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:40:13.8750853Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:40:13.8751212Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:40:13.8751565Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:40:13.8751919Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:40:13.8752218Z ##[endgroup]
+2026-09-24T01:40:13.8829581Z ╔════════════════════════════════════════════════════════════╗
+2026-09-24T01:40:13.8830413Z ║    Juniper Canopy - Install Dependencies                   ║
+2026-09-24T01:40:13.8830819Z ║    Python 3.13 on ubuntu-latest ║
+2026-09-24T01:40:13.8831221Z ╚════════════════════════════════════════════════════════════╝
+2026-09-24T01:40:14.5273220Z Requirement already satisfied: pip>=26.1.1 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (26.2.1)
+2026-09-24T01:40:14.9787234Z Looking in indexes: https://download.pytorch.org/whl/cpu
+2026-09-24T01:40:15.2406069Z Collecting torch
+2026-09-24T01:40:15.3141653Z   Downloading torch-2.14.0%2Bcpu-cp313-cp313-manylinux_2_28_x86_64.whl.metadata (37 kB)
+2026-09-24T01:40:15.3423391Z Collecting filelock (from torch)
+2026-09-24T01:40:15.3436001Z   Using cached filelock-3.32.3-py3-none-any.whl.metadata (2.0 kB)
+2026-09-24T01:40:15.3589333Z Collecting typing-extensions>=4.10.0 (from torch)
+2026-09-24T01:40:15.3604317Z   Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-09-24T01:40:15.3710915Z Collecting setuptools>=77.0.3 (from torch)
+2026-09-24T01:40:15.3760087Z   Downloading setuptools-78.1.0-py3-none-any.whl.metadata (6.6 kB)
+2026-09-24T01:40:15.3973175Z Collecting sympy>=1.13.3 (from torch)
+2026-09-24T01:40:15.4481256Z   Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+2026-09-24T01:40:15.4888464Z Collecting networkx>=2.5.1 (from torch)
+2026-09-24T01:40:15.4929376Z   Downloading networkx-3.6.1-py3-none-any.whl.metadata (6.8 kB)
+2026-09-24T01:40:15.5083595Z Collecting jinja2 (from torch)
+2026-09-24T01:40:15.5129425Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-09-24T01:40:15.5334163Z Collecting fsspec>=0.8.5 (from torch)
+2026-09-24T01:40:15.5393091Z   Downloading fsspec-2026.7.0-py3-none-any.whl.metadata (10 kB)
+2026-09-24T01:40:15.5677871Z Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch)
+2026-09-24T01:40:15.5711507Z   Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+2026-09-24T01:40:15.5932865Z Collecting MarkupSafe>=2.0 (from jinja2->torch)
+2026-09-24T01:40:15.5979524Z   Downloading markupsafe-3.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-09-24T01:40:15.6109393Z Downloading torch-2.14.0%2Bcpu-cp313-cp313-manylinux_2_28_x86_64.whl (196.3 MB)
+2026-09-24T01:40:17.0646875Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 196.3/196.3 MB 135.5 MB/s  0:00:01
+2026-09-24T01:40:17.0691733Z Downloading fsspec-2026.7.0-py3-none-any.whl (206 kB)
+2026-09-24T01:40:17.0882213Z Downloading networkx-3.6.1-py3-none-any.whl (2.1 MB)
+2026-09-24T01:40:17.1267723Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 56.8 MB/s  0:00:00
+2026-09-24T01:40:17.1316035Z Downloading setuptools-78.1.0-py3-none-any.whl (1.3 MB)
+2026-09-24T01:40:17.1447963Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 108.3 MB/s  0:00:00
+2026-09-24T01:40:17.1482578Z Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+2026-09-24T01:40:17.2158006Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 94.1 MB/s  0:00:00
+2026-09-24T01:40:17.2198810Z Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+2026-09-24T01:40:17.2257801Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 73.9 MB/s  0:00:00
+2026-09-24T01:40:17.2269190Z Using cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-09-24T01:40:17.2279541Z Using cached filelock-3.32.3-py3-none-any.whl (98 kB)
+2026-09-24T01:40:17.2326237Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-09-24T01:40:17.2399164Z Downloading markupsafe-3.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-09-24T01:40:17.5814173Z Installing collected packages: mpmath, typing-extensions, sympy, setuptools, networkx, MarkupSafe, fsspec, filelock, jinja2, torch
+2026-09-24T01:40:37.0926227Z 
+2026-09-24T01:40:37.0943398Z Successfully installed MarkupSafe-3.0.3 filelock-3.32.3 fsspec-2026.7.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.6.1 setuptools-78.1.0 sympy-1.14.0 torch-2.14.0+cpu typing-extensions-4.16.0
+2026-09-24T01:40:37.4758306Z Obtaining file:///home/runner/work/juniper-canopy/juniper-canopy
+2026-09-24T01:40:37.4790801Z   Installing build dependencies: started
+2026-09-24T01:40:38.3657011Z   Installing build dependencies: finished with status 'done'
+2026-09-24T01:40:38.3663140Z   Checking if build backend supports build_editable: started
+2026-09-24T01:40:38.7756320Z   Checking if build backend supports build_editable: finished with status 'done'
+2026-09-24T01:40:38.7764664Z   Getting requirements to build editable: started
+2026-09-24T01:40:39.1099736Z   Getting requirements to build editable: finished with status 'done'
+2026-09-24T01:40:39.1108600Z   Preparing editable metadata (pyproject.toml): started
+2026-09-24T01:40:39.3062987Z   Preparing editable metadata (pyproject.toml): finished with status 'done'
+2026-09-24T01:40:39.3819341Z Collecting dash>=3.0.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:39.4273481Z   Downloading dash-4.4.1-py3-none-any.whl.metadata (11 kB)
+2026-09-24T01:40:39.4636245Z Collecting dash-bootstrap-components>=2.0.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:39.4793235Z   Downloading dash_bootstrap_components-2.0.4-py3-none-any.whl.metadata (18 kB)
+2026-09-24T01:40:39.5165033Z Collecting fastapi>=0.100.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:39.5217706Z   Downloading fastapi-0.141.1-py3-none-any.whl.metadata (27 kB)
+2026-09-24T01:40:39.5573071Z Collecting uvicorn>=0.20.0 (from uvicorn[standard]>=0.20.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:39.5610805Z   Downloading uvicorn-0.53.0-py3-none-any.whl.metadata (6.6 kB)
+2026-09-24T01:40:39.5869592Z Collecting plotly>=5.0.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:39.5912264Z   Downloading plotly-7.1.0-py3-none-any.whl.metadata (8.8 kB)
+2026-09-24T01:40:39.7519674Z Collecting numpy>=1.24.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:39.7562478Z   Downloading numpy-2.5.3-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+2026-09-24T01:40:39.8556376Z Collecting scipy>=1.10.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:39.8597228Z   Downloading scipy-1.18.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-09-24T01:40:39.9434254Z Collecting PyYAML>=6.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:39.9448038Z   Using cached pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-09-24T01:40:40.0253456Z Collecting pydantic>=2.0.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.0306610Z   Downloading pydantic-2.13.5-py3-none-any.whl.metadata (110 kB)
+2026-09-24T01:40:40.0497798Z Collecting pydantic-settings>=2.0.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.0531610Z   Downloading pydantic_settings-2.15.0-py3-none-any.whl.metadata (3.9 kB)
+2026-09-24T01:40:40.1391959Z Collecting websockets>=12.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.1430463Z   Downloading websockets-17.1-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+2026-09-24T01:40:40.1866128Z Collecting nest-asyncio>=1.5.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.1996049Z   Downloading nest_asyncio-1.6.0-py3-none-any.whl.metadata (2.8 kB)
+2026-09-24T01:40:40.2524986Z Collecting requests>=2.28.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.2571460Z   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+2026-09-24T01:40:40.3073125Z Collecting httpx>=0.27 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.3107503Z   Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+2026-09-24T01:40:40.3235071Z Collecting a2wsgi>=1.10.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.3275133Z   Downloading a2wsgi-1.10.10-py3-none-any.whl.metadata (4.0 kB)
+2026-09-24T01:40:40.3397521Z Collecting colorama>=0.4.6 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.3433818Z   Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+2026-09-24T01:40:40.3476319Z Requirement already satisfied: networkx>=3.0 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from juniper-canopy==0.8.1) (3.6.1)
+2026-09-24T01:40:40.3985852Z Collecting psutil>=5.9.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.4028346Z   Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl.metadata (22 kB)
+2026-09-24T01:40:40.4391996Z Collecting python-multipart>=0.0.6 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.4489745Z   Downloading python_multipart-0.0.32-py3-none-any.whl.metadata (2.1 kB)
+2026-09-24T01:40:40.4886611Z Collecting juniper-observability<0.5.0,>=0.4.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.5112676Z   Downloading juniper_observability-0.4.0-py3-none-any.whl.metadata (15 kB)
+2026-09-24T01:40:40.5507385Z Collecting juniper-service-core<0.8.0,>=0.5.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.5871000Z   Downloading juniper_service_core-0.7.0-py3-none-any.whl.metadata (7.6 kB)
+2026-09-24T01:40:40.6021255Z Collecting juniper-cascor-protocol<0.3.0,>=0.1.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.6400855Z   Downloading juniper_cascor_protocol-0.2.0-py3-none-any.whl.metadata (4.9 kB)
+2026-09-24T01:40:40.6597061Z Collecting prometheus-client>=0.20.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.6677697Z   Downloading prometheus_client-0.26.0-py3-none-any.whl.metadata (2.1 kB)
+2026-09-24T01:40:40.6908504Z Collecting starlette>=0.40 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.6987509Z   Downloading starlette-1.7.0-py3-none-any.whl.metadata (6.6 kB)
+2026-09-24T01:40:40.7134365Z Collecting itsdangerous>=2.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.7175301Z   Downloading itsdangerous-2.2.0-py3-none-any.whl.metadata (1.9 kB)
+2026-09-24T01:40:40.7416065Z Collecting pytest>=9.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.7473419Z   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2026-09-24T01:40:40.8136479Z Collecting pytest-asyncio>=0.23 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.8181289Z   Downloading pytest_asyncio-1.4.0-py3-none-any.whl.metadata (4.1 kB)
+2026-09-24T01:40:40.8315075Z Collecting pytest-cov>=5.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.8371424Z   Downloading pytest_cov-7.1.0-py3-none-any.whl.metadata (32 kB)
+2026-09-24T01:40:40.8531978Z Collecting pytest-mock>=3.12 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.8845510Z   Downloading pytest_mock-3.15.1-py3-none-any.whl.metadata (3.9 kB)
+2026-09-24T01:40:40.9275345Z Collecting pytest-timeout>=2.4.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:40.9325907Z   Downloading pytest_timeout-2.4.0-py3-none-any.whl.metadata (20 kB)
+2026-09-24T01:40:41.2608048Z Collecting coverage>=7.16.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:41.2656745Z   Downloading coverage-7.16.1-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (8.2 kB)
+2026-09-24T01:40:41.3142043Z Collecting anyio>=4.15.1 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:41.3214128Z   Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+2026-09-24T01:40:41.3305060Z Collecting packaging>=26.3 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:41.3314596Z   Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-09-24T01:40:41.3605583Z Collecting juniper-cascor-client<0.9.0,>=0.8.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:41.3954796Z   Downloading juniper_cascor_client-0.8.0-py3-none-any.whl.metadata (6.1 kB)
+2026-09-24T01:40:41.4402359Z Collecting sentry-sdk>=2.0.0 (from juniper-canopy==0.8.1)
+2026-09-24T01:40:41.4443855Z   Downloading sentry_sdk-2.70.0-py3-none-any.whl.metadata (11 kB)
+2026-09-24T01:40:41.4993779Z Collecting urllib3>=2.0.0 (from juniper-cascor-client<0.9.0,>=0.8.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.5003960Z   Using cached urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+2026-09-24T01:40:41.5312179Z Collecting juniper-model-core>=0.1.0 (from juniper-service-core<0.8.0,>=0.5.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.5507104Z   Downloading juniper_model_core-0.3.2-py3-none-any.whl.metadata (4.9 kB)
+2026-09-24T01:40:41.5645090Z Collecting idna>=2.8 (from anyio>=4.15.1->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.5744928Z   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-09-24T01:40:41.5785866Z Requirement already satisfied: typing_extensions>=4.16.0 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from anyio>=4.15.1->juniper-canopy==0.8.1) (4.16.0)
+2026-09-24T01:40:41.5910727Z Collecting Flask<3.2,>=1.0.4 (from dash>=3.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.6043117Z   Downloading flask-3.1.3-py3-none-any.whl.metadata (3.2 kB)
+2026-09-24T01:40:41.6713542Z Collecting Werkzeug<3.2 (from dash>=3.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.6790735Z   Downloading werkzeug-3.1.8-py3-none-any.whl.metadata (4.0 kB)
+2026-09-24T01:40:41.7014822Z Collecting importlib-metadata (from dash>=3.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.7071459Z   Downloading importlib_metadata-9.0.1-py3-none-any.whl.metadata (4.5 kB)
+2026-09-24T01:40:41.7178745Z Collecting retrying (from dash>=3.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.7210313Z   Downloading retrying-1.4.2-py3-none-any.whl.metadata (5.5 kB)
+2026-09-24T01:40:41.7243250Z Requirement already satisfied: setuptools in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from dash>=3.0.0->juniper-canopy==0.8.1) (78.1.0)
+2026-09-24T01:40:41.7372485Z Collecting janus>=1.0.0 (from dash>=3.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.7402876Z   Downloading janus-2.0.0-py3-none-any.whl.metadata (5.3 kB)
+2026-09-24T01:40:41.7528909Z Collecting comm (from dash>=3.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.7571682Z   Downloading comm-0.2.3-py3-none-any.whl.metadata (3.7 kB)
+2026-09-24T01:40:41.7721186Z Collecting blinker>=1.9.0 (from Flask<3.2,>=1.0.4->dash>=3.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.7749678Z   Downloading blinker-1.9.0-py3-none-any.whl.metadata (1.6 kB)
+2026-09-24T01:40:41.7875782Z Collecting click>=8.1.3 (from Flask<3.2,>=1.0.4->dash>=3.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.7885107Z   Using cached click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+2026-09-24T01:40:41.7903415Z Requirement already satisfied: jinja2>=3.1.2 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from Flask<3.2,>=1.0.4->dash>=3.0.0->juniper-canopy==0.8.1) (3.1.6)
+2026-09-24T01:40:41.7906543Z Requirement already satisfied: markupsafe>=2.1.1 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from Flask<3.2,>=1.0.4->dash>=3.0.0->juniper-canopy==0.8.1) (3.0.3)
+2026-09-24T01:40:41.8062980Z Collecting typing-inspection>=0.4.2 (from fastapi>=0.100.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.8101213Z   Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+2026-09-24T01:40:41.8222600Z Collecting annotated-doc>=0.0.2 (from fastapi>=0.100.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.8260175Z   Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+2026-09-24T01:40:41.8437552Z Collecting certifi (from httpx>=0.27->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.8491102Z   Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)
+2026-09-24T01:40:41.8635992Z Collecting httpcore==1.* (from httpx>=0.27->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.8671084Z   Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+2026-09-24T01:40:41.8784735Z Collecting h11>=0.16 (from httpcore==1.*->httpx>=0.27->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.8829032Z   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+2026-09-24T01:40:41.9228353Z Collecting narwhals>=1.15.1 (from plotly>=5.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.9266287Z   Downloading narwhals-2.26.0-py3-none-any.whl.metadata (15 kB)
+2026-09-24T01:40:41.9411521Z Collecting annotated-types>=0.6.0 (from pydantic>=2.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:41.9443519Z   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+2026-09-24T01:40:42.4496856Z Collecting pydantic-core==2.46.5 (from pydantic>=2.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.4537071Z   Downloading pydantic_core-2.46.5-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)
+2026-09-24T01:40:42.4729807Z Collecting python-dotenv>=0.21.0 (from pydantic-settings>=2.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.4771157Z   Downloading python_dotenv-1.2.3-py3-none-any.whl.metadata (29 kB)
+2026-09-24T01:40:42.5077187Z Collecting iniconfig>=1.0.1 (from pytest>=9.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.5113425Z   Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+2026-09-24T01:40:42.5230456Z Collecting pluggy<2,>=1.5 (from pytest>=9.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.5241166Z   Using cached pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+2026-09-24T01:40:42.5375354Z Collecting pygments>=2.7.2 (from pytest>=9.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.5386820Z   Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-09-24T01:40:42.6490037Z Collecting charset_normalizer<4,>=2 (from requests>=2.28.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.6545145Z   Downloading charset_normalizer-3.5.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (45 kB)
+2026-09-24T01:40:42.7004398Z Collecting httptools>=0.8.0 (from uvicorn[standard]>=0.20.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.7052678Z   Downloading httptools-0.8.0-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+2026-09-24T01:40:42.7552587Z Collecting uvloop>=0.15.1 (from uvicorn[standard]>=0.20.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.7588311Z   Downloading uvloop-0.22.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (4.9 kB)
+2026-09-24T01:40:42.8315482Z Collecting watchfiles>=0.20 (from uvicorn[standard]>=0.20.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.8360108Z   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+2026-09-24T01:40:42.8708687Z Collecting zipp>=3.20 (from importlib-metadata->dash>=3.0.0->juniper-canopy==0.8.1)
+2026-09-24T01:40:42.8740450Z   Downloading zipp-4.1.0-py3-none-any.whl.metadata (3.6 kB)
+2026-09-24T01:40:42.8891162Z Downloading juniper_cascor_client-0.8.0-py3-none-any.whl (59 kB)
+2026-09-24T01:40:42.8958912Z Downloading juniper_cascor_protocol-0.2.0-py3-none-any.whl (15 kB)
+2026-09-24T01:40:42.9035733Z Downloading juniper_observability-0.4.0-py3-none-any.whl (28 kB)
+2026-09-24T01:40:42.9096157Z Downloading juniper_service_core-0.7.0-py3-none-any.whl (134 kB)
+2026-09-24T01:40:42.9148405Z Downloading a2wsgi-1.10.10-py3-none-any.whl (17 kB)
+2026-09-24T01:40:42.9196946Z Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+2026-09-24T01:40:42.9251259Z Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+2026-09-24T01:40:42.9302515Z Downloading coverage-7.16.1-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (257 kB)
+2026-09-24T01:40:42.9363095Z Downloading dash-4.4.1-py3-none-any.whl (8.9 MB)
+2026-09-24T01:40:43.0322760Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.9/8.9 MB 93.9 MB/s  0:00:00
+2026-09-24T01:40:43.0360111Z Downloading flask-3.1.3-py3-none-any.whl (103 kB)
+2026-09-24T01:40:43.0415063Z Downloading werkzeug-3.1.8-py3-none-any.whl (226 kB)
+2026-09-24T01:40:43.0468779Z Downloading blinker-1.9.0-py3-none-any.whl (8.5 kB)
+2026-09-24T01:40:43.0497282Z Using cached click-8.5.0-py3-none-any.whl (125 kB)
+2026-09-24T01:40:43.0569402Z Downloading dash_bootstrap_components-2.0.4-py3-none-any.whl (204 kB)
+2026-09-24T01:40:43.0636047Z Downloading fastapi-0.141.1-py3-none-any.whl (131 kB)
+2026-09-24T01:40:43.0693331Z Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+2026-09-24T01:40:43.0911569Z Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+2026-09-24T01:40:43.0965289Z Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+2026-09-24T01:40:43.1016785Z Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+2026-09-24T01:40:43.1065668Z Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-09-24T01:40:43.1117384Z Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+2026-09-24T01:40:43.1204071Z Downloading janus-2.0.0-py3-none-any.whl (12 kB)
+2026-09-24T01:40:43.1288375Z Downloading juniper_model_core-0.3.2-py3-none-any.whl (31 kB)
+2026-09-24T01:40:43.1339198Z Downloading nest_asyncio-1.6.0-py3-none-any.whl (5.2 kB)
+2026-09-24T01:40:43.1390206Z Downloading numpy-2.5.3-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+2026-09-24T01:40:43.2765701Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 121.9 MB/s  0:00:00
+2026-09-24T01:40:43.2779431Z Using cached packaging-26.3-py3-none-any.whl (129 kB)
+2026-09-24T01:40:43.2856181Z Downloading plotly-7.1.0-py3-none-any.whl (9.7 MB)
+2026-09-24T01:40:43.3623698Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.7/9.7 MB 130.9 MB/s  0:00:00
+2026-09-24T01:40:43.3677943Z Downloading narwhals-2.26.0-py3-none-any.whl (474 kB)
+2026-09-24T01:40:43.3745866Z Downloading prometheus_client-0.26.0-py3-none-any.whl (64 kB)
+2026-09-24T01:40:43.3856594Z Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl (155 kB)
+2026-09-24T01:40:43.3934295Z Downloading pydantic-2.13.5-py3-none-any.whl (472 kB)
+2026-09-24T01:40:43.4011047Z Downloading pydantic_core-2.46.5-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+2026-09-24T01:40:43.4189483Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 119.3 MB/s  0:00:00
+2026-09-24T01:40:43.4251838Z Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+2026-09-24T01:40:43.4310825Z Downloading pydantic_settings-2.15.0-py3-none-any.whl (69 kB)
+2026-09-24T01:40:43.4374859Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-09-24T01:40:43.4416589Z Using cached pluggy-1.6.0-py3-none-any.whl (20 kB)
+2026-09-24T01:40:43.4448451Z Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+2026-09-24T01:40:43.4477866Z Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-09-24T01:40:43.4548735Z Downloading pytest_asyncio-1.4.0-py3-none-any.whl (16 kB)
+2026-09-24T01:40:43.4645642Z Downloading pytest_cov-7.1.0-py3-none-any.whl (22 kB)
+2026-09-24T01:40:43.4896160Z Downloading pytest_mock-3.15.1-py3-none-any.whl (10 kB)
+2026-09-24T01:40:43.4947770Z Downloading pytest_timeout-2.4.0-py3-none-any.whl (14 kB)
+2026-09-24T01:40:43.4999766Z Downloading python_dotenv-1.2.3-py3-none-any.whl (22 kB)
+2026-09-24T01:40:43.5055356Z Downloading python_multipart-0.0.32-py3-none-any.whl (30 kB)
+2026-09-24T01:40:43.5100567Z Using cached pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (801 kB)
+2026-09-24T01:40:43.5135975Z Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+2026-09-24T01:40:43.5194640Z Downloading charset_normalizer-3.5.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (250 kB)
+2026-09-24T01:40:43.5228136Z Using cached urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-09-24T01:40:43.5268656Z Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+2026-09-24T01:40:43.5322195Z Downloading scipy-1.18.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
+2026-09-24T01:40:43.9320106Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.3/35.3 MB 88.7 MB/s  0:00:00
+2026-09-24T01:40:43.9367095Z Downloading sentry_sdk-2.70.0-py3-none-any.whl (531 kB)
+2026-09-24T01:40:43.9773754Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 531.8/531.8 kB 7.5 MB/s  0:00:00
+2026-09-24T01:40:43.9811104Z Downloading starlette-1.7.0-py3-none-any.whl (78 kB)
+2026-09-24T01:40:43.9865083Z Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+2026-09-24T01:40:43.9913331Z Downloading uvicorn-0.53.0-py3-none-any.whl (87 kB)
+2026-09-24T01:40:44.0011127Z Downloading httptools-0.8.0-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (486 kB)
+2026-09-24T01:40:44.0126635Z Downloading uvloop-0.22.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.4 MB)
+2026-09-24T01:40:44.1736937Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 26.1 MB/s  0:00:00
+2026-09-24T01:40:44.1765498Z Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+2026-09-24T01:40:44.4651402Z Downloading websockets-17.1-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (224 kB)
+2026-09-24T01:40:44.5245631Z Downloading comm-0.2.3-py3-none-any.whl (7.3 kB)
+2026-09-24T01:40:44.5663100Z Downloading importlib_metadata-9.0.1-py3-none-any.whl (27 kB)
+2026-09-24T01:40:44.5904541Z Downloading zipp-4.1.0-py3-none-any.whl (10 kB)
+2026-09-24T01:40:44.6244864Z Downloading retrying-1.4.2-py3-none-any.whl (10 kB)
+2026-09-24T01:40:44.8777284Z Building wheels for collected packages: juniper-canopy
+2026-09-24T01:40:44.8785325Z   Building editable for juniper-canopy (pyproject.toml): started
+2026-09-24T01:40:45.1595788Z   Building editable for juniper-canopy (pyproject.toml): finished with status 'done'
+2026-09-24T01:40:45.1601074Z   Created wheel for juniper-canopy: filename=juniper_canopy-0.8.1-0.editable-py3-none-any.whl size=6606 sha256=0c864cc49e6031f003589380afe7baf4f5dcd33d75f98f133bab9105ec090836
+2026-09-24T01:40:45.1602528Z   Stored in directory: /tmp/pip-ephem-wheel-cache-cxyzp2_v/wheels/4a/3e/50/cc21438eb4756642c165005f911833d90edc2e4f47b29bb232
+2026-09-24T01:40:45.1623598Z Successfully built juniper-canopy
+2026-09-24T01:40:45.2968515Z Installing collected packages: zipp, Werkzeug, websockets, uvloop, urllib3, typing-inspection, retrying, PyYAML, python-multipart, python-dotenv, pygments, pydantic-core, psutil, prometheus-client, pluggy, packaging, numpy, nest-asyncio, narwhals, juniper-model-core, janus, itsdangerous, iniconfig, idna, httptools, h11, coverage, comm, colorama, click, charset_normalizer, certifi, blinker, annotated-types, annotated-doc, a2wsgi, uvicorn, sentry-sdk, scipy, requests, pytest, pydantic, plotly, importlib-metadata, httpcore, Flask, anyio, watchfiles, starlette, pytest-timeout, pytest-mock, pytest-cov, pytest-asyncio, pydantic-settings, juniper-cascor-protocol, httpx, dash, juniper-observability, juniper-cascor-client, fastapi, dash-bootstrap-components, juniper-service-core, juniper-canopy
+2026-09-24T01:40:59.3412547Z 
+2026-09-24T01:40:59.3476871Z Successfully installed Flask-3.1.3 PyYAML-6.0.3 Werkzeug-3.1.8 a2wsgi-1.10.10 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 blinker-1.9.0 certifi-2026.7.22 charset_normalizer-3.5.1 click-8.5.0 colorama-0.4.6 comm-0.2.3 coverage-7.16.1 dash-4.4.1 dash-bootstrap-components-2.0.4 fastapi-0.141.1 h11-0.16.0 httpcore-1.0.9 httptools-0.8.0 httpx-0.28.1 idna-3.20 importlib-metadata-9.0.1 iniconfig-2.3.0 itsdangerous-2.2.0 janus-2.0.0 juniper-canopy-0.8.1 juniper-cascor-client-0.8.0 juniper-cascor-protocol-0.2.0 juniper-model-core-0.3.2 juniper-observability-0.4.0 juniper-service-core-0.7.0 narwhals-2.26.0 nest-asyncio-1.6.0 numpy-2.5.3 packaging-26.3 plotly-7.1.0 pluggy-1.6.0 prometheus-client-0.26.0 psutil-7.2.2 pydantic-2.13.5 pydantic-core-2.46.5 pydantic-settings-2.15.0 pygments-2.21.0 pytest-9.1.1 pytest-asyncio-1.4.0 pytest-cov-7.1.0 pytest-mock-3.15.1 pytest-timeout-2.4.0 python-dotenv-1.2.3 python-multipart-0.0.32 requests-2.34.2 retrying-1.4.2 scipy-1.18.1 sentry-sdk-2.70.0 starlette-1.7.0 typing-inspection-0.4.4 urllib3-2.8.0 uvicorn-0.53.0 uvloop-0.22.1 watchfiles-1.3.0 websockets-17.1 zipp-4.1.0
+2026-09-24T01:41:00.0273570Z Collecting h5py>=3.0
+2026-09-24T01:41:00.0906389Z   Downloading h5py-3.16.0-cp313-cp313-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+2026-09-24T01:41:00.0957638Z Requirement already satisfied: numpy>=1.21.2 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from h5py>=3.0) (2.5.3)
+2026-09-24T01:41:00.1046863Z Downloading h5py-3.16.0-cp313-cp313-manylinux_2_28_x86_64.whl (5.4 MB)
+2026-09-24T01:41:00.1889765Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.4/5.4 MB 84.2 MB/s  0:00:00
+2026-09-24T01:41:00.2697008Z Installing collected packages: h5py
+2026-09-24T01:41:00.4987578Z Successfully installed h5py-3.16.0
+2026-09-24T01:41:00.5769188Z ##[group]Run echo "╔════════════════════════════════════════════════════════════╗"
+2026-09-24T01:41:00.5769683Z [36;1mecho "╔════════════════════════════════════════════════════════════╗"[0m
+2026-09-24T01:41:00.5770326Z [36;1mecho "║       Juniper Canopy - Environment Floor-Drift Check       ║"[0m
+2026-09-24T01:41:00.5770724Z [36;1mecho "╚════════════════════════════════════════════════════════════╝"[0m
+2026-09-24T01:41:00.5771101Z [36;1mpython -m pip install "juniper-ci-tools>=0.9.0,<0.10.0"[0m
+2026-09-24T01:41:00.5771484Z [36;1mjuniper-env-drift-check --repo-root . --check-lock[0m
+2026-09-24T01:41:00.5808421Z shell: /usr/bin/bash -e {0}
+2026-09-24T01:41:00.5808692Z env:
+2026-09-24T01:41:00.5808892Z   ENV_NAME: juniper-canopy
+2026-09-24T01:41:00.5809131Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:41:00.5809379Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:41:00.5809654Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:00.5810273Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:41:00.5810657Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:00.5811002Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:00.5811354Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:00.5811694Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:41:00.5811994Z ##[endgroup]
+2026-09-24T01:41:00.5867311Z ╔════════════════════════════════════════════════════════════╗
+2026-09-24T01:41:00.5870465Z ║       Juniper Canopy - Environment Floor-Drift Check       ║
+2026-09-24T01:41:00.5871180Z ╚════════════════════════════════════════════════════════════╝
+2026-09-24T01:41:00.9887359Z Collecting juniper-ci-tools<0.10.0,>=0.9.0
+2026-09-24T01:41:01.0315250Z   Downloading juniper_ci_tools-0.9.0-py3-none-any.whl.metadata (13 kB)
+2026-09-24T01:41:01.0373370Z Requirement already satisfied: PyYAML>=6.0 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from juniper-ci-tools<0.10.0,>=0.9.0) (6.0.3)
+2026-09-24T01:41:01.0377798Z Requirement already satisfied: packaging>=22.0 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from juniper-ci-tools<0.10.0,>=0.9.0) (26.3)
+2026-09-24T01:41:01.0463038Z Downloading juniper_ci_tools-0.9.0-py3-none-any.whl (74 kB)
+2026-09-24T01:41:01.2894850Z Installing collected packages: juniper-ci-tools
+2026-09-24T01:41:01.3290015Z Successfully installed juniper-ci-tools-0.9.0
+2026-09-24T01:41:01.5116524Z juniper-env-drift-check: environment floor-drift report
+2026-09-24T01:41:01.5117174Z   repo:    /home/runner/work/juniper-canopy/juniper-canopy
+2026-09-24T01:41:01.5117791Z   scanned: active interpreter (/opt/hostedtoolcache/Python/3.13.15/x64/bin/python)
+2026-09-24T01:41:01.5118103Z 
+2026-09-24T01:41:01.5118254Z   PACKAGE                        FLOOR            INSTALLED      STATUS
+2026-09-24T01:41:01.5118784Z   ------------------------------ ---------------- -------------- ------------
+2026-09-24T01:41:01.5119243Z   juniper-cascor-client          <0.9.0,>=0.8.0   0.8.0          OK
+2026-09-24T01:41:01.5119748Z   juniper-cascor-protocol        <0.3.0,>=0.1.0   0.2.0          OK
+2026-09-24T01:41:01.5120435Z   juniper-data-client            <0.6.0,>=0.5.0   -              MISSING
+2026-09-24T01:41:01.5120936Z   juniper-observability          <0.5.0,>=0.4.0   0.4.0          OK
+2026-09-24T01:41:01.5121313Z   juniper-service-core           <0.8.0,>=0.5.0   0.7.0          OK
+2026-09-24T01:41:01.5121540Z 
+2026-09-24T01:41:01.5121643Z   5 floor(s): 4 OK, 0 BELOW_FLOOR, 1 MISSING
+2026-09-24T01:41:01.5121827Z 
+2026-09-24T01:41:01.5122176Z   requirements.lock: /home/runner/work/juniper-canopy/juniper-canopy/requirements.lock
+2026-09-24T01:41:01.5122645Z   PACKAGE                        FLOOR            LOCKED         STATUS
+2026-09-24T01:41:01.5123024Z   ------------------------------ ---------------- -------------- ------------
+2026-09-24T01:41:01.5124036Z   juniper-cascor-client          <0.9.0,>=0.8.0   0.8.0          OK
+2026-09-24T01:41:01.5124494Z   juniper-cascor-protocol        <0.3.0,>=0.1.0   0.2.0          OK
+2026-09-24T01:41:01.5124935Z   juniper-data-client            <0.6.0,>=0.5.0   0.5.0          OK
+2026-09-24T01:41:01.5125298Z   juniper-observability          <0.5.0,>=0.4.0   0.4.0          OK
+2026-09-24T01:41:01.5125666Z   juniper-service-core           <0.8.0,>=0.5.0   0.7.0          OK
+2026-09-24T01:41:01.5125985Z 
+2026-09-24T01:41:01.5126121Z   5 lock pin(s): 5 OK, 0 BELOW_FLOOR, 0 ABSENT
+2026-09-24T01:41:01.5126305Z 
+2026-09-24T01:41:01.5126389Z   RESULT: OK
+2026-09-24T01:41:01.5325051Z ##[group]Run mkdir -p logs src/logs reports/junit reports/coverage reports/htmlcov
+2026-09-24T01:41:01.5325608Z [36;1mmkdir -p logs src/logs reports/junit reports/coverage reports/htmlcov[0m
+2026-09-24T01:41:01.5361312Z shell: /usr/bin/bash -e {0}
+2026-09-24T01:41:01.5361543Z env:
+2026-09-24T01:41:01.5361734Z   ENV_NAME: juniper-canopy
+2026-09-24T01:41:01.5361965Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:41:01.5362191Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:41:01.5362475Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:01.5362867Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:41:01.5363246Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:01.5363593Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:01.5363933Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:01.5364301Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:41:01.5364621Z ##[endgroup]
+2026-09-24T01:41:01.5456914Z ##[group]Run echo "╔════════════════════════════════════════════════════════════╗"
+2026-09-24T01:41:01.5457538Z [36;1mecho "╔════════════════════════════════════════════════════════════╗"[0m
+2026-09-24T01:41:01.5457971Z [36;1mecho "║       Juniper Canopy - Unit Tests (Fast Only)              ║"[0m
+2026-09-24T01:41:01.5458356Z [36;1mecho "╚════════════════════════════════════════════════════════════╝"[0m
+2026-09-24T01:41:01.5458660Z [36;1m[0m
+2026-09-24T01:41:01.5458840Z [36;1mset +e[0m
+2026-09-24T01:41:01.5459176Z [36;1m# contract/ and performance/ are listed here because they were listed NOWHERE.[0m
+2026-09-24T01:41:01.5459695Z [36;1m# The three pytest invocations in this file named unit/, regression/, integration[0m
+2026-09-24T01:41:01.5460461Z [36;1m# and ui; the scheduled lane's `-m "slow or integration"` selector deselects both[0m
+2026-09-24T01:41:01.5460974Z [36;1m# directories' tests (contract/ is all @pytest.mark.unit, performance/ is[0m
+2026-09-24T01:41:01.5461406Z [36;1m# unmarked). So:[0m
+2026-09-24T01:41:01.5461750Z [36;1m#   contract/    — test_param_map_completeness.py, which pins that every[0m
+2026-09-24T01:41:01.5462212Z [36;1m#                  Apply-button input has a param-map entry (the N5 silent-drop[0m
+2026-09-24T01:41:01.5462640Z [36;1m#                  class), had never executed in CI. Its only trace was a[0m
+2026-09-24T01:41:01.5463069Z [36;1m#                  collection error in the scheduled lane, so repairing that lane[0m
+2026-09-24T01:41:01.5463477Z [36;1m#                  would have removed the last sign it existed.[0m
+2026-09-24T01:41:01.5463929Z [36;1m#   performance/ — test_button_responsiveness.py: 5 tests, 1 explicitly skipped,[0m
+2026-09-24T01:41:01.5464380Z [36;1m#                  the other 4 live and never run anywhere.[0m
+2026-09-24T01:41:01.5464808Z [36;1m# Both directories pass under this lane's selector today (3 and 4 tests). The[0m
+2026-09-24T01:41:01.5465307Z [36;1m# selector is negative, so unmarked tests are selected rather than dropped.[0m
+2026-09-24T01:41:01.5465789Z [36;1m# test_ci_lane_wiring.py keeps any future directory from going unwired.[0m
+2026-09-24T01:41:01.5466147Z [36;1mpython -m pytest \[0m
+2026-09-24T01:41:01.5466474Z [36;1m  -m "not requires_cascor and not requires_server and not slow" \[0m
+2026-09-24T01:41:01.5466962Z [36;1m  src/tests/unit/ src/tests/regression/ src/tests/contract/ src/tests/performance/ \[0m
+2026-09-24T01:41:01.5467396Z [36;1m  --verbose \[0m
+2026-09-24T01:41:01.5467612Z [36;1m  --timeout=60 \[0m
+2026-09-24T01:41:01.5467826Z [36;1m  --maxfail=5 \[0m
+2026-09-24T01:41:01.5468075Z [36;1m  --junitxml=reports/junit/junit-unit.xml \[0m
+2026-09-24T01:41:01.5468360Z [36;1m  --cov=src \[0m
+2026-09-24T01:41:01.5468578Z [36;1m  --cov-report=term-missing \[0m
+2026-09-24T01:41:01.5468953Z [36;1m  --cov-report=xml:reports/coverage.xml \[0m
+2026-09-24T01:41:01.5469309Z [36;1m  --cov-report=json:reports/coverage.json \[0m
+2026-09-24T01:41:01.5469609Z [36;1m  --cov-report=html:reports/htmlcov \[0m
+2026-09-24T01:41:01.5470082Z [36;1m  --cov-fail-under=${COVERAGE_FAIL_UNDER} \[0m
+2026-09-24T01:41:01.5470421Z [36;1m  2>&1 | tee reports/junit/pytest-unit.log[0m
+2026-09-24T01:41:01.5470713Z [36;1mPYTEST_EXIT=${PIPESTATUS[0]}[0m
+2026-09-24T01:41:01.5470973Z [36;1m[0m
+2026-09-24T01:41:01.5471269Z [36;1m# Python 3.12 may SIGABRT (exit 134) during interpreter cleanup after[0m
+2026-09-24T01:41:01.5471716Z [36;1m# all tests pass. Check the JUnit XML for actual test results.[0m
+2026-09-24T01:41:01.5472184Z [36;1mif [ "$PYTEST_EXIT" -eq 134 ] && [ -f reports/junit/junit-unit.xml ]; then[0m
+2026-09-24T01:41:01.5472778Z [36;1m  if grep -q 'failures="0"' reports/junit/junit-unit.xml && grep -q 'errors="0"' reports/junit/junit-unit.xml; then[0m
+2026-09-24T01:41:01.5473650Z [36;1m    echo "::warning::pytest exited with SIGABRT (134) during cleanup but JUnit XML shows 0 failures/errors — treating as success (Python 3.12 runtime bug)"[0m
+2026-09-24T01:41:01.5474452Z [36;1m    exit 0[0m
+2026-09-24T01:41:01.5474777Z [36;1m  fi[0m
+2026-09-24T01:41:01.5474978Z [36;1mfi[0m
+2026-09-24T01:41:01.5475181Z [36;1m[0m
+2026-09-24T01:41:01.5475398Z [36;1mexit $PYTEST_EXIT[0m
+2026-09-24T01:41:01.5505775Z shell: /usr/bin/bash -e {0}
+2026-09-24T01:41:01.5506009Z env:
+2026-09-24T01:41:01.5506212Z   ENV_NAME: juniper-canopy
+2026-09-24T01:41:01.5506442Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:41:01.5506656Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:41:01.5506928Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:01.5507338Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:41:01.5507721Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:01.5508076Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:01.5508405Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:41:01.5508757Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:41:01.5509065Z   CASCOR_BACKEND_AVAILABLE: 0
+2026-09-24T01:41:01.5509300Z   RUN_SERVER_TESTS: 0
+2026-09-24T01:41:01.5509495Z   ENABLE_SLOW_TESTS: 0
+2026-09-24T01:41:01.5509707Z ##[endgroup]
+2026-09-24T01:41:01.5558881Z ╔════════════════════════════════════════════════════════════╗
+2026-09-24T01:41:01.5559548Z ║       Juniper Canopy - Unit Tests (Fast Only)              ║
+2026-09-24T01:41:01.5560353Z ╚════════════════════════════════════════════════════════════╝
+2026-09-24T01:41:27.6164780Z 
+2026-09-24T01:41:27.6165573Z === Test Environment Configuration ===
+2026-09-24T01:41:27.6166131Z CasCor Backend Tests: ENABLED
+2026-09-24T01:41:27.6166554Z Live Server Tests: ENABLED
+2026-09-24T01:41:27.6166967Z Display Tests: DISABLED (set RUN_DISPLAY_TESTS=1)
+2026-09-24T01:41:27.6167400Z Slow Tests: ENABLED
+2026-09-24T01:41:27.6167714Z ========================================
+2026-09-24T01:41:27.6167984Z 
+2026-09-24T01:41:27.6168297Z ============================= test session starts ==============================
+2026-09-24T01:41:27.6168936Z platform linux -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0
+2026-09-24T01:41:27.6169584Z rootdir: /home/runner/work/juniper-canopy/juniper-canopy
+2026-09-24T01:41:27.6170394Z configfile: pyproject.toml
+2026-09-24T01:41:27.6170998Z plugins: anyio-4.15.1, dash-4.4.1, cov-7.1.0, mock-3.15.1, asyncio-1.4.0, timeout-2.4.0
+2026-09-24T01:41:27.6171980Z asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+2026-09-24T01:41:27.6172813Z timeout: 60.0s
+2026-09-24T01:41:27.6173132Z timeout method: signal
+2026-09-24T01:41:27.6173492Z timeout func_only: False
+2026-09-24T01:41:27.6173889Z collected 6880 items / 4 deselected / 6876 selected
+2026-09-24T01:41:27.6174226Z 
+2026-09-24T01:41:27.7191140Z src/tests/unit/backend/test_cascor_service_adapter.py .................. [  0%]
+2026-09-24T01:41:28.0745949Z ........................................................................ [  1%]
+2026-09-24T01:41:28.1340659Z ................                                                         [  1%]
+2026-09-24T01:41:28.1678795Z src/tests/unit/backend/test_cascor_service_adapter_boundary.py ......... [  1%]
+2026-09-24T01:41:28.2673809Z .................                                                        [  1%]
+2026-09-24T01:41:28.2792403Z src/tests/unit/backend/test_cascor_service_adapter_gate_coverage.py .... [  1%]
+2026-09-24T01:41:31.7737086Z ........................................................................ [  3%]
+2026-09-24T01:41:32.5733014Z .....................................................................    [  4%]
+2026-09-24T01:41:32.5895332Z src/tests/unit/backend/test_cascor_service_adapter_mutations.py .....    [  4%]
+2026-09-24T01:41:32.5983166Z src/tests/unit/backend/test_cascor_service_adapter_param_mapping_regression.py . [  4%]
+2026-09-24T01:41:32.6425506Z ......                                                                   [  4%]
+2026-09-24T01:41:32.7908111Z src/tests/unit/backend/test_cascor_service_adapter_v1_prefix_regression.py . [  4%]
+2026-09-24T01:41:32.9407096Z ...                                                                      [  4%]
+2026-09-24T01:41:32.9777380Z src/tests/unit/backend/test_cascor_ws_origin_regression.py .......       [  4%]
+2026-09-24T01:41:33.1999724Z src/tests/unit/backend/test_cassandra_client.py ........................ [  4%]
+2026-09-24T01:41:33.3243703Z .............                                                            [  4%]
+2026-09-24T01:41:33.8128382Z src/tests/unit/backend/test_circuit_breaker.py .............             [  5%]
+2026-09-24T01:41:34.2370640Z src/tests/unit/backend/test_circuit_breaker_resilience.py .............. [  5%]
+2026-09-24T01:41:34.2436542Z ..                                                                       [  5%]
+2026-09-24T01:41:34.2915288Z src/tests/unit/backend/test_data_adapter_coverage.py ................... [  5%]
+2026-09-24T01:41:34.3335796Z ..............                                                           [  5%]
+2026-09-24T01:41:34.3680422Z src/tests/unit/backend/test_data_adapter_normalization.py .............. [  6%]
+2026-09-24T01:41:34.3846707Z ......                                                                   [  6%]
+2026-09-24T01:41:34.4160144Z src/tests/unit/backend/test_dataset_swap_events_adapter.py ..........    [  6%]
+2026-09-24T01:41:34.4577655Z src/tests/unit/backend/test_demo_backend_gate_coverage.py .............. [  6%]
+2026-09-24T01:41:34.4805461Z .......                                                                  [  6%]
+2026-09-24T01:41:34.5094460Z src/tests/unit/backend/test_experimental_functions_adapter.py .........  [  6%]
+2026-09-24T01:41:34.5870370Z src/tests/unit/backend/test_recurrence_backend.py ...................... [  6%]
+2026-09-24T01:41:34.5885786Z                                                                          [  6%]
+2026-09-24T01:41:34.8506079Z src/tests/unit/backend/test_redis_client.py ............................ [  7%]
+2026-09-24T01:41:35.0626527Z ...................                                                      [  7%]
+2026-09-24T01:41:35.0800493Z src/tests/unit/backend/test_service_backend_boundary.py .....            [  7%]
+2026-09-24T01:41:35.1201655Z src/tests/unit/backend/test_service_backend_gate_coverage.py ........... [  7%]
+2026-09-24T01:41:35.1413840Z ......                                                                   [  7%]
+2026-09-24T01:41:35.1683456Z src/tests/unit/backend/test_service_backend_validation_gate.py ......... [  8%]
+2026-09-24T01:41:35.1696253Z                                                                          [  8%]
+2026-09-24T01:41:37.0628368Z src/tests/unit/backend/test_start_fresh_forwarding.py ........           [  8%]
+2026-09-24T01:41:37.1549187Z src/tests/unit/backend/test_stream_liveness.py ......................... [  8%]
+2026-09-24T01:41:39.4684434Z ................                                                         [  8%]
+2026-09-24T01:41:39.4962133Z src/tests/unit/backend/test_swap_dataset_live_adapter.py ........        [  8%]
+2026-09-24T01:41:39.7143058Z src/tests/unit/backend/test_training_monitor_95.py ..................... [  9%]
+2026-09-24T01:41:39.7642433Z .................                                                        [  9%]
+2026-09-24T01:41:39.7910051Z src/tests/unit/backend/test_training_monitor_gate_coverage.py .......... [  9%]
+2026-09-24T01:41:39.8061791Z .....                                                                    [  9%]
+2026-09-24T01:41:39.8465599Z src/tests/unit/backend/test_training_state_machine_95.py ............... [  9%]
+2026-09-24T01:41:39.8640950Z ......                                                                   [ 10%]
+2026-09-24T01:41:39.9652963Z src/tests/unit/frontend/test_about_panel.py ............................ [ 10%]
+2026-09-24T01:41:39.9811081Z .....                                                                    [ 10%]
+2026-09-24T01:41:40.0269018Z src/tests/unit/frontend/test_base_component_coverage.py ................ [ 10%]
+2026-09-24T01:41:40.0499266Z ........                                                                 [ 10%]
+2026-09-24T01:41:40.0886590Z src/tests/unit/frontend/test_callback_context_coverage.py .............. [ 11%]
+2026-09-24T01:41:40.1313963Z ...............                                                          [ 11%]
+2026-09-24T01:41:40.2762846Z src/tests/unit/frontend/test_candidate_metrics_panel.py ................ [ 11%]
+2026-09-24T01:41:40.5597639Z ...............                                                          [ 11%]
+2026-09-24T01:41:40.5766838Z src/tests/unit/frontend/test_candidate_metrics_panel_gate_coverage.py .. [ 11%]
+2026-09-24T01:41:41.0007424Z .................................                                        [ 12%]
+2026-09-24T01:41:41.2160779Z src/tests/unit/frontend/test_cassandra_panel.py ........................ [ 12%]
+2026-09-24T01:41:41.3220200Z ...........                                                              [ 12%]
+2026-09-24T01:41:41.4868877Z src/tests/unit/frontend/test_completion_reason_status_bar.py ........... [ 12%]
+2026-09-24T01:41:41.8931021Z ......                                                                   [ 13%]
+2026-09-24T01:41:42.1383158Z src/tests/unit/frontend/test_components_basic.py ....................... [ 13%]
+2026-09-24T01:41:42.2038687Z ..............                                                           [ 13%]
+2026-09-24T01:41:42.2177235Z src/tests/unit/frontend/test_connection_indicator_stream_health.py ..... [ 13%]
+2026-09-24T01:41:42.4257132Z ....                                                                     [ 13%]
+2026-09-24T01:41:43.4529457Z src/tests/unit/frontend/test_convergence_layout.py ........              [ 13%]
+2026-09-24T01:41:43.8735239Z src/tests/unit/frontend/test_d2_d5_truth_up.py .......                   [ 13%]
+2026-09-24T01:41:44.7844201Z src/tests/unit/frontend/test_dashboard_helpers_coverage.py ............. [ 14%]
+2026-09-24T01:41:47.3660382Z ..............................                                           [ 14%]
+2026-09-24T01:41:49.3800025Z src/tests/unit/frontend/test_dashboard_manager.py ...................... [ 14%]
+2026-09-24T01:41:55.8861165Z ........................................................................ [ 15%]
+2026-09-24T01:41:56.3668321Z .......                                                                  [ 15%]
+2026-09-24T01:41:58.2500468Z src/tests/unit/frontend/test_dashboard_manager_95.py ................... [ 16%]
+2026-09-24T01:41:59.7370398Z ......................                                                   [ 16%]
+2026-09-24T01:42:01.1998943Z src/tests/unit/frontend/test_dashboard_manager_coverage.py ............. [ 16%]
+2026-09-24T01:42:02.4535364Z ...................                                                      [ 17%]
+2026-09-24T01:42:03.0905324Z src/tests/unit/frontend/test_dashboard_manager_gate_coverage_handlers.py . [ 17%]
+2026-09-24T01:42:06.6851505Z .............................................                            [ 17%]
+2026-09-24T01:42:06.7532674Z src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner1.py . [ 17%]
+2026-09-24T01:42:12.5712513Z ....................................................................     [ 18%]
+2026-09-24T01:42:12.6387298Z src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner2.py . [ 18%]
+2026-09-24T01:42:15.5207283Z .................................                                        [ 19%]
+2026-09-24T01:42:17.0788962Z src/tests/unit/frontend/test_dashboard_manager_handlers.py ............. [ 19%]
+2026-09-24T01:42:21.9749091Z ..............................................................           [ 20%]
+2026-09-24T01:42:22.2358374Z src/tests/unit/frontend/test_dataset_plotter_coverage.py ............... [ 20%]
+2026-09-24T01:42:23.8669470Z ....................................................                     [ 21%]
+2026-09-24T01:42:24.1679352Z src/tests/unit/frontend/test_dataset_plotter_gate_coverage.py .......... [ 21%]
+2026-09-24T01:42:24.7339657Z .....................                                                    [ 21%]
+2026-09-24T01:42:25.9966630Z src/tests/unit/frontend/test_dataset_shortfall_prompt.py ............... [ 21%]
+2026-09-24T01:42:26.8863376Z .............                                                            [ 22%]
+2026-09-24T01:42:26.9117741Z src/tests/unit/frontend/test_dataset_swap_observers_handlers.py ........ [ 22%]
+2026-09-24T01:42:27.0124496Z .................................                                        [ 22%]
+2026-09-24T01:42:27.1563443Z src/tests/unit/frontend/test_decision_boundary_callback_coverage.py .... [ 22%]
+2026-09-24T01:42:27.7567093Z ..................                                                       [ 23%]
+2026-09-24T01:42:27.7929463Z src/tests/unit/frontend/test_decision_boundary_coverage.py ............. [ 23%]
+2026-09-24T01:42:28.1144652Z .................                                                        [ 23%]
+2026-09-24T01:42:28.1368838Z src/tests/unit/frontend/test_decision_boundary_gate_coverage.py ........ [ 23%]
+2026-09-24T01:42:28.1474364Z ...                                                                      [ 23%]
+2026-09-24T01:42:28.1580385Z src/tests/unit/frontend/test_f009_f010_snapshot_rebuild_preserves_state.py . [ 23%]
+2026-09-24T01:42:28.2783815Z .............                                                            [ 23%]
+2026-09-24T01:42:28.3470797Z src/tests/unit/frontend/test_f011_d0_network_editor_contracts.py ....... [ 23%]
+2026-09-24T01:42:28.4564763Z ..........                                                               [ 24%]
+2026-09-24T01:42:28.6077220Z src/tests/unit/frontend/test_f012_output_weights_2d.py ................. [ 24%]
+2026-09-24T01:42:28.6092606Z                                                                          [ 24%]
+2026-09-24T01:42:28.6879233Z src/tests/unit/frontend/test_f014_replay_api_base_url.py ........        [ 24%]
+2026-09-24T01:42:28.7979847Z src/tests/unit/frontend/test_f026_naive_phase_stamp_compat.py .......... [ 24%]
+2026-09-24T01:42:28.8178028Z ..                                                                       [ 24%]
+2026-09-24T01:42:28.8717437Z src/tests/unit/frontend/test_f035_candidate_loss_from_history.py ....... [ 24%]
+2026-09-24T01:42:29.1414427Z .............                                                            [ 24%]
+2026-09-24T01:42:29.4812307Z src/tests/unit/frontend/test_f037_topology_rebuild_decoupling.py ....... [ 25%]
+2026-09-24T01:42:31.9835478Z ...................                                                      [ 25%]
+2026-09-24T01:42:32.0358997Z src/tests/unit/frontend/test_f039_tick_short_circuit.py .....            [ 25%]
+2026-09-24T01:42:32.4730631Z src/tests/unit/frontend/test_f042_depth_filter_label.py ...........      [ 25%]
+2026-09-24T01:42:32.8053488Z src/tests/unit/frontend/test_f042_depth_slider_bounds.py ..........      [ 25%]
+2026-09-24T01:42:33.0386812Z src/tests/unit/frontend/test_f044_node_click_selection.py .............. [ 25%]
+2026-09-24T01:42:33.0616141Z .                                                                        [ 25%]
+2026-09-24T01:42:33.3900468Z src/tests/unit/frontend/test_f046_clear_selection.py .................   [ 26%]
+2026-09-24T01:42:33.5676582Z src/tests/unit/frontend/test_f046_selection_rebuild_contract.py ........ [ 26%]
+2026-09-24T01:42:33.6146558Z ..                                                                       [ 26%]
+2026-09-24T01:42:33.8219405Z src/tests/unit/frontend/test_f048_replay_cycle.py ........               [ 26%]
+2026-09-24T01:42:33.8921260Z src/tests/unit/frontend/test_f054_replay_block_clientside.py ........... [ 26%]
+2026-09-24T01:42:35.6303063Z ...............................................                          [ 27%]
+2026-09-24T01:42:35.8755795Z src/tests/unit/frontend/test_hdf5_callbacks.py ......................... [ 27%]
+2026-09-24T01:42:36.0231889Z ...............                                                          [ 27%]
+2026-09-24T01:42:36.2268801Z src/tests/unit/frontend/test_hdf5_snapshots_panel.py ................... [ 28%]
+2026-09-24T01:42:36.9112186Z ........................................................................ [ 29%]
+2026-09-24T01:42:37.0164390Z ...........                                                              [ 29%]
+2026-09-24T01:42:37.2416456Z src/tests/unit/frontend/test_idle_dispatch_cuts.py .........             [ 29%]
+2026-09-24T01:42:37.2477140Z src/tests/unit/frontend/test_internal_api_gate_coverage.py ..            [ 29%]
+2026-09-24T01:42:37.2811788Z src/tests/unit/frontend/test_live_dataset_switch_handlers.py ........... [ 29%]
+2026-09-24T01:42:37.3473293Z ....................                                                     [ 29%]
+2026-09-24T01:42:38.4671956Z src/tests/unit/frontend/test_meta_parameters_handlers.py ............... [ 30%]
+2026-09-24T01:42:38.5203853Z .............                                                            [ 30%]
+2026-09-24T01:42:39.1311070Z src/tests/unit/frontend/test_meta_parameters_layout.py ................. [ 30%]
+2026-09-24T01:42:39.8191024Z ...................                                                      [ 30%]
+2026-09-24T01:42:40.4589528Z src/tests/unit/frontend/test_metrics_panel_coverage.py ................. [ 31%]
+2026-09-24T01:42:41.1661730Z ................                                                         [ 31%]
+2026-09-24T01:42:41.3142717Z src/tests/unit/frontend/test_metrics_panel_handlers.py ................. [ 31%]
+2026-09-24T01:42:42.8327554Z ........................................................................ [ 32%]
+2026-09-24T01:42:42.9493396Z .............                                                            [ 32%]
+2026-09-24T01:42:43.0379357Z src/tests/unit/frontend/test_metrics_panel_helpers_coverage.py ......... [ 32%]
+2026-09-24T01:42:43.8432425Z .......................................                                  [ 33%]
+2026-09-24T01:42:44.0033975Z src/tests/unit/frontend/test_metrics_panel_layouts.py .................. [ 33%]
+2026-09-24T01:42:44.0669382Z ......                                                                   [ 33%]
+2026-09-24T01:42:44.5287884Z src/tests/unit/frontend/test_n6_counter_semantics.py ................... [ 34%]
+2026-09-24T01:42:44.7688694Z .....                                                                    [ 34%]
+2026-09-24T01:42:44.8227989Z src/tests/unit/frontend/test_n7_dataset_panel.py .................       [ 34%]
+2026-09-24T01:42:44.9205856Z src/tests/unit/frontend/test_n8_ws_primary_wiring.py ................... [ 34%]
+2026-09-24T01:42:45.0131350Z ........................                                                 [ 35%]
+2026-09-24T01:42:45.8667719Z src/tests/unit/frontend/test_n9_metrics_visualization.py ............... [ 35%]
+2026-09-24T01:42:46.3578884Z ......................                                                   [ 35%]
+2026-09-24T01:42:46.5310061Z src/tests/unit/frontend/test_network_editor_panel.py ................... [ 35%]
+2026-09-24T01:42:46.8647387Z ....................................                                     [ 36%]
+2026-09-24T01:42:46.9100643Z src/tests/unit/frontend/test_network_editor_panel_gate_coverage.py ..... [ 36%]
+2026-09-24T01:42:47.0144348Z ...........                                                              [ 36%]
+2026-09-24T01:42:47.1258751Z src/tests/unit/frontend/test_network_evolution_gate_coverage.py ......   [ 36%]
+2026-09-24T01:42:47.6998267Z src/tests/unit/frontend/test_network_visualizer_3d.py .................. [ 37%]
+2026-09-24T01:42:47.7612308Z .                                                                        [ 37%]
+2026-09-24T01:42:47.7927052Z src/tests/unit/frontend/test_network_visualizer_callbacks.py ........... [ 37%]
+2026-09-24T01:42:49.1372008Z ...........................................................              [ 38%]
+2026-09-24T01:42:49.2151538Z src/tests/unit/frontend/test_network_visualizer_coverage.py ............ [ 38%]
+2026-09-24T01:42:50.0977162Z ...........................................                              [ 38%]
+2026-09-24T01:42:50.1135623Z src/tests/unit/frontend/test_network_visualizer_layout_coverage.py ..... [ 38%]
+2026-09-24T01:42:50.4672932Z ......................................                                   [ 39%]
+2026-09-24T01:42:50.4814181Z src/tests/unit/frontend/test_obs1_about_version_single_source.py ....    [ 39%]
+2026-09-24T01:42:50.6611055Z src/tests/unit/frontend/test_p2_wave_batch_a.py ........................ [ 39%]
+2026-09-24T01:42:50.6626279Z                                                                          [ 39%]
+2026-09-24T01:42:50.7780718Z src/tests/unit/frontend/test_p2_wave_batch_b.py ..............           [ 40%]
+2026-09-24T01:42:50.8150029Z src/tests/unit/frontend/test_parameters_panel_gate_coverage.py ......... [ 40%]
+2026-09-24T01:42:50.8451597Z .....                                                                    [ 40%]
+2026-09-24T01:42:51.0155139Z src/tests/unit/frontend/test_poll_gating.py ............................ [ 40%]
+2026-09-24T01:42:51.0380737Z .......                                                                  [ 40%]
+2026-09-24T01:42:51.1485505Z src/tests/unit/frontend/test_poller_budget.py ..........                 [ 40%]
+2026-09-24T01:42:51.2677196Z src/tests/unit/frontend/test_redis_panel.py ............................ [ 41%]
+2026-09-24T01:42:51.5844578Z ..................................................................       [ 42%]
+2026-09-24T01:42:51.6418401Z src/tests/unit/frontend/test_replay_forward.py .....................     [ 42%]
+2026-09-24T01:42:51.8191971Z src/tests/unit/frontend/test_replay_player_panel.py .................... [ 42%]
+2026-09-24T01:42:51.9933518Z .....................                                                    [ 43%]
+2026-09-24T01:42:52.0533553Z src/tests/unit/frontend/test_replay_player_panel_gate_coverage.py ...... [ 43%]
+2026-09-24T01:42:52.2550250Z .....................                                                    [ 43%]
+2026-09-24T01:42:52.2888221Z src/tests/unit/frontend/test_restart_orchestration_handlers.py ......... [ 43%]
+2026-09-24T01:42:52.4099037Z ...................................                                      [ 44%]
+2026-09-24T01:42:52.4665334Z src/tests/unit/frontend/test_sidebar_visibility.py ..................... [ 44%]
+2026-09-24T01:42:52.6568287Z ................                                                         [ 44%]
+2026-09-24T01:42:52.7957920Z src/tests/unit/frontend/test_stage2_global_lane.py ..................... [ 45%]
+2026-09-24T01:42:52.8670796Z .....................                                                    [ 45%]
+2026-09-24T01:42:53.2997495Z src/tests/unit/frontend/test_y4_active_tab_restore.py ..............     [ 45%]
+2026-09-24T01:42:53.7902628Z src/tests/unit/test_api_state_live_first.py ........                     [ 45%]
+2026-09-24T01:42:54.6295771Z src/tests/unit/test_async_sync_boundary.py .............                 [ 45%]
+2026-09-24T01:42:54.6363884Z src/tests/unit/test_audit_log_gate_coverage.py ..                        [ 45%]
+2026-09-24T01:42:54.7566203Z src/tests/unit/test_backend_factory.py ............                      [ 46%]
+2026-09-24T01:42:54.8616460Z src/tests/unit/test_bind_guard.py ...................................... [ 46%]
+2026-09-24T01:42:54.9446384Z ..........                                                               [ 46%]
+2026-09-24T01:42:55.2250350Z src/tests/unit/test_browser_control_auth.py ........................     [ 47%]
+2026-09-24T01:42:55.2614519Z src/tests/unit/test_candidate_tracking.py .............                  [ 47%]
+2026-09-24T01:42:55.3842767Z src/tests/unit/test_cascor_discovery.py .........                        [ 47%]
+2026-09-24T01:42:55.4131585Z src/tests/unit/test_cascor_patch_bounds.py ...........                   [ 47%]
+2026-09-24T01:42:55.4684780Z src/tests/unit/test_client_version_floors.py ...s..                      [ 47%]
+2026-09-24T01:42:57.8232450Z src/tests/unit/test_concurrent_load.py ..........                        [ 47%]
+2026-09-24T01:42:57.9036482Z src/tests/unit/test_config_expansion.py .......                          [ 47%]
+2026-09-24T01:42:58.0668845Z src/tests/unit/test_config_manager.py .........................          [ 48%]
+2026-09-24T01:42:58.1341300Z src/tests/unit/test_config_manager_advanced.py .............             [ 48%]
+2026-09-24T01:42:58.2484342Z src/tests/unit/test_config_manager_comprehensive.py .................... [ 48%]
+2026-09-24T01:42:58.4111910Z .....................                                                    [ 49%]
+2026-09-24T01:42:58.9774216Z src/tests/unit/test_config_refactoring.py .............................. [ 49%]
+2026-09-24T01:42:58.9925865Z .....                                                                    [ 49%]
+2026-09-24T01:42:59.9265817Z src/tests/unit/test_config_training_params.py ....................       [ 49%]
+2026-09-24T01:42:59.9731356Z src/tests/unit/test_constants.py ..................                      [ 50%]
+2026-09-24T01:43:00.0502226Z src/tests/unit/test_control_graph_lint.py ..                             [ 50%]
+2026-09-24T01:43:00.1812218Z src/tests/unit/test_convergence_ui_controls.py ..................        [ 50%]
+2026-09-24T01:43:02.2254508Z src/tests/unit/test_convergence_ui_regression.py ....................    [ 50%]
+2026-09-24T01:43:05.3995689Z src/tests/unit/test_dashboard_manager.py ............................... [ 51%]
+2026-09-24T01:43:06.0428411Z .....................................................................    [ 52%]
+2026-09-24T01:43:06.1145790Z src/tests/unit/test_data_client_request_hook.py ........................ [ 52%]
+2026-09-24T01:43:06.1216645Z ..                                                                       [ 52%]
+2026-09-24T01:43:06.3284541Z src/tests/unit/test_dataset_import.py .............................      [ 53%]
+2026-09-24T01:43:06.3945670Z src/tests/unit/test_dataset_import_url_ssrf.py ......................... [ 53%]
+2026-09-24T01:43:06.5241317Z ..............                                                           [ 53%]
+2026-09-24T01:43:07.0631380Z src/tests/unit/test_dataset_plotter.py .......................           [ 53%]
+2026-09-24T01:43:07.1079439Z src/tests/unit/test_dataset_schema.py .................                  [ 54%]
+2026-09-24T01:43:07.1727443Z src/tests/unit/test_dataset_versioning.py ..........sss                  [ 54%]
+2026-09-24T01:43:07.4519803Z src/tests/unit/test_decision_boundary.py ...........................     [ 54%]
+2026-09-24T01:43:10.9504774Z src/tests/unit/test_demo_backend.py .................................... [ 55%]
+2026-09-24T01:43:10.9931878Z ....                                                                     [ 55%]
+2026-09-24T01:43:15.7779279Z src/tests/unit/test_demo_boundary_fixes.py ..............                [ 55%]
+2026-09-24T01:43:22.9724137Z src/tests/unit/test_demo_mode_advanced.py .................              [ 55%]
+2026-09-24T01:43:23.6914471Z src/tests/unit/test_demo_mode_comprehensive.py ......................... [ 56%]
+2026-09-24T01:43:27.6537604Z ..................................                                       [ 56%]
+2026-09-24T01:43:27.6930187Z src/tests/unit/test_demo_mode_concurrency.py ...                         [ 56%]
+2026-09-24T01:43:27.9465885Z src/tests/unit/test_demo_mode_gate_coverage.py .....................     [ 56%]
+2026-09-24T01:43:28.1012105Z src/tests/unit/test_demo_mode_gate_coverage_datasets.py .............    [ 57%]
+2026-09-24T01:43:28.1371604Z src/tests/unit/test_demo_mode_perform_reset.py ..                        [ 57%]
+2026-09-24T01:43:28.2450569Z src/tests/unit/test_demo_mode_regression.py .........                    [ 57%]
+2026-09-24T01:43:28.3363443Z src/tests/unit/test_demo_mode_running_property.py ............           [ 57%]
+2026-09-24T01:44:07.9704241Z src/tests/unit/test_demo_training_convergence.py ...............         [ 57%]
+2026-09-24T01:44:17.2111901Z src/tests/unit/test_demo_weight_training.py ..........                   [ 57%]
+2026-09-24T01:44:17.5311482Z src/tests/unit/test_discovery_coverage.py ...................            [ 58%]
+2026-09-24T01:44:18.4029327Z src/tests/unit/test_dockerfile_cpu_torch_pin.py ......................   [ 58%]
+2026-09-24T01:44:18.4202895Z src/tests/unit/test_env_file_isolation.py ..                             [ 58%]
+2026-09-24T01:44:18.5009754Z src/tests/unit/test_error_response.py ...                                [ 58%]
+2026-09-24T01:44:19.2399476Z src/tests/unit/test_f003_control_button_ack.py ...........               [ 58%]
+2026-09-24T01:44:19.2618278Z src/tests/unit/test_f005_ws_command_race.py ......                       [ 58%]
+2026-09-24T01:44:19.3781684Z src/tests/unit/test_f007_snapshots_resolve_through_backend.py .......... [ 58%]
+2026-09-24T01:44:19.3948472Z ....                                                                     [ 58%]
+2026-09-24T01:44:20.3346386Z src/tests/unit/test_f008_csrf_reject_releases_slots.py .....             [ 59%]
+2026-09-24T01:44:20.4101195Z src/tests/unit/test_f031_snapshot_scale.py ........                      [ 59%]
+2026-09-24T01:44:20.4644088Z src/tests/unit/test_f036_server_side_pool_history.py ..............      [ 59%]
+2026-09-24T01:44:20.4736688Z src/tests/unit/test_fake_client_conformance.py ..                        [ 59%]
+2026-09-24T01:44:20.4886630Z src/tests/unit/test_graceful_disconnection.py ...                        [ 59%]
+2026-09-24T01:44:22.4514761Z src/tests/unit/test_health.py ............................               [ 59%]
+2026-09-24T01:44:22.4950104Z src/tests/unit/test_inbound_frame_validation.py .........                [ 59%]
+2026-09-24T01:44:22.5921264Z src/tests/unit/test_juniper_data_api_key_resolution.py ........          [ 60%]
+2026-09-24T01:44:22.6880026Z src/tests/unit/test_juniper_data_integration.py ........................ [ 60%]
+2026-09-24T01:44:23.1974040Z .....................................................                    [ 61%]
+2026-09-24T01:44:23.3607321Z src/tests/unit/test_juniper_data_url_validation.py ....                  [ 61%]
+2026-09-24T01:44:23.5825387Z src/tests/unit/test_logger_coverage.py ................................. [ 61%]
+2026-09-24T01:44:23.7339815Z .....................                                                    [ 62%]
+2026-09-24T01:44:23.8825056Z src/tests/unit/test_logger_coverage_95.py .....................          [ 62%]
+2026-09-24T01:44:24.1946080Z src/tests/unit/test_main_api_coverage.py ............................... [ 62%]
+2026-09-24T01:44:24.3432991Z ...................                                                      [ 63%]
+2026-09-24T01:44:24.9226403Z src/tests/unit/test_main_coverage.py ................................... [ 63%]
+2026-09-24T01:44:24.9524465Z .....                                                                    [ 63%]
+2026-09-24T01:44:25.4187632Z src/tests/unit/test_main_coverage_95.py ................................ [ 64%]
+2026-09-24T01:44:25.5025182Z .                                                                        [ 64%]
+2026-09-24T01:44:25.8295542Z src/tests/unit/test_main_coverage_extended.py .......................... [ 64%]
+2026-09-24T01:44:26.3232415Z .................................................................        [ 65%]
+2026-09-24T01:44:26.7239352Z src/tests/unit/test_main_endpoints_coverage.py ......................... [ 65%]
+2026-09-24T01:44:26.9363259Z ...........                                                              [ 66%]
+2026-09-24T01:44:27.2024944Z src/tests/unit/test_main_gate_coverage_routes.py ....................... [ 66%]
+2026-09-24T01:44:27.4245577Z ...........................                                              [ 66%]
+2026-09-24T01:44:27.6941077Z src/tests/unit/test_main_gate_coverage_snapshots.py .................... [ 67%]
+2026-09-24T01:44:27.7485900Z ......                                                                   [ 67%]
+2026-09-24T01:44:28.4051725Z src/tests/unit/test_main_gate_coverage_ws_helpers.py ................... [ 67%]
+2026-09-24T01:44:28.5637361Z .....................                                                    [ 67%]
+2026-09-24T01:44:28.8868260Z src/tests/unit/test_main_import_and_lifespan.py ........................ [ 68%]
+2026-09-24T01:44:29.1149325Z ..............                                                           [ 68%]
+2026-09-24T01:44:29.5779814Z src/tests/unit/test_main_snapshot_coverage.py .......................    [ 68%]
+2026-09-24T01:44:30.9850674Z src/tests/unit/test_max_epochs_parameter.py ..............               [ 68%]
+2026-09-24T01:44:31.0546664Z src/tests/unit/test_message_builders.py ...................              [ 69%]
+2026-09-24T01:44:31.1224542Z src/tests/unit/test_metrics_auth_settings_integration.py ........        [ 69%]
+2026-09-24T01:44:31.4912377Z src/tests/unit/test_metrics_panel.py ..................................  [ 69%]
+2026-09-24T01:44:31.6263706Z src/tests/unit/test_middleware.py ...........                            [ 69%]
+2026-09-24T01:44:31.8565096Z src/tests/unit/test_middleware_coverage.py ............................  [ 70%]
+2026-09-24T01:44:32.0159625Z src/tests/unit/test_mock_cascor_forward.py .............                 [ 70%]
+2026-09-24T01:44:32.1390943Z src/tests/unit/test_model_registry.py .................................. [ 70%]
+2026-09-24T01:44:32.2263569Z ........................                                                 [ 71%]
+2026-09-24T01:44:32.5236439Z src/tests/unit/test_network_evolution.py ..............................  [ 71%]
+2026-09-24T01:44:33.8497894Z src/tests/unit/test_network_info_enhancements.py ..............          [ 71%]
+2026-09-24T01:44:34.2757957Z src/tests/unit/test_network_visualizer.py .............................. [ 72%]
+2026-09-24T01:44:34.3083782Z ........                                                                 [ 72%]
+2026-09-24T01:44:34.3233079Z src/tests/unit/test_non_destructive_connection.py ....                   [ 72%]
+2026-09-24T01:44:34.3476422Z src/tests/unit/test_normalize_metric_regression.py .......               [ 72%]
+2026-09-24T01:44:34.4007999Z src/tests/unit/test_npz_contract_advisory.py ........s.                  [ 72%]
+2026-09-24T01:44:35.8074184Z src/tests/unit/test_obs_wire_ws_metrics.py .................             [ 73%]
+2026-09-24T01:44:36.0803289Z src/tests/unit/test_observability.py .................................   [ 73%]
+2026-09-24T01:44:36.2090103Z src/tests/unit/test_observability_coverage.py .........................  [ 73%]
+2026-09-24T01:44:37.0354397Z src/tests/unit/test_phase0_fixes.py .............................        [ 74%]
+2026-09-24T01:44:38.6354238Z src/tests/unit/test_phase0_security.py .............................     [ 74%]
+2026-09-24T01:44:38.8226974Z src/tests/unit/test_phase1b_security.py .............                    [ 74%]
+2026-09-24T01:44:55.6663006Z src/tests/unit/test_phase4_implementation.py ........................... [ 75%]
+2026-09-24T01:44:59.4294239Z ..                                                                       [ 75%]
+2026-09-24T01:45:30.7709415Z src/tests/unit/test_phase6_implementation.py ........................... [ 75%]
+2026-09-24T01:47:52.3701667Z .................                                                        [ 75%]
+2026-09-24T01:47:52.5775029Z src/tests/unit/test_phase_b_bridge.py .................................. [ 76%]
+2026-09-24T01:47:52.7507527Z ......................                                                   [ 76%]
+2026-09-24T01:47:52.9381995Z src/tests/unit/test_phase_b_pre_b_csrf.py ..........................     [ 77%]
+2026-09-24T01:47:53.0147652Z src/tests/unit/test_phase_c_set_params_adapter.py ...........            [ 77%]
+2026-09-24T01:47:53.6913955Z src/tests/unit/test_phase_d_button_clientside.py ................        [ 77%]
+2026-09-24T01:47:55.2853544Z src/tests/unit/test_phase_d_control_buttons.py ................          [ 77%]
+2026-09-24T01:47:55.7516385Z src/tests/unit/test_r2_1_5_wire_compat.py ...........                    [ 77%]
+2026-09-24T01:47:55.8538904Z src/tests/unit/test_readonly_ws_browser_auth.py ...                      [ 77%]
+2026-09-24T01:47:55.9565082Z src/tests/unit/test_recurrence_oneshot_result.py ......                  [ 78%]
+2026-09-24T01:47:56.0202104Z src/tests/unit/test_recurrence_routing.py ........                       [ 78%]
+2026-09-24T01:47:56.1141449Z src/tests/unit/test_recurrence_service_adapter.py ...................... [ 78%]
+2026-09-24T01:47:56.1241798Z ..                                                                       [ 78%]
+2026-09-24T01:47:56.2427619Z src/tests/unit/test_recurrence_settings.py ...........                   [ 78%]
+2026-09-24T01:47:56.3973781Z src/tests/unit/test_recurrence_ui_suppression.py ........                [ 78%]
+2026-09-24T01:47:56.5135541Z src/tests/unit/test_response_normalization.py .......................... [ 79%]
+2026-09-24T01:47:56.6717797Z .........................                                                [ 79%]
+2026-09-24T01:47:56.8040348Z src/tests/unit/test_secrets_util.py .......................              [ 79%]
+2026-09-24T01:47:56.8725212Z src/tests/unit/test_secrets_util_coverage.py ............                [ 80%]
+2026-09-24T01:47:58.1286760Z src/tests/unit/test_security.py ........................................ [ 80%]
+2026-09-24T01:47:58.2352210Z .....................                                                    [ 80%]
+2026-09-24T01:47:58.4720433Z src/tests/unit/test_security_validation.py ............................. [ 81%]
+2026-09-24T01:47:58.5002159Z .......                                                                  [ 81%]
+2026-09-24T01:47:59.9188834Z src/tests/unit/test_sequence_dataset_viz.py ............................ [ 81%]
+2026-09-24T01:47:59.9394086Z ....                                                                     [ 81%]
+2026-09-24T01:48:00.1427079Z src/tests/unit/test_service_backend.py ................................. [ 82%]
+2026-09-24T01:48:00.2841660Z .....................                                                    [ 82%]
+2026-09-24T01:48:00.3174151Z src/tests/unit/test_service_controls.py ......                           [ 82%]
+2026-09-24T01:48:00.3645940Z src/tests/unit/test_state_sync.py .........                              [ 82%]
+2026-09-24T01:48:00.4581903Z src/tests/unit/test_three_mode_activation.py ......                      [ 83%]
+2026-09-24T01:48:00.5884873Z src/tests/unit/test_training_state.py .............                      [ 83%]
+2026-09-24T01:48:00.6916858Z src/tests/unit/test_training_state_machine.py .......................... [ 83%]
+2026-09-24T01:48:00.7188625Z .......                                                                  [ 83%]
+2026-09-24T01:48:00.7766691Z src/tests/unit/test_validation_gate.py ................                  [ 83%]
+2026-09-24T01:48:00.8555709Z src/tests/unit/test_walkthrough.py ....................                  [ 84%]
+2026-09-24T01:48:01.0582425Z src/tests/unit/test_websocket_comprehensive.py ......................... [ 84%]
+2026-09-24T01:48:01.4861517Z ..................................                                       [ 85%]
+2026-09-24T01:48:01.9329010Z src/tests/unit/test_websocket_manager_concurrency.py ...                 [ 85%]
+2026-09-24T01:48:13.9874556Z src/tests/unit/test_websocket_manager_thread_safety.py ...               [ 85%]
+2026-09-24T01:48:14.5194887Z src/tests/unit/test_websocket_manager_unit.py .......................... [ 85%]
+2026-09-24T01:48:14.6568704Z ..........                                                               [ 85%]
+2026-09-24T01:48:14.7832581Z src/tests/unit/test_weight_statistics.py .........................       [ 86%]
+2026-09-24T01:48:14.9257902Z src/tests/unit/test_worker_panel.py .................................... [ 86%]
+2026-09-24T01:48:15.6010814Z ...........................                                              [ 86%]
+2026-09-24T01:48:15.7545475Z src/tests/unit/test_ws_connection_caps.py ...............                [ 87%]
+2026-09-24T01:48:15.7770805Z src/tests/unit/test_ws_handler_fanout.py ......                          [ 87%]
+2026-09-24T01:48:15.7968776Z src/tests/unit/test_ws_heartbeat_jitter.py .....                         [ 87%]
+2026-09-24T01:48:15.8730769Z src/tests/unit/test_ws_security.py ...............                       [ 87%]
+2026-09-24T01:48:15.9097525Z src/tests/unit/test_ws_seq_gap_detected.py .........                     [ 87%]
+2026-09-24T01:48:15.9447278Z src/tests/regression/test_auth_posture_boot_check.py ........            [ 87%]
+2026-09-24T01:48:17.6144866Z src/tests/regression/test_availability_unknown_state.py ..............   [ 88%]
+2026-09-24T01:48:18.4042874Z src/tests/regression/test_backend_protocol_conformance.py .............. [ 88%]
+2026-09-24T01:48:18.4253088Z ......                                                                   [ 88%]
+2026-09-24T01:48:18.8261626Z src/tests/regression/test_blank_api_key_warning_boot.py .....            [ 88%]
+2026-09-24T01:48:18.8301460Z src/tests/regression/test_candidate_visibility.py .                      [ 88%]
+2026-09-24T01:48:18.8615105Z src/tests/regression/test_cfg_09_audit_log_default.py .....              [ 88%]
+2026-09-24T01:48:18.8934494Z src/tests/regression/test_cfg_16_create_backend_no_raw_env.py ....       [ 88%]
+2026-09-24T01:48:21.2032389Z src/tests/regression/test_ci_lane_wiring.py .......                      [ 88%]
+2026-09-24T01:48:21.2540257Z src/tests/regression/test_completion_reason_surfacing.py ............... [ 88%]
+2026-09-24T01:48:21.6437431Z ......                                                                   [ 88%]
+2026-09-24T01:48:21.7712710Z src/tests/regression/test_csp_bootstrap_cdn.py ......                    [ 89%]
+2026-09-24T01:48:21.7892763Z src/tests/regression/test_csp_plotly_image_export.py .....               [ 89%]
+2026-09-24T01:48:21.8405340Z src/tests/regression/test_d8_d11_phase4_truth_up.py .......              [ 89%]
+2026-09-24T01:48:22.0434831Z src/tests/regression/test_dark_mode_info_panels.py ...........           [ 89%]
+2026-09-24T01:48:22.1020753Z src/tests/regression/test_dataset_generator_contract.py ................ [ 89%]
+2026-09-24T01:48:22.7611666Z ........................................................................ [ 90%]
+2026-09-24T01:48:26.2110660Z .........................................................                [ 91%]
+2026-09-24T01:48:26.2960254Z src/tests/regression/test_demo_mode_local_fallback.py .........          [ 91%]
+2026-09-24T01:48:26.3366594Z src/tests/regression/test_demo_script_error_handling.py ...........      [ 91%]
+2026-09-24T01:48:26.3594579Z src/tests/regression/test_dependency_floor_boot_check.py ....            [ 91%]
+2026-09-24T01:48:26.3701783Z src/tests/regression/test_docker_bind_default.py ...                     [ 91%]
+2026-09-24T01:48:26.3778297Z src/tests/regression/test_docker_demo_mode_default.py ..                 [ 91%]
+2026-09-24T01:48:26.3893661Z src/tests/regression/test_dockerignore_egg_info.py ...                   [ 91%]
+2026-09-24T01:48:26.4755917Z src/tests/regression/test_legacy_env_deprecation_warnings.py ........... [ 92%]
+2026-09-24T01:48:26.4870547Z .                                                                        [ 92%]
+2026-09-24T01:48:26.5441035Z src/tests/regression/test_main_verify_catchup_base.py ......             [ 92%]
+2026-09-24T01:48:26.9697722Z src/tests/regression/test_metrics_panel_data_format_regression.py ...... [ 92%]
+2026-09-24T01:48:26.9715172Z                                                                          [ 92%]
+2026-09-24T01:48:27.0204978Z src/tests/regression/test_mode_flag_consistency.py .............         [ 92%]
+2026-09-24T01:48:27.1247390Z src/tests/regression/test_model_picker.py ........                       [ 92%]
+2026-09-24T01:48:27.2630801Z src/tests/regression/test_model_select.py ........                       [ 92%]
+2026-09-24T01:48:27.4413464Z src/tests/regression/test_model_table.py .........................       [ 93%]
+2026-09-24T01:48:27.4533642Z src/tests/regression/test_numeric_input_debounce_uniform.py .            [ 93%]
+2026-09-24T01:48:27.7093080Z src/tests/regression/test_numeric_input_step_grid.py .                   [ 93%]
+2026-09-24T01:48:28.0533958Z src/tests/regression/test_oneshot_start_body.py .........                [ 93%]
+2026-09-24T01:48:28.2259203Z src/tests/regression/test_outage_reaches_the_availability_gate.py ...... [ 93%]
+2026-09-24T01:48:28.8486070Z ........                                                                 [ 93%]
+2026-09-24T01:48:28.9366515Z src/tests/regression/test_panel_layout_snapshots.py ..                   [ 93%]
+2026-09-24T01:48:29.0747064Z src/tests/regression/test_rate_limit_default.py ........                 [ 93%]
+2026-09-24T01:48:29.2387148Z src/tests/regression/test_recurrence_routes.py ............              [ 93%]
+2026-09-24T01:48:29.8647095Z src/tests/regression/test_recurrence_staging.py ......................   [ 94%]
+2026-09-24T01:48:30.9843848Z src/tests/regression/test_request_nn_model_mirror.py ................... [ 94%]
+2026-09-24T01:48:30.9860499Z                                                                          [ 94%]
+2026-09-24T01:48:31.0259754Z src/tests/regression/test_requirements_integrity.py ...........          [ 94%]
+2026-09-24T01:48:31.9148846Z src/tests/regression/test_requires_server_infrastructure.py ............ [ 94%]
+2026-09-24T01:48:31.9236682Z .                                                                        [ 94%]
+2026-09-24T01:48:31.9520814Z src/tests/regression/test_selection_reachability_guardrails.py ......... [ 94%]
+2026-09-24T01:48:39.4996059Z ........................................................................ [ 95%]
+2026-09-24T01:48:40.9024593Z ...............                                                          [ 96%]
+2026-09-24T01:48:40.9806430Z src/tests/regression/test_staging_paths_send_one_payload.py ............ [ 96%]
+2026-09-24T01:48:41.1458068Z .................                                                        [ 96%]
+2026-09-24T01:48:43.7986375Z src/tests/regression/test_startup_regression.py ........                 [ 96%]
+2026-09-24T01:48:43.8115747Z src/tests/regression/test_tab_sidebar_widths.py ...                      [ 96%]
+2026-09-24T01:48:44.0186217Z src/tests/regression/test_topology_boundary_data_contract.py ........... [ 96%]
+2026-09-24T01:48:44.3572008Z ........                                                                 [ 96%]
+2026-09-24T01:48:44.3656063Z src/tests/regression/test_ui_standards_doc_in_sync.py ..                 [ 96%]
+2026-09-24T01:48:44.3922225Z src/tests/regression/test_ws_poll_failure_diagnostic.py .......          [ 97%]
+2026-09-24T01:48:45.2388311Z src/tests/regression/test_x7_admission_control.py ...............        [ 97%]
+2026-09-24T01:48:45.7566779Z src/tests/regression/test_x7_client_budget.py ...                        [ 97%]
+2026-09-24T01:48:45.8629530Z src/tests/regression/test_x7_demo_mode_honesty.py ......                 [ 97%]
+2026-09-24T01:48:45.8944115Z src/tests/regression/test_x7_gate_soundness.py .......                   [ 97%]
+2026-09-24T01:48:50.5744700Z src/tests/regression/test_x7_loop_responsiveness.py ....                 [ 97%]
+2026-09-24T01:48:51.3099204Z src/tests/regression/test_x7_off_loop_discipline.py ...                  [ 97%]
+2026-09-24T01:48:53.8531559Z src/tests/regression/test_x7_sites_outside_main_gate.py .....            [ 97%]
+2026-09-24T01:48:55.3734509Z src/tests/regression/test_x7_status_cache.py ........................... [ 98%]
+2026-09-24T01:48:57.3240926Z ....                                                                     [ 98%]
+2026-09-24T01:48:57.4239019Z src/tests/regression/test_x7_status_cache_guards.py ..................   [ 98%]
+2026-09-24T01:48:57.4626739Z src/tests/regression/test_y1_experimental_functions_gate.py ............ [ 98%]
+2026-09-24T01:48:57.4737156Z ...                                                                      [ 98%]
+2026-09-24T01:48:57.5395782Z src/tests/regression/test_y7_model_table_describedby.py ................ [ 98%]
+2026-09-24T01:48:57.7963507Z ..........................................................               [ 99%]
+2026-09-24T01:48:57.8333241Z src/tests/regression/test_y8_disabled_derives_from_compatible.py ....... [ 99%]
+2026-09-24T01:48:57.8664823Z .....                                                                    [ 99%]
+2026-09-24T01:48:57.8784702Z src/tests/contract/test_param_map_completeness.py ...                    [ 99%]
+2026-09-24T01:49:19.6573017Z src/tests/performance/test_button_responsiveness.py s....                [100%]
+2026-09-24T01:49:19.6573792Z 
+2026-09-24T01:49:19.6574041Z =============================== warnings summary ===============================
+2026-09-24T01:49:19.6574912Z ../../../../../opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/fastapi/testclient.py:1
+2026-09-24T01:49:19.6576617Z   /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+2026-09-24T01:49:19.6578089Z     from starlette.testclient import TestClient as TestClient  # noqa
+2026-09-24T01:49:19.6578542Z 
+2026-09-24T01:49:19.6579310Z src/tests/unit/test_dashboard_manager.py::TestStatusBarErrorDiagnosability::test_non_200_maps_to_specific_status_label[429-Rate Limited]
+2026-09-24T01:49:19.6581286Z src/tests/unit/test_dashboard_manager.py::TestNetworkInfoPanelDiagnosability::test_network_info_non_200_maps_to_specific_label[429-Network Info: Rate Limited]
+2026-09-24T01:49:19.6582762Z src/tests/unit/test_error_response.py::TestUnhandledExceptionHandler::test_unhandled_exception_returns_standardized_json
+2026-09-24T01:49:19.6583968Z src/tests/unit/test_recurrence_oneshot_result.py::TestOneShotResultView::test_live_shows_classification_hides_result
+2026-09-24T01:49:19.6585022Z src/tests/unit/test_recurrence_ui_suppression.py::TestCascadeTabSuppression::test_all_tabs_full_set
+2026-09-24T01:49:19.6586175Z src/tests/regression/test_request_nn_model_mirror.py::TestTheDashboardSendsIt::test_both_apply_callbacks_read_the_selection_as_state
+2026-09-24T01:49:19.6587652Z src/tests/regression/test_staging_paths_send_one_payload.py::TestTheCallbacksReadTheModelAsState::test_the_model_is_read_as_state_not_input[accept_live_switch]
+2026-09-24T01:49:19.6589429Z   /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/_pytest/fixtures.py:1313: PytestRemovedIn10Warning: Class-scoped fixture defined as instance method is deprecated.
+2026-09-24T01:49:19.6590872Z   Instance attributes set in this fixture will NOT be visible to test methods,
+2026-09-24T01:49:19.6591598Z   as each test gets a new instance while the fixture runs only once per class.
+2026-09-24T01:49:19.6592261Z   Use @classmethod decorator and set attributes on cls instead.
+2026-09-24T01:49:19.6593068Z   See https://docs.pytest.org/en/stable/deprecations.html#class-scoped-fixture-as-instance-method
+2026-09-24T01:49:19.6593860Z     fixturefunc = resolve_fixture_function(fixturedef, request)
+2026-09-24T01:49:19.6594223Z 
+2026-09-24T01:49:19.6594494Z -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2026-09-24T01:49:19.6595327Z - generated xml file: /home/runner/work/juniper-canopy/juniper-canopy/reports/junit/junit-unit.xml -
+2026-09-24T01:49:19.6596082Z ================================ tests coverage ================================
+2026-09-24T01:49:19.6596703Z _______________ coverage: platform linux, python 3.13.15-final-0 _______________
+2026-09-24T01:49:19.6597114Z 
+2026-09-24T01:49:19.6597363Z Name                                                 Stmts   Miss Branch BrPart   Cover   Missing
+2026-09-24T01:49:19.6598037Z -------------------------------------------------------------------------------------------------
+2026-09-24T01:49:19.6598698Z src/__init__.py                                          5      0      0      0 100.00%
+2026-09-24T01:49:19.6599334Z src/adapter_validation.py                               15      0      0      0 100.00%
+2026-09-24T01:49:19.6600102Z src/audit_log.py                                        32      1      4      1  94.44%   82
+2026-09-24T01:49:19.6600728Z src/backend/__init__.py                                 44      0     12      0 100.00%
+2026-09-24T01:49:19.6601512Z src/backend/admission.py                                41      1      2      0  97.67%   114
+2026-09-24T01:49:19.6603295Z src/backend/cascor_service_adapter.py                 1036     28    246     19  95.40%   118, 121-123, 345-346, 362, 393->389, 406->369, 469->472, 672, 709->726, 772->778, 848->667, 933-936, 1012, 1314, 1420, 1428-1431, 1434-1441, 1488-1490, 1499, 1511->1493, 2101->2100, 2106->2105, 2131->2130, 2219->2234
+2026-09-24T01:49:19.6605233Z src/backend/cassandra_client.py                        147      4     52      8  93.97%   62-64, 150->153, 173->exit, 206, 274->292, 287->278, 345, 424->458, 501->504
+2026-09-24T01:49:19.6606200Z src/backend/circuit_breaker.py                          53      0      8      0 100.00%
+2026-09-24T01:49:19.6606988Z src/backend/data_adapter.py                            179      1     68      4  97.98%   257->260, 335, 448->450, 450->453
+2026-09-24T01:49:19.6607897Z src/backend/demo_backend.py                            188      2     54      5  97.11%   138->143, 157, 161, 254->257, 297->300
+2026-09-24T01:49:19.6608709Z src/backend/protocol.py                                132      0      0      0 100.00%
+2026-09-24T01:49:19.6609567Z src/backend/recurrence_backend.py                      194     10     38      4  93.97%   202, 223-228, 290->292, 305, 326-327, 494->496
+2026-09-24T01:49:19.6611549Z src/backend/recurrence_service_adapter.py              103      3     28      2  96.18%   125, 255, 339
+2026-09-24T01:49:19.6612445Z src/backend/redis_client.py                            150      9     36      3  93.55%   65-68, 202, 211-214, 321, 548->553
+2026-09-24T01:49:19.6613244Z src/backend/service_backend.py                         156      0     42      0 100.00%
+2026-09-24T01:49:19.6614032Z src/backend/state_sync.py                               81      5     22      6  87.38%   66, 89->111, 116->119, 133, 145-146, 148
+2026-09-24T01:49:19.6614778Z src/backend/statistics.py                               53      0     12      0 100.00%
+2026-09-24T01:49:19.6615503Z src/backend/status_cache.py                            127      4     26      2  96.08%   221, 293-294, 317
+2026-09-24T01:49:19.6616270Z src/backend/training_monitor.py                        198      0     48      1  99.59%   346->342
+2026-09-24T01:49:19.6617039Z src/backend/training_state_machine.py                  177      1     42      1  99.09%   182
+2026-09-24T01:49:19.6617798Z src/canopy_constants.py                                251      9     20      1  94.83%   47-48, 309-313, 339-340
+2026-09-24T01:49:19.6618607Z src/communication/websocket_manager.py                 289      0     80      2  99.46%   299->305, 741->728
+2026-09-24T01:49:19.6619423Z src/config_manager.py                                  200     10     66      1  95.86%   410-412, 415, 463-465, 485-487
+2026-09-24T01:49:19.6620263Z src/csrf.py                                             57      1     14      1  97.18%   111
+2026-09-24T01:49:19.6620931Z src/dataset_import.py                                   63      1     30      1  97.85%   66
+2026-09-24T01:49:19.6621666Z src/dataset_schema.py                                  140      5     66      7  94.17%   295->294, 301, 309->306, 427, 430, 445, 463
+2026-09-24T01:49:19.6623003Z src/demo_mode.py                                      1074     10    328     17  98.07%   671->exit, 855-856, 999, 1418->1541, 1430, 1432, 1440->1450, 1473->1477, 1514, 1518, 1520, 1586-1587, 1829->1832, 1902->1904, 2203->2207, 2318->2323, 2408->2422, 2461->2473
+2026-09-24T01:49:19.6624180Z src/discovery.py                                        27      0      8      0 100.00%
+2026-09-24T01:49:19.6624781Z src/frontend/__init__.py                                 2      0      0      0 100.00%
+2026-09-24T01:49:19.6625417Z src/frontend/base_component.py                          28      0      2      0 100.00%
+2026-09-24T01:49:19.6626132Z src/frontend/callback_context.py                        58      2     12      2  94.29%   74->76, 93, 100
+2026-09-24T01:49:19.6626881Z src/frontend/components/about_panel.py                  30      0      2      0 100.00%
+2026-09-24T01:49:19.6627716Z src/frontend/components/candidate_metrics_panel.py     204      1     68      2  98.90%   556->560, 710
+2026-09-24T01:49:19.6628728Z src/frontend/components/cassandra_panel.py              90      1     14      1  98.08%   466
+2026-09-24T01:49:19.6629647Z src/frontend/components/connection_indicator.py          4      0      0      0 100.00%
+2026-09-24T01:49:19.6630790Z src/frontend/components/dataset_plotter.py             362      0     90      3  99.34%   579->604, 590->604, 1228->1247
+2026-09-24T01:49:19.6631677Z src/frontend/components/decision_boundary.py           120      0     40      2  98.75%   429->448, 486->494
+2026-09-24T01:49:19.6632748Z src/frontend/components/hdf5_snapshots_panel.py        390     17    130      9  94.62%   697, 719, 722->733, 733->744, 912-913, 1227->1237, 1292-1293, 1296, 1317-1325, 1439
+2026-09-24T01:49:19.6634216Z src/frontend/components/metrics_panel.py               563     34    214      7  93.69%   839-840, 854, 875, 885, 901, 935, 981, 1002, 1302, 1319, 1332, 1346, 1365-1367, 1468->1471, 1612-1624, 1637->1641, 1670, 1805-1806, 1846-1847
+2026-09-24T01:49:19.6635433Z src/frontend/components/network_editor_panel.py        258      0     90      0 100.00%
+2026-09-24T01:49:19.6636187Z src/frontend/components/network_evolution.py           139      0     50      0 100.00%
+2026-09-24T01:49:19.6637386Z src/frontend/components/network_visualizer.py          458      8    192     12  96.62%   327, 345, 733->790, 802-807, 1026->1046, 1425->1428, 1429->1471, 1503->1531, 1636->1632, 1645->1644, 1656, 1884->1892, 1987->1986
+2026-09-24T01:49:19.6638558Z src/frontend/components/parameters_panel.py             50      0     12      0 100.00%
+2026-09-24T01:49:19.6639290Z src/frontend/components/redis_panel.py                 162      0     50      0 100.00%
+2026-09-24T01:49:19.6640194Z src/frontend/components/replay_player_panel.py         224      0     86      1  99.68%   873->875
+2026-09-24T01:49:19.6640952Z src/frontend/components/tutorial_panel.py               21      0      0      0 100.00%
+2026-09-24T01:49:19.6641717Z src/frontend/components/worker_panel.py                103      2     26      1  97.67%   295->301, 298-299
+2026-09-24T01:49:19.6644124Z src/frontend/dashboard_manager.py                     2034     81    624     31  95.41%   2865, 3241, 3264, 3310, 3315->3317, 3318, 3323, 3325, 3349, 3571, 4752, 4883, 5315, 5336, 6226-6228, 6254-6256, 6264-6266, 6274-6276, 6308-6310, 6475->6488, 6620-6622, 6684-6685, 6856->6859, 6862, 6865->6860, 6998, 7671->7673, 7957, 8040, 8079, 8094->8101, 8096->8101, 8261->8268, 8278->8280, 8365->8367, 8383, 8385-8387, 8414-8415, 8436-8437, 8477, 8877-8879, 8960->8971, 9056, 9069-9072, 9094, 9095->9097, 9098-9099, 9104-9105, 9108-9112, 9245-9260
+2026-09-24T01:49:19.6646449Z src/frontend/internal_api.py                            15      0      2      0 100.00%
+2026-09-24T01:49:19.6647153Z src/frontend/replay_forward.py                          69      2     28      3  94.85%   65->67, 120, 197
+2026-09-24T01:49:19.6647860Z src/frontend/theme_constants.py                         23      0      0      0 100.00%
+2026-09-24T01:49:19.6648512Z src/frontend/tooltips.py                                 2      0      0      0 100.00%
+2026-09-24T01:49:19.6649139Z src/frontend/ui_standards.py                             9      0      0      0 100.00%
+2026-09-24T01:49:19.6649789Z src/frontend/walkthrough_steps.py                        3      0      0      0 100.00%
+2026-09-24T01:49:19.6650528Z src/health.py                                           21      0      2      0 100.00%
+2026-09-24T01:49:19.6651120Z src/logger/logger.py                                   246      0     30      1  99.64%   661->663
+2026-09-24T01:49:19.6654090Z src/main.py                                           1919     94    588     51  93.50%   214-222, 395->404, 401->404, 518-519, 590-596, 798->814, 828-830, 832-833, 935->949, 963-965, 967-968, 983->1010, 1049, 1298-1302, 1319-1320, 1409, 1411->1413, 1414->1416, 1425-1426, 1518->1520, 1916->1939, 1988->2003, 1991-1998, 2028->2027, 2086, 2157, 2191, 2202->2200, 2216, 2220, 2286->2285, 2325->2328, 2590, 2617, 2638->2645, 2649->2648, 2788->2797, 2856->2859, 2959->2961, 3034->3037, 3517->3524, 3519-3522, 3598->3612, 3622-3624, 3626-3627, 3721-3723, 3742-3744, 3763-3765, 3784-3786, 3820-3826, 3847-3851, 3895-3913, 3919-3922, 4130->4132, 4164-4168, 4367->4369, 4384, 4386, 4849, 4871->4873, 4879->4881
+2026-09-24T01:49:19.6657197Z src/middleware.py                                      109      1     34      1  98.60%   249
+2026-09-24T01:49:19.6657800Z src/model_registry.py                                   84      0     22      0 100.00%
+2026-09-24T01:49:19.6658391Z src/observability.py                                    61      0     16      0 100.00%
+2026-09-24T01:49:19.6658986Z src/provenance.py                                        5      0      0      0 100.00%
+2026-09-24T01:49:19.6659564Z src/secrets_util.py                                     14      0      6      0 100.00%
+2026-09-24T01:49:19.6660253Z src/security.py                                        212      0     82      0 100.00%
+2026-09-24T01:49:19.6661054Z src/settings.py                                        250     16     56     10  90.85%   101->104, 103, 463, 501-506, 609, 632, 635-640, 647, 650-655, 672-675, 681
+2026-09-24T01:49:19.6661857Z src/validation_gate.py                                  47      0     16      0 100.00%
+2026-09-24T01:49:19.6662445Z src/ws_security.py                                      18      0      6      0 100.00%
+2026-09-24T01:49:19.6663079Z -------------------------------------------------------------------------------------------------
+2026-09-24T01:49:19.6663665Z TOTAL                                                13619    364   3942    223  96.32%
+2026-09-24T01:49:19.6664000Z 
+2026-09-24T01:49:19.6664109Z 3 empty files skipped.
+2026-09-24T01:49:19.6664435Z Coverage HTML written to dir reports/htmlcov
+2026-09-24T01:49:19.6664854Z Coverage XML written to file reports/coverage.xml
+2026-09-24T01:49:19.6665295Z Coverage JSON written to file reports/coverage.json
+2026-09-24T01:49:21.0182847Z 2026-09-24 01:49:09,904 [INFO] demo_mode: Installed cascade unit #5 (correlation=0.1610)
+2026-09-24T01:49:21.0183850Z 2026-09-24 01:49:09,907 [WARNING] backend.training_state_machine: Cannot set phase to OUTPUT while status is STOPPED
+2026-09-24T01:49:21.0186072Z Required test coverage of 80% reached. Total coverage: 96.32%
+2026-09-24T01:49:21.0186706Z =========================== short test summary info ============================
+2026-09-24T01:49:21.0187872Z SKIPPED [1] src/tests/unit/test_client_version_floors.py:130: juniper-data-client not installed in the active env (declared floor 'juniper-data-client<0.6.0,>=0.5.0'); not the silent-drift case this guard targets.
+2026-09-24T01:49:21.0189283Z SKIPPED [1] src/tests/unit/test_dataset_versioning.py:199: requires juniper-data-client[testing]
+2026-09-24T01:49:21.0190432Z SKIPPED [1] src/tests/unit/test_dataset_versioning.py:211: requires juniper-data-client[testing]
+2026-09-24T01:49:21.0191377Z SKIPPED [1] src/tests/unit/test_dataset_versioning.py:222: requires juniper-data-client[testing]
+2026-09-24T01:49:21.0192680Z SKIPPED [1] src/tests/unit/test_npz_contract_advisory.py:192: juniper-data-client is not installed in this lane (src/tests/conftest.py injects a stub); the fake stands in
+2026-09-24T01:49:21.0193823Z SKIPPED [1] src/tests/performance/test_button_responsiveness.py:32: Requires full Dash callback registration context to invoke callback directly
+2026-09-24T01:49:21.0194497Z ==== 6870 passed, 6 skipped, 4 deselected, 8 warnings in 496.14s (0:08:16) =====
+2026-09-24T01:49:24.6458468Z ##[group]Run echo "╔════════════════════════════════════════════════════════════╗"
+2026-09-24T01:49:24.6458969Z [36;1mecho "╔════════════════════════════════════════════════════════════╗"[0m
+2026-09-24T01:49:24.6459431Z [36;1mecho "║   Juniper Canopy - Per-File Coverage Gate (>=90 file/>=95) ║"[0m
+2026-09-24T01:49:24.6459842Z [36;1mecho "╚════════════════════════════════════════════════════════════╝"[0m
+2026-09-24T01:49:24.6460437Z [36;1mpip install "juniper-ci-tools>=0.9.0,<0.10.0"[0m
+2026-09-24T01:49:24.6460865Z [36;1mjuniper-coverage-gap-map --coverage-json reports/coverage.json --enforce[0m
+2026-09-24T01:49:24.6498426Z shell: /usr/bin/bash -e {0}
+2026-09-24T01:49:24.6498663Z env:
+2026-09-24T01:49:24.6498857Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:24.6499088Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:24.6499303Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:24.6499573Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:24.6500176Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:24.6500567Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:24.6500911Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:24.6501255Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:24.6501598Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:24.6501894Z ##[endgroup]
+2026-09-24T01:49:24.6557529Z ╔════════════════════════════════════════════════════════════╗
+2026-09-24T01:49:24.6558003Z ║   Juniper Canopy - Per-File Coverage Gate (>=90 file/>=95) ║
+2026-09-24T01:49:24.6558604Z ╚════════════════════════════════════════════════════════════╝
+2026-09-24T01:49:24.9527096Z Requirement already satisfied: juniper-ci-tools<0.10.0,>=0.9.0 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (0.9.0)
+2026-09-24T01:49:24.9540986Z Requirement already satisfied: PyYAML>=6.0 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from juniper-ci-tools<0.10.0,>=0.9.0) (6.0.3)
+2026-09-24T01:49:24.9546754Z Requirement already satisfied: packaging>=22.0 in /opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages (from juniper-ci-tools<0.10.0,>=0.9.0) (26.3)
+2026-09-24T01:49:25.1718669Z Coverage gap map (ADVISORY -- exit 0 regardless of findings)
+2026-09-24T01:49:25.1719440Z   overall: 96.32%  files: 69  file-threshold: 90.0%  submodule-bar: 95.0%
+2026-09-24T01:49:25.1720191Z 
+2026-09-24T01:49:25.1720340Z Per-file distribution:
+2026-09-24T01:49:25.1720656Z      [0,50): 0
+2026-09-24T01:49:25.1720927Z     [50,70): 0
+2026-09-24T01:49:25.1721255Z     [70,80): 0
+2026-09-24T01:49:25.1721508Z     [80,90): 1
+2026-09-24T01:49:25.1721763Z     [90,95): 12
+2026-09-24T01:49:25.1722031Z    [95,100]: 56
+2026-09-24T01:49:25.1722200Z 
+2026-09-24T01:49:25.1722330Z Files below 90.0% (1):
+2026-09-24T01:49:25.1722676Z    87.38%  src/backend/state_sync.py  (76/81)
+2026-09-24T01:49:25.1722982Z 
+2026-09-24T01:49:25.1723164Z Sub-module averages (bar 95.0%):
+2026-09-24T01:49:25.1723599Z   [   ok]  97.87% avg   96.79% pooled  src  (21 files)
+2026-09-24T01:49:25.1724126Z   [   ok]  96.94% avg   97.78% pooled  src/backend  (17 files)
+2026-09-24T01:49:25.1724678Z   [   ok]  99.73% avg  100.00% pooled  src/communication  (2 files)
+2026-09-24T01:49:25.1725216Z   [   ok]  98.45% avg   96.21% pooled  src/frontend  (10 files)
+2026-09-24T01:49:25.1725770Z   [   ok]  98.67% avg   98.02% pooled  src/frontend/components  (17 files)
+2026-09-24T01:49:25.1726335Z   [   ok]  99.82% avg  100.00% pooled  src/logger  (2 files)
+2026-09-24T01:49:25.1727123Z 
+2026-09-24T01:49:25.1727446Z Enforcing gate: PASS  (per-file statement >= 90.0%, sub-module pooled >= 95.0%)
+2026-09-24T01:49:25.1728146Z   No files or sub-modules below the enforced thresholds.
+2026-09-24T01:49:25.1884484Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+2026-09-24T01:49:25.1884856Z with:
+2026-09-24T01:49:25.1885058Z   name: coverage-report-py3.13
+2026-09-24T01:49:25.1885320Z   path: reports/coverage.xml
+reports/htmlcov/
+
+2026-09-24T01:49:25.1885592Z   retention-days: 30
+2026-09-24T01:49:25.1885794Z   if-no-files-found: warn
+2026-09-24T01:49:25.1886023Z   compression-level: 6
+2026-09-24T01:49:25.1886222Z   overwrite: false
+2026-09-24T01:49:25.1886416Z   include-hidden-files: false
+2026-09-24T01:49:25.1886629Z   archive: true
+2026-09-24T01:49:25.1886817Z env:
+2026-09-24T01:49:25.1886998Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:25.1887232Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:25.1887465Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:25.1887759Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:25.1888204Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:25.1888644Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:25.1889002Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:25.1889350Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:25.1889714Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:25.1890230Z ##[endgroup]
+2026-09-24T01:49:25.3363060Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-09-24T01:49:25.3365283Z The least common ancestor is /home/runner/work/juniper-canopy/juniper-canopy/reports. This will be the root directory of the artifact
+2026-09-24T01:49:25.3366311Z With the provided path, there will be 75 files uploaded
+2026-09-24T01:49:25.3370705Z Artifact name is valid!
+2026-09-24T01:49:25.3371264Z Root directory input is valid!
+2026-09-24T01:49:25.5474557Z Uploading artifact: coverage-report-py3.13.zip
+2026-09-24T01:49:25.5509164Z Beginning upload of artifact content to blob storage
+2026-09-24T01:49:25.8608699Z Uploaded bytes 1615683
+2026-09-24T01:49:25.8726817Z Finished uploading artifact content to blob storage!
+2026-09-24T01:49:25.8727715Z SHA256 digest of uploaded artifact is 3629a51670e24db4fb4a1c8c6c546c54059ce8b33cac020b37c0a2b2f32870c1
+2026-09-24T01:49:25.8728493Z Finalizing artifact upload
+2026-09-24T01:49:26.0733463Z Artifact coverage-report-py3.13 successfully finalized. Artifact ID 10785908393
+2026-09-24T01:49:26.0734155Z Artifact coverage-report-py3.13 has been successfully uploaded! Final size is 1615683 bytes. Artifact ID is 10785908393
+2026-09-24T01:49:26.0737398Z Artifact download URL: https://github.com/pcalnon/juniper-canopy/actions/runs/35943786496/artifacts/10785908393
+2026-09-24T01:49:26.1109070Z ##[group]Run codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5
+2026-09-24T01:49:26.1109450Z with:
+2026-09-24T01:49:26.1109663Z   files: reports/coverage.xml
+2026-09-24T01:49:26.1110058Z   flags: unittests
+2026-09-24T01:49:26.1110256Z   fail_ci_if_error: false
+2026-09-24T01:49:26.1110473Z   cleanup: false
+2026-09-24T01:49:26.1110664Z   disable_file_fixes: false
+2026-09-24T01:49:26.1110878Z   disable_search: false
+2026-09-24T01:49:26.1111089Z   disable_safe_directory: false
+2026-09-24T01:49:26.1111309Z   disable_telem: false
+2026-09-24T01:49:26.1111500Z   dry_run: false
+2026-09-24T01:49:26.1111690Z   git_service: github
+2026-09-24T01:49:26.1111888Z   gcov_executable: gcov
+2026-09-24T01:49:26.1112105Z   handle_no_reports_found: false
+2026-09-24T01:49:26.1112339Z   recurse_submodules: false
+2026-09-24T01:49:26.1112565Z   run_command: upload-coverage
+2026-09-24T01:49:26.1112794Z   skip_validation: false
+2026-09-24T01:49:26.1113015Z   use_legacy_upload_endpoint: false
+2026-09-24T01:49:26.1113286Z   use_oidc: false
+2026-09-24T01:49:26.1113479Z   use_pypi: false
+2026-09-24T01:49:26.1113660Z   verbose: false
+2026-09-24T01:49:26.1114025Z   version: latest
+2026-09-24T01:49:26.1114200Z env:
+2026-09-24T01:49:26.1114383Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.1114603Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.1114824Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.1115102Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1115497Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.1115878Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1116211Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1116541Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1116884Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.1117176Z ##[endgroup]
+2026-09-24T01:49:26.1175703Z ##[start-action display=Check system dependencies;id=__codecov_codecov-action.__run]
+2026-09-24T01:49:26.1195738Z ##[group]Run missing_deps=""
+2026-09-24T01:49:26.1196065Z [36;1mmissing_deps=""[0m
+2026-09-24T01:49:26.1196314Z [36;1m[0m
+2026-09-24T01:49:26.1196544Z [36;1m# Check for always-required commands[0m
+2026-09-24T01:49:26.1196848Z [36;1mfor cmd in bash git curl; do[0m
+2026-09-24T01:49:26.1197183Z [36;1m  if ! command -v "$cmd" >/dev/null 2>&1; then[0m
+2026-09-24T01:49:26.1197517Z [36;1m    missing_deps="$missing_deps $cmd"[0m
+2026-09-24T01:49:26.1197802Z [36;1m  fi[0m
+2026-09-24T01:49:26.1197991Z [36;1mdone[0m
+2026-09-24T01:49:26.1198188Z [36;1m[0m
+2026-09-24T01:49:26.1198466Z [36;1m# Check for gpg only if validation is not being skipped[0m
+2026-09-24T01:49:26.1198850Z [36;1mif [ "$INPUT_SKIP_VALIDATION" != "true" ]; then[0m
+2026-09-24T01:49:26.1199192Z [36;1m  if ! command -v gpg >/dev/null 2>&1; then[0m
+2026-09-24T01:49:26.1199512Z [36;1m    missing_deps="$missing_deps gpg"[0m
+2026-09-24T01:49:26.1199784Z [36;1m  fi[0m
+2026-09-24T01:49:26.1200103Z [36;1mfi[0m
+2026-09-24T01:49:26.1200284Z [36;1m[0m
+2026-09-24T01:49:26.1200490Z [36;1m# Report missing required dependencies[0m
+2026-09-24T01:49:26.1200786Z [36;1mif [ -n "$missing_deps" ]; then[0m
+2026-09-24T01:49:26.1201162Z [36;1m  echo "Error: The following required dependencies are missing:$missing_deps"[0m
+2026-09-24T01:49:26.1201646Z [36;1m  echo "Please install these dependencies before using this action."[0m
+2026-09-24T01:49:26.1201991Z [36;1m  exit 1[0m
+2026-09-24T01:49:26.1202176Z [36;1mfi[0m
+2026-09-24T01:49:26.1202350Z [36;1m[0m
+2026-09-24T01:49:26.1202595Z [36;1mecho "All required system dependencies are available."[0m
+2026-09-24T01:49:26.1251567Z shell: /usr/bin/sh -e {0}
+2026-09-24T01:49:26.1251810Z env:
+2026-09-24T01:49:26.1252008Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.1252252Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.1252493Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.1252969Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1253420Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.1253844Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1254222Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1254582Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1254949Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.1255290Z   INPUT_SKIP_VALIDATION: false
+2026-09-24T01:49:26.1255530Z ##[endgroup]
+2026-09-24T01:49:26.1312142Z All required system dependencies are available.
+2026-09-24T01:49:26.1322141Z ##[end-action id=__codecov_codecov-action.__run;outcome=success;conclusion=success;duration_ms=14]
+2026-09-24T01:49:26.1324404Z ##[start-action display=Action version;id=__codecov_codecov-action.__run_2]
+2026-09-24T01:49:26.1337087Z ##[group]Run CC_ACTION_VERSION=$(cat ${GITHUB_ACTION_PATH}/src/version)
+2026-09-24T01:49:26.1337524Z [36;1mCC_ACTION_VERSION=$(cat ${GITHUB_ACTION_PATH}/src/version)[0m
+2026-09-24T01:49:26.1337959Z [36;1mecho -e "\033[0;32m==>\033[0m Running Action version $CC_ACTION_VERSION"[0m
+2026-09-24T01:49:26.1367389Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-24T01:49:26.1367713Z env:
+2026-09-24T01:49:26.1367905Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.1368132Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.1368356Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.1368624Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1369016Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.1369397Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1369733Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1370222Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1370574Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.1370876Z ##[endgroup]
+2026-09-24T01:49:26.1431546Z [0;32m==>[0m Running Action version 7.1.1
+2026-09-24T01:49:26.1436948Z ##[end-action id=__codecov_codecov-action.__run_2;outcome=success;conclusion=success;duration_ms=11]
+2026-09-24T01:49:26.1438751Z ##[start-action display=Set safe directory;id=__codecov_codecov-action.__run_3]
+2026-09-24T01:49:26.1456593Z ##[group]Run git config --global --add safe.directory "/home/runner/work/juniper-canopy/juniper-canopy"
+2026-09-24T01:49:26.1457229Z [36;1mgit config --global --add safe.directory "/home/runner/work/juniper-canopy/juniper-canopy"[0m
+2026-09-24T01:49:26.1457728Z [36;1mgit config --global --add safe.directory "$GITHUB_WORKSPACE"[0m
+2026-09-24T01:49:26.1487227Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-24T01:49:26.1487546Z env:
+2026-09-24T01:49:26.1487766Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.1488008Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.1488263Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.1488564Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1488977Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.1489410Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1489780Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1490364Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1490732Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.1491050Z ##[endgroup]
+2026-09-24T01:49:26.1574622Z ##[end-action id=__codecov_codecov-action.__run_3;outcome=success;conclusion=success;duration_ms=13]
+2026-09-24T01:49:26.1578575Z ##[start-action display=Set fork;id=__codecov_codecov-action.__run_4]
+2026-09-24T01:49:26.1590791Z ##[group]Run CC_FORK="false"
+2026-09-24T01:49:26.1591050Z [36;1mCC_FORK="false"[0m
+2026-09-24T01:49:26.1591730Z [36;1mif [ -n "$GITHUB_EVENT_PULL_REQUEST_HEAD_REPO_FULL_NAME" ] && [ "$GITHUB_EVENT_PULL_REQUEST_HEAD_REPO_FULL_NAME" != "$GITHUB_REPOSITORY" ];[0m
+2026-09-24T01:49:26.1592294Z [36;1mthen[0m
+2026-09-24T01:49:26.1592537Z [36;1m  echo -e "\033[0;32m==>\033[0m Fork detected"[0m
+2026-09-24T01:49:26.1592832Z [36;1m  CC_FORK="true"[0m
+2026-09-24T01:49:26.1593041Z [36;1mfi[0m
+2026-09-24T01:49:26.1593249Z [36;1mecho "CC_FORK=$CC_FORK" >> "$GITHUB_ENV"[0m
+2026-09-24T01:49:26.1623299Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-24T01:49:26.1623619Z env:
+2026-09-24T01:49:26.1623815Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.1624044Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.1624270Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.1624534Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1624958Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.1625345Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1625736Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1626085Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1626572Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.1626895Z   GITHUB_EVENT_PULL_REQUEST_HEAD_LABEL: 
+2026-09-24T01:49:26.1627175Z   GITHUB_EVENT_PULL_REQUEST_HEAD_REPO_FULL_NAME: 
+2026-09-24T01:49:26.1627474Z   GITHUB_REPOSITORY: pcalnon/juniper-canopy
+2026-09-24T01:49:26.1627728Z ##[endgroup]
+2026-09-24T01:49:26.1682359Z ##[end-action id=__codecov_codecov-action.__run_4;outcome=success;conclusion=success;duration_ms=10]
+2026-09-24T01:49:26.1685324Z ##[start-action display=Get OIDC token;id=__codecov_codecov-action.oidc]
+2026-09-24T01:49:26.1744402Z ##[group]Run actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+2026-09-24T01:49:26.1744753Z with:
+2026-09-24T01:49:26.1745322Z   script: if (process.env.CC_USE_OIDC === 'true' && process.env.CC_FORK != 'true') {
+  const id_token = await core.getIDToken(process.env.CC_OIDC_AUDIENCE)
+  return id_token
+}
+
+2026-09-24T01:49:26.1747990Z   github-token: ***
+2026-09-24T01:49:26.1748200Z   debug: false
+2026-09-24T01:49:26.1748422Z   user-agent: actions/github-script
+2026-09-24T01:49:26.1748671Z   result-encoding: json
+2026-09-24T01:49:26.1748877Z   retries: 0
+2026-09-24T01:49:26.1749092Z   retry-exempt-status-codes: 400,401,403,404,422
+2026-09-24T01:49:26.1749357Z env:
+2026-09-24T01:49:26.1749565Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.1749808Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.1750229Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.1750527Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1750938Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.1751355Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1751713Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1752081Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.1752483Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.1752798Z   CC_FORK: false
+2026-09-24T01:49:26.1753044Z   CC_OIDC_AUDIENCE: https://codecov.io
+2026-09-24T01:49:26.1753309Z   CC_USE_OIDC: false
+2026-09-24T01:49:26.1753525Z ##[endgroup]
+2026-09-24T01:49:26.2540510Z ##[end-action id=__codecov_codecov-action.oidc;outcome=success;conclusion=success;duration_ms=85]
+2026-09-24T01:49:26.2549019Z ##[start-action display=Get and set token;id=__codecov_codecov-action.__run_5]
+2026-09-24T01:49:26.2564136Z ##[group]Run if [ "$INPUT_USE_OIDC" == 'true' ] && [ "$CC_FORK" != 'true' ];
+2026-09-24T01:49:26.2564628Z [36;1mif [ "$INPUT_USE_OIDC" == 'true' ] && [ "$CC_FORK" != 'true' ];[0m
+2026-09-24T01:49:26.2564963Z [36;1mthen[0m
+2026-09-24T01:49:26.2565203Z [36;1m  echo "CC_TOKEN=$CC_OIDC_TOKEN" >> "$GITHUB_ENV"[0m
+2026-09-24T01:49:26.2565526Z [36;1melif [ -n "$INPUT_CODECOV_TOKEN" ];[0m
+2026-09-24T01:49:26.2565794Z [36;1mthen[0m
+2026-09-24T01:49:26.2566223Z [36;1m  echo -e "\033[0;32m==>\033[0m Token set from env"[0m
+2026-09-24T01:49:26.2566589Z [36;1m    echo "CC_TOKEN=$INPUT_CODECOV_TOKEN" >> "$GITHUB_ENV"[0m
+2026-09-24T01:49:26.2566913Z [36;1melse[0m
+2026-09-24T01:49:26.2567105Z [36;1m  if [ -n "$INPUT_TOKEN" ];[0m
+2026-09-24T01:49:26.2567343Z [36;1m  then[0m
+2026-09-24T01:49:26.2567606Z [36;1m    echo -e "\033[0;32m==>\033[0m Token set from input"[0m
+2026-09-24T01:49:26.2567953Z [36;1m    CC_TOKEN=$(echo "$INPUT_TOKEN" | tr -d '\n')[0m
+2026-09-24T01:49:26.2568309Z [36;1m    echo "CC_TOKEN=$CC_TOKEN" >> "$GITHUB_ENV"[0m
+2026-09-24T01:49:26.2568601Z [36;1m  fi[0m
+2026-09-24T01:49:26.2568799Z [36;1mfi[0m
+2026-09-24T01:49:26.2605440Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-24T01:49:26.2605767Z env:
+2026-09-24T01:49:26.2605975Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.2606212Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.2606438Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.2606739Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2607145Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.2607709Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2608059Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2608411Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2608791Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.2609094Z   CC_FORK: false
+2026-09-24T01:49:26.2609287Z   CC_OIDC_TOKEN: 
+2026-09-24T01:49:26.2609511Z   CC_OIDC_AUDIENCE: https://codecov.io
+2026-09-24T01:49:26.2609762Z   INPUT_USE_OIDC: false
+2026-09-24T01:49:26.2610220Z   INPUT_TOKEN: 
+2026-09-24T01:49:26.2610413Z   INPUT_CODECOV_TOKEN: 
+2026-09-24T01:49:26.2610619Z ##[endgroup]
+2026-09-24T01:49:26.2671213Z ##[end-action id=__codecov_codecov-action.__run_5;outcome=success;conclusion=success;duration_ms=12]
+2026-09-24T01:49:26.2674399Z ##[start-action display=Override branch for forks;id=__codecov_codecov-action.__run_6]
+2026-09-24T01:49:26.2687337Z ##[group]Run if [ -z "$CC_BRANCH" ] && [ -z "$CC_TOKEN" ] && [ "$CC_FORK" == 'true' ]
+2026-09-24T01:49:26.2687813Z [36;1mif [ -z "$CC_BRANCH" ] && [ -z "$CC_TOKEN" ] && [ "$CC_FORK" == 'true' ][0m
+2026-09-24T01:49:26.2688147Z [36;1mthen[0m
+2026-09-24T01:49:26.2688518Z [36;1m  echo -e "\033[0;32m==>\033[0m Fork detected, setting branch to $GITHUB_EVENT_PULL_REQUEST_HEAD_LABEL"[0m
+2026-09-24T01:49:26.2688985Z [36;1m  TOKENLESS="$GITHUB_EVENT_PULL_REQUEST_HEAD_LABEL"[0m
+2026-09-24T01:49:26.2689323Z [36;1m  CC_BRANCH="$GITHUB_EVENT_PULL_REQUEST_HEAD_LABEL"[0m
+2026-09-24T01:49:26.2689644Z [36;1m  echo "TOKENLESS=$TOKENLESS" >> "$GITHUB_ENV"[0m
+2026-09-24T01:49:26.2690149Z [36;1mfi[0m
+2026-09-24T01:49:26.2690333Z [36;1m[0m
+2026-09-24T01:49:26.2690544Z [36;1mecho "CC_BRANCH=$CC_BRANCH" >> "$GITHUB_ENV"[0m
+2026-09-24T01:49:26.2721275Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-24T01:49:26.2721615Z env:
+2026-09-24T01:49:26.2721814Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.2722047Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.2722289Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.2722567Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2722968Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.2723366Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2723714Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2724068Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2724419Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.2724724Z   CC_FORK: false
+2026-09-24T01:49:26.2724918Z   CC_BRANCH: 
+2026-09-24T01:49:26.2725121Z   GITHUB_EVENT_PULL_REQUEST_HEAD_LABEL: 
+2026-09-24T01:49:26.2725409Z   GITHUB_EVENT_PULL_REQUEST_HEAD_REPO_FULL_NAME: 
+2026-09-24T01:49:26.2725889Z   GITHUB_REPOSITORY: pcalnon/juniper-canopy
+2026-09-24T01:49:26.2726156Z ##[endgroup]
+2026-09-24T01:49:26.2784061Z ##[end-action id=__codecov_codecov-action.__run_6;outcome=success;conclusion=success;duration_ms=10]
+2026-09-24T01:49:26.2787188Z ##[start-action display=Override commits and pr for pull requests;id=__codecov_codecov-action.__run_7]
+2026-09-24T01:49:26.2800349Z ##[group]Run if [ -z "$CC_SHA" ];
+2026-09-24T01:49:26.2800618Z [36;1mif [ -z "$CC_SHA" ];[0m
+2026-09-24T01:49:26.2800841Z [36;1mthen[0m
+2026-09-24T01:49:26.2801079Z [36;1m  CC_SHA="$GITHUB_EVENT_PULL_REQUEST_HEAD_SHA"[0m
+2026-09-24T01:49:26.2801360Z [36;1mfi[0m
+2026-09-24T01:49:26.2801586Z [36;1mif [ -z "$CC_PR" ] && [ "$CC_FORK" == 'true' ];[0m
+2026-09-24T01:49:26.2801868Z [36;1mthen[0m
+2026-09-24T01:49:26.2802064Z [36;1m  CC_PR="$GITHUB_EVENT_NUMBER"[0m
+2026-09-24T01:49:26.2802305Z [36;1mfi[0m
+2026-09-24T01:49:26.2802476Z [36;1m[0m
+2026-09-24T01:49:26.2802677Z [36;1mecho "CC_SHA=$CC_SHA" >> "$GITHUB_ENV"[0m
+2026-09-24T01:49:26.2802971Z [36;1mecho "CC_PR=$CC_PR" >> "$GITHUB_ENV"[0m
+2026-09-24T01:49:26.2833443Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-24T01:49:26.2833924Z env:
+2026-09-24T01:49:26.2834116Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.2834345Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.2834572Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.2834844Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2835250Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.2835636Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2835975Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2836330Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2836676Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.2836981Z   CC_FORK: false
+2026-09-24T01:49:26.2837165Z   CC_BRANCH: 
+2026-09-24T01:49:26.2837341Z   CC_PR: 
+2026-09-24T01:49:26.2837521Z   CC_SHA: 
+2026-09-24T01:49:26.2837699Z   GITHUB_EVENT_NAME: push
+2026-09-24T01:49:26.2837915Z   GITHUB_EVENT_NUMBER: 
+2026-09-24T01:49:26.2838146Z   GITHUB_EVENT_PULL_REQUEST_HEAD_SHA: 
+2026-09-24T01:49:26.2838388Z ##[endgroup]
+2026-09-24T01:49:26.2894725Z ##[end-action id=__codecov_codecov-action.__run_7;outcome=success;conclusion=success;duration_ms=10]
+2026-09-24T01:49:26.2901569Z ##[start-action display=Upload coverage to Codecov;id=__codecov_codecov-action.__run_8]
+2026-09-24T01:49:26.2914618Z ##[group]Run ${GITHUB_ACTION_PATH}/dist/codecov.sh
+2026-09-24T01:49:26.2914968Z [36;1m${GITHUB_ACTION_PATH}/dist/codecov.sh[0m
+2026-09-24T01:49:26.2945425Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-24T01:49:26.2945746Z env:
+2026-09-24T01:49:26.2945949Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:26.2946186Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:26.2946417Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:26.2946701Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2947105Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:26.2947505Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2947855Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2948203Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:26.2948547Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:26.2948846Z   CC_FORK: false
+2026-09-24T01:49:26.2949037Z   CC_BRANCH: 
+2026-09-24T01:49:26.2949219Z   CC_SHA: 
+2026-09-24T01:49:26.2949390Z   CC_PR: 
+2026-09-24T01:49:26.2949572Z   CC_BASE_SHA: 
+2026-09-24T01:49:26.2949756Z   CC_BINARY: 
+2026-09-24T01:49:26.2950150Z   CC_BUILD: 
+2026-09-24T01:49:26.2950329Z   CC_BUILD_URL: 
+2026-09-24T01:49:26.2950518Z   CC_CLEANUP: false
+2026-09-24T01:49:26.2950711Z   CC_CODE: 
+2026-09-24T01:49:26.2950880Z   CC_DIR: 
+2026-09-24T01:49:26.2951083Z   CC_DISABLE_FILE_FIXES: false
+2026-09-24T01:49:26.2951484Z   CC_DISABLE_SEARCH: false
+2026-09-24T01:49:26.2951705Z   CC_DISABLE_TELEM: false
+2026-09-24T01:49:26.2951931Z   CC_DRY_RUN: false
+2026-09-24T01:49:26.2952132Z   CC_ENTERPRISE_URL: 
+2026-09-24T01:49:26.2952328Z   CC_ENV: 
+2026-09-24T01:49:26.2952504Z   CC_EXCLUDES: 
+2026-09-24T01:49:26.2952690Z   CC_FAIL_ON_ERROR: false
+2026-09-24T01:49:26.2952907Z   CC_FILES: reports/coverage.xml
+2026-09-24T01:49:26.2953145Z   CC_FLAGS: unittests
+2026-09-24T01:49:26.2953334Z   CC_FORCE: 
+2026-09-24T01:49:26.2953512Z   CC_GCOV_ARGS: 
+2026-09-24T01:49:26.2953703Z   CC_GCOV_EXECUTABLE: gcov
+2026-09-24T01:49:26.2953909Z   CC_GCOV_IGNORE: 
+2026-09-24T01:49:26.2954103Z   CC_GCOV_INCLUDE: 
+2026-09-24T01:49:26.2954295Z   CC_GIT_SERVICE: github
+2026-09-24T01:49:26.2954518Z   CC_HANDLE_NO_REPORTS_FOUND: false
+2026-09-24T01:49:26.2954764Z   CC_JOB_CODE: 
+2026-09-24T01:49:26.2954944Z   CC_LEGACY: false
+2026-09-24T01:49:26.2955131Z   CC_NAME: 
+2026-09-24T01:49:26.2955304Z   CC_NETWORK_FILTER: 
+2026-09-24T01:49:26.2955504Z   CC_NETWORK_PREFIX: 
+2026-09-24T01:49:26.2955708Z   CC_NETWORK_ROOT_FOLDER: 
+2026-09-24T01:49:26.2955912Z   CC_OS: 
+2026-09-24T01:49:26.2956080Z   CC_PARENT_SHA: 
+2026-09-24T01:49:26.2956442Z   CC_PLUGINS: 
+2026-09-24T01:49:26.2956634Z   CC_RECURSE_SUBMODULES: false
+2026-09-24T01:49:26.2956863Z   CC_REPORT_TYPE: 
+2026-09-24T01:49:26.2957063Z   CC_RUN_CMD: upload-coverage
+2026-09-24T01:49:26.2957286Z   CC_SERVICE: github
+2026-09-24T01:49:26.2957493Z   CC_SKIP_VALIDATION: false
+2026-09-24T01:49:26.2957704Z   CC_SLUG: 
+2026-09-24T01:49:26.2957874Z   CC_SWIFT_PROJECT: 
+2026-09-24T01:49:26.2958068Z   CC_USE_PYPI: false
+2026-09-24T01:49:26.2958255Z   CC_VERBOSE: false
+2026-09-24T01:49:26.2958439Z   CC_VERSION: latest
+2026-09-24T01:49:26.2958631Z   CC_YML_PATH: 
+2026-09-24T01:49:26.2958814Z ##[endgroup]
+2026-09-24T01:49:26.3035978Z      _____          _
+2026-09-24T01:49:26.3036224Z     / ____|        | |
+2026-09-24T01:49:26.3036445Z    | |     ___   __| | ___  ___ _____   __
+2026-09-24T01:49:26.3036716Z    | |    / _ \ / _` |/ _ \/ __/ _ \ \ / /
+2026-09-24T01:49:26.3036960Z    | |___| (_) | (_| |  __/ (_| (_) \ V /
+2026-09-24T01:49:26.3037201Z     \_____\___/ \__,_|\___|\___\___/ \_/
+2026-09-24T01:49:26.3037782Z                            [0;31m Wrapper-0.3.1[0m
+2026-09-24T01:49:26.3038050Z                            
+2026-09-24T01:49:26.3089407Z [0;32m==>[0m Detected [0;36mlinux[0m
+2026-09-24T01:49:26.3090350Z [0;32m ->[0m Downloading [0;36mhttps://cli.codecov.io/latest/linux/codecov[0m
+2026-09-24T01:49:26.3164366Z   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+2026-09-24T01:49:26.3164971Z                                  Dload  Upload   Total   Spent    Left  Speed
+2026-09-24T01:49:26.3165309Z 
+2026-09-24T01:49:26.5185012Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2026-09-24T01:49:26.5185875Z 100  9.9M  100  9.9M    0     0  49.0M      0 --:--:-- --:--:-- --:--:-- 49.3M
+2026-09-24T01:49:26.5212389Z [0;32m==>[0m Finishing downloading [0;36mlinux:latest[0m
+2026-09-24T01:49:26.5690935Z       Version: [0;36mv11.3.1[0m
+2026-09-24T01:49:26.5691646Z  
+2026-09-24T01:49:26.9790342Z gpg: directory '/home/runner/.gnupg' created
+2026-09-24T01:49:26.9791041Z gpg: keybox '/home/runner/.gnupg/pubring.kbx' created
+2026-09-24T01:49:27.0015951Z gpg: /home/runner/.gnupg/trustdb.gpg: trustdb created
+2026-09-24T01:49:27.0016574Z gpg: key 806BB28AED779869: public key "Codecov Uploader (Codecov Uploader Verification Key) <security@codecov.io>" imported
+2026-09-24T01:49:27.0440665Z gpg: Total number processed: 1
+2026-09-24T01:49:27.0441110Z gpg:               imported: 1
+2026-09-24T01:49:27.0446741Z [0;32m==>[0m Verifying GPG signature integrity
+2026-09-24T01:49:27.0447575Z [0;32m ->[0m Downloading [0;36mhttps://cli.codecov.io/latest/linux/codecov.SHA256SUM[0m
+2026-09-24T01:49:27.0448828Z [0;32m ->[0m Downloading [0;36mhttps://cli.codecov.io/latest/linux/codecov.SHA256SUM.sig[0m
+2026-09-24T01:49:27.0449601Z  
+2026-09-24T01:49:27.1270498Z gpg: Signature made Thu Jul  9 01:37:57 2026 UTC
+2026-09-24T01:49:27.1271157Z gpg:                using RSA key 27034E7FDB850E0BBC2C62FF806BB28AED779869
+2026-09-24T01:49:27.1272171Z gpg: Good signature from "Codecov Uploader (Codecov Uploader Verification Key) <security@codecov.io>" [unknown]
+2026-09-24T01:49:27.1273055Z gpg: WARNING: This key is not certified with a trusted signature!
+2026-09-24T01:49:27.1273700Z gpg:          There is no indication that the signature belongs to the owner.
+2026-09-24T01:49:27.1274401Z Primary key fingerprint: 2703 4E7F DB85 0E0B BC2C  62FF 806B B28A ED77 9869
+2026-09-24T01:49:27.3996347Z codecov: OK
+2026-09-24T01:49:27.4009623Z [0;32m==>[0m CLI integrity verified
+2026-09-24T01:49:27.4010133Z 
+2026-09-24T01:49:27.4571815Z [0;32m ->[0m Token length: 0
+2026-09-24T01:49:27.4572513Z [0;32m==>[0m Running upload-coverage
+2026-09-24T01:49:27.4581342Z       [0;36m./codecov  upload-coverage --git-service github --file reports/coverage.xml --flag unittests --gcov-executable gcov[0m
+2026-09-24T01:49:27.7714360Z info - 2026-09-24 01:49:27,771 -- ci service found: github-actions
+2026-09-24T01:49:27.8118162Z warning - 2026-09-24 01:49:27,811 -- xcrun is not installed or can't be found.
+2026-09-24T01:49:27.8264019Z warning - 2026-09-24 01:49:27,826 -- No gcov data found.
+2026-09-24T01:49:27.8271693Z info - 2026-09-24 01:49:27,827 -- Generating coverage.xml report in /home/runner/work/juniper-canopy/juniper-canopy
+2026-09-24T01:49:29.3860969Z 
+2026-09-24T01:49:29.4258588Z info - 2026-09-24 01:49:29,425 -- Found 3 coverage files to report
+2026-09-24T01:49:29.4259269Z info - 2026-09-24 01:49:29,425 -- > /home/runner/work/juniper-canopy/juniper-canopy/reports/coverage.xml
+2026-09-24T01:49:29.4260133Z info - 2026-09-24 01:49:29,425 -- > /home/runner/work/juniper-canopy/juniper-canopy/reports/coverage.json
+2026-09-24T01:49:29.4260684Z info - 2026-09-24 01:49:29,425 -- > /home/runner/work/juniper-canopy/juniper-canopy/coverage.xml
+2026-09-24T01:49:29.7525788Z info - 2026-09-24 01:49:29,752 -- Upload queued for processing complete
+2026-09-24T01:49:29.7526768Z error - 2026-09-24 01:49:29,752 -- Upload queued for processing failed: {"message":"Token required - not valid tokenless upload"}
+2026-09-24T01:49:29.8880478Z ##[end-action id=__codecov_codecov-action.__run_8;outcome=success;conclusion=success;duration_ms=3597]
+2026-09-24T01:49:29.8961749Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+2026-09-24T01:49:29.8962172Z with:
+2026-09-24T01:49:29.8962382Z   name: unit-test-results-py3.13
+2026-09-24T01:49:29.8962644Z   path: reports/junit/
+2026-09-24T01:49:29.8962856Z   retention-days: 30
+2026-09-24T01:49:29.8963062Z   if-no-files-found: warn
+2026-09-24T01:49:29.8963276Z   compression-level: 6
+2026-09-24T01:49:29.8963482Z   overwrite: false
+2026-09-24T01:49:29.8963699Z   include-hidden-files: false
+2026-09-24T01:49:29.8963965Z   archive: true
+2026-09-24T01:49:29.8964173Z env:
+2026-09-24T01:49:29.8964375Z   ENV_NAME: juniper-canopy
+2026-09-24T01:49:29.8964631Z   PYTHON_TEST_VERSION: 3.14
+2026-09-24T01:49:29.8964877Z   COVERAGE_FAIL_UNDER: 80
+2026-09-24T01:49:29.8965167Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:29.8965623Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-24T01:49:29.8966090Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:29.8966459Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:29.8966856Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-24T01:49:29.8967226Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-24T01:49:29.8967549Z   CC_FORK: false
+2026-09-24T01:49:29.8967770Z   CC_BRANCH: 
+2026-09-24T01:49:29.8967981Z   CC_SHA: 
+2026-09-24T01:49:29.8968170Z   CC_PR: 
+2026-09-24T01:49:29.8968375Z ##[endgroup]
+2026-09-24T01:49:30.0309173Z With the provided path, there will be 2 files uploaded
+2026-09-24T01:49:30.0313257Z Artifact name is valid!
+2026-09-24T01:49:30.0313811Z Root directory input is valid!
+2026-09-24T01:49:30.2152778Z Uploading artifact: unit-test-results-py3.13.zip
+2026-09-24T01:49:30.2187291Z Beginning upload of artifact content to blob storage
+2026-09-24T01:49:30.2933327Z Uploaded bytes 118054
+2026-09-24T01:49:30.3051526Z Finished uploading artifact content to blob storage!
+2026-09-24T01:49:30.3052725Z SHA256 digest of uploaded artifact is 9dc786b242696659c3b96e3c068b3901df43da002427212420f24039c8019f2b
+2026-09-24T01:49:30.3053610Z Finalizing artifact upload
+2026-09-24T01:49:30.5071042Z Artifact unit-test-results-py3.13 successfully finalized. Artifact ID 10785923409
+2026-09-24T01:49:30.5072079Z Artifact unit-test-results-py3.13 has been successfully uploaded! Final size is 118054 bytes. Artifact ID is 10785923409
+2026-09-24T01:49:30.5075416Z Artifact download URL: https://github.com/pcalnon/juniper-canopy/actions/runs/35943786496/artifacts/10785923409
+2026-09-24T01:49:30.5255598Z Post job cleanup.
+2026-09-24T01:49:30.6397845Z Cache hit occurred on the primary key setup-python-Linux-x64-24.04-Ubuntu-python-3.13.15-pip-2f3cedaae3bb27c91e123e3fa24ece00b90551fa48fc29fccc9489407d9d6b37, not saving cache.
+2026-09-24T01:49:30.6527423Z Post job cleanup.
+2026-09-24T01:49:30.7358472Z [command]/usr/bin/git version
+2026-09-24T01:49:30.7406889Z git version 2.55.0
+2026-09-24T01:49:30.7451898Z Copying '/home/runner/.gitconfig' to '/home/runner/work/_temp/7d0396b6-6a1f-4317-b6e4-104d4cbb3493/.gitconfig'
+2026-09-24T01:49:30.7461250Z Temporarily overriding HOME='/home/runner/work/_temp/7d0396b6-6a1f-4317-b6e4-104d4cbb3493' before making global git config changes
+2026-09-24T01:49:30.7462311Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-24T01:49:30.7468277Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/juniper-canopy/juniper-canopy
+2026-09-24T01:49:30.7506642Z Removing SSH command configuration
+2026-09-24T01:49:30.7514403Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-24T01:49:30.7552431Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-24T01:49:30.7798551Z Removing HTTP extra header
+2026-09-24T01:49:30.7805095Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-24T01:49:30.7848763Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-24T01:49:30.8096156Z Removing includeIf entries pointing to credentials config files
+2026-09-24T01:49:30.8102846Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-24T01:49:30.8131827Z includeif.gitdir:/home/runner/work/juniper-canopy/juniper-canopy/.git.path
+2026-09-24T01:49:30.8132624Z includeif.gitdir:/home/runner/work/juniper-canopy/juniper-canopy/.git/worktrees/*.path
+2026-09-24T01:49:30.8133120Z includeif.gitdir:/github/workspace/.git.path
+2026-09-24T01:49:30.8133515Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-24T01:49:30.8140898Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/juniper-canopy/juniper-canopy/.git.path
+2026-09-24T01:49:30.8166150Z /home/runner/work/_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config
+2026-09-24T01:49:30.8176441Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/juniper-canopy/juniper-canopy/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-eacf5343\-c6d0\-4702\-a3e1\-b23e1bf35c8d\.config
+2026-09-24T01:49:30.8212809Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/juniper-canopy/juniper-canopy/.git/worktrees/*.path
+2026-09-24T01:49:30.8239655Z /home/runner/work/_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config
+2026-09-24T01:49:30.8258000Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/juniper-canopy/juniper-canopy/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-eacf5343\-c6d0\-4702\-a3e1\-b23e1bf35c8d\.config
+2026-09-24T01:49:30.8292696Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-09-24T01:49:30.8316345Z /github/runner_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config
+2026-09-24T01:49:30.8323792Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-eacf5343\-c6d0\-4702\-a3e1\-b23e1bf35c8d\.config
+2026-09-24T01:49:30.8356150Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-24T01:49:30.8377547Z /github/runner_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config
+2026-09-24T01:49:30.8387643Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-eacf5343\-c6d0\-4702\-a3e1\-b23e1bf35c8d\.config
+2026-09-24T01:49:30.8424287Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-24T01:49:30.8644314Z Removing credentials config '/home/runner/work/_temp/git-credentials-eacf5343-c6d0-4702-a3e1-b23e1bf35c8d.config'
+2026-09-24T01:49:30.8807410Z Cleaning up orphan processes

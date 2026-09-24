@@ -1,0 +1,114 @@
+                dcc.Interval(
+                    id=f"{self.component_id}-update-interval",
+                    interval=self.update_interval,
+                    n_intervals=0,
+                ),
+            ],
+            style={"padding": "15px"},
+--
+                dcc.Interval(
+                    id=f"{self.component_id}-interval",
+                    interval=self.interval_ms,
+                    n_intervals=0,
+                ),
+                # Header with status badge
+                html.Div(
+--
+                dcc.Interval(
+                    id=f"{self.component_id}-refresh-interval",
+                    interval=self.refresh_interval,
+                    n_intervals=0,
+                ),
+                # Store for snapshots list
+                dcc.Store(id=f"{self.component_id}-snapshots-store", data={"snapshots": []}),
+--
+                dcc.Interval(id=f"{self.component_id}-update-interval", interval=self.update_interval, n_intervals=0),
+                dcc.Interval(id=f"{self.component_id}-stats-update-interval", interval=5000, n_intervals=0),
+                # Replay functionality stores
+                dcc.Store(
+                    id=f"{self.component_id}-replay-state",
+                    data={
+                        "mode": "stopped",
+                        "speed": 1.0,
+--
+                dcc.Interval(
+                    id=f"{self.component_id}-replay-interval",
+                    interval=1000,
+                    disabled=True,
+                    n_intervals=0,
+                ),
+            ],
+--
+                dcc.Interval(id=f"{self.component_id}-fsm-poll", interval=2000, n_intervals=0),
+                # Topology snapshot for the readout + remove-unit
+                # picker. Refreshed every poll tick when active.
+                dcc.Store(id=f"{self.component_id}-topology-store", data=None),
+            ],
+            id=f"{self.component_id}-root",
+            style={"padding": "10px"},
+--
+                dcc.Interval(
+                    id=f"{self.component_id}-refresh-interval",
+                    interval=self.interval_ms,
+                    n_intervals=0,
+                ),
+            ],
+            id=self.component_id,
+--
+                dcc.Interval(id=f"{self.component_id}-weight-drain", interval=500, n_intervals=0),
+            ],
+            id=self.component_id,
+            style={"padding": "20px", "maxWidth": "900px"},
+        )
+
+    def _build_idle_state(self):
+--
+                dcc.Interval(id="fast-update-interval", interval=DashboardConstants.FAST_UPDATE_INTERVAL_MS, n_intervals=0),
+                dcc.Interval(id="slow-update-interval", interval=DashboardConstants.SLOW_UPDATE_INTERVAL_MS, n_intervals=0),
+                # F-CANOPY-035: the metrics-store poll's own lane, so it can stop its
+                # own clock while in flight (``running=`` on update_metrics_store)
+                # without silencing the nine other fast-lane callbacks. Same nominal
+                # cadence as the fast lane; see ``METRICS_STORE_POLL_INTERVAL_MS``.
+                dcc.Interval(id=_METRICS_STORE_INTERVAL, interval=DashboardConstants.METRICS_STORE_POLL_INTERVAL_MS, n_intervals=0),
+                # F-CANOPY-027: per-tab poll lanes. These carry the panel-scoped pollers that
+                # used to ride the shared fast/slow intervals, so an inactive tab costs ZERO
+                # renderer slots instead of one round-trip per tick per poller. They start
+                # ``disabled=True`` and are armed by ``_setup_poll_gating``'s clientside gate,
+                # which fires on mount. Deliberately declared HERE, outside ``visualization-tabs``,
+                # so the A1-iii-b1 ``suppress_cascade_tabs`` children rebuild cannot reset them.
+--
+                dcc.Interval(id="tabpoll-topology", interval=DashboardConstants.SLOW_UPDATE_INTERVAL_MS, n_intervals=0, disabled=True),
+                dcc.Interval(id="tabpoll-dataset", interval=DashboardConstants.SLOW_UPDATE_INTERVAL_MS, n_intervals=0, disabled=True),
+                dcc.Interval(id="tabpoll-workers", interval=DashboardConstants.SLOW_UPDATE_INTERVAL_MS, n_intervals=0, disabled=True),
+                # Stage 2 lever 3 (design §12.6 / §13 row 5): SLOW cadence. At the fast
+                # cadence both boundary feeders' round-trips covered their own 1 s
+                # period, so the panel's render callback — whose Inputs they claim —
+                # was never promoted again after mount (80 fills vs 1 render / 115 s,
+                # run 20260824T080426Z). The dataset panel proves slow-lane feeders
+                # leave promotion gaps. Tab activation and the refresh button still
+--
+                dcc.Interval(id="tabpoll-boundaries", interval=DashboardConstants.SLOW_UPDATE_INTERVAL_MS, n_intervals=0, disabled=True),
+                # One-shot interval for parameter initialization (fires once, 1s after load)
+                dcc.Interval(id="params-init-interval", interval=1000, max_intervals=1, n_intervals=0),
+                # CAN-000: pause periodic update intervals while the Apply Parameters
+                # button is in flight, so a server roundtrip isn't racing against
+                # interval-driven REST polls / clientside drains.
+                dcc.Store(id="apply-in-flight", data=False),
+                # E-3 (training-runtime defects plan §9): watchdog tick for the
+                # apply-in-flight clamp. Deliberately NOT one of the two clamped
+--
+                dcc.Interval(id="apply-watchdog-interval", interval=DashboardConstants.APPLY_WATCHDOG_INTERVAL_MS, n_intervals=0),
+                # FRONTEND_ISSUES_PLAN_2026-05-09 §2.5 C / Issue #2 — write-only
+                # sink for the force-blur clientside callback. Dash requires
+                # an Output target on every callback; this Store exists solely
+                # to satisfy that contract without colliding with another
+                # callback's output.
+                dcc.Store(id="apply-blur-sink", data=None),
+--
+        assert 'dcc.Interval(id="apply-watchdog-interval"' in dashboard_manager_source
+
+    def test_watchdog_callback_wired_to_clear_stuck_clamp(self, dashboard_manager_source):
+        idx = dashboard_manager_source.find('Input("apply-watchdog-interval", "n_intervals")')
+        assert idx != -1
+        # The watchdog's Output (force-release) must sit in the same callback
+        # registration (search backwards within the registration window).
