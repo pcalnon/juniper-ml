@@ -51,6 +51,7 @@ import sys
 import threading
 import types
 import unittest
+import unittest.mock
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -146,30 +147,30 @@ class ParseOpenMPRuntimesTest(unittest.TestCase):
 # ------------------------------------------------------------------------------------------------
 class OpenMPRuntimeTest(unittest.TestCase):
     def _forbid_dlopen(self):
-        return mock.patch.object(tw.ctypes, "CDLL", side_effect=AssertionError("dlopen must not be reached"))
+        return unittest.mock.patch.object(tw.ctypes, "CDLL", side_effect=AssertionError("dlopen must not be reached"))
 
     def test_nothing_mapped_raises_before_dlopen(self) -> None:
-        with mock.patch.object(tw, "mapped_openmp_runtimes", return_value=[]), self._forbid_dlopen():
+        with unittest.mock.patch.object(tw, "mapped_openmp_runtimes", return_value=[]), self._forbid_dlopen():
             with self.assertRaises(tw.OpenMPRuntimeNotMapped) as ctx:
                 tw.OpenMPRuntime()
         self.assertIn("import", str(ctx.exception))
 
     def test_two_runtimes_raise_rather_than_guess(self) -> None:
         mapped = ["/env/lib/libgomp.so.1", "/env/lib/libiomp5.so"]
-        with mock.patch.object(tw, "mapped_openmp_runtimes", return_value=mapped), self._forbid_dlopen():
+        with unittest.mock.patch.object(tw, "mapped_openmp_runtimes", return_value=mapped), self._forbid_dlopen():
             with self.assertRaises(tw.AmbiguousOpenMPRuntime):
                 tw.OpenMPRuntime()
 
     def test_an_unmapped_path_is_refused_even_when_named(self) -> None:
-        with mock.patch.object(tw, "mapped_openmp_runtimes", return_value=["/env/lib/libgomp.so.1"]), self._forbid_dlopen():
+        with unittest.mock.patch.object(tw, "mapped_openmp_runtimes", return_value=["/env/lib/libgomp.so.1"]), self._forbid_dlopen():
             with self.assertRaises(tw.OpenMPRuntimeNotMapped):
                 tw.OpenMPRuntime("/usr/lib/x86_64-linux-gnu/libgomp.so.1")
 
     def test_opens_the_mapped_path_with_rtld_noload(self) -> None:
-        fake_lib = mock.MagicMock()
+        fake_lib = unittest.mock.MagicMock()
         fake_lib.omp_get_max_threads.return_value = 7
         fake_lib.omp_get_num_procs.return_value = 16
-        with mock.patch.object(tw, "mapped_openmp_runtimes", return_value=["/env/lib/libgomp.so.1"]), mock.patch.object(tw.ctypes, "CDLL", return_value=fake_lib) as cdll:
+        with unittest.mock.patch.object(tw, "mapped_openmp_runtimes", return_value=["/env/lib/libgomp.so.1"]), unittest.mock.patch.object(tw.ctypes, "CDLL", return_value=fake_lib) as cdll:
             omp = tw.OpenMPRuntime()
         cdll.assert_called_once()
         args, kwargs = cdll.call_args
