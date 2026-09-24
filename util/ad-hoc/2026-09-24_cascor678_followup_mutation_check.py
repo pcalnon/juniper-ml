@@ -148,17 +148,26 @@ def main(argv: List[str]) -> int:
         ok = True
         for rel, kind, old, new in edits:  # type: ignore[misc]
             path = os.path.join(tree, rel)
-            text = open(path, encoding="utf-8").read()
+            with open(path, encoding="utf-8") as f:
+                text = f.read()
+                # text = open(path, encoding="utf-8").read()
+
             originals[path] = text
             if kind == "file":
-                open(path, "w", encoding="utf-8").write(open(old, encoding="utf-8").read())
+                # open(path, "w", encoding="utf-8").write(open(old, encoding="utf-8").read())
+                with open(path, "w", encoding="utf-8") as f_out:
+                    with open(old, encoding="utf-8") as f_in:
+                        text = f_in.read()
+                    f_out.write(text)
                 continue
             count = text.count(old)
             if count != 1:
                 print(f"{name}: SKIPPED -- anchor occurs {count} times in {rel}")
                 ok = False
                 break
-            open(path, "w", encoding="utf-8").write(text.replace(old, new))
+            # open(path, "w", encoding="utf-8").write(text.replace(old, new))
+            with open(path, "w", encoding="utf-8") as f_out:
+                f_out.write(text.replace(old, new))
         if ok:
             summary, failed = _pytest(tree)
             verdict = "KILLED" if failed else "SURVIVED"
