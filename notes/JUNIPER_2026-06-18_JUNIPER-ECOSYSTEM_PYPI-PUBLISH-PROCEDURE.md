@@ -592,8 +592,10 @@ Notes on those commands:
 - **Pass `--target-sha <full 40-char sha>` whenever anything can merge between the preview and the
   cut.** Without it, the Release tags the owning repo's `main` as it is at cut time, while the notes
   come from the checkout. Those are two trees, and they agree only if nothing merged in between. With
-  it, the tag lands on that commit, and the CI precondition reads that commit's own run instead of
-  `main`'s newest. The checkout must be of the same commit: for a sibling, extract
+  it, the tag lands on that commit, and the CI precondition reads every completed run of that commit
+  instead of `main`'s newest. It is green only if one of them succeeded and none failed, because a run
+  superseded by a later merge is `cancelled` without anything failing. The checkout must be of the
+  same commit: for a sibling, extract
   `gh api repos/pcalnon/<repo>/tarball/<sha>`. It needs exactly one `--package`, and it refuses an
   abbreviated sha, which `gh` would reject only after the archive PR was armed. Added 2026-09-24,
   after three juniper-data PRs merged between the owner's approval of the 0.16.0 notes (pinned at

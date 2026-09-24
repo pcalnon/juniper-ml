@@ -238,6 +238,32 @@ def _assert_gh_allowed(args: list, allowed_repos: "frozenset[str] | None" = None
             raise SeamViolation(f"gh --repo {slug!r} is not one of the {len(allowed_repos)} publishing repos {sorted(allowed_repos)} -- R7 bounds the cross-repo write identity to exactly those repos (plan S9.3 / S12 step 4.1)")
 
 
+# A completed run that says the commit is BROKEN. ``cancelled`` / ``skipped`` / ``neutral`` / ``stale``
+# say nothing about the code: a run superseded by a later push on the same concurrency group is
+# cancelled although nothing failed.
+RED_CONCLUSIONS = frozenset({"failure", "timed_out", "startup_failure"})
+
+
+def commit_ci_verdict(conclusions: list) -> "str | None":
+    """The S8 verdict for ONE commit (``--target-sha``), from all its completed runs of the CI workflow.
+
+    Green (``"success"``) only if at least one run succeeded AND none is red; a red run returns its
+    conclusion; anything else returns the newest conclusion (or None for no runs), which the
+    precondition treats as not green. Why not simply the newest run: juniper-data's 0.16.0 target,
+    7125e161, has a successful push run and a LATER ``repository_dispatch`` run that was cancelled
+    when the next merge superseded it -- the newest conclusion, ``cancelled``, would HALT a green
+    commit, and re-running the dispatch only to make the probe happy proves nothing about the code.
+    Fail-closed where it matters: one red run halts, however many green ones surround it.
+    """
+    values = [str(c) for c in conclusions if c]
+    red = [c for c in values if c in RED_CONCLUSIONS]
+    if red:
+        return red[0]
+    if "success" in values:
+        return "success"
+    return values[0] if values else None
+
+
 def publishing_repo_slugs(entries: list, owner: str) -> "frozenset[str]":
     """The ``owner/<repo>`` allowlist for ``_assert_gh_allowed``, derived from the registry's repo set
     (data-driven, so it can never drift from the 8 publishing repos -- plan S4.1 / the registry lint)."""
@@ -714,13 +740,16 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         # any in-progress run of the CI workflow itself. Fail-closed: a brand-new repo with zero completed
         # runs of ``workflow`` returns None -> HALT (correct -- do not cut a Release with no green signal).
         # ``commit`` (--target-sha) narrows the probe to THAT commit's own runs: the Release will tag it, so
-        # its CI is the signal, not whatever merged after it. A commit that never ran the workflow on main
-        # returns None -> HALT, the same fail-closed answer.
-        args = ["run", "list", "--repo", f"{owner}/{repo}", "--branch", "main", "--workflow", workflow]
+        # its CI is the signal, not whatever merged after it. See ``commit_ci_verdict`` for how its runs
+        # are read. A commit that never ran the workflow on main returns None -> HALT, fail-closed.
         if commit:
-            args += ["--commit", commit]
-        args += ["--status", "completed", "--limit", "1", "--json", "conclusion", "--jq", ".[0].conclusion"]
-        out = _cgh(args)
+            out = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--branch", "main", "--workflow", workflow, "--commit", commit, "--status", "completed", "--limit", "20", "--json", "conclusion", "--jq", "[.[].conclusion]"])
+            try:
+                conclusions = json.loads(out or "[]")
+            except ValueError as exc:
+                raise SourceError(f"gh run list returned non-JSON for {repo}@{commit}") from exc
+            return commit_ci_verdict(conclusions)
+        out = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--branch", "main", "--workflow", workflow, "--status", "completed", "--limit", "1", "--json", "conclusion", "--jq", ".[0].conclusion"])
         return (out or "").strip() or None
 
     def list_open_prs(repo: str) -> list:

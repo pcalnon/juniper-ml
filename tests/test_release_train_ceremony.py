@@ -1689,12 +1689,16 @@ class TargetShaTest(unittest.TestCase):
     main. Each link of the target's path is pinned, because a break in any one is silent: a Release is
     still cut, at the wrong commit."""
 
-    def _gh_recorder(self):
+    def _gh_recorder(self, commit_runs='["cancelled", "success"]'):
         calls: list = []
 
         def rec_gh(args, timeout=90):
             calls.append(list(args))
-            return "success" if args[:2] == ["run", "list"] else "https://github.com/pcalnon/juniper-data/releases/tag/v0.16.0"
+            if args[:2] == ["run", "list"]:
+                # The targeted probe asks for every completed run of the commit, as a JSON list; this
+                # default is 7125e161's real shape: a later dispatch run cancelled, the push run green.
+                return commit_runs if "--commit" in args else "success"
+            return "https://github.com/pcalnon/juniper-data/releases/tag/v0.16.0"
 
         def rec_git(repo_dir, args, timeout=120, check=True):
             return ""
@@ -1715,14 +1719,41 @@ class TargetShaTest(unittest.TestCase):
         for argv in (targeted, untargeted):
             ce._assert_gh_allowed(argv, allowed)  # the R7 gate admits both
 
-    def test_live_ci_probe_narrows_to_the_commit(self):
+    def test_live_ci_probe_narrows_to_the_commit_and_reads_all_its_runs(self):
         calls, src = self._gh_recorder()
-        self.assertEqual(src.main_ci_conclusion("juniper-data", "ci.yml", TARGET), "success")
+        self.assertEqual(src.main_ci_conclusion("juniper-data", "ci.yml", TARGET), "success", "a superseded, cancelled run must not halt a green commit")
         argv = next(a for a in calls if a[:2] == ["run", "list"])
         self.assertEqual(argv[argv.index("--commit") + 1], TARGET)
         self.assertEqual(argv[argv.index("--branch") + 1], "main")
         self.assertEqual(argv[argv.index("--workflow") + 1], "ci.yml")
         self.assertEqual(argv[argv.index("--status") + 1], "completed")
+        self.assertEqual(argv[argv.index("--jq") + 1], "[.[].conclusion]", "every run of the commit, not just the newest")
+
+    def test_live_ci_probe_halts_on_a_red_run_of_the_commit(self):
+        _, src = self._gh_recorder(commit_runs='["success", "failure"]')
+        self.assertEqual(src.main_ci_conclusion("juniper-data", "ci.yml", TARGET), "failure")
+
+    def test_live_ci_probe_refuses_non_json(self):
+        _, src = self._gh_recorder(commit_runs="success")
+        with self.assertRaises(ce.SourceError):
+            src.main_ci_conclusion("juniper-data", "ci.yml", TARGET)
+
+    def test_commit_ci_verdict(self):
+        cases = [
+            (["cancelled", "success"], "success"),  # 7125e161: a dispatch run superseded, the push run green
+            (["success"], "success"),
+            (["neutral", "success"], "success"),
+            ([None, "success"], "success"),
+            (["success", "failure"], "failure"),  # one red run halts, however many green ones surround it
+            (["timed_out", "success"], "timed_out"),
+            (["startup_failure"], "startup_failure"),
+            (["cancelled"], "cancelled"),  # nothing green: not a pass
+            (["skipped", "cancelled"], "skipped"),
+            ([], None),
+        ]
+        for conclusions, expected in cases:
+            with self.subTest(conclusions=conclusions):
+                self.assertEqual(ce.commit_ci_verdict(conclusions), expected)
 
     def _targeted_plan(self, conclusion="success"):
         seen: list = []
