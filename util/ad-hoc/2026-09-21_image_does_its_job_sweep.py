@@ -4,7 +4,7 @@ Project:     Juniper
 Sub-Project: juniper-ml
 Application: util/ad-hoc
 Author:      Paul Calnon
-Version:     1.0.0
+Version:     2.0.0
 License:     MIT License
 
 CLASS 2 sweep: does each PUBLISHED Juniper image actually DO ITS JOB?
@@ -22,67 +22,89 @@ that actually bit:
 
     "It builds" is not "it works". Assert the artifact's PURPOSE.
 
-WHY THE PUBLISH PATH IS THE RIGHT TARGET
-----------------------------------------
-In all five image repos the import smoke test is gated:
-
-    if: github.event_name != 'release' && !inputs.push
-
-so on a **release** -- the path that actually ships -- the only in-image execution is
-`check_image_cpu_only.py`, a distribution census plus torch-posture check that **never
-imports the application**. The `/v1/health` probe exists only in `ci.yml`, against a
-*locally built* image. So nothing today proves a PUBLISHED service image can serve. That is
-precisely the shape of the six-month defect, and this script is the missing assertion.
-
 WHAT IT CHECKS, IN ESCALATING ORDER
 -----------------------------------
-  T1  IMPORT    -- can the application package be imported inside the image?
-                   This is the direct analogue of the conftest ImportError. Dependency-free,
-                   fast, and decisive: a failure here means the image cannot possibly work.
-  T2  ENTRYPOINT-- does the image's declared entry resolve and respond to a trivial
-                   invocation (console script `--help`)? Proves the wiring, not just the
-                   package.
-  T3  SERVE     -- does the real CMD start and the HEALTHCHECK endpoint answer 200?
-                   The strongest signal, but several images legitimately need backing
-                   services, so a T3 failure is reported with its reason and is NOT treated
-                   as equivalent to a T1 failure.
+  T1  IMPORT    -- the application package imports inside the image, AND its `__version__`
+                   equals the installed distribution's metadata version.
+  T2  ENTRYPOINT-- the image's console script answers `--help`.
+  T3  SERVE     -- the image's OWN entrypoint + command, started exactly as `docker run IMG`
+                   starts it, answers 200 on its LIVENESS endpoint (`/v1/health`), probed from
+                   inside the container. Readiness is deliberately not probed: a standalone
+                   container has no backing services, so `/ready` answering 503 is the probe
+                   working, not the image failing.
+  T4  VERSION   -- every version the RUNNING service reports equals the installed metadata:
+                   the `version` field of the `/v1/health` body, and -- where the service wraps
+                   its responses in an envelope -- `meta.version` of an enveloped response.
 
-A NOTE ON ONE HEALTHCHECK, because it is a vacuous-pass instance
-----------------------------------------------------------------
-`juniper-cascor-worker/Dockerfile:120` is `CMD kill -0 1` -- it asserts only that PID 1
-exists. A worker that booted, failed to connect and is sitting idle passes it. Compare the
-other four, which all probe a real HTTP endpoint. Recorded, not fixed here.
+WHAT v2.0.0 FIXED (2026-09-23), per the 09-22 container-registry handoff's item-5 detail
+------------------------------------------------------------------------------------------
+v1.0.0 passed two images it should have failed, and could not see a third:
+
+* **An absent `__version__` scored PASS.** The probe printed MISMATCH only when a version was
+  present AND different, so `ABSENT` fell through to PASS. That is how juniper-cascor 0.11.0
+  passed: its image ships no `juniper_cascor` package at all (the Dockerfile copies `src/`),
+  the import target was `cascade_correlation`, which has no `__version__`, and the envelope's
+  `meta.version` -- the image's real version surface -- read `0.6.0` in a 0.11.0 image
+  (cascor#668; fixed on `main` by cascor#672, from the next release). v2 scores ABSENT as FAIL
+  unless the row declares that the image has no version-bearing package, and then T4 must carry
+  the check on a served surface instead.
+* **The tags were hard-coded** at the 2026-09-21 releases, so every run after the next release
+  swept images nobody deploys. v2 resolves each repo's newest Release from GitHub
+  (`releases/latest`, which the ceremony keeps current since juniper-ml#2055) and prints the
+  ref it swept. `--image name:tag` overrides.
+* **The worker's serve check was skipped** ("no HTTP healthcheck"). The worker DOES serve
+  `/v1/health` -- on 127.0.0.1:8210 inside its container -- so v2 probes it there. Its Docker
+  HEALTHCHECK is `kill -0 1`, which proves only that PID 1 exists; that is recorded, not fixed.
 
 Read-only with respect to the repos. It PULLS and RUNS public images; it pushes nothing and
-writes nothing outside stdout. Requires `docker`. Exits 0 always -- a report, not a gate.
+writes nothing outside stdout. Requires `docker` and `gh`. Exit 0 when every check that applies
+passes, 1 when any fails, 2 when an image could not be pulled or a tag could not be resolved --
+an unswept image is not a clean one.
+
+Usage:
+    python3 util/ad-hoc/2026-09-21_image_does_its_job_sweep.py
+    python3 util/ad-hoc/2026-09-21_image_does_its_job_sweep.py --image juniper-cascor:0.11.0 --image juniper-data:0.16.0
+    python3 util/ad-hoc/2026-09-21_image_does_its_job_sweep.py --only juniper-cascor-worker --verbose
 """
 
 from __future__ import annotations
 
+import argparse
+import json
 import shutil
 import subprocess
 import sys
 import time
+from dataclasses import dataclass
 
 REGISTRY = "ghcr.io/pcalnon"
-
-# name -> (tag, import target, console script or None, health port, health path, dist name)
-#
-# Use the LIVENESS endpoint, not readiness. A standalone container has no backing services,
-# so cascor's `/v1/health/ready` correctly answers 503 {"status":"not_ready"} -- that is the
-# probe working, not the image failing. v1.0.0 of this script pointed at `/v1/health/ready`
-# and scored cascor FAIL: the instrument was answering an adjacent question. `/v1/health`
-# and `/v1/health/live` both return 200.
-IMAGES = {
-    "juniper-cascor": ("0.11.0", "cascade_correlation", None, 8200, "/v1/health", "juniper-cascor"),
-    "juniper-data": ("0.14.0", "juniper_data", None, 8100, "/v1/health", "juniper-data"),
-    "juniper-canopy": ("0.8.0", "juniper_canopy", None, 8050, "/v1/health", "juniper-canopy"),
-    "juniper-cascor-worker": ("0.6.0", "juniper_cascor_worker", "juniper-cascor-worker", None, None, "juniper-cascor-worker"),
-    "juniper-recurrence": ("0.5.0", "juniper_recurrence", "juniper-recurrence", 8210, "/v1/health", "juniper-recurrence"),
-}
-
 RUN_TIMEOUT = 120
-SERVE_WAIT = 45
+SERVE_WAIT = 60
+
+
+@dataclass(frozen=True)
+class Row:
+    repo: str  # the image name == the owning repo
+    tag_prefix: str  # the repo's primary release tag prefix, stripped to get the image tag
+    module: str | None  # the version-bearing application package; None = the image ships none
+    dist: str  # the distribution whose metadata is the truth
+    script: str | None  # console script for T2, or None
+    port: int  # the liveness port INSIDE the container
+    enveloped_path: str | None  # an endpoint whose response carries meta.version, or None
+    why_no_module: str = ""
+
+
+ROWS = {
+    # The cascor IMAGE ships `src/` and the dist-info, not the `juniper_cascor` package
+    # (Dockerfile copies pyproject.toml, README.md, LICENSE and src/), so there is no
+    # in-package __version__ to compare. Its version surfaces are served: /v1/health and the
+    # response envelope. `/v1/workers` is enveloped and needs no backing service.
+    "juniper-cascor": Row("juniper-cascor", "v", None, "juniper-cascor", None, 8200, "/v1/workers", "the image ships src/, not the juniper_cascor package"),
+    "juniper-data": Row("juniper-data", "v", "juniper_data", "juniper-data", None, 8100, None),
+    "juniper-canopy": Row("juniper-canopy", "v", "juniper_canopy", "juniper-canopy", None, 8050, None),
+    "juniper-cascor-worker": Row("juniper-cascor-worker", "v", "juniper_cascor_worker", "juniper-cascor-worker", "juniper-cascor-worker", 8210, None),
+    "juniper-recurrence": Row("juniper-recurrence", "juniper-recurrence-v", "juniper_recurrence", "juniper-recurrence", "juniper-recurrence", 8210, None),
+}
 
 
 def sh(args: list[str], timeout: int = RUN_TIMEOUT) -> tuple[int, str]:
@@ -95,103 +117,177 @@ def sh(args: list[str], timeout: int = RUN_TIMEOUT) -> tuple[int, str]:
         return 125, f"{type(exc).__name__}: {exc}"
 
 
-def t1_import(ref: str, module: str, dist: str) -> tuple[str, str]:
-    """Import the app package AND cross-check `__version__` against distribution metadata.
+def resolve_tag(row: Row) -> str | None:
+    code, out = sh(["gh", "api", f"repos/pcalnon/{row.repo}/releases/latest", "--jq", ".tag_name"], timeout=60)
+    if code != 0 or not out.startswith(row.tag_prefix):
+        return None
+    return out[len(row.tag_prefix) :]
 
-    The cross-check is not decoration. juniper-cascor-worker:0.6.0 imports fine and reports
-    `__version__ == "0.4.0"` while its metadata says 0.6.0 -- `__init__.py` was never bumped
-    past 0.4.0, so two releases shipped a stale in-package version. An import-only check
-    passes that silently, which is the vacuous-pass class all over again.
-    """
-    probe = (
-        f"import {module} as m, importlib.metadata as md;"
-        f"v=getattr(m,'__version__','ABSENT');"
-        f"d=md.version('{dist}');"
-        "print('ok', v, '| dist', d, '| MISMATCH' if v not in ('ABSENT', d) else '')"
-    )
+
+def metadata_version(ref: str, dist: str) -> str | None:
+    code, out = sh(["docker", "run", "--rm", "--entrypoint", "python", ref, "-c", f"import importlib.metadata as m; print(m.version({dist!r}))"])
+    return out.splitlines()[-1].strip() if code == 0 and out else None
+
+
+def t1_import(ref: str, row: Row, dist_version: str | None) -> tuple[str, str]:
+    if row.module is None:
+        return "N/A", f"{row.why_no_module}; T4 carries the version check"
+    probe = f"import {row.module} as m; print(getattr(m, '__version__', 'ABSENT'))"
     code, out = sh(["docker", "run", "--rm", "--entrypoint", "python", ref, "-c", probe])
     if code != 0:
-        return "FAIL", out.splitlines()[-1] if out else f"exit {code}"
-    last = out.splitlines()[-1] if out else "ok"
-    return ("MISMATCH" if "MISMATCH" in last else "PASS"), last
+        return "FAIL", (out.splitlines()[-1] if out else f"exit {code}")[:100]
+    version = out.splitlines()[-1].strip()
+    if version == "ABSENT":
+        return "FAIL", f"{row.module} imports but has no __version__ (v1 scored this PASS)"
+    if version != dist_version:
+        return "FAIL", f"__version__ {version} != metadata {dist_version}"
+    return "PASS", f"__version__ {version} == metadata"
 
 
 def t2_entrypoint(ref: str, script: str | None) -> tuple[str, str]:
     if script is None:
-        return "N/A", "no console script (CMD runs a file path)"
+        return "N/A", "no console script"
     code, out = sh(["docker", "run", "--rm", "--entrypoint", script, ref, "--help"])
     if code == 0:
-        first = next((line for line in out.splitlines() if line.strip()), "")
-        return "PASS", first[:70]
-    return "FAIL", out.splitlines()[-1][:90] if out else f"exit {code}"
+        return "PASS", next((line for line in out.splitlines() if line.strip()), "")[:70]
+    return "FAIL", (out.splitlines()[-1] if out else f"exit {code}")[:90]
 
 
-def t3_serve(name: str, ref: str, port: int | None, path: str | None) -> tuple[str, str]:
-    if port is None:
-        return "N/A", "no HTTP healthcheck (worker uses `kill -0 1` -- vacuous)"
+def _get_json(cname: str, port: int, path: str) -> tuple[int | None, dict | None, str]:
+    probe = (
+        "import json, sys, urllib.request, urllib.error\n"
+        f"try:\n    r = urllib.request.urlopen('http://127.0.0.1:{port}{path}', timeout=4)\n"
+        "    status, body = r.status, r.read()\n"
+        "except urllib.error.HTTPError as e:\n    status, body = e.code, e.read()\n"
+        "print(status); print(body.decode('utf-8', 'replace'))\n"
+    )
+    code, out = sh(["docker", "exec", cname, "python", "-c", probe], timeout=20)
+    if code != 0 or not out:
+        return None, None, (out.splitlines()[-1] if out else f"exit {code}")[:90]
+    status_line, _, body = out.partition("\n")
+    try:
+        return int(status_line), json.loads(body), ""
+    except ValueError:
+        return (int(status_line) if status_line.isdigit() else None), None, body[:90]
+
+
+def t3_t4_serve(name: str, ref: str, row: Row, dist_version: str | None, verbose: bool) -> tuple[tuple[str, str], tuple[str, str]]:
     cname = f"juniper-class2-{name}"
     sh(["docker", "rm", "-f", cname], timeout=30)
-    code, out = sh(["docker", "run", "-d", "--name", cname, "-p", f"{port}:{port}", ref], timeout=60)
+    # No -p: the probe runs INSIDE the container, so a service bound to 127.0.0.1 (the worker's
+    # health server) is reachable, and no host port can collide.
+    code, out = sh(["docker", "run", "-d", "--name", cname, ref], timeout=60)
     if code != 0:
-        return "FAIL", f"container did not start: {out.splitlines()[-1][:80] if out else code}"
+        return ("FAIL", f"container did not start: {(out.splitlines()[-1] if out else code)}"[:100]), ("N/A", "not served")
     try:
-        probe = (
-            "import urllib.request,sys;"
-            f"r=urllib.request.urlopen('http://127.0.0.1:{port}{path}',timeout=4);"
-            "print(r.status)"
-        )
         deadline = time.time() + SERVE_WAIT
-        last = ""
+        status, body, err = None, None, ""
         while time.time() < deadline:
-            c, o = sh(["docker", "exec", cname, "python", "-c", probe], timeout=15)
-            if c == 0 and "200" in o:
-                return "PASS", f"{path} -> 200"
-            last = o.splitlines()[-1][:80] if o else f"exit {c}"
-            rc, _ = sh(["docker", "inspect", "-f", "{{.State.Running}}", cname], timeout=15)
+            running = sh(["docker", "inspect", "-f", "{{.State.Running}}", cname], timeout=15)[1]
+            if running != "true":
+                logs = sh(["docker", "logs", "--tail", "5", cname], timeout=20)[1]
+                return ("FAIL", f"container exited; logs: {logs.splitlines()[-1][:80] if logs else '-'}"), ("N/A", "not served")
+            status, body, err = _get_json(cname, row.port, "/v1/health")
+            if status == 200:
+                break
             time.sleep(3)
-        lc, logs = sh(["docker", "logs", "--tail", "3", cname], timeout=20)
-        return "FAIL", f"no 200 in {SERVE_WAIT}s; last={last}; logs={logs.splitlines()[-1][:70] if logs else ''}"
+        if status != 200:
+            logs = sh(["docker", "logs", "--tail", "3", cname], timeout=20)[1]
+            return ("FAIL", f"no 200 on /v1/health in {SERVE_WAIT}s (last {status} {err}); logs: {logs.splitlines()[-1][:60] if logs else '-'}"), ("N/A", "not served")
+        if verbose:
+            print(f"      /v1/health body: {json.dumps(body)[:300]}")
+        t3 = ("PASS", f"/v1/health -> 200 on :{row.port}")
+
+        # T4: every served version surface must equal the metadata. A body with no version
+        # field is reported, not scored PASS.
+        findings: list[str] = []
+        served = (body or {}).get("version") if isinstance(body, dict) else None
+        if served is None:
+            findings.append("/v1/health carries no version field")
+        elif served != dist_version:
+            findings.append(f"/v1/health version {served} != metadata {dist_version}")
+        if row.enveloped_path:
+            e_status, e_body, e_err = _get_json(cname, row.port, row.enveloped_path)
+            meta_version = ((e_body or {}).get("meta") or {}).get("version") if isinstance(e_body, dict) else None
+            if verbose:
+                print(f"      {row.enveloped_path} -> {e_status}: {json.dumps(e_body)[:300] if e_body is not None else e_err}")
+            if meta_version is None:
+                findings.append(f"{row.enveloped_path} ({e_status}) carries no meta.version")
+            elif meta_version != dist_version:
+                findings.append(f"{row.enveloped_path} meta.version {meta_version} != metadata {dist_version}")
+        mismatches = [f for f in findings if "!=" in f]
+        if mismatches:
+            return t3, ("FAIL", "; ".join(findings))
+        if findings:
+            return t3, ("WARN", "; ".join(findings))
+        return t3, ("PASS", f"served version(s) == metadata {dist_version}")
     finally:
         sh(["docker", "rm", "-f", cname], timeout=30)
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Class-2 sweep of the published Juniper images.")
+    parser.add_argument("--image", action="append", default=[], help="name:tag to sweep instead of the newest Release (repeatable)")
+    parser.add_argument("--only", action="append", default=[], help="sweep only this image name (repeatable)")
+    parser.add_argument("--verbose", action="store_true", help="print each image's config and served bodies")
+    args = parser.parse_args()
+
     if shutil.which("docker") is None:
-        print("docker not available -- cannot run a class-2 sweep. "
-              "This check REQUIRES running the artifact; do not substitute reading it.")
-        return 0
+        print("docker not available -- a class-2 sweep REQUIRES running the artifact; do not substitute reading it.")
+        return 2
 
-    print("CLASS 2 SWEEP -- does each PUBLISHED image do its job?")
-    print("T1 import (decisive) | T2 entrypoint | T3 serve (dependency-sensitive)\n")
+    overrides = dict(item.split(":", 1) for item in args.image)
+    names = args.only or list(ROWS)
+    print("CLASS 2 SWEEP v2 -- does each PUBLISHED image do its job?")
+    print("T1 import+__version__ | T2 entrypoint | T3 serve /v1/health | T4 served version == metadata\n")
 
-    rows = []
-    for name, (tag, module, script, port, path, dist) in IMAGES.items():
-        ref = f"{REGISTRY}/{name}:{tag}"
-        print(f"── {name}:{tag}")
-        code, _ = sh(["docker", "pull", "-q", ref], timeout=900)
-        if code != 0:
-            print("   PULL FAILED -- skipping\n")
-            rows.append((name, "PULL-FAIL", "-", "-"))
+    worst = 0
+    rows_out = []
+    for name in names:
+        row = ROWS[name]
+        tag = overrides.get(name) or resolve_tag(row)
+        if tag is None:
+            print(f"── {name}: could not resolve the newest Release tag -- NOT SWEPT\n")
+            rows_out.append((name, "-", "UNRESOLVED", "-", "-", "-"))
+            worst = max(worst, 2)
             continue
+        ref = f"{REGISTRY}/{name}:{tag}"
+        print(f"── {ref}")
+        code, out = sh(["docker", "pull", "-q", ref], timeout=900)
+        if code != 0:
+            print(f"   PULL FAILED -- NOT SWEPT: {out.splitlines()[-1] if out else code}\n")
+            rows_out.append((name, tag, "PULL-FAIL", "-", "-", "-"))
+            worst = max(worst, 2)
+            continue
+        if args.verbose:
+            config = sh(["docker", "inspect", "--format", "{{json .Config}}", ref], timeout=30)[1]
+            try:
+                c = json.loads(config)
+                print(f"      entrypoint={c.get('Entrypoint')} cmd={c.get('Cmd')} exposed={list((c.get('ExposedPorts') or {}))} healthcheck={((c.get('Healthcheck') or {}).get('Test'))} user={c.get('User')!r}")
+            except ValueError:
+                print(f"      config: {config[:200]}")
 
-        s1, d1 = t1_import(ref, module, dist)
-        print(f"   T1 import {module:<24} {s1}  {d1}")
-        s2, d2 = t2_entrypoint(ref, script)
-        print(f"   T2 entrypoint {'':<20} {s2}  {d2}")
-        s3, d3 = t3_serve(name, ref, port, path)
-        print(f"   T3 serve {'':<24} {s3}  {d3}")
-        print()
-        rows.append((name, s1, s2, s3))
+        dist_version = metadata_version(ref, row.dist)
+        print(f"   metadata {row.dist} = {dist_version}")
+        s1, d1 = t1_import(ref, row, dist_version)
+        print(f"   T1 import        {s1:<5} {d1}")
+        s2, d2 = t2_entrypoint(ref, row.script)
+        print(f"   T2 entrypoint    {s2:<5} {d2}")
+        (s3, d3), (s4, d4) = t3_t4_serve(name, ref, row, dist_version, args.verbose)
+        print(f"   T3 serve         {s3:<5} {d3}")
+        print(f"   T4 version       {s4:<5} {d4}\n")
+        rows_out.append((name, tag, s1, s2, s3, s4))
+        if "FAIL" in (s1, s2, s3, s4) or dist_version != tag:
+            worst = max(worst, 1)
+        if dist_version != tag:
+            print(f"   !! the image tagged {tag} carries metadata {dist_version}\n")
 
     print("SUMMARY")
-    print(f"{'image':<24} {'T1 import':<11} {'T2 entry':<10} {'T3 serve'}")
-    for r in rows:
-        print(f"{r[0]:<24} {r[1]:<11} {r[2]:<10} {r[3]}")
-    print()
-    print("A T1 FAIL means the published image CANNOT work -- that is the six-month defect's")
-    print("shape. A T3 FAIL may simply mean the service needs a backing dependency; read the")
-    print("reason before concluding. Neither is asserted anywhere in CI on the release path.")
-    return 0
+    print(f"{'image':<24} {'tag':<8} {'T1':<6} {'T2':<6} {'T3':<6} {'T4'}")
+    for r in rows_out:
+        print(f"{r[0]:<24} {r[1]:<8} {r[2]:<6} {r[3]:<6} {r[4]:<6} {r[5]}")
+    print(f"\nexit={worst}")
+    return worst
 
 
 if __name__ == "__main__":

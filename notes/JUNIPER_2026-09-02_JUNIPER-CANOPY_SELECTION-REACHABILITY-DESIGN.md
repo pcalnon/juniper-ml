@@ -889,12 +889,35 @@ closing a capability gap and moving it somewhere less visible.
 >     previous run's results under an `equities` label.
 >   - `mnist` (784 features) should hit the same refusal by the same code path. It was not run.
 >
->   So the failing step is the Start path, not the generator. Whether that means disabling the seed
->   (this section's rule), fixing Start, or pointing the operator at Start fresh is an owner decision.
+>   So the failing step is the Start path, not the generator. **Owner ruling, 2026-09-24: fix the Start
+>   path.** Detect the width mismatch before Start, refuse with a message that points at Start fresh, and
+>   stop serving the previous run's results under the new label. The seed stays enabled; this section's
+>   disable-with-a-reason rule is not applied, because the fault is not the generator's. The fix must
+>   cover `mnist` as well.
+>
+>   **Shipped, 2026-09-24.**
+>   - juniper-cascor#687: a Start that continues the network now refuses a wider staged dataset after
+>     the fetch and **before binding anything**. The label, the loaded data and the staged slot stay
+>     as they were. The refusal opens with `[start_fresh_required]` and names `start_fresh`.
+>   - juniper-canopy#681: the alert recognises that marker and names the two controls that apply the
+>     remedy, "Stop & Restart with new dataset" and "Start fresh".
+>   - Both are tested for `equities` (15 features) and `mnist` (784).
+>   - Canopy's sidebar title follows the *selection*, which hydrates from the staged dataset. After
+>     a refused Start it therefore reads the staged dataset with the pending banner up, the same
+>     state an ordinary Apply Dataset leaves. It no longer sits over routes that claim that dataset
+>     is loaded.
 > - **Adjacent: Start fresh discards parameters applied just before it.** The restart modal applies
 >   edited parameters (`set_params`) and then restarts. With Start fresh on, cascor rebuilds a
 >   vanilla network at its own defaults, so the edits are silently lost. This was observed through
->   the two routes the modal calls, not by clicking the modal.
+>   the two routes the modal calls, not by clicking the modal. **Owner ruling, 2026-09-24: apply the
+>   edits after the fresh rebuild**, so they survive.
+>
+>   **Shipped, 2026-09-24.**
+>   - juniper-cascor#685: the start-fresh reset captures the discarded network's applied params.
+>     `start_training` re-applies them to the rebuilt network through the same path as a `PATCH`,
+>     and the start body's own params still land on top.
+>   - juniper-canopy#681: the modal's text no longer calls a start-fresh "functionally a clean stack
+>     launch". It says the parameters carry over.
 > - **Caveat on the LMU rows.** The recurrence leg was the installed `juniper-recurrence` console
 >   script (0.5.0, an editable install of the primary checkout). It ran with
 >   juniper-recurrence-model **0.1.5**, not the 0.3.x line `juniper-ml[recurrence]` installs.

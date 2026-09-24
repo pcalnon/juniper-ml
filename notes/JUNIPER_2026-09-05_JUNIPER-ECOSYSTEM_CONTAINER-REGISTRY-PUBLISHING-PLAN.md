@@ -10,9 +10,28 @@
 **public**, confirmed by an anonymous pull), `juniper-cascor-worker:0.6.0` (cut 2026-09-15,
 publish run 35033610624 all three jobs green; censused from the pulled image:
 `torch=2.14.0+cpu (cuda=None) distributions=24 cuda_stack=0`, *CPU-only contract holds*).
-**Newer release images since** (GHCR tag lists, probed 2026-09-22): `juniper-data:0.15.0`,
-`juniper-canopy:0.8.1` and `juniper-cascor-worker:0.6.1`. cascor (0.11.0) and recurrence (0.5.0)
-have had no release since.
+**Newer release images since** (GHCR tag lists, probed 2026-09-24): `juniper-data:0.15.0` and
+`0.16.0`, `juniper-canopy:0.8.1` and `juniper-cascor-worker:0.6.1`. cascor (0.11.0) and recurrence
+(0.5.0) have had no release since.
+**State at 2026-09-24 09:24Z** (this refresh):
+
+- **juniper-data v0.16.0 is cut and its image is published** (§5.2, the 0.16.0 paragraph). It is
+  the first data image that generates `equities`. Its PyPI deploy waits on the owner. juniper-deploy
+  still pins `0.15.0`, and its currency check flags that pin **STALE**.
+- **Item 5 is closed in all five repos** (§5.3). The publish path now checks that the image serves
+  and reports the version it is tagged.
+- **Two release-train changes**: `ceremony.py` moves GitHub's Latest badge per the registry's
+  `latest:` flag (juniper-ml#2055), and it can pin a cut to one commit with `--target-sha`
+  (juniper-ml#2071).
+- **The `dockerhub` environments are now drift-gated** by
+  `tests/test_publish_env_policy_drift.py` (juniper-ml#2056), as a **local** gate: per-PR CI cannot
+  read the five repositories, so the live half skips there. It checks four things. All five
+  environments are tag-only. No repository-scope `DOCKERHUB_*` credential exists. No other Juniper
+  repository (the release-train registry's, plus juniper-deploy) has a `dockerhub` environment.
+  And its detectors fire on synthetic violations. `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` §6
+  gives the command.
+- **Wave 4 still waits on the owner's token.**
+
 **WAVE 3 IS COMPLETE (2026-09-17).** All three of its items shipped, and
 `juniper-deploy/docker-compose.yml` now carries **ten** Juniper `image:` lines, every one a
 published registry ref and none a local build-output tag:
@@ -56,7 +75,7 @@ convention the bundled redis subchart also honours, and setting it rewrites redi
 **Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on the five `DOCKERHUB_TOKEN`
 secrets. Those are now **environment** secrets in a tag-restricted `dockerhub` environment, not
 repository secrets. The owner ruled this on 2026-09-22 (§3 of
-`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`). Last state refresh: **2026-09-22** — the §5 wave table's Wave 1 and Wave 2 rows had
+`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`). State refresh of **2026-09-22** (the newest is the 2026-09-24 block above) — the §5 wave table's Wave 1 and Wave 2 rows had
 gone stale against this Status line and are now correct. The deploy pins drifted three times after
 Wave 3 closed, and all three drifts are closed: canopy by juniper-deploy#225, data by #227, and the
 worker by #229, merged 2026-09-23 06:23Z (see the note under §5). **New §5.2** records the image hardening: both publish-trap classes
@@ -275,7 +294,7 @@ to discover that is on a Pi.
 | 2 | juniper-data | **COMPLETE** — data#385; `juniper-data:0.14.0` published 2026-09-09 |
 | 2 | juniper-recurrence | **COMPLETE** — recurrence#153; `juniper-recurrence:0.5.0` published 2026-09-10. Build context is **nested** (`juniper-recurrence/juniper-recurrence/`, via `APP_DIR`), which also means its `.dockerignore` lives in that subdirectory and **not** at the repo root — a repo-root sweep false-positives here |
 | 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **COMPLETE 2026-09-17.** Pin (#215, 9 lines) + D-1 check (#217) + `Dockerfile.test` runner published as `ghcr.io/pcalnon/juniper-deploy-test:0.3.0` (#219 / #220 / #221, Release `v0.3.0`) = **10** pinned lines. Sibling fix: helm `values.yaml` (#216) |
-| 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets, `dockerhub` **environment** secrets per the 2026-09-22 ruling (§6 OQ-1). The five `dockerhub` environments were **created 2026-09-22** (tags only, no secrets yet) |
+| 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets, `dockerhub` **environment** secrets per the 2026-09-22 ruling (§6 OQ-1). The five `dockerhub` environments were **created 2026-09-22** (tags only, no secrets yet), drift-gated since 2026-09-23 by a local gate (juniper-ml#2056) |
 
 > **Wave 3's pin DRIFTED the day after it was declared complete, and no gate can see it.**
 > juniper-canopy cut **`v0.8.1` on 2026-09-18** — the fix for canopy#631, this arc's own
@@ -507,7 +526,8 @@ its own right.
 
 It now sees a ship change for an unrelated reason. juniper-data#422 merged at 06:22Z (`ce436819`)
 and edits `juniper_data/storage/*.py`, so `detect.py` reports `UNRELEASED_CHANGES`: a minor bump,
-3 ship changes, probed 13:09Z. #428, still open, edits `juniper_data/api/` and `core/models.py`.
+3 ship changes, probed 13:09Z. #428, open at that probe, edits `juniper_data/api/` and
+`core/models.py`; it merged at 22:38Z (`af7831be`) and shipped in 0.16.0 (below).
 Even so, the release needs a **hand-made version-bump PR**, which the ceremony then handles as
 `BUMPED_NOT_RELEASED`, because the train opens nothing by itself. `release-train.yml` resolves its mode from
 the dispatch input, then the `RELEASE_TRAIN_MODE` repository variable, then `report`. juniper-ml
@@ -516,12 +536,59 @@ has no such variable, so the daily run only reports. Only a `mode=propose` dispa
 `release/juniper-data-v*` branch as a duplicate. A hand-made PR on that branch name therefore
 stops a dispatched train from opening a second one.
 
+**Cut 2026-09-24: juniper-data v0.16.0, and its published image generates equities.** The
+hand-made bump was data#433 (merged 2026-09-23 20:24Z, `7125e161`). The cut did not follow at
+once, and the delay mattered:
+
+- **Three more PRs merged first**: #428 (the `ETag` feature, carrying a **Breaking** change: the
+  access counters leave every metadata representation), #431 and #434.
+- **#428's CHANGELOG straddled the bump.** Its entries went under a second
+  `## [0.16.0] - 2026-09-23` heading, above the real one. The ceremony renders the **first**
+  match, so a cut from `main` would have published only #428's bullets and dropped the five the
+  release was bumped for.
+- **Two owner rulings, given in two sessions, then conflicted.** At 07:45Z: pin the cut to
+  `7125e161`, using `util/release_train/ceremony.py --target-sha` (new, juniper-ml#2071), and move
+  the three PRs to `[Unreleased]`. At 08:03Z, on data#435: fold all three into `[0.16.0]`. That
+  one reasoned that the ceremony could not pin a commit, which #2071 was about to change. **Put
+  back to the owner, the fold governed**, with the cut pinned to data#435's merge commit
+  `39d1cab2`, so nothing merged later rides along.
+
+The ceremony cut the Release at 08:52Z. The tag points at `39d1cab2`, and v0.16.0 carries the
+Latest badge (juniper-ml#2055). The notes are byte-identical to the preview the owner approved: the
+five bumped entries plus #428's, #434's and #431's. The archive,
+`notes/releases/RELEASE_NOTES_juniper-data_v0.16.0.md`, landed with juniper-ml#2076 (merged 09:16Z,
+`602094e3`). TestPyPI succeeded, and **PyPI waits on the owner's approval** (probed 2026-09-24
+09:24Z).
+
+**Verified on the published artifact.** `ghcr.io/pcalnon/juniper-data:0.16.0` is index
+`sha256:e8bddbe5…` (amd64 and arm64), and `0.16` and `latest` name the same digest.
+
+- `EQUITIES_DEPS_AVAILABLE` is `True` and `yfinance` imports, so the 0.15.0 finding above is closed
+  from this tag on.
+- `util/check_image_serves.py --expect-version 0.16.0` passes, and `/v1/health` reports
+  `git_sha 39d1cab2`, the pinned commit.
+- `arc_agi` reports generator `4.0.0` (#430).
+
+**The deploy pins still name `juniper-data:0.15.0`**, at `docker-compose.yml:164`, `:517` (the
+demo seed) and `k8s/helm/juniper/values.yaml:40`. That repin waits on the owner.
+
 **Instruments** (juniper-ml, `util/ad-hoc/`): `2026-09-21_image_build_context_sweep.py` (class 1,
 including root-anchoring detection) and `2026-09-21_image_does_its_job_sweep.py` (class 2: import
-+ `__version__`-vs-metadata + entrypoint + serve). Re-run these rather than repeating the survey,
-but fix the class-2 sweep first. Its `IMAGES` table hard-codes the tags it probes, and three are
-superseded: data `0.14.0`, canopy `0.8.0` and worker `0.6.0`. It also scores an absent
-`__version__` as a pass, which is how cascor's defect got through (above).
++ `__version__`-vs-metadata + entrypoint + serve). Re-run these rather than repeating the survey.
+
+**The class-2 sweep was fixed on 2026-09-23 (v2.0.0).** Three defects are gone:
+
+- it hard-coded the tags it probed, three of them superseded; it now resolves each image's tag
+  through `releases/latest`;
+- it scored an absent `__version__` as a pass, which is how cascor's defect got through (above);
+  that now fails wherever a module is named;
+- it skipped the worker's serve check; the worker serves on `127.0.0.1:8210` inside the container
+  even with no manager, so the check now runs.
+
+It also gains **T4**, which compares every version an image serves. Its first run, on 2026-09-23,
+scored cascor **FAIL** (the 0.11.0 envelope's `0.6.0`), recurrence **WARN** (its `/v1/health` body
+carries no version) and the other three PASS. The sweep is a survey of the published images, not a
+gate. The gate is item 5, §5.3.
 
 **Closed 2026-09-22 by juniper-deploy#226: juniper-deploy now detects a stale pin.** This
 paragraph used to say nothing did, and that was true when it was written.
@@ -531,6 +598,56 @@ paragraph used to say nothing did, and that was true when it was written.
 It now also reports currency, as an advisory warning by default; the note under §5 has the
 details. It caught the next drift the same day: `juniper-data:0.14.0` against a published 0.15.0.
 juniper-deploy#227 closed that one on 2026-09-23 at 01:05Z.
+
+### 5.3 Item 5 — the publish path asserts the image serves and is the version it is tagged (CLOSED 2026-09-24)
+
+The sweep found both class-2 defects by **running** the images, after they shipped. Every
+publish-path check had passed them: `check_image_cpu_only.py` censuses distributions and
+`check_image_no_secrets.py` walks files, and neither starts the service or reads a version. Item 5
+moves the sweep's serve-and-version check into the publish path of all five repos, so the next
+stale image fails before its tag is written.
+
+`util/check_image_serves.py` (stdlib only, byte-identical in all five repos, sha256 `41225ac2…`)
+starts the image **as deployed**, with its own `CMD`, and probes from inside the container. It
+requires:
+
+1. the installed metadata version to equal the expected version: `pyproject.toml`'s on a PR, and
+   on a release the **tag's**, because the merge job names the image after the tag;
+2. `__version__` to equal the metadata, where a module is named. **An absent `__version__`
+   fails**;
+3. liveness (`/v1/health`, 200) on the service port, with the body's `version` equal to the
+   metadata;
+4. each `--enveloped-path` response's `meta.version` to equal the metadata.
+
+Each `publish-image.yml` runs it twice. **Serve and version check (build-only runs)** checks the
+smoke image on the PR arm. **Verify pushed image serves and reports its version (publish runs)**
+checks each pushed digest, placed **before** *Export digest*, so a failing arch never reaches the
+merge job. On a release, that step first fails if the tag's version disagrees with the version
+the build read. In four repos that is `${RELEASE_TAG#v}` against `pyproject.toml`. In
+juniper-recurrence, whose app tags carry a prefix, it is `${RELEASE_TAG#juniper-recurrence-v}`
+against `juniper_recurrence/_version.py`.
+
+| repo | PR | merged | arguments | PR-arm run, both arches green |
+| --- | --- | --- | --- | --- |
+| juniper-cascor-worker | worker#196 | 2026-09-24 01:21Z, `40a24181` | `--module juniper_cascor_worker --port 8210` | 35914866068 |
+| juniper-recurrence | recurrence#186 | 2026-09-24 08:02Z, `db41e77e` | `--module juniper_recurrence --port 8210 --health-version optional` | 35972202990 |
+| juniper-cascor | cascor#684 | 2026-09-24 08:09Z, `33c965b3` | no `--module` (the image ships no `juniper_cascor`); `--port 8200 --enveloped-path /v1/workers` | 35972186298 |
+| juniper-canopy | canopy#679 | 2026-09-24 08:14Z, `6c4ad9a9` | `--module juniper_canopy --port 8050` | 35972195896 |
+| juniper-data | data#436 | 2026-09-24 08:57Z, `3adb33ea` | `--module juniper_data --port 8100` | 35977218798 |
+
+**The check is proven in both directions.** On the PR arm it passes each image built from `main`.
+cascor's run compared `/v1/workers` `meta.version 0.11.0` against metadata `0.11.0`, which is
+#672's fix at work. Run by hand against the published images, it fails the two it should:
+
+- `juniper-cascor:0.11.0`: `/v1/workers meta.version 0.6.0 != metadata 0.11.0`, exit 1;
+- `juniper-data:0.15.0` told to expect `0.16.0`: `installed metadata version 0.15.0 != expected
+  0.16.0`, exit 1. Told to expect `0.15.0`, it passes.
+
+**What it does not cover.** A release runs the workflow file at the tagged commit, so a repo's
+first checked release is its first release cut after its PR merged. juniper-data v0.16.0 was cut
+at `39d1cab2`, before data#436, so its image was checked by hand instead, and passed (§5.2, the
+0.16.0 paragraph). The check does not exercise a generator. The equities omission was a dependency the
+image lacked, not a version, and only a request or an availability probe finds that class.
 
 ## 6. Open questions
 

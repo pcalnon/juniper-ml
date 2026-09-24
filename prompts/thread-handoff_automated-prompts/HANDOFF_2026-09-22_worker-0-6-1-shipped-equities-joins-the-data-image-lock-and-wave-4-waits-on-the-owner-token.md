@@ -9,6 +9,22 @@ Read it from `main`.
 on its items.
 **Times are UTC.** The host is CDT (UTC−5), so this file is dated 09-22 local while its last
 events are 09-23 UTC. Live state was last probed at 2026-09-23 13:09Z.
+**Successor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_data-0-16-0-cut-at-one-commit-item-5-closed-in-five-repos-wave-4-waits-on-the-token.md`
+**Status**: **SUPERSEDED 2026-09-24 by the successor above**, which carries what is still open.
+All five items were worked:
+
+- item 1: juniper-data v0.16.0 was cut on 2026-09-24, pinned to `39d1cab2`, with PyPI waiting on
+  the owner;
+- items 2 to 4: juniper-cascor-worker#195, juniper-ml#2056 and juniper-ml#2055;
+- item 5: the serve-and-version check, merged in all five image repos.
+
+**This file is history only. Do not paste its goal and do not act on its items.** Among the
+statements overtaken:
+
+- *Data release recipe* step 5 says `ceremony.py` passes no `--target`. Since juniper-ml#2071 it
+  can, through `--target-sha`.
+- The 0.16.0 cut folded in data#428, #431 and #434, which merged after the bump. The owner ruled on
+  2026-09-24 which way to go; the successor records how.
 
 ## Handoff goal — paste from the next line down to the line `— END OF GOAL —`
 

@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""
+Show that the primer's own example harness now catches a revert of the II.11 toy's ETag fix.
+
+Project: juniper-ml
+Sub-Project: ad-hoc tooling (API primer correction, v3)
+Author: Paul Calnon
+Created: 2026-09-24
+Status: ad-hoc -- read-only mutation check; writes mutated copies to a scratch directory only
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+
+v2 of the primer correction (juniper-ml#2075) made the II.11 toy's four metadata responses send exactly
+the canonical bytes their strong `ETag` hashes. Round 2 of its validation found that nothing in the
+Appendix D harness pinned that: reverting GET, PATCH or POST-reuse to `JSONResponse` still passed 62/62
+(`primer-correction-round2-laneB-refute.md`, L-5). v3 adds same-line assertions to the example's own tests
+(lines 5838, 5857 and 5945, with `import hashlib` on the formerly blank line 5791).
+
+This reverts each route in a scratch copy of the primer and runs the Appendix D harness
+(util/ad-hoc/2026-08-13_run_primer_examples.py) on it. Each mutant must FAIL; the unmutated primer is the
+control and must pass.
+
+Usage: python3 util/ad-hoc/2026-09-24_primer_toy_pin_mutation_check.py --venv <venv with the Appendix D pins> --scratch <dir>
+"""
+
+from __future__ import annotations
+
+import argparse
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[2]
+PRIMER = REPO / "notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md"
+HARNESS = REPO / "util/ad-hoc/2026-08-13_run_primer_examples.py"
+
+# route -> {line: the v1 text that line held before the v2 fix}
+MUTANTS = {
+    "GET": {5722: "        return JSONResponse(dataset.metadata(), headers=headers)"},
+    "PATCH": {5773: "        return JSONResponse(", 5774: "            dataset.metadata(),"},
+    "POST reuse": {5653: "            return JSONResponse(", 5654: "                existing.metadata(),"},
+}
+
+
+def run(doc: Path, venv: str) -> tuple[bool, str]:
+    proc = subprocess.run([sys.executable, str(HARNESS), "--doc", str(doc), "--venv", venv], capture_output=True, text=True)
+    tail = [line for line in proc.stdout.split("\n") if " passed" in line or " failed" in line]
+    return proc.returncode == 0, (tail[-1].strip() if tail else f"exit {proc.returncode}")
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    ap.add_argument("--venv", required=True)
+    ap.add_argument("--scratch", required=True, type=Path)
+    args = ap.parse_args()
+    args.scratch.mkdir(parents=True, exist_ok=True)
+    base = PRIMER.read_text(encoding="utf-8").split("\n")
+
+    ok, tail = run(PRIMER, args.venv)
+    print(f"  control (unmutated): {'PASS' if ok else 'FAIL'} -- {tail}")
+    bad = not ok
+    for name, edits in MUTANTS.items():
+        lines = list(base)
+        for lineno, text in edits.items():
+            if lines[lineno - 1] == text:
+                raise SystemExit(f"line {lineno} already holds the mutant text; the primer is not v2 or later")
+            lines[lineno - 1] = text
+        doc = args.scratch / f"primer_mutant_{name.replace(' ', '_').lower()}.md"
+        doc.write_text("\n".join(lines), encoding="utf-8")
+        ok, tail = run(doc, args.venv)
+        print(f"  {name:10} reverted to JSONResponse: {'CAUGHT' if not ok else 'MISSED'} -- {tail}")
+        bad |= ok
+    print("RESULT:", "every revert is caught, and the control passes" if not bad else "a revert went uncaught, or the control failed")
+    return 1 if bad else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
