@@ -3,7 +3,16 @@
 **Project**: Juniper — performance lane
 **Author**: Paul Calnon
 **Date**: 2026-09-12
-**Status**: SPEC. Axis 3's calibration is **DONE** (§4.1 — viable, but gate on accuracy and sample 2,3,4,5). Axis 2 needs an **owner decision**, not a calibration — §1's correction shows its requested range is capped by juniper-data. Axis 1 is specifiable now.
+**Status** (updated 2026-09-24; §5 has the per-axis table):
+
+- **Axis 2 RUN**, no knee (§3 RESULT).
+- **Axis 3 RUN** (§4.2): it separates 2 → 3 → 4 spirals, and 5 does not rank below 4 on one
+  seed.
+- **Axis 1 BLOCKED on its instrument** (§2 note). The owner ruled 2026-09-24 to publish
+  `epochs_completed` from cascor.
+
+*Superseded status line (2026-09-12): "SPEC. Axis 3's calibration is DONE … Axis 2 needs an owner
+decision … Axis 1 is specifiable now."*
 **⚠ §1 carries a CORRECTION to a claim that shipped wrong in `juniper-ml#1927`** — read it before quoting which generator the experiment path uses.
 **License**: MIT License
 
@@ -40,7 +49,13 @@ which one an experiment takes depends on how the dataset is supplied.
 
 juniper-data's bounds are Pydantic field constraints
 (`juniper_data/generators/spiral/params.py:70-82`, constants in `…/spiral/defaults.py:26-31`), so
-a request past them is a 422, not a clamp.
+a request past them is refused, not clamped. ~~It is a 422.~~ **It is a 400 that carries the
+validation message** (corrected 2026-09-23, measured through the real route: `n_points_per_spiral`
+10,001 → `400 "Invalid parameters: 1 validation error for SpiralParams …"`). The request model
+types `params` as `dict[str, Any]`, so the boundary cannot check it; the route builds the
+generator's params model itself and maps its `ValueError` to 400
+(`juniper_data/api/routes/datasets.py:131-138`). The second correction below is the case that
+loses the message.
 
 > ## ⚠ CORRECTION 2026-09-15 — the bullet immediately below is WRONG, and it shipped that way
 > ## in juniper-ml#1927.
@@ -70,10 +85,20 @@ a request past them is a 422, not a clamp.
 >
 > **Found by running the top cell, not by reading.** The 10,000 probe ended `torn_down_early`
 > after 17.6 s. juniper-data answered **400 "Invalid request parameters"** and logged the cause
-> only at DEBUG. That is not the 422 this section predicts: the field check passes (10000 ≤
+> only at DEBUG. That is not the 422 this section predicted (a prediction itself wrong, corrected
+> in its first paragraph on 2026-09-23: an out-of-range request is a 400 WITH its message). The field check passes (10000 ≤
 > 10000), generation then raises a pydantic `ValidationError`, and the API's `ValueError`
 > handler turns it into a generic 400. A client cannot learn the real bound from the response.
 > That is a juniper-data defect in its own right.
+>
+> **Filed 2026-09-23 as [juniper-data#432](https://github.com/pcalnon/juniper-data/issues/432)**
+> for the defect register (no `APD-DATA-*` id assigned yet), after reproducing it through the real
+> route with `util/ad-hoc/2026-09-23_data_additive_overflow_repro.py` (FastAPI `TestClient`, the
+> driver's exact params). 5,882 → 201; 5,883 and 10,000 → `400 "Invalid request parameters"`, cause
+> at DEBUG only; the 10,001 control → 400 **with** the message. That control is what makes it a
+> lost diagnostic rather than a policy. Two more findings from the reproduction: the helper's
+> docstring promises "a 422 at the API boundary" (`juniper_data/core/partition_params.py:153`),
+> which is false; and the test that calls itself "End-to-end" never goes through the route.
 >
 > Axis 2 is built as `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`, capped
 > at **5,800** (about 23×; 425 → about 9,860 total rows per spiral). Every "10,000" in this
@@ -125,6 +150,40 @@ the opposite.
 **Calibration needed**: none beyond the existing floor/wall rule — the candidate phase already
 runs at full length under the smoke base (`ml#1069`: the base caps `max_epochs` but not
 `candidate_epochs`).
+
+> ## ⚠ 2026-09-23 — the instrument this axis requires does not exist on the suite path
+>
+> **No structured artifact of a suite run carries a candidate's `epochs_completed`.** Checked on a
+> 2026-09-23 axis-2 run (`20260923T142858Z-6371`):
+>
+> - `metrics_final.json` has no such field;
+> - `metrics_history.json`'s records are `output_epoch` / `training_step` kinds only;
+> - `metrics_series.csv` has none of the cascor Prometheus columns for it.
+>
+> cascor computes the count (`TrainingResults.epochs_completed`, `cascade_correlation.py:154`)
+> and never publishes it.
+>
+> **Only the log carries it, and only half of it.** `logs/juniper_cascor.log` has one
+> `CandidateUnit: train: Training candidate unit for <E> epochs` line per candidate (the
+> request). It has a `CandidateUnit: train: Early stopping at epoch <N>` line only for a candidate
+> that stopped early. A candidate that ran its whole budget writes nothing, so its count is an
+> inference from an ABSENT line. That run had 8 candidates and 2 stop lines (epochs 55 and 56), so
+> **6 of 8 ran the full `candidate_epochs` 400.** Under spiral-smoke the counts are mostly
+> budget-bound, as D1's debt measurement predicted: counts were emergent in 94 of 100 candidates
+> only at `candidate_epochs` 2000.
+>
+> **Before this axis is committed, choose the instrument** (a decision this document does not
+> take):
+>
+> 1. **Parse the log.** It works on today's cascor, but log formats are being redesigned right
+>    now (the logging arc's P0.4 envelope). Absence is load-bearing, so a format change that drops
+>    the stop line would silently read as "every candidate ran its budget".
+> 2. **Publish it.** Add a structured per-phase record in cascor, for example a `metrics_history`
+>    entry carrying each candidate's `epochs_completed`. This is a small cascor change, and the
+>    only option that does not rest on an absent line.
+>
+> Either way, the base must set `candidate_epochs` to about 2000, or the axis measures its own
+> budget.
 
 ---
 
@@ -251,15 +310,52 @@ budgets**: the interesting transition is already complete between 2 and 6.
 > structurally incapable of varying. The verdict now judges accuracy and labels the structural
 > column as the non-discriminator it is.
 
+### 4.2 RESULT 2026-09-23: difficulty separates 2 → 3 → 4, and 5 does not rank below 4
+
+- Suite: `util/experiments/suites/perf/pf2-axis3-cascor-spiral-count.yaml`. 12 cells: `n_spirals`
+  2, 3, 4 and 5 × 3 round-robin passes, at `max_hidden_units` 16 / `max_iterations` 16.
+- Code: cascor `0d2d826` (the retained pin that PF-1 and axis 2 ran on), 1-minute load 8–15.
+  All 12 succeeded.
+- Reducer: `util/ad-hoc/2026-09-23_pf2_axis3_reduce.py`.
+- Evidence: `~/.local/state/juniper-experiments/suites/pf2-axis3-cascor-spiral-count-20260923T202816Z/`.
+
+| `n_spirals` | test roc_auc | test f1 | f1 ÷ chance (1/n) | val accuracy | hidden / epoch | wall, median (s) |
+|---|---|---|---|---|---|---|
+| 2 | **0.9605** | 0.8997 | 1.80 | 0.9187 | 16* / 17* | 39.1 |
+| 3 | **0.8335** | 0.6674 | 2.00 | 0.6333 | 16* / 17* | 39.0 |
+| 4 | **0.6721** | 0.3896 | 1.56 | 0.3844 | 16* / 17* | 44.3 |
+| 5 | **0.7458** | 0.3380 | 1.69 | 0.3600 | 16* / 17* | 47.2 |
+
+`*` budget-bound, as §4.1 predicted.
+
+- **The three passes are bit-identical**, with test roc_auc spread 0.0000 at every `n_spirals`.
+  The accuracy outcome is deterministic under `seed_policy: fixed` and unaffected by load 8–15,
+  so this axis's observable does NOT need a quiet host. **The corollary limits every claim
+  below:** identical passes measure determinism, not seed variance. This is **n = 1 seed.**
+- **Difficulty separates 2 → 3 → 4 cleanly** on every accuracy column. The 2-spiral figure
+  reproduces §4.1's budget-16 cell exactly (0.9605).
+- **5 spirals does not rank below 4.** Test roc_auc *rises*, 0.672 → 0.746. Raw test f1 still
+  falls (0.390 → 0.338), but less than chance does (1/4 → 1/5), so chance-adjusted f1 also rises
+  (1.56 → 1.69). With one seed this inversion could be a property of that seed's dataset and
+  initialisation, so it is **not** a claim about 5-spiral difficulty. The reducer's "monotone"
+  verdict reports NO, correctly.
+- **No cell is within 0.10 of chance** (roc_auc 0.5). §4.1's near-chance cells were 6 and 10, so
+  the evaluable range at this budget ends somewhere between 5 and 6.
+- **What would settle the 4/5 question**: a seed axis (`seed_policy: per_cell`, or an explicit
+  seed key) crossed with 4 and 5. Accuracy is load-insensitive, so it can run on a loaded host.
+- **Which accuracy column to gate on** (roc_auc, raw f1 or chance-adjusted f1) is a threshold
+  question, and thresholds are unratified. The columns already disagree at 4/5, which is the
+  argument for deciding before gating.
+
 ---
 
 ## 5. What must be true before a matrix is committed
 
 | axis | calibration | status |
 |---|---|---|
-| 1 — candidate phase | none beyond floor/wall | specifiable now |
+| 1 — candidate phase | none beyond floor/wall | **BLOCKED on its instrument (2026-09-23, §2 note).** No structured suite artifact carries `epochs_completed`, and the log carries it only for candidates that stop early. **Owner ruled 2026-09-24: publish it in cascor** as a structured per-phase record, rather than parse the log. The base also needs `candidate_epochs` ≈ 2000 |
 | 2 — wide dataset range | largest completing cell at a chosen wall | **DONE 2026-09-23.** Ruled "10,000 now, in-process later"; built capped at 5,800 (the suite path's real ceiling is 5,882, per the second §1 correction); **RUN, no knee** (§3 RESULT), so the in-process follow-up does not fire |
-| 3 — spiral count | capacity budget that lets 2…10 differentiate | **DONE 2026-09-15 (§4.1)** — axis viable, but gate on **accuracy**; sample 2,3,4,5 not 2,6,10 |
+| 3 — spiral count | capacity budget that lets 2…10 differentiate | **DONE 2026-09-15 (§4.1)** — axis viable, but gate on **accuracy**; sample 2,3,4,5 not 2,6,10. **RUN 2026-09-23 (§4.2)**: separates 2 → 3 → 4 (test roc_auc 0.961 / 0.834 / 0.672). 5 scores 0.746, above 4, on one seed. Passes are bit-identical, so the observable is load-insensitive. **Next: a seed axis at 4 and 5** |
 
 **Host condition.** All three are wall-clock measurements. The host has not been quiet in four
 sessions (1-minute load 9–20 across the 2026-09-11 evidence files, with a 21-hour `clamscan`
