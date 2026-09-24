@@ -1951,7 +1951,7 @@ Invalidation is genuinely hard when content at a stable URL changes: purge APIs 
 
 #### Juniper in Practice: The Strongest Candidate, Unused
 
-juniper-data (v0.11.0) has a textbook caching candidate and emits no cache headers at all.
+juniper-data (v0.11.0) has a textbook caching candidate and emits no cache headers at all. **[Corrected: E.1](#e1-artifact-validator)**
 
 `GET /v1/datasets/{id}/artifact` serves a dataset's NPZ blob. The `{id}` is content-addressed: `generate_dataset_id` (`juniper_data/core/dataset_id.py:23-61`) derives it from a SHA-256 over canonical JSON of generator, version, and parameters. **[Corrected: E.1](#e1-artifact-validator)**
 
@@ -3343,7 +3343,7 @@ an architectural style to a query language. *Risks:* cargo-culting, and surprise
 
 URI design is where API design is most visible and least consequential, and where teams therefore spend disproportionate effort. The load-bearing decisions are: what your resources *are*, what the identifier's stability contract is, and whether clients construct URIs or follow them. Cosmetics — hyphens vs underscores, plural vs singular — matter only for consistency.
 
-This section covers the resource/endpoint/representation distinction, the noun rule and where it honestly breaks, collection and item patterns, identifier design, and the syntactic details that produce real bugs. It grounds in two juniper-data mechanisms: a load-bearing route-ordering dependency, and a content-addressed identifier with a deliberate escape hatch.
+This section covers the resource/endpoint/representation distinction, the noun rule and where it honestly breaks, collection and item patterns, identifier design, and the syntactic details that produce real bugs. It grounds in two juniper-data mechanisms: a load-bearing route-ordering dependency, and a content-addressed identifier with a deliberate escape hatch. **[Corrected: E.1](#e1-artifact-validator)**
 
 #### Background
 
@@ -4221,7 +4221,7 @@ cannot rely upon its use to prevent 'lost update' conflicts."
 
 The cost objection is answered in §8.8.1: a collision-resistant hash applied to the representation data suffices as a strong validator "if the data is
 available prior to the response header fields being sent **and the digest does not need to be recalculated every time
-a validation request is received**." Hashing per response makes the 304 — the cheap case — cost a full-body hash.
+a validation request is received**." (Emphasis added.) Hashing per response makes the 304 — the cheap case — cost a full-body hash.
 Precompute at write time and store it.
 
 juniper-data already does the hard half. `compute_checksum` (`juniper_data/core/artifacts.py:50-63`) is a SHA-256
@@ -5360,7 +5360,7 @@ because that hash covers the arrays, not the bytes served, and ``no-cache``,
 because a request-derived id does not make a body immutable.
 
 Nor could it reject a stale write. Its tag PATCH applies add/remove deltas,
-which lost tags to a concurrent race until juniper-data#263 and #282; since
+which lost tags to a concurrent race until juniper-data#263 and #282 (its batch route through 0.16.0); since
 juniper-data#428 it may also carry an optional ``If-Match``.
 
 This example wires up conditional requests in a small, unauthenticated service:
@@ -5375,7 +5375,7 @@ This example wires up conditional requests in a small, unauthenticated service:
   which -- unlike ``limit``/``offset`` -- cannot skip or duplicate rows when the
   collection changes mid-walk.
 * **RFC 9457 problem details** on every error path, including FastAPI's
-  validation errors, which otherwise emit a differently shaped body.
+  validation errors, which otherwise emit a differently shaped body. (An exception nothing anticipated still reaches Starlette's plain-text 500.)
 
 Run the tests with::
 
@@ -5397,7 +5397,7 @@ from typing import Annotated, Any, Final, Literal
 from fastapi import FastAPI, Header, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt
 
 __all__ = [
     "Dataset",
@@ -5495,11 +5495,11 @@ def compute_dataset_id(*, generator: str, version: int, params: Mapping[str, Any
 # Domain
 # --------------------------------------------------------------------------- #
 class DatasetCreate(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)  # Python's JSON parser accepts NaN and Infinity: refuse them as a 422
 
     generator: Literal["spiral", "two_moons", "checkerboard"]
     version: int = Field(default=1, ge=1, le=999)
-    params: dict[str, Any] = Field(default_factory=dict)
+    params: dict[str, StrictInt | StrictFloat] = Field(default_factory=dict)  # JSON numbers only, never coerced: anything else is a 422, not a 500
     tags: list[str] = Field(default_factory=list)
 
 
@@ -5628,7 +5628,7 @@ def create_app() -> FastAPI:
             title="Request validation failed",
             detail="The request body or parameters did not satisfy the schema.",
             type_="https://errors.example.com/validation-failed",
-            errors=json.loads(json.dumps(exc.errors(), default=str)),
+            errors=json.loads(json.dumps(exc.errors(), default=str), parse_constant=str),  # a refused NaN is echoed as "NaN"
         ).to_response(request)
 
     def _require(dataset_id: str) -> Dataset:
@@ -5835,7 +5835,7 @@ async def test_recreating_the_same_dataset_is_idempotent() -> None:
     assert first.status_code == 201
     assert second.status_code == 200  # already existed -- a distinction worth signalling
     assert first.json()["id"] == second.json()["id"]
-    assert first.headers["etag"] == second.headers["etag"] == '"' + hashlib.sha256(second.content).hexdigest()[:32] + '"'
+    assert first.headers["etag"] == '"' + hashlib.sha256(first.content).hexdigest()[:32] + '"' == second.headers["etag"] == '"' + hashlib.sha256(second.content).hexdigest()[:32] + '"'  # each tag is its own body's digest
     assert len(app.state.datasets) == 1
 
 
@@ -6116,8 +6116,8 @@ async def test_framework_validation_errors_use_the_same_shape() -> None:
         bad_enum = await client.post("/v1/datasets", json={**SPIRAL, "generator": "not_a_generator"})
         bad_extra = await client.post("/v1/datasets", json={**SPIRAL, "typo_field": 1})
         bad_query = await client.get("/v1/datasets?limit=99999")
-
-    for response in (bad_enum, bad_extra, bad_query):
+        bad_nan = await client.post("/v1/datasets", content=b'{"generator": "spiral", "params": {"noise": NaN}}', headers={"Content-Type": "application/json"})
+    for response in (bad_enum, bad_extra, bad_query, bad_nan):
         assert response.status_code == 422
         assert response.headers["content-type"].startswith("application/problem+json")
         assert REQUIRED_MEMBERS <= set(response.json())
@@ -9877,7 +9877,7 @@ harness re-run. Three other lines were corrected in place, being wrong rather th
 `If-Match` example (line 3639) reused the dataset id's digest as its tag; the §8.8.1 paraphrase (line
 4222) had dropped "applied to the representation data"; and II.11's motivation paragraph (line 5332)
 ended in the false premise itself, which its correction link now replaces. II.11's tests (lines 5791,
-5838, 5857 and 5945) now also check that each metadata `ETag` is the digest of the exact body sent.
+5838, 5857 and 5945) now also check that each metadata `ETag` is the digest of the exact body sent — the POST-create 201's own body only since a second correction the same day, which also restricted a create's `params` to JSON numbers, so that NaN, Infinity or a non-integer `n_samples` is a 422 problem where it had been a plain-text 500 (lines 5400, 5498, 5502, 5631, 6119 and 6120).
 Nothing above was moved: the defect register
 (`JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`) cites this document by bare line number,
 and inserting a line would shift every anchor after it. That is also why the table of contents does
@@ -9936,12 +9936,12 @@ the fix already sitting in juniper-data" (line 4213).
    therefore serve stale data for up to a year with revalidation suppressed. juniper-data sends
    `Cache-Control: private, no-cache` on the artifact and on both metadata reads, and answers a
    matching `If-None-Match` with a bodiless `304`.
-3. **A hash of serialized JSON is a strong validator.** The ETag-generation table (line 4220) rates
-   one "usually weak". But a hash of the exact bytes sent changes whenever those bytes change, which is
-   what §8.8.1 asks of a strong validator. Unstable field order or float formatting makes such a tag
-   change too often, never too rarely, and §8.8.1 allows that: "A strong validator might change for
-   reasons other than a change to the representation data". juniper-data's metadata `ETag` and II.11's
-   are both such hashes.
+3. **A hash of the exact bytes sent is a strong validator.** The ETag-generation table (line 4220) rates a hash of
+   serialized JSON "usually weak", which is right when the JSON hashed is not the JSON sent: a hash of some other
+   serialization is strong only if nothing can change the bytes sent without changing it, and a serializer upgrade
+   can. A hash of the exact bytes sent changes whenever those bytes change, which is what §8.8.1 asks of a strong
+   validator; unstable field order or float formatting only makes it change more often than the data does, which
+   costs revalidations but never serves stale bytes. juniper-data's metadata `ETag` and II.11's are both such hashes.
 
 What stands is the linked passages' central advice. Emit a validator when you hold a digest
 (juniper-data now does). Keep read counters out of a validated representation, or move them to a
@@ -9970,8 +9970,8 @@ passages describe:
 - juniper-data#428 let `PATCH /v1/datasets/{id}/tags` carry a precondition. It evaluates `If-Match`
   and `If-None-Match` inside the store's lock, answers a stale tag with `412` and writes nothing, and
   returns the new strong `ETag`. The precondition is optional. Its protection holds only against
-  writers that take the same lock (through 0.16.0, `PATCH /v1/datasets/batch-tags` and `DELETE` took
-  none; juniper-data#438 makes them take it), and per host at most: LocalFS orders processes with an
+  writers that take the same lock (through 0.16.0, `PATCH /v1/datasets/batch-tags`, `DELETE`, `POST /v1/datasets/batch-delete` and `POST /v1/datasets/cleanup-expired` took
+  none; juniper-data#438, merged after 0.16.0, makes them take it, though creating a dataset, as it merged, took no per-dataset lock), and per host at most: LocalFS orders processes with an
   advisory `flock`, while every other store (Redis, Postgres, the cached store, and the Hugging Face and
   Kaggle stores) holds only a per-process lock (defect-register row `APD-DATA-055`).
 - `/v1/datasets/latest` and the tag PATCH's response now carry `Content-Location` naming the

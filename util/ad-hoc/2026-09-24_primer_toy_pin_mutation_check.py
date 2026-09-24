@@ -19,6 +19,15 @@ This reverts each route in a scratch copy of the primer and runs the Appendix D 
 (util/ad-hoc/2026-08-13_run_primer_examples.py) on it. Each mutant must FAIL; the unmutated primer is the
 control and must pass.
 
+Extended the same day by the second round-42 fix-forward. The post-merge validation of v3
+(reports/2026-09-24_defect-register-round-42/ml2080-round1-laneA-reprobe.md M1,
+ml2080-round1-laneB-refute.md M1) reverted the fourth route, POST create (lines 5671-5672), and the
+harness still passed 62/62: line 5838 hashed only the second, 200, response's body, so the "each" in
+Appendix E was false. Line 5838 now hashes the 201's own body too, and the "POST create" mutant below pins
+it. The two "NaN" mutants pin that fix-forward's other toy change (lane B, L4): params restricted to JSON
+numbers so a NaN is refused as a 422 (lines 5400, 5498, 5502), and a 422 handler that can echo the
+refused NaN (line 5631), both caught by the NaN arm of the validation-shape test (lines 6119-6120).
+
 Usage: python3 util/ad-hoc/2026-09-24_primer_toy_pin_mutation_check.py --venv <venv with the Appendix D pins> --scratch <dir>
 """
 
@@ -33,11 +42,18 @@ REPO = Path(__file__).resolve().parents[2]
 PRIMER = REPO / "notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md"
 HARNESS = REPO / "util/ad-hoc/2026-08-13_run_primer_examples.py"
 
-# route -> {line: the v1 text that line held before the v2 fix}
+# mutant -> {line: the text that line held before the fix it pins}
 MUTANTS = {
     "GET": {5722: "        return JSONResponse(dataset.metadata(), headers=headers)"},
     "PATCH": {5773: "        return JSONResponse(", 5774: "            dataset.metadata(),"},
     "POST reuse": {5653: "            return JSONResponse(", 5654: "                existing.metadata(),"},
+    "POST create": {5671: "        return JSONResponse(", 5672: "            dataset.metadata(),"},
+    "NaN schema": {
+        5400: "from pydantic import BaseModel, ConfigDict, Field",
+        5498: '    model_config = ConfigDict(extra="forbid")',
+        5502: "    params: dict[str, Any] = Field(default_factory=dict)",
+    },
+    "NaN echo": {5631: "            errors=json.loads(json.dumps(exc.errors(), default=str)),"},
 }
 
 
@@ -67,7 +83,7 @@ def main() -> int:
         doc = args.scratch / f"primer_mutant_{name.replace(' ', '_').lower()}.md"
         doc.write_text("\n".join(lines), encoding="utf-8")
         ok, tail = run(doc, args.venv)
-        print(f"  {name:10} reverted to JSONResponse: {'CAUGHT' if not ok else 'MISSED'} -- {tail}")
+        print(f"  {name:11} reverted: {'CAUGHT' if not ok else 'MISSED'} -- {tail}")
         bad |= ok
     print("RESULT:", "every revert is caught, and the control passes" if not bad else "a revert went uncaught, or the control failed")
     return 1 if bad else 0

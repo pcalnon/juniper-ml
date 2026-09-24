@@ -41,12 +41,30 @@ OUT = ROOT / "reports/2026-09-24_defect-register-round-42"
 HEADER = "<!-- Archived verbatim 2026-09-24 from subagent {aid} of session {session} (final message). -->\n\n"
 HEADER_RE = re.compile(r"^<!-- Archived verbatim \S+ from subagent (a[0-9a-f]{16}) of session ([0-9a-f]{8}) \(final message\)\. -->\n\n")
 
-# Session id (8 hex) -> its subagents directory. bc31e993 ran rounds 1-2 and the fix agents;
-# 8f86dec2 (worktree `hazy-beaming-map`) ran the post-merge rounds of 2026-09-24.
-SESSIONS = {
-    "bc31e993": Path("/home/pcalnon/.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml--claude-worktrees-happy-skipping-hollerith/bc31e993-97b0-4a01-ae04-cb39593eb647/subagents"),
-    "8f86dec2": Path("/home/pcalnon/.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml--claude-worktrees-hazy-beaming-map/8f86dec2-21ea-43f2-911a-bb2314a822ec/subagents"),
+# Session id (8 hex) -> the session's full id. bc31e993 ran rounds 1-2 and the fix agents; 8f86dec2
+# (worktree `hazy-beaming-map`) ran the post-merge rounds of 2026-09-24; 2fba4397 (worktree
+# `fizzy-hugging-dream`) took over from it the same day.
+#
+# The transcripts are found by the session's id, never by a fixed path. This held a fixed
+# `<project>/<session>/subagents` path per session until 2026-09-24, and --check crashed with
+# FileNotFoundError on every 8f86dec2 report the same day: when a session leaves its worktree, its
+# transcripts move from the worktree's project directory
+# (`-home-...-juniper-ml--claude-worktrees-hazy-beaming-map/`) to the main checkout's
+# (`-home-...-juniper-ml/`), so the path is a property of the moment, not of the session.
+PROJECTS = Path.home() / ".claude/projects"
+SESSION_IDS = {
+    "bc31e993": "bc31e993-97b0-4a01-ae04-cb39593eb647",
+    "8f86dec2": "8f86dec2-21ea-43f2-911a-bb2314a822ec",
+    "2fba4397": "2fba4397-7d9b-4929-8ca2-375b8168e1c8",
 }
+
+
+def subagents_dir(session: str) -> Path:
+    """The session's subagents directory, wherever its project directory is now."""
+    hits = sorted(PROJECTS.glob(f"*/{SESSION_IDS[session]}/subagents"))
+    if len(hits) != 1:
+        raise SystemExit(f"session {session}: expected one subagents directory under {PROJECTS}, found {len(hits)}: {hits}")
+    return hits[0]
 
 # The seven reports juniper-ml#2072 did not archive: agent id -> file name (its naming style).
 # Deliberately NOT archived: a636d9155e8d8883f and a62c802ad61b85d03 are the canopy#660 and
@@ -136,7 +154,7 @@ def main(argv: "list[str]") -> int:
             print(f"  skip   {f.name}: no agent header")
             continue
         body = text[m.end():]
-        again = last_report(SESSIONS[m.group(2)] / f"agent-{m.group(1)}.jsonl")
+        again = last_report(subagents_dir(m.group(2)) / f"agent-{m.group(1)}.jsonl")
         same = body.rstrip("\n") == again.rstrip("\n")
         failed |= not same
         print(f"  {'OK    ' if same else 'DIFFER'} {f.name}: archived body {'==' if same else '!='} agent {m.group(1)}'s last message")
@@ -144,7 +162,7 @@ def main(argv: "list[str]") -> int:
     # 2. Add the missing reports.
     for aid, (session, name) in MISSING.items():
         target = OUT / name
-        text = last_report(SESSIONS[session] / f"agent-{aid}.jsonl")
+        text = last_report(subagents_dir(session) / f"agent-{aid}.jsonl")
         hits = [p.pattern for p in SECRET_PATTERNS if p.search(text)]
         if hits:
             print(f"  REFUSE {name}: credential-shaped text ({', '.join(hits)})")
