@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`ceremony.py --target-sha`: the tag, the CI gate and the notes describe one commit**
+  (`util/release_train/ceremony.py`). By default the Release tags the owning repo's `main` as it is
+  at cut time, while the notes come from the `--ecosystem-root` checkout. The two agree only if
+  nothing merged in between, and on 2026-09-23/24 three juniper-data PRs did: #428, #431 and #434,
+  between the owner's approval of the 0.16.0 notes (pinned at `7125e161`) and the cut. #428 left a
+  duplicate `## [0.16.0]` heading on `main`, and the section parser takes the first match, so a cut
+  of `main` would have published only #428's bullets. With a full 40-character sha, the tag lands on
+  that commit (`gh release create --target`). The S8 precondition then reads **every** completed CI
+  run of that commit (`gh run list --commit`) instead of `main`'s newest run, and the dry run names
+  the commit. `commit_ci_verdict` calls the commit green only if at least one run succeeded and none
+  is red (`failure`, `timed_out`, `startup_failure`). A run superseded by a later merge is
+  `cancelled` although nothing failed. `7125e161` itself has a green push run and a later
+  `repository_dispatch` run cancelled that way, so a newest-run probe would have halted a green
+  commit. The flag needs exactly one `--package` and refuses an abbreviated sha before anything is
+  written, because `gh` rejects one only after the archive PR has been armed. `TargetShaTest` (12
+  tests) pins the seam's argv, the verdict, the gate, the plan, execute and the CLI. Five mutations
+  each fail it: dropping `--target`; gating on `main`'s newest run; not passing the target through
+  execute; letting green outvote red; and reading only the newest run. Recorded in §11.7 of
+  `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md`.
 - **The publish-environment drift gate covers the `dockerhub` environments**
   (`tests/test_publish_env_policy_drift.py`). Wave 4's Docker Hub credential will live in a
   tags-only `dockerhub` environment in the five image repos (Option B, owner ruling 2026-09-22), and
