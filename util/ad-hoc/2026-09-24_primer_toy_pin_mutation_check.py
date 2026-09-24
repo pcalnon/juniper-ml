@@ -24,9 +24,12 @@ Extended the same day by the second round-42 fix-forward. The post-merge validat
 ml2080-round1-laneB-refute.md M1) reverted the fourth route, POST create (lines 5671-5672), and the
 harness still passed 62/62: line 5838 hashed only the second, 200, response's body, so the "each" in
 Appendix E was false. Line 5838 now hashes the 201's own body too, and the "POST create" mutant below pins
-it. The two "NaN" mutants pin that fix-forward's other toy change (lane B, L4): params restricted to JSON
-numbers so a NaN is refused as a 422 (lines 5400, 5498, 5502), and a 422 handler that can echo the
-refused NaN (line 5631), both caught by the NaN arm of the validation-shape test (lines 6119-6120).
+it. The two "NaN" mutants pin that fix-forward's other toy change (lane B, L4): the NaN refusal (lines
+5400, 5498, 5502) and a 422 handler that can echo the refused NaN (line 5631), both caught by the NaN arm
+of the validation-shape test (lines 6119-6120). They pin the NaN refusal only. The "lax union" mutant pins
+the other half of line 5502, that params are NEVER COERCED: the pre-PR validation of that fix-forward
+showed a lax `int | float` passing the whole harness while turning "512" into 512 (and so into the id of
+512), and the numeric-string arm on line 6117 now catches it.
 
 Usage: python3 util/ad-hoc/2026-09-24_primer_toy_pin_mutation_check.py --venv <venv with the Appendix D pins> --scratch <dir>
 """
@@ -54,6 +57,7 @@ MUTANTS = {
         5502: "    params: dict[str, Any] = Field(default_factory=dict)",
     },
     "NaN echo": {5631: "            errors=json.loads(json.dumps(exc.errors(), default=str)),"},
+    "lax union": {5502: "    params: dict[str, int | float] = Field(default_factory=dict)"},
 }
 
 

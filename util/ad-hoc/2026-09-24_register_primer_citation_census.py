@@ -43,6 +43,9 @@ SHIFT_AT = 5758
 # second end of every range and every list item but the last -- 7951, 7962 and 7968 on the very line the
 # validation named. Thousands groups ("9,863") cannot match, being under four digits.
 NUMBER = re.compile(r"(?<![\w#:./])(?<!RFC )(\d{4,5})(?![\w]|\.\d)")
+# Deliberately NOT seen: `L7950`, `…PRIMER.md:7950` and `#L7950` shapes (the lookbehind drops them with
+# identifiers and `file:line` anchors). None occurs in the register on 2026-09-24; re-check before relying
+# on this for a register that has gained one.
 
 
 def section_of(lines: "list[str]", idx: int) -> str:
@@ -52,30 +55,44 @@ def section_of(lines: "list[str]", idx: int) -> str:
     return "(preamble)"
 
 
+def where_of(line: str, section: str) -> str:
+    if line.startswith("| **Primer**"):
+        return "S3-field"
+    if line.startswith("| APD-"):
+        # §4 holds the register's own rows; §5's tables are fix records that cite the primer in prose.
+        return "S4-cell" if section.startswith("4.") else "S5-row"
+    return "prose"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--register", type=Path, default=REG)
     ap.add_argument("--primer", type=Path, default=PRIMER)
     args = ap.parse_args()
     reg = args.register.read_text(encoding="utf-8").split("\n")
-    primer = args.primer.read_text(encoding="utf-8").split("\n")
+    # splitlines(), not split("\n"): a file ending in a newline would otherwise gain a phantom empty last
+    # line, and the count printed below said 9983 for the 9,982-line primer until 2026-09-24.
+    primer = args.primer.read_text(encoding="utf-8").splitlines()
     last = len(primer)
 
-    found = 0
+    numbers = citations = 0
     for i, line in enumerate(reg):
         for m in NUMBER.finditer(line):
             n = int(m.group(1))
-            # a range "A-B" is reported once per end; both ends are read
             if not SHIFT_AT < n <= last:
                 continue
-            found += 1
-            where = "S4-cell" if line.startswith("| APD-") else ("S3-field" if line.startswith("| **Primer**") else "prose")
+            # A range "A-B" is one citation with two numbers: both ends are printed and read, and only the
+            # first counts as a citation.
+            numbers += 1
+            second_end = m.start() > 0 and line[m.start() - 1] == "-" and bool(re.search(r"\d-$", line[: m.start()]))
+            citations += not second_end
+            section = section_of(reg, i)
             ctx = line[max(0, m.start() - 70) : m.end() + 40].replace("\n", " ")
             text = primer[n - 1].strip()
-            print(f"L{i + 1:<5} {where:8} {n:<5} [{section_of(reg, i)}]")
+            print(f"L{i + 1:<5} {where_of(line, section):8} {n:<5} [{section}]")
             print(f"        cite: ...{ctx}...")
             print(f"        primer {n}: {'<BLANK>' if not text else text[:150]}")
-    print(f"{found} citation(s) past line {SHIFT_AT} in {args.register.name} (primer has {last} lines)")
+    print(f"{citations} citation(s), {numbers} number(s) counting both ends of a range, past line {SHIFT_AT} in {args.register.name} (primer has {last} lines)")
     return 0
 
 

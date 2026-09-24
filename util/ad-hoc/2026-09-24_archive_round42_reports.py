@@ -61,6 +61,8 @@ SESSION_IDS = {
 
 def subagents_dir(session: str) -> Path:
     """The session's subagents directory, wherever its project directory is now."""
+    if session not in SESSION_IDS:
+        raise SystemExit(f"session {session}: not in SESSION_IDS; add its full id before archiving or checking its reports")
     hits = sorted(PROJECTS.glob(f"*/{SESSION_IDS[session]}/subagents"))
     if len(hits) != 1:
         raise SystemExit(f"session {session}: expected one subagents directory under {PROJECTS}, found {len(hits)}: {hits}")
@@ -93,6 +95,10 @@ MISSING = {
     # 8f86dec2: the post-merge validation of juniper-ml#2080 (register fix-forward) and #2075 v3 (primer).
     "a3212838e6d1674b7": ("8f86dec2", "ml2080-round1-laneA-reprobe.md"),
     "a833573c5bbdf2a36": ("8f86dec2", "ml2080-round1-laneB-refute.md"),
+    # 2fba4397: the PRE-PR validation of the second fix-forward (branch docs/register-round-42-second-fixforward,
+    # validated at e2f87aae before any PR existed, because the owner's sweeper merges an open PR once green).
+    "a0511a4be64379a82": ("2fba4397", "register-fixforward2-round1-laneA-reprobe.md"),
+    "a4ae44a7ce58056a9": ("2fba4397", "register-fixforward2-round1-laneB-refute.md"),
     # bc31e993: the earlier rounds juniper-ml#2072 did not archive.
     "a6a4a26ed6b92d6e5": ("bc31e993", "ml2032-round1-laneA-reprobe.md"),
     "ab4b18fe07b799e1b": ("bc31e993", "ml2032-round1-laneB-attack.md"),

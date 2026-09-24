@@ -54,7 +54,7 @@ REG_SUBS: list[tuple[str, str, str, int]] = [
         "s2 crosscheck blind spots (L6)",
         "so a phantom open row moves the open-set count while the crosscheck still says AGREE.)*",
         "so a phantom open row moves the open-set count while the crosscheck still says AGREE. Two more, measured by mutation on round 42's fix-forward"
-        f" (`reports/2026-09-24_defect-register-round-42/ml2080-round1-laneB-refute.md`, L6): a `**FIXED` marker put in an open row's `Source` cell makes"
+        " (`reports/2026-09-24_defect-register-round-42/ml2080-round1-laneB-refute.md`, L6): a `**FIXED` marker put in an open row's `Source` cell makes"
         " `register_open_set.py`, which tests the whole row, count it fixed, while the crosscheck, which reads only the status cell, still says AGREE;"
         " and a duplicated row is invisible to both.)*",
         1,
@@ -388,7 +388,7 @@ PRIMER_LINES: dict[int, tuple[str, str]] = {
 
 # Characters str.splitlines() breaks on besides "\n" (and "\r\n"); a new line holding one would read as one
 # line to split("\n") and as two to splitlines(), the defect lane B found #2075's build proof could not see.
-LINE_BREAKERS = "\r\x0b\x0c\x1c\x1d\x1e\x85  "
+LINE_BREAKERS = "\r\x0b\x0c\x1c\x1d\x1e\x85\u2028\u2029"
 
 
 def apply(text: str, subs: list[tuple[str, str, str, int]]) -> str:

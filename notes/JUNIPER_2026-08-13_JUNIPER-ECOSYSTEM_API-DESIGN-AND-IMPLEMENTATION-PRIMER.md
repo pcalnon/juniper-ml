@@ -4196,7 +4196,7 @@ C2 now owns the merge, which is correct: only C2 knows whether "archive" still m
 resources used as semaphores "an origin server is better off being stringent in sending 412 for every failed
 precondition **on an unsafe method**" — the scope qualifier matters. Default to stringent. The same hazard hides on a path nobody suspects: `record_access` (`juniper_data/storage/base.py:198-223`)
 is a read-modify-write of the *same* document — bump `last_accessed_at` and `access_count`, write it all back — fired
-on every metadata read and artifact download (`routes/datasets.py:672`, `:698`). It holds `_version_lock`;
+on every single-dataset metadata read and artifact download (`routes/datasets.py:672`, `:698`; the list, filter, `/latest` and versions reads fire none). It holds `_version_lock`;
 `update_dataset_tags` never takes that lock, so reading a dataset can undo an edit to it. **[Corrected: E.2](#e2-conditional-tag-writes)**
 
 #### 428 Precondition Required
@@ -5343,7 +5343,7 @@ B: PATCH If-Match: E0 -> 412               (B's view is stale)
 
 Without the precondition, B's write succeeds and silently erases A's change: no error, no log line, and no way for A to discover it. That silence is what makes lost updates expensive to diagnose in production.
 
-One deliberate divergence from the real service: this example returns **200** when a content-addressed dataset already exists, reserving **201** for genuine creation. `juniper-data` returns 201 either way (`juniper_data/api/routes/datasets.py:71`), so a client cannot tell whether it created anything.
+One deliberate divergence from the real service: this example returns **200** when a content-addressed dataset already exists, reserving **201** for genuine creation. `juniper-data` returns 201 either way (`juniper_data/api/routes/datasets.py:71`), so a client cannot tell whether it created anything. A second: its `params` accept JSON numbers only, never coerced, so a string, a boolean, a null or a nested value is a 422 here — including the `seed: null` that [Appendix E, E.1](#e1-artifact-validator) describes the real service reading as a request for a fresh nonce.
 
 <!-- example-file: conditional_datasets.py -->
 ```python
@@ -5374,8 +5374,8 @@ This example wires up conditional requests in a small, unauthenticated service:
 * **Keyset pagination** with an opaque cursor and an RFC 8288 ``Link`` header,
   which -- unlike ``limit``/``offset`` -- cannot skip or duplicate rows when the
   collection changes mid-walk.
-* **RFC 9457 problem details** on every error path, including FastAPI's
-  validation errors, which otherwise emit a differently shaped body. (An exception nothing anticipated still reaches Starlette's plain-text 500.)
+* **RFC 9457 problem details** on every error path the routes raise, and on FastAPI's
+  validation errors, which otherwise emit a differently shaped body. Not on FastAPI's own 404, 405 or body-parse 400, which keep ``{"detail": ...}``, and not on an unhandled exception: ``n_samples`` is read unchecked, so a huge one is Starlette's plain-text 500.
 
 Run the tests with::
 
@@ -5430,8 +5430,8 @@ MAX_PAGE_SIZE: Final = 100
 class ProblemException(Exception):
     """Raised by route code; rendered by a single registered handler.
 
-    Centralising the rendering is what keeps *every* error path the same shape,
-    including the ones FastAPI generates on your behalf.
+    Centralising the rendering is what keeps every error path it covers the same shape,
+    including the validation errors FastAPI generates on your behalf (not its 404, 405 or body-parse 400).
     """
 
     def __init__(
@@ -5499,7 +5499,7 @@ class DatasetCreate(BaseModel):
 
     generator: Literal["spiral", "two_moons", "checkerboard"]
     version: int = Field(default=1, ge=1, le=999)
-    params: dict[str, StrictInt | StrictFloat] = Field(default_factory=dict)  # JSON numbers only, never coerced: anything else is a 422, not a 500
+    params: dict[str, StrictInt | StrictFloat] = Field(default_factory=dict)  # JSON numbers only, never coerced: "512" or true is a 422, not 512 or 1
     tags: list[str] = Field(default_factory=list)
 
 
@@ -5597,7 +5597,7 @@ def decode_cursor(cursor: str) -> str:
         after = payload["after"]
         if not isinstance(after, str):
             raise TypeError("after must be a string")
-    except (ValueError, KeyError, TypeError, binascii.Error) as exc:
+    except (ValueError, KeyError, TypeError, RecursionError, binascii.Error) as exc:  # RecursionError: a cursor nested past the limit
         raise ProblemException(
             status=400,
             title="Malformed cursor",
@@ -6114,10 +6114,10 @@ async def test_framework_validation_errors_use_the_same_shape() -> None:
     app = create_app()
     async with client_for(app) as client:
         bad_enum = await client.post("/v1/datasets", json={**SPIRAL, "generator": "not_a_generator"})
-        bad_extra = await client.post("/v1/datasets", json={**SPIRAL, "typo_field": 1})
+        bad_extra, bad_str = await client.post("/v1/datasets", json={**SPIRAL, "typo_field": 1}), await client.post("/v1/datasets", json={**SPIRAL, "params": {"n_samples": "512"}})  # "512" must not be coerced
         bad_query = await client.get("/v1/datasets?limit=99999")
         bad_nan = await client.post("/v1/datasets", content=b'{"generator": "spiral", "params": {"noise": NaN}}', headers={"Content-Type": "application/json"})
-    for response in (bad_enum, bad_extra, bad_query, bad_nan):
+    for response in (bad_enum, bad_extra, bad_str, bad_query, bad_nan):
         assert response.status_code == 422
         assert response.headers["content-type"].startswith("application/problem+json")
         assert REQUIRED_MEMBERS <= set(response.json())
@@ -9877,7 +9877,7 @@ harness re-run. Three other lines were corrected in place, being wrong rather th
 `If-Match` example (line 3639) reused the dataset id's digest as its tag; the §8.8.1 paraphrase (line
 4222) had dropped "applied to the representation data"; and II.11's motivation paragraph (line 5332)
 ended in the false premise itself, which its correction link now replaces. II.11's tests (lines 5791,
-5838, 5857 and 5945) now also check that each metadata `ETag` is the digest of the exact body sent — the POST-create 201's own body only since a second correction the same day, which also restricted a create's `params` to JSON numbers, so that NaN, Infinity or a non-integer `n_samples` is a 422 problem where it had been a plain-text 500 (lines 5400, 5498, 5502, 5631, 6119 and 6120).
+5838, 5857 and 5945) now also check that each metadata `ETag` is the digest of the exact body sent — the POST-create 201's own body only since a second correction the same day. That correction also limited a create's `params` to JSON numbers, never coerced (line 5346): NaN, Infinity, or an `n_samples` that `int()` rejects, is a 422 problem where it had been a plain-text 500, and any other non-number is refused where it had been accepted; `n_samples` itself stays unchecked, so a fraction is truncated and a huge value is a plain-text 500, as lines 5377-5378 now say. It also made a cursor nested past the recursion limit a 400 problem (line 5600), and marked line 4224's bold as added emphasis, a fourth line corrected in place.
 Nothing above was moved: the defect register
 (`JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`) cites this document by bare line number,
 and inserting a line would shift every anchor after it. That is also why the table of contents does
@@ -9940,8 +9940,8 @@ the fix already sitting in juniper-data" (line 4213).
    serialized JSON "usually weak", which is right when the JSON hashed is not the JSON sent: a hash of some other
    serialization is strong only if nothing can change the bytes sent without changing it, and a serializer upgrade
    can. A hash of the exact bytes sent changes whenever those bytes change, which is what §8.8.1 asks of a strong
-   validator; unstable field order or float formatting only makes it change more often than the data does, which
-   costs revalidations but never serves stale bytes. juniper-data's metadata `ETag` and II.11's are both such hashes.
+   validator; unstable field order or float formatting only makes it change when the dataset has not, which costs
+   revalidations and spurious `412`s on conditional writes, but never serves stale bytes. juniper-data's metadata `ETag` and II.11's are both such hashes.
 
 What stands is the linked passages' central advice. Emit a validator when you hold a digest
 (juniper-data now does). Keep read counters out of a validated representation, or move them to a
