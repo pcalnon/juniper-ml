@@ -45,7 +45,12 @@ coincide, so the split is a no-op and behaviour is byte-identical to Phase 3:
      ``--latest`` only for the package whose registry entry says ``latest: true`` -- one per repo, the
      package that owns that repo's "Latest" badge -- and ``--latest=false`` for every other (procedure
      S11.4). The Release **creates** the tag for a sub-package (procedure S11.4), so there is
-     deliberately **no** ``--verify-tag`` (there is no pre-existing tag to verify).
+     deliberately **no** ``--verify-tag`` (there is no pre-existing tag to verify). By default the tag
+     lands on the owning repo's ``main`` AS IT IS AT CUT TIME, while the notes come from the checkout
+     under ``--ecosystem-root`` -- two trees that agree only if nothing merged in between. ``--target-sha``
+     closes that race: the tag is created at that commit (``gh release create --target``), and the
+     S8 CI precondition reads that commit's own CI run, so the notes, the gate and the tag all describe
+     one tree. The extract under ``--ecosystem-root`` must be of that same commit.
   6. **Monitor** -- watch the triggered publish run; the run legitimately parks at the ``pypi``
      environment gate: that terminal state ``PENDING_PYPI_APPROVAL`` **is success for the train** (plan
      S5.1 terminal-healthy). A TestPyPI-verify failure before Gate 2 is a HALT.
@@ -603,6 +608,7 @@ class CeremonyPlan:
     target_version: "str | None"
     tag: "str | None" = None
     latest: bool = False  # registry ``latest``: cut with --latest (the repo's badge-owning package) or --latest=false (procedure S11.4)
+    target_sha: "str | None" = None  # --target-sha: tag this full commit instead of the owning repo's main at cut time
     archive_repo: str = detect.META_REPO  # the exempt notes-archive PR is ALWAYS central in juniper-ml (plan S10.2)
     state: str = "CEREMONY_PLANNED"  # CEREMONY_PLANNED | RESUME_MONITOR | ALREADY_RELEASED | HALTED | SKIPPED_CROSS_REPO
     halted: bool = False
@@ -628,6 +634,7 @@ class CeremonyPlan:
             "target_version": self.target_version,
             "tag": self.tag,
             "latest": self.latest,
+            "target_sha": self.target_sha,
             "state": self.state,
             "halted": self.halted,
             "halt_reason": self.halt_reason,
@@ -696,7 +703,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         except OSError:
             return None
 
-    def main_ci_conclusion(repo: str, workflow: str) -> "str | None":
+    def main_ci_conclusion(repo: str, workflow: str, commit: "str | None" = None) -> "str | None":
         # The "is main green?" signal for the S8 precondition. Scope the probe to the newest COMPLETED run
         # of the package's actual main-CI workflow (``workflow``, e.g. ``ci.yml``) -- NOT the newest run of
         # ANY workflow on main. The unscoped ``--branch main --limit 1`` form self-observed: when the
@@ -706,7 +713,14 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         # #854-#857 batch). ``--workflow`` excludes the release-train run; ``--status completed`` excludes
         # any in-progress run of the CI workflow itself. Fail-closed: a brand-new repo with zero completed
         # runs of ``workflow`` returns None -> HALT (correct -- do not cut a Release with no green signal).
-        out = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--branch", "main", "--workflow", workflow, "--status", "completed", "--limit", "1", "--json", "conclusion", "--jq", ".[0].conclusion"])
+        # ``commit`` (--target-sha) narrows the probe to THAT commit's own runs: the Release will tag it, so
+        # its CI is the signal, not whatever merged after it. A commit that never ran the workflow on main
+        # returns None -> HALT, the same fail-closed answer.
+        args = ["run", "list", "--repo", f"{owner}/{repo}", "--branch", "main", "--workflow", workflow]
+        if commit:
+            args += ["--commit", commit]
+        args += ["--status", "completed", "--limit", "1", "--json", "conclusion", "--jq", ".[0].conclusion"]
+        out = _cgh(args)
         return (out or "").strip() or None
 
     def list_open_prs(repo: str) -> list:
@@ -830,7 +844,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         except SourceError:
             return False
 
-    def create_release(repo: str, tag: str, title: str, notes_relpath: str, content: str, *, latest: bool = False) -> str:
+    def create_release(repo: str, tag: str, title: str, notes_relpath: str, content: str, *, latest: bool = False, target: "str | None" = None) -> str:
         # Render the notes body to a SCRATCH temp file (never into any checkout). The archived copy
         # already rode the exempt archive PR into juniper-ml's central notes/releases/ (``notes_relpath``,
         # kept for the record/log); writing it into the OWNING checkout here left a stray untracked file
@@ -840,11 +854,16 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         # --latest=false; until 2026-09-23 that was the ONLY value, and every repo's badge went stale. NO
         # --verify-tag: the Release CREATES the tag. The cross-repo Release is cut on the owning repo via
         # --repo owner/<repo>; gh does not need a local checkout of it (the temp notes file suffices).
+        # ``target`` (--target-sha) creates the tag at that FULL commit; without it gh tags the repo's
+        # default branch as it is at this moment. gh rejects an abbreviated sha, so main() refuses one first.
         fd, tmp_path = tempfile.mkstemp(prefix="release-notes-", suffix=".md")
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as fh:
                 fh.write(content)
-            return (_cgh(["release", "create", tag, "--repo", f"{owner}/{repo}", "--title", title, "--notes-file", tmp_path, "--latest" if latest else "--latest=false"]) or "").strip()
+            argv = ["release", "create", tag, "--repo", f"{owner}/{repo}", "--title", title, "--notes-file", tmp_path, "--latest" if latest else "--latest=false"]
+            if target:
+                argv += ["--target", target]
+            return (_cgh(argv) or "").strip()
         finally:
             try:
                 os.unlink(tmp_path)
@@ -895,13 +914,13 @@ def _monitor_action(tag: str) -> CeremonyAction:
     )
 
 
-def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySources, repo_root: Path, ecosystem_root: Path, when: str, *, cross_repo: bool = False) -> CeremonyPlan:
+def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySources, repo_root: Path, ecosystem_root: Path, when: str, *, cross_repo: bool = False, target_sha: "str | None" = None) -> CeremonyPlan:
     """Compute the ceremony plan for one BUMPED_NOT_RELEASED manifest package (reads only; no writes).
 
     ``plan.repo`` is the OWNING repo (Release + monitor); ``plan.archive_repo`` stays juniper-ml (the
     central exempt archive PR, plan S10.2). ``cross_repo`` unlocks a sibling when its checkout is present."""
     target = pkg.get("declared_version")
-    plan = CeremonyPlan(pypi_name=entry.pypi_name, repo=entry.repo, released_version=pkg.get("released_version"), target_version=target, latest=entry.latest)
+    plan = CeremonyPlan(pypi_name=entry.pypi_name, repo=entry.repo, released_version=pkg.get("released_version"), target_version=target, latest=entry.latest, target_sha=target_sha)
 
     # 0. capability guard (Phase 4.1): in-repo always; a sibling only when --cross-repo-capable AND its
     # checkout is on disk. The exempt archive PR is ALWAYS central (plan.archive_repo == juniper-ml).
@@ -935,9 +954,15 @@ def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySour
     # 2. S8: target main CI must be green -- the newest COMPLETED run of the package's own main-CI
     # workflow (registry ``main_ci_workflow``, default ``ci.yml``), never the newest run of ANY workflow
     # (which under workflow_dispatch is the release-train run itself -> the self-observation HALT).
-    conclusion = sources.main_ci_conclusion(entry.repo, entry.main_ci_workflow)
-    if conclusion != "success":
-        return _halt(plan, "main-ci-not-green", f"target main CI ({entry.main_ci_workflow}) latest completed conclusion is {conclusion!r}, not 'success' -- do not cut a Release onto a red main", when)
+    # With --target-sha the Release tags THAT commit, so the gate reads that commit's own run instead.
+    if target_sha:
+        conclusion = sources.main_ci_conclusion(entry.repo, entry.main_ci_workflow, target_sha)
+        if conclusion != "success":
+            return _halt(plan, "main-ci-not-green", f"target commit {target_sha}'s CI ({entry.main_ci_workflow}) latest completed conclusion on main is {conclusion!r}, not 'success' -- do not cut a Release onto a red commit", when)
+    else:
+        conclusion = sources.main_ci_conclusion(entry.repo, entry.main_ci_workflow)
+        if conclusion != "success":
+            return _halt(plan, "main-ci-not-green", f"target main CI ({entry.main_ci_workflow}) latest completed conclusion is {conclusion!r}, not 'success' -- do not cut a Release onto a red main", when)
 
     # 3. build the FINAL central notes file from the released CHANGELOG [<version>] section.
     clog = sources.read_file(entry, changelog_rel(entry))
@@ -976,7 +1001,9 @@ def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySour
         actions.append(CeremonyAction("enable_auto_merge", "enable `gh pr merge --auto --squash` on the archive PR (degrades to the owner one-click merge if allow_auto_merge is off -- step 3.3 not yet landed)", {"branch": plan.archive_branch}))
 
     latest_flag = "--latest" if plan.latest else "--latest=false"
-    actions.append(CeremonyAction("cut_release", f"`gh release create {plan.tag} {latest_flag} --notes-file {plan.archive_relpath}` -- the Release CREATES the tag (no --verify-tag)", {"tag": plan.tag, "notes_relpath": plan.archive_relpath, "latest": plan.latest}))
+    target_flag = f" --target {plan.target_sha}" if plan.target_sha else ""
+    where = f"at {plan.target_sha}" if plan.target_sha else f"at {entry.repo}'s main as it is at cut time"
+    actions.append(CeremonyAction("cut_release", f"`gh release create {plan.tag} {latest_flag}{target_flag} --notes-file {plan.archive_relpath}` -- the Release CREATES the tag {where} (no --verify-tag)", {"tag": plan.tag, "notes_relpath": plan.archive_relpath, "latest": plan.latest, "target": plan.target_sha}))
     actions.append(_monitor_action(plan.tag))
     plan.state = "CEREMONY_PLANNED"
     plan.actions = actions
@@ -1075,7 +1102,7 @@ def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: 
         elif action.kind == "cut_release":
             if sources.create_release is None:
                 raise SourceError("execute needs the create_release seam member")
-            result["release_url"] = sources.create_release(plan.repo, plan.tag, f"{plan.pypi_name} v{plan.target_version}", plan.archive_relpath, plan.archive_content, latest=plan.latest)
+            result["release_url"] = sources.create_release(plan.repo, plan.tag, f"{plan.pypi_name} v{plan.target_version}", plan.archive_relpath, plan.archive_content, latest=plan.latest, target=plan.target_sha)
         elif action.kind == "monitor_publish":
             verdict = monitor_publish_run(sources, plan.repo, plan.tag, **(monitor_kwargs or {}))
             if verdict == "HALT_TESTPYPI":
@@ -1192,6 +1219,12 @@ def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--owner", default=DEFAULT_OWNER, help=f"GitHub owner (default: {DEFAULT_OWNER})")
     p.add_argument("--registry", default=None, help="path to registry.yaml (default: alongside detect.py)")
     p.add_argument("--release-date", default=None, help="release date for the notes (default: today UTC; use for deterministic output)")
+    p.add_argument(
+        "--target-sha",
+        default=None,
+        metavar="SHA",
+        help="cut the Release at this FULL 40-char commit of the owning repo (gh release create --target), and gate on THAT commit's CI run, instead of tagging its main as it is at cut time. The --ecosystem-root checkout must be of this same commit, so the notes and the tag describe one tree. Requires exactly one --package.",
+    )
     p.add_argument("--dry-run", action="store_true", help="(default) print the full ceremony script of actions; write nothing, open nothing, cut nothing. Overrides --execute.")
     p.add_argument("--execute", action="store_true", help="opt-in: perform the ceremony (archive PR + auto-merge + Release + monitor). --dry-run overrides it.")
     p.add_argument("--cross-repo", action="store_true", help="Phase 4.1: this run has a cross-repo write identity (the GitHub App installation token). With it AND a sibling checkout under --ecosystem-root, a sibling's Release is cut on ITS repo (--repo owner/<repo>) while the exempt archive PR still lands centrally in juniper-ml; without it, sibling packages are skipped. No effect in --dry-run.")
@@ -1200,7 +1233,7 @@ def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     return p.parse_args(argv)
 
 
-def _plans_for(manifest_pkgs: list, entries: list, wanted: "set | None", sources: CeremonySources, repo_root: Path, ecosystem_root: Path, when: str, *, cross_repo: bool = False) -> list:
+def _plans_for(manifest_pkgs: list, entries: list, wanted: "set | None", sources: CeremonySources, repo_root: Path, ecosystem_root: Path, when: str, *, cross_repo: bool = False, target_sha: "str | None" = None) -> list:
     by_name = {e.pypi_name: e for e in entries}
     plans: list = []
     for pkg in manifest_pkgs:
@@ -1215,7 +1248,7 @@ def _plans_for(manifest_pkgs: list, entries: list, wanted: "set | None", sources
             _halt(plan, "not-in-registry", "package is BUMPED_NOT_RELEASED in the manifest but absent from registry.yaml", when)
             plans.append(plan)
             continue
-        plans.append(plan_ceremony(entry, pkg, sources, repo_root, ecosystem_root, when, cross_repo=cross_repo))
+        plans.append(plan_ceremony(entry, pkg, sources, repo_root, ecosystem_root, when, cross_repo=cross_repo, target_sha=target_sha))
     return plans
 
 
@@ -1252,12 +1285,23 @@ def main(argv: "list[str] | None" = None, sources: "CeremonySources | None" = No
             print(f"ERROR: unknown --package {sorted(unknown)}", file=sys.stderr)
             return 2
 
+    # A commit belongs to ONE repo, so a target is meaningful for exactly one package. And gh refuses an
+    # abbreviated sha ("Release.target_commitish is invalid"), which would surface only AFTER the archive
+    # PR had been opened and armed -- so refuse it here, before anything is written.
+    if args.target_sha is not None:
+        if not re.fullmatch(r"[0-9a-f]{40}", args.target_sha):
+            print(f"ERROR: --target-sha must be a full 40-char lowercase hex commit sha, got {args.target_sha!r}", file=sys.stderr)
+            return 2
+        if not wanted or len(wanted) != 1:
+            print("ERROR: --target-sha names one commit of one repo, so it requires exactly one --package", file=sys.stderr)
+            return 2
+
     if sources is None:
         # Bound every --repo argument to the registry's 8 publishing repos (R7 --repo value guard, Phase 4.1).
         sources = make_live_sources(args.owner, repo_root, ecosystem_root, allowed_repos=publishing_repo_slugs(entries, args.owner))
 
     try:
-        plans = _plans_for(manifest_pkgs, entries, wanted, sources, repo_root, ecosystem_root, when, cross_repo=args.cross_repo)
+        plans = _plans_for(manifest_pkgs, entries, wanted, sources, repo_root, ecosystem_root, when, cross_repo=args.cross_repo, target_sha=args.target_sha)
     except SourceError as exc:
         print(f"ERROR: source failure during ceremony planning: {exc}", file=sys.stderr)
         return 2

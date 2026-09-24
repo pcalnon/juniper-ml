@@ -589,6 +589,16 @@ Notes on those commands:
   archive PR still lands centrally in juniper-ml.
 - `detect.py` exits 1 whenever anything needs a release. That is its normal answer, not a failure.
 - The ceremony HALTs, correctly, if `main`'s latest CI run is not green.
+- **Pass `--target-sha <full 40-char sha>` whenever anything can merge between the preview and the
+  cut.** Without it, the Release tags the owning repo's `main` as it is at cut time, while the notes
+  come from the checkout. Those are two trees, and they agree only if nothing merged in between. With
+  it, the tag lands on that commit, and the CI precondition reads that commit's own run instead of
+  `main`'s newest. The checkout must be of the same commit: for a sibling, extract
+  `gh api repos/pcalnon/<repo>/tarball/<sha>`. It needs exactly one `--package`, and it refuses an
+  abbreviated sha, which `gh` would reject only after the archive PR was armed. Added 2026-09-24,
+  after three juniper-data PRs merged between the owner's approval of the 0.16.0 notes (pinned at
+  `7125e161`) and the cut. One of them left a duplicate `## [0.16.0]` heading, which would have
+  published only its own bullets.
 - **`.github/workflows/release-train.yml` also runs on a daily cron (13:00 UTC), but it cannot cut
   a Release unless told to.** Its mode resolves as the dispatch input, then the repo variable
   `RELEASE_TRAIN_MODE`, then `report`. With the variable unset, as it was on 2026-09-23, a scheduled
