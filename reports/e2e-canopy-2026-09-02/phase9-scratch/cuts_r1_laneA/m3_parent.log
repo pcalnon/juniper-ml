@@ -1,0 +1,66 @@
+ERROR conda.cli.main_run:execute(127): `conda run python -m pytest tests/unit/frontend/test_idle_dispatch_cuts.py -q -p no:cacheprovider -rA` failed. (See above for error)
+
+=== Test Environment Configuration ===
+CasCor Backend Tests: DISABLED (set CASCOR_BACKEND_AVAILABLE=1)
+Live Server Tests: DISABLED (set RUN_SERVER_TESTS=1)
+Display Tests: ENABLED
+Slow Tests: DISABLED (set ENABLE_SLOW_TESTS=1)
+========================================
+
+FFFF..FFF                                                                [100%]
+=================================== FAILURES ===================================
+_______ TestEveryIntervalHasAConsumer.test_every_interval_has_a_consumer _______
+tests/unit/frontend/test_idle_dispatch_cuts.py:116: in test_every_interval_has_a_consumer
+    assert not dead, f"Intervals with no consumer tick forever for nothing (each tick is a store update that re-runs the page's selectors): {dead}"
+E   AssertionError: Intervals with no consumer tick forever for nothing (each tick is a store update that re-runs the page's selectors): ['metrics-panel-update-interval']
+E   assert not ['metrics-panel-update-interval']
+_ TestEveryIntervalHasAConsumer.test_the_metrics_panel_has_no_update_interval __
+tests/unit/frontend/test_idle_dispatch_cuts.py:121: in test_the_metrics_panel_has_no_update_interval
+    assert "metrics-panel-update-interval" not in ids
+E   AssertionError: assert 'metrics-panel-update-interval' not in {'apply-watchdog-interval', 'candidate-metrics-panel-update-interval', 'cassandra-panel-interval', 'fast-update-interval', 'hdf5-snapshots-panel-refresh-interval', 'metrics-panel-replay-interval', ...}
+______________ TestWeightDrainGate.test_the_drain_ships_disabled _______________
+tests/unit/frontend/test_idle_dispatch_cuts.py:131: in test_the_drain_ships_disabled
+    assert drain[0].get("disabled") is True, "the weight drain must ship disabled; the gate enables it while a replay session exists"
+E   AssertionError: the weight drain must ship disabled; the gate enables it while a replay session exists
+E   assert None is True
+E    +  where None = <built-in method get of dict object at 0x7049a5608e40>('disabled')
+E    +    where <built-in method get of dict object at 0x7049a5608e40> = {'id': 'replay-player-panel-weight-drain', 'interval': 500, 'n_intervals': 0}.get
+_ TestWeightDrainGate.test_one_writer_of_disabled_and_it_is_the_clientside_gate _
+tests/unit/frontend/test_idle_dispatch_cuts.py:137: in test_one_writer_of_disabled_and_it_is_the_clientside_gate
+    assert len(writers) == 1, f"{len(writers)} writers of {DRAIN}.disabled -- the gate must be the only one"
+E   AssertionError: 0 writers of replay-player-panel-weight-drain.disabled -- the gate must be the only one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_________ TestWeightDrainGate.test_the_gate_is_the_registered_function _________
+tests/unit/frontend/test_idle_dispatch_cuts.py:170: in test_the_gate_is_the_registered_function
+    assert _gate_js() in registered
+           ^^^^^^^^^^
+tests/unit/frontend/test_idle_dispatch_cuts.py:64: in _gate_js
+    assert js, "replay_player_panel has no WEIGHT_DRAIN_GATE_JS -- the weight drain is not gated"
+E   AssertionError: replay_player_panel has no WEIGHT_DRAIN_GATE_JS -- the weight drain is not gated
+E   assert None
+________ TestWeightDrainGateRule.test_disabled_unless_a_session_exists _________
+tests/unit/frontend/test_idle_dispatch_cuts.py:189: in test_disabled_unless_a_session_exists
+    "const fn = (" + _gate_js() + ");\n" "const cases = JSON.parse(process.argv[2]);\n" "console.log(JSON.stringify(cases.map(function (c) { return fn(c); })));\n",
+                     ^^^^^^^^^^
+tests/unit/frontend/test_idle_dispatch_cuts.py:64: in _gate_js
+    assert js, "replay_player_panel has no WEIGHT_DRAIN_GATE_JS -- the weight drain is not gated"
+E   AssertionError: replay_player_panel has no WEIGHT_DRAIN_GATE_JS -- the weight drain is not gated
+E   assert None
+______________ test_register_callbacks_still_builds_on_a_bare_app ______________
+tests/unit/frontend/test_idle_dispatch_cuts.py:204: in test_register_callbacks_still_builds_on_a_bare_app
+    assert any(f"{DRAIN}.disabled" in str(entry.get("output", "")) for entry in app._callback_list)
+E   assert False
+E    +  where False = any(<generator object test_register_callbacks_still_builds_on_a_bare_app.<locals>.<genexpr> at 0x7049a56ffa60>)
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_the_drain_is_not_in_the_tab_gate
+PASSED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_no_pending_callback_can_hold_the_gate
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestEveryIntervalHasAConsumer::test_every_interval_has_a_consumer
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestEveryIntervalHasAConsumer::test_the_metrics_panel_has_no_update_interval
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_the_drain_ships_disabled
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_one_writer_of_disabled_and_it_is_the_clientside_gate
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_the_gate_is_the_registered_function
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGateRule::test_disabled_unless_a_session_exists
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::test_register_callbacks_still_builds_on_a_bare_app
+
