@@ -1,23 +1,21 @@
 # Backup infrastructure — integrated design, root-cause analysis and remediation plan
 
-**Project**: Juniper (workstation backup infrastructure, host `yamaguchi`)
-**Author**: Paul Calnon
-**Date**: 2026-09-21
-**Status**: VALIDATED (round 2) — consensus round 1 (six validators) and round 2 (four lanes) have
-both reported, and every finding is applied or recorded as dissent in §11. Verbatim reports:
-`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md` and
-`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`.
-**§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and
-merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s
-owner gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder). Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named
-in P1 step 4.
-**Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
-**Companions**:
-[`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md) (the design of record, "PLAN"),
-[`JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md`](JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md) (the certification record, "YAM"),
-[`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) ("DMG"),
-[`JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md`](JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md) ("GPG"),
-[`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md) ("CON", the validation procedure this document is held to).
+- **Project**: Juniper (workstation backup infrastructure, host `yamaguchi`)
+- **Author**: Paul Calnon
+- **Date**: 2026-09-21
+- **Status**: VALIDATED (round 2) — consensus round 1 (six validators) and round 2 (four lanes) have both reported, and every finding is applied or recorded as dissent in §11.
+  Verbatim reports:
+  - `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`
+  - `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`
+- **§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s owner gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder).
+  - Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named in P1 step 4.
+- **Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
+- **Companions**:
+  - [`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md) (the design of record, "PLAN"),
+  - [`JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md`](JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md) (the certification record, "YAM"),
+  - [`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) ("DMG"),
+  - [`JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md`](JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md) ("GPG"),
+  - [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md) ("CON", the validation procedure this document is held to).
 
 ---
 
