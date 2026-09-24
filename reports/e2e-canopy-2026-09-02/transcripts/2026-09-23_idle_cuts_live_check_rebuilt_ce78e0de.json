@@ -1,0 +1,259 @@
+{
+  "probe": "2026-09-23_idle_cuts_live_check.py",
+  "control_url": "http://127.0.0.1:8055",
+  "cuts_url": "http://127.0.0.1:8056",
+  "settle_s": 45.0,
+  "measure_s": 60.0,
+  "windows": [
+    {
+      "label": "C1",
+      "url": "http://127.0.0.1:8055",
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8055",
+        "git_sha": "3a6dea95dcbe717e598f5d32a9774e4779dde842",
+        "build_date": "2026-09-23T19:23:58Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T19:30:45Z"
+      },
+      "structure": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "present": true,
+            "n": 22,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 26,
+            "disabled": false
+          }
+        },
+        "after_10s": {
+          "metrics-panel-update-interval": {
+            "present": true,
+            "n": 28,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 31,
+            "disabled": false
+          }
+        },
+        "dead_present": true,
+        "drain_disabled": false,
+        "drain_ticks_10s": 5
+      },
+      "latency": {
+        "n": 109,
+        "p50_ms": 7115.1
+      },
+      "console_errors": [],
+      "console_error_count": 0
+    },
+    {
+      "label": "X1",
+      "url": "http://127.0.0.1:8056",
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8056",
+        "git_sha": "ce78e0de681b8e3000f482360e1f680514e92d6f",
+        "build_date": "2026-09-23T19:24:08Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T19:33:07Z"
+      },
+      "structure": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "present": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 0,
+            "disabled": true
+          }
+        },
+        "after_10s": {
+          "metrics-panel-update-interval": {
+            "present": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 0,
+            "disabled": true
+          }
+        },
+        "dead_present": false,
+        "drain_disabled": true,
+        "drain_ticks_10s": 0
+      },
+      "latency": {
+        "n": 170,
+        "p50_ms": 3912.6
+      },
+      "session_path": {
+        "write": {
+          "ok": true,
+          "via": "memoizedProps.setProps",
+          "hops": 3003
+        },
+        "enabled_after_s": 1.7,
+        "ticks_10s_enabled": 5,
+        "clear": {
+          "ok": true,
+          "via": "memoizedProps.setProps",
+          "hops": 3003
+        },
+        "disabled_after_s": 2.5,
+        "ticks_10s_cleared": 0
+      },
+      "console_errors": [],
+      "console_error_count": 0
+    },
+    {
+      "label": "C2",
+      "url": "http://127.0.0.1:8055",
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8055",
+        "git_sha": "3a6dea95dcbe717e598f5d32a9774e4779dde842",
+        "build_date": "2026-09-23T19:23:58Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T19:35:59Z"
+      },
+      "structure": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "present": true,
+            "n": 26,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 30,
+            "disabled": false
+          }
+        },
+        "after_10s": {
+          "metrics-panel-update-interval": {
+            "present": true,
+            "n": 32,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 37,
+            "disabled": false
+          }
+        },
+        "dead_present": true,
+        "drain_disabled": false,
+        "drain_ticks_10s": 7
+      },
+      "latency": {
+        "n": 127,
+        "p50_ms": 5336.9
+      },
+      "console_errors": [],
+      "console_error_count": 0
+    },
+    {
+      "label": "X2",
+      "url": "http://127.0.0.1:8056",
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8056",
+        "git_sha": "ce78e0de681b8e3000f482360e1f680514e92d6f",
+        "build_date": "2026-09-23T19:24:08Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T19:38:14Z"
+      },
+      "structure": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "present": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 0,
+            "disabled": true
+          }
+        },
+        "after_10s": {
+          "metrics-panel-update-interval": {
+            "present": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 0,
+            "disabled": true
+          }
+        },
+        "dead_present": false,
+        "drain_disabled": true,
+        "drain_ticks_10s": 0
+      },
+      "latency": {
+        "n": 136,
+        "p50_ms": 5415.8
+      },
+      "console_errors": [],
+      "console_error_count": 0
+    },
+    {
+      "label": "C3",
+      "url": "http://127.0.0.1:8055",
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8055",
+        "git_sha": "3a6dea95dcbe717e598f5d32a9774e4779dde842",
+        "build_date": "2026-09-23T19:23:58Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T19:40:28Z"
+      },
+      "structure": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "present": true,
+            "n": 28,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 33,
+            "disabled": false
+          }
+        },
+        "after_10s": {
+          "metrics-panel-update-interval": {
+            "present": true,
+            "n": 33,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "present": true,
+            "n": 40,
+            "disabled": false
+          }
+        },
+        "dead_present": true,
+        "drain_disabled": false,
+        "drain_ticks_10s": 7
+      },
+      "latency": {
+        "n": 131,
+        "p50_ms": 5275.5
+      },
+      "console_errors": [],
+      "console_error_count": 0
+    }
+  ],
+  "verdicts": {
+    "STRUCTURE": "PASS",
+    "SESSION": "PASS",
+    "LATENCY": "INCONSISTENT",
+    "X_over_C_p50": 0.79,
+    "ERRORS_no_worse": true
+  }
+}

@@ -1,0 +1,13 @@
+[t=   1331ms]   fix: server before page {"is_running": true, "flag": true, "phase": "candidate", "epoch": 56}
+[t=   1811ms] navigating to http://127.0.0.1:8058
+[t=   1840ms]   serving: {"ok": true, "canopy": "http://127.0.0.1:8058", "git_sha": "884d22fb8a73bc53a3df400a5441b11e1f40f0c3", "build_date": "2026-09-23T19:59:02Z", "version": "0.6.0", "read_at": "2026-09-23T19:59:30Z"}
+[t=   9136ms]   welcome modal not present/visible
+[t=  16498ms]   modal cleared after 1 attempt(s)
+[t= 124262ms]   fix http://127.0.0.1:8058 sha=884d22fb => {"ALLOW": "LANDS", "allow_first_enabled_t_s": 13.0, "DENY": "RETURNS", "deny_first_disabled_t_s": 7.8, "BAR": "APPLIES", "bar_texts_seen": ["Running", "Stopped"], "step_texts_last": ["137", "137", "143"]}
+[t= 124302ms]   parent: server before page {"is_running": true, "flag": true, "phase": "candidate", "epoch": 237}
+[t= 124458ms] navigating to http://127.0.0.1:8059
+[t= 124460ms]   serving: {"ok": true, "canopy": "http://127.0.0.1:8059", "git_sha": "78c057e23b09149add0b23ebfc4c0f852fe8f602", "build_date": "2026-09-23T19:59:08Z", "version": "0.6.0", "read_at": "2026-09-23T20:01:33Z"}
+[t= 141545ms]   welcome modal not present/visible
+[t= 250691ms]   parent http://127.0.0.1:8059 sha=78c057e2 => {"ALLOW": "LANDS", "allow_first_enabled_t_s": 19.7, "DENY": "RETURNS", "deny_first_disabled_t_s": 2.7, "BAR": "APPLIES", "bar_texts_seen": ["Running", "Stopped"], "step_texts_last": ["351", "353", "353"]}
+[t= 250711ms] results -> reports/e2e-canopy-2026-09-02/transcripts/2026-09-23_f055_f025_allow_arm_demo_drive.json
+exit=0
