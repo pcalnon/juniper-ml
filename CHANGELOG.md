@@ -44,6 +44,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   prefix pointed at the real `CROSS_REPO_DISPATCH_TOKEN`, and an environment name that exists. Per-PR
   CI cannot read the image repos, so the `dockerhub` half is a local gate and skips there by name.
   §6 and §10 of the procedure are updated.
+- **`util/thread_width.py`: the perf lane's shared thread-width helper, plus a CI gate that stops
+  instruments bypassing it** (`tests/test_thread_width.py`, new, the 168th suite in `ci.yml`,
+  `docs/REFERENCE.md` and `AGENTS.md`; `util/ad-hoc/2026-09-23_thread_width_mutation_check.py`,
+  new, which kills 12 of 12 mutants).
+  - Two ways of reading an OpenMP width had destroyed measurements, and both had been written down
+    only as prose. `torch.get_num_threads()` re-pins a thread torch has not initialised (16 → 8).
+    `CDLL("libgomp.so.1")` need not be torch's runtime: torch 2.11.0+cu130 maps its BUNDLED
+    `torch/lib/libgomp.so.1`, and opening the soname before `import torch` makes torch bind the
+    env's copy instead.
+  - `OpenMPRuntime()` opens only an already-mapped runtime, with `RTLD_NOLOAD`, and refuses when
+    none, two or an unmapped one is in play.
+  - `install_torch_getter_guard()` makes the getter raise off the main thread. The guard is
+    unconditional because under `OMP_NUM_THREADS=2`, cascor's default since cascor#683, the
+    re-pin is 2 → 2 and invisible.
+  - The gate AST-scans `util/ad-hoc/` and `util/experiments/`. Six pre-helper instruments are
+    grandfathered by name and must each still offend. `--self-check` measures every claim above
+    in an env with torch.
+- **PF-2 axis 3, built and RUN** (`util/experiments/suites/perf/pf2-axis3-cascor-spiral-count.yaml`
+  and `util/ad-hoc/2026-09-23_pf2_axis3_reduce.py`, both new; PF-2 re-spec §4.2).
+  - Owner decision D4 ruled this axis in, and it was dropped from two successive handoff work
+    lists.
+  - Test roc_auc is 0.961 / 0.834 / 0.672 / 0.746 for 2 / 3 / 4 / 5 spirals. The three passes are
+    bit-identical, which shows the observable is load-insensitive. It is one seed, so 5 scoring
+    above 4 is not yet a finding.
+  - The reducer reads `eval_metrics.final` (`split == "test"`). A run's top-level f1 / roc_auc
+    are the selected-on validation split, and the reducer's first draft read those.
+- **Two instruments**: `util/ad-hoc/2026-09-23_d6_advisory_firing_count.py` counts D6 advisory
+  firings per head SHA and per matrix leg, from workflow runs rather than PR commits. A
+  force-pushed head survives there, and a `ci-probe/*` positive control is excluded.
+  `util/ad-hoc/2026-09-23_data_additive_overflow_repro.py` is juniper-data#432's reproduction
+  through the real route.
 
 ### Changed
 
@@ -57,6 +88,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sizes. The D4 ruling sends the top end in-process only on a knee, so it stays on the suite path.
   This holds at `spiral-smoke`'s budgets only. `step_count` is 8 in every cell because the
   budget fixes it, and it is never compared.
+- **Perf lane, 2026-09-23/24: the D6 count, three owner rulings, PF-2 axis 1 blocked, and the
+  Python 3.14 micro reference**
+  (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md` §5.4 and
+  new §6; `notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` §1, §2,
+  §4.2 and §5; `util/experiments/suites/perf/README.md`;
+  `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`).
+  - **D6 advisory, first count: 0 firings on 6 head SHAs / 28 legs.** That is too few to decide
+    blocking. A throwaway `workflow_dispatch` branch with the reference drifted fired on 4 of 4
+    legs, and all 4 still passed, so the zero is not vacuous. CI's CPU-only torch 2.14.0 observed
+    the same 68 as the torch 2.11.0+cu130 reference.
+  - **Owner rulings (§6).** PF-3 waits for a quiet window. It opened at 02:39 and closed within
+    minutes, so PF-3 was not launched. The micro cut went ahead LOADED:
+    `Linux-CPython-3.14-64bit/0001`, cascor `0e016a7`, 1-minute load 5.5–6.6. PF-2 axis 1's
+    count will be published from cascor.
+  - **PF-2 axis 1 is BLOCKED on its instrument.** No structured suite artifact carries
+    `epochs_completed`. The log carries it only for early-stopped candidates, and 6 of 8 ran the
+    full 400 epochs.
+  - **Corrections.** The re-spec §1 said a request past the bound is a 422; it is a 400 that
+    carries the message. juniper-data#432 is filed. The axis-2 suite's description said 10,000;
+    it now says 5,800.
 
 ### Fixed
 
