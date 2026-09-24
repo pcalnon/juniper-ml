@@ -49,11 +49,23 @@ The four owner rulings of 2026-09-24 are implemented and merged. What remains:
   use the model's own label, and targets are picked by NPZ key (`y_reg_*`).
 - **Why 6.0.0:** the relabel nulls `n_classes` / `class_distribution` in the stored meta, the dataset ID hashes the
   version but not the meta, and a cache hit serves the stored meta as-is. That is the arc_agi #402 → #427 precedent.
-- **X8 ships in juniper-data 0.16.0**, because the 0.16.0 Release (not yet cut) tags main HEAD. Its CHANGELOG entry is
-  under `[0.16.0]`, following #435's precedent.
-  - The ecosystem guide's data-contract paragraph (`Juniper/CLAUDE.md`, unversioned) was updated to say `equities_seq`
-    is at 6.0.0 on main.
-  - When 0.16.0 is published, update it again to "on PyPI since 0.16.0".
+- **X8 did NOT ship in juniper-data 0.16.0.** *(Corrected 2026-09-24. This bullet said it would, and a peer session,
+  "containers", re-probed and caught it.)*
+  - The v0.16.0 Release was published at 08:52:14Z. `ceremony.py --target-sha` pinned it to `39d1cab2`, #435's
+    merge, under the owner ruling "Fold, cut at #435".
+  - #437 merged at 09:14Z, after the tag. `merge-base --is-ancestor 1afc3484 v0.16.0` is false, and the tag's
+    `equities_seq` VERSION is still 5.0.0.
+  - **X8 ships in the next juniper-data release after 0.16.0.**
+  - Two things caused the error:
+    - #435's premise, "the Release tags main HEAD", stopped holding once the ceremony pinned a `--target-sha`.
+    - This session's release probe predated the cut by about 30 minutes, and was not repeated before merging.
+  - The CHANGELOG entry placed under `[0.16.0]` is therefore wrong. The containers session is moving it to
+    `[Unreleased]` by PR, so that main's `[0.16.0]` matches the tag.
+  - The ecosystem guide's data-contract paragraph (`Juniper/CLAUDE.md`, unversioned) was updated this session to say
+    `equities_seq` is at 6.0.0 on main. That part is right. Its closing clause, "0.16.0, once its Release is cut from
+    `main`, carries the change", is false. The containers session is asking the owner before editing that file.
+  - Superseded original: "X8 ships in juniper-data 0.16.0, because the 0.16.0 Release (not yet cut) tags main HEAD",
+    and "When 0.16.0 is published, update it again to 'on PyPI since 0.16.0'".
 - **F2 was fixed in cascor alone.** Canopy's order (apply the edits, then restart) was already right. canopy's demo
   backend keeps its params across a reset, so it never had the defect. Mutation evidence: **no pre-existing test** in
   cascor `src/tests/unit/api/` covered what a start-fresh does to params.
@@ -94,8 +106,11 @@ The four owner rulings of 2026-09-24 are implemented and merged. What remains:
      - juniper-ml `.claude/worktrees/tender-wibbling-flask` (this handoff's PR).
 2. **Carry forward:**
    - The peer claims on Y2 waves 2/3 and X10 lapse **2026-09-29T00:00Z**.
-   - **Item 19 is the owner's call**: cutting the juniper-data **0.16.0** Release. The release commit (#433) is merged
-     and contains #421 and now #437 (X8). No `v0.16.0` tag or Release exists, and PyPI serves 0.15.0.
+   - **Item 19 is the owner's call.** The juniper-data **0.16.0** Release was cut at 08:52:14Z (GitHub Release and
+     GHCR image), pinned to `39d1cab2`. It contains #421, so the image can generate `equities`. **PyPI 0.16.0 is at
+     the owner's gate.** #437 (X8) is **not** in 0.16.0; it ships in the next release. *(Corrected 2026-09-24. This
+     line said no `v0.16.0` tag or Release existed and that 0.16.0 contained #437. Both were already false when this
+     handoff was written, because the Release was published at 08:52Z.)*
    - Y7's dropdown half: no `aria-disabled` on greyed options.
    - A-N2 observations: O2–O5 (2026-09-23 handoff, item 4), plus **O9** above.
 
@@ -116,7 +131,7 @@ The four owner rulings of 2026-09-24 are implemented and merged. What remains:
 ```bash
 gh pr list --repo pcalnon/juniper-canopy --state open --json number,title --jq '.[] | "\(.number) \(.title[0:70])"'
 gh pr list --repo pcalnon/juniper-cascor --state open --json number,title --jq '.[] | "\(.number) \(.title[0:70])"'
-gh release list --repo pcalnon/juniper-data --limit 2        # is 0.16.0 cut yet? (item 19)
+gh release list --repo pcalnon/juniper-data --limit 2        # 0.16.0 is cut at 39d1cab2; is the release carrying X8 cut yet?
 git -C /home/pcalnon/Development/python/Juniper/juniper-data grep -n -A4 '"equities_seq": {' origin/main -- juniper_data/api/routes/generators.py | grep version
 ss -ltnp | grep -E ':(8101|8202|8051) '   # the peer's stack; do not touch
 ```
@@ -136,7 +151,7 @@ it, read `WAIVED: 5`.
   - `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`.
 - **Changed:** `notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md` (§12.4, two "Shipped"
   notes). Also `Juniper/CLAUDE.md`, the unversioned ecosystem guide, whose data-contract `generator_version` bullet
-  now names `equities_seq` at 6.0.0.
+  now names `equities_seq` at 6.0.0. Its release clause is false (see Key context); the owner decides the edit.
 - **Created:**
   - this file;
   - `util/ad-hoc/2026-09-24_x11_mutation_check.py`;
