@@ -289,3 +289,54 @@ options that were put **and declined**, so each ruling reads as a choice rather 
   [`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`](JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md)
   asks whether the gate's tree-sensitivity is its value (it catches silent numeric drift) or its
   cost (it fires on intended changes). How often it fires on real PRs is that answer.
+
+> **COUNT, 2026-09-23 (first reading, cascor#682 + ~8 h): 0 firings on 6 head SHAs / 28
+> `Unit Tests` legs.** Instrument: `util/ad-hoc/2026-09-23_d6_advisory_firing_count.py`. It
+> enumerates workflow runs, not PR commits, because a PR's commit list forgets force-pushed heads,
+> and cascor#683 was force-moved. A leg counts only if its tree contains the advisory and the leg
+> actually ran; cancelled matrix placeholders are excluded. The six are #682's two heads, #683's
+> head, #678's head and two `main` pushes. Only #683 and #678 are PRs other than the advisory's
+> own, so **this is far too few to decide blocking**. It is a baseline, not a rate.
+>
+> **The zero is not vacuous: a positive control fired.** The annotation had never been seen in
+> CI, so a zero could not yet tell "no drift" apart from "the annotation never reaches the
+> runner". A throwaway branch (`ci-probe/d6-advisory-positive-control-20260923`, cascor `47d15dd`,
+> run once through `workflow_dispatch`, then deleted) drifted the budget-100 reference to 67.
+> **All 4 legs carried exactly one `D6 advisory - epochs_completed drift` annotation and all 4
+> passed.** The counter excludes `workflow_dispatch` and `ci-probe/*` runs, so the control can
+> never enter the count.
+>
+> **A cross-platform datum the reference did not have.** The reference was taken on Linux
+> x86_64, Python 3.14.7 and torch 2.11.0+cu130. CI observed the same **68** on CPU-only
+> **torch 2.14.0+cpu** under Python 3.12, 3.13 and 3.14 on Ubuntu, and under Python 3.12 on
+> macOS. So the count survived a torch minor-version change and a platform change. Its
+> tree-sensitivity is still untested: no PR in the window changed candidate numerics.
+
+---
+
+## 6. Three scheduling and instrument rulings, 2026-09-24
+
+The 2026-09-23 handoff
+(`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-23_perf-lane-d1-debt-clear-flip-pf1-rebaselined-pf2-axis2-ceiling-5882.md`)
+left PF-3's host time and the micro timing cut as open items. Its residue check found a third:
+PF-2 axis 1, which was ruled in §2 D4 and then dropped from two successive work lists. All three
+were put to the owner as one menu on 2026-09-23/24. As in §5, the declined options are recorded
+beside each ruling.
+
+| | question | ruling | put and declined |
+|---|---|---|---|
+| **PF-3 host time** | the matrix needs ~7 h per pass (~21 h for 3 round-robin passes), and it measures wall-clock speedup up to 16 processes | **Wait for a quiet window**: hold until the two `clamscan` processes finish and the 1-minute load stays under ~6 | run now on the loaded host, round-robin; the owner frees the host and signals |
+| **Micro timing cut (PF-4)** | never cut under Python 3.14; seven sessions deferred it waiting for an idle host | **Cut now, labelled LOADED.** It is report-only, it records its own load average, and a later quiet cut supersedes it by number | keep waiting |
+| **PF-2 axis 1 instrument** | the axis needs each candidate's `epochs_completed` per cell, but no structured suite artifact carries it; only the log does, and only for candidates that stop early (PF-2 re-spec §2 note) | **Publish it in cascor**: a structured per-phase record, e.g. a `metrics_history` entry carrying each candidate's `epochs_completed` | parse the cascor log (absence is load-bearing, and log formats are mid-redesign); defer axis 1 |
+
+**The window opened and closed within minutes, and PF-3 did not launch.**
+
+- **02:39 local, 2026-09-24**: both `clamscan`s had exited and the load was 4.20 / 4.09 / 3.48.
+- The micro cut took the window first, because the two measurements must not overlap:
+  `Linux-CPython-3.14-64bit/0001`, cascor `0e016a7`, 1-minute load 5.54–6.55 while it ran.
+- **Minutes later** a peer session's juniper-data unit-test run put the 1-minute load at
+  **8.97**. That fails "stays under ~6", so PF-3 was held, as ruled.
+
+The lesson for the next attempt: **"quiet" at night is still not unattended.** Peer sessions run
+test suites around the clock. A single ~7 h pass needs the load watched at launch and recorded
+throughout; `util/ad-hoc/2026-09-08_loadavg_sampler.py` alongside the suite does that.

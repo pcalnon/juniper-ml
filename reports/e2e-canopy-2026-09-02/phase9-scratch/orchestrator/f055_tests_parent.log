@@ -1,0 +1,181 @@
+
+=== Test Environment Configuration ===
+CasCor Backend Tests: DISABLED (set CASCOR_BACKEND_AVAILABLE=1)
+Live Server Tests: DISABLED (set RUN_SERVER_TESTS=1)
+Display Tests: ENABLED
+Slow Tests: DISABLED (set ENABLE_SLOW_TESTS=1)
+========================================
+
+FFFFF..FF.........FFFFFFFFF....................F...F.F.................. [ 76%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+____ TestStatusBarRidesItsOwnGuardedLane.test_the_feeder_rides_its_own_lane ____
+tests/unit/frontend/test_f055_status_bar_own_lane.py:110: in test_the_feeder_rides_its_own_lane
+    assert inputs == [f"{LANE}.n_intervals"], f"the status-bar feeder's Inputs are {inputs}"
+E   AssertionError: the status-bar feeder's Inputs are ['fast-update-interval.n_intervals']
+E   assert ['fast-update....n_intervals'] == ['status-bar-....n_intervals']
+E     
+E     At index 0 diff: 'fast-update-interval.n_intervals' != 'status-bar-interval.n_intervals'
+E     Use -v to get more diff
+_ TestStatusBarRidesItsOwnGuardedLane.test_the_feeder_stops_its_own_clock_while_in_flight _
+tests/unit/frontend/test_f055_status_bar_own_lane.py:122: in test_the_feeder_stops_its_own_clock_while_in_flight
+    assert running.get("running", {}).get(prop) is True, f"the guard does not disable the feeder's lane at dispatch: {running}"
+E   AssertionError: the guard does not disable the feeder's lane at dispatch: {}
+E   assert None is True
+E    +  where None = <built-in method get of dict object at 0x7840cec6f100>('status-bar-interval.disabled')
+E    +    where <built-in method get of dict object at 0x7840cec6f100> = {}.get
+E    +      where {} = <built-in method get of dict object at 0x7840cec6f040>('running', {})
+E    +        where <built-in method get of dict object at 0x7840cec6f040> = {}.get
+_ TestStatusBarRidesItsOwnGuardedLane.test_no_other_callback_takes_the_lane_as_an_input _
+tests/unit/frontend/test_f055_status_bar_own_lane.py:130: in test_no_other_callback_takes_the_lane_as_an_input
+    assert consumers == [feeder], f"{LANE} has other consumers: {[sorted(_outputs(e)) for e in consumers if e is not feeder]}"
+E   AssertionError: status-bar-interval has other consumers: []
+E   assert [] == [{'background...': None, ...}]
+E     
+E     Right contains one more item: {'background': None, 'clientside_function': None, 'dynamic_creator': None, 'hidden': None, ...}
+E     Use -v to get more diff
+_ TestStatusBarRidesItsOwnGuardedLane.test_the_lane_is_declared_perpetual_and_enabled _
+tests/unit/frontend/test_f055_status_bar_own_lane.py:136: in test_the_lane_is_declared_perpetual_and_enabled
+    assert len(found) == 1, f"{LANE} appears {len(found)} times in the layout"
+E   AssertionError: status-bar-interval appears 0 times in the layout
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ TestStatusBarRidesItsOwnGuardedLane.test_the_lane_is_registered_as_a_global_lane _
+tests/unit/frontend/test_f055_status_bar_own_lane.py:149: in test_the_lane_is_registered_as_a_global_lane
+    assert entries == [(LANE, None)], f"{LANE} registry entries: {entries}"
+E   AssertionError: status-bar-interval registry entries: []
+E   assert [] == [('status-bar...erval', None)]
+E     
+E     Right contains one more item: ('status-bar-interval', None)
+E     Use -v to get more diff
+_______ TestGatedIntervalRegistry.test_registry_ids_all_exist_in_layout ________
+tests/unit/frontend/test_poll_gating.py:199: in test_registry_ids_all_exist_in_layout
+    assert not missing, f"gated interval ids absent from the layout: {missing}"
+E   AssertionError: gated interval ids absent from the layout: ['status-bar-interval']
+E   assert not ['status-bar-interval']
+_____ TestGatedIntervalRegistry.test_exactly_one_writer_per_disabled_prop ______
+tests/unit/frontend/test_poll_gating.py:220: in test_exactly_one_writer_per_disabled_prop
+    assert len(writers) == expected, f"{target} has {len(writers)} writers, expected {expected}"
+E   AssertionError: status-bar-interval.disabled has 0 writers, expected 2
+E   assert 0 == 2
+E    +  where 0 = len([])
+____ TestStatusBarStrandWatchdog.test_watchdog_exists_and_is_single_output _____
+tests/unit/frontend/test_poll_gating.py:279: in test_watchdog_exists_and_is_single_output
+    specs = _output_specs(self._watchdog(dashboard))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/frontend/test_poll_gating.py:267: in _watchdog
+    assert len(singles) == 1, f"expected exactly 1 single-output writer of {self.LANE}.disabled, found {len(singles)}"
+E   AssertionError: expected exactly 1 single-output writer of status-bar-interval.disabled, found 0
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ TestStatusBarStrandWatchdog.test_watchdog_rides_an_existing_lane_and_adds_no_poller _
+tests/unit/frontend/test_poll_gating.py:284: in test_watchdog_rides_an_existing_lane_and_adds_no_poller
+    entry = self._watchdog(dashboard)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/frontend/test_poll_gating.py:267: in _watchdog
+    assert len(singles) == 1, f"expected exactly 1 single-output writer of {self.LANE}.disabled, found {len(singles)}"
+E   AssertionError: expected exactly 1 single-output writer of status-bar-interval.disabled, found 0
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ TestStatusBarStrandWatchdog.test_watchdog_reads_the_prop_and_the_clamp_as_state _
+tests/unit/frontend/test_poll_gating.py:294: in test_watchdog_reads_the_prop_and_the_clamp_as_state
+    entry = self._watchdog(dashboard)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/frontend/test_poll_gating.py:267: in _watchdog
+    assert len(singles) == 1, f"expected exactly 1 single-output writer of {self.LANE}.disabled, found {len(singles)}"
+E   AssertionError: expected exactly 1 single-output writer of status-bar-interval.disabled, found 0
+E   assert 0 == 1
+E    +  where 0 = len([])
+_______ TestStatusBarStrandWatchdog.test_watchdog_only_ever_writes_false _______
+tests/unit/frontend/test_poll_gating.py:300: in test_watchdog_only_ever_writes_false
+    entry = self._watchdog(dashboard)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/frontend/test_poll_gating.py:267: in _watchdog
+    assert len(singles) == 1, f"expected exactly 1 single-output writer of {self.LANE}.disabled, found {len(singles)}"
+E   AssertionError: expected exactly 1 single-output writer of status-bar-interval.disabled, found 0
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ TestStatusBarStrandWatchdog.test_watchdog_never_fires_while_the_apply_clamp_is_engaged _
+tests/unit/frontend/test_poll_gating.py:311: in test_watchdog_never_fires_while_the_apply_clamp_is_engaged
+    js = self._js(dashboard, self._watchdog(dashboard))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/frontend/test_poll_gating.py:267: in _watchdog
+    assert len(singles) == 1, f"expected exactly 1 single-output writer of {self.LANE}.disabled, found {len(singles)}"
+E   AssertionError: expected exactly 1 single-output writer of status-bar-interval.disabled, found 0
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ TestStatusBarStrandWatchdog.test_watchdog_threshold_is_far_above_the_worst_round_trip _
+tests/unit/frontend/test_poll_gating.py:320: in test_watchdog_threshold_is_far_above_the_worst_round_trip
+    assert self._timeout_ms() >= 10 * DashboardConstants.API_TIMEOUT_SECONDS * 1000
+           ^^^^^^^^^^^^^^^^^^
+tests/unit/frontend/test_poll_gating.py:256: in _timeout_ms
+    assert value is not None, f"DashboardConstants.{self.TIMEOUT_NAME} is missing"
+E   AssertionError: DashboardConstants.STATUS_BAR_STRAND_TIMEOUT_MS is missing
+E   assert None is not None
+_ TestStatusBarStrandWatchdog.test_threshold_is_interpolated_into_the_javascript _
+tests/unit/frontend/test_poll_gating.py:326: in test_threshold_is_interpolated_into_the_javascript
+    js = self._js(dashboard, self._watchdog(dashboard))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/frontend/test_poll_gating.py:267: in _watchdog
+    assert len(singles) == 1, f"expected exactly 1 single-output writer of {self.LANE}.disabled, found {len(singles)}"
+E   AssertionError: expected exactly 1 single-output writer of status-bar-interval.disabled, found 0
+E   assert 0 == 1
+E    +  where 0 = len([])
+________ TestStatusBarStrandWatchdog.test_watchdog_behaviour_under_node ________
+tests/unit/frontend/test_poll_gating.py:356: in test_watchdog_behaviour_under_node
+    entry = self._watchdog(dashboard)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/frontend/test_poll_gating.py:267: in _watchdog
+    assert len(singles) == 1, f"expected exactly 1 single-output writer of {self.LANE}.disabled, found {len(singles)}"
+E   AssertionError: expected exactly 1 single-output writer of status-bar-interval.disabled, found 0
+E   assert 0 == 1
+E    +  where 0 = len([])
+___ TestStatusBarStrandWatchdog.test_the_two_watchdogs_keep_separate_clocks ____
+tests/unit/frontend/test_poll_gating.py:389: in test_the_two_watchdogs_keep_separate_clocks
+    assert len(writers) == 1, f"{lane}: expected 1 watchdog, found {len(writers)}"
+E   AssertionError: status-bar-interval: expected 1 watchdog, found 0
+E   assert 0 == 1
+E    +  where 0 = len([])
+_________ TestGateSemantics.test_gate_writes_every_registered_interval _________
+tests/unit/frontend/test_poll_gating.py:498: in test_gate_writes_every_registered_interval
+    assert f"{interval_id}.disabled" in written, f"{interval_id} is not written by the gate"
+E   AssertionError: status-bar-interval is not written by the gate
+E   assert 'status-bar-interval.disabled' in {'candidate-metrics-panel-update-interval.disabled', 'cassandra-panel-interval.disabled', 'fast-update-interval.disabl...nel-refresh-interval.disabled', 'metrics-panel-stats-update-interval.disabled', 'metrics-store-interval.disabled', ...}
+____ TestRegistryMatchesSpecification.test_source_registry_matches_the_spec ____
+tests/unit/frontend/test_poll_gating.py:531: in test_source_registry_matches_the_spec
+    assert tuple(_GATED_POLL_INTERVALS) == EXPECTED_GATED_INTERVALS
+E   AssertionError: assert (('fast-updat...orkers'), ...) == (('fast-updat...ataset'), ...)
+E     
+E     At index 3 diff: ('tabpoll-topology', 'topology') != ('status-bar-interval', None)
+E     Right contains one more item: ('network-editor-panel-fsm-poll', 'network-editor')
+E     Use -v to get more diff
+___________ TestLever1Consolidation.test_global_lane_shape_is_pinned ___________
+tests/unit/frontend/test_stage2_global_lane.py:105: in test_global_lane_shape_is_pinned
+    assert sorted(fast) == ["handle_button_timeout_and_acks"], f"fast lane drifted: {sorted(fast)}"
+E   AssertionError: fast lane drifted: ['handle_button_timeout_and_acks', 'update_unified_status_bar']
+E   assert ['handle_butt...d_status_bar'] == ['handle_butt...out_and_acks']
+E     
+E     Left contains one more item: 'update_unified_status_bar'
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/unit/frontend/test_f055_status_bar_own_lane.py::TestStatusBarRidesItsOwnGuardedLane::test_the_feeder_rides_its_own_lane
+FAILED tests/unit/frontend/test_f055_status_bar_own_lane.py::TestStatusBarRidesItsOwnGuardedLane::test_the_feeder_stops_its_own_clock_while_in_flight
+FAILED tests/unit/frontend/test_f055_status_bar_own_lane.py::TestStatusBarRidesItsOwnGuardedLane::test_no_other_callback_takes_the_lane_as_an_input
+FAILED tests/unit/frontend/test_f055_status_bar_own_lane.py::TestStatusBarRidesItsOwnGuardedLane::test_the_lane_is_declared_perpetual_and_enabled
+FAILED tests/unit/frontend/test_f055_status_bar_own_lane.py::TestStatusBarRidesItsOwnGuardedLane::test_the_lane_is_registered_as_a_global_lane
+FAILED tests/unit/frontend/test_poll_gating.py::TestGatedIntervalRegistry::test_registry_ids_all_exist_in_layout
+FAILED tests/unit/frontend/test_poll_gating.py::TestGatedIntervalRegistry::test_exactly_one_writer_per_disabled_prop
+FAILED tests/unit/frontend/test_poll_gating.py::TestStatusBarStrandWatchdog::test_watchdog_exists_and_is_single_output
+FAILED tests/unit/frontend/test_poll_gating.py::TestStatusBarStrandWatchdog::test_watchdog_rides_an_existing_lane_and_adds_no_poller
+FAILED tests/unit/frontend/test_poll_gating.py::TestStatusBarStrandWatchdog::test_watchdog_reads_the_prop_and_the_clamp_as_state
+FAILED tests/unit/frontend/test_poll_gating.py::TestStatusBarStrandWatchdog::test_watchdog_only_ever_writes_false
+FAILED tests/unit/frontend/test_poll_gating.py::TestStatusBarStrandWatchdog::test_watchdog_never_fires_while_the_apply_clamp_is_engaged
+FAILED tests/unit/frontend/test_poll_gating.py::TestStatusBarStrandWatchdog::test_watchdog_threshold_is_far_above_the_worst_round_trip
+FAILED tests/unit/frontend/test_poll_gating.py::TestStatusBarStrandWatchdog::test_threshold_is_interpolated_into_the_javascript
+FAILED tests/unit/frontend/test_poll_gating.py::TestStatusBarStrandWatchdog::test_watchdog_behaviour_under_node
+FAILED tests/unit/frontend/test_poll_gating.py::TestStatusBarStrandWatchdog::test_the_two_watchdogs_keep_separate_clocks
+FAILED tests/unit/frontend/test_poll_gating.py::TestGateSemantics::test_gate_writes_every_registered_interval
+FAILED tests/unit/frontend/test_poll_gating.py::TestRegistryMatchesSpecification::test_source_registry_matches_the_spec
+FAILED tests/unit/frontend/test_stage2_global_lane.py::TestLever1Consolidation::test_global_lane_shape_is_pinned
+19 failed, 75 passed in 5.17s
+ERROR conda.cli.main_run:execute(127): `conda run python -m pytest tests/unit/frontend/test_f055_status_bar_own_lane.py tests/unit/frontend/test_poll_gating.py tests/unit/frontend/test_stage2_global_lane.py -p no:cacheprovider` failed. (See above for error)

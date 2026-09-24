@@ -689,6 +689,95 @@ The ledger's Phase 8 again.
   - A bar showing exactly its layout defaults ("Stopped", "0", an empty latency) has never applied
     anything.
 
+## F-CANOPY-055's first fix, its review, and the Phase 9 rescue from tmpfs (operational, 2026-09-23/24)
+
+The ledger's Phase 9.
+
+- **`2026-09-23_f055_f025_allow_arm_demo_drive.py`**: F-CANOPY-025's Live Switch allow and deny arms on DEMO
+  legs. A demo leg runs its own training, so the trio's cascor is never touched. It needs
+  `CANOPY_VERIFY_DEMO_MODE=1` on `2026-09-04_canopy_verify_instance.bash`.
+  - It does NOT discriminate the fix from its parent: the allow arm landed on both. The drive records no
+    latency, so "a demo page is fast enough for the old lane" is unmeasured.
+  - Its BAR verdict is weak, because one apply before its clock starts satisfies it. The per-sample
+    `step_text` is the stronger evidence.
+- **`2026-09-23_status_bar_apply_census.py`** (Phase 8's tool) gained the first fix's predictions.
+  - Size a window to the lane's cadence. The guarded lane self-clocked at ~7.5 s per applied response, so a
+    60 s window fell under the 10-response VOID floor.
+  - Note the units: `watched`/`executed` count renderer callback objects and `delivered` counts HTTP
+    responses. They differ by one or two at a window's edges.
+- **`2026-09-23_f055_r1_laneB_*`**: round 1 Lane B's scripts, archived verbatim with a provenance header.
+  - `_repro.py` is the synthetic Dash app with the first fix's exact wiring on the real renderer, the
+    F-CANOPY-058 repro. `_cascade_sim.py`, `_no_interaction_sim.js` and `_watchdog_alias_sim.js` are its
+    models.
+  - `2026-09-23_cuts_r1_laneB_probe_deps.py` is the idle cuts' single-writer probe.
+- **`2026-09-24_archive_phase9_tmpfs_evidence.py`** copies the files Phase 9's claims rest on out of the
+  authoring session's tmpfs scratchpad.
+  - Raw outputs go to `reports/e2e-canopy-2026-09-02/phase9-scratch/`, which has an index README; the
+    scripts go here.
+  - It refuses to overwrite a file, and refuses a source that contains a secret-shaped string.
+- **`2026-09-24_host_session_activity_window.py`**: which Claude Code sessions on this host made a tool call in
+  a time window, and which hit a rate limit.
+  - It answers whether any session made a tool call in a window. It cannot see a process launched BEFORE the
+    window, which keeps acting after its session goes quiet; the launch scan below covers that.
+  - It prints ids, counts and timestamps, never message text. It cannot see the GitHub UI, other hosts, cloud
+    sessions or automations.
+- **`2026-09-24_f058_trigger_census.py`**: F-CANOPY-058's live confirmation. **Refuted before its first run**
+  by round 2 of the ledger's validation: do not run it as written. Its docstring lists the four defects and
+  the fix direction.
+  - It meant to count per-request EVICTIONS: a request that leaves the renderer's `watched` list without
+    entering `executed`. But an answer with no props leaves `executed` inside the same dispatch that put it
+    there, so a store subscriber never sees it there and scores it evicted.
+  - On the idle trio the feeder answers `no_update`. That is HTTP 200 with an empty `response`, not a 204 (dash
+    4.2.0's `has_output`), and it applies nothing, so an applies count cannot tell a healthy lane from a
+    stalled one either.
+  - Records are keyed by `executionPromise`. The observer copies a resolved request into `executed`, so keying
+    by object identity would score every applied request as evicted.
+  - It drives five triggers. It simulates an Apply through the `apply-in-flight` Store, because a real Apply
+    PATCHes the trio's cascor.
+- **`2026-09-24_phase9_ledger_round1_corrections.py`**: the ledger's round-1 fix pass, as exact substitutions
+  that each must match once. It does not reproduce the whole pass: one bullet of the consensus record was
+  applied by hand, so a replay onto a moved `main` must re-apply that bullet.
+- **`2026-09-24_phase9_ledger_round2_corrections.py`** to **`…_round10_corrections.py`**: the round-2 to
+  round-9 fix passes, and round 10's record of the review's termination, with no hand edit to the ledger.
+- **`2026-09-24_owner_answer_extract.py`**: prints chosen records of a session transcript, by line number, with
+  e-mail addresses and the token shapes its docstring lists redacted; any other shape is printed. Round 5 used
+  it for the owner's answer to the sweeper question.
+- **`2026-09-24_secret_shape_check.py`**: tests the secret and e-mail shapes of the answer extractor, the launch
+  scan, the round-2 archive tool and the report archiver (`2026-09-23_archive_consensus_reports_by_round.py`,
+  whose `--allow-shape` gate it also tests) against constructed fake values, both ways, printing labels only.
+  Round 6 widened the first three after Lane R6-B found `sk-ant-…` keys passing the extractor. Round 7 set the
+  bare `sk-` floor to 20 in all four (round 6 had raised the extractor's to 32; the other three had used 32 from
+  the start) and scoped the archiver's allows to one agent's report (Lane R7-B). Round 8 added forms to the
+  archiver's key-material refusal after Lanes R8-A and R8-B passed fake keys through it, but replaced round 7's
+  form in doing so; round 9 kept that form as well (Lane R9-B). It now refuses any PEM END line; a PEM header
+  followed by whitespace and 20 or more base64 characters; any base64 run of 40 or more characters within 400
+  characters after a PEM header; and any age identity with a body.
+- **`2026-09-24_merge_command_launch_scan.py`**: the Claude Code tool calls on this host, in a window, whose
+  command line matches a pattern of commands that can ready, arm, merge, update-branch or re-run a PR, with
+  each call's background flag.
+  - It answers what the activity window cannot: a process launched BEFORE a window keeps acting after its
+    session is rate-limited, and round 2 found one that did.
+  - It is a PATTERN, not a proof. Rounds 3 and 4 found forms the first version missed (a converge driver's
+    update-branch loop, `gh pr -R <repo> <verb>`, GraphQL `updatePullRequestBranch`, and more); a script run
+    by a path the pattern does not name is still outside it, and its docstring names the forms it still
+    misses.
+  - It prints timestamps, session ids and the command's first 220 characters, with token shapes and e-mail
+    addresses redacted.
+- **`2026-09-24_archive_phase9_tmpfs_evidence_round2.py`**: the rest of Phase 9's tmpfs evidence, from two
+  sessions' scratchpads, including round 2's lanes. Same rules as the first pass, plus a refusal of any file
+  that holds an e-mail address other than a `noreply` one or the Codecov uploader's public key address
+  (`@codecov.io`), which CI logs print.
+- **`2026-09-24_push_phase9_signed_groups.py`**: uploads a local branch's change to its GitHub branch as signed
+  commits in groups of at most 250 KB, except the ledger, which goes alone and last at about 780 KB (about 1 MB
+  encoded), each pinned to the one before, then
+  compares every uploaded blob with the local one. A large payload can return HTTP 499 or 502 and still land,
+  so it re-reads the ref before any retry.
+- **`2026-09-23_cuts_r1_laneB_probe_*`, `2026-09-24_ledger_r1_laneB1_*`, `2026-09-24_ledger_r2_laneB_*` and
+  `2026-09-24_ledger_r2_laneF_*`**: review lanes' scripts, archived verbatim under a provenance header naming
+  the report that cites them.
+- **`2026-09-24_idle_cuts_check_mutants.py`**: the canopy follow-up to #676. Ten mutants of the
+  `test_idle_dispatch_cuts.py` CLASS check; each must fail exactly its named test.
+
 ---
 
 ## What does NOT belong here

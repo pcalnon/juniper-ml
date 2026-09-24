@@ -1,0 +1,36 @@
+# PF-2 axis 3 SEED PROBE (re-spec §4.2 follow-up): is "5 spirals scores above 4" real, or one seed?
+#
+# The axis-3 suite (util/experiments/suites/perf/pf2-axis3-cascor-spiral-count.yaml, RUN
+# 2026-09-23) measured test roc_auc 0.6721 at 4 spirals and 0.7458 at 5 -- an inversion of the
+# difficulty order -- on ONE seed: its three passes were bit-identical (seed_policy: fixed), so
+# they proved determinism and said nothing about seed variance.
+#
+# WHAT VARIES HERE, AND WHAT CANNOT. The DATASET seed (dataset.params.seed, explicit, the leading
+# key so seeds run round-robin across n_spirals). The NETWORK initialisation seed does not vary:
+# the cascor service exposes no random_seed on the training path (src/api/routes/training.py uses
+# params["seed"] only for its in-process generator), so every cell initialises identically. A
+# verdict here is therefore "over dataset draws, at a fixed network initialisation" -- not a full
+# seed marginal.
+#
+# READ IT PAIRED. Each seed yields a 4-spiral and a 5-spiral cell. The reducer
+# (util/ad-hoc/2026-09-24_pf2_axis3_seed_probe_reduce.py) counts the seeds on which 4 scores ABOVE
+# 5, which is the direction difficulty predicts. Five of five says the 2026-09-23 inversion was
+# that seed; a split says the two are not separable at this budget.
+#
+# Not committed under suites/: a one-question probe, like the axis-3 capacity calibration.
+# base_config is ABSOLUTE for the reason that calibration file records (a util/ad-hoc suite runs
+# from checkouts at different depths).
+schema_version: 1
+suite:
+  name: pf2-axis3-seed-probe
+  description: "PF-2 axis 3 follow-up: n_spirals 4 vs 5 over 5 dataset seeds, network init fixed"
+  app: cascor
+  base_config: [/home/pcalnon/Development/python/Juniper/juniper-cascor/conf/experiments/spiral-smoke.yaml]
+  seed_policy: fixed
+execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 1800, max_wall_seconds: 900}
+matrix:
+  dataset.params.seed: [101, 202, 303, 404, 505]
+  dataset.params.n_spirals: [4, 5]
+  training.params.max_hidden_units: [16]
+  training.params.max_iterations: [16]
+outputs: {suite_dir: null, aggregate: [csv, markdown]}

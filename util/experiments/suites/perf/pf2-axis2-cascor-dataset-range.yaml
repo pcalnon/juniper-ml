@@ -22,6 +22,7 @@
 #   (10000 <= 10000), generation then raises a pydantic ValidationError, and the ValueError
 #   handler (juniper_data/api/app.py) returns 400 "Invalid request parameters" with the cause
 #   logged only at DEBUG. The cell reads `torn_down_early` after ~18 s, not `timed_out`.
+#   Filed 2026-09-23 as juniper-data#432 (reproduction: util/ad-hoc/2026-09-23_data_additive_overflow_repro.py).
 # 5,800 is the top cell: the widest round request under the ceiling, with 1.4% margin in case
 # the split defaults move. In TOTAL rows per spiral this suite still spans 425 -> ~9,860.
 # The owner's original 250 -> 500,000 request is reachable only through cascor's own in-process
@@ -69,7 +70,7 @@
 schema_version: 1
 suite:
   name: pf2-axis2-cascor-dataset-range
-  description: "PF-2 axis 2: wall time vs n_points_per_spiral, 250 -> 10,000, 3 round-robin passes"
+  description: "PF-2 axis 2: wall time vs n_points_per_spiral, 250 -> 5,800 (the suite path's ceiling is 5,882), 3 round-robin passes"
   app: cascor
   base_config: [../../../../../juniper-cascor/conf/experiments/spiral-smoke.yaml]
   seed_policy: fixed

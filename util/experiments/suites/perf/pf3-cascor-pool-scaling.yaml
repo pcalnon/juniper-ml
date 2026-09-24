@@ -55,6 +55,13 @@
 #      does exactly that. For this suite that means 42 cells, about 21 h. Otherwise, wait for a
 #      1-minute load under 3.
 # Thresholds remain unratified -- do not read a result against a threshold nobody approved.
+#
+# OWNER RULED 2026-09-24 (notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md
+# §6): WAIT FOR A QUIET WINDOW -- no clamscan running, and a 1-minute load that STAYS under ~6.
+# Declined: running round-robin on the loaded host now, or waiting for the owner to free the host.
+# A window opened at 02:39 local that night (4.20 / 4.09 / 3.48) and closed within minutes, when a
+# peer session's test run took the load to 8.97. So check the load at launch, and record it
+# throughout with util/ad-hoc/2026-09-08_loadavg_sampler.py beside the suite dir. One pass is ~7 h.
 schema_version: 1
 suite:
   name: pf3-cascor-pool-scaling

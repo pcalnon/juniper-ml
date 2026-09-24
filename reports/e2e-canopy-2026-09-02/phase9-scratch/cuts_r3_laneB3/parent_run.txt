@@ -1,0 +1,30 @@
+
+=== Test Environment Configuration ===
+CasCor Backend Tests: DISABLED (set CASCOR_BACKEND_AVAILABLE=1)
+Live Server Tests: DISABLED (set RUN_SERVER_TESTS=1)
+Display Tests: ENABLED
+Slow Tests: DISABLED (set ENABLE_SLOW_TESTS=1)
+========================================
+
+FFFF..FFF                                                                [100%]
+=================================== FAILURES ===================================
+/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/laneB3cuts.9xxSoB/parent/src/tests/unit/frontend/test_idle_dispatch_cuts.py:123: AssertionError: Intervals with no consumer tick forever for nothing (each tick is a store update that re-runs the page's selectors): ['metrics-panel-update-interval']
+/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/laneB3cuts.9xxSoB/parent/src/tests/unit/frontend/test_idle_dispatch_cuts.py:128: AssertionError: assert 'metrics-panel-update-interval' not in {'apply-watchdog-interval', 'candidate-metrics-panel-update-interval', 'cassandra-panel-interval', 'fast-update-interval', 'hdf5-snapshots-panel-refresh-interval', 'metrics-panel-replay-interval', ...}
+/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/laneB3cuts.9xxSoB/parent/src/tests/unit/frontend/test_idle_dispatch_cuts.py:138: AssertionError: the weight drain must ship disabled; the gate enables it while a replay session exists
+/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/laneB3cuts.9xxSoB/parent/src/tests/unit/frontend/test_idle_dispatch_cuts.py:144: AssertionError: 0 writers of replay-player-panel-weight-drain.disabled -- the gate must be the only one
+/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/laneB3cuts.9xxSoB/parent/src/tests/unit/frontend/test_idle_dispatch_cuts.py:66: AssertionError: replay_player_panel has no WEIGHT_DRAIN_GATE_JS -- the weight drain is not gated
+/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/laneB3cuts.9xxSoB/parent/src/tests/unit/frontend/test_idle_dispatch_cuts.py:66: AssertionError: replay_player_panel has no WEIGHT_DRAIN_GATE_JS -- the weight drain is not gated
+/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/laneB3cuts.9xxSoB/parent/src/tests/unit/frontend/test_idle_dispatch_cuts.py:211: assert False
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_the_drain_is_not_in_the_tab_gate
+PASSED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_no_pending_callback_can_hold_the_gate
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestEveryIntervalHasAConsumer::test_every_interval_has_a_consumer
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestEveryIntervalHasAConsumer::test_the_metrics_panel_has_no_update_interval
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_the_drain_ships_disabled
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_one_writer_of_disabled_and_it_is_the_clientside_gate
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGate::test_the_gate_is_the_registered_function
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::TestWeightDrainGateRule::test_disabled_unless_a_session_exists
+FAILED tests/unit/frontend/test_idle_dispatch_cuts.py::test_register_callbacks_still_builds_on_a_bare_app
+7 failed, 2 passed in 2.69s
+ERROR conda.cli.main_run:execute(127): `conda run python -m pytest tests/unit/frontend/test_idle_dispatch_cuts.py -p no:cacheprovider -rA --tb=line` failed. (See above for error)

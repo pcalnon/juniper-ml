@@ -1,0 +1,25 @@
+
+=== Test Environment Configuration ===
+CasCor Backend Tests: DISABLED (set CASCOR_BACKEND_AVAILABLE=1)
+Live Server Tests: DISABLED (set RUN_SERVER_TESTS=1)
+Display Tests: ENABLED
+Slow Tests: DISABLED (set ENABLE_SLOW_TESTS=1)
+========================================
+
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-8.4.2, pluggy-1.6.0
+rootdir: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/laneB3cuts.9xxSoB/head
+configfile: pyproject.toml
+plugins: cov-7.1.0, base-url-2.1.0, anyio-4.14.2, dash-4.2.0, asyncio-0.26.0, mock-3.15.1, timeout-2.4.0, playwright-0.7.2
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 60.0s
+timeout method: signal
+timeout func_only: False
+collected 52 items
+
+tests/unit/frontend/test_idle_dispatch_cuts.py .........                 [ 17%]
+tests/unit/frontend/test_replay_player_panel.py ........................ [ 63%]
+.................                                                        [ 96%]
+tests/regression/test_panel_layout_snapshots.py ..                       [100%]
+
+============================== 52 passed in 2.63s ==============================

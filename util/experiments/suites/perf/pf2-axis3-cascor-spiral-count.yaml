@@ -1,0 +1,72 @@
+# PF-2 AXIS 3 (re-spec §4): classification DIFFICULTY against the number of spirals, 2 -> 5, read
+# on ACCURACY. Thresholds unratified; this file is the instrument, not the verdict.
+#
+# notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md §4 specifies the axis
+# (owner decision D4, 2026-09-11: "number of spirals per dataset is likely the more interesting
+# axis ... certainly <= 10 and probably <= 6"). Its §4.1 calibration (2026-09-15) found the axis
+# VIABLE, but not on the observable §4 expected, and fixed three things this file inherits:
+#
+#   1. READ ACCURACY, NOT STRUCTURE. At every budget tried, hidden units grown equalled
+#      max_hidden_units and `epoch` equalled max_iterations + 1 in every cell: the network
+#      saturates its capacity at every spiral count, so the structural columns are PINNED TO THE
+#      BUDGET and cannot discriminate. step_count is worse -- 50 here purely by output_epochs,
+#      invariant across n_spirals. Test roc_auc moved 0.961 -> 0.613 -> 0.555 across 2 / 6 / 10
+#      spirals at this budget. The suite's own REPORT.md / aggregate.csv carry only the structural
+#      and wall columns, so the reducer reads metrics_final.json per run:
+#          python3 util/ad-hoc/2026-09-23_pf2_axis3_reduce.py --suite-dir <suite dir>
+#   2. SAMPLE 2, 3, 4, 5 -- NOT 2, 6, 10. Only 2 spirals was solved; 6 and 10 were both near
+#      chance, so the transition happens between 2 and 6 and the upper points would spend host
+#      time confirming the same "unsolved".
+#   3. max_hidden_units 16 WITH max_iterations 16. `grow_network` is `for iteration in
+#      range(max_iterations)` and adds at most one unit per iteration, so max_iterations is the
+#      binding cap on growth. spiral-smoke sets both to 2; the calibration's larger budget is the
+#      one that let difficulty express (roc_auc spread 0.405 at 16 against 0.179 at 2).
+#
+# WHAT THIS CANNOT CLAIM. "Unsolved at this budget" only. Something other than hidden-unit capacity
+# binds at >= 6 spirals: spiral-smoke's output_epochs 50 and its candidate budget were never
+# varied, so a near-chance cell does NOT show that n spirals is intractable for cascor.
+#
+# LOAD. Accuracy is a numeric outcome: with seed_policy fixed it should not move with host load,
+# and the three passes test exactly that (a reducer flags any pass that disagrees). Wall time IS
+# load-sensitive and is reported as context only. The repeat key comes first so passes run
+# round-robin (see pf2-axis2-cascor-dataset-range.yaml for why a leading key does that).
+#
+# PATH. The experiment driver stages its dataset through juniper-data, so MAX_SPIRALS (10) binds
+# (re-spec §1 correction). 2..5 is well inside it. n_points_per_spiral stays at spiral-smoke's 200
+# (340 rows per spiral after additive sizing), far below the 5,882 request ceiling.
+#
+# Budgets mirror the calibration (util/ad-hoc/2026-09-12_pf2_spiral_capacity_calibration.yaml),
+# whose budget-16 cells took 32-39 s at load; 900 s is >20x that. Whole suite: 12 cells, roughly
+# 8-10 min.
+#
+# RESULT, 2026-09-23 -- RUN: 12/12 succeeded, cascor 0d2d826, load 8-15. Test roc_auc 0.9605 /
+# 0.8335 / 0.6721 / 0.7458 for 2 / 3 / 4 / 5 spirals. It separates 2 -> 3 -> 4; 5 does NOT rank
+# below 4, on one seed. The three passes are BIT-IDENTICAL, so they prove determinism and
+# load-insensitivity, not seed variance: the 4/5 inversion needs a seed axis before it means
+# anything. Full table: PF-2 re-spec §4.2.
+#   The reducer reads eval_metrics.final (split == "test"). A run's TOP-LEVEL f1 / roc_auc are the
+#   VALIDATION split, which training early-stops on. The reducer's first draft read those and
+#   reported 0.9808 for the cell whose test figure is 0.9605.
+#
+# SEED PROBE, 2026-09-24 (util/ad-hoc/2026-09-24_pf2_axis3_seed_probe.yaml; re-spec §4.3): the
+# 4/5 inversion was the seed. Over 5 dataset seeds, 4 beats 5 on test roc_auc 4/5 (median +0.040)
+# and on f1 5/5. But roc_auc at 4 spans 0.611-0.830 across seeds, ~5x the gap, so this suite's
+# single fixed seed CANNOT order adjacent spiral counts. Give any gate on it several dataset
+# seeds per cell (the service exposes no network seed, so a suite can vary only the data).
+schema_version: 1
+suite:
+  name: pf2-axis3-cascor-spiral-count
+  description: "PF-2 axis 3: accuracy vs n_spirals 2..5 at max_hidden_units 16, 3 round-robin passes"
+  app: cascor
+  base_config: [../../../../../juniper-cascor/conf/experiments/spiral-smoke.yaml]
+  seed_policy: fixed
+execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 1800, max_wall_seconds: 900}
+matrix:
+  experiment.description:
+    - "PF-2 axis 3 pass 1"
+    - "PF-2 axis 3 pass 2"
+    - "PF-2 axis 3 pass 3"
+  dataset.params.n_spirals: [2, 3, 4, 5]
+  training.params.max_hidden_units: [16]
+  training.params.max_iterations: [16]
+outputs: {suite_dir: null, aggregate: [csv, markdown]}

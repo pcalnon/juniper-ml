@@ -36,7 +36,48 @@ import re
 import sys
 from pathlib import Path
 
-SECRET_RE = re.compile(r"(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|sk-[A-Za-z0-9]{32,}|AGE-SECRET-KEY-)")
+# Widened 2026-09-24 (Phase 9 ledger, round 7, Lane R7-B): the first version passed sk-ant-/sk-proj- keys, gho_/
+# ghs_/ghu_/ghr_, hf_, xox?-, pypi- and JWT shapes in the reports it archives verbatim.
+SECRET_RE = re.compile(
+    r"(gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----"
+    r"|(?<![A-Za-z0-9])sk-[A-Za-z0-9_-]{20,}|(?<![A-Za-z0-9])hf_[A-Za-z0-9]{20,}|(?<![A-Za-z0-9])pypi-[A-Za-z0-9_-]{50,}"
+    r"|xox[abposr]-[A-Za-z0-9-]{10,}|AGE-SECRET-KEY-|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,})"
+)
+# Two SECRET_RE shapes match only a PREFIX, so an allowed literal equal to one would also pass a real key. Key
+# material is therefore refused whatever --allow-shape says. Round 7's form ("a header, whitespace, base64")
+# missed a JSON-escaped body, a blockquote, numbered lines, a backticked header, an encrypted PEM's Proc-Type
+# lines and a post-quantum age identity (round 8, Lanes R8-A and R8-B), so round 8's 40-character window does not
+# depend on separators. Round 7's form, kept below for 20-39-character bodies, still needs whitespace after the
+# header (Lane R10-B).
+PEM_HEADER_RE = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")
+PEM_END_RE = re.compile(r"-----END [A-Z ]*PRIVATE KEY-----")
+# Round 7's form, kept in round 9 (Lane R9-B): round 8 had replaced it, so a header, whitespace and a 20-39
+# character body passed.
+PEM_BODY_RE = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----\s*[A-Za-z0-9+/=]{20,}")
+BASE64_RUN_RE = re.compile(r"[A-Za-z0-9+/]{40,}")
+AGE_KEY_RE = re.compile(r"AGE-SECRET-KEY-[0-9A-Z-]*1[0-9A-Z]{10,}")
+KEY_WINDOW = 400
+
+
+def key_material(text: str) -> list:
+    """Return key material in ``text``: any PEM END line; a PEM header followed by whitespace and 20 or more
+    base64 characters; any base64 run of 40 or more characters within KEY_WINDOW characters after a PEM header;
+    and any age identity with a body (classic or post-quantum)."""
+    found = [m.group(0) for m in PEM_END_RE.finditer(text)] + [m.group(0) for m in AGE_KEY_RE.finditer(text)]
+    found += [m.group(0) for m in PEM_BODY_RE.finditer(text)]
+    for m in PEM_HEADER_RE.finditer(text):
+        found += BASE64_RUN_RE.findall(text[m.end() : m.end() + KEY_WINDOW])
+    return found
+
+
+def unreviewed_shapes(text: str, aid: str, allows: list) -> list:
+    """Return the secret-shaped strings in ``text`` that no reviewed allow covers.
+
+    An allow is ``AGENT_ID=LITERAL``: that exact matched text, allowed in that agent's report only. Key material
+    (see ``key_material``) is always returned.
+    """
+    allowed = {lit for agent, _, lit in (a.partition("=") for a in allows) if agent == aid}
+    return key_material(text) + [m.group(0) for m in SECRET_RE.finditer(text) if m.group(0) not in allowed]
 
 
 def _texts(content) -> list:
@@ -80,6 +121,11 @@ def main() -> int:
     ap.add_argument("--title", required=True)
     ap.add_argument("--intro", required=True)
     ap.add_argument("--out", required=True)
+    # Added 2026-09-24 (Phase 9 ledger, round 6): a report may QUOTE a shape without holding a secret, as Lane
+    # R6-B's did when it named the PEM header its fake-value test used. Scoped in round 7 (Lane R7-B): an allow
+    # names the agent whose report it covers, and key material (key_material(), widened in rounds 8 and 9) refuses regardless
+    # (see unreviewed_shapes). Any other match still refuses.
+    ap.add_argument("--allow-shape", action="append", default=[], help="AGENT_ID=LITERAL: exact matched text to ignore in that agent's report, after review (repeatable)")
     ap.add_argument("agents", nargs="+", help='AGENT_ID="role label"')
     args = ap.parse_args()
 
@@ -97,9 +143,13 @@ def main() -> int:
             print(f"{aid}: not resumed -- no round-{args.round} report; skipped ({label})")
             continue
         text, status = pick
-        if SECRET_RE.search(text):
-            print(f"REFUSED: a secret-shaped string in {aid}'s report; archive by hand after review", file=sys.stderr)
+        unreviewed = unreviewed_shapes(text, aid, args.allow_shape)
+        if unreviewed:
+            print(f"REFUSED: {len(unreviewed)} secret-shaped string(s) in {aid}'s report; archive by hand after review", file=sys.stderr)
             return 1
+        hits = len(SECRET_RE.findall(text))
+        if hits:
+            print(f"{aid}: {hits} match(es), each an --allow-shape literal for this agent")
         where = "before its round-2 brief" if got["split"] and args.round == 1 else f"after its round-{args.round} brief" if args.round >= 2 else "not resumed"
         parts += [f"## {label or aid}", "", f"*agent `{aid}` · round {args.round} · {status} ({where}) · {len(text)} chars*", "", text.strip(), "", "---", ""]
         print(f"{aid}: round {args.round} {status} ({where}), {len(text)} chars -- {label}")
