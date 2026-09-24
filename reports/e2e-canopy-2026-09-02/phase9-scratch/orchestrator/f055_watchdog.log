@@ -1,0 +1,10 @@
+
+=== Test Environment Configuration ===
+CasCor Backend Tests: DISABLED (set CASCOR_BACKEND_AVAILABLE=1)
+Live Server Tests: DISABLED (set RUN_SERVER_TESTS=1)
+Display Tests: ENABLED
+Slow Tests: DISABLED (set ENABLE_SLOW_TESTS=1)
+========================================
+
+.................                                                        [100%]
+17 passed, 28 deselected in 2.81s

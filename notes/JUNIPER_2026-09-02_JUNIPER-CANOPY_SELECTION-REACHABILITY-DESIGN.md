@@ -222,6 +222,29 @@ and disable **Apply Dataset** at `⊥` (N9). The correct idiom already exists at
 >   still its only accessible signal. canopy#671 counts the dropdown half as shipped through the
 >   `role="status"` notice, but that notice announces what the gate did, not which options are
 >   greyed. The browser posture has not been re-measured since OQ-N5 (2026-09-02).
+> - **Why canopy cannot set `aria-disabled` itself (2026-09-24).** This comes from dash's source,
+>   not from a DOM measurement. dash 4.2.0, the version installed in `JuniperCanopy1`, renders each
+>   `dcc.Dropdown` option as `<label role="option" aria-selected=…>` wrapping a native
+>   `<input disabled={!!option.disabled}>`. See `src/utils/optionRendering.tsx` lines 101–118 in the
+>   installed bundle's source map.
+>   - The element that carries the option role never gets `aria-disabled`.
+>   - An option is only `{label, value, disabled, title, search}` (`src/types.ts`,
+>     `DetailedOption`), so no canopy prop reaches that element.
+>   - Upstream `plotly/dash` `dev` renders the same lines today; the latest release is 4.4.1. No
+>     issue or PR there mentions `aria-disabled`.
+>   - The reason is already in the accessible name, because `gated_dataset_options` appends it to
+>     the label (`"<label> — <reason>"`). What a screen reader misses is the state.
+>
+>   The owner's options:
+>   - **Upstream fix.** Add one attribute, `aria-disabled={!!option.disabled}`, on that `<label>`.
+>     Filing the issue or PR is an outward action.
+>   - **An accessible-name marker.** `label` may be a component, so a greyed option could carry
+>     visually hidden "unavailable" text, with `search` set to keep search working. This changes
+>     nothing on screen, but it changes the label strings that canopy's Y8 tests pin.
+>   - **A clientside observer** that sets `aria-disabled` on `.dash-options-list-option` labels
+>     whose input is disabled. It binds to dcc's private class names, so a dash upgrade can break it
+>     silently.
+>   - **Accept the gap.** The reason is announced; only the state is not.
 
 ### 4.4 Model-state truth (N5 / X1)
 
@@ -894,11 +917,30 @@ closing a capability gap and moving it somewhere less visible.
 >   stop serving the previous run's results under the new label. The seed stays enabled; this section's
 >   disable-with-a-reason rule is not applied, because the fault is not the generator's. The fix must
 >   cover `mnist` as well.
+>
+>   **Shipped, 2026-09-24.**
+>   - juniper-cascor#687: a Start that continues the network now refuses a wider staged dataset after
+>     the fetch and **before binding anything**. The label, the loaded data and the staged slot stay
+>     as they were. The refusal opens with `[start_fresh_required]` and names `start_fresh`.
+>   - juniper-canopy#681: the alert recognises that marker and names the two controls that apply the
+>     remedy, "Stop & Restart with new dataset" and "Start fresh".
+>   - Both are tested for `equities` (15 features) and `mnist` (784).
+>   - Canopy's sidebar title follows the *selection*, which hydrates from the staged dataset. After
+>     a refused Start it therefore reads the staged dataset with the pending banner up, the same
+>     state an ordinary Apply Dataset leaves. It no longer sits over routes that claim that dataset
+>     is loaded.
 > - **Adjacent: Start fresh discards parameters applied just before it.** The restart modal applies
 >   edited parameters (`set_params`) and then restarts. With Start fresh on, cascor rebuilds a
 >   vanilla network at its own defaults, so the edits are silently lost. This was observed through
 >   the two routes the modal calls, not by clicking the modal. **Owner ruling, 2026-09-24: apply the
 >   edits after the fresh rebuild**, so they survive.
+>
+>   **Shipped, 2026-09-24.**
+>   - juniper-cascor#685: the start-fresh reset captures the discarded network's applied params.
+>     `start_training` re-applies them to the rebuilt network through the same path as a `PATCH`,
+>     and the start body's own params still land on top.
+>   - juniper-canopy#681: the modal's text no longer calls a start-fresh "functionally a clean stack
+>     launch". It says the parameters carry over.
 > - **Caveat on the LMU rows.** The recurrence leg was the installed `juniper-recurrence` console
 >   script (0.5.0, an editable install of the primary checkout). It ran with
 >   juniper-recurrence-model **0.1.5**, not the 0.3.x line `juniper-ml[recurrence]` installs.

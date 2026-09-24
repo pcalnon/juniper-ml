@@ -1,0 +1,420 @@
+{
+ "scenario": "watchdog",
+ "R": 3.0,
+ "jitter": 2.0,
+ "gate": false,
+ "gate_mount": true,
+ "watchdog": true,
+ "click_after": 1.0,
+ "feeder_posts_seen_by_browser": [
+  2.845,
+  7.646,
+  13.582,
+  18.666,
+  23.454,
+  28.946,
+  34.881,
+  39.312,
+  44.859,
+  49.788,
+  54.009,
+  58.843,
+  64.007,
+  69.756,
+  75.392,
+  81.365,
+  87.099,
+  91.308,
+  93.845,
+  96.093,
+  98.395,
+  100.199,
+  103.421,
+  105.353,
+  108.332,
+  109.366,
+  112.765,
+  114.644,
+  118.766,
+  124.173,
+  129.758,
+  135.124,
+  140.404,
+  145.64,
+  150.085,
+  153.844,
+  159.657,
+  164.826,
+  170.542,
+  176.163,
+  181.063,
+  187.02,
+  188.842,
+  191.643,
+  192.998,
+  197.47,
+  202.413,
+  206.777,
+  211.97,
+  216.91,
+  222.294,
+  227.083,
+  231.641,
+  233.842,
+  235.872,
+  238.825,
+  240.406
+ ],
+ "wrap": "function",
+ "t_load": 2.878,
+ "click_t": null,
+ "watchdog_fires": [
+  57.832,
+  92.833,
+  152.833,
+  187.833,
+  232.832
+ ],
+ "n_requests": 56,
+ "n_applied": 39,
+ "timeline": [
+  {
+   "seq": 1,
+   "start": 2.843,
+   "end": 6.633,
+   "applied_at": 6.642
+  },
+  {
+   "seq": 2,
+   "start": 7.645,
+   "end": 12.558,
+   "applied_at": 12.569
+  },
+  {
+   "seq": 3,
+   "start": 13.58,
+   "end": 17.65,
+   "applied_at": 17.661
+  },
+  {
+   "seq": 4,
+   "start": 18.665,
+   "end": 22.441,
+   "applied_at": 22.447
+  },
+  {
+   "seq": 5,
+   "start": 23.453,
+   "end": 27.932,
+   "applied_at": 27.942
+  },
+  {
+   "seq": 6,
+   "start": 28.948,
+   "end": 33.868,
+   "applied_at": 33.877
+  },
+  {
+   "seq": 7,
+   "start": 34.88,
+   "end": 38.3,
+   "applied_at": 38.309
+  },
+  {
+   "seq": 8,
+   "start": 39.311,
+   "end": 43.848,
+   "applied_at": 43.856
+  },
+  {
+   "seq": 9,
+   "start": 44.858,
+   "end": 48.774,
+   "applied_at": 48.782
+  },
+  {
+   "seq": 10,
+   "start": 49.787,
+   "end": 52.997,
+   "applied_at": 53.003
+  },
+  {
+   "seq": 11,
+   "start": 54.009,
+   "end": 58.26,
+   "applied_at": 58.266
+  },
+  {
+   "seq": 12,
+   "start": 58.842,
+   "end": 62.995,
+   "applied_at": 63.002
+  },
+  {
+   "seq": 13,
+   "start": 64.007,
+   "end": 68.739,
+   "applied_at": 68.75
+  },
+  {
+   "seq": 14,
+   "start": 69.755,
+   "end": 74.381,
+   "applied_at": 74.387
+  },
+  {
+   "seq": 15,
+   "start": 75.391,
+   "end": 80.352,
+   "applied_at": 80.359
+  },
+  {
+   "seq": 16,
+   "start": 81.365,
+   "end": 86.089,
+   "applied_at": 86.094
+  },
+  {
+   "seq": 17,
+   "start": 87.098,
+   "end": 90.293,
+   "applied_at": 90.304
+  },
+  {
+   "seq": 18,
+   "start": 91.308,
+   "end": 95.082,
+   "applied_at": null
+  },
+  {
+   "seq": 19,
+   "start": 93.846,
+   "end": 97.383,
+   "applied_at": null
+  },
+  {
+   "seq": 20,
+   "start": 96.092,
+   "end": 99.19,
+   "applied_at": null
+  },
+  {
+   "seq": 21,
+   "start": 98.394,
+   "end": 102.412,
+   "applied_at": null
+  },
+  {
+   "seq": 22,
+   "start": 100.198,
+   "end": 104.341,
+   "applied_at": null
+  },
+  {
+   "seq": 23,
+   "start": 103.421,
+   "end": 107.319,
+   "applied_at": null
+  },
+  {
+   "seq": 24,
+   "start": 105.352,
+   "end": 108.353,
+   "applied_at": null
+  },
+  {
+   "seq": 25,
+   "start": 108.332,
+   "end": 111.751,
+   "applied_at": null
+  },
+  {
+   "seq": 26,
+   "start": 109.364,
+   "end": 113.631,
+   "applied_at": null
+  },
+  {
+   "seq": 27,
+   "start": 112.765,
+   "end": 117.755,
+   "applied_at": null
+  },
+  {
+   "seq": 28,
+   "start": 114.643,
+   "end": 118.432,
+   "applied_at": 118.443
+  },
+  {
+   "seq": 29,
+   "start": 118.766,
+   "end": 123.161,
+   "applied_at": 123.17
+  },
+  {
+   "seq": 30,
+   "start": 124.172,
+   "end": 128.746,
+   "applied_at": 128.754
+  },
+  {
+   "seq": 31,
+   "start": 129.757,
+   "end": 134.113,
+   "applied_at": 134.119
+  },
+  {
+   "seq": 32,
+   "start": 135.122,
+   "end": 139.393,
+   "applied_at": 139.399
+  },
+  {
+   "seq": 33,
+   "start": 140.403,
+   "end": 144.629,
+   "applied_at": 144.635
+  },
+  {
+   "seq": 34,
+   "start": 145.639,
+   "end": 149.069,
+   "applied_at": 149.082
+  },
+  {
+   "seq": 35,
+   "start": 150.081,
+   "end": 153.16,
+   "applied_at": 153.166
+  },
+  {
+   "seq": 36,
+   "start": 153.843,
+   "end": 158.644,
+   "applied_at": 158.654
+  },
+  {
+   "seq": 37,
+   "start": 159.657,
+   "end": 163.812,
+   "applied_at": 163.819
+  },
+  {
+   "seq": 38,
+   "start": 164.825,
+   "end": 169.53,
+   "applied_at": 169.538
+  },
+  {
+   "seq": 39,
+   "start": 170.542,
+   "end": 175.15,
+   "applied_at": 175.16
+  },
+  {
+   "seq": 40,
+   "start": 176.163,
+   "end": 180.049,
+   "applied_at": 180.058
+  },
+  {
+   "seq": 41,
+   "start": 181.062,
+   "end": 186.005,
+   "applied_at": 186.014
+  },
+  {
+   "seq": 42,
+   "start": 187.019,
+   "end": 190.628,
+   "applied_at": null
+  },
+  {
+   "seq": 43,
+   "start": 188.843,
+   "end": 191.988,
+   "applied_at": null
+  },
+  {
+   "seq": 44,
+   "start": 191.642,
+   "end": 196.457,
+   "applied_at": null
+  },
+  {
+   "seq": 45,
+   "start": 192.997,
+   "end": 196.873,
+   "applied_at": 196.881
+  },
+  {
+   "seq": 46,
+   "start": 197.468,
+   "end": 201.399,
+   "applied_at": 201.407
+  },
+  {
+   "seq": 47,
+   "start": 202.412,
+   "end": 205.766,
+   "applied_at": 205.774
+  },
+  {
+   "seq": 48,
+   "start": 206.776,
+   "end": 210.955,
+   "applied_at": 210.964
+  },
+  {
+   "seq": 49,
+   "start": 211.969,
+   "end": 215.897,
+   "applied_at": 215.906
+  },
+  {
+   "seq": 50,
+   "start": 216.909,
+   "end": 221.276,
+   "applied_at": 221.29
+  },
+  {
+   "seq": 51,
+   "start": 222.294,
+   "end": 226.073,
+   "applied_at": 226.08
+  },
+  {
+   "seq": 52,
+   "start": 227.082,
+   "end": 230.627,
+   "applied_at": 230.635
+  },
+  {
+   "seq": 53,
+   "start": 231.641,
+   "end": 234.864,
+   "applied_at": null
+  },
+  {
+   "seq": 54,
+   "start": 233.841,
+   "end": 237.815,
+   "applied_at": null
+  },
+  {
+   "seq": 55,
+   "start": 235.872,
+   "end": 239.395,
+   "applied_at": null
+  },
+  {
+   "seq": 56,
+   "start": 238.824,
+   "end": 243.029,
+   "applied_at": null
+  }
+ ],
+ "after_first_fire_requests": 46,
+ "after_first_fire_applied": 29
+}

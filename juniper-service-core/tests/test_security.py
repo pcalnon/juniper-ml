@@ -76,6 +76,55 @@ def test_blank_keys_filtered_alongside_real_key():
     assert auth.validate("  ") is False
 
 
+# --- APIKeyAuth: a non-ASCII key is compared, never raised on ---------------
+#
+# ``hmac.compare_digest`` raises ``TypeError`` on a ``str`` holding any non-ASCII
+# character. Starlette decodes header bytes as latin-1, so every byte above 0x7f reaches
+# ``validate`` as one: an anonymous ``X-API-Key: \xa0`` was a 500 whose Sentry event
+# carried the comparison loop's ``candidate`` -- the real configured key (found by the
+# validation of juniper-canopy#683, 2026-09-24).
+
+#: Header values as ``validate`` receives them. U+00A0 and U+0085 are the two the
+#: validation drove through both uvicorn parsers; the rest vary position and byte.
+_NON_ASCII_PRESENTED = ["\xa0", "\x85", "\xff", "r\xe9al-key", "real-key\xa0"]
+
+
+@pytest.mark.parametrize("presented", _NON_ASCII_PRESENTED)
+def test_non_ascii_presented_key_is_a_mismatch_not_an_exception(presented):
+    assert APIKeyAuth(["real-key"]).validate(presented) is False
+
+
+#: Strings chosen to separate the candidate encodings. "\ud800" is a lone HIGH surrogate --
+#: ``strict`` and ``surrogateescape`` both raise on it; "\udcc3\udca9" is what
+#: ``surrogateescape`` encodes to the same bytes as "\xe9". Only an encoding that is both
+#: total and injective gives ``validate(x) == (x in keys)`` for every pair below.
+_ENCODING_PROBES = ["real-key", "cl\xe9", "\xe9", "\udcc3\udca9", "\ud800-key", "\udcff", "\U0001f511"]
+
+
+@pytest.mark.parametrize("configured", _ENCODING_PROBES)
+@pytest.mark.parametrize("presented", _ENCODING_PROBES)
+def test_validate_matches_exactly_when_the_strings_are_equal(configured, presented):
+    """The bytes compare must accept what ``==`` accepts: no raise, no collision."""
+    assert APIKeyAuth([configured]).validate(presented) is (presented == configured)
+
+
+def _make_raw_request(raw_headers: list[tuple[bytes, bytes]]) -> Request:
+    """A :class:`Request` carrying header bytes exactly as they arrived on the wire."""
+    scope = {"type": "http", "method": "GET", "path": "/", "headers": raw_headers, "client": ("testclient", 50000)}
+    return Request(scope)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw", [b"\xa0", b"\x85", b"real-key\xa0"])
+async def test_call_raises_401_on_a_non_ascii_header(raw):
+    """The dependency path the middleware takes: 401, not a ``TypeError`` escaping as a 500."""
+    auth = APIKeyAuth(["real-key"])
+    with pytest.raises(HTTPException) as exc_info:
+        await auth(_make_raw_request([(b"x-api-key", raw)]))
+    assert exc_info.value.status_code == 401
+    assert exc_info.value.detail == "Invalid API key."
+
+
 # --- APIKeyAuth: async __call__ dependency ----------------------------------
 
 

@@ -1,0 +1,10 @@
+[t=    194ms] canopy http://127.0.0.1:8057 serving {"ok": true, "canopy": "http://127.0.0.1:8057", "git_sha": "884d22fb8a73bc53a3df400a5441b11e1f40f0c3", "build_date": "2026-09-23T19:49:59Z", "version": "0.6.0", "read_at": "2026-09-23T19:55:09Z"}
+[t=   1057ms] navigating to http://127.0.0.1:8057
+[t=   1060ms]   serving: {"ok": true, "canopy": "http://127.0.0.1:8057", "git_sha": "884d22fb8a73bc53a3df400a5441b11e1f40f0c3", "build_date": "2026-09-23T19:49:59Z", "version": "0.6.0", "read_at": "2026-09-23T19:55:10Z"}
+[t=   5476ms]   welcome modal not present/visible
+[t= 214505ms]   initial bar: {"latency-display": "\"Latency: 4ms\"", "top-status-display": "\"Completed \u2014 early stopped\"", "top-epoch-display": "\"76\""}
+[t= 214505ms]   BASELINE wire: {'requests': 19, 'responses': 20, 'latency_s_median': 1.7, 'latency_s_min': 0.854, 'latency_s_max': 3.643, 'latency_samples': 19}  renderer: {'watched_entries': 20, 'executed_entries': 20, 'store_notifications': 12206}  latency-display changes: 19  DOM: {'top-status-display': 'Completed — early stopped', 'top-epoch-display': '76', 'latency-display': 'Latency: 5ms'}
+[t= 214505ms] => BASELINE VERDICT: APPLIES
+[t= 214505ms]   server /api/status: {"is_running": false, "phase": "output", "current_epoch": 76, "hidden_units": 68}
+[t= 214505ms] results -> reports/e2e-canopy-2026-09-02/transcripts/2026-09-23_status_bar_apply_census_f055_fix_8057_150s.json
+exit=0

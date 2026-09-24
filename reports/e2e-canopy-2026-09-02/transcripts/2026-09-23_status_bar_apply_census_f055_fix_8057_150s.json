@@ -1,0 +1,266 @@
+{
+  "probe": "2026-09-23_status_bar_apply_census.py",
+  "canopy": "http://127.0.0.1:8057",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8057",
+    "git_sha": "884d22fb8a73bc53a3df400a5441b11e1f40f0c3",
+    "build_date": "2026-09-23T19:49:59Z",
+    "version": "0.6.0",
+    "read_at": "2026-09-23T19:55:09Z"
+  },
+  "tab": "Training Metrics",
+  "settle_s": 45.0,
+  "seconds": 150.0,
+  "period_ms": null,
+  "baseline": {
+    "install": {
+      "found": true,
+      "initial": {
+        "latency-display": "\"Latency: 4ms\"",
+        "top-status-display": "\"Completed \u2014 early stopped\"",
+        "top-epoch-display": "\"76\""
+      }
+    },
+    "elapsed_s": 151.1,
+    "wire": {
+      "requests": 19,
+      "responses": 20,
+      "latency_s_median": 1.7,
+      "latency_s_min": 0.854,
+      "latency_s_max": 3.643,
+      "latency_samples": 19
+    },
+    "renderer": {
+      "watched_entries": 20,
+      "executed_entries": 20,
+      "store_notifications": 12206
+    },
+    "store_changes": [
+      [
+        1790193374503,
+        "latency-display",
+        "\"Latency: 8ms\""
+      ],
+      [
+        1790193380906,
+        "latency-display",
+        "\"Latency: 14ms\""
+      ],
+      [
+        1790193390358,
+        "latency-display",
+        "\"Latency: 11ms\""
+      ],
+      [
+        1790193398387,
+        "latency-display",
+        "\"Latency: 23ms\""
+      ],
+      [
+        1790193405822,
+        "latency-display",
+        "\"Latency: 12ms\""
+      ],
+      [
+        1790193413681,
+        "latency-display",
+        "\"Latency: 4ms\""
+      ],
+      [
+        1790193419658,
+        "latency-display",
+        "\"Latency: 3ms\""
+      ],
+      [
+        1790193425812,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ],
+      [
+        1790193432747,
+        "latency-display",
+        "\"Latency: 4ms\""
+      ],
+      [
+        1790193439949,
+        "latency-display",
+        "\"Latency: 8ms\""
+      ],
+      [
+        1790193446505,
+        "latency-display",
+        "\"Latency: 11ms\""
+      ],
+      [
+        1790193453781,
+        "latency-display",
+        "\"Latency: 4ms\""
+      ],
+      [
+        1790193461277,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ],
+      [
+        1790193469295,
+        "latency-display",
+        "\"Latency: 4ms\""
+      ],
+      [
+        1790193477616,
+        "latency-display",
+        "\"Latency: 6ms\""
+      ],
+      [
+        1790193488265,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ],
+      [
+        1790193495370,
+        "latency-display",
+        "\"Latency: 3ms\""
+      ],
+      [
+        1790193511482,
+        "latency-display",
+        "\"Latency: 6ms\""
+      ],
+      [
+        1790193519205,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ]
+    ],
+    "latency_display_changes": 19,
+    "dom_bar": {
+      "top-status-display": "Completed \u2014 early stopped",
+      "top-epoch-display": "76",
+      "latency-display": "Latency: 5ms"
+    },
+    "verdict": "APPLIES"
+  },
+  "server_status": {
+    "is_running": false,
+    "phase": "output",
+    "current_epoch": 76,
+    "hidden_units": 68
+  },
+  "wire": {
+    "requests": 19,
+    "responses": 20
+  },
+  "renderer": {
+    "watched_entries": 20,
+    "executed_entries": 20,
+    "store_notifications": 12206
+  },
+  "store_changes": [
+    [
+      1790193374503,
+      "latency-display",
+      "\"Latency: 8ms\""
+    ],
+    [
+      1790193380906,
+      "latency-display",
+      "\"Latency: 14ms\""
+    ],
+    [
+      1790193390358,
+      "latency-display",
+      "\"Latency: 11ms\""
+    ],
+    [
+      1790193398387,
+      "latency-display",
+      "\"Latency: 23ms\""
+    ],
+    [
+      1790193405822,
+      "latency-display",
+      "\"Latency: 12ms\""
+    ],
+    [
+      1790193413681,
+      "latency-display",
+      "\"Latency: 4ms\""
+    ],
+    [
+      1790193419658,
+      "latency-display",
+      "\"Latency: 3ms\""
+    ],
+    [
+      1790193425812,
+      "latency-display",
+      "\"Latency: 5ms\""
+    ],
+    [
+      1790193432747,
+      "latency-display",
+      "\"Latency: 4ms\""
+    ],
+    [
+      1790193439949,
+      "latency-display",
+      "\"Latency: 8ms\""
+    ],
+    [
+      1790193446505,
+      "latency-display",
+      "\"Latency: 11ms\""
+    ],
+    [
+      1790193453781,
+      "latency-display",
+      "\"Latency: 4ms\""
+    ],
+    [
+      1790193461277,
+      "latency-display",
+      "\"Latency: 5ms\""
+    ],
+    [
+      1790193469295,
+      "latency-display",
+      "\"Latency: 4ms\""
+    ],
+    [
+      1790193477616,
+      "latency-display",
+      "\"Latency: 6ms\""
+    ],
+    [
+      1790193488265,
+      "latency-display",
+      "\"Latency: 5ms\""
+    ],
+    [
+      1790193495370,
+      "latency-display",
+      "\"Latency: 3ms\""
+    ],
+    [
+      1790193511482,
+      "latency-display",
+      "\"Latency: 6ms\""
+    ],
+    [
+      1790193519205,
+      "latency-display",
+      "\"Latency: 5ms\""
+    ]
+  ],
+  "latency_display_changes": 19,
+  "verdict": "APPLIES",
+  "install": {
+    "found": true,
+    "initial": {
+      "latency-display": "\"Latency: 4ms\"",
+      "top-status-display": "\"Completed \u2014 early stopped\"",
+      "top-epoch-display": "\"76\""
+    }
+  }
+}

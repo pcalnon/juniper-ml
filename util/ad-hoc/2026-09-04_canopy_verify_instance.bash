@@ -89,7 +89,12 @@ up)
     # verify port -- that is the origin the page actually has.
     export JUNIPER_CANOPY_CASCOR_WS_ORIGIN="${JUNIPER_CANOPY_CASCOR_WS_ORIGIN:-http://127.0.0.1:$PORT}"
     export JUNIPER_CANOPY_WEBSOCKET__ALLOWED_ORIGINS="[\"http://127.0.0.1:$PORT\",\"http://localhost:$PORT\"]"
-    export JUNIPER_CANOPY_DEMO_MODE=0
+    # CANOPY_VERIFY_DEMO_MODE=1 (added 2026-09-23) launches a DEMO leg instead: its
+    # own simulated training, auto-started, and the experimental-functions flag in
+    # process -- for a drive that must start or stop a run without touching the
+    # trio's cascor fixture (2026-09-23_f055_f025_allow_arm_demo_drive.py). Pair it
+    # with a JUNIPER_CANOPY_CASCOR_SERVICE_URL that points at nothing.
+    export JUNIPER_CANOPY_DEMO_MODE="${CANOPY_VERIFY_DEMO_MODE:-0}"
     export JUNIPER_CANOPY_SNAPSHOT_DIR="${JUNIPER_CANOPY_SNAPSHOT_DIR:-/home/pcalnon/Development/python/Juniper/juniper-cascor/cascor-snapshots}"
     # JuniperCanopy1 is isolated from rust_mudgeon's LIBTORCH; the conda hooks
     # that strip these do NOT run when the interpreter is invoked directly.

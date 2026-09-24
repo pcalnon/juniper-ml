@@ -1,0 +1,1413 @@
+{
+  "probe": "2026-09-23_f055_f025_allow_arm_demo_drive.py",
+  "allow_seconds": 60.0,
+  "deny_seconds": 45.0,
+  "legs": [
+    {
+      "label": "fix",
+      "base": "http://127.0.0.1:8058",
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8058",
+        "git_sha": "884d22fb8a73bc53a3df400a5441b11e1f40f0c3",
+        "build_date": "2026-09-23T19:59:02Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T19:59:30Z"
+      },
+      "flag_on": [
+        200,
+        {
+          "status": "success",
+          "data": {
+            "enabled": true
+          }
+        }
+      ],
+      "server_before_page": {
+        "is_running": true,
+        "flag": true,
+        "phase": "candidate",
+        "epoch": 56
+      },
+      "stop": [
+        200,
+        {
+          "status": "stopped"
+        }
+      ],
+      "flag_off": [
+        200,
+        {
+          "status": "success",
+          "data": {
+            "enabled": false
+          }
+        }
+      ],
+      "allow_samples": [
+        {
+          "t_s": 0.3,
+          "button_disabled": true,
+          "status_text": "Running",
+          "step_text": "58",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 66
+        },
+        {
+          "t_s": 4.5,
+          "button_disabled": true,
+          "status_text": "Running",
+          "step_text": "58",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 68
+        },
+        {
+          "t_s": 6.0,
+          "button_disabled": true,
+          "status_text": "Running",
+          "step_text": "58",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 69
+        },
+        {
+          "t_s": 7.6,
+          "button_disabled": true,
+          "status_text": "Running",
+          "step_text": "58",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 70
+        },
+        {
+          "t_s": 9.2,
+          "button_disabled": true,
+          "status_text": "Running",
+          "step_text": "58",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 71
+        },
+        {
+          "t_s": 11.7,
+          "button_disabled": true,
+          "status_text": "Running",
+          "step_text": "58",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 94
+        },
+        {
+          "t_s": 13.0,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "70",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 95
+        },
+        {
+          "t_s": 14.7,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "70",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 96
+        },
+        {
+          "t_s": 16.2,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "95",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 97
+        },
+        {
+          "t_s": 18.3,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "95",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 99
+        },
+        {
+          "t_s": 19.7,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "95",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 99
+        },
+        {
+          "t_s": 22.5,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "98",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 101
+        },
+        {
+          "t_s": 24.5,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "98",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 103
+        },
+        {
+          "t_s": 26.7,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "102",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 105
+        },
+        {
+          "t_s": 28.2,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "105",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 106
+        },
+        {
+          "t_s": 29.8,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "105",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 107
+        },
+        {
+          "t_s": 33.3,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "105",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 109
+        },
+        {
+          "t_s": 35.0,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "105",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 110
+        },
+        {
+          "t_s": 37.6,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "107",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 132
+        },
+        {
+          "t_s": 39.1,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "132",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 133
+        },
+        {
+          "t_s": 41.9,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "132",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 135
+        },
+        {
+          "t_s": 44.2,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "134",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 136
+        },
+        {
+          "t_s": 45.5,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "134",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 137
+        },
+        {
+          "t_s": 48.7,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "134",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 139
+        },
+        {
+          "t_s": 50.2,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "134",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 140
+        },
+        {
+          "t_s": 54.0,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "137",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 142
+        },
+        {
+          "t_s": 55.6,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "137",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 144
+        },
+        {
+          "t_s": 60.1,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "143",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 147
+        }
+      ],
+      "deny_samples": [
+        {
+          "t_s": 1.6,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "147",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 4.1,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "147",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 6.4,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "147",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 7.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 10.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 11.7,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 13.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 14.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 15.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 17.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 19.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 20.2,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 21.4,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 22.7,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 23.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 24.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 25.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 27.7,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 28.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 29.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 31.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 32.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 33.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 34.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 35.6,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 37.4,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 38.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 39.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 40.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 42.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 43.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        },
+        {
+          "t_s": 44.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "148",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 148
+        }
+      ],
+      "console_errors": [],
+      "verdicts": {
+        "ALLOW": "LANDS",
+        "allow_first_enabled_t_s": 13.0,
+        "DENY": "RETURNS",
+        "deny_first_disabled_t_s": 7.8,
+        "BAR": "APPLIES",
+        "bar_texts_seen": [
+          "Running",
+          "Stopped"
+        ],
+        "step_texts_last": [
+          "137",
+          "137",
+          "143"
+        ]
+      }
+    },
+    {
+      "label": "parent",
+      "base": "http://127.0.0.1:8059",
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8059",
+        "git_sha": "78c057e23b09149add0b23ebfc4c0f852fe8f602",
+        "build_date": "2026-09-23T19:59:08Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T20:01:33Z"
+      },
+      "flag_on": [
+        200,
+        {
+          "status": "success",
+          "data": {
+            "enabled": true
+          }
+        }
+      ],
+      "server_before_page": {
+        "is_running": true,
+        "flag": true,
+        "phase": "candidate",
+        "epoch": 237
+      },
+      "stop": [
+        200,
+        {
+          "status": "stopped"
+        }
+      ],
+      "flag_off": [
+        200,
+        {
+          "status": "success",
+          "data": {
+            "enabled": false
+          }
+        }
+      ],
+      "allow_samples": [
+        {
+          "t_s": 0.1,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 253
+        },
+        {
+          "t_s": 1.3,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 253
+        },
+        {
+          "t_s": 4.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 275
+        },
+        {
+          "t_s": 6.3,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 276
+        },
+        {
+          "t_s": 8.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 278
+        },
+        {
+          "t_s": 11.1,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 280
+        },
+        {
+          "t_s": 13.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 282
+        },
+        {
+          "t_s": 14.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 283
+        },
+        {
+          "t_s": 17.3,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 285
+        },
+        {
+          "t_s": 18.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "0",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 286
+        },
+        {
+          "t_s": 19.7,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "286",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 287
+        },
+        {
+          "t_s": 21.6,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "287",
+          "is_running": true,
+          "flag": true,
+          "phase": "output",
+          "epoch": 306
+        },
+        {
+          "t_s": 22.7,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "299",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 309
+        },
+        {
+          "t_s": 24.2,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "309",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 310
+        },
+        {
+          "t_s": 26.3,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "309",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 311
+        },
+        {
+          "t_s": 28.6,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "309",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 313
+        },
+        {
+          "t_s": 30.0,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "309",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 314
+        },
+        {
+          "t_s": 32.7,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "309",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 315
+        },
+        {
+          "t_s": 34.3,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "309",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 316
+        },
+        {
+          "t_s": 36.2,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "309",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 318
+        },
+        {
+          "t_s": 38.1,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "309",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 319
+        },
+        {
+          "t_s": 39.9,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "309",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 321
+        },
+        {
+          "t_s": 42.0,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "321",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 322
+        },
+        {
+          "t_s": 43.4,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "322",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 324
+        },
+        {
+          "t_s": 44.9,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "323",
+          "is_running": true,
+          "flag": true,
+          "phase": "output",
+          "epoch": 331
+        },
+        {
+          "t_s": 46.6,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "323",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 346
+        },
+        {
+          "t_s": 48.5,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "323",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 348
+        },
+        {
+          "t_s": 49.8,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "347",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 348
+        },
+        {
+          "t_s": 52.2,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "347",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 350
+        },
+        {
+          "t_s": 53.7,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "350",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 351
+        },
+        {
+          "t_s": 55.2,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "351",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 352
+        },
+        {
+          "t_s": 57.5,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "353",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 354
+        },
+        {
+          "t_s": 59.2,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "353",
+          "is_running": true,
+          "flag": true,
+          "phase": "candidate",
+          "epoch": 356
+        }
+      ],
+      "deny_samples": [
+        {
+          "t_s": 1.1,
+          "button_disabled": false,
+          "status_text": "Running",
+          "step_text": "353",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 2.7,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 3.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 5.7,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 6.7,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 7.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 10.1,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 11.4,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 12.5,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 13.6,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 15.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 16.1,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 17.1,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 18.1,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 19.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 20.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 22.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 23.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 24.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 26.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 27.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 28.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 29.6,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 30.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 31.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 32.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 34.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 36.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 37.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 38.0,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 39.8,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 40.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 41.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 42.9,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        },
+        {
+          "t_s": 44.6,
+          "button_disabled": true,
+          "status_text": "Stopped",
+          "step_text": "357",
+          "is_running": false,
+          "flag": true,
+          "phase": "idle",
+          "epoch": 357
+        }
+      ],
+      "console_errors": [],
+      "verdicts": {
+        "ALLOW": "LANDS",
+        "allow_first_enabled_t_s": 19.7,
+        "DENY": "RETURNS",
+        "deny_first_disabled_t_s": 2.7,
+        "BAR": "APPLIES",
+        "bar_texts_seen": [
+          "Running",
+          "Stopped"
+        ],
+        "step_texts_last": [
+          "351",
+          "353",
+          "353"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,343 @@
+{
+ "module": "/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/laneB_f055.Iywb95/fix/src/frontend/dashboard_manager.py",
+ "n_callbacks": 179,
+ "gated": [
+  [
+   "fast-update-interval",
+   null
+  ],
+  [
+   "slow-update-interval",
+   null
+  ],
+  [
+   "metrics-store-interval",
+   null
+  ],
+  [
+   "status-bar-interval",
+   null
+  ],
+  [
+   "tabpoll-topology",
+   "topology"
+  ],
+  [
+   "tabpoll-dataset",
+   "dataset"
+  ],
+  [
+   "tabpoll-workers",
+   "workers"
+  ],
+  [
+   "tabpoll-boundaries",
+   "boundaries"
+  ],
+  [
+   "candidate-metrics-panel-update-interval",
+   "candidates"
+  ],
+  [
+   "metrics-panel-stats-update-interval",
+   "metrics"
+  ],
+  [
+   "cassandra-panel-interval",
+   "cassandra"
+  ],
+  [
+   "redis-panel-refresh-interval",
+   "redis"
+  ],
+  [
+   "hdf5-snapshots-panel-refresh-interval",
+   "snapshots"
+  ],
+  [
+   "network-editor-panel-fsm-poll",
+   "network-editor"
+  ]
+ ],
+ "records": [
+  {
+   "idx": 85,
+   "output": "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+   "inputs": [
+    "status-bar-interval.n_intervals"
+   ],
+   "state": [
+    "training-status-store.data",
+    "experimental-flags-store.data",
+    "live-dataset-switch-button.disabled"
+   ],
+   "prevent_initial_call": false,
+   "running": {
+    "running": {
+     "status-bar-interval.disabled": true
+    },
+    "runningOff": {
+     "status-bar-interval.disabled": false
+    }
+   },
+   "clientside": null
+  },
+  {
+   "idx": 86,
+   "output": "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+   "inputs": [
+    "slow-update-interval.n_intervals"
+   ],
+   "state": [],
+   "prevent_initial_call": false,
+   "running": null,
+   "clientside": null
+  },
+  {
+   "idx": 91,
+   "output": "..fast-update-interval.disabled...slow-update-interval.disabled...metrics-store-interval.disabled...status-bar-interval.disabled...tabpoll-topology.disabled...tabpoll-dataset.disabled...tabpoll-workers.disabled...tabpoll-boundaries.disabled...candidate-metrics-panel-update-interval.disabled...metrics-panel-stats-update-interval.disabled...cassandra-panel-interval.disabled...redis-panel-refresh-interval.disabled...hdf5-snapshots-panel-refresh-interval.disabled...network-editor-panel-fsm-poll.disabled..",
+   "inputs": [
+    "apply-in-flight.data",
+    "visualization-tabs.active_tab"
+   ],
+   "state": [],
+   "prevent_initial_call": false,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "6aff8a5aa5813f732d6865f1207a97e7fd410fe37e476f30012c17e28dc5ed97"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 92,
+   "output": "metrics-store-interval.disabled@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c",
+   "inputs": [
+    "slow-update-interval.n_intervals"
+   ],
+   "state": [
+    "metrics-store-interval.disabled",
+    "apply-in-flight.data"
+   ],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "84a3df8f4544d46c4dcea7db56dfb5f07d23ad0d3344330b4334f234f33f468c"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 93,
+   "output": "status-bar-interval.disabled@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c",
+   "inputs": [
+    "slow-update-interval.n_intervals"
+   ],
+   "state": [
+    "status-bar-interval.disabled",
+    "apply-in-flight.data"
+   ],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "ebbc2e81c88b3dbf391fd5f5a25ed887c51c507610fc25e161286f02033a250c"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 102,
+   "output": "ws-metrics-buffer.data",
+   "inputs": [
+    "fast-update-interval.n_intervals"
+   ],
+   "state": [],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "735121873bb9e5764d051376c41bb5b21861f7b4175e78a05da7abaab69c98e2"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 103,
+   "output": "ws-topology-buffer.data",
+   "inputs": [
+    "fast-update-interval.n_intervals"
+   ],
+   "state": [],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "9024edbe69a640346c314015e8b38bc23dcdbbe9484c2bd13f5397f9b665d652"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 104,
+   "output": "ws-state-buffer.data",
+   "inputs": [
+    "fast-update-interval.n_intervals"
+   ],
+   "state": [],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "6bda74ef476f34aa827de54944c241506ac4566c8fc7e6348d4da9108ec4b20a"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 105,
+   "output": "ws-cascade-add-buffer.data",
+   "inputs": [
+    "fast-update-interval.n_intervals"
+   ],
+   "state": [],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "0ad28d7c3149bab20dcbccce4f1e4f043b35cd203077e2db557e5648f567faf7"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 106,
+   "output": "ws-dataset-swap-buffer.data",
+   "inputs": [
+    "fast-update-interval.n_intervals"
+   ],
+   "state": [],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "0a2c8ed47d2b46c83865a9f4b2024cdd2b641eb7753719e060635a6ca395b76a"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 107,
+   "output": "ws-connection-status.data",
+   "inputs": [
+    "fast-update-interval.n_intervals"
+   ],
+   "state": [],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "bf8a368d80bc23bd654f7ebac28f11c14855ee207099f58863179386c6ab1425"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 108,
+   "output": "ws-liveness-store.data",
+   "inputs": [
+    "fast-update-interval.n_intervals"
+   ],
+   "state": [],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": {
+    "namespace": "_dashprivate_clientside_funcs",
+    "function_name": "0717a084fe8c8d4508e85752ea60c4e1a0b226cf3c7c23687b9767fa1c9b52dd"
+   },
+   "js_found": true
+  },
+  {
+   "idx": 113,
+   "output": "metrics-panel-metrics-store.data",
+   "inputs": [
+    "metrics-store-interval.n_intervals",
+    "metrics-panel-display-mode-store.data"
+   ],
+   "state": [
+    "ws-liveness-store.data",
+    "metrics-panel-metrics-store.data"
+   ],
+   "prevent_initial_call": false,
+   "running": {
+    "running": {
+     "metrics-store-interval.disabled": true
+    },
+    "runningOff": {
+     "metrics-store-interval.disabled": false
+    }
+   },
+   "clientside": null
+  },
+  {
+   "idx": 135,
+   "output": "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+   "inputs": [
+    "training-control-action.data",
+    "fast-update-interval.n_intervals"
+   ],
+   "state": [
+    "button-states.data"
+   ],
+   "prevent_initial_call": true,
+   "running": null,
+   "clientside": null
+  },
+  {
+   "idx": 166,
+   "output": "dataset-swap-events-store.data",
+   "inputs": [
+    "slow-update-interval.n_intervals"
+   ],
+   "state": [
+    "dataset-swap-events-store.data"
+   ],
+   "prevent_initial_call": false,
+   "running": null,
+   "clientside": null
+  }
+ ],
+ "inline_scripts": [
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"f9c68981c0f605da04437cd75a0272081a6d3c981872b3ef48171e9b6a547066\"] = \n            function(wsBuffer, lossId, accId) {\n                if (!wsBuffer || !wsBuffer.events || wsBuffer.events.length === 0) {\n                    return [window.dash_clientside.no_update, window.dash_clientside.no_update];\n                }\n                var events = wsBuffer.events;\n                var epochs = [], losses = [], accuracies = [];\n                var valEpochs = [], valLosses = [], valAccs = [];\n                // N9 (C7/U-4): parallel arrays for the scalar classification\n                // metrics, pushed under the SAME gate as loss/accuracy so every\n                // series stays x-aligned with accuracy trace 0 (a length skew\n                // would silently mis-append WS points). null => gap, never 0.\n                var f1s = [], precisions = [], recalls = [], rocAucs = [];\n                for (var i = 0; i < events.length; i++) {\n                    var e = events[i];\n                    var epoch = e.epoch || e.current_epoch || i;\n                    var loss = e.loss || e.error || e.current_error;\n                    var acc = e.accuracy || e.correct_percentage;\n                    if (loss !== undefined && loss !== null) {\n                        epochs.push(epoch);\n                        losses.push(loss);\n                        accuracies.push(acc !== undefined && acc !== null ? acc : 0);\n                        // N9 (C7/U-4): read each scalar flat off the frame under\n                        // the loss gate; null (missing / candidate phase / the\n                        // ~every-25th-epoch sparsity) becomes a gap, not a zero.\n                        f1s.push((e.f1 !== undefined && e.f1 !== null) ? e.f1 : null);\n                        precisions.push((e.precision !== undefined && e.precision !== null) ? e.precision : null);\n                        recalls.push((e.recall !== undefined && e.recall !== null) ? e.recall : null);\n                        rocAucs.push((e.roc_auc !== undefined && e.roc_auc !== null) ? e.roc_auc : null);\n                    }\n                    // GAP-WS-14: collect validation values when present so the\n                    // overlay traces stay in sync without forcing a rebuild.\n                    var vLoss = (e.val_loss !== undefined) ? e.val_loss\n                              : ((e.validation_loss !== undefined) ? e.validation_loss : null);\n                    var vAcc = (e.val_accuracy !== undefined) ? e.val_accuracy\n                             : ((e.validation_accuracy !== undefined) ? e.validation_accuracy : null);\n                    if (vLoss !== null && vLoss !== undefined) {\n                        valEpochs.push(epoch);\n                        valLosses.push(vLoss);\n                        valAccs.push(vAcc !== null && vAcc !== undefined ? vAcc : null);\n                    }\n                }\n                if (epochs.length === 0 && valEpochs.length === 0) {\n                    return [window.dash_clientside.no_update, window.dash_clientside.no_update];\n                }\n\n                // Locate optional traces by name. Positions vary depending on\n                // whether candidate-training / validation overlays are\n                // enabled in this view (GAP-WS-14).\n                function findTraceIndex(el, name) {\n                    if (!el || !el.data) return -1;\n                    for (var k = 0; k < el.data.length; k++) {\n                        if (el.data[k] && el.data[k].name === name) return k;\n                    }\n                    return -1;\n                }\n\n                // extendTraces on loss plot (trace 0 = Output Training)\n                var lossEl = document.getElementById(lossId);\n                if (lossEl && lossEl.data && lossEl.data.length > 0) {\n                    if (epochs.length > 0) {\n                        try {\n                            Plotly.extendTraces(lossEl, {x: [epochs], y: [losses]}, [0], 5000);\n                        } catch(e) {}\n                    }\n                    if (valEpochs.length > 0) {\n                        var valLossIdx = findTraceIndex(lossEl, \"Validation Loss\");\n                        if (valLossIdx >= 0) {\n                            try {\n                                Plotly.extendTraces(lossEl, {x: [valEpochs], y: [valLosses]}, [valLossIdx], 5000);\n                            } catch(e) {}\n                        }\n                    }\n                }\n                // extendTraces on accuracy plot (trace 0 = Accuracy)\n                var accEl = document.getElementById(accId);\n                if (accEl && accEl.data && accEl.data.length > 0) {\n                    if (epochs.length > 0) {\n                        try {\n                            Plotly.extendTraces(accEl, {x: [epochs], y: [accuracies]}, [0], 5000);\n                        } catch(e) {}\n                        // N9 (C7/U-4): extend each scalar series by name. Names\n                        // MUST match MetricsPanel.SCALAR_SERIES display names.\n                        // Absent traces (metric disabled / all-null at build\n                        // time) are skipped; the 1 Hz REST rebuild adds the\n                        // trace once real values land, then WS extends keep it\n                        // live. Shares [epochs] so it stays aligned with acc[0].\n                        var n9Series = [{n: \"F1\", v: f1s}, {n: \"Precision\", v: precisions}, {n: \"Recall\", v: recalls}, {n: \"ROC-AUC\", v: rocAucs}];\n                        for (var s = 0; s < n9Series.length; s++) {\n                            var n9Idx = findTraceIndex(accEl, n9Series[s].n);\n                            if (n9Idx >= 0) {\n                                try {\n                                    Plotly.extendTraces(accEl, {x: [epochs], y: [n9Series[s].v]}, [n9Idx], 5000);\n                                } catch(e) {}\n                            }\n                        }\n                    }\n                    if (valEpochs.length > 0) {\n                        var valAccIdx = findTraceIndex(accEl, \"Validation Accuracy\");\n                        if (valAccIdx >= 0) {\n                            // Filter null val_accuracy values so the overlay\n                            // only gains real points (the loss event may\n                            // arrive before the matching accuracy).\n                            var fEpochs = [], fAccs = [];\n                            for (var j = 0; j < valEpochs.length; j++) {\n                                if (valAccs[j] !== null && valAccs[j] !== undefined) {\n                                    fEpochs.push(valEpochs[j]);\n                                    fAccs.push(valAccs[j]);\n                                }\n                            }\n                            if (fEpochs.length > 0) {\n                                try {\n                                    Plotly.extendTraces(accEl, {x: [fEpochs], y: [fAccs]}, [valAccIdx], 5000);\n                                } catch(e) {}\n                            }\n                        }\n                    }\n                }\n                return [window.dash_clientside.no_update, window.dash_clientside.no_update];\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"75e8eb26a2d8cd002755650c14a18852acab179d582b11034369fbba2883f049\"] = \nfunction(playClicks, backClicks, forwardClicks, startClicks, endClicks, speed1x, speed2x, speed4x, sliderValue, nIntervals, currentState, metricsData) {\n    var dc = window.dash_clientside;\n    var noUpdate = dc.no_update;\n    var ctx = dc.callback_context || {};\n    var prefix = \"metrics-panel-\";\n    var controls = [\"replay-play\", \"replay-step-back\", \"replay-step-forward\", \"replay-start\", \"replay-end\", \"speed-1x\", \"speed-2x\", \"speed-4x\", \"replay-slider\"];\n    var tickId = prefix + \"replay-interval\";\n    var maxIndex = (metricsData && metricsData.length) ? metricsData.length - 1 : 0;\n    var tickN = (typeof nIntervals === \"number\") ? nIntervals : 0;\n    var state = currentState ? Object.assign({}, currentState) : {mode: \"stopped\", speed: 1.0, current_index: 0, start_index: 0, end_index: null};\n    if (typeof state.current_index !== \"number\") { state.current_index = 0; }\n    var num = function (v) { return (typeof v === \"number\" && isFinite(v)) ? v : 0; };\n\n    // EVENTS COME FROM VALUES, NOT ONLY FROM TRIGGERS. A trigger can be lost before this runs:\n    // a request of this callback waiting for one of the renderer's 12 slots (``prioritized``)\n    // is replaced by the next tick's request of the same callback, and only requests still in\n    // ``requested`` merge their changed-prop ids. The click counts survive in the Inputs, so\n    // ``state.clicks`` keeps each button's count as of its last applied click, and anything\n    // above it is applied now. A trigger alone applies nothing: it only orders the events.\n    // The slider is a seek when its value differs from the value this callback last wrote to\n    // it (``state.slider_w``).\n    var counts = {\n        \"replay-play\": playClicks, \"replay-step-back\": backClicks, \"replay-step-forward\": forwardClicks,\n        \"replay-start\": startClicks, \"replay-end\": endClicks,\n        \"speed-1x\": speed1x, \"speed-2x\": speed2x, \"speed-4x\": speed4x\n    };\n    var seen = Object.assign({}, (state.clicks && typeof state.clicks === \"object\") ? state.clicks : {});\n    var pending = {};\n    Object.keys(counts).forEach(function (c) {\n        var n = num(counts[c]);\n        var s = num(seen[c]);\n        if (n < s) { s = 0; }  // the button was re-created and its count restarted\n        seen[c] = s;\n        pending[c] = n - s;\n    });\n    var sliderOk = (typeof sliderValue === \"number\") && isFinite(sliderValue);\n    var sliderMoved = sliderOk && (typeof state.slider_w === \"number\") && sliderValue !== state.slider_w;\n\n    // Apply order: controls whose trigger was lost come first, because their clicks predate\n    // this run's triggers. Then the triggers, in the order the renderer merged them. Two LOST\n    // clicks of different controls apply in REPLAY_CONTROL_IDS order, not click order: step\n    // forward then play, both lost, ends paused. Only n_clicks_timestamp could order them, and\n    // two lost in one run is rare (both reviewers, round 2).\n    var triggered = ctx.triggered || [];\n    var order = [];\n    var inTriggers = {};\n    for (var k = 0; k < triggered.length; k++) {\n        var propId = String(triggered[k].prop_id || \"\");\n        var cid = propId.slice(0, Math.max(0, propId.lastIndexOf(\".\")));\n        if (cid === tickId) { order.push(\"tick\"); continue; }\n        if (cid.indexOf(prefix) !== 0) { continue; }\n        var name = cid.slice(prefix.length);\n        if (controls.indexOf(name) < 0 || inTriggers[name]) { continue; }\n        inTriggers[name] = true;\n        order.push(name);\n    }\n    var lost = controls.filter(function (c) {\n        if (inTriggers[c]) { return false; }\n        return (c === \"replay-slider\") ? sliderMoved : pending[c] > 0;\n    });\n    order = lost.concat(order);\n\n    var controlFired = false;\n    var ticked = false;\n    var sliderReset = false;\n    for (var e = 0; e < order.length; e++) {\n        var ev = order[e];\n        if (ev === \"tick\") {\n            if (state.mode !== \"playing\") { continue; }\n            // Merged ticks arrive as ONE request, with n_intervals read at execution: advance\n            // by the ticks since the last one consumed, not by one.\n            var last = (typeof state.tick_n === \"number\") ? state.tick_n : tickN - 1;\n            var steps = tickN - last;\n            if (steps <= 0) { continue; }\n            var endIndex = state.end_index || maxIndex;\n            var next = state.current_index + steps;\n            if (next > endIndex) {\n                state.mode = \"stopped\";\n                state.current_index = endIndex;\n            } else {\n                state.current_index = next;\n            }\n            state.tick_n = tickN;\n            ticked = true;\n            continue;\n        }\n        if (ev === \"replay-slider\" && !sliderOk) {\n            // A cleared number box sends NaN. That is not a seek: write the slider back.\n            sliderReset = true;\n            continue;\n        }\n        // A button applies exactly its unapplied clicks; its trigger only orders it. An earlier\n        // run can already have applied this click from the count -- it ran after the click\n        // wrote n_clicks and before this request did -- and applying it again would undo the\n        // pause (Lane B2, round 2). A slider trigger carrying the value this callback last wrote\n        // is not a seek: re-reading the thumb, trunc(v / 100 * max) can land one index low. The\n        // cost: a real drag landing exactly on that value does not pause. It is a whole number\n        // only at row 0, the last row, or where max divides 100 * row (round 3).\n        if (ev === \"replay-slider\") {\n            if (typeof state.slider_w === \"number\" && sliderValue === state.slider_w) { continue; }\n        } else if (pending[ev] <= 0) {\n            continue;\n        }\n        var times = (ev === \"replay-slider\") ? 1 : pending[ev];\n        if (ev !== \"replay-slider\") { seen[ev] = num(counts[ev]); }\n        if (!controlFired) {\n            state.end_index = state.end_index || maxIndex;\n            controlFired = true;\n        }\n        if (ev === \"replay-play\") {\n            // ONE toggle per run, however many clicks are pending. Stock Dash toggles once for a\n            // merged double click, and on a page this slow a second click is usually the user\n            // repeating a pause that has not shown yet, not undoing it. By parity, a lost pause\n            // plus that repeat would cancel out and leave the replay playing. It helps only\n            // when both clicks are pending in ONE run: a repeat made after the pause applied,\n            // but before the page shows it, toggles back. That is the toggle's own limit.\n            state.mode = (state.mode === \"playing\") ? \"paused\" : \"playing\";\n            if (state.mode === \"playing\") { state.tick_n = tickN; }\n        } else if (ev === \"replay-step-back\") {\n            state.mode = \"paused\";\n            state.current_index = Math.max(0, state.current_index - times);\n        } else if (ev === \"replay-step-forward\") {\n            state.mode = \"paused\";\n            state.current_index = Math.min(maxIndex, state.current_index + times);\n        } else if (ev === \"replay-start\") {\n            state.current_index = (typeof state.start_index === \"number\") ? state.start_index : 0;\n            state.mode = \"paused\";\n        } else if (ev === \"replay-end\") {\n            state.current_index = state.end_index || maxIndex;\n            state.mode = \"paused\";\n        } else if (ev === \"speed-1x\") {\n            state.speed = 1.0;\n        } else if (ev === \"speed-2x\") {\n            state.speed = 2.0;\n        } else if (ev === \"speed-4x\") {\n            state.speed = 4.0;\n        } else if (ev === \"replay-slider\") {\n            state.current_index = maxIndex > 0 ? Math.trunc((sliderValue / 100) * maxIndex) : 0;\n            state.mode = \"paused\";\n        }\n    }\n    var idx = state.current_index;\n    var sliderOut = maxIndex > 0 ? (idx / maxIndex * 100) : 0;\n    var label = (state.mode === \"playing\") ? \"\\u23f8\" : \"\\u25b6\";\n    var disabled = state.mode !== \"playing\";\n    if (order.length > 0 && !controlFired && !ticked && !sliderReset) {\n        // Events, none with anything to do: a tick while not playing or already consumed, a\n        // trigger whose click was already applied, the slider's own value. Write nothing.\n        return [noUpdate, noUpdate, noUpdate, noUpdate, noUpdate, noUpdate, noUpdate, noUpdate];\n    }\n    // Every path below writes the slider, and every one records what it wrote, so a later\n    // slider value that differs from ``slider_w`` can only be the user's. (The refill below\n    // never writes the slider.) Writing the state triggers nothing: no callback takes it as\n    // an Input.\n    state.clicks = seen;\n    state.slider_w = sliderOut;\n    if (controlFired) {\n        var speed = (typeof state.speed === \"number\" && state.speed > 0) ? state.speed : 1.0;\n        return [state, disabled, Math.trunc(1000 / speed), sliderOut, 100, String(idx), String(maxIndex), label];\n    }\n    if (ticked) {\n        return [state, disabled, noUpdate, sliderOut, noUpdate, String(idx), String(maxIndex), label];\n    }\n    // Mount, a tab rebuild, or a cleared slider box: render from the state, change nothing.\n    return [state, noUpdate, noUpdate, sliderOut, 100, String(idx), String(maxIndex), label];\n}\n;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"8e349cfff31fff2801c72b2f6b556f0f9d61eaa70c70b5becded070b0f57a394\"] = \nfunction(metricsData) {\n    return String((metricsData && metricsData.length) ? metricsData.length - 1 : 0);\n}\n;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"603a144e91519a21633fff3df0a3d881b3f2aeffe84fc6d4187d2d513cff5198\"] = \n            function(topology, currentValue) {\n                if (!topology) {\n                    return [0, 0, {marginBottom: \"10px\", padding: \"0 10px\", display: \"none\"}];\n                }\n                var nHidden = topology.hidden_units || 0;\n                if (nHidden === 0) {\n                    return [0, 0, {marginBottom: \"10px\", padding: \"0 10px\", display: \"none\"}];\n                }\n                // Bump max to current hidden-unit count.\n                // Preserve the user-picked value across grow events as long as\n                // it's still in range; otherwise snap to the new max (= show all).\n                var v = currentValue;\n                if (v === null || v === undefined || v > nHidden) {\n                    v = nHidden;\n                }\n                return [\n                    nHidden,\n                    v,\n                    {marginBottom: \"10px\", padding: \"0 10px\", display: \"block\"}\n                ];\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"e9c17a5729dfd7ce246ea4656f6059a719fb058ff9d78ec9d4b39b4f21d77bbe\"] = \n            function(depth, topology) {\n                var nHidden = (topology && topology.hidden_units) || 0;\n                if (depth === null || depth === undefined ||\n                    depth <= 0 || depth >= nHidden || nHidden === 0) {\n                    return \"all\";\n                }\n                return depth + \" of \" + nHidden;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"414393a1cce61be85d73ebf8370f6198a5a224f061dae61a0d9dbc6442f00c58\"] = \n            function(n_intervals, current_buffer) {\n                if (!window._juniperWsDrain || typeof window._juniperWsDrain.drainReplayWeights !== \"function\") {\n                    return window.dash_clientside.no_update;\n                }\n                var fresh = window._juniperWsDrain.drainReplayWeights();\n                if (!fresh || fresh.length === 0) {\n                    return window.dash_clientside.no_update;\n                }\n                var buf = (current_buffer || []).concat(fresh);\n                // LRU cap: drop oldest when the ring exceeds the budget.\n                if (buf.length > 100) {\n                    buf = buf.slice(buf.length - 100);\n                }\n                return buf;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"579ce1098250a97bcec6c2a0536c3481290ceaf2b2b071b465eb996d1fd2edce\"] = function(session) { return !(session && session.snapshot_id); };\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"29f836ae171b2e63b54858ec4f3eb6e9481d9edb01409118a2a15bfcf6a3eea0\"] = \n            function(buffer) {\n                if (!buffer || buffer.length === 0) {\n                    return \"\";\n                }\n                var last = buffer[buffer.length - 1];\n                if (!last || typeof last.epoch !== \"number\") {\n                    return \"\";\n                }\n                return \"last sample: epoch \" + last.epoch + \" (\" + buffer.length + \" buffered)\";\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"75abfc397679911c6b4ced6dc8c15c4729cd73420909ff97bc73c5af51fe940e\"] = \n            function(is_dark) {\n                const root = document.documentElement;\n                if (is_dark) {\n                    root.classList.add('dark-mode');\n                } else {\n                    root.classList.remove('dark-mode');\n                }\n                return is_dark;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"99a186746335224f0e9ab657b9ef54670e732067591339b101951fa1885c59fe\"] = \n            function(n) {\n                if (!localStorage.getItem('juniper_canopy_welcomed')) {\n                    return true;\n                }\n                return window.dash_clientside.no_update;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"3d544a0f6e9a53439a2968afa2771dedf0c4968ef207ea86c1ae92577e0b93d2\"] = \n            function(n) {\n                localStorage.setItem('juniper_canopy_welcomed', '1');\n                return false;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"fbee3bef9251a86756978083bbfc873ce20776f94bb87b0d5f8d75905867d5fb\"] = \n            function(params_clicks, dataset_clicks) {\n                // Either Apply button blurs the focused element, committing a\n                // pending numeric value before the server State() snapshot.\n                // prevent_initial_call means we only run on a real click, so no\n                // n_clicks guard is needed.\n                if (document.activeElement\n                        && typeof document.activeElement.blur === 'function') {\n                    document.activeElement.blur();\n                }\n                return null;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"f1dd70e3150c628cd1af0ef114ebebefe87bb6f4ad9433ca31d668cf28d111c4\"] = \n            function(s_raw, t_raw, r_raw, p_raw) {\n                var s = (s_raw === null || s_raw === undefined || s_raw === '') ? null : Number(s_raw);\n                var t = (t_raw === null || t_raw === undefined || t_raw === '') ? null : Number(t_raw);\n                var r = (r_raw === null || r_raw === undefined || r_raw === '') ? null : Number(r_raw);\n                var p = (p_raw === null || p_raw === undefined || p_raw === '') ? null : Number(p_raw);\n                if (s === null || t === null || r === null || p === null\n                    || isNaN(s) || isNaN(t) || isNaN(r) || isNaN(p)) {\n                    return [false, false, false, ''];\n                }\n                if (!(s >= 1 && s <= p)) {\n                    return [true, false, false,\n                        'selected_candidates ' + s + ' not in [1, candidate_pool_size=' + p + ']'];\n                }\n                if (t < 0 || r < 0) {\n                    return [false, t < 0, r < 0,\n                        'top_candidates and random_candidates must be >= 0 (got T=' + t + ', R=' + r + ')'];\n                }\n                if (t > s || r > s) {\n                    return [false, t > s, r > s,\n                        'each component must be <= selected_candidates (S=' + s + ', T=' + t + ', R=' + r + ')'];\n                }\n                if (t === 0 && r === 0) {\n                    return [false, true, true,\n                        'top_candidates and random_candidates cannot both be 0'];\n                }\n                if (t === 0 && r !== s) {\n                    return [false, false, true,\n                        'with top_candidates=0, random_candidates must equal S=' + s + ' (got R=' + r + ')'];\n                }\n                if (r === 0 && t !== s) {\n                    return [false, true, false,\n                        'with random_candidates=0, top_candidates must equal S=' + s + ' (got T=' + t + ')'];\n                }\n                if (t > 0 && r > 0 && (t + r) !== s) {\n                    return [false, true, true,\n                        'top_candidates+random_candidates must equal S=' + s\n                        + ' (got ' + t + '+' + r + '=' + (t + r) + ')'];\n                }\n                return [false, false, false, ''];\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"4c6702177f37bb47773f7a2ca37cc6a61e9c8920d34ef44db9a139c05bf913f1\"] = \n            function(nClicks) {\n                if (!nClicks) return window.dash_clientside.no_update;\n                // E-3: stamp the click time so the watchdog can age the clamp.\n                return {in_flight: true, since: Date.now()};\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"5e6dd563a3b6999c6f72d744f8ac27e5d7c4a448b524d8f08a6bb560f57b08dc\"] = \n            function(appliedData) {\n                // applied-params-store updates on the success path; the\n                // server callback additionally releases the clamp directly\n                // on every path (E-3), so this is belt-and-braces.\n                return false;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"6aff8a5aa5813f732d6865f1207a97e7fd410fe37e476f30012c17e28dc5ed97\"] = \n            function(inFlight, activeTab) {\n                // CAN-000: the apply clamp silences everything, tab-gated or not.\n                var clamped = Boolean(inFlight);\n                var tabs = [null, null, null, null, \"topology\", \"dataset\", \"workers\", \"boundaries\", \"candidates\", \"metrics\", \"cassandra\", \"redis\", \"snapshots\", \"network-editor\"];\n                return tabs.map(function (tab) {\n                    // tab === null -> shared lane with global consumers; never tab-gated.\n                    return clamped || (tab !== null && tab !== activeTab);\n                });\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"84a3df8f4544d46c4dcea7db56dfb5f07d23ad0d3344330b4334f234f33f468c\"] = \n                function(n, disabled, applyInFlight) {\n                    var NU = window.dash_clientside.no_update;\n                    if (!disabled || Boolean(applyInFlight)) {\n                        // Healthy, or the apply clamp owns the prop: hold the timer clear.\n                        window.__metricsStoreDisabledSince = null;\n                        return NU;\n                    }\n                    var now = Date.now();\n                    if (!window.__metricsStoreDisabledSince) {\n                        window.__metricsStoreDisabledSince = now;\n                        return NU;\n                    }\n                    if (now - window.__metricsStoreDisabledSince < 30000) {\n                        return NU;\n                    }\n                    window.__metricsStoreDisabledSince = null;\n                    return false;\n                }\n                ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"ebbc2e81c88b3dbf391fd5f5a25ed887c51c507610fc25e161286f02033a250c\"] = \n                function(n, disabled, applyInFlight) {\n                    var NU = window.dash_clientside.no_update;\n                    if (!disabled || Boolean(applyInFlight)) {\n                        // Healthy, or the apply clamp owns the prop: hold the timer clear.\n                        window.__statusBarDisabledSince = null;\n                        return NU;\n                    }\n                    var now = Date.now();\n                    if (!window.__statusBarDisabledSince) {\n                        window.__statusBarDisabledSince = now;\n                        return NU;\n                    }\n                    if (now - window.__statusBarDisabledSince < 30000) {\n                        return NU;\n                    }\n                    window.__statusBarDisabledSince = null;\n                    return false;\n                }\n                ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"dde6f6cf5edcc731f38ef91aa66ebe79b4d4bf761c2b53087bc7e322be6c9ee6\"] = \n            function(n, inFlight) {\n                if (!inFlight || !inFlight.since) return window.dash_clientside.no_update;\n                if (Date.now() - inFlight.since > 60000) {\n                    console.warn(\"apply-in-flight clamp exceeded 60000ms; watchdog force-released it (E-3)\");\n                    return false;\n                }\n                return window.dash_clientside.no_update;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"b1037beb3c0bb86b000ab69c21ad7671af010270012230559f996e87f3b68a60\"] = \n            function(tooltips) {\n                if (window.juniperCanopy && window.juniperCanopy.installContextMenus) {\n                    window.juniperCanopy.installContextMenus(tooltips || {});\n                }\n                return window.dash_clientside.no_update;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"b2a29f11af1cbc37e22f8b5ba41a1ad38c2d4051ca16f81c9867aaddeb8cdec1\"] = \n            function(triggerTs) {\n                if (!triggerTs) return window.dash_clientside.no_update;\n                return \"tutorial\";\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"1c80f0b8b6d40a116697565698a8fa80bc9617ee906ba17cd351dbafdb8f83c6\"] = \n            function(state, tabs, currentTab) {\n                var rendered = [];\n                [].concat(tabs || []).forEach(function(tab, index) {\n                    if (tab && tab.props) rendered.push(tab.props.tab_id || \"tab-\" + index);\n                });\n                var saved = state && state.active_tab;\n                if (rendered.length && rendered.indexOf(saved) === -1) {\n                    var target = rendered.indexOf(currentTab) !== -1 ? currentTab : rendered[0];\n                    return target === currentTab ? window.dash_clientside.no_update : target;\n                }\n                if (!state || !state.active_tab) return window.dash_clientside.no_update;\n                // Equality guard (#1 tab-feedback-loop fix): only restore when\n                // the persisted tab differs from the tab already shown. Without\n                // it, every Writer-A store stamp echoes back through here and\n                // re-asserts active_tab, re-triggering every Input(active_tab)\n                // callback and feeding the tab-toggle race.\n                if (state.active_tab === currentTab) return window.dash_clientside.no_update;\n                return state.active_tab;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"2dbbd2b044e2e2b1cb1a039bfb2627cb95d12f84e1619aed0723ac0acea939f6\"] = \n            function(nClicks) {\n                if (!nClicks) return window.dash_clientside.no_update;\n                return {active: true, index: 0};\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"a2edcf897933a37f8878b905098a80a05359df827e6461487363ce509f2bd930\"] = \n            function(state, steps) {\n                if (!window._juniperWalkthrough) {\n                    return window.dash_clientside.no_update;\n                }\n                if (state && state.active) {\n                    var stepsArr = Array.isArray(steps) ? steps : [];\n                    window._juniperWalkthrough.show(stepsArr, (state.index|0));\n                } else {\n                    window._juniperWalkthrough.hide();\n                }\n                return window.dash_clientside.no_update;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"a1e59a648aa91b7d276b94504e5cd9d68a02816f8c3a3dae8ff7cbb4f05aeda7\"] = \n            function(activeTab, state) {\n                if (!activeTab) return window.dash_clientside.no_update;\n                var prev = state || {};\n                if (prev.active_tab === activeTab) return window.dash_clientside.no_update;\n                return Object.assign({}, prev, {active_tab: activeTab});\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"dcb4e068c4bd3e2ed5ca5e7cc7d3d6c3aa576a9f4ae387a3fc78a5ea46aa34ab\"] = \n            function() {\n                window._juniperRafCoalescerEnabled = false;\n                return {rafCoalescer: false};\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"735121873bb9e5764d051376c41bb5b21861f7b4175e78a05da7abaab69c98e2\"] = \n            function(n) {\n                if (!window._juniperWsDrain) return window.dash_clientside.no_update;\n                var events = window._juniperWsDrain.drainMetrics();\n                if (!events || events.length === 0) return window.dash_clientside.no_update;\n                window._juniperWsDrain._gen++;\n                return {events: events, gen: window._juniperWsDrain._gen, last_drain_ms: Date.now()};\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"9024edbe69a640346c314015e8b38bc23dcdbbe9484c2bd13f5397f9b665d652\"] = \n            function(n) {\n                if (!window._juniperWsDrain) return window.dash_clientside.no_update;\n                var topo = window._juniperWsDrain.drainTopology();\n                if (!topo) return window.dash_clientside.no_update;\n                return topo;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"6bda74ef476f34aa827de54944c241506ac4566c8fc7e6348d4da9108ec4b20a\"] = \n            function(n) {\n                if (!window._juniperWsDrain) return window.dash_clientside.no_update;\n                var s = window._juniperWsDrain.drainState();\n                if (!s) return window.dash_clientside.no_update;\n                return s;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"0ad28d7c3149bab20dcbccce4f1e4f043b35cd203077e2db557e5648f567faf7\"] = \n            function(n) {\n                if (!window._juniperWsDrain) return window.dash_clientside.no_update;\n                var events = window._juniperWsDrain.drainCascadeAdd();\n                if (!events || events.length === 0) return window.dash_clientside.no_update;\n                window._juniperWsDrain._gen++;\n                return {events: events, gen: window._juniperWsDrain._gen, last_drain_ms: Date.now()};\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"0a2c8ed47d2b46c83865a9f4b2024cdd2b641eb7753719e060635a6ca395b76a\"] = \n            function(n) {\n                if (!window._juniperWsDrain) return window.dash_clientside.no_update;\n                var events = window._juniperWsDrain.drainDatasetSwaps();\n                if (!events || events.length === 0) return window.dash_clientside.no_update;\n                window._juniperWsDrain._gen++;\n                return {events: events, gen: window._juniperWsDrain._gen, last_drain_ms: Date.now()};\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"bf8a368d80bc23bd654f7ebac28f11c14855ee207099f58863179386c6ab1425\"] = \n            function(n) {\n                if (!window._juniperWsDrain) return window.dash_clientside.no_update;\n                return window._juniperWsDrain.peekConnectionStatus();\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"0717a084fe8c8d4508e85752ea60c4e1a0b226cf3c7c23687b9767fa1c9b52dd\"] = \n            function(n) {\n                if (!window._juniperWsDrain || !window._juniperWsDrain.peekLiveness) {\n                    return window.dash_clientside.no_update;\n                }\n                var live = window._juniperWsDrain.peekLiveness();\n                var W = 5000;\n                return {\n                    metrics_live: (live.metrics_age_ms !== null && live.metrics_age_ms <= W),\n                    state_live: (live.state_age_ms !== null && live.state_age_ms <= W)\n                };\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"cb6300cc00fabbef9937e1d3504bed45a29d0c29ad01550924c72fca4ac24207\"] = \nfunction(wsStatus, streamHealth) {\n    if (!wsStatus) return [window.dash_clientside.no_update, window.dash_clientside.no_update];\n\n    var baseStyle = {\n        display: \"inline-block\",\n        padding: \"2px 8px\",\n        borderRadius: \"4px\",\n        fontSize: \"11px\",\n        fontWeight: \"bold\",\n        color: \"#fff\",\n        marginLeft: \"8px\",\n        verticalAlign: \"middle\"\n    };\n\n    // PR 2 (demo-mode honesty): the mode comes from the SERVER, via\n    // GET /api/stream_health, because the browser cannot know it. This branch was\n    // previously keyed on `wsStatus.mode`, which websocket_client.js and\n    // ws_dash_bridge.js both hardcode to \"live\" \u2014 so \"WS: Demo\" was unreachable dead\n    // code, and canopy rendered a green \"WS: Connected\" over simulated data whenever a\n    // cold start could not reach cascor. `wsStatus.mode` is still honoured first so a\n    // future client that learns its own mode is not overridden by a stale store.\n    var mode = (wsStatus && wsStatus.mode !== \"live\" && wsStatus.mode) || (streamHealth && streamHealth.mode);\n    if (mode === \"demo\") {\n        baseStyle.backgroundColor = \"#6c757d\";\n        // \u00a74.12 / G9: demo mode is SUPPOSED to run on juniper-data \u2014 that is the dogfooding the\n        // platform depends on. When it falls back to its own local generator it is no longer\n        // demonstrating the platform at all, and until now said so only in the log. Red rather\n        // than grey, because this is a different claim from \"these numbers are simulated\": the\n        // data itself never came from the platform.\n        if (streamHealth && streamHealth.dataset_source === \"local\") {\n            baseStyle.backgroundColor = \"#dc3545\";\n            baseStyle.color = \"#fff\";\n            return [\"WS: Demo \u2014 LOCAL data, not juniper-data\", baseStyle];\n        }\n        return [\"WS: Demo\", baseStyle];\n    }\n    if (wsStatus.connected) {\n        var upstream = streamHealth && streamHealth.overall;\n        if (upstream === \"reconnecting\" || upstream === \"degraded\") {\n            baseStyle.backgroundColor = \"#ffc107\";\n            baseStyle.color = \"#212529\";\n            return [upstream === \"reconnecting\" ? \"WS: Upstream reconnecting\" : \"WS: Upstream degraded\", baseStyle];\n        }\n        baseStyle.backgroundColor = \"#28a745\";\n        return [\"WS: Connected\", baseStyle];\n    }\n    if (wsStatus.reconnecting) {\n        baseStyle.backgroundColor = \"#ffc107\";\n        baseStyle.color = \"#212529\";\n        return [\"WS: Reconnecting\", baseStyle];\n    }\n    baseStyle.backgroundColor = \"#dc3545\";\n    return [\"WS: Offline\", baseStyle];\n}\n;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"92f682973c17d711f6bfc592ee29932687f93a40526889b8ca4feee197ec36e1\"] = \n            function(cascadeBuf, topology, snapshots) {\n                var snaps = Array.isArray(snapshots) ? snapshots : [];\n                if (!topology) {\n                    return window.dash_clientside.no_update;\n                }\n                var iu = (topology.input_units|0);\n                var hu = (topology.hidden_units|0);\n                var ou = (topology.output_units|0);\n\n                // Auto-clear on dataset / network reset.\n                if (snaps.length > 0) {\n                    var head = snaps[0];\n                    if ((head.input_units|0) !== iu || hu < (head.hidden_units|0)) {\n                        snaps = [];\n                    }\n                }\n\n                // Read epoch from metrics store if available.\n                var epoch = null;\n                try {\n                    if (window._juniperWsDrain && Array.isArray(window._juniperWsDrain._metricsBuffer)\n                            && window._juniperWsDrain._metricsBuffer.length > 0) {\n                        var lastMetric = window._juniperWsDrain._metricsBuffer[window._juniperWsDrain._metricsBuffer.length - 1];\n                        if (lastMetric && typeof lastMetric.epoch !== \"undefined\") {\n                            epoch = lastMetric.epoch;\n                        }\n                    }\n                } catch (e) { /* best-effort epoch tagging */ }\n\n                // De-dupe: only push if hidden_units differs from the head.\n                if (snaps.length > 0 && (snaps[0].hidden_units|0) === hu\n                        && (snaps[0].input_units|0) === iu\n                        && (snaps[0].output_units|0) === ou) {\n                    return window.dash_clientside.no_update;\n                }\n\n                var newSnap = {\n                    timestamp: Date.now(),\n                    epoch: epoch,\n                    input_units: iu,\n                    hidden_units: hu,\n                    output_units: ou,\n                };\n                var next = [newSnap].concat(snaps);\n                if (next.length > 20) {\n                    next = next.slice(0, 20);\n                }\n                return next;\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"d506f29edf1a7ae0c0335f6e5b50d6007b90753e07ecc4917dc7af1bf2824f28\"] = \n            function(nClicks) {\n                if (!nClicks) return window.dash_clientside.no_update;\n                return [];\n            }\n            ;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"5684ddb493d375469a84a22df574aaf47c5f087b9df650f4196fc05c1d987d2d\"] = \nfunction(start_clicks, pause_clicks, stop_clicks, resume_clicks, reset_clicks, last_click, button_states, oneshot_start_body) {\n    var dc = window.dash_clientside || {};\n    var no_update = (dc.no_update !== undefined) ? dc.no_update : null;\n    var ctx = dc.callback_context || {};\n    var triggered = ctx.triggered || [];\n    if (!triggered.length || triggered[0].value === null || triggered[0].value === undefined) {\n        return [no_update, no_update];\n    }\n\n    var triggerId = triggered[0].prop_id.split('.')[0];\n    var buttonMap = {\n        'start-button': 'start',\n        'pause-button': 'pause',\n        'stop-button': 'stop',\n        'resume-button': 'resume',\n        'reset-button': 'reset'\n    };\n    var command = buttonMap[triggerId];\n    if (!command) {\n        return [no_update, no_update];\n    }\n\n    var now = Date.now() / 1000.0;\n\n    // Debounce: ignore same-button clicks within 500ms.\n    if (last_click && last_click.button === triggerId) {\n        var sinceLast = now - (last_click.timestamp || 0);\n        if (sinceLast < 0.5) {\n            return [no_update, no_update];\n        }\n    }\n\n    // Optimistic UI: flip the clicked button to loading immediately.\n    var newStates = Object.assign({}, button_states || {});\n    newStates[command] = { disabled: true, loading: true, timestamp: now };\n\n    // Phase D \u00a7S10: push the *real* async outcome into the training-control-\n    // action store so the surface_training_control_outcome callback can render a\n    // dismissable danger alert. Without this a rejected command (WS error ack or\n    // REST non-2xx) only ever reached the browser console \u2014 the \"dead button\"\n    // class. See notes/CANOPY_TRAINING_CONTROL_ERROR_SURFACING_DESIGN_2026-06-14.md.\n    function reportFailure(detail) {\n        try {\n            if (dc && typeof dc.set_props === 'function') {\n                dc.set_props('training-control-action', {\n                    // detail is the alert's 300-char slice; detail_full keeps the producer's own\n                    // sentence (which symbols, how many rows) for the partial-data prompt.\n                    data: { last: triggerId, ts: Date.now() / 1000.0, success: false, command: command, detail: String(detail || '').slice(0, 300), detail_full: String(detail || '').slice(0, 4000) }\n                });\n            }\n        } catch (e) {\n            console.error('[Phase D] reportFailure failed for ' + command + ':', e);\n        }\n    }\n\n    // F-CANOPY-003: the success ack never reached the dashboard -- the WS success\n    // path only logged and the REST path did nothing on 2xx -- so a button stayed\n    // on its optimistic loading state until the interval-driven timeout sweep\n    // landed (30 s to minutes under callback congestion; a wedged button blocked\n    // the next command for the rest of a run). Report the ack the same way\n    // failures are reported AND clear this button's loading state directly: the\n    // ack is the primary release, the sweep stays as the backstop.\n    function reportSuccess(transport, commandId) {\n        try {\n            if (dc && typeof dc.set_props === 'function') {\n                dc.set_props('training-control-action', {\n                    data: { last: triggerId, ts: Date.now() / 1000.0, success: true, command: command, transport: transport, command_id: commandId }\n                });\n                var cleared = Object.assign({}, newStates);\n                cleared[command] = { disabled: false, loading: false, timestamp: 0 };\n                dc.set_props('button-states', { data: cleared });\n            }\n        } catch (e) {\n            console.error('[Phase D] reportSuccess failed for ' + command + ':', e);\n        }\n    }\n\n    function restFallback(reason) {\n        if (reason) {\n            console.warn('[Phase D] REST fallback (' + command + '):', reason);\n        }\n        try {\n            // A1-iv-3c: a one-shot Start carries the dataset-ref body (generator + registry\n            // params); every other command and a live-model Start post no body (route unchanged).\n            var fetchOpts = { method: 'POST', credentials: 'same-origin' };\n            if (command === 'start' && oneshot_start_body) {\n                fetchOpts.headers = { 'Content-Type': 'application/json' };\n                fetchOpts.body = JSON.stringify(oneshot_start_body);\n            }\n            // PR-1 (Start-Training 401 fix): attach the CSRF token (bootstrapped\n            // and cached by websocket_client.js on page load) so the keyless REST\n            // fallback satisfies require_browser_control_auth on the server. The\n            // session cookie already rides on credentials:'same-origin'. Skipped\n            // when no token is set (CSRF disabled -> server falls back to Origin-only).\n            if (window.__canopy_csrf) {\n                fetchOpts.headers = Object.assign({}, fetchOpts.headers || {}, { 'X-CSRF-Token': window.__canopy_csrf });\n            }\n            fetch('/api/train/' + command, fetchOpts)\n                .then(function(resp) {\n                    if (resp.ok) {\n                        reportSuccess('rest', null);\n                        return;\n                    }\n                    if (!resp.ok) {\n                        console.warn('[Phase D] REST /api/train/' + command + ' returned ' + resp.status);\n                        resp.text().then(function(body) {\n                            var msg = '';\n                            try {\n                                var parsed = JSON.parse(body);\n                                msg = (parsed && parsed.error && (parsed.error.message || parsed.error.detail)) || (parsed && (parsed.message || parsed.detail)) || '';\n                            } catch (e) {\n                                msg = body || '';\n                            }\n                            reportFailure('HTTP ' + resp.status + (msg ? ': ' + msg : ''));\n                        }).catch(function() {\n                            reportFailure('HTTP ' + resp.status);\n                        });\n                    }\n                })\n                .catch(function(err) {\n                    console.error('[Phase D] REST /api/train/' + command + ' failed:', err);\n                    reportFailure((err && err.message) || 'request failed');\n                });\n        } catch (err) {\n            console.error('[Phase D] REST fallback threw for ' + command + ':', err);\n            reportFailure((err && err.message) || 'request error');\n        }\n    }\n\n    var ws = window.cascorControlWS;\n    var wsReady = !!(ws && ws.connected && ws.ws && ws.ws.readyState === 1 /* OPEN */);\n\n    if (wsReady && typeof ws.send === 'function') {\n        var commandId;\n        try {\n            commandId = (ws.constructor && typeof ws.constructor._uuidv4 === 'function')\n                ? ws.constructor._uuidv4()\n                : ('btn-' + now.toFixed(3) + '-' + Math.floor(Math.random() * 1e9).toString(16));\n        } catch (e) {\n            commandId = 'btn-' + now.toFixed(3) + '-' + Math.floor(Math.random() * 1e9).toString(16);\n        }\n        try {\n            // A1-iv-3c: attach the one-shot dataset-ref body as the WS ``params`` (the /ws/control\n            // start handler feeds it to _recurrence_start_kwargs); a live-model Start sends none.\n            var sendMsg = { command: command, command_id: commandId };\n            if (command === 'start' && oneshot_start_body) {\n                sendMsg.params = oneshot_start_body;\n            }\n            var sendPromise = ws.send(sendMsg);\n            if (sendPromise && typeof sendPromise.then === 'function') {\n                sendPromise\n                    .then(function(data) {\n                        console.log('[Phase D] WS command success:', command, data && data.command_id);\n                        reportSuccess('ws', (data && data.command_id) || commandId);\n                    })\n                    .catch(function(err) {\n                        // F-CANOPY-005: fall back ONLY on transport-class failures\n                        // (timeout / socket closed / send threw \u2014 err.transport is\n                        // set by websocket_client.js). A business rejection means\n                        // the server RECEIVED and adjudicated the command; a REST\n                        // retry re-issues a state-changing command the backend\n                        // already answered (the observed resume->409 double-fire),\n                        // so surface it to the operator instead.\n                        if (err && err.transport) {\n                            restFallback('WS transport failure: ' + (err && err.message));\n                        } else {\n                            console.warn('[Phase D] WS business rejection (' + command + '):', err && err.message);\n                            reportFailure((err && err.message) || 'command rejected');\n                        }\n                    });\n            } else {\n                // send() returned something non-thenable \u2014 treat as failure.\n                restFallback('send() returned non-promise value');\n            }\n        } catch (err) {\n            restFallback('send() threw: ' + err);\n        }\n        return [\n            { last: triggerId, ts: now, success: true, transport: 'ws', command_id: commandId },\n            newStates\n        ];\n    }\n\n    // Fast path: WS unavailable \u2014 go straight to REST.\n    restFallback(wsReady ? null : 'WS not connected');\n    return [\n        { last: triggerId, ts: now, success: true, transport: 'rest' },\n        newStates\n    ];\n}\n;\n})();\n",
+  "\n(function() {\n    var clientside = window.dash_clientside = window.dash_clientside || {};\n    var ns = clientside[\"_dashprivate_clientside_funcs\"] = clientside[\"_dashprivate_clientside_funcs\"] || {};\n    ns[\"a5e9e0cc9333aa46c404ab9942d7b01fb34f08c88753928de7015ee51678a72b\"] = \n            function(n_clicks) {\n                if (!n_clicks) return window.dash_clientside.no_update;\n                var btn = document.getElementById('apply-dataset-button');\n                if (!btn) return window.dash_clientside.no_update;\n                btn.classList.remove('attention-pulse');\n                // Force a reflow so the class re-add restarts the animation\n                // even if the user clicks cancel twice in quick succession.\n                void btn.offsetWidth;\n                btn.scrollIntoView({behavior: 'smooth', block: 'center'});\n                btn.classList.add('attention-pulse');\n                setTimeout(function() {\n                    btn.classList.remove('attention-pulse');\n                }, 1100);\n                return window.dash_clientside.no_update;\n            }\n            ;\n})();\n"
+ ]
+}
