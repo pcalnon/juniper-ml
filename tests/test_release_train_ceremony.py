@@ -125,6 +125,7 @@ class _Recorder:
     def __init__(self):
         self.calls = []
         self.release_latest = []  # the ``latest`` kwarg of each create_release, kept out of ``calls`` so its tuples stay stable
+        self.release_target = []  # the ``target`` kwarg likewise
 
     def open_archive_pr(self, repo, base, branch, relpath, content, title, body):
         self.calls.append(("open_archive_pr", repo, branch, relpath))
@@ -134,9 +135,10 @@ class _Recorder:
         self.calls.append(("enable_automerge", repo, pr))
         return True
 
-    def create_release(self, repo, tag, title, notes_relpath, content, *, latest=False):
+    def create_release(self, repo, tag, title, notes_relpath, content, *, latest=False, target=None):
         self.calls.append(("create_release", repo, tag, notes_relpath))
         self.release_latest.append(latest)
+        self.release_target.append(target)
         return f"https://github.com/pcalnon/{repo}/releases/tag/{tag}"
 
     def upsert_halt_issue(self, repo, title, body):
@@ -1672,6 +1674,172 @@ class LatestBadgeTest(unittest.TestCase):
         self.assertTrue(_plan(entry=entries["juniper-data"], pkg=_manifest_pkg(pypi_name="juniper-data", repo="juniper-data")).latest)
         self.assertTrue(_plan(entry=entries["juniper-ml"], pkg=_manifest_pkg(pypi_name="juniper-ml")).latest)
         self.assertFalse(_plan(entry=entries["juniper-service-core"], pkg=_manifest_pkg()).latest)
+
+
+TARGET = "7125e161d75b9b3f8a3ab1b6aa51daf9cdb8bdcf"
+
+
+class TargetShaTest(unittest.TestCase):
+    """``--target-sha``: the tag, the S8 CI gate and the notes all describe ONE commit.
+
+    Without it, ``gh release create`` tags the owning repo's main AS IT IS AT CUT TIME while the notes
+    come from the ``--ecosystem-root`` checkout -- two trees that agree only if nothing merged in
+    between. On 2026-09-23/24 three juniper-data PRs merged between the owner's approval of the 0.16.0
+    notes (pinned at 7125e161) and the cut, and one of them left a duplicate ``## [0.16.0]`` heading on
+    main. Each link of the target's path is pinned, because a break in any one is silent: a Release is
+    still cut, at the wrong commit."""
+
+    def _gh_recorder(self, commit_runs='["cancelled", "success"]'):
+        calls: list = []
+
+        def rec_gh(args, timeout=90):
+            calls.append(list(args))
+            if args[:2] == ["run", "list"]:
+                # The targeted probe asks for every completed run of the commit, as a JSON list; this
+                # default is 7125e161's real shape: a later dispatch run cancelled, the push run green.
+                return commit_runs if "--commit" in args else "success"
+            return "https://github.com/pcalnon/juniper-data/releases/tag/v0.16.0"
+
+        def rec_git(repo_dir, args, timeout=120, check=True):
+            return ""
+
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(tmp, ignore_errors=True))
+        allowed = ce.publishing_repo_slugs(d.load_registry(UTIL_DIR / "registry.yaml"), "pcalnon")
+        return calls, ce.make_live_sources("pcalnon", tmp, tmp.parent, allowed_repos=allowed, gh=rec_gh, git=rec_git)
+
+    def test_live_release_passes_target_only_when_given(self):
+        calls, src = self._gh_recorder()
+        src.create_release("juniper-data", "v0.16.0", "juniper-data v0.16.0", "notes/releases/RELEASE_NOTES_juniper-data_v0.16.0.md", "notes\n", latest=True, target=TARGET)
+        src.create_release("juniper-data", "v0.16.0", "juniper-data v0.16.0", "notes/releases/RELEASE_NOTES_juniper-data_v0.16.0.md", "notes\n", latest=True)
+        targeted, untargeted = [a for a in calls if a[:2] == ["release", "create"]]
+        self.assertEqual(targeted[targeted.index("--target") + 1], TARGET)
+        self.assertNotIn("--target", untargeted)
+        allowed = ce.publishing_repo_slugs(d.load_registry(UTIL_DIR / "registry.yaml"), "pcalnon")
+        for argv in (targeted, untargeted):
+            ce._assert_gh_allowed(argv, allowed)  # the R7 gate admits both
+
+    def test_live_ci_probe_narrows_to_the_commit_and_reads_all_its_runs(self):
+        calls, src = self._gh_recorder()
+        self.assertEqual(src.main_ci_conclusion("juniper-data", "ci.yml", TARGET), "success", "a superseded, cancelled run must not halt a green commit")
+        argv = next(a for a in calls if a[:2] == ["run", "list"])
+        self.assertEqual(argv[argv.index("--commit") + 1], TARGET)
+        self.assertEqual(argv[argv.index("--branch") + 1], "main")
+        self.assertEqual(argv[argv.index("--workflow") + 1], "ci.yml")
+        self.assertEqual(argv[argv.index("--status") + 1], "completed")
+        self.assertEqual(argv[argv.index("--jq") + 1], "[.[].conclusion]", "every run of the commit, not just the newest")
+
+    def test_live_ci_probe_halts_on_a_red_run_of_the_commit(self):
+        _, src = self._gh_recorder(commit_runs='["success", "failure"]')
+        self.assertEqual(src.main_ci_conclusion("juniper-data", "ci.yml", TARGET), "failure")
+
+    def test_live_ci_probe_refuses_non_json(self):
+        _, src = self._gh_recorder(commit_runs="success")
+        with self.assertRaises(ce.SourceError):
+            src.main_ci_conclusion("juniper-data", "ci.yml", TARGET)
+
+    def test_commit_ci_verdict(self):
+        cases = [
+            (["cancelled", "success"], "success"),  # 7125e161: a dispatch run superseded, the push run green
+            (["success"], "success"),
+            (["neutral", "success"], "success"),
+            ([None, "success"], "success"),
+            (["success", "failure"], "failure"),  # one red run halts, however many green ones surround it
+            (["timed_out", "success"], "timed_out"),
+            (["startup_failure"], "startup_failure"),
+            (["cancelled"], "cancelled"),  # nothing green: not a pass
+            (["skipped", "cancelled"], "skipped"),
+            ([], None),
+        ]
+        for conclusions, expected in cases:
+            with self.subTest(conclusions=conclusions):
+                self.assertEqual(ce.commit_ci_verdict(conclusions), expected)
+
+    def _targeted_plan(self, conclusion="success"):
+        seen: list = []
+
+        def main_ci_conclusion(repo, workflow, commit=None):
+            seen.append((repo, workflow, commit))
+            return conclusion
+
+        src = _sources()
+        src.main_ci_conclusion = main_ci_conclusion
+        plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17", target_sha=TARGET)
+        return plan, seen
+
+    def test_the_plan_gates_on_the_target_and_cuts_there(self):
+        plan, seen = self._targeted_plan()
+        self.assertEqual(seen, [("juniper-ml", "ci.yml", TARGET)], "the S8 gate must read the TARGET commit's run")
+        self.assertEqual(plan.target_sha, TARGET)
+        self.assertEqual(plan.to_dict()["target_sha"], TARGET)
+        cut = next(a for a in plan.actions if a.kind == "cut_release")
+        self.assertEqual(cut.detail["target"], TARGET)
+        self.assertIn(f"--target {TARGET}", cut.summary)
+
+    def test_a_red_target_commit_halts(self):
+        plan, _ = self._targeted_plan(conclusion="failure")
+        self.assertTrue(plan.halted)
+        self.assertIn(f"target commit {TARGET}", plan.halt_reason)
+
+    def test_without_a_target_the_gate_and_the_cut_are_unchanged(self):
+        seen: list = []
+
+        def main_ci_conclusion(repo, workflow, *rest):
+            seen.append(rest)
+            return "success"
+
+        src = _sources()
+        src.main_ci_conclusion = main_ci_conclusion
+        plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
+        self.assertEqual(seen, [()], "an untargeted cut keeps the two-argument probe of main's newest run")
+        self.assertIsNone(plan.target_sha)
+        cut = next(a for a in plan.actions if a.kind == "cut_release")
+        self.assertNotIn("--target", cut.summary)
+        self.assertIsNone(cut.detail["target"])
+
+    def test_execute_hands_the_target_to_create_release(self):
+        rec = _Recorder()
+        src = _sources(recorder=rec, run_status=PENDING_RUN)
+        src.main_ci_conclusion = lambda repo, workflow, commit=None: "success"
+        plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17", target_sha=TARGET)
+        ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
+        self.assertEqual(rec.release_target, [TARGET])
+
+    def _main_error(self, *extra):
+        fh = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8")
+        json.dump({"schema": "juniper-release-train/manifest/v1", "packages": [_manifest_pkg()]}, fh)
+        fh.close()
+        self.addCleanup(lambda: Path(fh.name).unlink(missing_ok=True))
+        err = io.StringIO()
+        with redirect_stdout(io.StringIO()), redirect_stderr(err):
+            rc = ce.main(["--manifest", fh.name, "--registry", str(UTIL_DIR / "registry.yaml"), *extra], sources=_sources())
+        return rc, err.getvalue()
+
+    def test_an_abbreviated_sha_is_refused_before_anything_is_written(self):
+        rc, err = self._main_error("--package", "juniper-service-core", "--target-sha", TARGET[:7])
+        self.assertEqual(rc, 2)
+        self.assertIn("full 40-char", err)
+
+    def test_a_target_needs_exactly_one_package(self):
+        rc, err = self._main_error("--target-sha", TARGET)
+        self.assertEqual(rc, 2)
+        self.assertIn("exactly one --package", err)
+        rc, err = self._main_error("--package", "juniper-service-core", "--package", "juniper-ci-tools", "--target-sha", TARGET)
+        self.assertEqual(rc, 2)
+        self.assertIn("exactly one --package", err)
+
+    def test_a_valid_target_reaches_the_plan_through_the_cli(self):
+        fh = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8")
+        json.dump({"schema": "juniper-release-train/manifest/v1", "packages": [_manifest_pkg()]}, fh)
+        fh.close()
+        self.addCleanup(lambda: Path(fh.name).unlink(missing_ok=True))
+        src = _sources()
+        src.main_ci_conclusion = lambda repo, workflow, commit=None: "success" if commit == TARGET else "cancelled"
+        out = io.StringIO()
+        with redirect_stdout(out):
+            rc = ce.main(["--manifest", fh.name, "--registry", str(UTIL_DIR / "registry.yaml"), "--repo-root", str(REPO_ROOT), "--package", "juniper-service-core", "--target-sha", TARGET, "--json"], sources=src)
+        self.assertEqual(rc, 0, out.getvalue())
+        self.assertEqual(json.loads(out.getvalue())["plans"][0]["target_sha"], TARGET)
 
 
 class ArchiveNotesTrailingNewlineTest(unittest.TestCase):
