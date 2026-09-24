@@ -52,7 +52,6 @@ import threading
 import types
 import unittest
 from pathlib import Path
-from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 HELPER = REPO_ROOT / "util" / "thread_width.py"
