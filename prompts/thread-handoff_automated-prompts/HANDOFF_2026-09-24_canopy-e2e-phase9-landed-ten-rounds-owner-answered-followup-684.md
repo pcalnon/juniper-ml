@@ -46,17 +46,34 @@ before any review round.
    F-CANOPY-056's fix. Each drive must end its replay (sidebar Reset Training, or cascor `/replay/control` stop)
    and check that Start and Apply work after it, reading `/api/status`'s `fsm_status` and the Network Editor
    badge (the status bar reads Stopped during and after a replay either way).
-2. **Item 17 triage**: a replay replaces cascor's live network and nothing restores it, while canopy calls it
+2. **Triage five observations the canopy selection arc offered on 2026-09-24** (its O2–O5 and O9; its O1 is
+   F-CANOPY-055). Source: juniper-ml `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md`
+   § "Observations (not A-N2 failures)", lines 188–226 on `main`. A grep of the ledger finds none of them filed:
+   - **O2**: both metric charts plot `metric["epoch"]`, a per-phase counter, as x (`metrics_panel.py`
+     `_parse_metrics` / `_create_accuracy_plot`), so accuracy sits in a sliver at x ≤ 51 on a ~10k axis for every
+     CasCor case. Likely the most user-visible; re-derive before rating.
+   - **O3**: `/api/set_params`'s `applied` list omits the keys routed over `/ws/control` (and `epochs_max`'s
+     `not-updatable` skip), though the values land.
+   - **O4**: `/v1/health`'s `version` comes from installed metadata (0.6.0 from `JuniperCanopy1`'s stale editable
+     install) while the source is 0.8.1. Related history only: the About panel's hardcoded `APP_VERSION`,
+     fixed as OBS-1 by canopy#526. May be an environment artifact rather than a code defect.
+   - **O5**: 80 "Network stats API returned 503" warnings under the recurrence backend: `/api/network/stats` has
+     no recurrence branch. Log noise; decide whether the recurrence backend is in this arc's scope.
+   - **O9**: after a refused Start the sidebar's "Current Dataset" shows the staged dataset; the routes are
+     honest. The selection arc calls it a pre-existing U-6 design question; it may be theirs to keep.
+
+   File what survives as a new ledger phase, through the consensus procedure; decline the rest with a reason.
+3. **Item 17 triage**: a replay replaces cascor's live network and nothing restores it, while canopy calls it
    "read-only playback". canopy's wording, cascor's design, or both — an owner call.
-3. **F-058's census** (item 0): the first one was refuted before its first run. Hook dispatch (or
+4. **F-058's census** (item 0): the first one was refuted before its first run. Hook dispatch (or
    `add_init_script`), detect fires before the reset, and run a synthetic check both ways first.
-4. **F-055/F-058 redesign**: a request/ack handshake pacer with no `running=` guard.
-5. **Owner questions** (item 15): the later actions and #676's CI re-run; the ratings (F-059 P0 against F-014's P1
+5. **F-055/F-058 redesign**: a request/ack handshake pacer with no `running=` guard.
+6. **Owner questions** (item 15): the later actions and #676's CI re-run; the ratings (F-059 P0 against F-014's P1
    precedent; F-056/057 P1); a provenance ref for the local-only commits the ledger cites.
-6. **MEMORY.md** is at ~24,880 characters, ~120 under the ~25,000-CHARACTER load limit (`wc -m`). Compact by
+7. **MEMORY.md** is at ~24,880 characters, ~120 under the ~25,000-CHARACTER load limit (`wc -m`). Compact by
    retiring entries, never by stripping hooks; snapshot the link set first
    (`util/ad-hoc/2026-09-12_memory_index_linkset.py`); the three ACTIVE status lines belong to their arcs.
-7. **Worktree cleanup** once canopy#684 has merged: the canopy worktree
+8. **Worktree cleanup**, now that #2083 and canopy#684 have merged: the canopy worktree
    `worktrees/juniper-canopy--fix--idle-cuts-round3-wording--20260923-2238--e9053227`, and the juniper-ml worktree
    `.claude/worktrees/graceful-sprouting-panda` (branch `docs/canopy-e2e-phase9`, merged as #2083), per each repo's
    `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`.
