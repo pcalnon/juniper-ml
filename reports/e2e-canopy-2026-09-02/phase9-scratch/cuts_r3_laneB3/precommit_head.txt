@@ -1,0 +1,25 @@
+Check YAML syntax.....................................(no files to check)Skipped
+Check TOML syntax.....................................(no files to check)Skipped
+Check JSON syntax.....................................(no files to check)Skipped
+Fix end of files..........................................................Passed
+Trim trailing whitespace..................................................Passed
+Check for merge conflicts.................................................Passed
+Check for large files.....................................................Passed
+Check case conflicts......................................................Passed
+Check Python AST..........................................................Passed
+Check for debug statements................................................Passed
+Detect private keys.......................................................Passed
+Format with Black.........................................................Passed
+Sort imports with isort...................................................Passed
+Async-route audit (BUG-JD-10 class).......................................Passed
+Lint with Flake8..........................................................Passed
+Lint tests with Flake8 (relaxed)..........................................Passed
+Type check with MyPy......................................................Passed
+Security scan with Bandit.................................................Passed
+Lint Markdown files.......................................................Passed
+Validate documentation links..............................................Passed
+Lint shell scripts....................................(no files to check)Skipped
+Lint YAML files.......................................(no files to check)Skipped
+Block unencrypted .env files..........................(no files to check)Skipped
+Guard _normalize_metric dual-format contract (C-22)...(no files to check)Skipped
+Ensure requirements.lock exists...........................................Passed

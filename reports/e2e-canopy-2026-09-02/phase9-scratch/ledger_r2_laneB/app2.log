@@ -1,0 +1,23 @@
+Dash is running on http://127.0.0.1:9489/
+
+ * Serving Flask app 'synth_app2'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:9489
+Press CTRL+C to quit
+127.0.0.1 - - [23/Sep/2026 23:56:33] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-component-suites/dash/deps/react-dom@18.v4_2_0m1781825206.3.1.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-component-suites/dash/dcc/dash_core_components.v4_2_0m1781825206.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-component-suites/dash/deps/react@18.v4_2_0m1781825206.3.1.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-component-suites/dash/deps/prop-types@15.v4_2_0m1781825206.8.1.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-component-suites/dash/deps/polyfill@7.v4_2_0m1781825206.12.1.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_2_0m1781825206.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-component-suites/dash/dcc/dash_core_components-shared.v4_2_0m1781825206.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-component-suites/dash/html/dash_html_components.v4_2_0m1781825206.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-component-suites/dash/dash_table/bundle.v7_2_0m1781825206.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-dependencies HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:56:34] "GET /_dash-layout HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:57:14] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:57:50] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:57:55] "POST /_dash-update-component HTTP/1.1" 200 -

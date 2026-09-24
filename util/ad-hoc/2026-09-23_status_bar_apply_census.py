@@ -58,6 +58,35 @@ PREDICTION (:8055, baseline 60 s at 1000 ms, then 150 s at 20000 ms): baseline N
 window APPLIES, with the bar showing the server's epoch (76) by the end; baseline median L above 1 s,
 slowed-window median L below 20 s.
 
+THE FIX VERIFICATION (2026-09-23, later the same day). F-CANOPY-055's fix moves the feeder onto its own
+``status-bar-interval`` with a ``running=`` guard. The MARK (``status-indicator.style`` in the callback's
+output key) is unchanged by the fix, so the probe identifies the same callback on both builds. Baseline
+window only: the period arm retunes ``fast-update-interval``, which the fixed feeder no longer rides.
+The verdict rule above is UNCHANGED. PREDICTIONS -- FIXED BEFORE THESE TWO RUNS (idle trio, Training
+Metrics, GPU, 45 s settle, 60 s window, one browser at a time, parent first):
+  the parent (:8056, ce78e0de, main plus the idle cuts): NEVER-APPLIES or RARELY-APPLIES.
+  the fix (:8057, 884d22fb): APPLIES, with at least 10 responses delivered (self-clocked at round trip +
+  up to 1 s), and the bar's DOM at the end showing the server's state (the fixture's completed run,
+  step 76), not the layout defaults "Stopped" / "0".
+RESULTS. The parent: NEVER-APPLIES (30 responses delivered, 31 watched, 0 executed, 0 latency changes;
+DOM "Stopped" / "0" / ""), as predicted. The fix: VOID -- 7 responses delivered, below the rule's 10. The
+prediction of at least 10 was WRONG: the lane self-clocked at ~8.6 s, not round trip + up to 1 s, because
+``running=`` releases the lane from ``completeJob()``, after the saturated page has PROCESSED the response
+(its delivery latency L was 4-7 s this afternoon), not when the wire answers. That is F-CANOPY-035's
+measured 5.5-7.3 s cadence again. The raw record the VOID leaves unscored: 9 watched, 8 executed, 7
+latency changes, and the bar showing the server's state both in the store at install and in the DOM at the end ("Completed — early stopped" / "76").
+SECOND FIX RUN, rule unchanged, window lengthened to 150 s (the period arm's window) so that a lane
+polling at ~8.6 s can deliver the rule's 10. PREDICTION -- FIXED BEFORE IT: APPLIES, with 12-25
+responses delivered and the DOM showing the server's state.
+RESULT (recorded 2026-09-24, when round 2 of the ledger's validation found it missing here): APPLIES, as
+predicted -- 20 responses delivered, 20 watched, 20 executed, 19 latency changes, and the DOM at the end
+"Completed — early stopped" / "76" / "Latency: 5ms"
+(reports/e2e-canopy-2026-09-02/transcripts/2026-09-23_status_bar_apply_census_f055_fix_8057_150s.json).
+CORRECTIONS (2026-09-24, the ledger's Phase 9): "~8.6 s" above is either the mean gap between latency
+changes (8.69 s), which skips repeated values, or 60 s over 7 responses (8.57 s). Every estimator puts the
+self-clock at 7.4-8.7 s, about 7.5 s by the median. And it is not "F-CANOPY-035's measured 5.5-7.3 s cadence
+again": it is slower than that, though of the same order.
+
 Usage:
     JUNIPER_E2E_CANOPY_URL=http://127.0.0.1:8055 JUNIPER_E2E_BROWSER_GPU=1 \\
     LIBTORCH= LD_LIBRARY_PATH= /opt/miniforge3/envs/JuniperCanopy1/bin/python \\

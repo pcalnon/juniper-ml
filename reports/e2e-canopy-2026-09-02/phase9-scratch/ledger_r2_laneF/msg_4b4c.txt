@@ -1,0 +1,38 @@
+perf(idle): the replay weight drain's 2 Hz timer ran on every tab with nothing to drain -- it now waits for this page to start a replay, and the metrics panel's dead timer is removed
+
+An idle dashboard's main thread is ~0.1% idle, and every dcc.Interval tick is a
+store update that re-runs the page's selectors, so an idle timer's cost comes
+straight out of response delivery. Two timers were half of the page's
+steady-state ticks:
+
+- replay-player-panel-weight-drain, a 2 Hz timer on no tab gate, drains the
+  CAN-015g replay-weight ring buffer. Nothing fills that buffer today: cascor's
+  replay frames carry no weights and canopy's metrics relay drops the key
+  (F-CANOPY-057). The drain now ships disabled; a clientside gate, the only
+  writer of its `disabled`, enables it once replay-player-session holds a
+  snapshot_id. Against cascor a Stop does not clear the session
+  (_merge_session overlays any non-empty response, F-CANOPY-056), so after a
+  replay the drain runs until the page reloads, as it always ran before.
+- metrics-panel-update-interval (1 Hz) had no consumer. Removed. Its period
+  setting is still parsed and still drives nothing, and the two docs rows say so.
+
+Parking the drain on an idle page cut the median response-delivery latency by
+42% and 32% (two in-page A/B runs in opposite orders, juniper-ml
+util/ad-hoc/2026-09-23_canopy_timer_park_ab.py). A live check of this build
+against its parent scored the latency inconsistent (one cuts window beat both
+neighbours, the other was 1.5-2.7% slower than both); an earlier check of the
+same change on canopy#670's branch scored it consistent. Structure and the
+session gate passed in both.
+
+New src/tests/unit/frontend/test_idle_dispatch_cuts.py fails CI on any Interval
+in the built app that no callback consumes, and pins the gate's wiring and its
+rule (run under node). 7 of its 9 fail on the parent; the two premise pins hold
+on both. Comments that claimed cascor emits weights, that stop clears the
+session, and that WebSocket events write it are corrected.
+
+Rebuilt on main from the local provenance commit 668380ec; the metrics panel
+layout snapshot was regenerated, not hand-merged. Reviewed under the juniper-ml
+independent-agent consensus procedure (two rounds; prose corrections only).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01QaAd7RACvbsKjqdrSXEouS

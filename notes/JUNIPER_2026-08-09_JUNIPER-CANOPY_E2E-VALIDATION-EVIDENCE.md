@@ -3932,6 +3932,11 @@ worth answering so the two working panels aren't relying on defaults either.
 **F-CANOPY-015 — the replay player reads three session fields one nesting level too shallow; the weights
 badge therefore reports V1 for a V2 snapshot while two sibling misreads are silently masked by
 coincidence (P2, OPEN; root-caused, empirically confirmed).**
+
+> **Pointer added in Phase 9 (2026-09-24):** this finding's fix, canopy#532, reads `range` at the right level
+> but indexes cascor's dict as a list, so every session cascor serves now crashes the player: F-CANOPY-059
+> (P0).
+
 cascor's replay-start payload nests the live session summary under a `session` key. Measured directly off
 the running service, the `data` block's keys are
 `['fsm_state', 'operation', 'session', 'snapshot_id', 'status', 'time_index', 'training_params']` while
@@ -6158,7 +6163,7 @@ brought up; every fix is grounded in the Phase 1–3 measurements plus source tr
 |---|---|---|
 | F-CANOPY-001 dark-mode glyph | canopy#532 | fixed — glyph derived from the store by the mount-capable callback |
 | F-CANOPY-013 envelope nesting | canopy#532 | fixed — both call sites, incl. the latent DELETE instance |
-| F-CANOPY-015 replay session nesting | canopy#532 | fixed — `_session_summary`, legacy shape tolerated |
+| F-CANOPY-015 replay session nesting | canopy#532 | fixed — `_session_summary`, legacy shape tolerated; its `range` read crashes every real session (F-CANOPY-059, Phase 9) |
 | F-CANOPY-034 dead store | canopy#532 | fixed — store, handler and its 5 tests removed |
 | F-CANOPY-018 apply toast | canopy#533 | fixed — **and re-diagnosed: 3 keys, not "two writers"** |
 | F-CANOPY-028 pinned params | canopy#533 | fixed — **and re-diagnosed: the writer, not rehydration** |
@@ -7493,7 +7498,8 @@ which it always is, its output is in its own closure, so the consumers are never
   #614's watchdog.
 - Round-2 review showed it **regresses F-CANOPY-027**:
   - `running=` releases in `completeJob()` (`:925-937`) after **every** run of the writer, including the
-    204 `no_update` runs at page load and on every tab change.
+    `no_update` runs at page load and on every tab change (HTTP 200 with an empty `response`, not the 204
+    first written here; corrected in Phase 9, round 2 of its validation).
   - That overwrites the CAN-000 gate's `disabled=True`. The write orderings measured on `main` (Lane A3's
     timestamps) put the fetch's completion after the gate's write in 3 of 3 page loads and 3 of 3 tab
     activations, so under that design the gate would lose every time. This is a prediction from measured
@@ -8480,3 +8486,1222 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
     - the slider THUMB does not follow a refill until the next control or tick (v2's documented cost);
     - the immediate write-back snaps the thumb in 25% steps while dragging over a 5-row history (Lane B);
       the final seek is correct.
+
+## Phase 9 — 2026-09-23: the idle cuts reviewed through three rounds and merged out of order (canopy#676), F-CANOPY-055's first fix refuted in review, and four new findings, one of them P0
+
+**Summary.**
+
+- **The idle dispatch cuts, canopy#676, MERGED at 2026-09-24T01:38:02Z as `e9053227`, before this phase landed
+  and without round 3's wording fixes.** It was held as a draft: for round 1 (its PR comment), then for this
+  phase to land first (its PR body only). No Claude Code process on this host readied it or armed auto-merge,
+  in the foreground or the background (see "The merge, out of order" below). The armed merge then waited on
+  CI: the first run on its head, `5e52debb`, failed, and the `pcalnon` account re-ran it at 01:22:32Z. The
+  change that landed is byte-identical to the reviewed `4b4cfb16`. The cuts were rebuilt on `main` from local
+  `668380ec`.
+  - The live check of the rebuilt cuts (`ce78e0de`) against `3a6dea95`, the PR's parent at the time, scored
+    STRUCTURE and SESSION PASS and LATENCY INCONSISTENT.
+  - The review corrected prose, plus two test-only changes (`key=str`; the dict-id refusal):
+    - round 1 refuted four of the PR's claims (the stop claim, the weight stream, "2 Hz", and a pooled latency
+      sentence);
+    - round 2 found what those corrections broke.
+- **F-CANOPY-055's first fix is NOT mergeable.** It put the feeder on its own lane with a `running=` guard,
+  F-CANOPY-035's repair.
+  - The census, with its rule unchanged, scored the parent NEVER-APPLIES and the fix APPLIES. F-CANOPY-025's
+    allow arm landed on the fix and on the parent alike, on demo legs, so that drive does not discriminate.
+  - Round-1 Lane B then returned **DO-NOT-MERGE**. Ordinary events re-request or re-enable the guarded lane
+    mid-request:
+    - a tab switch, through the fused gate's write;
+    - the end of an Apply, the same gate write;
+    - the strand watchdog's false fires;
+    - on #613's lane, a change of the feeder's second Input (added by the ledger's validation, Lane B1).
+  - Each completion that reaches `completeJob()` releases the guard, an evicted request's included, so the
+    eviction then sustains itself.
+  - The census windows held no tab switch and no Apply. The watchdog was armed and the gate's mount write
+    fired, and neither produced a cascade on canopy. The class also reaches #613's metrics-store lane in
+    production. That is F-CANOPY-058 below.
+- **Four new findings:**
+  - F-CANOPY-056 and F-CANOPY-057, from the cuts' round-1 adversarial lane:
+    - F-CANOPY-056: against cascor, the replay player drops every control's result, and a Stop keeps the
+      session. The ledger's validation widened it from Stop alone and re-rated it P1. Against cascor today it
+      is masked: F-CANOPY-059 keeps the controls from rendering at all.
+    - F-CANOPY-057: the CAN-015g replay-weight stream is not wired end to end. Round 2 of the ledger's
+      validation re-rated it P1, because canopy's manual still promises the stream.
+  - F-CANOPY-058, from F-055's round-1 adversarial lane: a `running=` guard is released by an evicted
+    request's completion too, so a mid-request re-request, or a re-enable more than one period before the
+    in-flight response lands, starts an eviction cascade.
+  - **F-CANOPY-059 (P0)**, from round 2 of the ledger's validation: against cascor, the replay player never
+    shows a session. canopy#532's fix for F-CANOPY-015 reads `range` where cascor serves a dict, and the
+    readout indexes it as a list, so every render raises `KeyError: 0`. Phase 1 predicted this crash when it
+    measured the payload (segment 7: "The obvious one-line fix crashes the panel"). A Replay started from the
+    page also leaves cascor refusing training until a Reset Training on the page, or a stop through cascor's
+    API.
+  - All four were re-derived in source, and F-CANOPY-059 also by executing the callback.
+
+### The idle cuts, rebuilt on `main` (canopy#676)
+
+- **The rebuild.** Local `668380ec` (built on `723ee812`, a local merge commit on canopy#670's branch; neither was
+  pushed) was
+  cherry-picked onto `main` `3a6dea95` in a fresh worktree, as local `ce78e0de`. It hit two conflicts:
+  - **`CHANGELOG.md`.** `main` had gained the Y4/Y8/Y7 entries (canopy#671) at the cuts entry's point.
+    - `main`'s entries were kept verbatim in place, and the cuts entry was placed below them.
+    - The branch's older copy of the F-CANOPY-054 entry was dropped, because `main` carries the merged one.
+  - **`src/tests/regression/snapshots/metrics_panel.txt`.** Regenerated, not hand-merged (delete, run, re-run).
+    - Its only drift from `main` is the removed `Interval(id='metrics-panel-update-interval', …)`, a single
+      76-character deletion.
+  - The code, docs and test diff is byte-identical to `668380ec`'s outside hunk positions (Lane A: `cmp` exit 0,
+    same sha256).
+- **Falsified on the new parent.** `test_idle_dispatch_cuts.py` on an extract of `3a6dea95`: 7 of 9 fail,
+  each on its intended assertion.
+  - The CLASS test names exactly `['metrics-panel-update-interval']`, so `main` had gained no other dead timer.
+  - The two premise pins pass on both.
+- **Suite.** `src/tests/unit/ src/tests/regression/` at `ce78e0de`: 6806 passed, 4 skipped, 0 failed.
+  - Lane A re-derived the count from the progress characters, and the collection count at `ce78e0de` (6810)
+    agrees. The log carries no SHA, so "at `ce78e0de`" is corroborated only indirectly (Lane A). It is archived
+    as `reports/e2e-canopy-2026-09-02/phase9-scratch/orchestrator/cuts_full_suite.log`.
+- **Live check, re-run on the PR's pair** (`2026-09-23_idle_cuts_live_check.py`, rule unchanged; control
+  `:8055` `3a6dea95`, cuts `:8056` `ce78e0de`; `…_live_check_rebuilt_ce78e0de.json`):
+
+  | window | leg | L p50 | responses | dead timer | drain disabled / ticks in 10 s |
+  |---|---|---|---|---|---|
+  | C1 | `3a6dea95` | 7.12 s | 109 | present | no / 5 |
+  | X1 | `ce78e0de` | 3.91 s | 170 | absent | yes / 0 |
+  | C2 | `3a6dea95` | 5.34 s | 127 | present | no / 7 |
+  | X2 | `ce78e0de` | 5.42 s | 136 | absent | yes / 0 |
+  | C3 | `3a6dea95` | 5.28 s | 131 | present | no / 7 |
+
+  - **STRUCTURE PASS, SESSION PASS, LATENCY INCONSISTENT** (X/C 0.79). Console errors were 0 in every window
+    after page load. The check's own counter attaches after load, but the driver's listener attaches before
+    navigation (`e2e_w3_params_driver.py:209`, `goto` at `:215`) and prints every console error or warning into
+    the run's log, which holds none, load included (Lane R2-F; `phase9-scratch/orchestrator/idle_cuts_live_check_rebuilt.log`).
+    - SESSION passed exactly at its floor: the write enabled the drain in 1.7 s with 5 ticks in 10 s.
+      Clearing it disabled the drain in 2.5 s, with 0 ticks after.
+  - **The latency prediction was half wrong.** X/C 0.79 fell inside its predicted band (0.60–0.85), but the
+    predicted CONSISTENT verdict failed: X2 was 1.48% slower than C2 and 2.66% slower than C3. The rule was not
+    changed and the run was not repeated.
+  - **C1 is an outlier** (Lane A). It started 32–40 s after the full suite finished on the same host: the run
+    command was issued ~32 s after the suite's last write (the ledger validation's Lane A2), and its first
+    window read came at 40 s, after a health read at 34 s. The suite ran
+    19:22:18Z–19:30:05Z, in the worktree the cuts leg served from, and overlapped both legs' launches. Without
+    C1, X/C is 0.88; the verdict does not depend on it.
+  - **Host load.** These are the authoring session's `uptime` readings. The script records none, so Lane A
+    scored the figure NO ARTIFACT; the readings survive only in that session's transcript (`259b4d16`).
+    - 7.89 at 19:30:31Z, just before the run's command (19:30:37.9Z), and 13.10 ten minutes in.
+    - Two `clamscan` processes read 84.2% and 80.8% CPU. Those are `ps` lifetime averages, not the load at the
+      time. Other sessions' test runs were also active.
+  - **The two live checks are different build pairs.** Phase 8's served `668380ec` against `723ee812`, and
+    `723ee812` is not an ancestor of `3a6dea95`. A first CHANGELOG wording pooled them ("three of four
+    windows"). On the PR's own pair, one cuts window of two beat both of its neighbours.
+  - **Rule provenance.**
+    - Run 1's "rule fixed before the first run" is UNTRACEABLE (Lane A). The script and its JSON first entered
+      git together in local `ada8e50c` at 16:26:49Z, about 2 h 52 min after the run, and reached `main` in
+      `51993b37` at 17:07:01Z, about 3.5 h after it.
+    - Run 2's rule is traceable (the orchestrator's check, re-derived by the ledger's validation): the script was
+      on `main` from 17:07Z, and run 2 began at 19:30Z.
+- **Review, round 1** (on `f4d864df` / `ce78e0de`).
+  - **Lane A** (measurement re-creation, entry point: git objects and raw transcripts).
+    - Every number in M1–M6 matched, including the served SHAs, which it traced through `/proc/<pid>/cwd`
+      without touching the ports. Its report still carried qualifiers: M1c ("one sentence") was a wording
+      MISMATCH, and M6's "at `ce78e0de`" was corroborated only indirectly.
+    - It corrected four pieces of wording:
+      - "one sentence" was three;
+      - the pooled pairs;
+      - C1;
+      - the load figure.
+    - It also listed instrument gaps in the live check, among them:
+      - a missing node reads as 0 ticks;
+      - an empty `paths.strs` reads as "dead timer absent";
+      - `setProps`' `ok` is not a store read-back;
+      - `ticks_10s_cleared` is stored without its raw counts.
+    - None changed this run's verdicts. The raw records rule out three of the gaps. The fourth,
+      `ticks_10s_cleared`, is a field the SESSION rule does use. Lane A could only argue it improbable. The
+      reason, that the `disabled_after_s` read just before found the node present, is the orchestrator's.
+  - **Lane B** (adversarial, entry point: code and renderer source) returned **MERGE-WITH-FIXES**.
+    - MAJOR: "stop clears it" was false (Lane A found it too). That became F-CANOPY-056 below.
+    - MINOR: no replay weight reaches the page. That became F-CANOPY-057 below.
+    - NIT: a dangling `_weight_drain_gate` name. Fixed.
+    - NIT: stale refresh-rate config (`conf/app_config.yaml:170,181`, `docs/USER_MANUAL.md:1344`). This
+      predates the PR and is still owed.
+    - NIT: the CLASS test's `sorted()` would crash on a dict id. Fixed with `key=str`.
+  - **Claims Lane B tried and could not refute:**
+    - the drain has a single writer (probe of the built app's 178 callbacks);
+    - the `@hash` readiness argument (`splitIdAndProp`, `getReadyCallbacks`; dash 4.2.0 renderer lines cited);
+    - the dead timer was dead from the 2025-12-12 import;
+    - the layout walk finds all 17 Intervals, including under `dbc.Tabs`, and flags an injected dead one.
+- **The corrections**, commit `2fa134f8` on #676. They change no behaviour: prose, plus one test-only change
+  (`key=str`):
+  - the stop claim;
+  - the dead weight stream, and what the gate would get wrong if that stream is ever wired;
+  - "a 2 Hz timer" rather than "ticked at 2 Hz". Lane A measured the saturated page delivering 5–7 of the
+    drain's ticks per 10 s;
+  - the unpooled latency sentence;
+  - the dangling name and `key=str`.
+- **Review, round 2** (Lane B2, briefed only on the corrections, per §4 of
+  `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`): **MERGE-WITH-FIXES**, text
+  plus one test-code change (the dict-id refusal). B2 reproduced every number it could check. It could not
+  check the load readings, or that C1 started 40 s after the suite.
+  - **MAJOR:** the corrections cited ledger records that did not exist yet. The remedy was for this phase to
+    land before #676 merged, with the canopy text citing only the finding IDs and the run-2 transcript
+    committed. The merge overtook it: canopy `main` cited the IDs before they existed (see "The dangling
+    citation" below). The transcript first entered git locally at 20:41:35Z, before the merge (`800c20bb`, on an
+    unpushed branch; this phase's `5a0e4ea9` is its rebased copy), so GitHub did not have it before #676
+    merged.
+  - **MINOR:**
+    - "runs only while a replay session exists" survived in five places. Against cascor the drain runs until
+      the page reloads, or until a successful model select rebuilds the tab bar (see F-CANOPY-056).
+    - Four older comments contradicted the corrections, `ws_dash_bridge.js`'s "g-3's
+      `_ReplaySession._emit_frame`" among them.
+    - The Stop mechanism was misattributed. See F-CANOPY-056.
+    - The squash (`COMMIT_MESSAGES`) would have shipped the first commit's refuted text to `main`. The branch
+      was collapsed onto one signed commit, `4b4cfb16`, on `main` `0254a7ec`.
+    - Both X/C figures include the outlier C1 (0.88 and 0.80 without it), and "loaded host" had no artifact.
+      Both were dropped from the CHANGELOG.
+    - Latent: `key=str` made a dict-id Interval read as dead. The CLASS test now refuses dict ids explicitly.
+  - **NITs:** "no production caller"; the forward-looking comment; the headline's arithmetic. A 32–42% cut
+    means "about a third of its response latency", not "a third slower".
+  - All were applied to the tree and the commit message. The PR description kept text rounds 1 and 2 had
+    corrected, which round 3 then flagged (below). The authoring session's run of eight named files passed 168
+    tests (archived log, no SHA). Its pre-commit run on four files, with the output filtered, showed no failure. B3's later pinned run on
+    all 8 PR files was clean.
+- **Review, round 3** (Lane B3, briefed only on the round-2 corrections): **MERGE-WITH-FIXES**. Its verdict
+  named the squash message and the PR body, and it marked its code-file NITs no-action.
+  - The round-2 corrections broke no code, test or behaviour, and every corrected mechanism re-derives from
+    source. B3 ran 52 + 111 + 321 tests on the head extract, 7 of 9 failed on `0254a7ec`, and pinned
+    pre-commit was clean on all 8 files.
+  - **MINOR:** the squash body's "(two rounds; prose corrections only)" is false. It was three rounds, and
+    both earlier rounds changed test code. The fix needs a new signed commit with the same tree.
+  - **MINOR:** the PR description still carried text rounds 1 and 2 corrected, plus stale counts: 7 files, not
+    8; the old parent SHA; and two commits. The "two commits" text had been corrected 14 s after B3 read it, in
+    an edit that fixed more than that.
+  - **NITs:**
+    - phrases that survived the sweep: `replay_player_panel.py:75`, the test assertion message and name, and
+      `ws_dash_bridge.js:113-115`'s "see g-3 emitter";
+    - the squash body should name the live check's SHAs, and "half of the ticks" is 45%;
+    - F-CANOPY-056/057 existed only in this then-unpushed phase, which confirmed the ledger-first order the
+      merge later broke;
+    - the dict-id refusal guards only the class test.
+  - **Termination** (§4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`): the review had NOT
+    terminated. B3 marked both MINORs as changing a number and an action, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`
+    called for a round 4 on their fixes, which were wording in the squash message and the PR body. The merge
+    overtook both (next bullet), so no round 4 ran: nothing was left on #676's code to review (its description
+    is edited separately, Still owed item 13). Its no-action NITs are carried in item 13 too.
+- **The merge, out of order.** From the PR's timeline (`gh api repos/pcalnon/juniper-canopy/issues/676/timeline`)
+  and its commit dates. Every event that records an actor names `pcalnon` (committed events record none),
+  none was performed by a GitHub App (`performed_via_github_app` is null), and two retitles are omitted. The CI
+  rows are from the Actions API (`gh api repos/pcalnon/juniper-canopy/actions/runs/35928632707/attempts/{1,2}/jobs`,
+  added in round 2 of the ledger's validation):
+
+  | UTC | event |
+  |---|---|
+  | 2026-09-23 19:44:37 | converted to draft; a comment one second later: "Held as draft on purpose … Please do not arm auto-merge on it." |
+  | 20:38:41 | `4b4cfb16` force-pushed (the collapse onto one signed commit) |
+  | 22:28:04 | **marked ready for review** |
+  | 22:28:09 | `e581b821`, "Merge branch 'main' into perf/idle-dispatch-cuts-v2" |
+  | 22:28:12 | **auto-merge armed** (squash), storing `4b4cfb16`'s message as the squash body; GitHub adds "(#676)" to the title and rewrites the co-author trailer |
+  | 22:29:31 | `5e52debb`, a second "Merge branch 'main'", ten seconds after canopy#678's direct merge moved `main` |
+  | 22:40:57 | CI on `5e52debb` (run 35928632707, attempt 1) fails its "Unit Tests + Coverage (Python 3.12 on macos-latest)" job, then its Quality Gate at 22:42:30, so the armed merge cannot fire |
+  | 2026-09-24 01:22:32 | **CI re-run** (attempt 2), triggered by `pcalnon`; its Quality Gate passes at 01:37:55 |
+  | 01:38:02 | **merged** as `e9053227`, seven seconds after the re-run's Quality Gate |
+
+  - **Who.**
+    - **No Claude Code process on this host readied or armed it, in the foreground or the background.** This
+      basis replaced a first one that Lane R2-B refuted in round 2 of the ledger's validation.
+      - **Launches, not tool calls.** `util/ad-hoc/2026-09-24_merge_command_launch_scan.py` lists the tool
+        calls whose command line matches a pattern of commands that can ready, arm, merge, update-branch or
+        re-run a PR (outputs, regenerated in rounds 3 and 4 under the round-2 directory name, in
+        `reports/e2e-canopy-2026-09-02/phase9-scratch/ledger_r2_orchestrator/`). It is a pattern, not a proof: a
+        push, a script it does not name, or a command form it does not match is outside it. Rounds 3 and 4 each
+        added forms it had missed: round 3's matched the converge driver's six background launches (below),
+        and round 4's matched no launch (Lanes R4-A and R4-B). The only
+        draft-readying command any session ran on 09-23 was `gh pr ready 2020`, at 06:09Z. None of that day's 44
+        matching background launches names a PR of the pass below or of the later actions: 40 name one PR each,
+        and the other four (a release-train detect, the release ceremony and two experiment runs) name none.
+        None that could ready a draft was launched from 09-20 on, and the last matching call of any kind was at
+        21:27:05Z. The one repo script that readies drafts, `util/ad-hoc/2026-09-05_fleet_merge_train.py`, was
+        not run that day.
+      - **What the first pattern missed** (Lanes R3-A and R3-B). Round 2's pattern counted 38 background
+        launches, 34 naming a PR. It missed `util/ad-hoc/2026-09-23_converge_pr_through_moving_main.py`, an
+        update-branch loop that session `23e65d0b` launched in the background six times on 09-23 (13:50Z to
+        15:19Z, for ml#2040 and ml#2049 to ml#2053; R3-B reads their 5,400–7,200 s timeouts as ending them by
+        about 17:20Z), and the forms `gh pr -R <repo> <verb>`, a `$PR` merge path, GraphQL
+        `updatePullRequestBranch`, check-suite re-requests and GraphQL read from a file. The widened pattern
+        catches them, and the conclusion held: none of the six names a PR of the pass.
+      - **Why launches.** A count of tool calls, the first basis, cannot see a process launched before its
+        window. Session `317c1df2`'s background shepherd (`2026-09-22_shepherd_automerge.bash 2058 60 180`,
+        launched 20:39:42Z; its only write is `update-branch`) updated ml#2058's branch at 21:43:55Z
+        (`cdb0a18b`), inside the window below, and reported completion at 21:53:09Z.
+      - **The window.** The sessions working at 21:30Z hit the weekly rate limit between 21:30:11Z and
+        21:41:01Z; the authoring session (`259b4d16`) and four subagents, idle since 21:25:49Z or earlier, hit
+        none. From 21:41:02Z to 01:40Z no session made a tool call. Among the window's five transcript entries
+        (Lane R2-B's count) are the shepherd's completion notice and a new prompt the limit refused at 00:07:23Z
+        (`util/ad-hoc/2026-09-24_host_session_activity_window.py`, which prints ids, counts and timestamps only).
+    - The authoring session's transcript (`259b4d16`) executed `gh pr ready 676 --undo` and no ready or arm. Its
+      handoff's prose mentions `gh pr ready 676`, but that is text, not a command. Its last timestamped entry is
+      at 21:01:29Z, 87 minutes before the ready; the session stayed open, idle, until about 03:27Z. Its WIP
+      handoff (`b54e3b3f`, committed 21:00:59Z; rebased onto this branch as `f6861234`) records #676 as a draft
+      with no auto-merge.
+    - A grep of every transcript under `~/.claude/projects/` finds no executed ready or arm of canopy#676; the
+      only other match is juniper-cascor#676. A transcript scan sees only Claude Code on this host: not the
+      GitHub UI, other hosts, cloud sessions or automations.
+    - **It was one pass over nine PRs**, 21:47Z to 22:51Z, from their timelines:
+      - readied, then armed 4–8 s later, drafts from three sessions: ml#2059 21:47:22Z, ml#2032 22:27:20Z,
+        canopy#676 22:28:04Z, data#428 22:29:55Z, data#431 22:50:54Z and data#434 22:51:07Z;
+      - armed, not a draft: ml#2066 22:27:08Z;
+      - merged directly, with no arm event: canopy#678 22:29:21Z and data-client#212 22:30:44Z.
+      - #676 is the only one with an update-branch between its ready and its arm. The pass also updated the
+        branches of ml#2032 (22:27:32Z), data#428 (22:30:06Z), ml#2059 (22:50:08Z), ml#2066 (22:50:21Z,
+        `41379ff9`) and data#431 (22:51:03Z) (Lane R3-A).
+      - The drafts it readied were the ones sessions had drafted to hold them: `259b4d16` drafted #676 at
+        19:44Z, `bc31e993` drafted data#428, ml#2032 and ml#2059 at 20:24Z, and `e6c1cb6d` drafted data#431 and
+        data#434 at 21:26Z (the launch scan above).
+    - **The account kept acting after the pass** (Lane R2-F; re-derived from the timelines and commit dates):
+      update-branches on ml#2066 (`4392ab5a`, 23:16:06Z) and data#434 (`ae5a3b18`, 23:17:08Z), which merged at
+      23:24:21Z and 23:22:46Z; ml#2045 disarmed and re-armed at 23:48:47–52Z; cascor-worker#196 merged at
+      01:21:37Z; and #676's CI re-run at 01:22:32Z, without which its armed merge could not have fired. A
+      background shepherd can update a branch, but none of the day's launches names ml#2066 or data#434.
+    - **Commits signed with the owner's key landed in that window** (Lanes R2-B, R3-A and R4-A; re-derived
+      from the commits API). `4c496443` on ml#2058 (committed 21:45:22Z, two minutes before the pass's first
+      ready) and `c666403b` on ml#2045 (23:47:30Z, a minute before that PR's disarm and re-arm) are committed
+      by "Paul Calnon", not by GitHub's web-flow, with valid PGP signatures, while no Claude Code session made a
+      tool call. On this host signing needs the owner's hardware key (`util/push_signed_commit.py`'s docstring
+      says a touch; R4-A found five signatures stamped within one second, so one touch can cover a burst).
+      ml#2045 also took a fast-forward push at 00:00:38Z of 29 more commits signed with that key between
+      23:57:24Z and 00:00:07Z (R4-A, from the activity and compare APIs; R3-A had read it as a force-push).
+    - **Arms like the pass's happened at least three times earlier that day** (Lanes R3-B, R4-A, R4-B, R5-A
+      and R5-B; round 5's two lanes each read the arm events of every PR updated since 09-22 in the nine
+      Juniper repos). Ten PRs across ml, canopy, cascor and deploy were armed as `pcalnon` between 00:47:31Z
+      and 01:08:14Z (ml#2020 twice), nine across four repos between 13:17:53Z and 13:32:10Z, and ml#2057 at
+      20:23:01Z. The lanes found no command on this host, before any of those arms, that could have made it
+      (each lane's windows are in its report). The lists are in `reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round4.md` and `…_round5.md`.
+      Session `bc31e993` was working on ml#2032 and data#428 at 13:18–13:19Z (a retitle and a signed fix-up),
+      without arming them, and its handoff that evening is titled "…four-prs-armed-by-an-unseen-actor…" (R4-A
+      read it). Three background launches the pattern matches name morning PRs, and all came after those PRs'
+      morning arms: a shepherd for ml#2041 at 13:35Z, which cannot arm, and `safe_merge --pr 670` at 15:29Z
+      and 15:55Z, each followed within 6 s by a re-arm of canopy#670, which had been disarmed at 14:27:46Z and
+      15:52:22Z. A foreground `gh pr merge 2041 --squash --auto` (session `1f771cb0`, 13:35:20Z) came after
+      that PR's 13:25:23Z arm, and GitHub recorded no arm event for it (Lanes R5-A and R5-B).
+    - **ml#2045 again, the next morning:** drafted at 03:04:45Z, which disarmed it (03:04:46Z), and readied at
+      03:05:02Z, with no tool call on this host between 01:40Z and 03:26:44Z (Lanes R4-A and R4-B). It was not
+      re-armed. Two to three minutes before the draft, at 03:02:06Z, the account fast-forwarded its branch by
+      three commits committed by "Paul Calnon" between 03:00:20Z and 03:01:48Z, with valid signatures (Lanes R5-A and
+      R5-B read the same key as the night's; re-derived from the activity and compare APIs). ml#2045 was
+      closed unmerged at 07:29:52Z.
+    - **What the hold said.** The draft comment's condition was round 1 plus green checks: "It will be marked
+      ready and merged with util/safe_merge.py once that round reports and required checks are green." Both
+      held before the ready: every successful or skipped check on `4b4cfb16` had finished by 20:59:25Z (five
+      Cursor checks then went neutral at 22:28:07–12Z, the seconds of the ready and the arm; Lane R2-B). The
+      ledger-first order and round 3 appeared only in the PR body. So the ready met the comment's literal
+      condition; the arm, which the comment asked no one to do, did not.
+    - **The owner has answered: the sweeper is the owner's.** It acts as `pcalnon` and is not Claude Code on
+      this host. Session `bc31e993` asked at 03:34:45Z on 2026-09-24, and the owner answered at 07:32:48Z, four
+      minutes after round 5's artifact was frozen. The question named four PRs of the pass above (data#428,
+      ml#2032, ml#2059 and canopy#678) as taken out of draft and armed 4–7 s later as `pcalnon`, which three
+      were; canopy#678 was never a draft and merged directly, with no arm event. It added that cascor#678 was
+      armed the same way earlier (its only arm was at 13:32:10Z on 09-23, and it too was never a draft), and
+      asked whether that sweeper was the owner's. The owner chose "Mine:
+      fix forward", an option whose text says the sweeper is the owner's and "the merges", those PRs', are
+      intended, with validation continuing after the merge and fixes going forward in follow-up PRs.
+      - **Its scope.** It names none of the pass's other five PRs. It reaches three of them, #676, data#431 and
+        data#434, only through the shared pattern (a draft readied, then armed 4–8 s later), and ml#2066's arm
+        and data-client#212's direct merge not even that way. It does not cover #676's CI re-run, the account's
+        other later actions or ml#2045's next morning, which remain the owner's to confirm (Still owed, item
+        15).
+      - Lane R5-B found the exchange; `util/ad-hoc/2026-09-24_owner_answer_extract.py` prints it, redacted,
+        from lines 4227 and 4260 of that session's transcript.
+  - **What landed.** `git diff e9053227^ e9053227` equals `git diff 4b4cfb16^ 4b4cfb16` byte for byte outside the
+    `index` and hunk-offset lines (445 lines each, `cmp` exit 0). The change round 3 reviewed is the change on
+    `main`. `main`'s tree also carries #677, which overlaps it nowhere, and #678, which overlaps it only in
+    `CHANGELOG.md`.
+  - **What landed that round 3 said to fix.** `e9053227`'s message is `4b4cfb16`'s (plus "(#676)" and GitHub's
+    trailer rewrite), so canopy's history now carries five statements this ledger corrects:
+    - "(two rounds; prose corrections only)": there were three rounds, and rounds 1 and 2 each changed test code;
+    - "A live check of this build against its parent": the pair checked was `ce78e0de` against `3a6dea95`;
+    - "Two timers were half of the page's steady-state ticks": the static census of `c0530279` (canopy#670's first
+      commit; its final head is `bc357d09`), whose Interval layout matches #676's parent, gives 3.0 of the 6.6
+      ticks per second the layout's enabled
+      Intervals nominally fire, which is 45%. These are nominal rates, not measured ticks;
+    - "Comments that claimed cascor emits weights … are corrected": `ws_dash_bridge.js:113-115` still said "(see
+      g-3 emitter)";
+    - "the drain runs until the page reloads, as it always ran before": a successful model select also ends it,
+      by rebuilding the tab bar (F-CANOPY-056's "How a session does end").
+  - **Still unfixed:** on canopy `main`, round 3's wording survivors in the PR's files and the class test's
+    fragility; on GitHub, #676's stale PR description. The first two are fixed on canopy branch
+    `fix/idle-cuts-round3-wording` (local, not yet pushed), which opens as a PR after this phase lands and its
+    own review terminates; the third is an edit of #676's description (Still owed, item 13).
+  - **The dangling citation.** From 01:38:02Z until this phase merged, canopy `main`'s CHANGELOG cited F-CANOPY-056
+    and F-CANOPY-057 "in the juniper-ml E2E evidence ledger", and its comments cited the IDs, before the ledger
+    contained them.
+
+### F-CANOPY-055 — the first fix (its own guarded lane, F-CANOPY-035's repair): census PASS, then refuted in review
+
+- **The fix** (local `884d22fb` on the cuts' `ce78e0de`; the direction Phase 8 recorded):
+  - `update_unified_status_bar`'s only Input is a new `status-bar-interval` (1 s), with
+    `running=[(Output(lane, "disabled"), True, False)]`.
+  - The lane is `(lane, None)` in `_GATED_POLL_INTERVALS`. The commit claimed that the CAN-000 clamp silences it
+    and the tab gate never writes it, so F-CANOPY-053's hazard (a guard's fixed `runningOff` re-enabling a
+    tab-gated lane) cannot arise. **Lane A refuted that below:** the fused gate writes the lane on every fire.
+  - #614's strand watchdog became one registration per guarded lane, each with its own `window` clock
+    (`STATUS_BAR_STRAND_TIMEOUT_MS`, 30 s).
+- **Tests.**
+  - New `test_f055_status_bar_own_lane.py` (7 tests).
+  - `test_poll_gating.py` runs every watchdog test against both lanes (`TestStatusBarStrandWatchdog` subclasses
+    `TestStrandWatchdog`). It executes the registered watchdog JavaScript under node with a controlled clock,
+    and pins the two watchdogs' separate clocks.
+  - `test_stage2_global_lane.py`'s fast-lane pin names one rider.
+  - **Falsification.** On the parent `ce78e0de`, 19 of the three files' 94 tests fail and 75 pass. The
+    metrics-store watchdog's node test passes on both sides; that is the evidence the per-lane refactor kept
+    its behaviour. Lane A's per-test junit files are archived in
+    `reports/e2e-canopy-2026-09-02/phase9-scratch/f055_r1_laneA/`.
+  - **Suite.** 6823 passed, 4 skipped, 0 failed: the parent's 6806 plus exactly the 17 new tests. No lane ran
+    it. The log (no SHA) is archived as `phase9-scratch/orchestrator/f055_full_suite.log`, and the +17
+    re-derives from an AST count that includes inherited tests (+7, +10, +0; a plain count gives +7, +2, +0).
+  - **A test-design defect, caught before commit by the falsification run.** The first draft read the new
+    constant at class-definition time. On the parent, `test_poll_gating.py` then died at COLLECTION, and none
+    of its assertions ran: the F-CANOPY-029 trap the module's own registry import avoids. The lookup is now
+    made per test.
+- **Census, rule unchanged** (`2026-09-23_status_bar_apply_census.py`; idle trio, Training Metrics, GPU, one
+  browser at a time). Its predictions were added to its docstring before each run. The script was in git from
+  `51993b37` (17:07:01Z), but those docstring edits entered git only after the runs (locally at 20:41:35Z,
+  `800c20bb`; rebased here as `5a0e4ea9`), so only the
+  session transcript shows the order. `delivered` counts HTTP responses, while `watched` and `executed` count
+  the renderer's callback objects, which run one or two ahead at a window's edges or after a network failure:
+
+  | leg | window | delivered | watched / executed | latency changes | DOM at end | verdict |
+  |---|---|---|---|---|---|---|
+  | `:8056` `ce78e0de` (parent) | 60 s | 30 | 31 / 0 | 0 | `Stopped` · `0` · empty | **NEVER-APPLIES** |
+  | `:8057` `884d22fb` (fix) | 60 s | 7 | 9 / 8 | 7 | `Completed — early stopped` · `76` · `Latency: 5ms` | **VOID** (< 10 delivered) |
+  | `:8057` `884d22fb` (fix) | 150 s | 20 | 20 / 20 | 19 | `Completed — early stopped` · `76` · `Latency: 5ms` | **APPLIES** |
+
+  - **The first fix run's prediction was wrong.** It predicted at least 10 responses in 60 s ("round trip plus
+    up to 1 s"). The lane clocked itself at about 7.5 s per applied response instead: 7.4–8.7 s by every
+    estimator. The census docstring's ~8.6 s is either the mean gap between latency changes (8.69 s), which skips
+    repeated values, or 60 s over 7 responses (8.57 s). `running=` releases the lane from `completeJob()`, which
+    runs when the page's main thread takes the
+    fetch's response, before the result is applied; a saturated page takes it late. That is slower than
+    F-CANOPY-035's measured 5.5–7.3 s, though the same order.
+  - The rule's VOID floor was set for a 1 Hz lane, so the run went unscored even though every raw number
+    pointed one way. The second run lengthened the window to the period arm's 150 s, with the rule unchanged
+    and its prediction (APPLIES, 12–25 delivered) fixed first.
+  - **The cost, stated:** the bar updates about every 7.5–8 s on a page this busy. Before the fix, on this
+    page, it never updated.
+- **F-CANOPY-025's allow arm, driven on demo legs** (new `2026-09-23_f055_f025_allow_arm_demo_drive.py`;
+  `2026-09-04_canopy_verify_instance.bash` gained an opt-in `CANOPY_VERIFY_DEMO_MODE=1`).
+  - A demo canopy runs its own training and keeps the experimental flag in process. Its cascor URL pointed at
+    nothing, so the trio's fixture was never touched.
+
+  | leg | ALLOW | DENY after the stop | BAR |
+  |---|---|---|---|
+  | `:8058` `884d22fb` (fix) | **LANDS**, 13.0 s after page load (a lower bound) | **RETURNS**, 7.8 s | **APPLIES** (`Running`, step 137 → 143) |
+  | `:8059` `78c057e2` (`src/` = `ce78e0de`, parent) | LANDS, 19.7 s | RETURNS, 2.7 s | APPLIES |
+
+  - **The drive does not discriminate, as its docstring said it might before it ran:** the old 1 Hz feeder
+    also got responses through on the demo parent page. Why is unmeasured, since the drive records no latency.
+  - **What it shows:** the allow arm and the deny arm both work on the fix.
+  - **What it suggests for F-CANOPY-055, unmeasured:** the bar freezes where the page's delivery latency exceeds
+    the tick, as on the trio legs, and not on every page. The drive cannot show that, since it records no
+    latency. The parent's bar did sit at its defaults for its first 18.5 s.
+- **Review, round 1.**
+  - **Lane A** (measurement re-creation, entry point: git extracts, the transcripts, `/proc`): no MISMATCH in
+    M1–M5, with qualifiers. Two mutations were caught only incidentally or only with node present (below), the
+    drive (M4b) does not discriminate, the parent leg was `78c057e2` (code-identical to `ce78e0de` in `src/`),
+    and M5a found one false-positive path.
+    - The falsification set is exactly the claimed 19, with per-test junit.
+    - All three census verdicts and the drive's verdicts were recomputed from raw records with the scripts'
+      own rule functions (AST-extracted).
+    - The served SHAs of the census legs were confirmed through `/proc/<pid>/cwd` and environ.
+    - **All six mutations were caught.** (iv), both watchdogs sharing one clock, was caught only through a
+      Dash function-name collision, because both timeouts are 30000. With the timeouts made unequal, the
+      separate-clocks test catches it alone. (v), `<` → `<=`, is caught only when node is present.
+  - **Lane A's corrections** (applied locally as `7a4a2e33`):
+    - **The fused gate DOES write this lane**, on every tab or apply change, always the clamp's value. The
+      first draft's "the tab gate never writes it" was wrong.
+    - **The guard can outlive an Apply's clamp.** `runningOff` is unconditional in `completeJob()`, so an
+      Apply that begins mid-request leaves the lane polling for the rest of that Apply. Shared with #613's
+      metrics-store lane, and unmeasured.
+    - The same commit also said "a tab change mid-request re-opens the eviction window for one cycle". That was
+      the orchestrator's addition, not Lane A's, and Lane B refuted it: one tab click gave 0 of 28 over ~120 s,
+      the cascade of F-CANOPY-058.
+    - **The watchdog's margin is thinner than stated.** The guard holds until the page PROCESSES the
+      response (4–7 s at p50), and the watchdog samples every 5 s, so disabled samples inside several
+      requests can add up to 30 s and fire. Lane A read that as one request released early; Lane B showed that
+      a fire starts the cascade (F-CANOPY-058). Not observed in the census: 20 of 20 applied in 150 s.
+    - **The drive proves the allow arm, nothing more.** Its "a demo page is fast enough for the old lane"
+      was unmeasured, since the drive records no latency. The parent's bar sat at its defaults for its first
+      18.5 s. The legs ran under unequal load, and "13 s" is a lower bound.
+    - Stale ports in the drive's docstring, and "the DOM at both ends" in the census docstring, were
+      corrected.
+  - **Lane B** (adversarial, entry point: the frozen code, the dash 4.2.0 renderer source, and a synthetic
+    Dash app with the fix's exact wiring driven in headless Chromium; canopy itself was not run):
+    **DO-NOT-MERGE.**
+    - **BLOCKER 1, the guard is defeated and the defeat repeats.**
+      - The fused gate writes `status-bar-interval.disabled` on EVERY fire: at mount, on every `active_tab`
+        write, and on every `apply-in-flight` write. The value is always the clamp's, so `false` outside an
+        Apply.
+      - Re-enabling a `dcc.Interval` restarts its timer, so it ticks 1 s later. If a request is in flight, that
+        tick evicts it.
+      - The evicted request is not aborted. When its response arrives, `completeJob()` releases the guard
+        anyway, re-enabling the lane under its successor. The two chains then keep evicting each other.
+      - **Re-derived in source.** `completeJob` (`dash_renderer.dev.js:925-937`) dispatches
+        `sideUpdate(runningOff)` on the OK, PREVENT_UPDATE and error paths (`:966-986`), with no check that
+        the request is still current.
+      - **Repro** (synthetic app, real renderer):
+        - guard only: 7 of 7 applied;
+        - with the gate's mount write: 0 of 51;
+        - at a per-request time of 7–8 s: 4 of 4 applied, then one tab click 3 s into a request, then **0 of 28
+          over ~120 s**.
+      - **Model:** at a per-request time of 6.9–7.6 s, the median time to the next applied response after a
+        trigger is 352 s.
+    - **BLOCKER 2, the strand watchdog fires on lanes that never stranded.**
+      - It samples every 5 s and resets only when a sample happens to see the lane enabled, about 1 s per
+        cycle. So seven disabled samples in a row are routine.
+      - Repro, with no request ever failing: at R = 3–5 s, 5 false fires in 240 s, three of them evicting (17 of
+        56 responses dropped). At R = 7–8 s, 0 of 21 applied after one false fire.
+      - Model: 37–44 false fires an hour at a 7 s per-request time. The metrics-store watchdog has the same
+        predicate.
+    - **MAJOR, the Apply clamp does not silence the lane.** A completion re-enables it under the clamp, and the
+      Apply's release lands mid-request: 0 of 24 applied after the release.
+    - **MAJOR, the tests pass on code that fails in a browser.** `test_poll_gating.py:406-408` (at `884d22fb`;
+      `:311-313` at `e9053227`) exempts global
+      lanes as sharing `disabled` "with the apply clamp alone", but the gate also takes `active_tab`. The node
+      test never presents a healthy lane whose enabled windows fall between samples.
+    - **MINOR:** "not a slowdown" is false. The cycle is completion plus at least 1 s.
+    - **NIT:** a 200 response whose body fails to parse also skips `completeJob`.
+    - **Tried and could not refute:**
+      - nothing else rides or writes the lane's `n_intervals`;
+      - the feeder's own mount call cannot evict by itself (the gate's mount write can, per the repro above);
+      - no re-render re-requests the feeder;
+      - the lane cannot be left disabled forever;
+      - the watchdog refactor is equivalent, with distinct function names and no output collision;
+      - the poller budget is unchanged;
+      - nothing depends on a 1 Hz cadence;
+      - CI runs the node test. Settled 2026-09-24 for `main`'s node-gated test, #614's metrics-store watchdog
+        (the F-055 fix's own node tests were never on `main`): none of the six skips in CI's Python 3.13 unit job
+        on `e9053227` is node-gated. GitHub's ubuntu image ships node, although `ci.yml` has no setup-node step.
+    - **Why the census still passed** (the orchestrator's reading, not Lane B's): its windows had no tab switch
+      (Training Metrics is the default tab, so `open_tab` wrote nothing) and no Apply. Two trigger sources were
+      live: the watchdog was armed throughout, and the gate's mount write fired on each page before its window.
+      Neither produced a cascade on canopy. The census does not record fires, so "no fire" is inferred from the
+      applies, and only an evicting fire would show: 28 of 29 watched callbacks executed across the two fix
+      runs' 210 s, and 27 responses were delivered on the wire.
+    - **What that says about Lane B's model** (corrected in round 2 of the ledger's validation). Under a Poisson
+      approximation, at the 37–44 fires an hour stated above, no fire in 210 s has a probability of 0.08–0.12.
+      Lane B's own alias simulation gives fires more regular than Poisson, which lowers every figure here (Lane
+      R3-A), so the conclusion below only strengthens. The census could see only
+      EVICTING fires, which Lane B modelled at 29–33 an hour; no evicting fire in 210 s then has a probability
+      of about 0.15–0.18 (the ledger validation's Lane A2). Lane B's own archived run at a similar per-request
+      time, which records fires directly, saw none either: `phase9-scratch/f055_r1_laneB/run_watchdog.json`,
+      R = 7–8 s with the gate's mount write and the watchdog on, 23 of 23 applied and no fire in about 200 s
+      (0.086–0.127 under the model; Lane R2-F). Together the two have a probability of about 0.013–0.023 under
+      the model, so its rate is probably too high at this per-request time. The mechanism rests on source and
+      on Lane B's run at R = 3–5 s (F-CANOPY-058 below); the rate on a real page is unmeasured.
+    - **Lane B's proposed direction:** stop using the Interval's `disabled` as the guard. A clientside pacer on
+      the 1 s lane issues a request token only after the feeder's ack (echoing the token) has applied, or after
+      a stale timeout. That leaves no `running=` guard and no watchdog for this lane. It also asks for
+      real-renderer tests: a tab switch mid-request, an Apply spanning a request, and 10 idle minutes with the
+      watchdog.
+    - **Disposition.** Canopy PR not opened. The local branch `fix/f055-status-bar-running-guard` (`884d22fb`,
+      `cf6fb1dc`, `7a4a2e33`) is kept as provenance. F-CANOPY-055 stays OPEN.
+
+### New findings
+
+**F-CANOPY-056 — against cascor, the CAN-015 replay player drops every control's result: `_merge_session` overlays cascor's `{status, data, meta}` envelope, so play, pause, seek, speed and range never reach the session and a Stop never clears it, and the weight drain keeps running until the page reloads or a successful model select rebuilds the tab bar; masked today by F-CANOPY-059, which keeps the player's controls from rendering at all (P1, canopy repo; found 2026-09-23 by the cuts' round-1 adversarial lane, widened 2026-09-24 by the ledger's validation; OPEN).**
+
+- **The mechanism.** `_merge_session` (`src/frontend/components/replay_player_panel.py`) copies the old
+  session and overlays the backend's response whenever that response is non-empty (`if data:
+  new.update(data)`). It reaches its `stop → {"snapshot_id": None}` branch only for an empty response.
+- **The route.** A successful Stop always has a body: `_invoke_replay_control` wraps `resp.json()`, and
+  canopy's route and adapter pass cascor's envelope through unchanged. So the old `snapshot_id` survives the
+  overlay.
+  - Round 2 corrected an attribution the round-1 corrections (`2fa134f8`) had made: cascor's own echo of the id
+    is nested under `data`/`result`, and
+    it is not what keeps the id. With the echo removed, the probe still kept `'snap_A'`. Only an empty body
+    gave `None`.
+- **The result.** Lane B drove the registered `dispatch_control` with that envelope. The session kept its id,
+  and `render_session` kept the active view with a `REPLAYING` badge. That session was built by hand. One that
+  `confirm_snapshot_op` stores from cascor's real `/replay` response makes `render_session` raise before it
+  renders anything (F-CANOPY-059), so against cascor today the active view never appears and no control is
+  reachable (Lane R2-F, round 2 of the ledger's validation).
+- **Widened 2026-09-24** (Lane B1 of the ledger's validation; the overlay re-derived in source by the
+  orchestrator). `_merge_session` does `new.update(data)` for ANY non-empty response. The proxied envelope's
+  top level is `{status, data, meta}`, and none of the session's display keys sits there. So the results of
+  play, pause, seek, speed and range never reach the session either, and `render_session` writes the stale
+  values back into the sliders. B1's probe of `e9053227`'s `_merge_session` with cascor-shaped envelopes:
+  speed(−5) left `speed` at 1.0; seek(40) left `time_index.current` at 0; play left `playing` unset (a session
+  `confirm_snapshot_op` stores starts it False, and it stays False); stop kept `snapshot_id` and REPLAYING.
+  This is F-CANOPY-013's envelope-nesting class on a third site, which canopy#532's sweep missed. It rests on
+  source and a probe whose sessions were built by hand. It has not been driven live, and against cascor it
+  cannot be until F-CANOPY-059 is fixed.
+- **Re-rated P1**, on plan §6.3's rule ("breaks a documented behaviour";
+  `JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360`). `docs/USER_MANUAL.md` documents
+  the controls' readouts, and against cascor none of them reflects a control. The finding was P2 while it was
+  scoped to Stop. It stays P1 while F-CANOPY-059 masks it, because fixing F-059 exposes it at once.
+- **How a session does end** (Lane C of the canopy follow-up, in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_canopy_followup.md`; re-derived in
+  source): a successful model select
+  writes `model-class-store` unconditionally, `suppress_cascade_tabs` rebuilds the whole tab bar, and the Replay
+  tab re-mounts with an empty session and a disabled drain. A reload does the same.
+- **Test coverage.** The only test of `_merge_session`'s stop branch passes an empty response, a shape the live
+  route never produces. The tests that pass a non-empty response (`test_success_merges_session`,
+  `test_backend_response_overrides`) use flat dicts the route never returns.
+- **Status.** This predates canopy#676. #676's gate inherits it: once a page has started a replay, the drain
+  runs until the page reloads or a model select rebuilds the tab bar.
+- **Fix direction, not implemented:** unwrap the envelope's `data`, map `result`, and handle `stop` explicitly;
+  test all six actions with the real envelope. Handling `stop` first alone fixes one action of six, and
+  unwrapping `data` alone would put the echoed `snapshot_id` back on a Stop. It was not done in #676, because it
+  could not be verified live without starting a replay on the shared trio's cascor. F-CANOPY-059's fix comes
+  first, since until then no control renders.
+
+**F-CANOPY-057 — the CAN-015g replay-weight stream is not wired end to end: no replay weight reaches the page (P1 while canopy's manual and FAQ promise the stream, re-rated 2026-09-24; canopy + cascor; found 2026-09-23 by the cuts' round-1 adversarial lane; OPEN).**
+
+- **Cascor.** The replay frames carry no weights. On `main`, `weights_at` (`src/api/lifecycle/manager.py`) is
+  called only by its unit tests, and `_emit_frame` adds no `weights` key (re-derived by `git grep` on
+  `origin/main`).
+- **Canopy.** `_to_dashboard_metric` (`src/backend/cascor_service_adapter.py`) rebuilds every metrics payload
+  from a fixed key set without `weights`, so it would drop the key even if cascor sent one.
+- **Consequence.** The weight-buffer consumers never receive data: Decision Boundary's replay path, Network
+  Evolution, and the player's last-sample readout.
+- **History** (Lane B1 of the ledger's validation, re-derived with `gh`; corrected in round 2). The g-3 emitter
+  was merged twice, both times into a stacked base branch after that branch had itself landed, so neither merge
+  reached `main`:
+  - cascor#187, into `feature/can-015g-2-replay-weight-cache`, at 2026-05-03T07:31:04Z (`d85c9ddd`);
+  - its retarget cascor#190, into `feature/can-015g-2-replay-weight-cache-v2`, at 20:05:12Z (`dbc25277`), 13
+    minutes after that branch's own PR, cascor#189, had landed on `main` as `b1d19948` (19:52:10Z).
+  - `dbc25277` has diverged from cascor `main` `0e016a7c`: 3 ahead, 512 behind. Round-1 Lane B found neither
+    commit in the local cascor clone, which is still true, since no local branch carries them; its inference
+    that they were never merged was the error.
+  - The same merge pattern a third time (Lane R2-B; re-derived with `gh`): cascor#184 merged into
+    `feature/can-015g-1-snapshot-weight-history` at 06:03:30Z, 3 h 57 min after that branch's own PR, cascor#180,
+    had landed on `main` (02:06:37Z). Unlike #187's, its diff did reach `main`: cascor#189 is its retarget
+    ("[retarget #184]", the same +524/−3 over two files), merged as `b1d19948` (Lanes C4, R3-A and R3-B;
+    re-derived from #189's title).
+  - The orphaned diff adds `metrics["weights"]` in `_emit_frame`, exactly the key `_to_dashboard_metric` strips,
+    so both halves of this finding stand.
+- **Fix direction:** re-land #190's diff on cascor and add `weights` to canopy's relay key set. Also sweep cascor
+  for other stacked PRs merged into a base that had already landed. cascor#184 was one, and its retarget,
+  cascor#189, landed it.
+- **Severity: P1**, re-rated in round 2 of the ledger's validation (Lanes R2-F and R2-B). canopy `main` still
+  promises the stream (`docs/USER_MANUAL.md:764`, `notes/development/REPLAY_V2_FAQ.md:253`), and plan §6.3's rule
+  (`JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360`) makes a documented behaviour that does
+  not exist P1, the rule that made F-CANOPY-056 P1. It returns to P2 when the canopy follow-up that corrects both
+  files merges (branch `fix/idle-cuts-round3-wording`, Still owed item 13); that re-rating is owed with the
+  merge.
+- **If it is ever wired,** canopy#676's gate has two latent gaps, now recorded in its comment:
+  - it keys on the page's own session while the WS broadcast reaches every page;
+  - weights that arrive while it is closed are drained into the next session.
+
+**F-CANOPY-058 — a `running=` guard is released by an evicted request's completion too, so a mid-request re-request, or a re-enable more than one period before the in-flight response lands, starts an eviction cascade, and the lane's responses can stop applying for minutes (P1, canopy repo; found 2026-09-23 by F-CANOPY-055's round-1 adversarial lane; OPEN).**
+
+- **The class.** canopy#613's guard on `metrics-store-interval` (F-CANOPY-035) holds a lane's `disabled`
+  true while its request is in flight. dash-renderer releases the guard from `completeJob()` on every HTTP
+  outcome that reaches it (OK, PREVENT_UPDATE and non-OK), with no check that the request is still the
+  current one. In 4.2.0, the JuniperCanopy1 env, that is `dash_renderer.dev.js:925-937` and `:966-986`.
+  canopy's `requirements.lock` ships 4.4.1, where `completeJob` is defined at `:979-991` and called at `:1020`,
+  `:1024`, `:1033` and `:1037`. A 200 whose body fails to parse never reaches `completeJob()`.
+- **The trigger.** Anything that re-requests or re-enables the lane mid-request. A re-enable restarts the
+  Interval's timer, so it ticks one period later and evicts the in-flight request if its response has not
+  landed by then; a re-request evicts it directly. The evicted request's late completion then re-enables the
+  lane under its successor, and the two chains can keep evicting each other. Not every trigger cascades, and
+  not every cascade lasts (Lane R2-F; re-derived from the archived run): in Lane B's run at R = 3–5 s
+  (`phase9-scratch/f055_r1_laneB/run_watchdog_r3.json`), the fires at 57.8 s and 152.8 s evicted nothing. Of
+  the three that did, two cascades ended by themselves, after 10 and 3 lost responses, and the third was still
+  running when the run ended; 17 of 56 responses were lost in all. The sources:
+  - the fused CAN-000/tab gate. It writes this global lane `Boolean(apply-in-flight)` on every tab switch, at
+    the end of an Apply, and at mount. An Apply's start writes `true`, which is not a re-enable. The mount
+    write is qualified: Lane B could not check canopy's own mount order, and the gate's mount write was present
+    during #613's live verification, this phase's 150 s census (20 of 20 applied) and Lane B's own archived
+    watchdog run at R = 7–8 s (`run_watchdog.json`: 23 of 23 applied, no fire);
+  - the strand watchdog's false fires. It samples every 5 s and resets only on a sample that sees the lane
+    enabled, about 1 s per cycle, so on a slow page it reads a healthy lane as stranded;
+  - **on #613's lane, a change of the feeder's second Input**, `metrics-panel-display-mode-store.data` (Lane B1
+    of the ledger's validation). `getUniqueIdentifier` ignores which Input fired, so a mid-flight change
+    creates a same-identity request and evicts the in-flight one; canopy's own comment says so
+    (`update_metrics_store`, qualification 3). B1's synthetic app with this wiring (3 s server latency): one
+    mid-request change of the second Input gave 0 applied of 45 responses over 90 s, twice, against 23 of 23 in
+    the no-trigger control, twice. Those figures are B1's report. Its app, driver and server log are archived
+    (`util/ad-hoc/2026-09-24_ledger_r1_laneB1_second_input_{app,drive}.py`, `phase9-scratch/ledger_r1_laneB1/`),
+    and the log fits the request counts only.
+- **The clamp defeat** (Phase 8 item 6; Lane A above): `runningOff` is unconditional, so a completion under the
+  CAN-000 clamp re-enables the lane, which then polls through the rest of an Apply.
+- **Evidence so far.** Source-derived (lines above, re-derived by the orchestrator), plus Lane B's
+  synthetic-app repro with the real renderer (see F-CANOPY-055's review above) and Lane B1's second-Input
+  repro. Lane B's scripts and three of its raw outputs are archived (`util/ad-hoc/2026-09-23_f055_r1_laneB_*`,
+  `reports/e2e-canopy-2026-09-02/phase9-scratch/f055_r1_laneB/`), with the `fix_callbacks.json` its repro reads
+  (added in round 2, in `f055_r1_laneB/fix/`; the repro opens it at `util/ad-hoc/fix/`). Six of its figures (7 of
+  7, 0 of 51, 4 of 4 then 0 of 28, 352 s, 0 of 21, 37–44 an hour) have no surviving raw output. Its scripts can
+  re-create them, and round 2's Lane R2-F re-created two: the 352 s, and the 37–44 an hour.
+- **Provenance.** The mechanism was already in this ledger as "source-derived and unobserved" (Phase 7 item 7,
+  Phase 8 item 6). Lane B made it a finding, with a repro.
+- **In production:** #613's metrics-store poll carries the same guard, gate and watchdog, plus the second
+  Input. After a tab switch, the end of an Apply, a display-mode change or a watchdog false fire mid-request,
+  the lane can stop applying for minutes on a slow page. What a user would see is narrower. The feeder answers
+  `no_update` while the WS is live in window mode, on non-modulus ticks in the full modes, and whenever the
+  fetch equals the store. So a stall is visible only while the history is changing and the WS is stale or the
+  view is a full mode. The P1 rests as much on blocking F-CANOPY-055's P1 repair, whose feeder always returns
+  data, as on the production lane.
+- **NOT yet observed on canopy itself.** Live confirmation is owed (Still owed, item 0). It must count
+  evictions, not applies. On the idle trio the feeder answers `no_update`, which applies nothing, so an applies
+  count cannot tell a healthy lane from a stalled one. Such an answer is HTTP 200 with an empty `response`, not
+  a 204 as this entry first said: in dash 4.2.0 a callback with outputs sets `has_update = … or has_output`
+  (`_callback.py:602`), so it never raises `PreventUpdate` (Lane R2-B, round 2; 4.4.1 has the same code at
+  `:695-699`, by R2-B's reading of the wheel).
+- **Fix direction** (Lane B): pace a poll with a request/ack handshake instead of the Interval's `disabled`.
+  A progress-based watchdog predicate (reset on `n_intervals` change) addresses the false fires alone. The
+  gate returning `no_update` for global lanes on a tab-only change addresses the tab trigger alone. Neither
+  addresses the second Input, and the design must.
+
+**F-CANOPY-059 — against cascor, the CAN-015 replay player never shows a session: canopy#532's fix for F-CANOPY-015 reads `range` from `data.session`, where cascor serves a dict, and the readout indexes it as a list, so `render_session` raises `KeyError: 0` on every session cascor serves and the Replay tab stays at "▶ No active replay session" with no control reachable, while cascor stays in REPLAYING and refuses training until a Reset Training or an API stop (P0, canopy repo; a regression from canopy#532; found 2026-09-24 by round 2 of this phase's validation, Lane R2-F; OPEN).**
+
+- **The mechanism.** cascor's `/replay` route nests `state_summary()` at `data.session`
+  (`src/api/routes/snapshots.py:449`), and `state_summary()` returns `"range": {"start": …, "end": …}`, a dict,
+  as it has since cascor#178 (`e01f57f`, merged 2026-05-03T00:55:26Z). `confirm_snapshot_op` stores that `data` block as the
+  session (`hdf5_snapshots_panel.py:1313-1323`). `render_session` then takes
+  `range_value = summary.get("range") or [start, end]` (`replay_player_panel.py:505-506`) and formats
+  `f"[{range_value[0]}, {range_value[1]}]"` (`:532`): `KeyError: 0`. Nothing in canopy converts the dict.
+- **Executed, not only read** (the orchestrator, re-deriving Lane R2-F's finding): the registered callback,
+  called on a session built from the payload Phase 1 measured live, raises `KeyError(0)`; the same session with
+  the range as the list `[0, 12]` renders the active view and the `V2 ✓ weights` badge. Dash applies none of a
+  callback's outputs when it raises, so the layout defaults stand: the idle placeholder shown
+  (`replay_player_panel.py:112`), the controls hidden (`:113`).
+- **What a user sees.** A successful Replay switches to the Replay tab, which says "▶ No active replay session".
+  Play, pause, seek, speed, range and Stop are never on screen, and every later write of the session Store
+  re-raises. Nothing replays either: cascor's session starts paused (`manager.py:1076`) and emits only its
+  first frame until a Play arrives (`_run`'s initial `_emit_frame(0)`), and no Play is on screen (Lane C4).
+- **cascor stays in REPLAYING** (Lanes R3-A, R3-B, R4-A and R4-B; re-derived in source). It refuses a new
+  network (`manager.py:1731-1732`), starting or stopping training (`:2452-2453`, `:2842-2843`), the parameter
+  updates Apply sends (`:4742-4743`), and restore, retrain and resume (`routes/snapshots.py:278`, `:329`,
+  `:378`). It reports its training state as Stopped / Idle meanwhile (`manager.py:6001-6003`), and the status
+  bar shows Stopped: for a REPLAYING status every flag it reads is false, so it falls to its `else`
+  (`dashboard_manager.py:7508-7518`). On a page slower than its 1 s tick, F-CANOPY-055 (open) also holds it at
+  its layout default, which is Stopped too (`:887`). `/api/state` maps the unknown status to Stopped too (`state_sync.py:177`).
+  The Network Editor's badge alone reads "FSM: Replaying". A Start fails with cascor's refusal, whose text says to
+  invoke `/replay/control` with `stop`. The player's controls are canopy's only callers of that route
+  (`replay_player_panel.py:371`), its Stop the only one that ends a replay, and none is on screen. The one way
+  out on the page is the sidebar's Reset Training: its button is disabled only while its own command is in
+  flight (`dashboard_manager.py:8548-8549`), the adapter's `reset_training` (`cascor_service_adapter.py:1137-1139`)
+  calls cascor's `/v1/training/reset` (`routes/training.py:169-173`), and cascor documents `reset()` as
+  REPLAYING's escape hatch; a reset also discards the run's metrics and counters, not its data. Nothing on
+  the page points a user to it.
+- **How it shipped.** Phase 1 predicted it when it measured this payload (segment 7): "Reading one level deeper
+  without converting dict → list turns a silently-wrong readout into a `KeyError`. The obvious one-line fix
+  crashes the panel." canopy#532 (`359e1bf7`, merged 2026-08-28T04:16:14Z) made that fix, and its test passes
+  because its fixture, labelled "The exact shape measured off the running service", types the range as
+  `[3, 37]` (`src/tests/unit/frontend/test_p2_wave_batch_a.py:179-190`); it also differs from the measured
+  payload in five other fields (Lane R3-A). Phase 4 listed F-CANOPY-015 as fixed by #532 but kept it OPEN
+  pending a live re-drive (its status correction), which never ran.
+- **Severity: P0**, on plan §6.3's rule (`JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360`):
+  it blocks a workflow the mandate names, "snapshots saving/loading/replaying" (§1.1(d)). It also masks
+  F-CANOPY-056, whose controls it keeps off screen, and it leaves cascor refusing training. F-CANOPY-014 broke
+  the same workflow through a different fault: its controls were on screen but every one failed on an empty
+  base URL, Stop included, so it too left cascor replaying (Phase 1 ended that session with a direct API stop).
+  It was rated P1 and is fixed. What this one adds is that no session view appears at all. §6.3's words give
+  P0 to a finding that blocks the workflow, which would cover F-CANOPY-014 too; which rating replay findings
+  take is an owner question (Still owed, item 15).
+- **Not yet driven live.** A drive starts a replay, which writes the cascor it runs against; the shared trio's
+  must not be written. The fix and its live check are Still owed item 16.
+
+### Instruments
+
+All are under `util/ad-hoc/`:
+
+- `2026-09-23_f055_f025_allow_arm_demo_drive.py` (new): the Live Switch allow and deny arms on demo legs, with
+  its rule and predictions fixed in the docstring.
+- `2026-09-04_canopy_verify_instance.bash`: opt-in `CANOPY_VERIFY_DEMO_MODE=1`. The default is unchanged.
+- `2026-09-23_status_bar_apply_census.py`: the fix verification's predictions and results, recorded in its
+  docstring before and after each run. The 150 s run's result, and corrections to its "~8.6 s" and "F-035's …
+  cadence again", were added on 2026-09-24 (round 2, Lane R2-F). The rule is untouched.
+- Transcripts in `reports/e2e-canopy-2026-09-02/transcripts/`:
+  - `2026-09-23_idle_cuts_live_check_rebuilt_ce78e0de.json`
+  - `…_status_bar_apply_census_f055_parent_8056.json`
+  - `…_f055_fix_8057.json`
+  - `…_f055_fix_8057_150s.json`
+  - `2026-09-23_f055_f025_allow_arm_demo_drive.json`
+- Consensus reports, archived verbatim: `reports/e2e-canopy-2026-09-02/consensus/2026-09-23_validator_reports_phase9_round{1,2,3}.md`,
+  the ledger's own validation, `…/2026-09-24_validator_reports_phase9_ledger_round{1,2,3,4,5,6,7,8,9,10}.md`; and the canopy
+  follow-up's review, `…/2026-09-24_validator_reports_phase9_canopy_followup.md`. Every lane's brief is in
+  `reports/e2e-canopy-2026-09-02/drafts/`.
+- Added 2026-09-24, while validating this phase:
+  - `2026-09-24_archive_phase9_tmpfs_evidence.py` copied the files this phase rests on out of the authoring
+    session's tmpfs scratchpad, which a reboot deletes. Raw outputs are in
+    `reports/e2e-canopy-2026-09-02/phase9-scratch/` (indexed by its README). Round-1 Lane B's F-055 scripts
+    are `2026-09-23_f055_r1_laneB_*` and the cuts' single-writer probe is `2026-09-23_cuts_r1_laneB_probe_deps.py`,
+    each with a provenance header prepended.
+  - `2026-09-24_host_session_activity_window.py`: which Claude Code sessions on this host made a tool call in a
+    time window, and which hit a rate limit.
+  - `2026-09-24_f058_trigger_census.py`: F-CANOPY-058's live confirmation, per-request evictions keyed by
+    `executionPromise`, and five triggers. **Refuted before its first run** (Lane R2-B, on a synthetic dash 4.2.0
+    app running the census's own JavaScript; the mechanism re-derived by the orchestrator in the renderer
+    source):
+    - An answer that carries no props leaves `executed` inside the same synchronous dispatch that put it there
+      (`removeExecutedCallbacks`, `dash_renderer.dev.js:2627`). A store subscriber never sees it there and
+      scores it EVICTED: 13 of 13 `no_update` answers, against 13 of 13 data answers APPLIED.
+    - Its fire detector reads the lane after the fire's own `false` write, so it counted 0 of 2 real fires.
+    - Those figures are R2-B's report. Its synthetic apps, drivers and server logs are archived, not the
+      census's scored output. One archived app still labels its no-props mode "HTTP 204" in a comment, while
+      its own log shows 200s.
+    - T-apply is scored even with nothing in flight, `took()` skips its "still in flight" check, and T-tab's
+      second click lands ~4.5 s after the first, not 1 s.
+    - Its docstring now says so. Do not run it as written (Still owed, item 0). The synthetic apps are
+      `2026-09-24_ledger_r2_laneB_{census,watchdog}_synth_{app,drive}.py`.
+  - `2026-09-24_phase9_ledger_round1_corrections.py`: round 1's pass, as 56 replayable substitutions. It is
+    not the whole pass: the consensus bullet "This phase's own text" was edited by hand, so a replay onto a
+    moved `main` must re-apply it (Lanes R2-F and R2-B).
+  - `2026-09-24_phase9_ledger_round2_corrections.py`: round 2's pass, entirely scripted; rounds 3 to 10's
+    passes are `…_round{3,4,5,6,7,8,9,10}_corrections.py`, likewise.
+  - `2026-09-24_owner_answer_extract.py`: prints chosen records of a session transcript, redacted; round 5
+    used it for the owner's answer ("Who", above). Round 6 widened its secret shapes, and the launch scan's and
+    the archive tool's, after Lane R6-B found `sk-ant-…` keys passing it; round 7 set the bare `sk-` floor to
+    20 characters in all four shape-bearing tools (round 6 had raised the extractor's from 20 to 32, and the
+    other three had used 32 since they were written; Lanes R7-B, R8-A and R8-B). `2026-09-24_secret_shape_check.py` tests all three,
+    and the report archiver, against constructed fake values, both ways.
+  - `2026-09-23_archive_consensus_reports_by_round.py`, which archives the lanes' reports verbatim: round 6 gave
+    it `--allow-shape` for a reviewed literal, and round 7 scoped each allow to one agent's report, refused key
+    material after an allowed prefix, and widened its shapes (Lane R7-B found that an allowed PEM header would
+    also have passed a whole key). That refusal caught a PEM header followed by whitespace and 20 or more base64
+    characters, and a whole classic age key; Lanes R8-A and R8-B passed fake keys through it in six other forms.
+    Round 8 replaced it rather than adding to it, which let a header followed by a 20-39-character body pass, so
+    round 9 kept round 7's form as well (Lane R9-B). It now refuses any PEM END line; a PEM header followed by
+    whitespace and 20 or more base64 characters; any base64 run of 40 or more characters within 400 characters
+    after a PEM header; and any age identity with a body.
+  - `2026-09-24_merge_command_launch_scan.py`: the Claude Code tool calls on this host, in a window, whose
+    command line matches a pattern of commands that can ready, arm, merge, update-branch or re-run a PR, with
+    each call's background flag. Widened in rounds 3 and 4, after each found forms it missed ("Who", above).
+  - `2026-09-24_archive_phase9_tmpfs_evidence_round2.py`: the rest of this phase's tmpfs evidence, round 2's
+    included, from two sessions' scratchpads. It refuses secret shapes and any file holding an e-mail address
+    other than one containing `noreply` or one at `codecov.io` (the uploader's public key, which CI logs
+    print). Since round 4 it re-checks the files it already archived; all 36 pass.
+  - `2026-09-24_push_phase9_signed_groups.py`: lands this branch as signed commits, each pinned to the one
+    before, re-reading the ref before any retry, since a 499 can still land. Its groups are at most 250 KB,
+    except the ledger, which goes alone and last at about 780 KB, about 1 MB encoded. The tool's docstring
+    cites failures from about 330 KB; Phase 8's ledger landed as one such commit at 683 KB (`fb9b382a`). It
+    refuses a dirty tree, or a base that is not an ancestor of HEAD (round 4, Lane R4-B).
+
+### Consensus record (§7 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`)
+
+- **canopy#676 (the cuts).**
+  - Round 1: Lane A (git objects, raw transcripts, `/proc`) and Lane B (code and renderer source, a
+    built-app probe), briefed separately.
+  - Round 2: Lane B2, on the corrections only.
+  - Round 3: Lane B3, on the round-2 corrections, MERGE-WITH-FIXES with wording only (the squash message and the PR body).
+    The review had not terminated under §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`, since B3's two MINORs each
+    changed a number and an action. The
+    merge overtook it: #676 landed with those fixes unapplied (see "The merge, out of order").
+  - Every round's corrections were prose, plus one test-only change in each of rounds 1 and 2 (`key=str`; the
+    dict-id refusal). No behaviour changed. No number that decides the change moved, except the X/C figures,
+    which were withdrawn from the CHANGELOG.
+  - Instruments: the live check, n = 5 windows per run and one run per build pair, alongside the test
+    falsification. Lane A listed the live check's blind spots.
+- **F-CANOPY-055 (first fix).**
+  - Round 1 only: Lane A (git extracts, AST-extracted rule functions, `/proc`, six mutations) and Lane B (a
+    synthetic app on the real renderer).
+  - Lane A: no MISMATCH, with qualifiers (above). Lane B: DO-NOT-MERGE, whose central mechanism the
+    orchestrator re-derived in the renderer source.
+  - No round 2: the fix is being redesigned, not corrected.
+  - The census that passed (a 150 s fix window scored APPLIES after a 60 s one VOIDed, 27 responses delivered
+    across the two, against one parent window) held no tab switch and no Apply, so it could not produce the
+    failure those triggers cause. It could have seen an evicting watchdog false fire or a mount-time strand, as a
+    drop in applies, and saw neither; it records no fires directly. That is the instrument-adequacy lesson of this
+    phase (Still owed, item 14).
+- **This phase's own text** (the ledger's validation, 2026-09-24, before it landed).
+  - **Round 1**: four lanes on the frozen `e624c281`, briefed separately with different entry points. Lane A1
+    worked from git objects and the GitHub API, and Lane A2 from the raw evidence tree. Lane B1 was
+    adversarial, working from canopy and cascor source, the installed renderer and a synthetic app. Lane B2 was
+    adversarial on the correction pass that recorded #676's merge.
+  - **Verdicts.** A1 and A2 re-derived most numbers exactly. Their MISMATCH rows (A1's G6; A2's R2.e, R2.f,
+    R2.h, R4.a–d and R5.b) were all corrected, alongside wording, attribution and unit defects. B1 and B2
+    returned SOUND-WITH-FIXES.
+  - **What round 1 changed:**
+    - one disposition: F-CANOPY-056, widened and re-rated P1;
+    - one count: open P1s, 4 → 5;
+    - F-CANOPY-025's stated status: it stays counted FIXED;
+    - F-CANOPY-057's history, and F-CANOPY-058's trigger list and scope;
+    - the live-confirmation plan, which now counts evictions;
+    - item 14's lesson, and the record of who merged #676;
+    - wording, unit and attribution fixes: 56 substitutions in
+      `util/ad-hoc/2026-09-24_phase9_ledger_round1_corrections.py`, plus this bullet, which was edited by hand, so
+      a replay of the script alone drops it.
+  - **Re-derived before applying.** The orchestrator re-derived the rate-limit window, the nine-PR pass, the
+    checks' completion times, the stacked cascor PRs, `_merge_session`'s overlay, CI's node skips and the X/C
+    band. It did NOT re-derive Lane B1's claim that every answer after the first is a 204, which round 2
+    refuted.
+  - **Round 2**: two lanes on the frozen `acf1a93a`, briefed separately. Lane R2-F re-derived the whole phase
+    from its primary artifacts; Lane R2-B attacked round 1's corrections, the new census included. Both returned
+    SOUND-WITH-FIXES, and both said §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` required a round 3.
+  - **What round 2 changed:**
+    - a new finding, F-CANOPY-059 (P0), which qualifies F-CANOPY-056's claims about the session view;
+    - one disposition: F-CANOPY-057 re-rated P1;
+    - the counts: 70 findings, 19 open, 1 open P0 and 6 open P1;
+    - the F-058 census, refuted before its first run, and the 204 claim, corrected wherever it stood in the
+      ledger (Phase 7's line included; an archived lane script's comment still says it);
+    - the merge record: CI's failure and the 01:22:32Z re-run, the account's later actions, and the "Who"
+      basis, now a scan of launches rather than a count of tool calls;
+    - F-CANOPY-058's scope, and the census probability's basis;
+    - F-CANOPY-057's history, and cascor#184;
+    - Still owed items 0, 3 to 9 (back-references), 13, 14 and 15, and a new item 16;
+    - the rest: wording, attribution and pointer fixes, and the tmpfs evidence both lanes found unarchived. All
+      are in `util/ad-hoc/2026-09-24_phase9_ledger_round2_corrections.py`, with no hand edit to the ledger;
+      the scripts' docstrings, the README and the handoff's note were edited directly.
+  - **Re-derived before applying (round 2):** CI's two attempts and their jobs (Actions API); the `KeyError`, by
+    executing the registered callback on the payload Phase 1 measured (segment 7) and, as a control, on the
+    F-CANOPY-015 fixture's list shape, which renders; cascor's dict `range` since cascor#178 (`e01f57f`); dash
+    4.2.0's `has_output`; the renderer's synchronous `removeExecutedCallbacks`; ml#2058's `cdb0a18b` at
+    21:43:55Z and the shepherd's single write; the later actions on ml#2066, data#434, ml#2045 and
+    cascor-worker#196; cascor#180 and #184, and both #674s; the fifth squash-message statement; and Lane B's two
+    archived watchdog runs. Not re-derived: R2-F's reading of the host reflogs, R2-B's count of five window
+    entries, and R2-B's synthetic census runs, whose mechanism was re-derived in the renderer source instead.
+    New, beyond both lanes: the launch scan, and the finding that the drafts the pass readied were exactly the
+    ones sessions had drafted to hold.
+  - **Round 3**: two lanes on the frozen `3f83b9c6`, briefed separately. Lane R3-A re-derived round 2's new
+    claims from their artifacts; Lane R3-B attacked round 2's corrections. Both returned SOUND-WITH-FIXES. The
+    replay of round 2's script is exact; R3-A's MISMATCH rows were corrected in this pass.
+  - **What round 3 changed:**
+    - F-CANOPY-059's reach: cascor stays in REPLAYING, refusing training, a new network, and restore, retrain
+      and resume, while canopy shows Stopped, until a Reset; and its P0 now states F-CANOPY-014's P1
+      precedent;
+    - the launch scan's pattern and counts (44 background launches on 09-23 and 40 naming one PR, where 38
+      and 34 stood), after it missed the converge driver; the conclusion held;
+    - the owner question's evidence: commits signed locally with the owner's key inside the quiet window, and
+      the same arming pattern that morning;
+    - F-CANOPY-057's history: cascor#184 reached `main` through its retarget, #189;
+    - the per-request ranges (3–5 s and 7–8 s, not "±"), two merge dates now in UTC, two line numbers, the
+      run-2 transcript's first commit (`800c20bb`, before the merge), and the canopy follow-up's review state;
+    - what the new tools see and refuse, and their secret shapes;
+    - the ledger's changes all in `util/ad-hoc/2026-09-24_phase9_ledger_round3_corrections.py`, with no hand
+      edit to the ledger (the tools' code was edited directly), including a pointer in Phase 4's F-CANOPY-015
+      row.
+  - **Re-derived before applying (round 3):** cascor's REPLAYING refusals, its Stopped/Idle report and its
+    reset escape hatch; canopy's Reset button, its enabling and its path to cascor; the placeholder's layout
+    lines; `4c496443`'s and `c666403b`'s committers and signatures; the morning's arms (but not the claim,
+    false as worded, that no logged command named those PRs then); ml#2045's 03:04–03:05Z draft and ready;
+    `800c20bb`'s content; #189's
+    retarget title; the two merge dates; the widened scan's counts. Not re-derived: R3-A's reading of the
+    00:00:39Z force-push, R3-B's reading of `bc31e993`'s handoff title and of the converge runs' timeouts, and
+    the fixture's five other differing fields.
+  - **Round 3 changed numbers and actions**, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` called for a round 4 on these corrections.
+  - **Round 4**: two lanes on the frozen `86e82c0c`. Lane R4-A re-derived round 3's new claims from their
+    artifacts; Lane R4-B attacked round 3's corrections. Both returned SOUND-WITH-FIXES. The replay of round 3's
+    script is exact, and the REPLAYING lock-in, the Reset escape, #184, the dates, the line numbers and
+    `800c20bb` held.
+  - **What round 4 changed:**
+    - the owner question's evidence, stated with bounds: arms like the pass's ran twice earlier that day, on at
+      least twelve PRs (round 5 found a third occasion and at least 20 PRs); ml#2045's 00:00Z push was a
+      fast-forward of 29 signed commits, not a force-push; and one touch of the key can sign a burst;
+    - F-CANOPY-014's precedent: it too left cascor replaying, so only the missing session view separates the
+      two ratings;
+    - the REPLAYING bullet: Apply is refused too, and the status bar shows Stopped because canopy maps an
+      unknown status to Stopped (round 5 corrected the mapping it cited: the bar's own `else`, not
+      `state_sync.py:177`);
+    - a new lead, Still owed item 17, from the canopy follow-up's round 6;
+    - the tools: the scan's pattern, the e-mail rule and re-checking of archived files, and the push tool's
+      clean-tree and ancestry checks;
+    - pointers: F-CANOPY-015's own entry now points to F-CANOPY-059;
+    - the ledger's changes all in `util/ad-hoc/2026-09-24_phase9_ledger_round4_corrections.py`, with no hand edit
+      to the ledger.
+  - **Re-derived before applying (round 4):** the arm events of ten PRs; the Network Editor's badge, the Apply
+    refusal and `state_sync.py:177`; the network swap (`manager.py:1472`, `:5734`, `:5977`) and canopy's two
+    "read-only" texts; the C4 paused-start claim (`manager.py:1076`, and `_run`'s `_emit_frame(0)`). Not
+    re-derived: the arms of canopy#670 and ml#2038, the 29-commit push, the five signatures in one second, and
+    `bc31e993`'s handoff title.
+  - **Round 4 changed a number and actions**, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` called for a round 5. An archived handoff,
+    `HANDOFF_2026-09-10_canopy-e2e-f035-fixed-at-the-renderer-and-the-defect-it-was-masking.md`, repeats the
+    204 claim; archived handoffs are not edited.
+  - **Round 5**: two lanes on the frozen `07aef715`. Lane R5-A re-derived round 4's claims from their
+    artifacts; Lane R5-B attacked round 4's corrections. Both returned SOUND-WITH-FIXES. The replay of round 4's
+    script is exact, both launch-scan outputs regenerate byte-identical, and the counts, F-CANOPY-014's
+    precedent, item 17, the F-CANOPY-015 pointer, the REPLAYING refusals and the signed-commit facts held.
+  - **What round 5 changed:**
+    - the owner question, answered four minutes after the freeze for the sweeper that readied and armed the
+      drafts it named (R5-B): "Who", item 15 and "What the evidence cannot support" record the answer and its
+      scope;
+    - the arm census: at least three earlier occasions and at least 20 PRs, where two and twelve stood; three
+      later background launches, not two, the two `safe_merge` runs re-arming canopy#670 after its disarms;
+      and ml#2045's 03:02:06Z push of three commits signed with the owner's key;
+    - the status bar's cause: its own `else` (and, on a page slower than its tick, F-CANOPY-055's frozen
+      layout default), not `state_sync.py:177`; item 16's check now reads `fsm_status` and the badge;
+    - the push tool's group sizes, the scan's round-3 forms and its docstring (the forms it still misses), and
+      item 13's account of the FAQ's old error and of the follow-up's review, which terminated at round 8;
+    - the ledger's changes all in `util/ad-hoc/2026-09-24_phase9_ledger_round5_corrections.py`, with no hand
+      edit to the ledger.
+  - **Re-derived before applying (round 5):** the owner's question and answer (lines 4227 and 4260 of
+    `bc31e993`'s transcript); the events of ml#2059, canopy#676 and canopy#678; canopy#670's arms and
+    disarms, ml#2041's single arm, the 13:35:20Z foreground command and the three background rows; the arms
+    of ml#2013, deploy#228 and ml#2057; the status bar's `else` and layout default; ml#2045's 03:02:06Z push
+    (activity and compare APIs) and its closing; the FAQ's text at `b07943d6`; and Phase 8's 683 KB ledger
+    upload (`fb9b382a`). Not re-derived: the rest of the lanes' arm census, the signing key of the 03:00Z
+    commits, and that no transcript runs an arming-capable command naming ml#2057 or its branch between 19:50Z
+    and 21:00Z (session `1f771cb0` opened it at 20:09:28Z and ran only the read-only `watch_pr_runs.bash`).
+  - **Round 5 changed a disposition, numbers and actions**, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` called for a round 6 on these
+    corrections.
+  - **Round 6**: two lanes on the frozen `b0b17cad`. Lane R6-A re-derived round 5's claims from their
+    artifacts; Lane R6-B attacked round 5's corrections. A session limit killed both mid-review; both were
+    resumed with their context and returned SOUND-WITH-FIXES. The replay of round 5's script is exact, and every
+    count, time and source line round 5 added held except two, the question's time and the count of drafts
+    (R6-A's finding 1, R6-B's finding 2); the signing key of the 03:00Z commits held too.
+  - **What round 6 changed:**
+    - the owner's answer: the question's time (03:34:45Z; 07:32:48Z is the answer), the three of its four PRs
+      that were drafts, and one statement of its scope, in "Who", which item 15 and "What the evidence cannot
+      support" now follow;
+    - "whatever cascor reports": F-CANOPY-055 freezes the bar on some pages, not on every page (whether only on
+      pages slower than its tick is unmeasured), and the bar reads Stopped during a replay through its own
+      `else` either way;
+    - round 5's "not re-derived" item on ml#2057, false as worded, which R6-A re-derived;
+    - the secret shapes of the answer extractor, the launch scan and the archive tool, which missed seven,
+      seven and three of the shapes `2026-09-24_secret_shape_check.py` tested as round 6 left it (`sk-ant-…`
+      keys among them).
+      None occurs in the archived evidence: both scan windows regenerate byte-identical, and all 36 archived
+      files pass. Also the README's push-tool sizes, and the follow-up's rebase onto canopy#679 (item 13);
+    - the ledger's changes all in `util/ad-hoc/2026-09-24_phase9_ledger_round6_corrections.py`, with no hand
+      edit to the ledger.
+  - **Re-derived before applying (round 6):** the question's and the answer's records (lines 4227 and 4260),
+    canopy#678's events, the widened secret shapes (`2026-09-24_secret_shape_check.py`, as round 6 left it, fails 17
+    times on round 5's tools and passes on round 6's), and the follow-up's rebase (`git range-diff` gives an identical patch, and
+    its test file gives 13 passed). Both lanes' other findings
+    concern wording this pass's predecessor wrote.
+  - **Round 6 changed a disposition, numbers and an action**, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` called for a round 7 on these
+    corrections.
+  - **Round 7**: two lanes on the frozen `129f4880`. Lane R7-A re-derived round 6's claims from their
+    artifacts; Lane R7-B attacked round 6's corrections. Both returned SOUND-WITH-FIXES. The replay of round 6's
+    script is exact, the answer's scope and every ready and arm time re-derive from the transcript and the
+    timelines, and the follow-up's rebase, the shape check and both scan windows reproduce.
+  - **What round 7 changed:**
+    - in the ledger, wording only: round 6's record said every round-5 number held and that F-CANOPY-055 freezes
+      the bar only on slow pages, and "Who" said cascor#678 was armed "the same way that morning" (it too was
+      never a draft, and its arm was on 09-23);
+    - two tools, an action: the bare `sk-` floor is now 20 in all four shape-bearing tools (round 6 had raised
+      only the extractor's to 32; the other three had used 32 since they were written), and the report
+      archiver's `--allow-shape` is scoped to one agent's report and refuses key material after an allowed
+      prefix in its plainest form (rounds 8 and 9 widened that). `2026-09-24_secret_shape_check.py` gained the
+      cases that see both and, as round 7 left it, fails 14 times on round 6's tools;
+    - the ledger's changes all in `util/ad-hoc/2026-09-24_phase9_ledger_round7_corrections.py`, with no hand
+      edit to the ledger.
+  - **Re-derived before applying (round 7):** finding 4 by that check's 24-character case, and finding 5 by
+    reading the pattern (its PEM and age alternatives match only a prefix), not by a run; cascor#678's events (no draft
+    or ready event, one arm at 13:32:10Z on 09-23). After the fixes, both scan windows regenerate
+    byte-identical, all 36 archived tmpfs files pass, round 6's report regenerates byte-identical under the
+    scoped allow, and every secret shape in the archived reports and briefs is a reviewed quote (round 6's PEM
+    header, round 7's age-key prefix).
+  - **Round 7 changed actions, two tool fixes, and no number or disposition**, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` called for a
+    round 8 on these corrections.
+  - **Round 8**: two lanes on the frozen `3297131f`. Lane R8-A re-derived round 7's claims from their
+    artifacts; Lane R8-B attacked round 7's corrections. Both returned SOUND-WITH-FIXES. The replay of round 7's
+    script is exact, cascor#678's events and the counts held, both scan windows regenerate byte-identical, and
+    the scoped allow fails closed for another agent's allow, an unscoped allow and no allow.
+  - **What round 8 changed:**
+    - the report archiver's key-material refusal, an action: both lanes passed fake keys through it with the
+      header allowed, in six forms besides round 7's (a JSON-escaped body, a blockquote, numbered lines, a
+      backticked header, an encrypted PEM's header lines, a post-quantum age identity). It now refuses any PEM
+      END line, any base64 run of 40 or more characters within 400 characters after a PEM header, and any age
+      identity with a body. `2026-09-24_secret_shape_check.py` gained a case for each form, plus an END line
+      alone, and fails those 7 on round 7's archiver. Round 8 also dropped round 7's own PEM form and lengthened
+      the check's case for it from a 39- to a 48-character body, which hid the drop; round 9 restored both;
+    - wording: the `sk-` floor's history (round 6 raised only the extractor's), and round 6's numbers for the
+      check, which were measured with the check as round 6 left it;
+    - the ledger's changes all in `util/ad-hoc/2026-09-24_phase9_ledger_round8_corrections.py`, with no hand
+      edit to the ledger.
+  - **Re-derived before applying (round 8):** each tool's first `sk-` floor, from git; the refusal's gaps, by the
+    new cases. After the fix, round 6's and round 7's reports regenerate byte-identical under their scoped
+    allows, and no file under `reports/e2e-canopy-2026-09-02/`, and no script in `util/ad-hoc/`, holds key
+    material.
+  - **Round 8 changed an action, a tool fix, and no number or disposition in the ledger**, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` called
+    for a round 9 on these corrections.
+  - **Round 9**: two lanes on the frozen `04db8614`. Lane R9-A re-derived round 8's claims from their
+    artifacts; Lane R9-B attacked round 8's corrections. Both returned SOUND-WITH-FIXES. The replay of round 8's
+    script is exact; every tool's `sk-` floor history, every form `key_material` names (R9-A tested 21 fakes,
+    R9-B more), the check's "fails those 7", the three reports' regeneration and the key-material sweep all
+    held.
+  - **What round 9 changed:**
+    - the report archiver, an action: round 8's `key_material` had replaced round 7's PEM form, so a header, whitespace
+      and a 20-39-character body passed with the header allowed (Lane R9-B); it now keeps that form beside
+      round 8's, and `2026-09-24_secret_shape_check.py` has a 39-character case again, which fails on round 8's
+      archiver;
+    - wording: round 7's "fails 14 times" (measured with the check as round 7 left it), and what round 7's
+      refusal caught (a classic age key too);
+    - the ledger's changes all in `util/ad-hoc/2026-09-24_phase9_ledger_round9_corrections.py`, with no hand
+      edit to the ledger.
+  - **Re-derived before applying (round 9):** the dropped form, by the 39-character case, which fails once on
+    round 8's archiver and passes on round 9's; round 7's own check passes on round 9's tools. After the fix,
+    round 6's, 7's and 8's reports regenerate byte-identical under their scoped allows, and no file under
+    `reports/e2e-canopy-2026-09-02/`, and no script in `util/ad-hoc/`, holds key material.
+  - **Round 9 changed an action, a tool fix, and no number or disposition in the ledger**, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` called
+    for a round 10 on these corrections.
+  - **Round 10**: two lanes on the frozen `b0eb4ac1`. Lane R10-A re-derived round 9's claims from their
+    artifacts and returned SOUND with no findings; its tests of `key_material` refused every one of about
+    17,000 fake keys in the forms the ledger names. Lane R10-B attacked round 9's corrections and returned
+    SOUND-WITH-FIXES with one LOW finding: a comment in the report archiver that round 9 had made false, which
+    was corrected in the tool directly.
+  - **Round 10 changed no number, disposition or action, so under §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` the review of this phase's
+    text terminated at round 10.** This pass (`util/ad-hoc/2026-09-24_phase9_ledger_round10_corrections.py`)
+    records it and changes nothing else.
+- **Unresolved dissent:** none on a verdict.
+- **What the evidence cannot support:**
+  - that the cuts' latency gain holds on a loaded host (the rule scored run 2 INCONSISTENT);
+  - that F-CANOPY-058 occurs on canopy itself (source plus synthetic repros only);
+  - any rate for F-CANOPY-058's false-fire trigger on a real page (modelled, not measured);
+  - F-CANOPY-056's widened scope on a live page (a probe with constructed envelopes on sessions built by hand;
+    never driven, and masked against cascor by F-CANOPY-059);
+  - F-CANOPY-059 on a live page: it rests on executing the callback with the payload shape Phase 1 measured
+    live, not on a drive;
+  - that the F-058 census works: round 2 refuted it before any run;
+  - that F-CANOPY-055's bar freezes only on pages slower than the tick (the drive recorded no latency);
+  - the live check's SESSION PASS beyond one run at its floor, whose disable leg is a synthetic clear that no
+    production writer performs;
+  - "no watchdog false fire" in the census, which it does not record;
+  - who re-ran #676's CI, or took the account's other later actions, beyond "no Claude Code process on this
+    host" (foreground calls and background launches whose command lines match a pattern, which a script run
+    by an unnamed path escapes): the owner's answer covers the sweeper that readied and armed the drafts it
+    named, and names neither; #676's own ready and arm are tied to that sweeper by the pass's pattern, not by
+    the answer;
+  - any browser other than headless GPU Chromium on one Linux host.
+
+### Matrix effect and counts
+
+- **F-CANOPY-055**: stays **OPEN**. Its first fix was refuted in review and not opened as a PR.
+- **F-CANOPY-025**: stays counted **FIXED**. Its allow arm lands on F-055's first fix and on a demo parent
+  page, so Phase 8's "inferred regressed" is not established. Whether a slow page regresses it is tracked under
+  F-CANOPY-055, whose second fix must re-drive it (Still owed, item 0).
+- **New**: F-CANOPY-056 and F-CANOPY-057 (both re-rated P1 on 2026-09-24, above), F-CANOPY-058 (P1) and
+  F-CANOPY-059 (P0).
+- **F-CANOPY-015**: stays **OPEN** (P2), awaiting its live re-drive (Phase 4's status correction). That re-drive
+  cannot pass until F-CANOPY-059, which F-015's own fix introduced, is fixed.
+- **Counts**, from `e2e_finding_triage.py` (run it to confirm):
+  - **70 findings**: 48 fixed, 1 accepted, 2 withdrawn, **19 open**.
+  - **1 of the open is P0**: F-CANOPY-059.
+  - **6 of the open are P1**: F-CANOPY-055, F-CANOPY-056, F-CANOPY-057, F-CANOPY-058, F-CASCOR-001 and
+    F-CASCOR-002.
+
+### Still owed after this phase
+
+Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
+
+- Item 0 is new, and takes over both halves of Phase 8's item 2.
+- Items 13 to 17 are new.
+- Phase 8's items 13 and 14 are merged into item 12.
+
+0. **F-CANOPY-055's second fix, and F-CANOPY-058.**
+   - They are the same class, so decide one design for both lanes. Lane B's handshake pacer is the
+     candidate: request/ack tokens, with no `disabled`-prop guard. It must also cover a non-Interval Input,
+     since #613's feeder has one.
+   - First, confirm F-CANOPY-058 live on a leg serving `main`, counting EVICTIONS, not applies: on the idle
+     trio the feeder answers `no_update`, an HTTP 200 that applies nothing. The census written for this,
+     `util/ad-hoc/2026-09-24_f058_trigger_census.py`, was **refuted before its first run** (Instruments, above):
+     it scores every answer without props EVICTED and cannot count a watchdog fire. Fix it first:
+     - record the executed transition itself: wrap `window.store.dispatch` and log `addExecutedCallbacks` by
+       `executionPromise`, or install a shim with `add_init_script` before the renderer builds its store;
+     - detect a fire from the lane's state before the reset;
+     - score T-apply only with a request in flight, and check "still in flight" in `took()`;
+     - then pass a synthetic check on a scratch dash app, with and without `no_update` answers, before any live
+       run.
+     It drives five triggers (a gate write, a tab switch, an Apply clamp and release, a display-mode change, and
+     10 idle minutes), and simulates the Apply through the clamp Store, because a real Apply PATCHes the trio's
+     cascor.
+   - A leg serving `main`: `util/ad-hoc/2026-09-04_canopy_verify_instance.bash up <canopy worktree on
+     main>/src <port>` (it wants the directory holding `main.py`), with `JUNIPER_E2E_CANOPY_URL` exported for
+     the drivers. It reads the trio's `:8101` data and
+     `:8202` cascor and must not write them; never use `:8051`.
+   - The fix needs real-renderer tests of every trigger: a tab switch mid-request, the end of an Apply spanning a
+     request, a second-Input change mid-request, and 10 idle minutes with the watchdog.
+   - Then the fix's own live verification, before its consensus rounds, PR and merge: the census and its
+     triggers on the fix's leg, and F-CANOPY-025's allow arm re-driven on a leg where the old code fails and
+     whose training may be started (Phase 8 item 2's second half).
+   - Correct the canopy text F-CANOPY-058 contradicts: `dashboard_manager.py:467-472` ("the harmless window"),
+     `:4698-4701` ("Self-healing, bounded to one cycle"), and `test_poll_gating.py:312-313` ("the apply clamp
+     alone").
+
+1. **Hunt the F-053 regression** (Phase 8 item 1), unchanged. This phase adds one data point: with the drain
+   parked, L still sat at 3.9–5.4 s on the cuts leg under load.
+2. **The timestamp-only store rewrite** (Phase 8 item 3). It needs a design that keeps the phase-duration
+   clock.
+3. **Owner: F-CANOPY-004's contract** (Phase 8 item 4; the question itself is Phase 7 item 5).
+4. **`FULL_HISTORY_POLL_TICK_MODULUS` → 1** (Phase 8 item 5; the decision and its measurement are Phase 7
+   item 6).
+5. **canopy#613's guard, source-derived and unobserved** (Phase 8 item 6). Superseded by F-CANOPY-058 (item 0). An evicted
+   request's `completeJob` is now source-confirmed to release the guard. The item's other half, the clamp
+   defeat, is now part of F-CANOPY-058's text.
+6. **F-CANOPY-049** and cascor#674's follow-ups (Phase 8 item 7; the follow-ups are Phase 7 item 8).
+   cascor#674 merged on 2026-09-23T00:45:02Z as `f9818b01` ("an unserializable broadcast is the message's
+   fault"). This item first cited `894a2cc7`, which is canopy#674.
+7. **CAN-015's replay-player loop** (Phase 8 item 8; the trigger shape is Phase 7 item 9). Now joined by
+   F-CANOPY-056 and F-CANOPY-057, both P1, behind F-CANOPY-059 (item 16).
+8. **M-CANDIDATES-10/-11** (Phase 8 item 9), now re-drivable (Phase 7 item 10).
+9. Unchanged (Phase 8 item 10; Phase 7 item 11): M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16
+   fade half, and F-038's browser-level test gap.
+10. **Owner question**: the metrics replay drives no chart (Phase 8 item 11).
+11. **The starvation mechanism, re-derived under FIFO** (Phase 8 item 12). Unstarted; canopy's comment at
+    `dashboard_manager.py`'s `_GATED_POLL_INTERVALS` block still says "the lowest-priority callbacks".
+12. **F1 and the round-1 minors of Phase 8** (items 13 and 14), unchanged.
+13. **New, from #676's review.**
+    - The stale refresh-rate config: `conf/app_config.yaml:170,181` and `docs/USER_MANUAL.md:1344` promise
+      intervals no code reads.
+    - The live-check instrument's gaps (Lane A): a missing node reads as 0 ticks; an empty `paths.strs` reads
+      as "dead timer absent"; PROBE never checks the node's id; there is no store read-back after `setProps`;
+      `ticks_10s_cleared` keeps no raw counts; and the script records no host load. Fix them before
+      `2026-09-23_idle_cuts_live_check.py` runs again.
+    - **Round 3's findings and no-action NITs, now scheduled, with Lane C's additions.** Done as one canopy
+      follow-up, branch `fix/idle-cuts-round3-wording` (local commit `26bf27b3` on `e9053227`, rebased with an
+      identical patch as `96e7b105` onto canopy `main` `6c4ad9a9` after canopy#679 changed `CHANGELOG.md`; not
+      yet pushed), which opens as a PR after this phase lands, the order #676 broke. Its review terminated at round
+      8 under §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`: Lane C8 found nothing false and returned MERGE. Its rounds are archived in
+      `reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_canopy_followup.md`. Its FAQ
+      note once called the player's Stop canopy's only way to stop a cascor replay, which left only an API stop
+      or a restart; the follow-up's round 5 (Lane C5, whose report quotes the old text) found the sidebar's
+      Reset Training, and the note now names it. It covers:
+      - the wording survivors: `replay_player_panel.py:75`; `test_idle_dispatch_cuts.py:138` (the assertion
+        message) and `:193` (the test name); `ws_dash_bridge.js:113-115` ("see g-3 emitter") and `:28` (an
+        "Each carries…" with no antecedent). Line numbers are at `4b4cfb16`;
+      - the CLASS test's fragility: a dict id crashes the sibling test at `:127`, and an Interval with no id
+        raises `KeyError` at `:120`;
+      - the same false claims outside #676's files: `replay_forward.py`'s module docstring,
+        `docs/USER_MANUAL.md`, and `notes/development/REPLAY_V2_FAQ.md`;
+      - #676's own "until the page reloads", which missed the model-select path.
+    - #676's PR description, refreshed on the merged PR with `gh api -X PATCH repos/pcalnon/juniper-canopy/pulls/676`
+      (`gh pr edit` fails on gh 2.46.0). It still says "answered a third slower", "all seven files", "`main`
+      `3a6dea95`", "Round 3 … running" and "lands before this PR merges". That is an edit of the PR, not part of
+      the follow-up.
+14. **New: a verification census must be able to fail.** Three rules this phase earned:
+    - Put every known trigger inside the window, or name the ones it cannot see.
+    - Count an observable that differs between pass and fail on that leg. An applies count does only where the
+      feeder returns data: the F-055 census's status-bar feeder always does, and applies separated its legs (0
+      against 19 latency changes). #613's feeder answers `no_update` on the idle trio, an HTTP 200 that applies
+      nothing, so there count evictions, with an instrument shown to count them.
+    - Run the instrument on a synthetic case whose answer is known, both ways, before trusting it live. The
+      F-058 census was written with its rule and predictions fixed, and failed its first synthetic run
+      (item 0).
+    - Size the window, and any verdict floor, to the lane's cadence, fixed before the run. The census's "≥ 10
+      responses" assumed a 1 Hz lane and VOIDed a fix that self-clocks at ~7.5 s.
+15. **New: owner questions and loose ends from #676's merge.**
+    - **Answered for the sweeper (2026-09-24):** the sweeper that readied and armed the drafts the question
+      named is the owner's, and the owner called their merges intended; the pass's other drafts, #676 included,
+      share its pattern but were not named ("Who", above, gives the answer's scope). Still the owner's to
+      confirm, because the question did not name them: the account's later actions, which are the update-branches on ml#2066 and data#434
+      (23:16–23:17Z), ml#2045's disarm and re-arm (23:48Z), cascor-worker#196's merge (01:21:37Z) and #676's CI
+      re-run (01:22:32Z), without which its armed merge could not fire; and ml#2045's draft and ready the next
+      morning (03:04–03:05Z). No Claude Code process on this host did any of them, while commits signed with the
+      owner's key landed at 21:45:22Z, 23:47:30Z, 23:57–00:00Z and 03:00–03:02Z. Lane R2-F reports interactive
+      git activity in host reflogs from about 21:39Z to 00:07Z (not re-derived). What follows for this arc: a
+      disarm, a draft or a comment does not hold a PR, so a PR that must be validated before it merges is
+      validated before it is opened.
+    - The ratings on plan §6.3's rule (`JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360`): F-CANOPY-056 and
+      F-CANOPY-057 P1, F-CANOPY-059 P0, against F-CANOPY-014's P1 for a fault that also blocked replaying and
+      also left cascor replaying (F-CANOPY-059's severity bullet).
+    - Local-only commits this ledger cites. Canopy, served: `ce78e0de`, `78c057e2`, `668380ec`, `723ee812` and
+      `884d22fb`; canopy, cited but never served: `cf6fb1dc`, `7a4a2e33`, `8990f65c`, `5310b81a`, `c360fb53` and
+      `040dc5c1`; juniper-ml: `ada8e50c`, and `b54e3b3f`, whose rebased copy on this branch is `f6861234`. Push
+      them to a provenance ref on each remote (for example `refs/provenance/canopy-e2e-phase9`), or accept that
+      a lost clone loses them. The canopy follow-up's local commits join the list until its PR opens.
+16. **New: F-CANOPY-059's fix, first in the replay loop** (item 7).
+    - Convert cascor's `range` dict to `[start, end]` wherever canopy reads it: `render_session`'s readout
+      (`replay_player_panel.py:532`) and the range slider's value, keeping a list, or no range, working.
+    - Its regression test must use the payload Phase 1 measured (segment 7), not a typed list. Correct
+      `test_p2_wave_batch_a.py:179-190`, whose fixture says it is "the exact shape measured off the running
+      service" and is not, and sweep the other fixtures that make the same claim.
+    - Then F-CANOPY-015's live re-drive, then F-CANOPY-056's fix, which needs a reachable control to verify.
+      Each of these drives starts a replay, so each needs a cascor that may be written, not the shared trio's.
+      Each must end its replay (the sidebar's Reset Training, or a stop through cascor's `/replay/control`), and
+      should check that Start and Apply work after one, and what `/api/status`'s `fsm_status` and the Network
+      Editor's badge say meanwhile: the status bar reads Stopped both during a replay (its own `else`) and after
+      one, so it cannot tell them apart.
+17. **New lead, not yet a finding: a replay replaces cascor's live network** (Lane C6 of the canopy
+    follow-up's review; re-derived in source). `start_replay` calls `_load_snapshot_to_network`
+    (`manager.py:5977`), which sets `self.model` to the snapshot's network (`:5734`); neither `reset()` nor
+    `stop_replay()` restores the earlier one, and `_auto_snap_best` is off by default (`:1472`). So a Replay
+    discards an unsaved trained network, while canopy's Replay modal promises "a read-only playback session"
+    (`hdf5_snapshots_panel.py:533`), as does the proxy route's docstring (`main.py:2985`). The canopy
+    follow-up's FAQ note warns of it. Triage it: canopy's wording, cascor's design, or both (the owner).

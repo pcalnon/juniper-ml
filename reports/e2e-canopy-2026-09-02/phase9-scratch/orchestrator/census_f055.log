@@ -1,0 +1,19 @@
+[t=    135ms] canopy http://127.0.0.1:8056 serving {"ok": true, "canopy": "http://127.0.0.1:8056", "git_sha": "ce78e0de681b8e3000f482360e1f680514e92d6f", "build_date": "2026-09-23T19:24:08Z", "version": "0.6.0", "read_at": "2026-09-23T19:50:26Z"}
+[t=    746ms] navigating to http://127.0.0.1:8056
+[t=    749ms]   serving: {"ok": true, "canopy": "http://127.0.0.1:8056", "git_sha": "ce78e0de681b8e3000f482360e1f680514e92d6f", "build_date": "2026-09-23T19:24:08Z", "version": "0.6.0", "read_at": "2026-09-23T19:50:26Z"}
+[t=   5321ms]   welcome modal not present/visible
+[t= 123498ms]   initial bar: {"latency-display": "\"\"", "top-status-display": "\"Stopped\"", "top-epoch-display": "\"0\""}
+[t= 123498ms]   BASELINE wire: {'requests': 29, 'responses': 30, 'latency_s_median': 1.694, 'latency_s_min': 0.207, 'latency_s_max': 4.791, 'latency_samples': 28}  renderer: {'watched_entries': 31, 'executed_entries': 0, 'store_notifications': 3570}  latency-display changes: 0  DOM: {'top-status-display': 'Stopped', 'top-epoch-display': '0', 'latency-display': ''}
+[t= 123498ms] => BASELINE VERDICT: NEVER-APPLIES
+[t= 123498ms]   server /api/status: {"is_running": false, "phase": "output", "current_epoch": 76, "hidden_units": 68}
+[t= 123499ms] results -> reports/e2e-canopy-2026-09-02/transcripts/2026-09-23_status_bar_apply_census_f055_parent_8056.json
+[t=    258ms] canopy http://127.0.0.1:8057 serving {"ok": true, "canopy": "http://127.0.0.1:8057", "git_sha": "884d22fb8a73bc53a3df400a5441b11e1f40f0c3", "build_date": "2026-09-23T19:49:59Z", "version": "0.6.0", "read_at": "2026-09-23T19:52:30Z"}
+[t=   1906ms] navigating to http://127.0.0.1:8057
+[t=   1912ms]   serving: {"ok": true, "canopy": "http://127.0.0.1:8057", "git_sha": "884d22fb8a73bc53a3df400a5441b11e1f40f0c3", "build_date": "2026-09-23T19:49:59Z", "version": "0.6.0", "read_at": "2026-09-23T19:52:31Z"}
+[t=   6914ms]   welcome modal not present/visible
+[t= 125755ms]   initial bar: {"latency-display": "\"Latency: 13ms\"", "top-status-display": "\"Completed \u2014 early stopped\"", "top-epoch-display": "\"76\""}
+[t= 125755ms]   BASELINE wire: {'requests': 8, 'responses': 7, 'latency_s_median': 1.349, 'latency_s_min': 0.951, 'latency_s_max': 2.797, 'latency_samples': 7}  renderer: {'watched_entries': 9, 'executed_entries': 8, 'store_notifications': 4249}  latency-display changes: 7  DOM: {'top-status-display': 'Completed — early stopped', 'top-epoch-display': '76', 'latency-display': 'Latency: 5ms'}
+[t= 125755ms] => BASELINE VERDICT: VOID
+[t= 125755ms]   server /api/status: {"is_running": false, "phase": "output", "current_epoch": 76, "hidden_units": 68}
+[t= 125755ms] results -> reports/e2e-canopy-2026-09-02/transcripts/2026-09-23_status_bar_apply_census_f055_fix_8057.json
+exit=0

@@ -1,0 +1,26 @@
+You are Lane A (measurement re-creation) of the Juniper independent-agent consensus procedure (juniper-ml `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` §2). An observation is verified only when YOU re-derive it from primary artifacts and get the same value. Prose (PR bodies, commit messages, CHANGELOG, this brief) is a CLAIM, never evidence. "NO ARTIFACT" and "UNTRACEABLE" are allowed and expected answers; do not reconstruct a number from the narrative.
+
+READ-ONLY with respect to the repos: do not edit tracked files, commit, push, or comment on any PR. Do not start or stop any canopy/cascor/data process; never touch ports :8051, :8101, :8202, :8055, :8056. Scratch work goes in a directory you create with `mktemp -d`.
+
+Repos:
+- canopy: /home/pcalnon/Development/python/Juniper/juniper-canopy (read commits with `git -C <path> show/diff/archive <sha>`; these are shared git objects, stable)
+- juniper-ml worktree holding the evidence: /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/squishy-dancing-moth
+Python env: `conda run -n JuniperCanopy1 python ...` (it strips a LIBTORCH/LD_LIBRARY_PATH collision; invoking the env's python directly without `LIBTORCH= LD_LIBRARY_PATH=` breaks torch imports).
+
+The PR is juniper-canopy#676, head `f4d864df` (GitHub-signed; its tree is claimed identical to local commit `78c057e2`, whose `src/` tree is claimed identical to `ce78e0de`, the commit the live legs served). Verify both tree identities with `git diff`.
+
+THE MEASUREMENTS TO RE-DERIVE (each: report the value you got, the command(s), and MATCH / MISMATCH / NO ARTIFACT):
+
+M1. REBUILD FIDELITY. Commit `ce78e0de` (parent `3a6dea95`) is claimed to be a rebuild of local commit `668380ec` (parent `723ee812`) whose code/docs/test diff is byte-identical outside hunk positions and blob ids, for paths src/frontend/, docs/, src/tests/unit/. Compare `git diff 723ee812 668380ec -- <paths>` with `git diff 3a6dea95 ce78e0de -- <paths>` after removing `index` and `@@` lines. Separately: the CHANGELOG.md diff of the PR head `f4d864df` vs 3a6dea95 is claimed to be exactly 31 inserted lines and 0 deletions (ce78e0de had 27; local follow-up commit 78c057e2 added one sentence), all one new entry placed after the entry ending "their hover hint." and before "- **The replay controls never applied".
+
+M2. SNAPSHOT. `src/tests/regression/snapshots/metrics_panel.txt` at ce78e0de is claimed to differ from 3a6dea95's only by the removal of `Interval(id='metrics-panel-update-interval', interval=1000, n_intervals=0), `. Verify with a word/character-level diff. Also verify it is what the code GENERATES at ce78e0de: extract ce78e0de (`git archive ce78e0de | tar -x -C <dir>`; `mkdir <dir>/logs`), then from `<dir>/src` run `conda run -n JuniperCanopy1 python -m pytest tests/regression/test_panel_layout_snapshots.py -q -p no:cacheprovider`.
+
+M3. FALSIFICATION. `src/tests/unit/frontend/test_idle_dispatch_cuts.py` (new in ce78e0de, 9 tests) is claimed: 9/9 pass at ce78e0de; on the parent 3a6dea95, exactly 7 fail and 2 pass (the passing two being `test_the_drain_is_not_in_the_tab_gate` and `test_no_pending_callback_can_hold_the_gate`), and `test_every_interval_has_a_consumer` fails naming exactly `['metrics-panel-update-interval']`. Re-run both: an extract of each commit, the test file copied from ce78e0de into the parent extract. Report per-test outcomes.
+
+M4. LIVE CHECK. `reports/e2e-canopy-2026-09-02/transcripts/2026-09-23_idle_cuts_live_check_rebuilt_ce78e0de.json` (juniper-ml worktree) was produced by `util/ad-hoc/2026-09-23_idle_cuts_live_check.py` (same worktree), whose docstring fixes a VERDICT RULE before the first run. Recompute every verdict (STRUCTURE, SESSION, LATENCY, X_over_C_p50, ERRORS_no_worse) from the raw per-window records in the JSON using the rule as the SCRIPT's code implements it, and report whether they match the stored `verdicts`. Check each window's `serving.git_sha`: C windows must be 3a6dea95…, X windows ce78e0de…. Report the per-window L p50 and n.
+
+M5. INSTRUMENT ADEQUACY (required, not optional). For STRUCTURE and SESSION: could the script's PROBE have returned the "passing" values if the thing it claims to measure were broken? E.g. does `drain_disabled` read True when the Interval's path is missing from `paths.strs` (look at PROBE's handling of a missing path), could `drain_ticks_10s == 0` arise from a missing node, could the session write's `ok` be true without the Store's data changing? Cite the script's lines.
+
+M6. FULL SUITE. The claim "src/tests/unit/ src/tests/regression/ at ce78e0de: 6806 passed, 4 skipped, 0 failed" comes from the log `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/259b4d16-1621-41ee-bdc9-e58cf7964814/scratchpad/cuts_full_suite.log` (pytest -q progress output; its final count line was lost to `conda run`). Re-derive the count from the progress characters in that log. Do NOT re-run the whole suite (8+ minutes of CPU on a shared host).
+
+FINAL MESSAGE FORMAT (nothing else): a table M1..M6 with columns: measurement | claimed | re-derived | MATCH/MISMATCH/NO ARTIFACT | evidence (command + key output). Then "INSTRUMENT FINDINGS" and "ANYTHING ELSE THAT LOOKS WRONG" (each with evidence).

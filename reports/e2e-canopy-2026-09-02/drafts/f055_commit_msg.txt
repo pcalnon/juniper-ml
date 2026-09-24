@@ -1,0 +1,28 @@
+fix(status-bar): the top bar never applied a response, so it read Stopped / 0 for the life of the page and the Live Switch never enabled -- its feeder rides its own guarded lane (F-CANOPY-055)
+
+update_unified_status_bar rode the shared 1 Hz fast-update-interval with no
+guard. dash-renderer drops a response when the same callback is requested again
+before that response is processed, and the bar's round trip (1.16 s p50 on the
+wire) exceeded the period, so the next tick evicted every response: on a live
+leg, 36 of 36 responses in a 60 s window were delivered and 0 applied. All
+eleven outputs held their layout defaults, including
+live-dataset-switch-button.disabled, the F-CANOPY-025 gate computed in this
+feeder, so the Live Dataset Switch could never enable.
+
+Fixed as F-CANOPY-035 fixed the metrics-store poll:
+- the feeder's only Input is a new dedicated lane, status-bar-interval (1 s),
+  and a running= guard stops that lane's clock while a request is in flight;
+- the lane is registered in _GATED_POLL_INTERVALS as a global lane, so the
+  CAN-000 apply clamp reaches it and it is never tab-gated. It shares the
+  metrics lane's two unmeasured limits: an Apply that begins mid-request is
+  outlived by the guard's release, and a tab change mid-request re-opens the
+  eviction window for one cycle;
+- the #614 strand watchdog is now registered once per guarded lane, each with
+  its own clock (STATUS_BAR_STRAND_TIMEOUT_MS, 30 s), because a request that
+  never produces a response leaves the guard holding the lane off.
+
+New src/tests/unit/frontend/test_f055_status_bar_own_lane.py; test_poll_gating.py
+runs every strand-watchdog test against both lanes and executes the registered
+watchdog JavaScript under node; test_stage2_global_lane.py's fast-lane pin names
+one rider. On the parent, 19 of the three files' 94 tests fail; the premise pins
+and the metrics-store watchdog's node test pass on both.
