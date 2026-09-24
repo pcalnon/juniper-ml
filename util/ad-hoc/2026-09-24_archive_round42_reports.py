@@ -17,8 +17,10 @@ with the machine.
 juniper-ml#2072 archived eight of those reports (plus three stubs of agents stopped mid-flight) in
 reports/2026-09-24_defect-register-round-42/. It left out the round's EARLIER rounds: ml#2032
 rounds 1 and 2, canopy#660 round 1, data#428 round 1 and cascor#678's pre-merge validation. This
-adds those seven in the same format, and re-extracts every report already in the directory to check
-it is still byte-identical to its agent's last message.
+adds those seven in the same format, and every later report of the round as its lanes finish (the
+post-merge rounds run in session 8f86dec2). It also re-extracts every report already in the
+directory to check that its body is still identical to its agent's last message. A file adds only
+the header, a blank line after it and a final newline.
 
 The task notification the orchestrator received is NOT a source: it HTML-escapes `<`, `>` and `&`
 (memory: reference_subagents_killed_by_session_limit_resume_with_sendmessage.md). A report that
@@ -61,6 +63,12 @@ MISSING = {
     # 8f86dec2: round 1 of the API primer's artifact-validator correction (Appendix E, v1).
     "a9d3743d17bb6ab8d": ("8f86dec2", "primer-correction-round1-laneA-reprobe.md"),
     "a256e7aa15a92fe2d": ("8f86dec2", "primer-correction-round1-laneB-refute.md"),
+    # 8f86dec2: the post-merge validation of juniper-ml#2074, this round's own register PR.
+    "a990ab20a1bd18405": ("8f86dec2", "ml2074-round1-laneA-reprobe.md"),
+    "a69df29a8e3cd7134": ("8f86dec2", "ml2074-round1-laneB-refute.md"),
+    # 8f86dec2: round 2 of the API primer's correction (v2, juniper-ml#2075).
+    "a7631c36ca821d652": ("8f86dec2", "primer-correction-round2-laneA-reprobe.md"),
+    "ad32dacf1c456fe8b": ("8f86dec2", "primer-correction-round2-laneB-refute.md"),
     # bc31e993: the earlier rounds juniper-ml#2072 did not archive.
     "a6a4a26ed6b92d6e5": ("bc31e993", "ml2032-round1-laneA-reprobe.md"),
     "ab4b18fe07b799e1b": ("bc31e993", "ml2032-round1-laneB-attack.md"),
