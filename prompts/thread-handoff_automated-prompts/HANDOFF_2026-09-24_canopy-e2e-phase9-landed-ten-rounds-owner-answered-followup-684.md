@@ -46,8 +46,28 @@ before any review round.
    F-CANOPY-056's fix. Each drive must end its replay (sidebar Reset Training, or cascor `/replay/control` stop)
    and check that Start and Apply work after it, reading `/api/status`'s `fsm_status` and the Network Editor
    badge (the status bar reads Stopped during and after a replay either way).
-2. **Triage five observations the canopy selection arc offered on 2026-09-24** (its O2–O5 and O9; its O1 is
-   F-CANOPY-055). Source: juniper-ml `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md`
+2. **File the findings two peer arcs handed over on 2026-09-24**, as a new ledger phase, through the consensus
+   procedure. Re-derive each before filing; decline or withdraw with a reason.
+
+   **(a) From the defect-register arc (round 42).** Its §4.9 routes canopy behaviour to this ledger. **Ids
+   F-CANOPY-060 to -062 are RESERVED for these and were given to that arc to cite**; use them, or mark one
+   WITHDRAWN if re-derivation refutes it:
+   - **F-CANOPY-060** (NIT/LOW, pre-existing, no owner yet): the dataset-shortfall prompt drops juniper-data's
+     truncation-permanence sentence. `_producer_detail_from_refusal` (`src/frontend/dashboard_manager.py:8404`,
+     canopy `7ab994e5`) cuts the producer detail at `" To accept it,"` and at `" The resulting dataset"`
+     (`:8410`), so the cap refusal's "The resulting dataset will be permanently annotated as truncated."
+     (juniper-data `juniper_data/core/limits.py`, `InputTooLargeError`) never shows. Proposed fix: cut only at
+     `" To accept it,"`. Also check whether the prompt's three options (`:8442-8444`: "broken rows",
+     "placeholder values") fit a cap refusal, if cascor routes one through the same prompt.
+   - **F-CANOPY-061** (LOW; the canopy#683 validation's LOW 3): `_docs_enabled` is pinned by a single sample
+     (`src/main.py:517`).
+   - **F-CANOPY-062** (LOW; that validation's LOW 4): the padded-key WARNING names `CANOPY_API_KEY` even when the
+     value came from the `_FILE` variant, and the comment at `security.py:350` is wrong.
+   - 061 and 062 are to be FIXED-BY the defect-register arc's canopy PR from branch
+     `fix/secret-leaks-683-validation`, which opens after canopy#683 merges; record the PR once it exists.
+
+   **(b) From the canopy selection arc: five observations** (its O2–O5 and O9; its O1 is F-CANOPY-055), ids from
+   F-CANOPY-063 as filed. Source: juniper-ml `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md`
    § "Observations (not A-N2 failures)", lines 188–226 on `main`. A grep of the ledger finds none of them filed:
    - **O2**: both metric charts plot `metric["epoch"]`, a per-phase counter, as x (`metrics_panel.py`
      `_parse_metrics` / `_create_accuracy_plot`), so accuracy sits in a sliver at x ≤ 51 on a ~10k axis for every
@@ -62,7 +82,7 @@ before any review round.
    - **O9**: after a refused Start the sidebar's "Current Dataset" shows the staged dataset; the routes are
      honest. The selection arc calls it a pre-existing U-6 design question; it may be theirs to keep.
 
-   File what survives as a new ledger phase, through the consensus procedure; decline the rest with a reason.
+   File what survives with the rest of item 2; decline the rest with a reason.
 3. **Item 17 triage**: a replay replaces cascor's live network and nothing restores it, while canopy calls it
    "read-only playback". canopy's wording, cascor's design, or both — an owner call.
 4. **F-058's census** (item 0): the first one was refuted before its first run. Hook dispatch (or
