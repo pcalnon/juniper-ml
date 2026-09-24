@@ -63,8 +63,9 @@ before any review round.
      (`src/main.py:517`).
    - **F-CANOPY-062** (LOW; that validation's LOW 4): the padded-key WARNING names `CANOPY_API_KEY` even when the
      value came from the `_FILE` variant, and the comment at `security.py:350` is wrong.
-   - 061 and 062 are to be FIXED-BY the defect-register arc's canopy PR from branch
-     `fix/secret-leaks-683-validation`, which opens after canopy#683 merges; record the PR once it exists.
+   - 061 and 062 are to be FIXED-BY the canopy PR from branch `fix/secret-leaks-683-validation`. That PR belongs
+     to session `bc31e993` ("defect reg [042116]"), not to the session that handed these over, and it opens only
+     after canopy#683 merges. Get its number from `bc31e993`, and record it once the PR exists.
 
    **(b) From the canopy selection arc: five observations** (its O2–O5 and O9; its O1 is F-CANOPY-055), ids from
    F-CANOPY-063 as filed. Source: juniper-ml `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md`
