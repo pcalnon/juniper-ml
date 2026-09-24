@@ -1,0 +1,851 @@
+diff --git a/src/main.py b/src/main.py
+index 62c408d3..c295b39c 100644
+--- a/src/main.py
++++ b/src/main.py
+@@ -333,27 +333,36 @@ async def lifespan(app: FastAPI):
+     # boot FAILURE (CRITICAL + AuthPostureError) — set true wherever secrets are
+     # provisioned (the composed juniper-deploy stack). Bypass with
+     # JUNIPER_SKIP_AUTH_POSTURE_CHECK=1 (logged loudly).
+-    from juniper_service_core import enforce_auth_posture
++    from juniper_service_core import AuthPostureError, enforce_auth_posture
+ 
+     from secrets_util import get_secret
+ 
++    # APD-ECO-008: the posture check words a SET-but-blank key exactly like an unset
++    # one, so a blank key gets its own WARNING, naming which source was blank; the same
++    # report covers a key with leading or trailing whitespace and a CANOPY_API_KEY_FILE
++    # that names no file (#678 follow-up). It is emitted here, through the logger
++    # configured above, because the key is read at import (``api_key_auth =
++    # get_api_key_auth()`` below), before ``configure_logging`` has run. It uses what
++    # that read recorded rather than reading the secret again, and it fires once per
++    # process however many times this lifespan runs. When the posture check refuses to
++    # start (JUNIPER_CANOPY_REQUIRE_AUTH=true), its CRITICAL says NO key is configured,
++    # which misleads an operator whose key is SET but blank: the report still runs,
++    # worded for a boot that is failing, and the error propagates unchanged.
++    from security import report_api_key_configuration
++
+     _canopy_api_key = get_secret("CANOPY_API_KEY")
+-    enforce_auth_posture(
+-        [_canopy_api_key] if _canopy_api_key else [],
+-        require_auth=settings.require_auth,
+-        service_name="juniper-canopy",
+-        logger=system_logger,
+-    )
++    try:
++        enforce_auth_posture(
++            [_canopy_api_key] if _canopy_api_key else [],
++            require_auth=settings.require_auth,
++            service_name="juniper-canopy",
++            logger=system_logger,
++        )
++    except AuthPostureError:
++        report_api_key_configuration(system_logger, boot_refused=True)
++        raise
+ 
+-    # APD-ECO-008: the posture check words a SET-but-blank key exactly like an unset
+-    # one, so a blank key gets its own WARNING, naming which source was blank. It is
+-    # emitted here, through the logger configured above, because the key is read at
+-    # import (``api_key_auth = get_api_key_auth()`` below), before ``configure_logging``
+-    # has run. It uses what that read recorded rather than reading the secret again,
+-    # and it fires once per process however many times this lifespan runs.
+-    from security import report_blank_api_key
+-
+-    report_blank_api_key(system_logger)
++    report_api_key_configuration(system_logger)
+ 
+     # D2 (SEC-F22): loopback bind-guard. Fail loud + closed here -- before
+     # backend init / serving -- when canopy is configured to bind a non-loopback
+diff --git a/src/secrets_util.py b/src/secrets_util.py
+index 10d1231b..7200539d 100644
+--- a/src/secrets_util.py
++++ b/src/secrets_util.py
+@@ -6,11 +6,11 @@
+ # Purpose:       Docker secrets utility for file-based secret resolution
+ #
+ # Author:        Paul Calnon
+-# Version:       0.2.0
++# Version:       0.3.0
+ # File Name:     secrets_util.py
+ #
+ # Created Date:  2026-04-01
+-# Last Modified: 2026-09-23
++# Last Modified: 2026-09-24
+ #
+ # License:       MIT License
+ # Copyright:     Copyright (c) 2024-2026 Paul Calnon
+@@ -30,17 +30,34 @@
+ #      2. Read value from ENV_VAR directly
+ #      3. Return None
+ #
++#    A <ENV_VAR>_FILE that is set but names no existing file falls through to step 2
++#    exactly as if it were unset; resolve_secret_detail() reports that it happened.
++#
+ #####################################################################################################################################################################################################
+ import os
+ from pathlib import Path
++from typing import NamedTuple
+ 
+ 
+-def resolve_secret(env_var: str, file_env_var: str | None = None) -> tuple[str | None, str | None]:
+-    """Read a secret value and report which variable supplied it.
++class SecretResolution(NamedTuple):
++    """What :func:`resolve_secret_detail` found.
++
++    ``source`` and ``missing_file_var`` are variable NAMES and safe to log. ``value`` is the
++    secret and never is.
++    """
+ 
+-    The one implementation of the resolution order in this file's header
+-    notes, so a caller that must say WHERE a value came from cannot drift
+-    from :func:`get_secret`, which delegates here.
++    value: str | None
++    source: str | None
++    missing_file_var: str | None
++
++
++def resolve_secret_detail(env_var: str, file_env_var: str | None = None) -> SecretResolution:
++    """Read a secret value; report which variable supplied it and whether a ``_FILE`` variable was ignored.
++
++    The one implementation of the resolution order in this file's header notes.
++    :func:`resolve_secret` and :func:`get_secret` delegate here, so a caller that must say
++    WHERE a value came from, or why the file it pointed at was not used, cannot drift from
++    them.
+ 
+     Args:
+         env_var: Name of the environment variable holding the secret value
+@@ -49,24 +66,51 @@ def resolve_secret(env_var: str, file_env_var: str | None = None) -> tuple[str |
+             file.  Defaults to ``f"{env_var}_FILE"`` when not provided.
+ 
+     Returns:
+-        ``(value, source)``. ``source`` is the NAME of the variable whose
+-        setting supplied ``value`` -- ``file_env_var`` when it names an existing
+-        file (whose contents win, whitespace-stripped, and may be empty), else
+-        ``env_var`` when that is set (returned raw, not stripped) -- and
+-        ``(None, None)`` when neither applies.  The name is safe to log; the
+-        value never is.
++        ``SecretResolution(value, source, missing_file_var)``. ``value`` and ``source`` are
++        exactly :func:`resolve_secret`'s pair. ``missing_file_var`` is ``file_env_var`` when
++        that variable is set (non-empty) but does not name an existing file -- the case the
++        resolution order otherwise treats silently as unset -- and ``None`` otherwise. It is
++        the variable's NAME, never its value: an operator who confuses the two variables puts
++        the secret itself in the ``_FILE`` variable, so its value is not safe to log either.
+     """
+     if file_env_var is None:
+         file_env_var = f"{env_var}_FILE"
+ 
++    missing_file_var = None
+     file_path = os.environ.get(file_env_var)
+     if file_path:
+         path = Path(file_path)
+         if path.is_file():
+-            return path.read_text().strip(), file_env_var
++            return SecretResolution(path.read_text().strip(), file_env_var, None)
++        missing_file_var = file_env_var
+ 
+     value = os.environ.get(env_var)
+-    return value, (env_var if value is not None else None)
++    return SecretResolution(value, env_var if value is not None else None, missing_file_var)
++
++
++def resolve_secret(env_var: str, file_env_var: str | None = None) -> tuple[str | None, str | None]:
++    """Read a secret value and report which variable supplied it.
++
++    Delegates to :func:`resolve_secret_detail`, the one implementation of the resolution
++    order in this file's header notes, so a caller that must say WHERE a value came from
++    cannot drift from :func:`get_secret`, which delegates here.
++
++    Args:
++        env_var: Name of the environment variable holding the secret value
++            directly (e.g. ``"CANOPY_API_KEY"``).
++        file_env_var: Name of the environment variable pointing to the secret
++            file.  Defaults to ``f"{env_var}_FILE"`` when not provided.
++
++    Returns:
++        ``(value, source)``. ``source`` is the NAME of the variable whose
++        setting supplied ``value`` -- ``file_env_var`` when it names an existing
++        file (whose contents win, whitespace-stripped, and may be empty), else
++        ``env_var`` when that is set (returned raw, not stripped) -- and
++        ``(None, None)`` when neither applies.  The name is safe to log; the
++        value never is.
++    """
++    value, source, _ = resolve_secret_detail(env_var, file_env_var)
++    return value, source
+ 
+ 
+ def get_secret(env_var: str, file_env_var: str | None = None) -> str | None:
+diff --git a/src/security.py b/src/security.py
+index 3bdec6aa..2f186a16 100644
+--- a/src/security.py
++++ b/src/security.py
+@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Any, cast
+ from fastapi import HTTPException, Request, status
+ from fastapi.security import APIKeyHeader
+ 
+-from secrets_util import resolve_secret
++from secrets_util import resolve_secret_detail
+ 
+ if TYPE_CHECKING:
+     from settings import Settings
+@@ -59,26 +59,27 @@ class APIKeyAuth:
+         # APIKeyAuth (security.py) and the juniper-data / juniper-cascor forks do.
+         # ``get_api_key_auth`` already maps an empty key to None, so what reaches
+         # here unfiltered is a whitespace-only CANOPY_API_KEY from the env var
+-        # (``resolve_secret`` strips a secret FILE, not the env var). Unfiltered, a key
+-        # of ASCII spaces and tabs ENABLED auth on a key no caller could present --
+-        # h11 and httptools both strip an all-space or all-tab ``X-API-Key`` to
+-        # empty -- so every key-gated route refused every caller, while the
+-        # boot-time posture check, which filters with this same rule, reported the
+-        # service OPEN. That holds for spaces and tabs only: ``str.strip()`` also
+-        # removes U+00A0 and U+0085, which both parsers pass through (Starlette
+-        # decodes latin-1) but ``hmac.compare_digest`` rejects as non-ASCII
+-        # (``TypeError``: a 500, never a match), and U+001C..U+001F, which h11 passes
+-        # and httptools -- canopy's default parser -- refuses; under h11 a key of those
+-        # was a working key. The
+-        # WebSocket ``?api_key=`` parameter could carry a whitespace key, but every WS
+-        # route admits a keyless connection anyway (``allow_browser_auth=True``), so
+-        # that was never an exposure. Now this class and the posture check agree: a blank
+-        # key is no key and auth is off -- the posture canopy documents for no key
+-        # at all -- and ``enforce_auth_posture`` fails the boot when ``require_auth``
+-        # is set. Two readers still take the raw value for a key and are NOT
+-        # changed here: ``main.py``'s ``_docs_enabled`` and the self-call
+-        # ``X-API-Key`` in ``frontend/internal_api.py``, which ``requests`` rejects
+-        # (``InvalidHeader``) -- both behave as they did before this filter.
++        # (``resolve_secret`` strips a secret FILE, not the env var). Unfiltered, such a
++        # key ENABLED auth on a key no caller could present, so every key-gated route
++        # refused every caller, while the boot-time posture check, which filters with
++        # this same rule, reported the service OPEN. "No caller could present it" holds
++        # for every ``str.strip()`` character except U+00A0 and U+0085, and, under h11
++        # only, U+001C..U+001F. Measured on uvicorn 0.49.0 with raw socket bytes: h11
++        # and httptools both strip an all-space or all-tab ``X-API-Key`` to empty; both
++        # refuse U+000B and U+000C with a 400, and httptools -- canopy's default parser
++        # -- refuses U+001C..U+001F too; nothing above U+00FF can arrive, because
++        # Starlette decodes header bytes as latin-1; and CR/LF end the header line.
++        # U+00A0 and U+0085 pass both parsers, but ``hmac.compare_digest`` rejects
++        # non-ASCII text (``TypeError``: a 500, never a match). U+001C..U+001F pass h11,
++        # and under h11 a key of those was a working key. The WebSocket ``?api_key=``
++        # parameter could carry a whitespace key, but every WS route admits a keyless
++        # connection anyway (``allow_browser_auth=True``), so that was never an
++        # exposure. Now this class and the posture check agree: a blank key is no key
++        # and auth is off -- the posture canopy documents for no key at all -- and
++        # ``enforce_auth_posture`` fails the boot when ``require_auth`` is set. The
++        # key's two other readers apply the same rule (#678 follow-up): ``main.py``'s
++        # ``_docs_enabled`` serves the docs, and ``frontend/internal_api.py`` sends no
++        # ``X-API-Key`` on a self-call, exactly as with no key configured.
+         self._api_keys: set[str] = {k for k in (api_keys or []) if isinstance(k, str) and k.strip()}
+         self._enabled = len(self._api_keys) > 0
+ 
+@@ -303,16 +304,31 @@ _rate_limiter: RateLimiter | None = None
+ # and ``enforce_auth_posture`` words the two identically ("running OPEN"). When the
+ # key's source is set but blank, ``get_api_key_auth`` records the NAME of the variable
+ # that supplied it -- never the value -- from its one secret read, and
+-# ``main.lifespan`` reports it with :func:`report_blank_api_key` once logging is
+-# configured. It cannot be logged where it is read: the singleton is first built at
+-# import (``main.api_key_auth``), before ``configure_logging`` runs. #660 logged it
++# ``main.lifespan`` reports it (:func:`report_api_key_configuration`, which calls
++# :func:`report_blank_api_key`) once logging is configured. It cannot be logged where
++# it is read: the singleton is first built at import (``main.api_key_auth``), before
++# ``configure_logging`` runs -- and only while ``main`` builds its handler through
++# ``get_api_key_auth()``: a handler built any other way records nothing, and the report
++# has nothing to say (pinned in a fresh interpreter by
++# ``tests/regression/test_blank_api_key_warning_boot.py``). #660 logged it
+ # there, through a module logger with no handler, so it reached only Python's
+ # last-resort handler -- no level, no JSON, no Sentry, and never ``logs/system.log``.
+-# Guarded by ``_blank_key_lock``.
++# Guarded by ``_blank_key_lock``, which guards every finding recorded from that read.
+ _blank_key_source: str | None = None
+ _blank_key_reported = False
+ _blank_key_lock = Lock()
+ 
++# #678 follow-up: two more things the same read can find, reported beside the blank key
++# by :func:`report_api_key_configuration`, for the same reason. A key with leading or
++# trailing whitespace ENABLES auth with the key exactly as set, and no HTTP client can
++# reliably present it (``_PADDED_KEY_WARNING``). A CANOPY_API_KEY_FILE that names no
++# existing file is otherwise ignored silently, exactly as if it were unset. Recorded as
++# variable NAMES only: never the key, nor the path the ``_FILE`` variable holds, because
++# an operator who confuses the two variables puts the key itself there.
++_padded_key_source: str | None = None
++_missing_key_file_var: str | None = None
++_key_findings_reported = False
++
+ # One wording per source, because the advice differs: while CANOPY_API_KEY_FILE names
+ # an existing file it takes precedence and CANOPY_API_KEY is not read at all
+ # (``secrets_util.resolve_secret``), so "unset CANOPY_API_KEY" would be wrong advice
+@@ -321,37 +337,62 @@ _BLANK_KEY_OPENS = "so API-key authentication is DISABLED: every route, includin
+ _BLANK_KEY_ENV_WARNING = "CANOPY_API_KEY is set but blank (empty or whitespace-only), " + _BLANK_KEY_OPENS + " Set a real key, or unset CANOPY_API_KEY for an intentional open profile."
+ _BLANK_KEY_FILE_WARNING = "The file named by CANOPY_API_KEY_FILE is blank (empty or whitespace-only), " + _BLANK_KEY_OPENS + " While CANOPY_API_KEY_FILE names an existing file it takes precedence and CANOPY_API_KEY is not read. Write a real key into that file, or unset CANOPY_API_KEY_FILE to use CANOPY_API_KEY instead."
+ 
++# The same two sources when the posture check refuses to start
++# (JUNIPER_CANOPY_REQUIRE_AUTH=true): nothing serves, so "authentication is DISABLED ...
++# serves without a key" would be false. These follow the posture check's CRITICAL, which
++# says NO API key is configured, and name the key it counted as none.
++_BLANK_KEY_REFUSES = "so it counts as no key: it is the key the auth-posture check reports as not configured, and because JUNIPER_CANOPY_REQUIRE_AUTH is true, canopy refuses to start."
++_BLANK_KEY_ENV_REFUSED_WARNING = "CANOPY_API_KEY is set but blank (empty or whitespace-only), " + _BLANK_KEY_REFUSES + " Set a real key."
++_BLANK_KEY_FILE_REFUSED_WARNING = "The file named by CANOPY_API_KEY_FILE is blank (empty or whitespace-only), " + _BLANK_KEY_REFUSES + " While CANOPY_API_KEY_FILE names an existing file it takes precedence and CANOPY_API_KEY is not read. Write a real key into that file, or unset CANOPY_API_KEY_FILE to use CANOPY_API_KEY instead."
++
++# Only the env var can be padded: ``resolve_secret`` strips a secret FILE. Measured on
++# uvicorn 0.49.0 and requests 2.34.2 (``util/ad-hoc/2026-09-24_padded_api_key_probes.py
++# header-probe``): h11 and httptools both drop a header value's leading spaces and tabs,
++# h11 also drops trailing ones (httptools keeps them), and requests refuses to send a
++# value that starts with whitespace.
++_PADDED_KEY_WARNING = "CANOPY_API_KEY has leading or trailing whitespace. API-key authentication is enabled with the key exactly as set, whitespace included, and HTTP does not carry that whitespace reliably: uvicorn's parsers drop leading spaces and tabs from a header value, h11 drops trailing ones as well, and the dashboard's own requests to this API cannot send a key that starts with whitespace. So callers presenting the key, the dashboard included, can fail to authenticate. Strip the whitespace from the key."
++_MISSING_KEY_FILE_WARNING = "CANOPY_API_KEY_FILE is set but does not name an existing file, so it is ignored: the key is read from CANOPY_API_KEY instead, exactly as if CANOPY_API_KEY_FILE were unset. Point CANOPY_API_KEY_FILE at the key file, or unset it."
++
+ 
+ def get_api_key_auth() -> APIKeyAuth:
+     """Get the global API key auth handler, creating if needed.
+ 
+-    Creation is the only place the key is read. A set-but-blank key -- one the
+-    blank-key filter leaves auth disabled on -- is recorded by source for
+-    :func:`report_blank_api_key`; nothing is logged here.
++    Creation is the only place the key is read. What that read finds wrong with the
++    key's configuration is recorded by variable NAME for
++    :func:`report_api_key_configuration`, and nothing is logged here: a set-but-blank key
++    (one the blank-key filter leaves auth disabled on), a key with leading or trailing
++    whitespace, and a ``CANOPY_API_KEY_FILE`` that names no existing file.
+     """
+-    global _api_key_auth, _blank_key_source, _blank_key_reported
++    global _api_key_auth, _blank_key_source, _blank_key_reported, _padded_key_source, _missing_key_file_var, _key_findings_reported
+     if _api_key_auth is None:
+-        api_key, source = resolve_secret("CANOPY_API_KEY")
++        api_key, source, missing_file_var = resolve_secret_detail("CANOPY_API_KEY")
+         api_keys = [api_key] if api_key else None
+         _api_key_auth = APIKeyAuth(api_keys)
+         with _blank_key_lock:
+             _blank_key_source = source if api_key is not None and not _api_key_auth.enabled else None
+             _blank_key_reported = False
++            _padded_key_source = source if api_key is not None and _api_key_auth.enabled and api_key != api_key.strip() else None
++            _missing_key_file_var = missing_file_var
++            _key_findings_reported = False
+     return _api_key_auth
+ 
+ 
+-def report_blank_api_key(log: Any) -> bool:
++def report_blank_api_key(log: Any, *, boot_refused: bool = False) -> bool:
+     """Log the set-but-blank ``CANOPY_API_KEY`` WARNING through ``log``, at most once.
+ 
+-    ``main.lifespan`` calls this right after ``enforce_auth_posture``, once
+-    ``configure_logging`` has run, with the system logger. The message names the
+-    source that was blank (``CANOPY_API_KEY_FILE`` or ``CANOPY_API_KEY``) and the
+-    remedy for that source, and never the value. It reads only what
+-    :func:`get_api_key_auth` recorded, never the secret itself, and reports once
+-    per recorded key however many times the lifespan runs.
++    :func:`report_api_key_configuration` calls this; ``main.lifespan`` calls that right
++    after ``enforce_auth_posture``, once ``configure_logging`` has run, with the system
++    logger. The message names the source that was blank (``CANOPY_API_KEY_FILE`` or
++    ``CANOPY_API_KEY``) and the remedy for that source, and never the value. It reads
++    only what :func:`get_api_key_auth` recorded, never the secret itself, and reports
++    once per recorded key however many times the lifespan runs.
+ 
+     Args:
+         log: Any logger with a ``warning(message)`` method.
++        boot_refused: True when the posture check has refused to start
++            (``JUNIPER_CANOPY_REQUIRE_AUTH=true``). The WARNING then says the blank key
++            counts as no key and canopy refuses to start, instead of saying routes serve
++            without a key: nothing is serving.
+ 
+     Returns:
+         True when this call logged the WARNING, else False.
+@@ -362,10 +403,54 @@ def report_blank_api_key(log: Any) -> bool:
+             return False
+         _blank_key_reported = True
+         source = _blank_key_source
+-    log.warning(_BLANK_KEY_FILE_WARNING if source == "CANOPY_API_KEY_FILE" else _BLANK_KEY_ENV_WARNING)
++    if boot_refused:
++        log.warning(_BLANK_KEY_FILE_REFUSED_WARNING if source == "CANOPY_API_KEY_FILE" else _BLANK_KEY_ENV_REFUSED_WARNING)
++    else:
++        log.warning(_BLANK_KEY_FILE_WARNING if source == "CANOPY_API_KEY_FILE" else _BLANK_KEY_ENV_WARNING)
+     return True
+ 
+ 
++def report_api_key_configuration(log: Any, *, boot_refused: bool = False) -> int:
++    """Log, through ``log``, what the one read of ``CANOPY_API_KEY`` found wrong with its configuration.
++
++    ``main.lifespan`` calls this with the system logger once ``configure_logging`` has
++    run: right after ``enforce_auth_posture``, or, when the posture check refuses to
++    start, from its ``except AuthPostureError`` with ``boot_refused=True``, before the
++    error propagates. In this order, each WARNING at most once per recorded read:
++
++    1. ``CANOPY_API_KEY_FILE`` is set but names no existing file, so it was ignored;
++    2. the key is set but blank (:func:`report_blank_api_key`, worded for ``boot_refused``);
++    3. the key has leading or trailing whitespace, and auth is enabled with it as set.
++
++    Like :func:`report_blank_api_key`, it reads only what :func:`get_api_key_auth`
++    recorded -- variable names, never the key or the path.
++
++    Args:
++        log: Any logger with a ``warning(message)`` method.
++        boot_refused: Passed to :func:`report_blank_api_key`.
++
++    Returns:
++        How many WARNINGs this call logged.
++    """
++    global _key_findings_reported
++    with _blank_key_lock:
++        if _key_findings_reported:
++            missing_file_var = padded_source = None
++        else:
++            _key_findings_reported = True
++            missing_file_var, padded_source = _missing_key_file_var, _padded_key_source
++    logged = 0
++    if missing_file_var is not None:
++        log.warning(_MISSING_KEY_FILE_WARNING)
++        logged += 1
++    if report_blank_api_key(log, boot_refused=boot_refused):
++        logged += 1
++    if padded_source is not None:
++        log.warning(_PADDED_KEY_WARNING)
++        logged += 1
++    return logged
++
++
+ def get_rate_limiter() -> RateLimiter:
+     """Get the global rate limiter, creating if needed."""
+     global _rate_limiter
+@@ -382,12 +467,15 @@ def get_rate_limiter() -> RateLimiter:
+ 
+ def reset_security_state() -> None:
+     """Reset global security state. Useful for testing."""
+-    global _api_key_auth, _rate_limiter, _blank_key_source, _blank_key_reported
++    global _api_key_auth, _rate_limiter, _blank_key_source, _blank_key_reported, _padded_key_source, _missing_key_file_var, _key_findings_reported
+     _api_key_auth = None
+     _rate_limiter = None
+     with _blank_key_lock:
+         _blank_key_source = None
+         _blank_key_reported = False
++        _padded_key_source = None
++        _missing_key_file_var = None
++        _key_findings_reported = False
+ 
+ 
+ def browser_origin_allowed(request: Request) -> bool:
+diff --git a/util/ad-hoc/2026-09-24_padded_api_key_probes.py b/util/ad-hoc/2026-09-24_padded_api_key_probes.py
+new file mode 100644
+index 00000000..c3d06e8d
+--- /dev/null
++++ b/util/ad-hoc/2026-09-24_padded_api_key_probes.py
+@@ -0,0 +1,199 @@
++"""
++Probes behind the #678 follow-up's claims about a PADDED CANOPY_API_KEY (not blank; leading or
++trailing whitespace), and about the dashboard self-call that leaked one into the logs.
++
++Project: juniper-canopy
++Sub-Project: ad-hoc tooling
++Author: Paul Calnon
++Created: 2026-09-24
++Status: ad-hoc -- investigation
++Retire when: the #678 follow-up is merged and nobody needs to re-derive its wording.
++Related: juniper-canopy #678 follow-up (items 4 and 6); util/ad-hoc/2026-09-23_blank_api_key_route_sweep.py
++    (its ``header-probe`` covers all-whitespace values; this one covers a real key WITH padding).
++
++Subcommands
++-----------
++``header-probe``
++    Starts real uvicorn twice -- ``--http h11`` and ``--http httptools`` (canopy's default parser
++    when ``uvicorn[standard]`` is installed) -- on an echo app, sends raw socket bytes, and prints
++    the ``X-API-Key`` value Starlette hands the app. Then prints what ``requests`` does with the
++    same values as a header (``prepare()``): send it, or raise ``InvalidHeader`` -- and whether
++    that exception's text carries the value.
++
++``leak``
++    Imports canopy in THIS process with a padded ``CANOPY_API_KEY`` (auth enabled), captures every
++    log record at the root, and calls a dashboard handler that self-calls the API (the mount-time
++    selection hydration, ``DashboardManager._hydrate_selection_handler``). Prints how many records
++    carry the key's text. Run it on a tree (``--tree``) to compare before/after.
++
++Usage::
++
++    python util/ad-hoc/2026-09-24_padded_api_key_probes.py header-probe
++    python util/ad-hoc/2026-09-24_padded_api_key_probes.py leak [--tree <checkout>]
++
++Exit status is 0 unless a server fails to start (2) -- an instrument, not a gate.
++"""
++
++from __future__ import annotations
++
++import argparse
++import asyncio
++import json
++import os
++import socket
++import subprocess  # nosec B404 -- re-runs this script under another tree's src/
++import sys
++import threading
++import time
++from pathlib import Path
++from typing import Any
++
++REPO = Path(__file__).resolve().parents[2]
++
++# (label, raw bytes on the wire). A "real" key with padding, in every position that matters.
++WIRE_VALUES: list[tuple[str, bytes]] = [
++    ("clean", b"real-key-XYZ"),
++    ("leading space", b" real-key-XYZ"),
++    ("leading tab", b"\treal-key-XYZ"),
++    ("trailing space", b"real-key-XYZ "),
++    ("trailing tab", b"real-key-XYZ\t"),
++    ("both sides", b"  real-key-XYZ\t "),
++    ("inner space", b"real key XYZ"),
++    ("trailing VT (0B)", b"real-key-XYZ\x0b"),
++    ("trailing FF (0C)", b"real-key-XYZ\x0c"),
++    ("trailing FS (1C)", b"real-key-XYZ\x1c"),
++    ("leading U+00A0 (A0)", b"\xa0real-key-XYZ"),
++    ("trailing U+00A0 (A0)", b"real-key-XYZ\xa0"),
++]
++
++PROBE_KEY_TEXT = "leaked-key-XYZ123"
++
++
++async def _echo(scope: Any, receive: Any, send: Any) -> None:
++    from starlette.requests import Request
++
++    value = Request(scope).headers.get("x-api-key")
++    body = json.dumps({"value": value}).encode()
++    await send({"type": "http.response.start", "status": 200, "headers": [(b"content-type", b"application/json"), (b"content-length", str(len(body)).encode())]})
++    await send({"type": "http.response.body", "body": body})
++
++
++def _free_port() -> int:
++    with socket.socket() as s:
++        s.bind(("127.0.0.1", 0))
++        return int(s.getsockname()[1])
++
++
++def _raw_get(port: int, raw_value: bytes) -> tuple[str, str]:
++    request = b"GET / HTTP/1.1\r\nHost: probe\r\nX-API-Key: " + raw_value + b"\r\nConnection: close\r\n\r\n"
++    with socket.create_connection(("127.0.0.1", port), timeout=5) as s:
++        s.sendall(request)
++        chunks = []
++        while True:
++            chunk = s.recv(65536)
++            if not chunk:
++                break
++            chunks.append(chunk)
++    response = b"".join(chunks).decode("latin-1")
++    status = response.split("\r\n", 1)[0].replace("HTTP/1.1 ", "")
++    body = response.split("\r\n\r\n", 1)[1] if "\r\n\r\n" in response else ""
++    return status, body
++
++
++def cmd_header_probe() -> int:
++    import requests
++    import uvicorn
++
++    delivered: dict[str, dict[str, str]] = {label: {} for label, _ in WIRE_VALUES}
++    for impl in ("h11", "httptools"):
++        port = _free_port()
++        server = uvicorn.Server(uvicorn.Config(_echo, host="127.0.0.1", port=port, http=impl, lifespan="off", log_level="critical"))
++        thread = threading.Thread(target=lambda srv=server: asyncio.run(srv.serve()), daemon=True)
++        thread.start()
++        deadline = time.monotonic() + 10
++        while not server.started and time.monotonic() < deadline:
++            time.sleep(0.05)
++        if not server.started:
++            print(f"{impl}: server did not start -- NOTHING MEASURED")
++            return 2
++        for label, raw in WIRE_VALUES:
++            status, body = _raw_get(port, raw)
++            if status.startswith("200"):
++                value = json.loads(body)["value"]
++                delivered[label][impl] = repr(value) + ("  (== sent)" if value == raw.decode("latin-1") else "")
++            else:
++                delivered[label][impl] = status
++        server.should_exit = True
++        thread.join(timeout=10)
++
++    print(f"uvicorn {uvicorn.__version__}, requests {requests.__version__}")
++    print(f"{'value':22} {'wire bytes':24} {'h11 delivers':28} {'httptools delivers':28} requests.prepare()")
++    for label, raw in WIRE_VALUES:
++        text = raw.decode("latin-1")
++        try:
++            requests.Request("GET", "http://127.0.0.1:1/", headers={"X-API-Key": text}).prepare()
++            verdict = "sends it"
++        except requests.exceptions.InvalidHeader as exc:
++            verdict = f"InvalidHeader; value in text: {text in str(exc) or repr(text) in str(exc)}"
++        print(f"{label:22} {raw!r:24} {delivered[label]['h11']:28} {delivered[label]['httptools']:28} {verdict}")
++    return 0
++
++
++def _leak_inner() -> int:
++    """Runs inside a child whose sys.path puts the tree under test first."""
++    import logging
++
++    records: list[logging.LogRecord] = []
++
++    class _All(logging.Handler):
++        def emit(self, record: logging.LogRecord) -> None:
++            records.append(record)
++
++    root = logging.getLogger()
++    root.addHandler(_All(level=logging.DEBUG))
++    root.setLevel(logging.DEBUG)
++
++    import main
++
++    manager = next(obj for obj in vars(main).values() if type(obj).__name__ == "DashboardManager")
++    outcome = manager._hydrate_selection_handler()
++
++    def rendered(r: logging.LogRecord) -> str:
++        text = r.getMessage()
++        if r.exc_info:
++            text += "\n" + logging.Formatter().formatException(r.exc_info)
++        return text + repr(getattr(r, "context_data", ""))
++
++    hits = [(r.name, r.levelname, rendered(r)[:220]) for r in records if PROBE_KEY_TEXT in rendered(r)]
++    print(json.dumps({"main": main.__file__, "auth_enabled": main.api_key_auth.enabled, "records": len(records), "records_carrying_key": len(hits), "hits": hits, "handler_returned": repr(outcome)[:160]}, indent=2))
++    return 0
++
++
++def cmd_leak(tree: Path) -> int:
++    env = {k: v for k, v in os.environ.items() if not k.startswith(("CANOPY_API_KEY", "SENTRY")) and "SENTRY" not in k}
++    env.update({"CANOPY_API_KEY": " " + PROBE_KEY_TEXT, "JUNIPER_CANOPY_DEMO_MODE": "1", "PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": f"{tree / 'src'}{os.pathsep}{env.get('PYTHONPATH', '')}"})
++    result = subprocess.run([sys.executable, __file__, "_leak-inner"], cwd=str(tree / "src"), env=env, capture_output=True, text=True, timeout=300)  # nosec B603
++    start = result.stdout.find("{\n")
++    print(result.stdout[start:] if start >= 0 else result.stdout[-3000:])
++    if result.returncode != 0:
++        print(result.stderr[-3000:])
++    return 0
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
++    sub = parser.add_subparsers(dest="cmd", required=True)
++    sub.add_parser("header-probe", help="what uvicorn delivers, and what requests does, for padded key values")
++    leak = sub.add_parser("leak", help="count log records carrying a padded key after one dashboard self-call")
++    leak.add_argument("--tree", type=Path, default=REPO, help="checkout to import canopy from (default: this one)")
++    sub.add_parser("_leak-inner", help=argparse.SUPPRESS)
++    args = parser.parse_args()
++    if args.cmd == "header-probe":
++        return cmd_header_probe()
++    if args.cmd == "leak":
++        return cmd_leak(args.tree.resolve())
++    return _leak_inner()
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/util/ad-hoc/2026-09-24_self_call_error_text_census.py b/util/ad-hoc/2026-09-24_self_call_error_text_census.py
+new file mode 100644
+index 00000000..56b4f66c
+--- /dev/null
++++ b/util/ad-hoc/2026-09-24_self_call_error_text_census.py
+@@ -0,0 +1,220 @@
++"""
++Census: every dashboard self-call that sends ``internal_api_headers()``, and what the handler that
++catches its failure does with the exception's TEXT.
++
++Project: juniper-canopy
++Sub-Project: ad-hoc tooling
++Author: Paul Calnon
++Created: 2026-09-24
++Status: ad-hoc -- investigation
++Retire when: every self-call routes its failure text through one audited helper and a committed
++    test enforces it (then this census is that test's instrument of record, not a gate).
++Related: juniper-canopy #678 follow-up, item 6 -- a padded CANOPY_API_KEY reaches the logs.
++
++Why it exists
++-------------
++``requests`` validates each header while PREPARING a request, and when it rejects a value it raises
++``requests.exceptions.InvalidHeader`` whose message is the whole value, ``repr``-quoted::
++
++    Invalid leading whitespace, reserved character(s), or return character(s) in header value: ' leaked-key'
++
++A dashboard self-call sends ``X-API-Key: <CANOPY_API_KEY>`` (``frontend/internal_api.py``), so a
++configured key that ``requests`` rejects -- one with leading whitespace, a line break, a leading
++U+00A0 -- is copied verbatim into the exception text. Wherever that text is logged (``%s`` of the
++exception, an f-string, ``str(e)``, a traceback via ``exc_info`` / ``logger.exception``), the key is
++in the log record, and with ``enable_logs=True`` in Sentry Logs.
++
++What it reports
++---------------
++For every ``internal_api_headers()`` call under ``src/`` (tests excluded) it finds the innermost
++enclosing ``try`` whose handler would catch ``InvalidHeader`` (bare, ``Exception``, ``BaseException``,
++``RequestException``, ``ValueError``, ``OSError``, ``InvalidHeader``, or a tuple naming one), and
++classifies what that handler does with the exception:
++
++- ``TEXT``       -- the bound exception name is interpolated into a log call (``%s`` arg, f-string,
++                    ``str()`` / ``repr()`` / ``format``) or into a value the function returns;
++- ``TRACEBACK``  -- the handler logs with ``exc_info=`` or ``.exception(``, or formats a traceback;
++- ``TYPE-ONLY``  -- it uses only ``type(e)`` / ``type(e).__name__``;
++- ``SILENT``     -- it never references the exception;
++- ``RERAISE``    -- it re-raises (the text then travels to whoever catches it);
++- ``UNCAUGHT``   -- no enclosing ``try`` in the function catches it.
++
++Usage::
++
++    python util/ad-hoc/2026-09-24_self_call_error_text_census.py            # table
++    python util/ad-hoc/2026-09-24_self_call_error_text_census.py --json     # machine-readable
++
++Exit status is 0 (an instrument, not a gate).
++"""
++
++from __future__ import annotations
++
++import argparse
++import ast
++import json
++import sys
++from dataclasses import asdict, dataclass, field
++from pathlib import Path
++
++REPO_ROOT = Path(__file__).resolve().parents[2]
++SRC = REPO_ROOT / "src"
++
++# Handler types that catch requests.exceptions.InvalidHeader (MRO: InvalidHeader ->
++# RequestException -> OSError -> ... and ValueError). Matched on the LAST dotted component.
++CATCHES_INVALID_HEADER = {"Exception", "BaseException", "RequestException", "ValueError", "OSError", "IOError", "EnvironmentError", "InvalidHeader"}
++LOG_METHODS = {"debug", "info", "warning", "warn", "error", "critical", "exception", "log", "trace", "verbose", "fatal"}
++
++
++@dataclass
++class Site:
++    file: str
++    line: int
++    function: str
++    handler_line: int | None
++    handler_type: str | None
++    verdict: str
++    uses: list[str] = field(default_factory=list)
++
++
++def _parents(tree: ast.AST) -> dict[ast.AST, ast.AST]:
++    parents: dict[ast.AST, ast.AST] = {}
++    for node in ast.walk(tree):
++        for child in ast.iter_child_nodes(node):
++            parents[child] = node
++    return parents
++
++
++def _is_headers_call(node: ast.AST) -> bool:
++    if not isinstance(node, ast.Call):
++        return False
++    func = node.func
++    return (isinstance(func, ast.Name) and func.id == "internal_api_headers") or (isinstance(func, ast.Attribute) and func.attr == "internal_api_headers")
++
++
++def _type_names(expr: ast.expr | None) -> list[str]:
++    if expr is None:
++        return ["<bare>"]
++    if isinstance(expr, ast.Tuple):
++        out: list[str] = []
++        for elt in expr.elts:
++            out.extend(_type_names(elt))
++        return out
++    return [ast.unparse(expr)]
++
++
++def _catches(handler: ast.ExceptHandler) -> bool:
++    names = _type_names(handler.type)
++    return any(n == "<bare>" or n.split(".")[-1] in CATCHES_INVALID_HEADER for n in names)
++
++
++def _inside(child: ast.AST, container: list[ast.stmt], parents: dict[ast.AST, ast.AST]) -> bool:
++    node = child
++    while node in parents:
++        if node in container:
++            return True
++        node = parents[node]
++    return node in container
++
++
++def _enclosing_function(node: ast.AST, parents: dict[ast.AST, ast.AST]) -> ast.AST | None:
++    while node in parents:
++        node = parents[node]
++        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
++            return node
++    return None
++
++
++def _classify_handler(handler: ast.ExceptHandler, parents: dict[ast.AST, ast.AST]) -> tuple[str, list[str]]:
++    uses: list[str] = []
++    verdicts: set[str] = set()
++    name = handler.name
++    for stmt in handler.body:
++        for node in ast.walk(stmt):
++            if isinstance(node, ast.Raise):
++                if node.exc is None or (isinstance(node.exc, ast.Name) and node.exc.id == name):
++                    verdicts.add("RERAISE")
++                    uses.append(f"{node.lineno}: raise")
++            if isinstance(node, ast.Call):
++                func = node.func
++                attr = func.attr if isinstance(func, ast.Attribute) else (func.id if isinstance(func, ast.Name) else "")
++                if attr == "exception" or any(k.arg == "exc_info" for k in node.keywords):
++                    verdicts.add("TRACEBACK")
++                    uses.append(f"{node.lineno}: {ast.unparse(node)[:140]}")
++                if attr in {"format_exc", "print_exc", "format_exception", "print_exception"}:
++                    verdicts.add("TRACEBACK")
++                    uses.append(f"{node.lineno}: {ast.unparse(node)[:140]}")
++            if name and isinstance(node, ast.Name) and node.id == name and isinstance(node.ctx, ast.Load):
++                parent = parents.get(node)
++                # type(e) / type(e).__name__ carries no text.
++                if isinstance(parent, ast.Call) and isinstance(parent.func, ast.Name) and parent.func.id == "type":
++                    verdicts.add("TYPE-ONLY")
++                    uses.append(f"{node.lineno}: type({name})")
++                    continue
++                # Walk up to the statement to show what the text lands in.
++                stmt_node: ast.AST = node
++                while stmt_node in parents and not isinstance(stmt_node, ast.stmt):
++                    stmt_node = parents[stmt_node]
++                verdicts.add("TEXT")
++                uses.append(f"{node.lineno}: {ast.unparse(stmt_node)[:160]}")
++    if not verdicts:
++        return "SILENT", uses
++    for v in ("TEXT", "TRACEBACK", "RERAISE", "TYPE-ONLY"):
++        if v in verdicts:
++            return "+".join(sorted(verdicts, key=["TEXT", "TRACEBACK", "RERAISE", "TYPE-ONLY"].index)), uses
++    return "SILENT", uses
++
++
++def census(src: Path = SRC) -> list[Site]:
++    sites: list[Site] = []
++    for path in sorted(src.rglob("*.py")):
++        rel = path.relative_to(src.parent)
++        if "tests" in rel.parts or path.name == "internal_api.py":
++            continue
++        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
++        parents = _parents(tree)
++        for node in ast.walk(tree):
++            if not _is_headers_call(node):
++                continue
++            func = _enclosing_function(node, parents)
++            func_name = getattr(func, "name", "<lambda>") if func is not None else "<module>"
++            found: Site | None = None
++            cursor: ast.AST = node
++            while cursor in parents:
++                cursor = parents[cursor]
++                if cursor is func:
++                    break
++                if isinstance(cursor, ast.Try) and _inside(node, cursor.body, parents):
++                    for handler in cursor.handlers:
++                        if _catches(handler):
++                            verdict, uses = _classify_handler(handler, parents)
++                            found = Site(str(rel), node.lineno, func_name, handler.lineno, ast.unparse(handler.type) if handler.type else "<bare>", verdict, uses)
++                            break
++                    if found:
++                        break
++            sites.append(found or Site(str(rel), node.lineno, func_name, None, None, "UNCAUGHT"))
++    return sites
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
++    parser.add_argument("--json", action="store_true", help="emit JSON instead of a table")
++    parser.add_argument("--src", type=Path, default=SRC, help="source root to scan (default: this repo's src/)")
++    args = parser.parse_args()
++    sites = census(args.src)
++    if args.json:
++        json.dump([asdict(s) for s in sites], sys.stdout, indent=2)
++        print()
++        return 0
++    counts: dict[str, int] = {}
++    for s in sites:
++        counts[s.verdict] = counts.get(s.verdict, 0) + 1
++        print(f"{s.file}:{s.line}  [{s.function}]  handler={s.handler_type}@{s.handler_line}  -> {s.verdict}")
++        for use in s.uses:
++            print(f"      {use}")
++    print()
++    print(f"{len(sites)} internal_api_headers() call sites; verdicts: {json.dumps(counts, sort_keys=True)}")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
