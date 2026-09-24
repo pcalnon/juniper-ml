@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.10.0
-**Last Updated**: 2026-09-23
+**Last Updated**: 2026-09-24
 
 ---
 
@@ -66,7 +66,7 @@ pip install -e ".[tools]"      # ci-tools + doc-tools + observability
 pip install -e ".[doc-tools]"  # markdown link validator (back-compat alias)
 pip install -e ".[all]"        # everything (multi-GB; pulls torch via worker)
 
-# Run all tests -- the full ordered list of 166 `python3 -m unittest`
+# Run all tests -- the full ordered list of 168 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
 # § Test Suite Reference. It is generated from ci.yml's regression step, which is
 # the authoritative list; tests/test_ci_test_wiring_drift.py gates that every suite
