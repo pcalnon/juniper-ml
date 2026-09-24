@@ -12,6 +12,7 @@ import socket
 import subprocess
 import sys
 import time
+import regex as re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TREE = os.path.join(HERE, sys.argv[1])
@@ -37,6 +38,14 @@ SCENARIOS = [
     ("env-blank+require_auth+skip", {"CANOPY_API_KEY": " \t ", "JUNIPER_CANOPY_REQUIRE_AUTH": "true", "JUNIPER_SKIP_AUTH_POSTURE_CHECK": "1"}),
     ("env-real-padded", {"CANOPY_API_KEY": " real-key-with-leading-space"}),
 ]
+
+_TOKEN_PATTERNS = [re.compile(r"hf_[A-Za-z0-9]{20,}"), re.compile(r"pypi-[A-Za-z0-9_\-]{20,}"), re.compile(r"(?i)(x-api-key['\"]?\s*[:=]\s*['\"]?)[^'\"\s,}]+")]
+
+
+def redact(text: str) -> str:
+    for pat in _TOKEN_PATTERNS:
+        text = pat.sub(lambda m: (m.group(1) if m.groups() else "") + "<redacted>", text)
+    return text
 
 
 def free_port():
@@ -104,3 +113,4 @@ for name, extra in SCENARIOS:
     for secret in (" \t ", "real-env-key", "validator-real-key", " real-key-with-leading-space"):
         if secret.strip() and secret.strip() in (out + err + sl):
             print(f"    !!! value {secret!r} appears in the logs")
+
