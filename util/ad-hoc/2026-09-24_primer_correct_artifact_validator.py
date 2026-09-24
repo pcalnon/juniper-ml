@@ -6,7 +6,7 @@ Sub-Project: juniper-ml
 Application: ad-hoc documentation tooling
 Author:      Paul Calnon
 Created:     2026-09-24
-Version:     2.0.0
+Version:     3.0.0
 License:     MIT License
 Status:      single-use (defect-register round 42; retained as provenance)
 
@@ -21,7 +21,8 @@ juniper-data#428 (and #263 / #282 before it) found or fixed all of that:
   ``np.savez_compressed`` -- so the checksum can back only a WEAK validator (register ``APD-DATA-054``);
 * ``generate_dataset_id`` hashes the REQUEST, not the bytes, so the artifact is not immutable and
   ``Cache-Control: ... immutable`` would serve stale data;
-* the tag write is atomic (#263, #282) and conditional (#428), and ``/latest`` sets
+* the single-dataset tag write is atomic (#263, #282) and may carry a precondition (#428) -- batch-tags
+  took no lock through 0.16.0 (register ``APD-DATA-057``) -- and ``/latest`` sets
   ``Content-Location``.
 
 The defect register cites this primer by BARE LINE NUMBER. Inserting one line anywhere shifts every
@@ -37,12 +38,17 @@ anchor below it. So:
 
 v1 of this script was validated by two independent lanes (round 42, reports
 ``primer-correction-round1-lane{A,B}-*.md``), which found it incomplete; v2 applies their findings.
-v1's ``--check`` passed vacuously once applied. v2 always rebuilds from ``git show HEAD:<primer>`` and
-PROVES the result: every untouched line is byte-identical to HEAD, and the line count before Appendix E
-is unchanged.
+v1's ``--check`` passed vacuously once applied. v2 always rebuilds from ``git show <base>:<primer>`` and
+PROVES the result: every untouched line is byte-identical to the base, and the line count before
+Appendix E is unchanged. Round 2 (``primer-correction-round2-lane{A,B}-*.md``) validated v2 as juniper-ml#2075;
+v3 applies its findings -- chiefly that II.11 credited #428 with a lost-update fix #263 had made, and
+that the release-state wording aged within minutes -- and adds ``--base``, because v2 could re-run its
+proof only while HEAD still predated the correction.
 
-Usage: python3 util/ad-hoc/2026-09-24_primer_correct_artifact_validator.py [--check]
+Usage: python3 util/ad-hoc/2026-09-24_primer_correct_artifact_validator.py [--check] [--base REV]
   --check  build and prove, then compare with the working-tree file; write nothing
+  --base   the commit whose primer predates the correction (default HEAD). Once the correction has
+           merged, name the commit before it -- dcfc024f for juniper-ml#2075 -- to re-run the proof.
 """
 
 from __future__ import annotations
@@ -56,10 +62,12 @@ PRIMER = "notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATI
 MAX_LINE = 512
 E1 = " **[Corrected: E.1](#e1-artifact-validator)**"
 E2 = " **[Corrected: E.2](#e2-conditional-tag-writes)**"
+E12 = E1 + E2
 
 # (1-based line, a phrase that must be on that line, marker, insert-after anchor or None to append)
 MARKERS = [
     (463, "having a stable strong validator, was already done", E1, None),
+    (594, "Caching benefits are claimed and not implemented (as in `juniper-data`).", E1, "Caching benefits are claimed and not implemented (as in `juniper-data`)."),
     (1565, "so a UUID nonce is mixed in", E1, None),
     (1956, "The `{id}` is content-addressed", E1, None),
     (1958, "**The body for a given id cannot change.**", E1, None),
@@ -67,7 +75,7 @@ MARKERS = [
     (1974, "The stored `checksum` is a strong `ETag` waiting to be emitted", E1, "waiting to be emitted"),
     (2015, "juniper-data's unused `checksum` is the case in point", E1, None),
     (2026, "bytes that cannot have changed", E1, None),
-    (3400, "Since juniper-data emits no cache headers at all", E2, None),
+    (3400, "Since juniper-data emits no cache headers at all", E12, None),
     (3453, "nonce deliberately breaks content-addressing", E1, None),
     (3647, "a SHA-256 over the serialised NPZ bytes", E1, "The material is there; the header is not."),
     (3685, "juniper-data computes one and discards it", E1, None),
@@ -79,8 +87,7 @@ MARKERS = [
     (4245, "treat its own semantics as unverified.)", E1, None),
     (4251, "or split them into a sub-resource.", E1, None),
     (4279, "The storage layer is what would have to change first.", E2, None),
-    (5330, "content-addressed identifiers, strong `ETag`s", E1, None),
-    (9510, "the right header is `private, max-age=31536000, immutable`", E1, None),
+    (9510,"the right header is `private, max-age=31536000, immutable`", E1, None),
 ]
 
 # (1-based line, exact old line, exact new line). The II.11 example is extracted and executed by
@@ -102,19 +109,19 @@ SUBS = [
     (5357, "anywhere in the service, so ``GET /v1/datasets/{id}/artifact`` re-transfers",
      "so ``GET /v1/datasets/{id}/artifact`` re-transferred every artifact in full."),
     (5358, "large, **immutable, content-addressed** blobs in full on every request. The",
-     "juniper-data#428 has since shipped the fix -- with a WEAK artifact tag,"),
+     "juniper-data#428 (0.16.0) has since added the fix -- with a WEAK artifact tag,"),
     (5359, "identifier is already a hash of the inputs and the body is already hashed: the",
      "because that hash covers the arrays, not the bytes served, and ``no-cache``,"),
     (5360, "validator exists and is simply not emitted.",
      "because a request-derived id does not make a body immutable."),
     (5362, "The service also cannot reject a stale write. Tags are mutable, so two clients",
-     "Nor could it reject a stale write. Tags are mutable, so two clients that read"),
+     "Nor could it reject a stale write. Its tag PATCH applies add/remove deltas,"),
     (5363, "that read the same dataset and both PATCH it produce a silent lost update -- the",
-     "the same dataset and both PATCHed it produced a silent lost update -- until"),
+     "which lost tags to a concurrent race until juniper-data#263 and #282; since"),
     (5364, "second write wins and the first is gone, with no error anywhere.",
-     "juniper-data#428 made that PATCH conditional on ``If-Match``."),
+     "juniper-data#428 it may also carry an optional ``If-Match``."),
     (5366, "This example wires up what that service is missing:",
-     "This example wires up those semantics in a small, unauthenticated service:"),
+     "This example wires up conditional requests in a small, unauthenticated service:"),
     # -- II.11 example code: the artifact's immutability is the toy's, not the id's --
     (5419, "#: The artifact is safe to cache forever *because* the id is content-addressed:",
      "#: The artifact is safe to cache forever *because* this toy synthesizes it"),
@@ -135,32 +142,58 @@ SUBS = [
     (5774, "            dataset.metadata(),", '            canonical_json(dataset.metadata()), media_type="application/json",'),
     # -- II.11 tests --
     (5786, "whole reason optimistic concurrency exists, and it is the scenario the real",
-     "whole reason optimistic concurrency exists, and it is the scenario"),
-    (5787, "service silently gets wrong.", "juniper-data's tag PATCH got wrong until juniper-data#428."),
+     "whole reason optimistic concurrency exists. juniper-data's tag PATCH applies"),
+    (5787, "service silently gets wrong.", "add/remove deltas, so it never had this replace-style overwrite."),
+    # -- II.11 code and tests: fail on NaN as the base did, and pin the toy fix in the harness itself --
+    (5477, '    return json.dumps(payload, sort_keys=True, separators=(",", ":"))',
+     '    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)'),
+    (5791, "", "import hashlib"),
+    (5838, '    assert first.headers["etag"] == second.headers["etag"]',
+     '    assert first.headers["etag"] == second.headers["etag"] == \'"\' + hashlib.sha256(second.content).hexdigest()[:32] + \'"\''),
+    (5857, '    assert etag.startswith(\'"\') and etag.endswith(\'"\')  # strong validator, quoted',
+     '    assert etag == \'"\' + hashlib.sha256(full.content).hexdigest()[:32] + \'"\'  # strong: the digest of the exact body sent'),
+    (5945, '        assert write_a.headers["etag"] != etag_a  # the validator moved',
+     '        assert write_a.headers["etag"] != etag_a and write_a.headers["etag"] == \'"\' + hashlib.sha256(write_a.content).hexdigest()[:32] + \'"\'  # moved, to the body\'s digest'),
     (5901, '    # "immutable" is only honest because the id is a hash of the inputs.',
      '    # "immutable" is honest here only because the bytes are a pure function of the id.'),
+]
+
+# (1-based line, exact fragment, replacement): a false sentence replaced IN PLACE by its correction link,
+# where appending the link would push the line past MAX_LINE. II.11's motivation paragraph is 498
+# characters; its last sentence is the false premise itself.
+RESUBS = [
+    (5332, "The validator it needs is already sitting in the codebase.", "**[Corrected: E.1](#e1-artifact-validator)**"),
 ]
 
 APPENDIX = """
 ## Appendix E — Corrections
 
-Claims about the Juniper codebase that proved false, or that a later change overtook, are corrected here
-rather than rewritten in place. Each affected prose passage keeps its text and gains a **Corrected** link
-to its entry below. Passages inside the II.11 executable example, which a link cannot enter, were
-reworded on the same lines, and the Appendix D harness re-run. Nothing above was moved: the defect
-register (`JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`) cites this document by bare line
-number, and inserting a line would shift every anchor after it. That is also why the table of contents
-does not list this appendix; the header's **Status** line points here instead.
+This primer's claims about juniper-data's HTTP caching and tag writes that proved false, or that a
+later change overtook, are corrected here rather than rewritten in place. Other claims about the
+codebase that later work overtook are tracked by the defect register, not here. Each affected prose
+passage keeps its text and gains a **Corrected** link to its entry below, except where a link would
+break a heading or a table row; those are named in the entry instead. Passages inside the II.11
+executable example, which a link cannot enter, were reworded on the same lines, and the Appendix D
+harness re-run. Three other lines were corrected in place, being wrong rather than overtaken: II.3's
+`If-Match` example (line 3639) reused the dataset id's digest as its tag; the §8.8.1 paraphrase (line
+4222) had dropped "applied to the representation data"; and II.11's motivation paragraph (line 5332)
+ended in the false premise itself, which its correction link now replaces. II.11's tests (lines 5791,
+5838, 5857 and 5945) now also check that each metadata `ETag` is the digest of the exact body sent.
+Nothing above was moved: the defect register
+(`JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`) cites this document by bare line number,
+and inserting a line would shift every anchor after it. That is also why the table of contents does
+not list this appendix; the header's **Status** line points here instead.
 
 ### E.1 Artifact validator
 
 **Corrected 2026-09-24.** juniper-data#428 (merged 2026-09-23) implemented conditional requests on
 `GET /v1/datasets/{id}/artifact` and found false the premises of the passages linked here. They treat
 the artifact as an immutable, content-addressed blob whose stored `checksum` is a ready-made strong
-validator. #428 is queued for juniper-data 0.16.0, unreleased when this was written; 0.15.0, the latest
-on PyPI, sends none of the headers below. Beyond the linked passages, the same premises appear in II.2's
-content-hash table row and its "content-addressed dataset ID" heading, and in II.11's motivation
-paragraph.
+validator. #428 is in juniper-data 0.16.0 (GitHub Release 2026-09-24, tag `39d1cab2`); 0.15.0 and
+earlier send none of the headers below. Beyond the linked passages, the same premises appear in II.2's
+content-hash table row and its "content-addressed dataset ID" heading (lines 3426 and 3431), and in two
+headings: "Juniper in Practice: The Strongest Candidate, Unused" (line 1952) and "ETag generation, and
+the fix already sitting in juniper-data" (line 4213).
 
 1. **The stored `checksum` does not digest the bytes the route serves, so it can back only a weak
    validator.** `compute_checksum` (`juniper_data/core/artifacts.py`) hashes `arrays_to_bytes(arrays)`:
@@ -171,9 +204,10 @@ paragraph.
    revalidation needs. But one dataset can be served as two different byte strings under one
    checksum: the in-memory store sorts the arrays' keys and the others keep the generator's order, so
    the bytes differ between stores, and between the cache states of `CachedDatasetStore`; another
-   numpy or zlib could do the same. RFC 9110 §8.8.1 calls such a validator weak: "a validator is weak
-   if it is shared by two or more representations of a given resource at the same time, unless those
-   representations have identical representation data". juniper-data therefore sends
+   numpy or zlib could do the same. RFC 9110 §8.8.1 defines a strong validator as "representation
+   metadata that changes value whenever a change occurs to the representation data that would be
+   observable in the content of a 200 (OK) response to GET". The checksum stays put while the served
+   bytes change, so it can only be weak. juniper-data therefore sends
    `ETag: W/"<checksum>"`, per the owner's ruling of 2026-09-23. Three consequences for the passages
    linked here:
 
@@ -192,9 +226,9 @@ paragraph.
    That known gap is defect-register row `APD-DATA-054`.
 2. **The artifact is not content-addressed, so it is not immutable.** `generate_dataset_id`
    (`juniper_data/core/dataset_id.py`) hashes the *request* — generator, version and parameters — not
-   the bytes produced. Since juniper-data#322 (2026-09-03) a generator's documented default seed is
-   `DEFAULT_GENERATOR_SEED`, so an omitted seed gives a deterministic id, and only an explicit
-   `seed=None` mixes in a per-call nonce. A dataset that is deleted (or expires and is cleaned up) and
+   the bytes produced. Since juniper-data#322 (2026-09-03) every generator's seed has a fixed default,
+   so an omitted seed gives a deterministic id; only an explicit `seed=None`, where a generator accepts
+   one, mixes in a per-call nonce. A dataset that is deleted (or expires and is cleaned up) and
    is then re-created serves whatever the generator produces now, at the same URI. `equities` with its
    default `end_date=None` means "today", so the same parameters yield different data on different
    days under one id. Part II states the governing rule, *content-address only over inputs that fully
@@ -203,6 +237,12 @@ paragraph.
    therefore serve stale data for up to a year with revalidation suppressed. juniper-data sends
    `Cache-Control: private, no-cache` on the artifact and on both metadata reads, and answers a
    matching `If-None-Match` with a bodiless `304`.
+3. **A hash of serialized JSON is a strong validator.** The ETag-generation table (line 4220) rates
+   one "usually weak". But a hash of the exact bytes sent changes whenever those bytes change, which is
+   what §8.8.1 asks of a strong validator. Unstable field order or float formatting makes such a tag
+   change too often, never too rarely, and §8.8.1 allows that: "A strong validator might change for
+   reasons other than a change to the representation data". juniper-data's metadata `ETag` and II.11's
+   are both such hashes.
 
 What stands is the linked passages' central advice. Emit a validator when you hold a digest
 (juniper-data now does). Keep read counters out of a validated representation, or move them to a
@@ -211,48 +251,67 @@ a custom header. A digest in your data model is not an HTTP validator until some
 wire, and it is a *strong* one only if it digests the bytes actually sent. An identifier derived from
 inputs buys idempotent creation without buying immutability. II.11's example keeps `immutable` for its
 own artifacts, and honestly so, because that toy synthesizes each artifact deterministically from its
-id; its metadata responses now send exactly the bytes their strong `ETag` hashes. The corrected
-reasoning is also recorded at the source, in the module docstring of `juniper_data/api/http_cache.py`.
+id; its metadata responses now send exactly the bytes their strong `ETag` hashes. juniper-data gives its
+own account in the module docstring of `juniper_data/api/http_cache.py`.
 
 ### E.2 Conditional tag writes
 
 **Corrected 2026-09-24.** The passages linked here describe juniper-data's tag update as an unguarded
 read-modify-write that an ordinary read could undo, and `GET /v1/datasets/latest` as setting no
-`Content-Location`. Each was true when written, and each has since been fixed:
+`Content-Location`. Each was true when written, and each has since been fixed on the route those
+passages describe:
 
-- juniper-data#263 (2026-08-14, `APD-DATA-006`) made tag updates atomic, so a GET can no longer undo
-  one, and juniper-data#282 (2026-08-23, `APD-DATA-007`) made the metadata read-modify-write atomic
-  across processes on the local-filesystem store.
-- juniper-data#428 made `PATCH /v1/datasets/{id}/tags` conditional. It evaluates `If-Match` and
-  `If-None-Match` inside the store's lock, answers a stale tag with `412` and writes nothing, and
-  returns the new strong `ETag`. Its protection holds against writers that take the same lock, and
-  per host only: the Redis, Postgres and cached stores hold a per-process lock (defect-register row
-  `APD-DATA-055`). The precondition is optional.
+- juniper-data#263 (2026-08-14, `APD-DATA-006`) made the single-dataset tag update atomic, so a GET
+  can no longer undo one and two concurrent PATCHes in one process no longer lose one;
+  juniper-data#282 (2026-08-23, `APD-DATA-007`) made that read-modify-write atomic across processes on
+  the local-filesystem store. The tag PATCH adds and removes tags rather than replacing the list.
+  `PATCH /v1/datasets/batch-tags` was left out: through juniper-data 0.16.0 it read and wrote each
+  dataset's metadata in two unlocked steps, so there a GET could still undo an edit (defect-register
+  row `APD-DATA-057`; juniper-data#438 routes it through the same lock).
+- juniper-data#428 let `PATCH /v1/datasets/{id}/tags` carry a precondition. It evaluates `If-Match`
+  and `If-None-Match` inside the store's lock, answers a stale tag with `412` and writes nothing, and
+  returns the new strong `ETag`. The precondition is optional. Its protection holds only against
+  writers that take the same lock (through 0.16.0, `PATCH /v1/datasets/batch-tags` and `DELETE` took
+  none; juniper-data#438 makes them take it), and per host at most: LocalFS orders processes with an
+  advisory `flock`, while every other store (Redis, Postgres, the cached store, and the Hugging Face and
+  Kaggle stores) holds only a per-process lock (defect-register row `APD-DATA-055`).
 - `/v1/datasets/latest` and the tag PATCH's response now carry `Content-Location` naming the
-  canonical `/v1/datasets/<dataset_id>` (`APD-DATA-029`).
+  canonical `/v1/datasets/<dataset_id>` (`APD-DATA-029`). The passage that calls that duplication
+  latent because "juniper-data emits no cache headers at all" is overtaken by E.1 too: it now does.
 
 II.11's example service, which demonstrates the conditional PATCH, now describes juniper-data's gap in
 the past tense.
 """
 
 
-def head_primer() -> str:
-    out = subprocess.run(["git", "show", f"HEAD:{PRIMER}"], cwd=REPO, capture_output=True, text=True, check=True)
+def base_primer(rev: str) -> str:
+    out = subprocess.run(["git", "show", f"{rev}:{PRIMER}"], cwd=REPO, capture_output=True, text=True, check=True)
     return out.stdout
 
 
 def build(head: str) -> str:
     if not head.endswith("\n") or "## Appendix E — Corrections" in head:
-        raise SystemExit("REFUSED: HEAD's primer already carries Appendix E, or lacks a final newline")
+        raise SystemExit("REFUSED: the base's primer already carries Appendix E, or lacks a final newline -- pass --base <the commit before the correction>")
     lines = head.split("\n")[:-1]
     original = list(lines)
     edited: "dict[int, str]" = {}
     for lineno, old, new in SUBS:
+        if "\n" in new:
+            raise SystemExit(f"REFUSED: the rewrite of line {lineno} contains a newline; it would move every line below it")
         if lines[lineno - 1] != old:
             raise SystemExit(f"REFUSED: line {lineno} is not the expected text; the primer moved\n  want {old!r}\n  have {lines[lineno - 1]!r}")
         lines[lineno - 1] = new
         edited[lineno] = new
+    for lineno, frag, repl in RESUBS:
+        if lineno in edited or "\n" in repl:
+            raise SystemExit(f"REFUSED: line {lineno} is edited twice, or its replacement contains a newline")
+        if lines[lineno - 1].count(frag) != 1:
+            raise SystemExit(f"REFUSED: line {lineno} does not contain {frag!r} exactly once; the primer moved")
+        lines[lineno - 1] = lines[lineno - 1].replace(frag, repl, 1)
+        edited[lineno] = lines[lineno - 1]
     for lineno, phrase, marker, after in MARKERS:
+        if "\n" in marker:
+            raise SystemExit(f"REFUSED: the marker for line {lineno} contains a newline")
         if lineno in edited:
             raise SystemExit(f"REFUSED: line {lineno} is both substituted and marked")
         line = lines[lineno - 1]
@@ -266,23 +325,27 @@ def build(head: str) -> str:
             new = line.replace(after, after + marker, 1)
         lines[lineno - 1] = new
         edited[lineno] = new
-    # Proof: nothing moved, and every line outside the edit set is byte-identical to HEAD.
-    assert len(lines) == len(original)
+    # Proof: nothing moved, and every line outside the edit set is byte-identical to the base. Explicit
+    # checks, not asserts, so ``python -O`` cannot skip them; and the line count is re-derived from the
+    # joined text, so a newline smuggled into any edit is caught rather than hidden inside one list item.
+    if len("\n".join(lines).split("\n")) != len(original):
+        raise SystemExit("REFUSED: the edited text has a different line count from the base; lines moved")
     for i, (old, new) in enumerate(zip(original, lines), start=1):
-        if i not in edited:
-            assert new == old, i
+        if i not in edited and new != old:
+            raise SystemExit(f"REFUSED: line {i} changed outside the declared edit set")
     too_long = [i for i in edited if len(lines[i - 1]) > MAX_LINE] + [f"appendix+{i}" for i, ln in enumerate(APPENDIX.split("\n")) if len(ln) > MAX_LINE]
     if too_long:
         raise SystemExit(f"REFUSED: lines over {MAX_LINE} characters: {too_long}")
-    print(f"{len(MARKERS)} markers + {len(SUBS)} same-line rewrites; {len(original)} lines, none moved; every other line byte-identical to HEAD; appendix +{len(APPENDIX.splitlines())} lines")
+    print(f"{len(MARKERS)} markers + {len(SUBS)} same-line rewrites + {len(RESUBS)} in-line replacement; {len(original)} lines, none moved; every other line byte-identical to the base; appendix +{len(APPENDIX.splitlines())} lines")
     return "\n".join(lines) + "\n" + APPENDIX
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--check", action="store_true", help="build and prove, compare with the working tree, write nothing")
+    ap.add_argument("--base", default="HEAD", help="the commit whose primer predates the correction (default HEAD)")
     args = ap.parse_args()
-    out = build(head_primer())
+    out = build(base_primer(args.base))
     target = REPO / PRIMER
     if args.check:
         same = target.read_text(encoding="utf-8") == out
