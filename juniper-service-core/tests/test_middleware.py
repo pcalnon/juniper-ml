@@ -220,6 +220,22 @@ def test_security_middleware_401_with_invalid_key():
     assert response.status_code == 401
 
 
+@pytest.mark.parametrize("raw", [b"\xa0", b"\x85", b"k\xa0"])
+def test_security_middleware_401_not_500_on_a_non_ascii_key(raw):
+    """An anonymous non-ASCII ``X-API-Key`` is a 401, not a 500 (juniper-canopy#683's validation).
+
+    Header bytes are sent raw -- httpx passes ``bytes`` values through unencoded -- because
+    Starlette decodes them as latin-1, so each of these reaches ``validate`` as a non-ASCII
+    ``str``, which ``hmac.compare_digest`` refused with ``TypeError``. The error escaped
+    ``SecurityMiddleware``'s ``except HTTPException`` as a 500. ``raise_server_exceptions=False``
+    so that a regression reads as the 500 a caller would see, not as the exception.
+    """
+    client = TestClient(_secured_app(["k"]), raise_server_exceptions=False)
+    response = client.get("/v1/data", headers={"X-API-Key": raw})
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Invalid API key."}
+
+
 def test_security_middleware_exempts_health_path():
     # /v1/health is in EXEMPT_PATHS -> reachable without a key even when auth is on.
     client = TestClient(_secured_app(["k"]))
@@ -278,7 +294,7 @@ def test_security_middleware_rate_limit_429_json_preserves_retry_after():
 # ----------------------------------------------------------------------------------------
 
 
-def _auth_app(throttle: FailedAuthThrottle | None = None, *, requests_per_minute: int = 1000) -> TestClient:
+def _auth_app(throttle: FailedAuthThrottle | None = None, *, requests_per_minute: int = 1000, raise_server_exceptions: bool = True) -> TestClient:
     """An app with API-key auth enabled and a deliberately generous identity-keyed limiter.
 
     The quota limiter is generous so that any 429 observed in these tests comes from the
@@ -292,7 +308,7 @@ def _auth_app(throttle: FailedAuthThrottle | None = None, *, requests_per_minute
         rate_limiter=RateLimiter(requests_per_minute=requests_per_minute, enabled=True),
         **kwargs,
     )
-    return TestClient(app)
+    return TestClient(app, raise_server_exceptions=raise_server_exceptions)
 
 
 def test_failed_auth_attempts_are_throttled():
@@ -336,6 +352,19 @@ def test_missing_api_key_also_counts_as_a_failed_attempt():
     assert client.get("/v1/data").status_code == 401
     assert client.get("/v1/data").status_code == 401
     assert client.get("/v1/data").status_code == 429
+
+
+def test_non_ascii_key_failures_are_counted_by_the_throttle():
+    """While a non-ASCII key raised, it was a 500 -- and only a 401 records a failure.
+
+    So a flood of non-ASCII garbage keys was never throttled at all, however long it ran. Now
+    each is an ordinary failed attempt.
+    """
+    client = _auth_app(build_failed_auth_throttle(max_failures=2, window_seconds=60), raise_server_exceptions=False)
+
+    assert client.get("/v1/data", headers={"X-API-Key": b"\xa0"}).status_code == 401
+    assert client.get("/v1/data", headers={"X-API-Key": b"\xa0"}).status_code == 401
+    assert client.get("/v1/data", headers={"X-API-Key": b"\xa0"}).status_code == 429
 
 
 def test_throttle_is_enabled_by_default():
