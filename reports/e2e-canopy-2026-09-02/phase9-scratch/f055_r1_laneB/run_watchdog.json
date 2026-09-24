@@ -1,0 +1,181 @@
+{
+ "scenario": "watchdog",
+ "R": 7.0,
+ "jitter": 1.0,
+ "gate": false,
+ "gate_mount": true,
+ "watchdog": true,
+ "click_after": 1.0,
+ "feeder_posts_seen_by_browser": [
+  3.256,
+  12.19,
+  21.032,
+  29.11,
+  37.388,
+  46.185,
+  54.424,
+  63.345,
+  71.784,
+  80.288,
+  88.299,
+  96.331,
+  105.142,
+  113.864,
+  122.779,
+  131.183,
+  140.094,
+  148.569,
+  157.348,
+  166.355,
+  174.949,
+  183.854,
+  192.671,
+  201.072
+ ],
+ "wrap": "function",
+ "t_load": 3.277,
+ "click_t": null,
+ "watchdog_fires": [],
+ "n_requests": 23,
+ "n_applied": 23,
+ "timeline": [
+  {
+   "seq": 1,
+   "start": 3.255,
+   "end": 11.173,
+   "applied_at": 11.183
+  },
+  {
+   "seq": 2,
+   "start": 12.188,
+   "end": 20.02,
+   "applied_at": 20.028
+  },
+  {
+   "seq": 3,
+   "start": 21.031,
+   "end": 28.098,
+   "applied_at": 28.106
+  },
+  {
+   "seq": 4,
+   "start": 29.11,
+   "end": 36.377,
+   "applied_at": 36.383
+  },
+  {
+   "seq": 5,
+   "start": 37.387,
+   "end": 45.173,
+   "applied_at": 45.179
+  },
+  {
+   "seq": 6,
+   "start": 46.185,
+   "end": 53.41,
+   "applied_at": 53.418
+  },
+  {
+   "seq": 7,
+   "start": 54.424,
+   "end": 62.333,
+   "applied_at": 62.342
+  },
+  {
+   "seq": 8,
+   "start": 63.344,
+   "end": 70.773,
+   "applied_at": 70.781
+  },
+  {
+   "seq": 9,
+   "start": 71.783,
+   "end": 79.274,
+   "applied_at": 79.28
+  },
+  {
+   "seq": 10,
+   "start": 80.287,
+   "end": 87.288,
+   "applied_at": 87.296
+  },
+  {
+   "seq": 11,
+   "start": 88.299,
+   "end": 95.315,
+   "applied_at": 95.325
+  },
+  {
+   "seq": 12,
+   "start": 96.33,
+   "end": 104.131,
+   "applied_at": 104.138
+  },
+  {
+   "seq": 13,
+   "start": 105.142,
+   "end": 112.852,
+   "applied_at": 112.858
+  },
+  {
+   "seq": 14,
+   "start": 113.863,
+   "end": 121.764,
+   "applied_at": 121.773
+  },
+  {
+   "seq": 15,
+   "start": 122.778,
+   "end": 130.174,
+   "applied_at": 130.179
+  },
+  {
+   "seq": 16,
+   "start": 131.182,
+   "end": 139.082,
+   "applied_at": 139.089
+  },
+  {
+   "seq": 17,
+   "start": 140.096,
+   "end": 147.557,
+   "applied_at": 147.565
+  },
+  {
+   "seq": 18,
+   "start": 148.569,
+   "end": 156.338,
+   "applied_at": 156.343
+  },
+  {
+   "seq": 19,
+   "start": 157.347,
+   "end": 165.342,
+   "applied_at": 165.348
+  },
+  {
+   "seq": 20,
+   "start": 166.353,
+   "end": 173.937,
+   "applied_at": 173.944
+  },
+  {
+   "seq": 21,
+   "start": 174.949,
+   "end": 182.843,
+   "applied_at": 182.85
+  },
+  {
+   "seq": 22,
+   "start": 183.853,
+   "end": 191.652,
+   "applied_at": 191.657
+  },
+  {
+   "seq": 23,
+   "start": 192.67,
+   "end": 200.06,
+   "applied_at": 200.068
+  }
+ ]
+}

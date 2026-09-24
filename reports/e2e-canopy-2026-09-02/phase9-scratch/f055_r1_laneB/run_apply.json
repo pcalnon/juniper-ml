@@ -1,0 +1,231 @@
+{
+ "scenario": "apply-click",
+ "R": 7.0,
+ "jitter": 0.5,
+ "gate": true,
+ "gate_mount": false,
+ "watchdog": false,
+ "click_after": 1.0,
+ "feeder_posts_seen_by_browser": [
+  3.173,
+  11.589,
+  19.844,
+  27.918,
+  36.178,
+  44.506,
+  49.284,
+  52.892,
+  57.42,
+  61.305,
+  65.794,
+  69.386,
+  74.123,
+  77.743,
+  82.403,
+  85.946,
+  90.881,
+  94.445,
+  99.233,
+  102.674,
+  107.352,
+  111.165,
+  115.406,
+  119.21,
+  123.463,
+  127.559,
+  131.692,
+  135.972,
+  139.88,
+  144.213,
+  148.11
+ ],
+ "release_t": 48.255,
+ "t_load": 3.181,
+ "click_t": 37.233,
+ "watchdog_fires": [],
+ "n_requests": 29,
+ "n_applied": 5,
+ "timeline": [
+  {
+   "seq": 1,
+   "start": 3.172,
+   "end": 10.556,
+   "applied_at": 10.576
+  },
+  {
+   "seq": 2,
+   "start": 11.587,
+   "end": 18.825,
+   "applied_at": 18.833
+  },
+  {
+   "seq": 3,
+   "start": 19.843,
+   "end": 26.904,
+   "applied_at": 26.921
+  },
+  {
+   "seq": 4,
+   "start": 27.918,
+   "end": 35.162,
+   "applied_at": 35.17
+  },
+  {
+   "seq": 5,
+   "start": 36.176,
+   "end": 43.492,
+   "applied_at": 43.5
+  },
+  {
+   "seq": 6,
+   "start": 44.504,
+   "end": 51.88,
+   "applied_at": null
+  },
+  {
+   "seq": 7,
+   "start": 49.283,
+   "end": 56.41,
+   "applied_at": null
+  },
+  {
+   "seq": 8,
+   "start": 52.892,
+   "end": 60.294,
+   "applied_at": null
+  },
+  {
+   "seq": 9,
+   "start": 57.419,
+   "end": 64.784,
+   "applied_at": null
+  },
+  {
+   "seq": 10,
+   "start": 61.304,
+   "end": 68.374,
+   "applied_at": null
+  },
+  {
+   "seq": 11,
+   "start": 65.794,
+   "end": 73.111,
+   "applied_at": null
+  },
+  {
+   "seq": 12,
+   "start": 69.385,
+   "end": 76.732,
+   "applied_at": null
+  },
+  {
+   "seq": 13,
+   "start": 74.122,
+   "end": 81.393,
+   "applied_at": null
+  },
+  {
+   "seq": 14,
+   "start": 77.743,
+   "end": 84.92,
+   "applied_at": null
+  },
+  {
+   "seq": 15,
+   "start": 82.403,
+   "end": 89.854,
+   "applied_at": null
+  },
+  {
+   "seq": 16,
+   "start": 85.95,
+   "end": 93.424,
+   "applied_at": null
+  },
+  {
+   "seq": 17,
+   "start": 90.88,
+   "end": 98.218,
+   "applied_at": null
+  },
+  {
+   "seq": 18,
+   "start": 94.442,
+   "end": 101.663,
+   "applied_at": null
+  },
+  {
+   "seq": 19,
+   "start": 99.231,
+   "end": 106.341,
+   "applied_at": null
+  },
+  {
+   "seq": 20,
+   "start": 102.674,
+   "end": 110.154,
+   "applied_at": null
+  },
+  {
+   "seq": 21,
+   "start": 107.351,
+   "end": 114.389,
+   "applied_at": null
+  },
+  {
+   "seq": 22,
+   "start": 111.165,
+   "end": 118.199,
+   "applied_at": null
+  },
+  {
+   "seq": 23,
+   "start": 115.405,
+   "end": 122.452,
+   "applied_at": null
+  },
+  {
+   "seq": 24,
+   "start": 119.21,
+   "end": 126.548,
+   "applied_at": null
+  },
+  {
+   "seq": 25,
+   "start": 123.463,
+   "end": 130.681,
+   "applied_at": null
+  },
+  {
+   "seq": 26,
+   "start": 127.561,
+   "end": 134.96,
+   "applied_at": null
+  },
+  {
+   "seq": 27,
+   "start": 131.691,
+   "end": 138.868,
+   "applied_at": null
+  },
+  {
+   "seq": 28,
+   "start": 135.972,
+   "end": 143.201,
+   "applied_at": null
+  },
+  {
+   "seq": 29,
+   "start": 139.878,
+   "end": 147.1,
+   "applied_at": null
+  }
+ ],
+ "after_click_requests": 25,
+ "after_click_applied": 1,
+ "requests_dispatched_while_clamped": [
+  6
+ ],
+ "after_release_requests": 24,
+ "after_release_applied": 0
+}

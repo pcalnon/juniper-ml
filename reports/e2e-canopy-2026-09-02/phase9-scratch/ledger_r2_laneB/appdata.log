@@ -1,0 +1,36 @@
+Dash is running on http://127.0.0.1:9488/
+
+ * Serving Flask app 'synth_app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:9488
+Press CTRL+C to quit
+127.0.0.1 - - [23/Sep/2026 23:53:22] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-component-suites/dash/deps/react@18.v4_2_0m1781825206.3.1.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-component-suites/dash/dcc/dash_core_components.v4_2_0m1781825206.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-component-suites/dash/deps/polyfill@7.v4_2_0m1781825206.12.1.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_2_0m1781825206.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-component-suites/dash/deps/react-dom@18.v4_2_0m1781825206.3.1.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-component-suites/dash/deps/prop-types@15.v4_2_0m1781825206.8.1.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-component-suites/dash/dcc/dash_core_components-shared.v4_2_0m1781825206.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-component-suites/dash/html/dash_html_components.v4_2_0m1781825206.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-component-suites/dash/dash_table/bundle.v7_2_0m1781825206.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-dependencies HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:23] "GET /_dash-layout HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:25] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:28] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:31] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:34] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:37] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:40] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:43] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:46] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:49] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:52] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:55] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:53:58] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:54:01] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:54:04] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:54:07] "POST /_dash-update-component HTTP/1.1" 200 -
+127.0.0.1 - - [23/Sep/2026 23:54:10] "POST /_dash-update-component HTTP/1.1" 200 -
