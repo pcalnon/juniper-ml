@@ -2,7 +2,7 @@
 
 **Date**: 2026-08-13
 **Author**: Paul Calnon
-**Status**: Reference primer — living document
+**Status**: Reference primer — living document; corrections are listed in [Appendix E](#appendix-e--corrections)
 **Scope**: Web/HTTP APIs (breadth), REST/HTTP semantics (depth), and library/SDK API design
 **Worked examples**: Grounded in the Juniper ecosystem; all example code is executable
 
@@ -460,7 +460,7 @@ The escapes are real but narrow: persisted queries plus `GET` (which restores a 
 
 REST's position here is the strong one, and most REST APIs waste it.
 `juniper-data` is a clean example of the waste: `GET /v1/datasets/{id}/artifact` serves large, **immutable**, content-addressed blobs whose SHA-256 digest is already computed and stored (`juniper_data/core/artifacts.py:50-63`), and the service emits no `ETag`, no `Last-Modified`, no `Cache-Control`, and never returns `304` — the only `max-age` string in the codebase is inside its HSTS header value (`juniper_data/api/constants.py:69`).
-The hard part of caching, having a stable strong validator, was already done; the easy part was skipped.
+The hard part of caching, having a stable strong validator, was already done; the easy part was skipped. **[Corrected: E.1](#e1-artifact-validator)**
 
 #### Honest comparison
 
@@ -1562,7 +1562,7 @@ The practical consequence is where you invest. Do not try to make the network re
 
 juniper-data illustrates the content-addressed variant. `generate_dataset_id` (`juniper_data/core/dataset_id.py:23-61`) hashes canonical JSON of `{generator, version, params}` with `sort_keys=True` and compact separators, producing `{generator}-{version}-{sha256[:16]}`. Identical parameters give an identical id, so a duplicate `POST /v1/datasets` collapses onto the existing resource — idempotent effect from the data model, no key header anywhere.
 
-The escape hatch is equally instructive: when `params['seed']` is absent or `None` the generator is itself non-deterministic, so a UUID nonce is mixed in (`dataset_id.py:54-55`) specifically so a repeat does *not* collide onto a stale artifact. Content addressing is only idempotent when the content determines the result.
+The escape hatch is equally instructive: when `params['seed']` is absent or `None` the generator is itself non-deterministic, so a UUID nonce is mixed in (`dataset_id.py:54-55`) specifically so a repeat does *not* collide onto a stale artifact. Content addressing is only idempotent when the content determines the result. **[Corrected: E.1](#e1-artifact-validator)**
 
 #### Juniper in Practice: Three Siblings, Three Answers
 
@@ -1953,11 +1953,11 @@ Invalidation is genuinely hard when content at a stable URL changes: purge APIs 
 
 juniper-data (v0.11.0) has a textbook caching candidate and emits no cache headers at all.
 
-`GET /v1/datasets/{id}/artifact` serves a dataset's NPZ blob. The `{id}` is content-addressed: `generate_dataset_id` (`juniper_data/core/dataset_id.py:23-61`) derives it from a SHA-256 over canonical JSON of generator, version, and parameters.
+`GET /v1/datasets/{id}/artifact` serves a dataset's NPZ blob. The `{id}` is content-addressed: `generate_dataset_id` (`juniper_data/core/dataset_id.py:23-61`) derives it from a SHA-256 over canonical JSON of generator, version, and parameters. **[Corrected: E.1](#e1-artifact-validator)**
 
-**The body for a given id cannot change.** A SHA-256 over the serialized artifact bytes is *already computed and stored* — `compute_checksum` (`juniper_data/core/artifacts.py:50-63`) returns `hashlib.sha256(arrays_to_bytes(arrays)).hexdigest()`, persisted on `DatasetMeta.checksum`. The response is large and clients download it repeatedly.
+**The body for a given id cannot change.** A SHA-256 over the serialized artifact bytes is *already computed and stored* — `compute_checksum` (`juniper_data/core/artifacts.py:50-63`) returns `hashlib.sha256(arrays_to_bytes(arrays)).hexdigest()`, persisted on `DatasetMeta.checksum`. The response is large and clients download it repeatedly. **[Corrected: E.1](#e1-artifact-validator)**
 
-Every ingredient is present: an immutable resource, a stable content-derived URL, a precomputed strong validator, and a payload big enough to matter. None reaches HTTP. The artifact response (`juniper_data/api/routes/datasets.py:700-704`) sets exactly one header:
+Every ingredient is present: an immutable resource, a stable content-derived URL, a precomputed strong validator, and a payload big enough to matter. **[Corrected: E.1](#e1-artifact-validator)** None reaches HTTP. The artifact response (`juniper_data/api/routes/datasets.py:700-704`) sets exactly one header:
 
 ```python
 import io
@@ -1971,7 +1971,7 @@ def artifact_response(dataset_id: str, artifact_bytes: bytes) -> StreamingRespon
     )
 ```
 
-A repository-wide grep across `juniper_data/` for `ETag`, `Cache-Control`, `Last-Modified`, `If-None-Match`, `Vary`, and 304 handling returns nothing. The only `max-age` in the codebase is inside the HSTS header value (`juniper_data/api/constants.py:69`). The stored `checksum` is a strong `ETag` waiting to be emitted; three lines would enable both freshness and the conditional-request fallback:
+A repository-wide grep across `juniper_data/` for `ETag`, `Cache-Control`, `Last-Modified`, `If-None-Match`, `Vary`, and 304 handling returns nothing. The only `max-age` in the codebase is inside the HSTS header value (`juniper_data/api/constants.py:69`). The stored `checksum` is a strong `ETag` waiting to be emitted **[Corrected: E.1](#e1-artifact-validator)**; three lines would enable both freshness and the conditional-request fallback:
 
 ```python
 headers = {
@@ -2012,7 +2012,7 @@ The lesson generalises: a checksum in your data model is not an HTTP validator. 
 
 - Emit an explicit `Cache-Control` on every response; silence means heuristics, and heuristics are not your policy.
 - Mark immutable, content-addressed resources aggressively — `public, max-age=31536000, immutable` when the resource is genuinely public, `private, ...` when it sits behind authentication. `public` on an authenticated endpoint tells every shared cache to serve one caller's body to the next.
-- Emit a strong `ETag` whenever you already have a content digest — juniper-data's unused `checksum` is the case in point.
+- Emit a strong `ETag` whenever you already have a content digest — juniper-data's unused `checksum` is the case in point. **[Corrected: E.1](#e1-artifact-validator)**
 - Name every request header that affects the body in `Vary`, and nothing else.
 - Split browser and CDN lifetimes with `max-age` plus `s-maxage` when they should differ.
 - Verify cache behaviour in tests: assert the headers you expect and, at least once, assert a second request actually hits.
@@ -2023,7 +2023,7 @@ The lesson generalises: a checksum in your data model is not an HTTP validator. 
 - **Missing `Vary` on a negotiated or header-versioned response.** One user's data served to another by a shared cache — the most serious caching bug there is.
 - **A cached error.** A 500 with a long `max-age` outlives the outage that produced it.
 - **Purge that does not propagate.** CDN purge is eventually consistent and per-POP; treat it as a hint.
-- **The uncached immutable blob.** juniper-data's artifact endpoint: repeated full downloads of bytes that cannot have changed, with the digest already in the database.
+- **The uncached immutable blob.** juniper-data's artifact endpoint: repeated full downloads of bytes that cannot have changed, with the digest already in the database. **[Corrected: E.1](#e1-artifact-validator)**
 - **Heuristic freshness surprising you.** With no explicit lifetime, RFC 9111 §4.2.2 permits caches to invent one. "We never set a cache header" is not "it is not cached".
 
 #### Error Handling
@@ -3397,7 +3397,7 @@ When a resource is legitimately reachable at more than one URI, `Content-Locatio
 "not a replacement for the target URI". Nowhere does §8.7 give it canonicality semantics. Canonicality is a different mechanism: the `canonical` link relation of RFC 6596, carried in a `Link` header or a document element. RFC 6596 is not in the local spec cache, so it is named here by number only, with no section cited.
 
 juniper-data has a mild case: `GET /v1/datasets/latest?name=X` and `GET /v1/datasets/{id}` can return the same `DatasetMeta` (`datasets.py:628`, `:651`). Neither redirects and neither sets `Content-Location` — but setting it would not have merged anything, because a cache key is "composed from, at a minimum, the request method and target URI" (RFC 9111 §2). Two URIs get two entries no matter what the bodies say about themselves; only a
-redirect collapses them. Since juniper-data emits no cache headers at all, the duplication is latent rather than live.
+redirect collapses them. Since juniper-data emits no cache headers at all, the duplication is latent rather than live. **[Corrected: E.2](#e2-conditional-tag-writes)**
 
 #### Path vs query parameters
 
@@ -3450,7 +3450,7 @@ if params.get("seed") is None:
 ```
 
 This is a worked example of **when not to content-address**. Content-addressing assumes the name is a total function of the inputs. With `seed` absent the generator is itself non-deterministic — identical parameters produce *different* data — so hashing the parameters would name two different artifacts identically, and the second request would silently receive the first one's data. Mixing in a
-nonce deliberately breaks content-addressing for exactly the case where its premise is false. The rule generalises: **content-address only over inputs that fully determine the output.** Wall-clock time, unseeded randomness, and upstream mutable state all violate that premise.
+nonce deliberately breaks content-addressing for exactly the case where its premise is false. The rule generalises: **content-address only over inputs that fully determine the output.** Wall-clock time, unseeded randomness, and upstream mutable state all violate that premise. **[Corrected: E.1](#e1-artifact-validator)**
 
 #### Ground truth: the route-ordering dependency
 
@@ -3636,7 +3636,7 @@ A precondition converts a blind write into a compare-and-swap — *provided the 
 
 ```http
 PATCH /v1/datasets/spiral-v1.0.0-a3f8e12b4c567890/tags HTTP/1.1
-If-Match: "a3f8e12b4c567890"
+If-Match: "9c4b7e2d01f5a863"
 Content-Type: application/merge-patch+json
 
 {"tags": ["train", "validated"]}
@@ -3644,7 +3644,7 @@ Content-Type: application/merge-patch+json
 
 If the representation changed since the client's copy, the server returns **412 Precondition Failed** (§15.5.13) and applies nothing. The write is now safe to retry: a repeat either fails cleanly or applies to the state it was written against. This is what makes PATCH's non-idempotency tolerable, and why RFC 5789 §2 recommends it directly.
 
-The server-side half is a validator. juniper-data computes exactly the value it needs — a SHA-256 over the serialised NPZ bytes, stored on `DatasetMeta.checksum` — and never sends it as an `ETag`, so no client can make a conditional request against it. The material is there; the header is not. RFC 6585 §3's **428 Precondition Required** covers the other side: a server that *requires* conditional
+The server-side half is a validator. juniper-data computes exactly the value it needs — a SHA-256 over the serialised NPZ bytes, stored on `DatasetMeta.checksum` — and never sends it as an `ETag`, so no client can make a conditional request against it. The material is there; the header is not. **[Corrected: E.1](#e1-artifact-validator)** RFC 6585 §3's **428 Precondition Required** covers the other side: a server that *requires* conditional
 writes can reject unconditional ones outright, "to avoid the 'lost update' problem". Validator generation, strong versus weak
 comparison, and the full optimistic-concurrency pattern are II.6's subject; this section needs only the fact that a precondition
 converts an unsafe write into a retryable one.
@@ -3682,7 +3682,7 @@ If you must support it for a legacy client you do not control, terminate the ove
 - Never let a safe method perform an action the caller requested. Logging and counters are fine; anything the client asked for is not.
 - Return 405 with `Allow` for a wrong method (§15.5.6 makes `Allow` mandatory) and 501 for an unrecognised one.
 - Choose and document one patch format; put it in the media type, not the prose docs.
-- Emit an `ETag` whenever you already compute a digest — juniper-data computes one and discards it — and support `If-Match` on every unsafe method that can lose an update.
+- Emit an `ETag` whenever you already compute a digest — juniper-data computes one and discards it — and support `If-Match` on every unsafe method that can lose an update. **[Corrected: E.1](#e1-artifact-validator)**
 
 #### Common Failure Modes
 
@@ -3992,7 +3992,7 @@ Base64-inlining a binary blob in JSON costs roughly 33% size inflation, forces t
 
 RFC 9110 §14 defines range requests, "an OPTIONAL feature of HTTP, designed so that recipients not implementing this feature (or not supporting it for the target resource) can respond as if it is a normal GET request without impacting interoperability." The pieces: `Range` on the request (§14.2), `Accept-Ranges` to advertise support (§14.3), `Content-Range` to describe what was sent (§14.4), and
 **206 Partial Content** as the status (§15.3.7). Two precise facts: "For this specification, GET is the only method for which range handling is defined" (§14.2), and a server supporting no ranges for a resource "MAY send `Accept-Ranges: none`" (§14.3) — while a client "MUST NOT assume that receiving an `Accept-Ranges` field means that future range requests will return partial responses." Range
-support is worth implementing for exactly juniper-data's case: large immutable content-addressed artifacts, where a download that died at 80% would otherwise start over.
+support is worth implementing for exactly juniper-data's case: large immutable content-addressed artifacts, where a download that died at 80% would otherwise start over. **[Corrected: E.1](#e1-artifact-validator)**
 
 #### Ground truth: two byte-delivery paths that look alike and are not
 
@@ -4015,7 +4015,7 @@ The entire artifact is materialised into `artifact_bytes` before the response ob
 ones, and it is not.
 
 Two smaller notes on the same four lines. `application/octet-stream` is the maximally generic type; RFC 9110 §8.3 names it as the *fallback* a recipient may assume when no `Content-Type` is present. NPZ is a ZIP container, so `application/zip` would have been strictly more informative — and juniper-data already uses exactly that on its other binary endpoint (`datasets.py:584`), making the
-inconsistency internal rather than theoretical. And with the SHA-256 checksum already computed and stored on `DatasetMeta.checksum`, this response could carry an `ETag` for free and support conditional GETs on an immutable blob; it carries no validator at all.
+inconsistency internal rather than theoretical. And with the SHA-256 checksum already computed and stored on `DatasetMeta.checksum`, this response could carry an `ETag` for free and support conditional GETs on an immutable blob; it carries no validator at all. **[Corrected: E.1](#e1-artifact-validator)**
 
 **The batch export genuinely is incremental** (`datasets.py:562-586`), and the constraint that makes it work is worth studying:
 
@@ -4171,7 +4171,7 @@ resource, letting a shared cache freshen the wrong variant.
 juniper-data's tag update (`juniper_data/api/routes/datasets.py:766-795`) is a read-modify-write across two thread
 offloads: `store.get_meta` at `:785`, set arithmetic at `:789-792`, `store.update_meta` at `:794`.
 `LocalFSDatasetStore.update_meta` (`juniper_data/storage/local_fs.py:262-298`) serialises the whole `DatasetMeta` and
-atomically replaces the file — last writer wins, whole document, no version check. No lock spans the pair.
+atomically replaces the file — last writer wins, whole document, no version check. No lock spans the pair. **[Corrected: E.2](#e2-conditional-tag-writes)**
 
 ```text
 Dataset D, tags = ["train"].
@@ -4197,7 +4197,7 @@ resources used as semaphores "an origin server is better off being stringent in 
 precondition **on an unsafe method**" — the scope qualifier matters. Default to stringent. The same hazard hides on a path nobody suspects: `record_access` (`juniper_data/storage/base.py:198-223`)
 is a read-modify-write of the *same* document — bump `last_accessed_at` and `access_count`, write it all back — fired
 on every metadata read and artifact download (`routes/datasets.py:672`, `:698`). It holds `_version_lock`;
-`update_dataset_tags` never takes that lock, so reading a dataset can undo an edit to it.
+`update_dataset_tags` never takes that lock, so reading a dataset can undo an edit to it. **[Corrected: E.2](#e2-conditional-tag-writes)**
 
 #### 428 Precondition Required
 
@@ -4219,7 +4219,7 @@ cannot rely upon its use to prevent 'lost update' conflicts."
 | `mtime` + size          | weak         | O(1) stat                    | Sub-second writes; restore resets mtime     |
 | Hash of serialized JSON | usually weak | O(body) every response       | Field order, floats, embedded read counters |
 
-The cost objection is answered in §8.8.1: a collision-resistant hash suffices as a strong validator "if the data is
+The cost objection is answered in §8.8.1: a collision-resistant hash applied to the representation data suffices as a strong validator "if the data is
 available prior to the response header fields being sent **and the digest does not need to be recalculated every time
 a validation request is received**." Hashing per response makes the 304 — the cheap case — cost a full-body hash.
 Precompute at write time and store it.
@@ -4229,7 +4229,7 @@ digest over the NPZ serialisation, and `arrays_to_bytes` (`:33-47`) sorts the ar
 stable serialization order") so it is stable across processes. The create path calls it once
 (`routes/datasets.py:192`) and stores it on `DatasetMeta.checksum` (`:230`; field at `core/models.py:71`), on an
 artifact that is immutable and content-addressed — `generate_dataset_id` (`core/dataset_id.py:23-61`) hashes canonical
-JSON into `{generator}-{version}-{digest[:16]}`. That is the textbook strong-validator case, and §8.8.3.1 says an
+JSON into `{generator}-{version}-{digest[:16]}`. That is the textbook strong-validator case **[Corrected: E.1](#e1-artifact-validator)**, and §8.8.3.1 says an
 origin **SHOULD** send an `ETag` wherever change detection is reasonably determinable.
 
 It sends nothing. `download_artifact` (`routes/datasets.py:676-704`) returns a `StreamingResponse` with exactly two
@@ -4242,13 +4242,13 @@ lines: emit `ETag: "<checksum>.npz"` plus `Cache-Control: private, max-age=31536
 rather than `Authorization` no shared cache can tell the request was authenticated — so `public` would license every
 intermediary to serve one caller's artifact to the next for a year. (The `immutable` directive is from RFC 8246, **not** in the
 local spec cache; §13.2.1 references it as instructing caches "to forgo forwarding conditional requests when they hold
-a fresh response", but treat its own semantics as unverified.)
+a fresh response", but treat its own semantics as unverified.) **[Corrected: E.1](#e1-artifact-validator)**
 
 A trap sits on the neighbouring endpoint. `GET /v1/datasets/{id}` returns a `DatasetMeta` including `last_accessed_at`
 and `access_count` (`core/models.py:84-85`), and the handler schedules `record_access` on every call — so a strong
 ETag hashed over *that* body would change on every GET and never hit, while the artifact endpoint's would work
 perfectly. The validator must cover the representation, and here read access is part of it. Either exclude read
-counters and mark the tag weak, or split them into a sub-resource.
+counters and mark the tag weak, or split them into a sub-resource. **[Corrected: E.1](#e1-artifact-validator)**
 
 #### Compression and validator identity
 
@@ -4276,7 +4276,7 @@ across two separate `asyncio.to_thread` hops with nothing held between them. `re
 (`storage/base.py:217-222`) then performs its own read-modify-write of the same `DatasetMeta` on every GET, under a
 per-process `_version_lock` the tag path never takes. Adding an `If-Match` check to the top of that handler would buy a
 correct 412 and change nothing about the race — a writer landing between the two hops still wins silently, and a
-second process is not serialised at all. The storage layer is what would have to change first.
+second process is not serialised at all. The storage layer is what would have to change first. **[Corrected: E.2](#e2-conditional-tag-writes)**
 
 #### Judgement Calls
 
@@ -5327,7 +5327,7 @@ automated must compare the description to the running system, or you do not have
 
 ### II.11 Part II Worked Example — Conditional Requests and Optimistic Concurrency
 
-This example builds the HTTP semantics of Part II into one small service: content-addressed identifiers, strong `ETag`s, conditional `GET` returning 304, optimistic concurrency with `If-Match` and 412, `428 Precondition Required` for writes that omit the precondition, keyset pagination with a `Link` header, and RFC 9457 `application/problem+json` for every error.
+This example builds the HTTP semantics of Part II into one small service: content-addressed identifiers, strong `ETag`s, conditional `GET` returning 304, optimistic concurrency with `If-Match` and 412, `428 Precondition Required` for writes that omit the precondition, keyset pagination with a `Link` header, and RFC 9457 `application/problem+json` for every error. **[Corrected: E.1](#e1-artifact-validator)**
 
 The motivation is again a real gap. `juniper-data` already computes a SHA-256 over every artifact and stores it on the metadata record (`juniper_data/core/artifacts.py:50-63`), and its dataset identifiers are already content-addressed (`juniper_data/core/dataset_id.py:23-61`) — so its artifacts are the strongest possible candidate for `ETag` plus `Cache-Control: immutable`. It emits neither, and supports no conditional requests at all. The validator it needs is already sitting in the codebase.
 
@@ -5349,21 +5349,21 @@ One deliberate divergence from the real service: this example returns **200** wh
 ```python
 """Conditional requests: ETags, 304s, optimistic concurrency, and a real error model.
 
-Motivation (the fix is already sitting in the codebase)
+Motivation (a real gap when written; see Appendix E)
 ------------------------------------------------------
-``juniper-data`` computes a SHA-256 over every artifact's serialized bytes and
-stores it on ``DatasetMeta.checksum`` -- then never uses it as an HTTP validator.
-There is no ``ETag``, no ``Cache-Control``, no ``If-None-Match`` and no 304
-anywhere in the service, so ``GET /v1/datasets/{id}/artifact`` re-transfers
-large, **immutable, content-addressed** blobs in full on every request. The
-identifier is already a hash of the inputs and the body is already hashed: the
-validator exists and is simply not emitted.
+When this primer was written, ``juniper-data`` stored a SHA-256 of every
+dataset's arrays on ``DatasetMeta.checksum`` and never sent it as an HTTP
+validator: no ``ETag``, no ``Cache-Control``, no ``If-None-Match``, no 304,
+so ``GET /v1/datasets/{id}/artifact`` re-transferred every artifact in full.
+juniper-data#428 has since shipped the fix -- with a WEAK artifact tag,
+because that hash covers the arrays, not the bytes served, and ``no-cache``,
+because a request-derived id does not make a body immutable.
 
-The service also cannot reject a stale write. Tags are mutable, so two clients
-that read the same dataset and both PATCH it produce a silent lost update -- the
-second write wins and the first is gone, with no error anywhere.
+Nor could it reject a stale write. Tags are mutable, so two clients that read
+the same dataset and both PATCHed it produced a silent lost update -- until
+juniper-data#428 made that PATCH conditional on ``If-Match``.
 
-This example wires up what that service is missing:
+This example wires up those semantics in a small, unauthenticated service:
 
 * **Strong ETags** derived from the exact representation, so equality of the
   validator implies equality of the bytes.
@@ -5416,9 +5416,9 @@ PROBLEM_JSON: Final = "application/problem+json"
 #: revalidation is cheap because a 304 carries no body. "no-store" would be wrong
 #: (it forbids caching entirely) and a positive max-age would serve stale tags.
 METADATA_CACHE_CONTROL: Final = "public, max-age=0, must-revalidate"
-#: The artifact is safe to cache forever *because* the id is content-addressed:
-#: a different byte stream is necessarily a different URL, so a cached entry can
-#: never go stale. "immutable" is only honest under that invariant.
+#: The artifact is safe to cache forever *because* this toy synthesizes it
+#: deterministically from its id, so a URL can never serve other bytes. An id
+#: that merely hashes the request cannot promise that (Appendix E, E.1).
 ARTIFACT_CACHE_CONTROL: Final = "public, max-age=31536000, immutable"
 DEFAULT_PAGE_SIZE: Final = 20
 MAX_PAGE_SIZE: Final = 100
@@ -5643,15 +5643,15 @@ def create_app() -> FastAPI:
         return dataset
 
     @app.post("/v1/datasets", status_code=201)
-    async def create_dataset(body: DatasetCreate) -> JSONResponse:
+    async def create_dataset(body: DatasetCreate) -> Response:
         dataset_id = compute_dataset_id(generator=body.generator, version=body.version, params=body.params)
         existing: Dataset | None = app.state.datasets.get(dataset_id)
         if existing is not None:
             # Content-addressing makes creation idempotent for free. Returning 200
             # rather than 201 lets the client tell "I created this" from "this
             # already existed" -- a distinction the real service throws away.
-            return JSONResponse(
-                existing.metadata(),
+            return Response(
+                canonical_json(existing.metadata()), media_type="application/json",
                 status_code=200,
                 headers={"Location": f"/v1/datasets/{dataset_id}", "ETag": metadata_etag(existing)},
             )
@@ -5668,8 +5668,8 @@ def create_app() -> FastAPI:
             n_samples=n_samples,
         )
         app.state.datasets[dataset_id] = dataset
-        return JSONResponse(
-            dataset.metadata(),
+        return Response(
+            canonical_json(dataset.metadata()), media_type="application/json",
             status_code=201,
             headers={"Location": f"/v1/datasets/{dataset_id}", "ETag": metadata_etag(dataset)},
         )
@@ -5719,7 +5719,7 @@ def create_app() -> FastAPI:
             # 304 is terminated by the end of the header section: no content.
             return Response(status_code=304, headers=headers)
 
-        return JSONResponse(dataset.metadata(), headers=headers)
+        return Response(canonical_json(dataset.metadata()), media_type="application/json", headers=headers)
 
     @app.get("/v1/datasets/{dataset_id}/artifact")
     async def get_artifact(
@@ -5745,7 +5745,7 @@ def create_app() -> FastAPI:
         dataset_id: str,
         body: TagUpdate,
         if_match: Annotated[str | None, Header(alias="If-Match")] = None,
-    ) -> JSONResponse:
+    ) -> Response:
         dataset = _require(dataset_id)
         current = metadata_etag(dataset)
 
@@ -5770,8 +5770,8 @@ def create_app() -> FastAPI:
             )
 
         dataset.tags = list(body.tags)
-        return JSONResponse(
-            dataset.metadata(),
+        return Response(
+            canonical_json(dataset.metadata()), media_type="application/json",
             headers={"ETag": metadata_etag(dataset), "Cache-Control": METADATA_CACHE_CONTROL, "Vary": "Accept"},
         )
 
@@ -5783,8 +5783,8 @@ def create_app() -> FastAPI:
 """Tests for conditional_datasets.py.
 
 The headline test is ``test_lost_update_is_prevented_by_if_match``: it is the
-whole reason optimistic concurrency exists, and it is the scenario the real
-service silently gets wrong.
+whole reason optimistic concurrency exists, and it is the scenario
+juniper-data's tag PATCH got wrong until juniper-data#428.
 """
 
 from __future__ import annotations
@@ -5898,7 +5898,7 @@ async def test_artifact_is_immutable_and_conditionally_cacheable() -> None:
     assert artifact.status_code == 200
     assert artifact.headers["content-type"] == "application/octet-stream"
     assert artifact.headers["content-disposition"] == f'attachment; filename="{dataset_id}.npz"'
-    # "immutable" is only honest because the id is a hash of the inputs.
+    # "immutable" is honest here only because the bytes are a pure function of the id.
     assert artifact.headers["cache-control"] == "public, max-age=31536000, immutable"
     assert len(artifact.content) == 512
 
@@ -9507,7 +9507,7 @@ the part worth volunteering unprompted is the ordering's **cost**: the auth chec
 
 **Q37. When can you cache aggressively with no invalidation strategy?**
 *Strong answer:* when the URL is content-addressed, so the content cannot change under a given URL. Then `immutable` with a long `max-age` is safe and invalidation is just a new URL. Say the qualifier that keeps it safe, though, because it is the half interviewers listen for: the directive must name who may store the response. Juniper's dataset artifacts are content-addressed and would qualify — they currently emit no cache headers at all — but the artifact route sits behind
-`X-API-Key`, so the right header is `private, max-age=31536000, immutable`, never `public`. `public` on an authenticated endpoint instructs every shared cache to hand one caller's body to the next, and `immutable` then suppresses the revalidation that might have caught it. "Cache aggressively" means aggressively *and* privately whenever a credential gates the route.
+`X-API-Key`, so the right header is `private, max-age=31536000, immutable`, never `public`. `public` on an authenticated endpoint instructs every shared cache to hand one caller's body to the next, and `immutable` then suppresses the revalidation that might have caught it. "Cache aggressively" means aggressively *and* privately whenever a credential gates the route. **[Corrected: E.1](#e1-artifact-validator)**
 
 **Q38. Your p50 latency is fine and p99 is terrible. What do you look at?**
 *Strong answer:* tail-specific causes — GC pauses, connection-pool saturation and queueing, lock contention, a slow dependency on a fraction of requests, cold caches, retries stacking. Averages hide all of this, which is why histograms and percentiles are the minimum viable latency metric.
@@ -9864,3 +9864,95 @@ grep -n -A 8 '9.2.2.  Idempotent Methods' /tmp/juniper-api-primer-specs/rfc9110-
 ```
 
 The script exits non-zero if any document fails to download, so a partial cache is loud rather than silently incomplete.
+
+## Appendix E — Corrections
+
+Claims about the Juniper codebase that proved false, or that a later change overtook, are corrected here
+rather than rewritten in place. Each affected prose passage keeps its text and gains a **Corrected** link
+to its entry below. Passages inside the II.11 executable example, which a link cannot enter, were
+reworded on the same lines, and the Appendix D harness re-run. Nothing above was moved: the defect
+register (`JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`) cites this document by bare line
+number, and inserting a line would shift every anchor after it. That is also why the table of contents
+does not list this appendix; the header's **Status** line points here instead.
+
+### E.1 Artifact validator
+
+**Corrected 2026-09-24.** juniper-data#428 (merged 2026-09-23) implemented conditional requests on
+`GET /v1/datasets/{id}/artifact` and found false the premises of the passages linked here. They treat
+the artifact as an immutable, content-addressed blob whose stored `checksum` is a ready-made strong
+validator. #428 is queued for juniper-data 0.16.0, unreleased when this was written; 0.15.0, the latest
+on PyPI, sends none of the headers below. Beyond the linked passages, the same premises appear in II.2's
+content-hash table row and its "content-addressed dataset ID" heading, and in II.11's motivation
+paragraph.
+
+1. **The stored `checksum` does not digest the bytes the route serves, so it can back only a weak
+   validator.** `compute_checksum` (`juniper_data/core/artifacts.py`) hashes `arrays_to_bytes(arrays)`:
+   an *uncompressed* `np.savez` of the arrays, keys sorted. Every store serves `np.savez_compressed`
+   output instead (`storage/local_fs.py`, `memory.py`, `redis_store.py`, `postgres_store.py`; the
+   cached, Hugging Face and Kaggle stores delegate to one of these), so `sha256(served bytes) !=
+   checksum` on every store. The hash changes whenever the arrays change, which is what whole-body
+   revalidation needs. But one dataset can be served as two different byte strings under one
+   checksum: the in-memory store sorts the arrays' keys and the others keep the generator's order, so
+   the bytes differ between stores, and between the cache states of `CachedDatasetStore`; another
+   numpy or zlib could do the same. RFC 9110 §8.8.1 calls such a validator weak: "a validator is weak
+   if it is shared by two or more representations of a given resource at the same time, unless those
+   representations have identical representation data". juniper-data therefore sends
+   `ETag: W/"<checksum>"`, per the owner's ruling of 2026-09-23. Three consequences for the passages
+   linked here:
+
+   - `If-None-Match` compares weakly, so revalidation works. `If-Match` compares strongly, so it can
+     match an artifact only through `*`.
+   - `If-Range` accepts only a strong validator (§13.1.5), so resumable range downloads cannot be keyed
+     on this tag.
+   - The checksum was never the right validator for PATCH's lost-update protection either: it covers
+     the arrays, and a tag edit does not change them. juniper-data's `PATCH /v1/datasets/{id}/tags` can
+     be made conditional on a *strong* `ETag` over the metadata representation, the SHA-256 of the
+     exact response body. The precondition is optional: a PATCH without one is applied, and nothing
+     answers `428`. The body is stable only because the access counters left it (`APD-DATA-032`); they
+     are served at `GET /v1/datasets/{id}/access` now.
+
+   A strong artifact validator needs each store to record the SHA-256 of the exact bytes it writes.
+   That known gap is defect-register row `APD-DATA-054`.
+2. **The artifact is not content-addressed, so it is not immutable.** `generate_dataset_id`
+   (`juniper_data/core/dataset_id.py`) hashes the *request* — generator, version and parameters — not
+   the bytes produced. Since juniper-data#322 (2026-09-03) a generator's documented default seed is
+   `DEFAULT_GENERATOR_SEED`, so an omitted seed gives a deterministic id, and only an explicit
+   `seed=None` mixes in a per-call nonce. A dataset that is deleted (or expires and is cleaned up) and
+   is then re-created serves whatever the generator produces now, at the same URI. `equities` with its
+   default `end_date=None` means "today", so the same parameters yield different data on different
+   days under one id. Part II states the governing rule, *content-address only over inputs that fully
+   determine the output*, and applies it to the seedless case; it applies here too, because the inputs
+   do not fully determine the bytes. `Cache-Control: private, max-age=31536000, immutable` would
+   therefore serve stale data for up to a year with revalidation suppressed. juniper-data sends
+   `Cache-Control: private, no-cache` on the artifact and on both metadata reads, and answers a
+   matching `If-None-Match` with a bodiless `304`.
+
+What stands is the linked passages' central advice. Emit a validator when you hold a digest
+(juniper-data now does). Keep read counters out of a validated representation, or move them to a
+sub-resource (juniper-data moved them to `/access`). Use `private`, not `public`, when the credential is
+a custom header. A digest in your data model is not an HTTP validator until someone puts it on the
+wire, and it is a *strong* one only if it digests the bytes actually sent. An identifier derived from
+inputs buys idempotent creation without buying immutability. II.11's example keeps `immutable` for its
+own artifacts, and honestly so, because that toy synthesizes each artifact deterministically from its
+id; its metadata responses now send exactly the bytes their strong `ETag` hashes. The corrected
+reasoning is also recorded at the source, in the module docstring of `juniper_data/api/http_cache.py`.
+
+### E.2 Conditional tag writes
+
+**Corrected 2026-09-24.** The passages linked here describe juniper-data's tag update as an unguarded
+read-modify-write that an ordinary read could undo, and `GET /v1/datasets/latest` as setting no
+`Content-Location`. Each was true when written, and each has since been fixed:
+
+- juniper-data#263 (2026-08-14, `APD-DATA-006`) made tag updates atomic, so a GET can no longer undo
+  one, and juniper-data#282 (2026-08-23, `APD-DATA-007`) made the metadata read-modify-write atomic
+  across processes on the local-filesystem store.
+- juniper-data#428 made `PATCH /v1/datasets/{id}/tags` conditional. It evaluates `If-Match` and
+  `If-None-Match` inside the store's lock, answers a stale tag with `412` and writes nothing, and
+  returns the new strong `ETag`. Its protection holds against writers that take the same lock, and
+  per host only: the Redis, Postgres and cached stores hold a per-process lock (defect-register row
+  `APD-DATA-055`). The precondition is optional.
+- `/v1/datasets/latest` and the tag PATCH's response now carry `Content-Location` naming the
+  canonical `/v1/datasets/<dataset_id>` (`APD-DATA-029`).
+
+II.11's example service, which demonstrates the conditional PATCH, now describes juniper-data's gap in
+the past tense.
