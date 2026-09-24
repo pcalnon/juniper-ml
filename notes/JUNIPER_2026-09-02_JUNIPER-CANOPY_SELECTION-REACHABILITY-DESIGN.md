@@ -222,6 +222,29 @@ and disable **Apply Dataset** at `⊥` (N9). The correct idiom already exists at
 >   still its only accessible signal. canopy#671 counts the dropdown half as shipped through the
 >   `role="status"` notice, but that notice announces what the gate did, not which options are
 >   greyed. The browser posture has not been re-measured since OQ-N5 (2026-09-02).
+> - **Why canopy cannot set `aria-disabled` itself (2026-09-24).** This comes from dash's source,
+>   not from a DOM measurement. dash 4.2.0, the version installed in `JuniperCanopy1`, renders each
+>   `dcc.Dropdown` option as `<label role="option" aria-selected=…>` wrapping a native
+>   `<input disabled={!!option.disabled}>`. See `src/utils/optionRendering.tsx` lines 101–118 in the
+>   installed bundle's source map.
+>   - The element that carries the option role never gets `aria-disabled`.
+>   - An option is only `{label, value, disabled, title, search}` (`src/types.ts`,
+>     `DetailedOption`), so no canopy prop reaches that element.
+>   - Upstream `plotly/dash` `dev` renders the same lines today; the latest release is 4.4.1. No
+>     issue or PR there mentions `aria-disabled`.
+>   - The reason is already in the accessible name, because `gated_dataset_options` appends it to
+>     the label (`"<label> — <reason>"`). What a screen reader misses is the state.
+>
+>   The owner's options:
+>   - **Upstream fix.** Add one attribute, `aria-disabled={!!option.disabled}`, on that `<label>`.
+>     Filing the issue or PR is an outward action.
+>   - **An accessible-name marker.** `label` may be a component, so a greyed option could carry
+>     visually hidden "unavailable" text, with `search` set to keep search working. This changes
+>     nothing on screen, but it changes the label strings that canopy's Y8 tests pin.
+>   - **A clientside observer** that sets `aria-disabled` on `.dash-options-list-option` labels
+>     whose input is disabled. It binds to dcc's private class names, so a dash upgrade can break it
+>     silently.
+>   - **Accept the gap.** The reason is announced; only the state is not.
 
 ### 4.4 Model-state truth (N5 / X1)
 

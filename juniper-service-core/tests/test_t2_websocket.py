@@ -236,6 +236,22 @@ async def test_ws_authenticate_enabled_valid_and_invalid() -> None:
     assert bad.closed is not None and bad.closed[0] == 4001
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("presented", ["\xa0", "\x85", "s3cret\xa0"])
+async def test_ws_authenticate_closes_4001_on_a_non_ascii_key(presented) -> None:
+    """The handshake shares ``validate`` with HTTP, so it shared the ``TypeError`` too.
+
+    Starlette decodes WebSocket header bytes as latin-1, exactly as it does HTTP ones, so a
+    non-ASCII ``X-API-Key`` reached ``hmac.compare_digest`` as a non-ASCII ``str`` and raised
+    out of the stream handler instead of closing the socket with 4001.
+    """
+    auth = build_api_key_auth(["s3cret"])
+    app = types.SimpleNamespace(state=types.SimpleNamespace(api_key_auth=auth))
+    ws = FakeWebSocket(headers={"X-API-Key": presented}, app=app)
+    assert await ws_authenticate(ws) is False
+    assert ws.closed is not None and ws.closed[0] == 4001
+
+
 # ======================================================================================
 # Lifecycle -> broadcast bridge (live training frames + replay frames / FW-3)
 # ======================================================================================

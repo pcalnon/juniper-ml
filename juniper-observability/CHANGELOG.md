@@ -43,6 +43,33 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 > module-level and are not exported from `juniper_observability.__init__`. The bump this documents is
 > therefore a **patch**, which is what `detect.py --local-git` proposes for this package.
 
+### Security
+
+- **`configure_sentry` no longer sends frame-local variables to Sentry.** It now passes
+  `include_local_variables=False` to `sentry_sdk.init`. The SDK default is `True`, which snapshots
+  every frame's locals into each error event. The validation of juniper-canopy#683 (2026-09-24)
+  showed what that costs. An anonymous request with `X-API-Key: \xa0` made `hmac.compare_digest`
+  raise `TypeError` inside `APIKeyAuth.validate`, and the error event carried the comparison
+  loop's local `candidate`: the **real configured key**. The SDK's own `EventScrubber` did not
+  catch it, because it redacts locals by name. `api_key`, the presented key, is on its default
+  denylist; `candidate` is not. No name list can be complete, so no locals are captured at all, and
+  there is deliberately no parameter to turn them back on. Owner ruling "Fix everywhere now"
+  (2026-09-24).
+- **The `before_send` hook also deletes frame `vars`**, as defence in depth. It covers every
+  `exception.values[*].stacktrace`, every `threads.values[*].stacktrace` and the top-level
+  `stacktrace`. The option covers the SDK's own capture paths but not the opt-in
+  `PureEvalIntegration`, whose event processor writes frame `vars` without consulting it
+  (sentry-sdk 2.58.0), and event processors run before `before_send`. The hook keeps its name,
+  `_strip_sensitive_headers`, because juniper-data and juniper-cascor import it by that name.
+- **Consumers inherit both on upgrade, with no code change.** juniper-data, juniper-canopy and
+  juniper-cascor's service path all delegate to `configure_sentry`. Pinned in `tests/test_sentry.py`
+  (18 new tests): the keyword is asserted, the hook is tested at every frame location, and
+  `TestNoSecretLocalReachesTheWire` drives the real SDK into a local transport. There, a frame that
+  dies holding the key as `candidate` puts no byte of it on the wire, through `capture_exception`
+  and through the logging path uvicorn uses, with each layer disabled in turn. A control asserts
+  that the harness does see the leak when both layers are off. Each of the five mutations in
+  juniper-ml's `util/ad-hoc/2026-09-24_bytes_compare_sentry_locals_verify.py` fails the suite.
+
 ## [0.4.0] - 2026-06-14
 
 ### Added
