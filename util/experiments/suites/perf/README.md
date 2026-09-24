@@ -23,5 +23,7 @@ python util/experiments/run_suite.py --suite util/experiments/suites/perf/<file>
 
 Notes (the arguments behind two table cells; MD013 applies to table rows):
 
-1. **PF-2 axis 3.** The suite's own aggregate carries only the budget-bound structural columns, and a run's TOP-LEVEL f1 / roc_auc are the selected-on validation split, so the reducer reads `eval_metrics.final` (`split == "test"`). It separates 2 → 3 → 4 spirals; 5 does not rank below 4 on this one seed. The bit-identical passes prove determinism and load-insensitivity, not seed variance.
+1. **PF-2 axis 3.** The suite's own aggregate carries only the budget-bound structural columns, and a run's TOP-LEVEL f1 / roc_auc are the selected-on validation split, so the reducer reads `eval_metrics.final` (`split == "test"`).
+   It separates 2 → 3 → 4 spirals. The bit-identical passes prove determinism and load-insensitivity, not seed variance.
+   The 2026-09-24 seed probe (`util/ad-hoc/2026-09-24_pf2_axis3_seed_probe.yaml`) found the 4/5 inversion was the seed: 4 beats 5 on test roc_auc for 4 of 5 dataset seeds. Seed spread is about 5× that gap, so one seed cannot order neighbours.
 2. **PF-4's 3.14 reference.** 71 benchmarks from a clean detached cascor worktree, at 1-minute load 5.54–6.55 during the cut (`baselines/cascor-micro/loadavg-20260924.tsv`). It was cut by owner ruling rather than after waiting further (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md` §6). Compare with `--benchmark-compare=0001`, never `--benchmark-compare-fail`; a quieter cut supersedes it by number. The 3.13 runs `0001`–`0003` cannot be compared across the interpreter change.
