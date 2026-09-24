@@ -16,7 +16,8 @@ util/ad-hoc/2026-09-24_register_primer_anchor_audit.py and seven prose citations
 post-merge validation (reports/2026-09-24_defect-register-round-42/ml2080-round1-laneA-reprobe.md H1,
 ml2080-round1-laneB-refute.md H1) found five more in three places that neither reached, and showed why a
 mechanical check cannot settle the question: "line N of 68f62f5b is line N+3 today" holds for every
-non-blank line past 5758, so it cannot tell a right anchor from a wrong one. Only reading can.
+non-blank line past 5758 that no later commit rewrote in place (#1098 is the only commit that moved a line;
+later ones rewrite lines where they stand), so it cannot tell a right anchor from a wrong one. Only reading can.
 
 So this does not judge. It finds every bare number in the register between 5759 and the primer's last line
 that is not a PR/issue number, a `file:line` anchor, a version or part of an identifier, and prints the

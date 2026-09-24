@@ -68,6 +68,15 @@ def subagents_dir(session: str) -> Path:
         raise SystemExit(f"session {session}: expected one subagents directory under {PROJECTS}, found {len(hits)}: {hits}")
     return hits[0]
 
+
+def transcript(session: str, aid: str) -> Path:
+    """An agent's transcript, refused with a message (not a bare FileNotFoundError) when it is not there."""
+    path = subagents_dir(session) / f"agent-{aid}.jsonl"
+    if not path.is_file():
+        raise SystemExit(f"session {session}: no transcript for agent {aid} at {path}; check the id in MISSING or the report's header")
+    return path
+
+
 # The seven reports juniper-ml#2072 did not archive: agent id -> file name (its naming style).
 # Deliberately NOT archived: a636d9155e8d8883f and a62c802ad61b85d03 are the canopy#660 and
 # cascor#678 BUILDERS (their work is the PRs; #2072 archives the cascor one's implementation report),
@@ -99,6 +108,9 @@ MISSING = {
     # validated at e2f87aae before any PR existed, because the owner's sweeper merges an open PR once green).
     "a0511a4be64379a82": ("2fba4397", "register-fixforward2-round1-laneA-reprobe.md"),
     "a4ae44a7ce58056a9": ("2fba4397", "register-fixforward2-round1-laneB-refute.md"),
+    # 2fba4397: round 2 of the same pre-PR validation, on the round-1 corrections (990ef3f9).
+    "aa5b6a0674e3d3218": ("2fba4397", "register-fixforward2-round2-laneA-reprobe.md"),
+    "aee68ba42bd222c6e": ("2fba4397", "register-fixforward2-round2-laneB-refute.md"),
     # bc31e993: the earlier rounds juniper-ml#2072 did not archive.
     "a6a4a26ed6b92d6e5": ("bc31e993", "ml2032-round1-laneA-reprobe.md"),
     "ab4b18fe07b799e1b": ("bc31e993", "ml2032-round1-laneB-attack.md"),
@@ -160,7 +172,7 @@ def main(argv: "list[str]") -> int:
             print(f"  skip   {f.name}: no agent header")
             continue
         body = text[m.end():]
-        again = last_report(subagents_dir(m.group(2)) / f"agent-{m.group(1)}.jsonl")
+        again = last_report(transcript(m.group(2), m.group(1)))
         same = body.rstrip("\n") == again.rstrip("\n")
         failed |= not same
         print(f"  {'OK    ' if same else 'DIFFER'} {f.name}: archived body {'==' if same else '!='} agent {m.group(1)}'s last message")
@@ -168,7 +180,7 @@ def main(argv: "list[str]") -> int:
     # 2. Add the missing reports.
     for aid, (session, name) in MISSING.items():
         target = OUT / name
-        text = last_report(subagents_dir(session) / f"agent-{aid}.jsonl")
+        text = last_report(transcript(session, aid))
         hits = [p.pattern for p in SECRET_PATTERNS if p.search(text)]
         if hits:
             print(f"  REFUSE {name}: credential-shaped text ({', '.join(hits)})")

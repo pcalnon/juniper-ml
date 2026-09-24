@@ -4196,7 +4196,7 @@ C2 now owns the merge, which is correct: only C2 knows whether "archive" still m
 resources used as semaphores "an origin server is better off being stringent in sending 412 for every failed
 precondition **on an unsafe method**" — the scope qualifier matters. Default to stringent. The same hazard hides on a path nobody suspects: `record_access` (`juniper_data/storage/base.py:198-223`)
 is a read-modify-write of the *same* document — bump `last_accessed_at` and `access_count`, write it all back — fired
-on every single-dataset metadata read and artifact download (`routes/datasets.py:672`, `:698`; the list, filter, `/latest` and versions reads fire none). It holds `_version_lock`;
+on the `GET /{id}` metadata read and every artifact download (`routes/datasets.py:672`, `:698`; the list, filter, `/latest` and versions reads fire none). It holds `_version_lock`;
 `update_dataset_tags` never takes that lock, so reading a dataset can undo an edit to it. **[Corrected: E.2](#e2-conditional-tag-writes)**
 
 #### 428 Precondition Required
@@ -5327,7 +5327,7 @@ automated must compare the description to the running system, or you do not have
 
 ### II.11 Part II Worked Example — Conditional Requests and Optimistic Concurrency
 
-This example builds the HTTP semantics of Part II into one small service: content-addressed identifiers, strong `ETag`s, conditional `GET` returning 304, optimistic concurrency with `If-Match` and 412, `428 Precondition Required` for writes that omit the precondition, keyset pagination with a `Link` header, and RFC 9457 `application/problem+json` for every error.
+This example builds the HTTP semantics of Part II into one small service: content-addressed identifiers, strong `ETag`s, conditional `GET` returning 304, optimistic concurrency with `If-Match` and 412, `428 Precondition Required` for writes that omit the precondition, keyset pagination with a `Link` header, and RFC 9457 `application/problem+json` for every error its routes raise.
 
 The motivation is again a real gap. `juniper-data` already computes a SHA-256 over every artifact and stores it on the metadata record (`juniper_data/core/artifacts.py:50-63`), and its dataset identifiers are already content-addressed (`juniper_data/core/dataset_id.py:23-61`) — so its artifacts are the strongest possible candidate for `ETag` plus `Cache-Control: immutable`. It emits neither, and supports no conditional requests at all. **[Corrected: E.1](#e1-artifact-validator)**
 
@@ -5375,7 +5375,7 @@ This example wires up conditional requests in a small, unauthenticated service:
   which -- unlike ``limit``/``offset`` -- cannot skip or duplicate rows when the
   collection changes mid-walk.
 * **RFC 9457 problem details** on every error path the routes raise, and on FastAPI's
-  validation errors, which otherwise emit a differently shaped body. Not on FastAPI's own 404, 405 or body-parse 400, which keep ``{"detail": ...}``, and not on an unhandled exception: ``n_samples`` is read unchecked, so a huge one is Starlette's plain-text 500.
+  validation errors, which otherwise emit a differently shaped body. Not on FastAPI's own 404, 405 or body-parse 400, which keep ``{"detail": ...}``, and not on an exception nothing here anticipates, which is Starlette's plain-text 500.
 
 Run the tests with::
 
@@ -5396,7 +5396,7 @@ from typing import Annotated, Any, Final, Literal
 
 from fastapi import FastAPI, Header, Query, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import Response
 from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt
 
 __all__ = [
@@ -5452,7 +5452,7 @@ class ProblemException(Exception):
         self.headers = dict(headers or {})
         self.extra = extra
 
-    def to_response(self, request: Request) -> JSONResponse:
+    def to_response(self, request: Request) -> Response:
         body: dict[str, Any] = {
             "type": self.type_,
             "title": self.title,
@@ -5461,7 +5461,7 @@ class ProblemException(Exception):
             "instance": str(request.url.path),
             **self.extra,
         }
-        return JSONResponse(body, status_code=self.status, media_type=PROBLEM_JSON, headers=self.headers)
+        return Response(json.dumps(body, allow_nan=False), status_code=self.status, media_type=PROBLEM_JSON, headers=self.headers)  # ASCII-escaped: an echoed lone surrogate cannot break it
 
 
 # --------------------------------------------------------------------------- #
@@ -5597,7 +5597,7 @@ def decode_cursor(cursor: str) -> str:
         after = payload["after"]
         if not isinstance(after, str):
             raise TypeError("after must be a string")
-    except (ValueError, KeyError, TypeError, RecursionError, binascii.Error) as exc:  # RecursionError: a cursor nested past the limit
+    except (ValueError, KeyError, TypeError, RecursionError, binascii.Error) as exc:  # RecursionError: nested deeper than the JSON parser allows
         raise ProblemException(
             status=400,
             title="Malformed cursor",
@@ -5615,11 +5615,11 @@ def create_app() -> FastAPI:
     app.state.datasets = {}
 
     @app.exception_handler(ProblemException)
-    async def _problem_handler(request: Request, exc: ProblemException) -> JSONResponse:
+    async def _problem_handler(request: Request, exc: ProblemException) -> Response:
         return exc.to_response(request)
 
     @app.exception_handler(RequestValidationError)
-    async def _validation_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    async def _validation_handler(request: Request, exc: RequestValidationError) -> Response:
         # Without this, FastAPI emits {"detail": [ ... ]} -- a second, undocumented
         # error shape that clients must special-case. RFC 9457 permits extension
         # members, so the field-level detail survives under "errors".
@@ -5655,8 +5655,8 @@ def create_app() -> FastAPI:
                 status_code=200,
                 headers={"Location": f"/v1/datasets/{dataset_id}", "ETag": metadata_etag(existing)},
             )
-
-        n_samples = int(body.params.get("n_samples", 512))
+        if not isinstance(n_samples := body.params.get("n_samples", 512), int) or not 1 <= n_samples <= 1_000_000:
+            raise ProblemException(status=422, title="Request validation failed", detail="n_samples must be an integer from 1 to 1,000,000.", type_="https://errors.example.com/validation-failed")
         dataset = Dataset(
             id=dataset_id,
             generator=body.generator,
@@ -5679,7 +5679,7 @@ def create_app() -> FastAPI:
         request: Request,
         limit: Annotated[int, Query(ge=1, le=MAX_PAGE_SIZE)] = DEFAULT_PAGE_SIZE,
         cursor: str | None = None,
-    ) -> JSONResponse:
+    ) -> Response:
         # Keyset pagination sorts by a UNIQUE, TOTAL key. A non-unique sort key
         # (created_at alone, say) is the classic keyset bug: rows sharing a
         # timestamp straddle the page boundary and get skipped or repeated.
@@ -5696,7 +5696,7 @@ def create_app() -> FastAPI:
             # constructing offsets, so the scheme can change without a break.
             next_url = f"{request.url.path}?limit={limit}&cursor={encode_cursor(page[-1].id)}"
             headers["Link"] = f'<{next_url}>; rel="next"'
-        return JSONResponse({"items": [d.metadata() for d in page], "count": len(page)}, headers=headers)
+        return Response(canonical_json({"items": [d.metadata() for d in page], "count": len(page)}), media_type="application/json", headers=headers)
 
     @app.get("/v1/datasets/{dataset_id}")
     async def get_dataset(
@@ -6081,14 +6081,14 @@ async def test_link_header_is_absent_on_an_exactly_full_final_page() -> None:
 async def test_a_garbage_cursor_is_a_problem_not_a_500() -> None:
     app = create_app()
     async with client_for(app) as client:
-        response = await client.get("/v1/datasets?cursor=not-a-real-cursor")
+        response, deep = await client.get("/v1/datasets?cursor=not-a-real-cursor"), await client.get("/v1/datasets?cursor=" + "W1tb" * 5000 + "XV1d" * 5000)  # base64 of 15,000 nested arrays
 
-    assert response.status_code == 400
-    assert response.headers["content-type"].startswith("application/problem+json")
+    assert response.status_code == deep.status_code == 400  # deep: nested past what the JSON parser allows
+    assert all(r.headers["content-type"].startswith("application/problem+json") for r in (response, deep))
 
 
 # --------------------------------------------------------------------------- #
-# 6. One error model everywhere
+# 6. One error model: the routes' errors and FastAPI's validation errors
 # --------------------------------------------------------------------------- #
 REQUIRED_MEMBERS = {"type", "title", "status", "detail", "instance"}
 
@@ -6114,10 +6114,10 @@ async def test_framework_validation_errors_use_the_same_shape() -> None:
     app = create_app()
     async with client_for(app) as client:
         bad_enum = await client.post("/v1/datasets", json={**SPIRAL, "generator": "not_a_generator"})
-        bad_extra, bad_str = await client.post("/v1/datasets", json={**SPIRAL, "typo_field": 1}), await client.post("/v1/datasets", json={**SPIRAL, "params": {"n_samples": "512"}})  # "512" must not be coerced
-        bad_query = await client.get("/v1/datasets?limit=99999")
-        bad_nan = await client.post("/v1/datasets", content=b'{"generator": "spiral", "params": {"noise": NaN}}', headers={"Content-Type": "application/json"})
-    for response in (bad_enum, bad_extra, bad_str, bad_query, bad_nan):
+        bad_extra, bad_str, bad_bool = await client.post("/v1/datasets", json={**SPIRAL, "typo_field": 1}), await client.post("/v1/datasets", json={**SPIRAL, "params": {"n_samples": "512"}}), await client.post("/v1/datasets", json={**SPIRAL, "params": {"seed": True}})  # "512" and true must not be coerced
+        bad_query, bad_fraction, bad_null = await client.get("/v1/datasets?limit=99999"), await client.post("/v1/datasets", json={**SPIRAL, "params": {"n_samples": 1.5}}), await client.post("/v1/datasets", json={**SPIRAL, "params": {"seed": None}})  # nor 1.5 truncated, nor null taken for a number
+        bad_nan, bad_surrogate = await client.post("/v1/datasets", content=b'{"generator": "spiral", "params": {"noise": NaN}}', headers={"Content-Type": "application/json"}), await client.post("/v1/datasets", content=b'{"generator": "\\ud800"}', headers={"Content-Type": "application/json"})  # the 422 echoes a lone surrogate
+    for response in (bad_enum, bad_extra, bad_str, bad_bool, bad_query, bad_fraction, bad_null, bad_nan, bad_surrogate):
         assert response.status_code == 422
         assert response.headers["content-type"].startswith("application/problem+json")
         assert REQUIRED_MEMBERS <= set(response.json())
@@ -9877,7 +9877,7 @@ harness re-run. Three other lines were corrected in place, being wrong rather th
 `If-Match` example (line 3639) reused the dataset id's digest as its tag; the §8.8.1 paraphrase (line
 4222) had dropped "applied to the representation data"; and II.11's motivation paragraph (line 5332)
 ended in the false premise itself, which its correction link now replaces. II.11's tests (lines 5791,
-5838, 5857 and 5945) now also check that each metadata `ETag` is the digest of the exact body sent — the POST-create 201's own body only since a second correction the same day. That correction also limited a create's `params` to JSON numbers, never coerced (line 5346): NaN, Infinity, or an `n_samples` that `int()` rejects, is a 422 problem where it had been a plain-text 500, and any other non-number is refused where it had been accepted; `n_samples` itself stays unchecked, so a fraction is truncated and a huge value is a plain-text 500, as lines 5377-5378 now say. It also made a cursor nested past the recursion limit a 400 problem (line 5600), and marked line 4224's bold as added emphasis, a fourth line corrected in place.
+5838, 5857 and 5945) now also check that each metadata `ETag` is the digest of the exact body sent — the POST-create 201's own body only since a second correction the same day. That correction also limited a create's `params` to JSON numbers, never coerced (lines 5346, 5400, 5498 and 5502), and `n_samples` to an integer from 1 to 1,000,000 (lines 5658-5659): NaN, Infinity, any other non-number, and an `n_samples` out of that range or not an integer are 422 problems now, where the same requests had been plain-text 500s, silently truncated, or accepted, depending on the input. It renders every problem body, and the list, ASCII-escaped like the other routes, so a lone surrogate echoed in a 422 or stored in a tag no longer makes a plain-text 500 (lines 5399, 5455, 5464, 5618, 5622, 5682 and 5699), and it makes a cursor nested deeper than the JSON parser allows a 400 (line 5600). This suite pins the create route's tag (line 5838), the deep cursor (lines 6084, 6086 and 6087), and a numeric string, `true`, `null`, a fractional `n_samples`, a NaN and an echoed lone surrogate (lines 6117-6120); `util/ad-hoc/2026-09-24_primer_toy_error_paths_probe.py` pins the rest, the list included. Two more lines were corrected in place: line 4199's `record_access` claim, and line 4224's bold, now marked as added emphasis. That makes five in all.
 Nothing above was moved: the defect register
 (`JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`) cites this document by bare line number,
 and inserting a line would shift every anchor after it. That is also why the table of contents does
@@ -9940,8 +9940,8 @@ the fix already sitting in juniper-data" (line 4213).
    serialized JSON "usually weak", which is right when the JSON hashed is not the JSON sent: a hash of some other
    serialization is strong only if nothing can change the bytes sent without changing it, and a serializer upgrade
    can. A hash of the exact bytes sent changes whenever those bytes change, which is what §8.8.1 asks of a strong
-   validator; unstable field order or float formatting only makes it change when the dataset has not, which costs
-   revalidations and spurious `412`s on conditional writes, but never serves stale bytes. juniper-data's metadata `ETag` and II.11's are both such hashes.
+   validator; unstable field order or float formatting only makes it change when the dataset has not, which costs the
+   `304`s it would have earned, and can fail an `If-Match` write that should pass or pass an `If-None-Match` write (§13.1.2) that should fail, but never serves stale bytes. juniper-data's metadata `ETag` and II.11's are both such hashes.
 
 What stands is the linked passages' central advice. Emit a validator when you hold a digest
 (juniper-data now does). Keep read counters out of a validated representation, or move them to a

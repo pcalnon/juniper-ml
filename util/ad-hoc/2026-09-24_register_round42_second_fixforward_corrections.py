@@ -257,7 +257,7 @@ PRIMER_LINES: dict[int, tuple[str, str]] = {
     ),
 }
 
-LINE_BREAKERS = "\r\x0b\x0c\x1c\x1d\x1e\x85  "
+LINE_BREAKERS = "\r\x0b\x0c\x1c\x1d\x1e\x85\u2028\u2029"
 
 
 def apply(text: str, subs: list[tuple[str, str, str, int]]) -> str:
@@ -285,7 +285,7 @@ def edit_primer(text: str) -> str:
     changed = [i + 1 for i, (a, b) in enumerate(zip(text.split("\n"), after)) if a != b]
     if len(after) != before or changed != sorted(PRIMER_LINES) or len(out.splitlines()) != len(text.splitlines()):
         raise SystemExit(f"FAIL primer: lines moved or unexpected lines changed ({len(after)} vs {before}; changed {changed}); nothing written")
-    print(f"  ok  primer: {len(changed)} lines rewritten in place, {before} lines before and after, none moved")
+    print(f"  ok  primer: {len(changed)} lines rewritten in place, {len(text.splitlines())} lines before and after, none moved")
     return out
 
 

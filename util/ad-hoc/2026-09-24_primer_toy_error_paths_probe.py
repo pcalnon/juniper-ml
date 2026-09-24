@@ -16,17 +16,25 @@ params carry NaN or Infinity -- which Python's JSON parser accepts -- reached `c
 allow_nan=False)` unrefused and escaped as a text/plain 500.
 
 The second fix-forward restricts `params` to JSON numbers, never coerced, and makes the 422 handler able to
-echo a refused NaN. Its pre-PR validation found this probe's first version overclaimed: it tried seven cases
-and printed "every client-input error is a 422 problem", while `n_samples: 1.5` is still accepted
-(truncated) and a huge `n_samples` still escapes as a plain-text 500. So each case now carries the answer
-the corrected primer SAYS it gets, the known limitations included, and the probe checks exactly that. The
-deep-cursor case pins the same fix-forward's `RecursionError` catch in `decode_cursor`, which the primer's
-own suite has no line to test without moving one.
+echo a refused NaN. Round 1 of its pre-PR validation found this probe's first version overclaimed: it tried
+seven cases and printed "every client-input error is a 422 problem", while `n_samples: 1.5` was still
+accepted (truncated) and a huge `n_samples` still escaped as a plain-text 500. Round 2
+(register-fixforward2-round2-laneA-reprobe.md, register-fixforward2-round2-laneB-refute.md) found those
+limitations better fixed than documented, and found a lone surrogate -- valid JSON, and a valid Python
+`str` -- turning the 422 itself into a plain-text 500, because Starlette's `JSONResponse` renders with
+`ensure_ascii=False`. The toy now bounds `n_samples` to an integer from 1 to 1,000,000 and renders every
+problem body, and the list, ASCII-escaped.
+
+So each case carries the answer the corrected primer SAYS it gets, and the probe checks exactly that. The
+primer's own suite pins some of them (lines 6084-6087 and 6117-6120: the deep cursor, "512", `true`, `null`,
+1.5, NaN and an echoed surrogate); this keeps those too and adds the ones the suite cannot hold without
+moving a line: the bound's edges, surrogates in other fields, and a surrogate STORED in a tag and then
+listed, which made every later list a plain-text 500 on `main` as well.
 
 This extracts `conditional_datasets.py` from a primer file by the harness's own convention (the
-`<!-- example-file: conditional_datasets.py -->` marker) and drives each case in-process with
-`raise_app_exceptions=False`, so an unhandled exception is observed as the plain-text 500 a real server
-sends. The valid POST is the control and must be answered 201.
+`<!-- example-file: conditional_datasets.py -->` marker) and drives each case in-process, in order, on one
+app, with `raise_app_exceptions=False`, so an unhandled exception is observed as the plain-text 500 a real
+server sends. The valid POST is the control and must be answered 201.
 
 Run it on the primer after the fix (expect every case AS EXPECTED) and before it (expect mismatches: the
 negative control).
@@ -43,31 +51,48 @@ import tempfile
 from pathlib import Path
 
 PROBLEM = "application/problem+json"
-PLAIN = "text/plain"
 JSON = "application/json"
 
-# (label, method, target, raw JSON body or None, expected status, expected content-type prefix).
-# Python's json module parses NaN / Infinity / -Infinity; so does Starlette.
-# The deep cursor must be BALANCED and 10,000 deep: on CPython 3.13 the C scanner parses a 5,000-deep
-# array, and an unbalanced one fails as a JSONDecodeError before it recurses that far (measured
-# 2026-09-24). Its URL is about 26.7 KB, which uvicorn's h11 parser refuses before the app sees it; an
-# in-process client, or a server without that limit, reaches decode_cursor.
-_DEEP_CURSOR = base64.urlsafe_b64encode(b"[" * 10000 + b"]" * 10000).decode("ascii").rstrip("=")
+# 15,000 balanced levels. CPython 3.13's C JSON scanner raises RecursionError somewhere between 9,000 and
+# 10,000 levels, balanced or not; sys.getrecursionlimit()'s 1,000 is not the limit that applies (both
+# round-2 lanes measured this on 3.13.13). The suite builds the same cursor without an import, as
+# "W1tb" * 5000 + "XV1d" * 5000. Whether a real server delivers a URL this long depends on the server:
+# round 2's lane A saw uvicorn with h11 accept a 26.7 KB request written in one piece and refuse it
+# written in 8 KB pieces. In-process, the app always sees it.
+_DEEP_CURSOR = base64.urlsafe_b64encode(b"[" * 15000 + b"]" * 15000).decode("ascii")
+_P = "/v1/datasets"
 CASES = [
-    ("NaN in params", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"noise": NaN}}', 422, PROBLEM),
-    ("Infinity in params", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"noise": Infinity}}', 422, PROBLEM),
-    ("-Infinity in params", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"noise": -Infinity}}', 422, PROBLEM),
-    ("NaN nested in params", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"grid": [1.0, NaN]}}', 422, PROBLEM),
-    ("non-numeric n_samples", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"n_samples": "abc"}}', 422, PROBLEM),
-    ("list n_samples", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"n_samples": [512]}}', 422, PROBLEM),
-    ("null n_samples", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"n_samples": null}}', 422, PROBLEM),
-    ("numeric-string n_samples", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"n_samples": "512"}}', 422, PROBLEM),
-    ("boolean n_samples", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"n_samples": true}}', 422, PROBLEM),
-    ("string param", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"mode": "fast"}}', 422, PROBLEM),
-    # Known limitations the corrected primer states (lines 5377-5378, 9880): n_samples itself is unchecked.
-    ("fractional n_samples (truncated)", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"n_samples": 1.5}}', 201, JSON),
-    ("huge n_samples (known 500)", "POST", "/v1/datasets", b'{"generator": "spiral", "params": {"n_samples": 1e19}}', 500, PLAIN),
-    ("cursor nested past the limit", "GET", f"/v1/datasets?cursor={_DEEP_CURSOR}", None, 400, PROBLEM),
+    # Non-numbers in params: refused by the schema (lines 5498 and 5502), never coerced.
+    ("NaN in params", "POST", _P, b'{"generator": "spiral", "params": {"noise": NaN}}', 422, PROBLEM),
+    ("Infinity in params", "POST", _P, b'{"generator": "spiral", "params": {"noise": Infinity}}', 422, PROBLEM),
+    ("-Infinity in params", "POST", _P, b'{"generator": "spiral", "params": {"noise": -Infinity}}', 422, PROBLEM),
+    ("NaN nested in params", "POST", _P, b'{"generator": "spiral", "params": {"grid": [1.0, NaN]}}', 422, PROBLEM),
+    ("non-numeric n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": "abc"}}', 422, PROBLEM),
+    ("list n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": [512]}}', 422, PROBLEM),
+    ("null n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": null}}', 422, PROBLEM),
+    ("numeric-string n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": "512"}}', 422, PROBLEM),
+    ("boolean n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": true}}', 422, PROBLEM),
+    ("string param", "POST", _P, b'{"generator": "spiral", "params": {"mode": "fast"}}', 422, PROBLEM),
+    ("null seed", "POST", _P, b'{"generator": "spiral", "params": {"seed": null}}', 422, PROBLEM),
+    ("boolean seed", "POST", _P, b'{"generator": "spiral", "params": {"seed": true}}', 422, PROBLEM),
+    # n_samples out of range or not an integer: refused by the route's bound (lines 5658-5659).
+    ("fractional n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": 1.5}}', 422, PROBLEM),
+    ("integral-float n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": 512.0}}', 422, PROBLEM),
+    ("zero n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": 0}}', 422, PROBLEM),
+    ("negative n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": -5}}', 422, PROBLEM),
+    ("n_samples one past the bound", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": 1000001}}', 422, PROBLEM),
+    ("huge integer n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": 10000000000000000000}}', 422, PROBLEM),
+    ("huge float n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": 1e19}}', 422, PROBLEM),
+    ("n_samples at the lower bound", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": 1}}', 201, JSON),
+    # A lone surrogate: echoed in a 422 (lines 5455, 5464, 5618, 5622), or stored in a tag and listed (5682, 5699).
+    ("lone surrogate in a string param", "POST", _P, b'{"generator": "spiral", "params": {"s": "\\ud800"}}', 422, PROBLEM),
+    ("lone surrogate as n_samples", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": "\\ud800"}}', 422, PROBLEM),
+    ("lone surrogate as generator", "POST", _P, b'{"generator": "\\ud800"}', 422, PROBLEM),
+    ("lone surrogate in an extra key", "POST", _P, b'{"generator": "spiral", "x\\ud800": 1}', 422, PROBLEM),
+    ("lone surrogate stored in a tag", "POST", _P, b'{"generator": "spiral", "params": {"n_samples": 8}, "tags": ["\\ud800"]}', 201, JSON),
+    ("the list after it", "GET", _P, None, 200, JSON),
+    # A cursor nested past what the JSON parser allows (line 5600).
+    ("cursor nested 15,000 deep", "GET", f"{_P}?cursor={_DEEP_CURSOR}", None, 400, PROBLEM),
 ]
 CONTROL = b'{"generator": "spiral", "params": {"n_samples": 64, "noise": 0.05, "seed": 1}}'
 
@@ -88,7 +113,7 @@ async def drive(module) -> "int | None":
     unexpected = 0
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
         headers = {"Content-Type": "application/json"}
-        control = await client.post("/v1/datasets", content=CONTROL, headers=headers)
+        control = await client.post(_P, content=CONTROL, headers=headers)
         print(f"  {'control (valid POST)':34} {control.status_code} {control.headers.get('content-type', '')}")
         if control.status_code != 201:
             return None
