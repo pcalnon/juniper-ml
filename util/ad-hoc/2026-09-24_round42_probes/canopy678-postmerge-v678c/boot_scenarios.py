@@ -112,5 +112,4 @@ for name, extra in SCENARIOS:
         print("    posture:", c)
     for secret in (" \t ", "real-env-key", "validator-real-key", " real-key-with-leading-space"):
         if secret.strip() and secret.strip() in (out + err + sl):
-            print(f"    !!! value {secret!r} appears in the logs")
-
+            print(f"    !!! value {redact(secret)!r} appears in the logs")
