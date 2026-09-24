@@ -17,12 +17,24 @@ stale-checkout misread that nearly shipped a 10,000-line revert earlier in this 
 So: fetch each file's blob AT THE BRANCH HEAD and compare it to the same path on main. Three
 outcomes per path -- SAME (no effect), DIFFERS (a real change to review), ABSENT-ON-MAIN (a genuine
 addition). Read-only; touches nothing.
+
+DEFECT THIS TOOL SHIPPED WITH, FOUND BY AN INDEPENDENT VALIDATOR 2026-09-24. The first run examined
+`--status modified` by CONTENT but the `added` set was checked only by PATH, with `comm` over two
+filename lists. A path present on main was reported "already there" without anyone comparing bytes.
+On ml#2045 that hid a real divergence: `util/ad-hoc/smart_checks_backup-sda.bash` is listed `added`
+(it did not exist at that stale merge-base), exists on main, and differs by 102 lines -- #2045 would
+have rewritten the very script it was named for. The reported net effect was "1 file"; it was 2.
+
+The two halves of one comparison were measured in different UNITS -- paths against bytes -- and the
+weaker unit silently governed the answer. `--status all` is now the default and every path is
+compared by content, whatever GitHub labelled it.
 """
 
 from __future__ import annotations
 
 import argparse
 import base64
+import json
 import subprocess
 import sys
 
@@ -49,7 +61,12 @@ def blob_at(path: str, ref: str) -> bytes | None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--pr", type=int, required=True)
-    ap.add_argument("--status", default="modified", help="which PR file status to examine")
+    ap.add_argument(
+        "--status", default="all",
+        help="which PR file status to examine: added, modified, removed, or all (default). "
+             "'all' is the honest choice -- GitHub's label is relative to the stale merge-base, "
+             "so an 'added' path may well exist on main with different bytes.",
+    )
     args = ap.parse_args()
 
     meta = gh(["api", f"repos/{OWNER}/{REPO}/pulls/{args.pr}", "--jq", ".head.ref"]).strip()
@@ -60,7 +77,8 @@ def main() -> int:
 
     listing = gh([
         "api", "--paginate", f"repos/{OWNER}/{REPO}/pulls/{args.pr}/files?per_page=100",
-        "--jq", ".[] | select(.status==\"" + args.status + "\") | .filename",
+        "--jq", ".[] | .filename" if args.status == "all"
+                 else ".[] | select(.status==\"" + args.status + "\") | .filename",
     ])
     paths = [p for p in listing.splitlines() if p.strip()]
     print(f"#{args.pr} head={head}  examining {len(paths)} '{args.status}' file(s) against main\n")
