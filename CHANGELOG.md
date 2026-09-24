@@ -108,6 +108,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Corrections.** The re-spec §1 said a request past the bound is a 422; it is a 400 that
     carries the message. juniper-data#432 is filed. The axis-2 suite's description said 10,000;
     it now says 5,800.
+- **PF-2 axis 3 seed probe: the 4/5 inversion was the seed, and one seed cannot order adjacent
+  spiral counts**
+  (`notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` new §4.3;
+  `util/ad-hoc/2026-09-24_pf2_axis3_seed_probe.yaml` and its reducer
+  `util/ad-hoc/2026-09-24_pf2_axis3_seed_probe_reduce.py`, both new; the axis-3 suite header;
+  `util/experiments/suites/perf/README.md`).
+  - Over 5 dataset seeds, 4 spirals beats 5 on test roc_auc for 4 of 5 seeds (median +0.040), and
+    on test f1 for 5 of 5 (median +0.108).
+  - roc_auc at 4 spirals spans 0.611–0.830 across seeds, about 5× that gap. **Any accuracy gate
+    on this axis needs several dataset seeds per cell.**
+  - Only the dataset seed can vary: the service exposes no network `random_seed`.
+  - The session handoff is
+    `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_perf-lane-helper-binds-axis3-run-d6-control-micro-cut.md`.
 
 ### Fixed
 

@@ -6,8 +6,9 @@
 **Status** (updated 2026-09-24; §5 has the per-axis table):
 
 - **Axis 2 RUN**, no knee (§3 RESULT).
-- **Axis 3 RUN** (§4.2): it separates 2 → 3 → 4 spirals, and 5 does not rank below 4 on one
-  seed.
+- **Axis 3 RUN** (§4.2): it separates 2 → 3 → 4 spirals. The seed probe (§4.3) shows 5 does
+  rank below 4 on most dataset seeds. Seed spread dominates the gap between neighbours, so
+  **one seed cannot order adjacent counts**.
 - **Axis 1 BLOCKED on its instrument** (§2 note). The owner ruled 2026-09-24 to publish
   `epochs_completed` from cascor.
 
@@ -347,6 +348,38 @@ budgets**: the interesting transition is already complete between 2 and 6.
   question, and thresholds are unratified. The columns already disagree at 4/5, which is the
   argument for deciding before gating.
 
+### 4.3 SEED PROBE 2026-09-24: the 4/5 inversion was the seed, and one seed cannot order neighbours
+
+Probe `util/ad-hoc/2026-09-24_pf2_axis3_seed_probe.yaml`: `n_spirals` 4 and 5 × 5 dataset
+seeds, at the same budget and cascor pin, on a loaded host. All 10 cells succeeded. Reducer:
+`util/ad-hoc/2026-09-24_pf2_axis3_seed_probe_reduce.py`. Evidence:
+`~/.local/state/juniper-experiments/suites/pf2-axis3-seed-probe-20260924T075038Z/`.
+
+**Only the DATASET seed varies.** The cascor service exposes no network `random_seed` on the
+training path, so every cell initialises identically. This is a marginal over dataset draws, not
+over initialisation.
+
+| dataset seed | 4 spirals: test roc_auc / f1 | 5 spirals: test roc_auc / f1 |
+|---|---|---|
+| 101 | 0.6954 / 0.3966 | 0.6556 / 0.2882 |
+| 202 | 0.8302 / 0.5539 | 0.6815 / 0.3571 |
+| 303 | 0.7995 / 0.5800 | 0.6234 / 0.2563 |
+| 404 | 0.6108 / 0.2673 | 0.5982 / 0.2415 |
+| 505 | 0.6404 / 0.3591 | 0.6586 / 0.2930 |
+
+- **The §4.2 inversion was the seed.** 4 spirals beats 5 on roc_auc for **4 of 5** seeds (median
+  4 − 5 = +0.040), and on raw f1 for **5 of 5** (median +0.108). Chance-adjusted f1 is mixed at
+  **3 of 5**: the gap between 4 and 5 is small next to the chance-level shift (1/4 → 1/5).
+- **The seed spread dwarfs the neighbour gap.** At 4 spirals, roc_auc spans **0.611–0.830** over
+  five dataset draws, about **5×** the median 4-vs-5 difference. §4.2's single seed (0.672 at 4)
+  sits inside that spread.
+- **Consequence for any gate on this axis:** a single-seed accuracy reading cannot order adjacent
+  spiral counts. A threshold (unratified) would need several dataset seeds per cell and a paired
+  comparison, or it gates on seed luck. The bit-identical passes of §4.2 never tested this,
+  because a fixed seed repeats the same draw.
+- **Not settled:** initialisation variance, which the service does not expose, and whether a larger
+  budget narrows the spread.
+
 ---
 
 ## 5. What must be true before a matrix is committed
@@ -355,7 +388,7 @@ budgets**: the interesting transition is already complete between 2 and 6.
 |---|---|---|
 | 1 — candidate phase | none beyond floor/wall | **BLOCKED on its instrument (2026-09-23, §2 note).** No structured suite artifact carries `epochs_completed`, and the log carries it only for candidates that stop early. **Owner ruled 2026-09-24: publish it in cascor** as a structured per-phase record, rather than parse the log. The base also needs `candidate_epochs` ≈ 2000 |
 | 2 — wide dataset range | largest completing cell at a chosen wall | **DONE 2026-09-23.** Ruled "10,000 now, in-process later"; built capped at 5,800 (the suite path's real ceiling is 5,882, per the second §1 correction); **RUN, no knee** (§3 RESULT), so the in-process follow-up does not fire |
-| 3 — spiral count | capacity budget that lets 2…10 differentiate | **DONE 2026-09-15 (§4.1)** — axis viable, but gate on **accuracy**; sample 2,3,4,5 not 2,6,10. **RUN 2026-09-23 (§4.2)**: separates 2 → 3 → 4 (test roc_auc 0.961 / 0.834 / 0.672). 5 scores 0.746, above 4, on one seed. Passes are bit-identical, so the observable is load-insensitive. **Next: a seed axis at 4 and 5** |
+| 3 — spiral count | capacity budget that lets 2…10 differentiate | **DONE 2026-09-15 (§4.1)** — axis viable, but gate on **accuracy**; sample 2,3,4,5 not 2,6,10. **RUN 2026-09-23 (§4.2)**: separates 2 → 3 → 4 (test roc_auc 0.961 / 0.834 / 0.672). 5 scores 0.746, above 4, on one seed. Passes are bit-identical, so the observable is load-insensitive. **Seed probe 2026-09-24 (§4.3)**: the inversion was the seed. 4 beats 5 on roc_auc for 4 of 5 dataset seeds and on f1 for 5 of 5, but the seed spread (0.611–0.830 at 4) is about 5× the gap, so **a gate needs several seeds per cell** |
 
 **Host condition.** All three are wall-clock measurements. The host has not been quiet in four
 sessions (1-minute load 9–20 across the 2026-09-11 evidence files, with a 21-hour `clamscan`

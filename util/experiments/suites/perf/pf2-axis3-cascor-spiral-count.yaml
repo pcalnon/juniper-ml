@@ -47,6 +47,12 @@
 #   The reducer reads eval_metrics.final (split == "test"). A run's TOP-LEVEL f1 / roc_auc are the
 #   VALIDATION split, which training early-stops on. The reducer's first draft read those and
 #   reported 0.9808 for the cell whose test figure is 0.9605.
+#
+# SEED PROBE, 2026-09-24 (util/ad-hoc/2026-09-24_pf2_axis3_seed_probe.yaml; re-spec §4.3): the
+# 4/5 inversion was the seed. Over 5 dataset seeds, 4 beats 5 on test roc_auc 4/5 (median +0.040)
+# and on f1 5/5. But roc_auc at 4 spans 0.611-0.830 across seeds, ~5x the gap, so this suite's
+# single fixed seed CANNOT order adjacent spiral counts. Give any gate on it several dataset
+# seeds per cell (the service exposes no network seed, so a suite can vary only the data).
 schema_version: 1
 suite:
   name: pf2-axis3-cascor-spiral-count
