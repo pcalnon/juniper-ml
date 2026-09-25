@@ -36,6 +36,10 @@ wrappers that do not pass the repo's shellcheck hook, and the trees are copies o
 | `register-fixforward2-round2-laneB/` | the same, pre-PR round 2, refutation | `register-fixforward2-round2-laneB-refute.md` |
 | `data438-fixforward-round1-laneA/` | juniper-data#438's fix-forward (branch `fix/conditional-requests-round4-followups`), pre-PR round 1, re-derivation | `data438-fixforward-round1-laneA-reprobe.md` |
 | `data438-fixforward-round1-laneB/` | the same, pre-PR round 1, refutation | `data438-fixforward-round1-laneB-refute.md` |
+| `cascor686-v686/` | juniper-cascor#686 (superseded by #688), follow-up lane | `cascor686-validation.md` |
+| `canopy683-v683/` | juniper-canopy#683, follow-up lane | `canopy683-validation.md` |
+| `cascor688-v688/` | juniper-cascor#688, follow-up lane | `cascor688-validation.md` |
+| `bytes-compare-ml2086-data440-cascor689-vbytes/` | juniper-ml#2086, juniper-data#440 and juniper-cascor#689, follow-up lane | `bytes-compare-ml2086-data440-cascor689-validation.md` |
 
 The `round3-4_*`, `ml2074-*` and `primer-correction-round2-*` directories were filled by
 `util/ad-hoc/2026-09-24_copy_round42_probe_scripts.py`.
@@ -45,3 +49,9 @@ The `register-fixforward2-*` and `data438-fixforward-*` directories hold the lan
 which took the round over from `8f86dec2`. They were filled by
 `util/ad-hoc/2026-09-24_copy_round42_session2fba4397_probe_scripts.py`, by the same rules.
 Their reports also name shell runners (`*.bash`, `*.sh`), which are not kept.
+
+The four follow-up-lane directories (`cascor686-v686/`, `canopy683-v683/`, `cascor688-v688/`
+and `bytes-compare-…-vbytes/`) come from the same `bc31e993` scratchpad, where that session went on
+to run the round's cascor and canopy follow-ups. They were filled by
+`util/ad-hoc/2026-09-24_copy_followup_lane_probe_scripts.py`, which also leaves out four
+whole-file copies of repository code the lanes kept beside their probes.
