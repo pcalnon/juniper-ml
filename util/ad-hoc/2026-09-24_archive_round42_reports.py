@@ -111,6 +111,40 @@ MISSING = {
     # 2fba4397: round 2 of the same pre-PR validation, on the round-1 corrections (990ef3f9).
     "aa5b6a0674e3d3218": ("2fba4397", "register-fixforward2-round2-laneA-reprobe.md"),
     "aee68ba42bd222c6e": ("2fba4397", "register-fixforward2-round2-laneB-refute.md"),
+    # 2fba4397: the PRE-PR validation of juniper-data#438's fix-forward (branch
+    # fix/conditional-requests-round4-followups, validated at d1c66a11 before any PR existed).
+    "a6afb722d69732ae5": ("2fba4397", "data438-fixforward-round1-laneA-reprobe.md"),
+    "a641405b9532742e6": ("2fba4397", "data438-fixforward-round1-laneB-refute.md"),
+    # 2fba4397: the executor that fixed those two reports' findings and pushed 94ce8b1f (its disposition report).
+    "a46e715a6801b98ca": ("2fba4397", "data438-fixforward-round1-fix-report.md"),
+    # 2fba4397: round 1 of the consensus validation of this session's own handoff
+    # (HANDOFF_2026-09-24_defect-register-round-42-ml2088-merged-data-fixforward-refuted-and-fixing-closes-pr-owed.md).
+    "ac06b2699a8d933a3": ("2fba4397", "handoff-2fba4397-round1-laneF-reprobe.md"),
+    "a6a7b815d4ecf1415": ("2fba4397", "handoff-2fba4397-round1-laneO-amputation.md"),
+    "a6664729992745f8d": ("2fba4397", "handoff-2fba4397-round1-laneP-fresh-session.md"),
+    # 2fba4397: round 2 of the same validation, on the corrected handoff.
+    "ad4c472203a4c4b54": ("2fba4397", "handoff-2fba4397-round2-laneF-reprobe.md"),
+    "a75082d40b77328f3": ("2fba4397", "handoff-2fba4397-round2-laneO-amputation.md"),
+    "aeb3e0b56825ec0c0": ("2fba4397", "handoff-2fba4397-round2-laneP-fresh-session.md"),
+    # 2fba4397: round 3, on round 2's corrections (frozen at sha256 c9ef84f352a82857).
+    "a55bb97b3f211dde1": ("2fba4397", "handoff-2fba4397-round3-laneF-reprobe.md"),
+    "a315e24f7bb56eba5": ("2fba4397", "handoff-2fba4397-round3-laneP-fresh-session.md"),
+    # 2fba4397: round 1 of the consensus validation of the CONSOLIDATED handoff
+    # (HANDOFF_2026-09-24_defect-register-round-42-consolidated-both-lanes-validations-and-closes-pr-owed.md,
+    # frozen at sha256 96c1b58f52fb5377), which merges the handoff above with the follow-up lane's and their predecessor.
+    "a597cb4528bceda28": ("2fba4397", "handoff-consolidated-round1-laneF-reprobe.md"),
+    "a6d7859ac840b7748": ("2fba4397", "handoff-consolidated-round1-laneO-amputation.md"),
+    "a7ae702d3f586d2e0": ("2fba4397", "handoff-consolidated-round1-laneP-fresh-session.md"),
+    # 2fba4397: round 2 of the same validation (frozen at sha256 79c0abb4b7dbdf15).
+    "aac2e54444043de31": ("2fba4397", "handoff-consolidated-round2-laneF-reprobe.md"),
+    "a8db50d2bc385a75e": ("2fba4397", "handoff-consolidated-round2-laneO-amputation.md"),
+    "ae082bd285e35f93b": ("2fba4397", "handoff-consolidated-round2-laneP-fresh-session.md"),
+    # 2fba4397: round 3 (frozen at sha256 cab844827349c45f).
+    "ac5d48c366111b92f": ("2fba4397", "handoff-consolidated-round3-laneF-reprobe.md"),
+    "abc3fd42a271ebb61": ("2fba4397", "handoff-consolidated-round3-laneP-fresh-session.md"),
+    # 2fba4397: round 4, a delta round on round 3's corrections (frozen at sha256 6a052d09a1d2db6e).
+    "ae1e0162ef5d928bd": ("2fba4397", "handoff-consolidated-round4-laneF-reprobe.md"),
+    "a620da6fbd3c0217f": ("2fba4397", "handoff-consolidated-round4-laneO-amputation.md"),
     # bc31e993: the earlier rounds juniper-ml#2072 did not archive.
     "a6a4a26ed6b92d6e5": ("bc31e993", "ml2032-round1-laneA-reprobe.md"),
     "ab4b18fe07b799e1b": ("bc31e993", "ml2032-round1-laneB-attack.md"),
@@ -123,8 +157,13 @@ MISSING = {
 
 SECRET_PATTERNS = [
     re.compile(r"hf_[A-Za-z0-9]{30,}"),
-    re.compile(r"pypi-[A-Za-z0-9_-]{40,}"),
-    re.compile(r"AgEIcHlwaS"),
+    # A PyPI token is "pypi-" plus a base64url macaroon, whose v2 serialization always opens "AgE".
+    # The bare "pypi-[A-Za-z0-9_-]{40,}" matched a handoff FILENAME on 2026-09-25
+    # ("…-on-pypi-and-pinned-the-stack-generates-…"), refusing a report that holds no token.
+    re.compile(r"pypi-Ag[A-Za-z0-9_-]{40,}"),
+    # A pypi.org macaroon body without its prefix. The bare "AgEIcHlwaS" matched a report that quoted
+    # this very pattern in backticks (2026-09-25); a real token body runs on for hundreds of characters.
+    re.compile(r"AgEIcHlwaS[A-Za-z0-9_-]{20,}"),
     re.compile(r"ghp_[A-Za-z0-9]{30,}"),
     re.compile(r"gho_[A-Za-z0-9]{30,}"),
     re.compile(r"github_pat_[A-Za-z0-9_]{20,}"),
@@ -181,7 +220,8 @@ def main(argv: "list[str]") -> int:
     for aid, (session, name) in MISSING.items():
         target = OUT / name
         text = last_report(transcript(session, aid))
-        hits = [p.pattern for p in SECRET_PATTERNS if p.search(text)]
+        # Name the owner's address by a label, never by its pattern: the pattern IS the address.
+        hits = ["owner-email" if p is _OWNER else p.pattern for p in SECRET_PATTERNS if p.search(text)]
         if hits:
             print(f"  REFUSE {name}: credential-shaped text ({', '.join(hits)})")
             failed = True
