@@ -16,8 +16,8 @@ round 1 of juniper-data#438's fix-forward. Their reports, archived verbatim in
 reports/2026-09-24_defect-register-round-42/, cite their scripts by paths under this session's scratchpad
 on tmpfs. The handoff validation of 2026-09-24 flagged those 196 files as the only copies. On 2026-09-25
 the same was true of the lanes that validated the session's two handoffs (its own, and the consolidated
-one of both round-42 lanes), so their six probe directories were added; a re-run skips a file an earlier
-run already copied byte-for-byte, and still refuses one that differs.
+one of both round-42 lanes), so a probe directory was added for each of those lanes that wrote any, round by
+round; a re-run skips a file an earlier run already copied byte-for-byte, and still refuses one that differs.
 
 This copies each lane's own Python scripts (`*.py` at the lane root, plus its `scripts/` subdirectory)
 into util/ad-hoc/2026-09-24_round42_probes/<report stem>/, by the same rules as the sibling: shell runners
@@ -52,6 +52,8 @@ LANES = {
     "hc2/laneP": "handoff-consolidated-round2-laneP",
     "hc3/laneF": "handoff-consolidated-round3-laneF",
     "hc3/laneP": "handoff-consolidated-round3-laneP",
+    "hc4/laneF": "handoff-consolidated-round4-laneF",
+    "hc4/laneO": "handoff-consolidated-round4-laneO",
 }
 EXTS = {".py"}
 

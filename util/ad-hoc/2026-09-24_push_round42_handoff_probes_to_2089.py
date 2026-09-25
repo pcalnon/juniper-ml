@@ -13,7 +13,7 @@ juniper-ml#2089 preserves the probe scripts of session 2fba4397's round-42 lanes
 that validated the session's two handoffs (its own, and the consolidated handoff of both round-42 lanes)
 wrote probes too, and their reports ship in the consolidation PR (branch docs/handoff-round42-consolidated)
 citing those probes by scratch path. util/ad-hoc/2026-09-24_copy_round42_session2fba4397_probe_scripts.py
-copied them into six new directories; this pushes those directories, the README rows that describe them,
+copied them into one new directory per lane (DIRS); this pushes those directories, the README rows that describe them,
 the copier and this script onto #2089's branch. util/push_signed_commit.py takes one `--add` per file,
 which a session sandbox will not let a shell loop assemble, so this builds the list. `--dry-run` is
 forwarded; `--expected-head` must be #2089's FULL head sha, read from gh.
@@ -39,6 +39,8 @@ DIRS = [
     "handoff-consolidated-round2-laneP",
     "handoff-consolidated-round3-laneF",
     "handoff-consolidated-round3-laneP",
+    "handoff-consolidated-round4-laneF",
+    "handoff-consolidated-round4-laneO",
 ]
 COPIER = "util/ad-hoc/2026-09-24_copy_round42_session2fba4397_probe_scripts.py"
 BRANCH = "chore/round42-probe-provenance-session-2fba4397"

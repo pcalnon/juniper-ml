@@ -44,6 +44,8 @@ wrappers that do not pass the repo's shellcheck hook, and the trees are copies o
 | `handoff-consolidated-round2-laneP/` | the consolidated handoff, round 2, fresh-session walk | `handoff-consolidated-round2-laneP-fresh-session.md` |
 | `handoff-consolidated-round3-laneF/` | the consolidated handoff, round 3, delta re-probe | `handoff-consolidated-round3-laneF-reprobe.md` |
 | `handoff-consolidated-round3-laneP/` | the consolidated handoff, round 3, fresh-session walk | `handoff-consolidated-round3-laneP-fresh-session.md` |
+| `handoff-consolidated-round4-laneF/` | the consolidated handoff, round 4, delta re-probe | `handoff-consolidated-round4-laneF-reprobe.md` |
+| `handoff-consolidated-round4-laneO/` | the consolidated handoff, round 4, amputation hunt | `handoff-consolidated-round4-laneO-amputation.md` |
 | `cascor686-v686/` | juniper-cascor#686 (superseded by #688), follow-up lane | `cascor686-validation.md` |
 | `canopy683-v683/` | juniper-canopy#683, follow-up lane | `canopy683-validation.md` |
 | `cascor688-v688/` | juniper-cascor#688, follow-up lane | `cascor688-validation.md` |
