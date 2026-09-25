@@ -14,7 +14,10 @@ of session 8f86dec2's lanes and is hard-coded to that session's scratchpad. Sess
 more lanes: the two pre-PR rounds of the second register and primer fix-forward (juniper-ml#2088), and
 round 1 of juniper-data#438's fix-forward. Their reports, archived verbatim in
 reports/2026-09-24_defect-register-round-42/, cite their scripts by paths under this session's scratchpad
-on tmpfs. The handoff validation of 2026-09-24 flagged those 196 files as the only copies.
+on tmpfs. The handoff validation of 2026-09-24 flagged those 196 files as the only copies. On 2026-09-25
+the same was true of the lanes that validated the session's two handoffs (its own, and the consolidated
+one of both round-42 lanes), so their six probe directories were added; a re-run skips a file an earlier
+run already copied byte-for-byte, and still refuses one that differs.
 
 This copies each lane's own Python scripts (`*.py` at the lane root, plus its `scripts/` subdirectory)
 into util/ad-hoc/2026-09-24_round42_probes/<report stem>/, by the same rules as the sibling: shell runners
@@ -39,6 +42,14 @@ LANES = {
     "r42b2/laneB": "register-fixforward2-round2-laneB",
     "r42d/laneA": "data438-fixforward-round1-laneA",
     "r42d/laneB": "data438-fixforward-round1-laneB",
+    # Added 2026-09-25: the lanes that validated this session's two handoffs. Their reports ship in the
+    # consolidation PR (branch docs/handoff-round42-consolidated) and cite these probes by scratch path.
+    "hv1/laneF": "handoff-2fba4397-round1-laneF",
+    "hv2/laneF2": "handoff-2fba4397-round2-laneF",
+    "hv3/laneD": "handoff-2fba4397-round3-laneF",
+    "hc1/laneF": "handoff-consolidated-round1-laneF",
+    "hc2/laneF": "handoff-consolidated-round2-laneF",
+    "hc2/laneP": "handoff-consolidated-round2-laneP",
 }
 EXTS = {".py"}
 
@@ -75,7 +86,9 @@ def main() -> int:
                 if f.is_file() and f.suffix in EXTS and f.stat().st_size < 200_000:
                     out = DST / dest / f.name
                     if out.exists():
-                        raise SystemExit(f"{out}: two lane files share this name; nothing more copied")
+                        if out.read_bytes() == f.read_bytes():
+                            continue  # copied, byte-identical, by an earlier run
+                        raise SystemExit(f"{out}: exists and differs from {f}; nothing more copied")
                     out.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(f, out)
                     copied += 1
