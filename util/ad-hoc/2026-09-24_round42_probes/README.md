@@ -30,8 +30,18 @@ wrappers that do not pass the repo's shellcheck hook, and the trees are copies o
 | `ml2074-round1-laneB/` | juniper-ml#2074, post-merge, refutation | `ml2074-round1-laneB-refute.md` |
 | `primer-correction-round2-laneA/` | the API primer correction v2 (juniper-ml#2075), round 2, re-derivation | `primer-correction-round2-laneA-reprobe.md` |
 | `primer-correction-round2-laneB/` | the API primer correction v2, round 2, refutation | `primer-correction-round2-laneB-refute.md` |
+| `register-fixforward2-round1-laneA/` | the second register and primer fix-forward (juniper-ml#2088), pre-PR round 1, re-derivation | `register-fixforward2-round1-laneA-reprobe.md` |
+| `register-fixforward2-round1-laneB/` | the same, pre-PR round 1, refutation | `register-fixforward2-round1-laneB-refute.md` |
+| `register-fixforward2-round2-laneA/` | the same, pre-PR round 2, re-derivation | `register-fixforward2-round2-laneA-reprobe.md` |
+| `register-fixforward2-round2-laneB/` | the same, pre-PR round 2, refutation | `register-fixforward2-round2-laneB-refute.md` |
+| `data438-fixforward-round1-laneA/` | juniper-data#438's fix-forward (branch `fix/conditional-requests-round4-followups`), pre-PR round 1, re-derivation | `data438-fixforward-round1-laneA-reprobe.md` |
+| `data438-fixforward-round1-laneB/` | the same, pre-PR round 1, refutation | `data438-fixforward-round1-laneB-refute.md` |
 
 The `round3-4_*`, `ml2074-*` and `primer-correction-round2-*` directories were filled by
 `util/ad-hoc/2026-09-24_copy_round42_probe_scripts.py`.
 The four predecessor-session directories were copied by hand, from that session's scratchpad
 (`bc31e993`), when round 42 was picked up in session `8f86dec2`.
+The `register-fixforward2-*` and `data438-fixforward-*` directories hold the lanes of session `2fba4397`,
+which took the round over from `8f86dec2`. They were filled by
+`util/ad-hoc/2026-09-24_copy_round42_session2fba4397_probe_scripts.py`, by the same rules.
+Their reports also name shell runners (`*.bash`, `*.sh`), which are not kept.
