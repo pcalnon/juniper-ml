@@ -50,6 +50,8 @@ LANES = {
     "hc1/laneF": "handoff-consolidated-round1-laneF",
     "hc2/laneF": "handoff-consolidated-round2-laneF",
     "hc2/laneP": "handoff-consolidated-round2-laneP",
+    "hc3/laneF": "handoff-consolidated-round3-laneF",
+    "hc3/laneP": "handoff-consolidated-round3-laneP",
 }
 EXTS = {".py"}
 

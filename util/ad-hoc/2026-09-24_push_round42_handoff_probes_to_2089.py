@@ -37,6 +37,8 @@ DIRS = [
     "handoff-consolidated-round1-laneF",
     "handoff-consolidated-round2-laneF",
     "handoff-consolidated-round2-laneP",
+    "handoff-consolidated-round3-laneF",
+    "handoff-consolidated-round3-laneP",
 ]
 COPIER = "util/ad-hoc/2026-09-24_copy_round42_session2fba4397_probe_scripts.py"
 BRANCH = "chore/round42-probe-provenance-session-2fba4397"
