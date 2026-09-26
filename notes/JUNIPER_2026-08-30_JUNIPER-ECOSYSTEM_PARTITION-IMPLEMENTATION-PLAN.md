@@ -476,9 +476,17 @@ difference is the whole point:
 | --- | --- | --- | --- |
 | `juniper-data` | 0.14.0 | **0.15.0** | `equities` / `equities_seq` go to `generator_version` 5.0.0: data#395 (the owner rulings) took them to 4.0.0 and data#404 (its regression fix) to 5.0.0. PyPI never served 4.0.0. The published wheels read 3.0.0 in 0.14.0 and 5.0.0 in 0.15.0. |
 | `juniper-canopy` | 0.7.0 | **0.8.1** | Every wheel from 0.5.0 through 0.8.0 ships zero top-level modules and cannot import its own dashboard (canopy#631), so 0.7.0 carried decision 11 without being able to deliver it. |
-| `juniper-ml` (meta) | 0.8.0 | **0.9.0**, then **0.10.0** | 0.9.0 floors canopy at `>=0.8.1`. 0.10.0 (ml#2033) floors data at `>=0.15.0`, because `>=0.14.0` left an installed 0.14.0 in place. v0.10.0 was cut 2026-09-23 at `288de462`; re-probe `/pypi/juniper-ml/0.10.0/json` before quoting it as installable. |
+| `juniper-ml` (meta) | 0.8.0 | **0.9.0**, then **0.10.0** | 0.9.0 floors canopy at `>=0.8.1`. 0.10.0 (ml#2033) floors data at `>=0.15.0`, because `>=0.14.0` left an installed 0.14.0 in place. v0.10.0 was cut 2026-09-23 at `288de462` and is on PyPI since that day (publish run 35879664979). |
 
 The other six rows still name the current PyPI release (simple API, 2026-09-22).
+
+**0.10.0 is delivered, not only published (verified 2026-09-23).** Over an installed juniper-data
+0.14.0, `uv pip install --dry-run "juniper-ml[servers]==0.10.0"` plans `- juniper-data==0.14.0` /
+`+ juniper-data==0.15.0`, while 0.9.0 plans no juniper-data change at all. The wheel-contract probe
+holds 39 of 39 checks over the published 0.10.0 set (ml#2063, evidence in
+`reports/2026-09-23_decision11-wheel-contract-probe-0.10.0/`). It exposed one gap: `[servers]` alone
+installs no Juniper client, so canopy's service mode and cascor's dataset fetch both fail under it
+(ml#2062). `[all]` is unaffected.
 
 **`juniper-model-core` is floored by nobody — but a fresh install still gets it.** juniper-ml's `[tools]`
 extra pins it `>=0.1.0,<0.4.0`, which *admits* 0.3.2 without *requiring* it. Both halves were measured in a
