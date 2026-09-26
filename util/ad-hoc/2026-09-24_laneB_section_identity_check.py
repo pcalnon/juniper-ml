@@ -25,7 +25,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def section(path: str, version: str) -> list[str]:
-    lines = open(path, encoding="utf-8").read().split("\n")
+    with open(path, encoding="utf-8") as f:
+        lines = f.read().split("\n")
     start = next(i for i, line in enumerate(lines) if line.startswith(f"## [{version}]"))
     end = next(i for i in range(start + 1, len(lines)) if lines[i].startswith("## ["))
     return lines[start:end]
