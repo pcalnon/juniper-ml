@@ -39,7 +39,8 @@ def load(path, name):
 
 egress = load("d_post/tests/test_compose_data_egress.py", "egress")
 subnet = load("d_post/tests/test_compose_metrics_subnet_alignment.py", "subnet")
-BASE = yaml.safe_load(open("d_post/docker-compose.yml", encoding="utf-8"))
+with open("d_post/docker-compose.yml", encoding="utf-8") as compose_file:
+    BASE = yaml.safe_load(compose_file)
 
 EGRESS_TESTS = [n for n in dir(egress) if n.startswith("test_")]
 SUBNET_TESTS = ["test_every_network_pins_a_unique_static_subnet"]
