@@ -9,6 +9,10 @@ Read it from `main`.
 (`…waits-on-the-owner-token.md` below), **SUPERSEDED** by this file. It is history only; do not act
 on its items. Its Wave 4 section is carried below, not by reference.
 **Times are UTC.** Live state was last probed at 2026-09-24 09:24Z.
+**Status: SUPERSEDED** (2026-09-24, about 20:00Z). It is history only; do not act on its items.
+**Successor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_data-0-16-0-on-pypi-and-pinned-the-stack-generates-equities-wave-4-waits-on-the-token.md`.
+That file carries this one's live items. Its Remaining items 1 and 2 are done: the PyPI deploy was
+approved and recorded, and the deploy repin is juniper-deploy#230.
 
 ## Handoff goal — paste from the next line down to the line `— END OF GOAL —`
 
