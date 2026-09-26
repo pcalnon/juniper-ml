@@ -32,7 +32,8 @@ os.chdir(HERE)
 spec = importlib.util.spec_from_file_location("t", "d_post/tests/test_helm_networkpolicy_data_egress.py")
 t = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(t)
-DOCS = [d for d in yaml.safe_load_all(open("render_post.yaml")) if d]
+with open("render_post.yaml") as f:
+    DOCS = [d for d in yaml.safe_load_all(f) if d]
 TESTS = (
     "test_data_policy_allows_https_to_public_addresses_only",
     "test_no_other_policy_gains_public_https",
