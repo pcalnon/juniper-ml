@@ -13,11 +13,27 @@ publish run 35033610624 all three jobs green; censused from the pulled image:
 **Newer release images since** (GHCR tag lists, probed 2026-09-24): `juniper-data:0.15.0` and
 `0.16.0`, `juniper-canopy:0.8.1` and `juniper-cascor-worker:0.6.1`. cascor (0.11.0) and recurrence
 (0.5.0) have had no release since.
-**State at 2026-09-24 09:24Z** (this refresh):
+**State at 2026-09-25 00:50Z** (this refresh):
 
-- **juniper-data v0.16.0 is cut and its image is published** (§5.2, the 0.16.0 paragraph). It is
-  the first data image that generates `equities`. Its PyPI deploy waits on the owner. juniper-deploy
-  still pins `0.15.0`, and its currency check flags that pin **STALE**.
+- **juniper-data v0.16.0 is cut, published and pinned.** Its image is on GHCR, PyPI serves it
+  since 18:35Z (the owner approved the deploy), and juniper-deploy pins it (juniper-deploy#230,
+  merged 18:58:50Z). See §5.2, the 0.16.0 paragraph. **The release's consumer notification
+  failed**: the dispatch to juniper-recurrence got `403`, a token-permission gap that is the
+  owner's to fix. The owner approved a replay, and recurrence's bench then **passed against
+  0.16.0** (§5.2).
+- **The stack can now generate `equities`, `mnist` and `arc_agi`.** 0.16.0 is the first data image
+  with the equities dependencies. But `juniper-data` sat only on `internal: true` networks, so every
+  request that fetches at run time failed: equities with a `400`, mnist and arc_agi with a `500`.
+  The owner ruled on 2026-09-24 for a dedicated egress network.
+  - Compose: juniper-deploy#231 (`data-egress`), proven in the stack (201, against 400 before it).
+  - Helm: juniper-deploy#232, a TCP 443 rule, verified as rendered.
+  - Validation refuted two of their claims and found gaps in their guards. #233 fixes those, and
+    sets the data pod's `automountServiceAccountToken: false`. #234 and #235 make the guards judge
+    the effect: the union of every policy selecting a pod, and the whole network definition.
+
+  See §5.2, *The stack still cannot generate equities*, which records the diagnosis and the fix.
+- **X8 (juniper-data#437) is not in 0.16.0.** It merged 22 minutes after the pinned cut, so
+  `equities_seq` is `5.0.0` / `classification` in this release.
 - **Item 5 is closed in all five repos** (§5.3). The publish path now checks that the image serves
   and reports the version it is tagged.
 - **Two release-train changes**: `ceremony.py` moves GitHub's Latest badge per the registry's
@@ -557,20 +573,174 @@ The ceremony cut the Release at 08:52Z. The tag points at `39d1cab2`, and v0.16.
 Latest badge (juniper-ml#2055). The notes are byte-identical to the preview the owner approved: the
 five bumped entries plus #428's, #434's and #431's. The archive,
 `notes/releases/RELEASE_NOTES_juniper-data_v0.16.0.md`, landed with juniper-ml#2076 (merged 09:16Z,
-`602094e3`). TestPyPI succeeded, and **PyPI waits on the owner's approval** (probed 2026-09-24
-09:24Z).
+`602094e3`). TestPyPI succeeded. **PyPI serves 0.16.0 since 2026-09-24 18:35Z**: the owner
+approved the deploy, run 35977786108's `Publish to PyPI` job succeeded, and
+`https://pypi.org/pypi/juniper-data/0.16.0/json` lists the wheel (18:35:40Z) and the sdist
+(18:35:42Z).
+
+**The consumer notification failed on its first real run.** 0.16.0 is the first release to carry
+the notify job (the 0.15.0 run has none). Its step `Dispatch` got
+`403 Resource not accessible by personal access token`: `CROSS_REPO_DISPATCH_TOKEN` cannot create a
+`repository_dispatch` on juniper-recurrence. The confirmation step was skipped, and the run's overall
+conclusion is `failure`. The release itself is fine. But juniper-recurrence's
+`ci-recurrence-bench.yml`, which the dispatch triggers to test the bench against the **exact**
+released version (recurrence#178), never ran for 0.16.0. Two follow-ups:
+
+- **The owner's:** fix the token's access. It is a secret, so no agent touches it. Until it is
+  fixed, every data release's notify job fails the same way.
+- **Replayed 2026-09-24 19:13Z, on the owner's approval.** The replay was one `repository_dispatch`
+  with the notify job's exact payload (`version 0.16.0`, `sha 39d1cab2`), sent with the session's
+  own credentials. Bench run 36046705575 passed on Python 3.12, 3.13 and 3.14: 36 passed, 1 skipped.
+  It installed **juniper-data 0.16.0** over the `0.15.0` that recurrence's `[bench]` pin resolves,
+  and noted that `[bench]` consumers do not get 0.16.0 until that pin admits it. **Raising that
+  cap is juniper-recurrence's follow-up**, and this run is the evidence that it is safe.
 
 **Verified on the published artifact.** `ghcr.io/pcalnon/juniper-data:0.16.0` is index
 `sha256:e8bddbe5…` (amd64 and arm64), and `0.16` and `latest` name the same digest.
 
 - `EQUITIES_DEPS_AVAILABLE` is `True` and `yfinance` imports, so the 0.15.0 finding above is closed
-  from this tag on.
+  **for the image** from this tag on. It was not closed for the stack until juniper-deploy#231 (see *The stack still
+  cannot generate equities* below).
 - `util/check_image_serves.py --expect-version 0.16.0` passes, and `/v1/health` reports
   `git_sha 39d1cab2`, the pinned commit.
 - `arc_agi` reports generator `4.0.0` (#430).
+- `equities_seq` reports generator `5.0.0` and serves `classification` meta. **X8 (juniper-data#437)
+  is not in 0.16.0.** It merged at 09:14Z, 22 minutes after the pinned cut, and ships in the next
+  data release. Its CHANGELOG entry first landed under the released `## [0.16.0]` heading.
+  juniper-data#438 moved it to `[Unreleased]` (merged 18:52:00Z). `main`'s `[0.16.0]` is again
+  byte-identical to the tag's (261 lines, sha256 `f376fdc1c111`), checked with
+  `util/ad-hoc/2026-09-24_changelog_section_identity.py`.
+  - This session's own PR for the same move, juniper-data#439, was **closed unmerged**.
+    - Both PRs inserted at the same point, so merging `main` into #439 **conflicts**
+      (`git merge-tree` and `git merge-file` both say so), and a server-side update-branch refuses it.
+    - A two-parent merge commit, `322135bd`, resolved that conflict in #439's favour and dropped
+      #438's 71 added lines. It was committed by `web-flow` and authored by `pcalnon`, at 18:52:37Z,
+      37 s after #438 merged.
+    - #439's diff went from `CHANGELOG.md +26 −23` to **`+0 −71`**. A squash would have deleted
+      #438's `### Fixed` notes from `main` with every check green.
+    - Who resolved it is not established; no local Claude Code transcript records it.
+      `safe_merge.py` refused only because the head moved during its wait.
+    - The PR carries a correction comment; an earlier comment and the unpublished v1 draft of this refresh had
+      called it a conflict-free update-branch.
 
-**The deploy pins still name `juniper-data:0.15.0`**, at `docker-compose.yml:164`, `:517` (the
-demo seed) and `k8s/helm/juniper/values.yaml:40`. That repin waits on the owner.
+**Repinned: juniper-deploy#230** (merged 2026-09-24 18:58:50Z, `b972ae8c`). It moved
+`docker-compose.yml:164`, `:517` (the demo seed; `:523` since #231) and `k8s/helm/juniper/values.yaml:40` to `0.16.0`.
+`scripts/verify_published_images.py --fail-on-stale` exited 1 before (STALE) and 0 after, with all
+six refs current. Its `pytest tests/` run: 289 passed, 42 skipped.
+
+**The stack still cannot generate equities, for a new reason: `juniper-data` has no egress.**
+(Fixed since; see *RULED 2026-09-24* below. This paragraph records the diagnosis as found.)
+
+- **The network.** In `juniper-deploy/docker-compose.yml` at `b972ae8c` (before #231), the
+  `juniper-data` service is attached only to `backend` and `data` (`:207-209`), and both are
+  `internal: true` (`:1209-1217`).
+- **The fetch.** The generator fetches from Yahoo Finance (`yf.download`,
+  `juniper_data/generators/equities/generator.py:983` at v0.16.0) and SEC EDGAR (`urlopen`, `:241`)
+  at request time.
+- **The cache.** `JUNIPER_DATA_EQUITIES_CACHE_DIR` defaults to
+  `/home/juniper/.cache/juniper_data/equities`, which no volume persists.
+
+Measured on the published 0.16.0 image with the same `equities_seq` request each time (one ticker,
+2023-01-03 to 2024-06-03), in a fresh container with a cold cache:
+
+| network | response | log |
+| --- | --- | --- |
+| default bridge (egress) | `201`: generator `5.0.0`, `classification`, 219/35/36 rows | `AAPL -> 354 rows` |
+| `--internal` (the stack's shape) | `400 {"detail":"Invalid request parameters"}` | `DNSError … Could not resolve host: query2.finance.yahoo.com` |
+
+**mnist and arc_agi fail the same way**, which validation found and the first diagnosis missed.
+Both fetch from the Hugging Face Hub at request time. With `--network none`, the 0.16.0 image lists
+both as available, and each request answers `500` after about 23 s (`Couldn't reach
+'lordspline/arc-agi' on the Hub`). The 0.15.0 image carries the same `datasets` dependency, so the
+stack has never been able to generate either.
+
+This has two consequences in the stack:
+
+- `GET /v1/generators` now lists both generators as `available: true`, so clients are offered a
+  dataset that cannot be built.
+- The failure reads as the caller's bad parameters. It is the same body that a genuinely invalid
+  request gets, such as a range too short to window.
+
+The 2026-09-22 ruling was framed as "in the stack it means outbound calls to Yahoo and SEC" (above).
+The stack's isolation makes those calls impossible. So the ruling's purpose, juniper-recurrence
+training on `equities_seq` in the stack, is not met by the image change alone.
+
+**RULED 2026-09-24 (owner): a dedicated egress network**, chosen over pre-seeding the cache on a
+volume, an allow-listed proxy, or accepting the gap. The same ruling covers the Helm chart. It
+shipped in four juniper-deploy PRs. The last two fix forward what an independent validation round
+refuted in the first two.
+
+- **Compose: #231** (merged 19:26:18Z, `2bde07b2`). It adds `data-egress`, a plain bridge on
+  `172.27.0.0/16` (pinned like the other four, per D5 of
+  `notes/JUNIPER_2026-07-03_JUNIPER-CANOPY_CONTROL-SURFACE-AUTH-AND-NAT-DESIGN.md`, not this plan's
+  D-5).
+  - Only `juniper-data` attaches, and it publishes no port. Prometheus is not on it, so no
+    allowlist changes. `backend` and `data` stay internal.
+  - **Proven in the stack.** `docker compose up juniper-data` ran from the branch, then one
+    authenticated `equities_seq` request was made from inside the service: `201` on the branch,
+    `400` with the DNS failure on `main` before #231 (`b972ae8c`).
+  - **Two limits, stated in the compose comment and deploy's `docs/REFERENCE.md` since #233:**
+    - Egress is **unrestricted** (any port, any destination, including the LAN and a cloud VM's
+      metadata endpoint); compose cannot express a filter.
+    - No published port is **not** the same as no way in. Docker 28 and later drop direct-routed
+      traffic to unpublished ports. Older Docker (the repo supports >= 24.0), with a FORWARD policy
+      of ACCEPT, lets a LAN host that routes `172.27.0.0/16` via the Docker host reach
+      `juniper-data:8100`. #231 had called the network "a route out, not a way in", measured only
+      from the Docker host itself on Docker 29.7.2.
+- **Helm: #232** (merged 19:56:16Z, `7ff6ff32`). `networkpolicy-data.yaml` gains TCP 443 to
+  `0.0.0.0/0`, excluding RFC 1918, CGNAT and link-local. It is verified as rendered only; no
+  cluster was available.
+  - **An overclaim.** #232 said the exclusions meant the rule "cannot reach cluster-internal
+    services". On a cluster whose **API server has a public IP on 443** (a GKE or AKS public
+    endpoint), or whose pod or service ranges are public, it reaches them, and the data pod
+    carried the default service-account token.
+  - **IPv4 only.** IPv6-only clusters stay blocked. On a dual-stack pod the SEC fetch (a 30 s
+    `urlopen`) can wait out its timeout on a dropped IPv6 attempt.
+- **#233** (merged 23:43:02Z, `713e8a93`) fixes both PRs forward.
+  - **The data pod sets `automountServiceAccountToken: false`** (owner ruling 2026-09-24): a
+    reachable API server finds no token. juniper-data never calls the Kubernetes API.
+  - **Helm tests.** #232's tests pinned the rule's wording, and eight strictly broader rules passed
+    them: an `endPort`, a peerless 443 rule, an all-ports rule, `::/0`, two `/1` halves, a named
+    port. They now pin three things: the data policy's whole egress set; no `ipBlock` or peerless
+    non-DNS egress elsewhere; and the token setting. 15/15 planted defects caught
+    (`util/ad-hoc/2026-09-24_helm_data_egress_mutation_check.py`).
+  - **Compose tests.** Every service must attach to declared networks by name, which rules out a
+    namespace-sharing sidecar and dynamic IPAM. Every limit above is now stated in the docs.
+  - Its renamed tests needed an `Allow-Symbol-Loss:` waiver, carried in a commit trailer that
+    reached `main`.
+- **#234** (merged 23:51:02Z, `0408534d`) closes the two probes #233's compose tests still passed:
+  - an interpolated `internal: "${EGRESS_INTERNAL:-true}"`. `internal` and masquerade must now be
+    literal values;
+  - juniper-data joining `frontend` as well. Its network set is now pinned exactly.
+
+  Validation lane B's own probe catches all nine of its cases, and 14/14 planted defects are
+  caught. The lane is round 1 of the archiving handoff's validation record,
+  `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_data-0-16-0-on-pypi-and-pinned-the-stack-generates-equities-wave-4-waits-on-the-token.md`.
+  Its probes are retained as `util/ad-hoc/2026-09-24_laneB_*.py`.
+- **#235** (merged 2026-09-25 00:43:57Z, `8ec98277`) fixes forward what round 2 of that handoff's
+  validation (lane R2) found in #233 and #234:
+  - **Helm.** The tests judged one policy at a time, where Kubernetes gives a pod the **union** of
+    every policy that selects it, whatever the policy's labels. These passed: a widened deny-all, a
+    second or unlabelled allow-all policy on data, a widened selector, a data policy that no longer
+    applied, a projected token, and a CiliumNetworkPolicy. The tests now compute each pod's
+    effective egress from all rendered NetworkPolicies. 26/26 planted defects are caught
+    (`util/ad-hoc/2026-09-24_helm_data_egress_mutation_check.py`).
+  - **Compose.** #234 checked two keys by value, and `gateway_mode_ipv4: routed` or
+    `nat-unprotected`, `inhibit_ipv4` and interpolations passed. `data-egress`'s whole definition is
+    now pinned, each service's networks must be declared, and `extends` is forbidden. 21/21 are
+    caught (`util/ad-hoc/2026-09-24_data_egress_mutation_check.py`).
+  - **Accepted limits:**
+    - the DNS rule has no peer (ports 53 open to any address);
+    - the Redis subchart's own policy allows its pods all egress;
+    - only the default values are rendered;
+    - both Docker protections assume Docker manages iptables.
+  - **Measured in the stack after #234:** mnist `201` (48,000/6,000/6,000 rows) and arc_agi `201`
+    (1,374/172/171).
+
+**Still open, not ruled:** juniper-data could answer a fetch failure with a `502`/`503` rather than
+a `400`, which blames the caller's parameters. The availability-flag instrument proposed above
+reads `True` here, so it cannot see this class; only a request made in the deployed network
+topology can.
 
 **Instruments** (juniper-ml, `util/ad-hoc/`): `2026-09-21_image_build_context_sweep.py` (class 1,
 including root-anchoring detection) and `2026-09-21_image_does_its_job_sweep.py` (class 2: import
