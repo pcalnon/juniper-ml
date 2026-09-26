@@ -1,0 +1,56 @@
+import subprocess, base64, json
+def gh(args):
+    r = subprocess.run(["gh"] + args, capture_output=True, text=True)
+    return r.stdout + (("\nERR:" + r.stderr.strip()) if r.returncode else "")
+def content(repo, path, ref):
+    out = gh(["api", f"repos/pcalnon/{repo}/contents/{path}?ref={ref}", "--jq", ".content"])
+    try:
+        return base64.b64decode(out).decode("utf-8", "replace")
+    except Exception:
+        return "ERR " + out[:200]
+C = "juniper-cascor"
+print("--- files changed by #690 (7f4a7213..0fbb447a minus #689)")
+print(gh(["api", f"repos/pcalnon/{C}/compare/b9484fef98430a6b0c833c5a158cb94f4a132912...0fbb447a1455ca19ef042a5f925b306ab2d3e3e2", "--jq", ".files[].filename"]))
+print("--- files changed by #689")
+print(gh(["api", f"repos/pcalnon/{C}/commits/b9484fef98430a6b0c833c5a158cb94f4a132912", "--jq", ".files[].filename"]))
+print("--- b9484fef message (4001?)")
+msg = gh(["api", f"repos/pcalnon/{C}/commits/b9484fef98430a6b0c833c5a158cb94f4a132912", "--jq", ".commit.message"])
+print([l for l in msg.splitlines() if "4001" in l])
+print("--- 0fbb447a message head")
+msg2 = gh(["api", f"repos/pcalnon/{C}/commits/0fbb447a1455ca19ef042a5f925b306ab2d3e3e2", "--jq", ".commit.message"])
+print(msg2[:400])
+print("--- manager.py 'Nothing was loaded' at b9484fef, 78e99414, 0fbb447a")
+for ref in ("b9484fef98430a6b0c833c5a158cb94f4a132912", "78e99414", "0fbb447a1455ca19ef042a5f925b306ab2d3e3e2"):
+    src = content(C, "src/api/lifecycle/manager.py", ref).splitlines()
+    print(ref[:8], len(src), [(i + 1, l.strip()[:110]) for i, l in enumerate(src) if "Nothing was loaded" in l or "nothing was loaded" in l.lower()][:5])
+    if ref.startswith("0fbb") or ref.startswith("78e9"):
+        print("   4841:", src[4840][:160] if len(src) > 4840 else "")
+        print("   str_as_bool:", [(i + 1, l.strip()[:100]) for i, l in enumerate(src) if "str_as_bool" in l][:3])
+        print("   Re-submit:", [(i + 1, l.strip()[:120]) for i, l in enumerate(src) if "Re-submit with allow_truncation=true" in l][:3])
+print("--- cascor security.py anchors at 0fbb447a")
+src = content(C, "src/api/security.py", "0fbb447a1455ca19ef042a5f925b306ab2d3e3e2").splitlines()
+print([(i + 1, l.strip()[:100]) for i, l in enumerate(src) if "surrogatepass" in l or "compare_digest(" in l])
+print("--- cascor app.py handler anchors at 0fbb447a")
+src = content(C, "src/api/app.py", "0fbb447a1455ca19ef042a5f925b306ab2d3e3e2").splitlines()
+print([(i + 1, l.strip()[:80]) for i, l in enumerate(src) if "exception_handler" in l])
+print("335:", src[334][:140])
+print("--- cascor main.py 231 + conftest 37 + test files")
+m = content(C, "src/main.py", "0fbb447a1455ca19ef042a5f925b306ab2d3e3e2").splitlines()
+print("main.py 231:", m[230][:140])
+cf = content(C, "src/tests/conftest.py", "0fbb447a1455ca19ef042a5f925b306ab2d3e3e2").splitlines()
+print("conftest 37:", cf[36][:100])
+t = content(C, "src/tests/unit/test_cfg_03_sentry_dsn_resolution.py", "0fbb447a1455ca19ef042a5f925b306ab2d3e3e2").splitlines()
+print("test_cfg_03 25:", t[24][:120] if len(t) > 24 else t[:3])
+s = content(C, "src/tests/unit/api/test_api_security.py", "0fbb447a1455ca19ef042a5f925b306ab2d3e3e2").splitlines()
+print("test_api_security 31:", s[30][:120] if len(s) > 30 else "")
+print("--- cascor locks")
+for f in ("requirements.lock", "requirements-cpu.lock"):
+    L = content(C, f, "0fbb447a1455ca19ef042a5f925b306ab2d3e3e2").splitlines()
+    print(f, [(i + 1, l) for i, l in enumerate(L) if l.startswith(("juniper-observability==", "juniper-service-core==", "fastapi==", "starlette=="))])
+print("--- #689 PR body 4001? / #440 body 4001?")
+b = gh(["api", f"repos/pcalnon/{C}/pulls/689", "--jq", ".body"])
+print("689 body 4001 lines:", [l[:140] for l in b.splitlines() if "4001" in l])
+b2 = gh(["api", "repos/pcalnon/juniper-data/pulls/440", "--jq", ".body"])
+print("440 body 4001 lines:", [l[:140] for l in b2.splitlines() if "4001" in l])
+cl = content(C, "CHANGELOG.md", "0fbb447a1455ca19ef042a5f925b306ab2d3e3e2").splitlines()
+print("cascor CHANGELOG 4001:", [(i + 1, l[:140]) for i, l in enumerate(cl) if "4001" in l][:4])
