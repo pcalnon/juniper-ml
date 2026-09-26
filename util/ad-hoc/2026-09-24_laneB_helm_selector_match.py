@@ -28,7 +28,8 @@ def matches(selector: dict, labels: dict) -> bool:
 
 
 for path in sys.argv[1:]:
-    docs = [d for d in yaml.safe_load_all(open(path, encoding="utf-8")) if d]
+    with open(path, encoding="utf-8") as f:
+        docs = [d for d in yaml.safe_load_all(f) if d]
     pods = {d["metadata"]["name"]: (d["spec"]["template"]["metadata"].get("labels") or {}) for d in docs if d.get("kind") in ("Deployment", "StatefulSet")}
     pods.update({d["metadata"]["name"]: (d["metadata"].get("labels") or {}) for d in docs if d.get("kind") == "Pod"})
     print(f"== {path}")
