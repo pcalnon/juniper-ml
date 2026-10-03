@@ -17,6 +17,17 @@ Other aliases:
 
 **Document of record** for this arc, called "the design" below: `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`. In this file a bare `§` always means the design.
 
+> **READ FIRST — a concurrent session re-measured the host on 2026-10-03.** After this file was drafted, session `652c1204` (worktree `cached-swinging-summit`) wrote `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` as this arc's new assessment and plan of record. At the time of writing that file existed only in that worktree, not on `main`, and a
+> three-lane validation round on it was in progress. Its findings, as recorded in the auto-memory `project_backup_service_user_migration_2026-09-21.md` § 2026-10-03 [UNVERIFIED — reported by that session, not re-probed here]:
+>
+> - The host is unchanged since 09-24, and **none of the owner's 09-24 released actions has run**.
+> - The service `.env` was rewritten on 2026-09-22 with two active keys (`SETTINGS_ENCRYPTION_KEY_OLD` and `SETTINGS_ENCRYPTION_KEY`). No record documents this.
+> - The live wrapper is v2. On the next start it exits 78 on the `_OLD` line, before preflight. The record's "neither wrapper revision can parse" is obsolete.
+> - All five STOP defects are re-confirmed in the artifacts.
+> - Its plan runs in phases: A, land the ruling; B, fix the five defects and clear the STOP; C, the released owner actions; D, P0; E, hardening.
+>
+> **Before acting on anything below, check whether that plan has reached `main`, and coordinate with its session.** Where the two documents conflict, the newer host measurement wins.
+
 ---
 
 ## Goal statement (paste as the new thread's first prompt)
