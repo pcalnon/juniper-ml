@@ -656,6 +656,14 @@ util/juniper-backup.bash --dest /path/to/writable-dir
 | `--repos "LIST"` | Space-separated leaf names. Each must match `[A-Za-z0-9._-]+` (blocks `../`). Empty list is exit 2. |
 | `--label TEXT` | Same charset. Inserted into every filename. Use when `--source` is a restored tree. |
 
+Where the drives are is read from the environment, under the **same names and defaults** that `util/juniper-backup-scheduled.bash` reads, so the scheduler's "a drive is mounted and due" and the runner's "write here" cannot name different paths. All three are ignored under `--dest`; a malformed value is exit 2.
+
+| Variable | Default | Contract |
+|----------|---------|----------|
+| `JUNIPER_BACKUP_MEDIA_ROOT` | `/run/media/$USER` | Where configured drives are mounted. udisks2 2.10.91 moved automounts here from `/media/$USER` on 2026-09-07. Must be absolute. |
+| `JUNIPER_BACKUP_DEVICES` | `EBC5-F0A3 DFF3-2782` | Space-separated, in build order. A name (`[A-Za-z0-9._-]+`) is a directory under the root. An entry beginning with `/` is its own mount root (an fstab drive under `/mnt/`). The scheduler does **not** take that form. |
+| `JUNIPER_BACKUP_DIR` | `Juniper-8.0.0.python` | Directory on each drive that receives the archives. |
+
 Default `APPLICATION_REPOS`: `juniper-canopy`, `juniper-cascor`, `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-data`, `juniper-data-client`, `juniper-deploy`, `juniper-ml`, `juniper-recurrence`, `juniper-slacker`. A missing leaf is a WARNING skip; zero found is FATAL. `juniper-legacy` is **not** in the default list.
 
 ### Restore
@@ -676,7 +684,7 @@ Use `-xjf`, not `-xzf`. Encryption is asymmetric (`gpg -r <uid> -e`) to the two 
 |------|---------|
 | `0` | Every configured device holds a verified archive of every found repo, or `--dry-run` previewed |
 | `1` | Fatal — nothing written (bad source, no usable dest, missing recipient, empty repo list, build/verify failed) |
-| `2` | Misuse (unknown flag, empty `--repos`, illegal `--label` / repo name) |
+| `2` | Misuse (unknown flag, empty `--repos`, illegal `--label` / repo name, malformed `JUNIPER_BACKUP_*` value) |
 | `4` | PARTIAL — cross-repo `TOTAL_WRITTEN < TOTAL_EXPECTED`. Visible to cron. Already-verified copies stay. |
 
 ### Contract (verified against `util/juniper-backup.bash` on `origin/main`)
@@ -691,11 +699,27 @@ Use `-xjf`, not `-xzf`. Encryption is asymmetric (`gpg -r <uid> -e`) to the two 
   Absolute or quote-baked patterns were shellcheck-clean and matched nothing (`du` ~205 MB vs `tar` ~103 GB).
   Repro: [`util/ad-hoc/2026-08-28_exclude_arg_repro.bash`](../util/ad-hoc/2026-08-28_exclude_arg_repro.bash).
 - **`cascor-snapshots` is archived by default.** `EXCLUDE_CASCOR_SNAPSHOTS` defaults to the script's `FALSE` (`1`). The script's `TRUE` is `0`. Set `EXCLUDE_CASCOR_SNAPSHOTS=0` to drop the corpus; setting `1` does **not** mean "yes, exclude".
-- **Mount check is the mount root.** `mountpoint -q` on `/media/<user>/<MEDIA_NAME>`, not on `BACKUP_DIR`. An unmounted path is an empty dir on `/` and would fill the system disk.
+- **Mount check is the mount root.** `mountpoint -q` on `<JUNIPER_BACKUP_MEDIA_ROOT>/<MEDIA_NAME>`, or on the entry itself when it begins with `/`, and never on `BACKUP_DIR`. One function, `mount_root_for`, resolves the root for both the guard and the write. An unmounted path is an empty dir on `/` and would fill the system disk. Before recovery plan B6 the root was hard-coded `/media/pcalnon`, which udisks2 stopped using on 2026-09-07, so every run after that date skipped both drives.
 - **One missing drive degrades; zero usable is fatal.**
 - **Free-space floor is the uncompressed source**, not half. This tree is mostly already-compressed `.h5` / `.npz` / `.gpg`.
 - **Cross-repo totals decide COMPLETE.** Per-repo counters used to reset each iteration and print COMPLETE over a missing archive.
 - **`cleanup_partial` removes only `IN_PROGRESS`.** Verified copies on earlier devices stay.
+
+### Scheduled lane (tier 2)
+
+`bash util/install_juniper_backup_timer.bash [--dry-run]` installs the lane under `systemd --user`: §7.8 and §8 P3 step 2 of [the backup design](../notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md), item B6 of [the 2026-10-03 recovery plan](../notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md). It copies and never symlinks, and it refuses root and a missing `Linger` before writing anything. `--dry-run` prints every action and writes nothing.
+
+| Installed | From |
+|-----------|------|
+| `~/.local/bin/juniper-backup.bash` | `util/juniper-backup.bash` |
+| `~/.local/bin/juniper-backup-scheduled.bash` | `util/juniper-backup-scheduled.bash` |
+| `~/.local/bin/duplicati-backup-failure.bash` | `util/duplicati_backup_failure.bash` (shared with the Duplicati lane) |
+| `~/.config/systemd/user/juniper-backup.{timer,path,service}` | `util/systemd/` |
+| `~/.config/systemd/user/juniper-backup-failure.service` | `util/systemd/` |
+
+It then runs `systemctl --user daemon-reload` and `systemctl --user enable --now juniper-backup.timer juniper-backup.path`. The timer opens a weekly window and the path unit watches `/run/media/pcalnon`; both start `juniper-backup.service`, which runs the scheduler. The scheduler runs the archive only when a configured drive is mounted and has no success stamp newer than `JUNIPER_BACKUP_PERIOD_DAYS` (default 7). Its state is `~/.local/state/juniper-backup/last-run.status`.
+
+**Until the lane has succeeded once, a run with no drive mounted reads `FAILED`, not `SKIPPED`.** The scheduler counts "never succeeded" as older than `JUNIPER_BACKUP_STALE_DAYS` (default 21), so `OnFailure=` fires. Do the first OK run before checking for a SKIP. `juniper-backup-failure.service` sets `DUPLICATI_STATE_DIR=%h/.local/state/juniper-backup` and passes `juniper-backup.service` as `$1`, so the shared reporter records into this lane's `failures.log` rather than the Duplicati lane's.
 
 ### Operator pitfalls
 
@@ -704,7 +728,8 @@ Use `-xjf`, not `-xzf`. Encryption is asymmetric (`gpg -r <uid> -e`) to the two 
 | `tar` cannot extract a `.tbz2.gpg` | Used `-xzf`. Use `-xjf`. |
 | `--dry-run` created archives | Script must `exit 0` after the preview. Current `origin/main` does. |
 | `FATAL: gpg recipient not found` | Both `ENCRYPT_KEYS` UIDs must resolve in the local keyring **before** tar starts. |
-| `SKIP … is not a mount point` | Drive not attached. Attach it, or pass `--dest DIR`. |
+| `SKIP … is not a mount point` | Drive not attached, or mounted under another root. Check the path the line names against `findmnt`; set `JUNIPER_BACKUP_MEDIA_ROOT` if the drive is mounted elsewhere, or pass `--dest DIR`. |
+| First scheduled run reads `FAILED` with no drive attached | Expected until the lane's first success; see [Scheduled lane (tier 2)](#scheduled-lane-tier-2). |
 | Exit `4` PARTIAL | A copy/verify failed. Already-verified archives stay. Re-run makes a **new** UUID. |
 | Archive huge / includes `data/` `venv/` | Exclude flags inert (quoted or absolute). Confirm `--dry-run` `tar args:` shows `--exclude=<leaf>/<name>`. |
 | Backup of a restored tree looks like today's | Timestamp is when the backup ran. Pass `--label`. |
@@ -2753,7 +2778,7 @@ Related: [Relocation Completeness (G3)](#relocation-completeness-g3),
 
 ### Running every suite
 
-The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th; the drift script above counts, so re-run it rather than trusting this figure). This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
+The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th), **169** on 2026-10-03 (`tests/test_juniper_backup_tier2_lane.py`); the drift script above counts, so re-run it rather than trusting this figure. This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
 
 ci.yml is the authoritative list. `tests/test_ci_test_wiring_drift.py` gates that every `tests/test_*.py` on disk is invoked there; `util/ad-hoc/2026-09-10_agents_md_test_list_drift.py` reports any suite CI runs that this list does not name.
 
@@ -2776,6 +2801,7 @@ python3 -m unittest -v tests/test_prune_git_branches_without_working_dirs.py
 python3 -m unittest -v tests/test_reap_pytest_orphans.py
 python3 -m unittest -v tests/test_kill_helpers.py
 python3 -m unittest -v tests/test_duplicati_scheduled_backup.py
+python3 -m unittest -v tests/test_juniper_backup_tier2_lane.py
 python3 -m unittest -v tests/test_editable_install_drift_check.py
 python3 -m unittest -v tests/test_env_floor_drift_check.py
 python3 -m unittest -v tests/test_env_drift_check.py
@@ -2956,6 +2982,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_soak_run_probe.py` -- Gate for `util/soak_run_probe.py`. Hermetic (never launches `claude`). Pins dry-run stdout leaking no task/fact/discriminator, and that a pointer miss is never reported as a scored miss (consistent with source-recovered **or** wrong).
 - `tests/test_cascor_freeze_tell.py` -- **not on main** (open juniper-ml#1667). Pins exact-prefix + sibling/worktree exclusion, independent cmdline/environ/fd/maps arms, and `main()` exit 1 iff any hold. Operator surface: [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell).
 - `tests/test_kill_helpers.py` -- Hermetic process-filter / kill-path tests for `util/kill_all_pythons.bash` and `util/juniper_worker_kill.bash` (PATH-stubbed `ps`/`sudo`/`kill`; bash `kill` builtin disabled; never touches live PIDs)
+- `tests/test_juniper_backup_tier2_lane.py` -- The tier-2 USB archive lane (recovery plan B6 / I-20). Pins that `util/juniper-backup.bash` takes its mount root from the scheduler's `JUNIPER_BACKUP_MEDIA_ROOT` (default `/run/media/$USER`, falling back to `id -un` when `USER` is unset), that an absolute `JUNIPER_BACKUP_DEVICES` entry is used as-is **and still mount-checked**, that malformed values exit 2 before any probe (and do not block a `--dest` run), and that `--dry-run` writes nothing and never encrypts. End to end through the copies `util/install_juniper_backup_timer.bash` installs: the scheduler's due run reaches the runner under one root, and an unplugged run is `FAILED` until the first success, `SKIPPED` after it. `juniper-backup-failure.service`, executed as written, records into this lane's state dir and leaves the Duplicati lane's untouched. The installer's `--dry-run` prints every action and writes nothing; root and a missing `Linger` are refused before any write; a destination symlink is replaced, never written through. PATH-stubbed `mountpoint` answers from a list of scratch paths, so no drive is probed. `util/ad-hoc/2026-10-03_juniper_backup_tier2_mutation_check.py` kills 23 of 23 mutants, including the pre-change runner itself.
 - `tests/test_check_conda_env_torch.py` -- Hermetic exit-matrix tests for `util/check_conda_env_torch.bash` (P-5 torch._C shadow diagnostic: 0/1/2/3/4 via `JUNIPER_CONDA_DIR` + stub python; no real conda/torch). Operator surface: [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5).
 - `tests/test_requirements_drift_check.py` -- Tests for `util/requirements_drift_check.py`: structural range validation, BAD_PATH / BAD_RANGE classification, `--ecosystem-root` rewriting, CLI exit codes, JSON output
 - `tests/test_requirements_consolidate.py` -- Live-tree gate for `util/requirements_consolidate.py` (v5 refresh). Pins byte-identical `render(parse(x))` on every shipped view, `--check-roundtrip` / `--check-views` agreement, Detail survival (ledger has no `detail`), derived-family projection of `by-area`, unique IDs, the official 11-entry `rec` block, incoming-only exact/fuzzy dedup, and `load_incoming` refusals. `util/` is outside every pre-commit Python hook, so this unittest is the gate.
@@ -3180,7 +3207,8 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Installer **copies** (never symlinks) the runner, OnFailure reporter, and three user units; does **not** `enable --now` the timer.
   - Runner fail-closes on empty/short passphrase, unmounted dest, wrong-filesystem dest, and tmpfs `--tempdir`; `flock` / DB-open holders `skip_or_fail` (a skip overwrites `result=OK`, so the next skip always escalates).
   - `--no-auto-compact=true` is load-bearing. Distinct from `util/juniper-backup.bash` (project-tree `tar | gpg -e`). Operator surface: [`docs/REFERENCE.md` § Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane).
-- `util/juniper-backup.bash` -- Per-repo project-tree archive to attached external media: `tar -cjf` (bzip2) piped into `gpg -e` (asymmetric, two `ENCRYPT_KEYS`). Build once, copy ciphertext. `--dry-run` writes nothing. Restore is `gpg -d FILE | tar -xjf -` (not `-xzf`). Exit 0/1/2/4. Unattended verify is `--list-packets` only. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
+- `util/juniper-backup.bash` -- Per-repo project-tree archive to attached external media: `tar -cjf` (bzip2) piped into `gpg -e` (asymmetric, two `ENCRYPT_KEYS`). Build once, copy ciphertext. `--dry-run` writes nothing. Restore is `gpg -d FILE | tar -xjf -` (not `-xzf`). Exit 0/1/2/4. Unattended verify is `--list-packets` only. Drives are found under `JUNIPER_BACKUP_MEDIA_ROOT` (default `/run/media/$USER`), read under the same name and default as the scheduler; an absolute device entry is its own mount root. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
+- `util/install_juniper_backup_timer.bash` / `util/juniper-backup-scheduled.bash` / `util/systemd/juniper-backup{,-failure}.service` / `util/systemd/juniper-backup.{timer,path}` -- Tier-2 lane under `systemd --user` (recovery plan B6). The installer copies the runner, the scheduler and the shared OnFailure reporter into `~/.local/bin/` and the four units into `~/.config/systemd/user/`, then `daemon-reload` and `enable --now` the timer and the path unit. `--dry-run` writes nothing; it refuses root and a missing `Linger` before any write. Run it with `bash`. `juniper-backup-failure.service` points the reporter at `~/.local/state/juniper-backup`. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
 - `util/soak_next_probe.py` -- Emits the next pointer-follow soak probe's **task only** (unprimed). Default pick is least-covered then registry order; `--probe-id` needs the **full slug** (`P19-port-check-fail-opens`, not `P19`); `--reveal` is scoring-only; `--status` is post-intervention run counts with no task text. Tests: `tests/test_soak_next_probe.py`.
 - `util/soak_run_probe.py` -- Headless `claude -p` wrapper: dispatch, capture, mechanical retrieval channel (`tool_use` **inputs only** — not the answer text, #1644; not a sibling repo's same-named file, #1855; still no `tool_result`), scoring packet. `--dry-run` does not require the `claude` binary and must not print the task. A **real** run refuses (exit **3**) a terminal `BET-FAILING` / `HOLDS-AT-*` **and** an unreadable `DEGRADED` / `NO-DATA` / `NO-SEEDED-DATA` / crashed ledger unless `--force`; a **dry run is exempt** and previews with a NOTE on stderr (#1690, second arm 2026-09-10) — the rule rations billed sessions and a dry run spends none. `--force` is an open owner decision, not sanctioned. Reaper P1 pidfile is `$JUNIPER_EXP_RUN_ROOT/soak-probes/soak-probe-<pid>.pid`, not `reports/soak/runs/`. Tests: `tests/test_soak_run_probe.py`. Operator surface: [Pointer-Follow Soak](#pointer-follow-soak).
 - `util/soak_ledger.py` -- Append-only soak ledger (`probe-run` / `report` / `status` / `verify-probes` / `resolve` / `rescore`). Seeded arm decides; organic describes. `source-recovered` stays in the follow-rate denominator. `--outcome miss` requires `--class`. `rescore` is one-way to `source-recovered`. `analyse()` has no era filter (ledger §15.4 is not applied). `status` exits `1` on `BET-FAILING` or an open escalation (by design). Tests: `tests/test_soak_ledger.py`.
@@ -7435,10 +7463,10 @@ These variables are consumed by Juniper packages documented in this repository. 
 > These are not set by juniper-ml itself — they are consumed by the installed sub-packages.
 > `CASCOR_SERVICE_URL` defaults to the cascor service/container port (`8200`). The host-level stack and `util/get_cascor_*.bash` helpers target the host-facing port (`8201`) unless overridden.
 > REST constructor `base_url` values are normalised as of the GitHub-main clients documented in [HTTP Client Base-URL Contract](#http-client-base-url-contract); those env vars are **not** themselves passed through `_normalize_url` unless the caller feeds them into the constructor.
-Local orchestration scripts in `util/` also read the host-stack variables documented in [Host Orchestration Utilities](#host-orchestration-utilities), the E2E overrides in [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities), the per-run experiment overrides in [Experiment Stack Utilities](#experiment-stack-utilities), the Duplicati lane overrides in [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane), and `EXCLUDE_CASCOR_SNAPSHOTS` on [Juniper Project-Tree Backup](#juniper-project-tree-backup) (script `TRUE` is `0`).
+Local orchestration scripts in `util/` also read the host-stack variables documented in [Host Orchestration Utilities](#host-orchestration-utilities), the E2E overrides in [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities), the per-run experiment overrides in [Experiment Stack Utilities](#experiment-stack-utilities), the Duplicati lane overrides in [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane), and `EXCLUDE_CASCOR_SNAPSHOTS` (script `TRUE` is `0`) and the tier-2 drive settings `JUNIPER_BACKUP_MEDIA_ROOT` / `JUNIPER_BACKUP_DEVICES` / `JUNIPER_BACKUP_DIR` on [Juniper Project-Tree Backup](#juniper-project-tree-backup).
 `JUNIPER_CONDA_DIR` (default `/opt/miniforge3`) is also the conda root for `util/check_conda_env_torch.bash` — see [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5).
 
-Local orchestration scripts in `util/` also read the host-stack variables documented in [Host Orchestration Utilities](#host-orchestration-utilities), the E2E overrides in [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities), the F-039 store-probe overrides in [F-039 Store Probe](#f-039-store-probe) (`JUNIPER_E2E_CANOPY_URL`, `JUNIPER_E2E_CANOPY_LOG`), the per-run experiment overrides in [Experiment Stack Utilities](#experiment-stack-utilities), and the Duplicati lane overrides in [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane).
+Local orchestration scripts in `util/` also read the host-stack variables documented in [Host Orchestration Utilities](#host-orchestration-utilities), the E2E overrides in [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities), the F-039 store-probe overrides in [F-039 Store Probe](#f-039-store-probe) (`JUNIPER_E2E_CANOPY_URL`, `JUNIPER_E2E_CANOPY_LOG`), the per-run experiment overrides in [Experiment Stack Utilities](#experiment-stack-utilities), the Duplicati lane overrides in [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane), and the tier-2 drive settings (`JUNIPER_BACKUP_MEDIA_ROOT`, `JUNIPER_BACKUP_DEVICES`, `JUNIPER_BACKUP_DIR`) in [Juniper Project-Tree Backup](#juniper-project-tree-backup).
 
 `JUNIPER_CASCOR_SNAPSHOTS_DIR` is **dual-use**: cascor's snapshot write directory **and** `snapshot_index.default_root()`.
 Experiment `--up` may redirect it to `$RUN_DIR/snapshots` (W-6). The sidecar chain must **not** — pass `--root` instead.

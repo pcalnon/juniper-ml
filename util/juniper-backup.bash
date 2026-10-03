@@ -4,6 +4,7 @@
 # Sub-Project:   juniper-ml
 # File Name:     juniper-backup.bash
 # Author:        Paul Calnon
+# Version:       1.0.0
 #
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
@@ -48,10 +49,20 @@
 #       util/juniper-backup.bash --source ~/juniper-restore-2026-02-27 --label snapshot-2026-02-27 \
 #           --repos "juniper-cascor juniper-data JuniperLegacy"
 #
+# Environment -- read under the SAME names, with the SAME defaults, by util/juniper-backup-scheduled.bash, which decides
+# whether a run is due by testing these paths and then runs this script. Ignored under --dest.
+#     JUNIPER_BACKUP_MEDIA_ROOT  Where configured drives are mounted. Default /run/media/$USER (udisks2 >= 2.10.91
+#                                moved automounts there from /media/$USER on 2026-09-07).
+#     JUNIPER_BACKUP_DEVICES     Space-separated MEDIA_NAMES, in build order. Default "EBC5-F0A3 DFF3-2782". A name is a
+#                                directory under the mount root. An entry beginning with / is an absolute mount root (an
+#                                fstab-managed drive under /mnt/) and is used as-is; the scheduler does NOT take that form,
+#                                so under it set the drive's parent as the root and its leaf as the name.
+#     JUNIPER_BACKUP_DIR         Directory on each drive that receives the archives. Default Juniper-8.0.0.python.
+#
 # Exit codes:
 #     0  every configured device received a verified archive OF EVERY REPO
 #     1  fatal -- nothing was written (bad source, no usable device, missing recipient, build failed)
-#     2  misuse (bad argument)
+#     2  misuse (bad argument, or a malformed JUNIPER_BACKUP_* value)
 #     4  PARTIAL -- fewer archive copies landed than expected, across all repos and devices.
 #        Deliberately non-zero: degraded redundancy must be visible to cron, not silent.
 #        Judged on CROSS-REPO totals; per-repo counters alone let a mid-run failure report COMPLETE.
@@ -83,6 +94,14 @@
 #     MOUNT CHECK IS ON THE MOUNT ROOT, NOT THE BACKUP DIR.
 #       Statement `mountpoint -q` is true only for an actual mount point. When `BACKUP_DIR` was appended to `EXT_DRIVE`, the check began testing `<mount>/Juniper-8.0.0.python` -- a plain subdirectory, never a mount point -- so preflight FATALed on every run even with both drives correctly attached.
 #       The two questions are now asked separately: is the DEVICE mounted, and does its BACKUP_DIR exist and accept writes.
+#
+#     THE MOUNT ROOT MOVED UNDER IT (2026-09-07; fixed in 1.0.0, 2026-10-03).
+#       udisks2 2.10.91 moved removable-media automounts from /media/<user>/<UUID> to /run/media/<user>/<UUID>. This script built /media/pcalnon/<name> from two hard-coded constants, so every run after the upgrade
+#       read "SKIP <name>: ... is not a mount point" for BOTH drives and exited 1 with "no usable destination", whatever was plugged in -- the mount guard did its job, on a path nothing mounts any more.
+#       No monitor noticed: this lane had no timer and no alerting until the scheduler (util/juniper-backup-scheduled.bash) was designed, and that scheduler already looked under /run/media -- so every run it
+#       judged due would have ended here, rc 1. The root is now ONE setting the two share (JUNIPER_BACKUP_MEDIA_ROOT, with the device list and backup dir beside it, same names and defaults), resolved for the
+#       guard and the write in ONE place (mount_root_for). An entry beginning with / is an absolute mount root, for the fstab-managed drive of the design's §7.9, and the mount guard applies to it unchanged.
+#       1.0.0 is the first revision to carry a version; the notes above, and `git log -- util/juniper-backup.bash`, are its history.
 #######################################################################################################################################################################################################################################################
 
 #######################################################################################################################################################################################################################################################
@@ -118,10 +137,13 @@ fi
 
 #######################################################################################################################################################################################################################################################
 # Every attached device named here receives a copy of the SAME archive. Order matters only in that the first usable device is the one the archive is BUILT on; the rest are copies of it.
-MEDIA_NAMES=( "EBC5-F0A3" "DFF3-2782" )
-MOUNT_NAME="media"
-USER_NAME="pcalnon"
-BACKUP_DIR="Juniper-8.0.0.python"
+#   ONE SETTING, TWO READERS. The mount root, the device list and the backup dir are read under the SAME names, with the SAME defaults, as util/juniper-backup-scheduled.bash, which tests exactly these paths to
+#   decide that a run is due and then runs this script. While this script forced /media/pcalnon/<name> and the scheduler looked under /run/media/<user>, every run the scheduler started would have ended
+#   "no usable destination" (§4.5 and §7.8 of notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md, "the design" below). Change a default here and change it there in the same commit.
+#   `${USER:-$(id -un)}` where the scheduler has a bare `${USER}`: identical whenever USER is set (systemd --user always sets it), and a hand run under `env -i` resolves the same root instead of dying on set -u.
+MEDIA_ROOT="${JUNIPER_BACKUP_MEDIA_ROOT:-/run/media/${USER:-$(id -un)}}"
+read -r -a MEDIA_NAMES <<< "${JUNIPER_BACKUP_DEVICES:-EBC5-F0A3 DFF3-2782}"
+BACKUP_DIR="${JUNIPER_BACKUP_DIR:-Juniper-8.0.0.python}"
 
 
 #######################################################################################################################################################################################################################################################
@@ -208,6 +230,19 @@ for _repo in "${APPLICATION_REPOS[@]}"; do
     [[ "${_repo}" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "FATAL: repo name must match [A-Za-z0-9._-]+ : ${_repo}" >&2; exit 2; }
     [[ "${_repo}" != "." && "${_repo}" != ".." ]] || { echo "FATAL: invalid repo name: ${_repo}" >&2; exit 2; }
 done
+# The device settings land in PATHS too, and they now come from the environment, so they get the same scrutiny. Not under --dest: it bypasses the fan-out entirely, and a malformed
+#   JUNIPER_BACKUP_DEVICES must not block a run that never reads it. A relative device is ONE directory under the root -- a slash in it is a typo for an absolute root or a walk out of the root, and
+#   neither is guessed at. An absolute entry is taken as written; the mount guard below is what stands between it and the system disk, exactly as for a relative one.
+if [[ -z "${DEST_OVERRIDE}" ]]; then
+    [[ "${MEDIA_ROOT}" == /* ]] || { echo "FATAL: JUNIPER_BACKUP_MEDIA_ROOT must be an absolute path: ${MEDIA_ROOT}" >&2; exit 2; }
+    (( ${#MEDIA_NAMES[@]} > 0 )) || { echo "FATAL: JUNIPER_BACKUP_DEVICES names no device" >&2; exit 2; }
+    for _media in "${MEDIA_NAMES[@]}"; do
+        if [[ "${_media}" != /* ]]; then
+            [[ "${_media}" =~ ^[A-Za-z0-9._-]+$ && "${_media}" != "." && "${_media}" != ".." ]] || { echo "FATAL: device must be a name under ${MEDIA_ROOT} ([A-Za-z0-9._-]+) or an absolute mount root: ${_media}" >&2; exit 2; }
+        fi
+    done
+    [[ "${BACKUP_DIR}" =~ ^[A-Za-z0-9._-]+$ && "${BACKUP_DIR}" != "." && "${BACKUP_DIR}" != ".." ]] || { echo "FATAL: JUNIPER_BACKUP_DIR must match [A-Za-z0-9._-]+ : ${BACKUP_DIR}" >&2; exit 2; }
+fi
 
 
 #######################################################################################################################################################################################################################################################
@@ -299,9 +334,23 @@ function cleanup_partial() {
 trap cleanup_partial EXIT
 
 #######################################################################################################################################################################################################################################################
+# The mount root of one configured device. ONE definition, used by both the mount guard and target_dir_for, so the path that is checked and the path that is written cannot drift apart.
+#   An entry beginning with / IS its mount root (an fstab-managed drive under /mnt/, design §7.9); any other entry is a directory under MEDIA_ROOT (where udisks2 automounts).
+function mount_root_for() {
+    local media_name="$1"
+    if [[ "${media_name}" == /* ]]; then
+        printf '%s\n' "${media_name}"
+    else
+        printf '%s\n' "${MEDIA_ROOT}/${media_name}"
+    fi
+}
+
+#######################################################################################################################################################################################################################################################
 # Where a given device's archive goes. ONE definition, so a destination can never be carried over from a previous loop iteration (see "THE SECOND BUG OF THAT CLASS" above).
 function target_dir_for() {
-    printf '%s\n' "/${MOUNT_NAME}/${USER_NAME}/$1/${BACKUP_DIR}"
+    local mount_root
+    mount_root="$(mount_root_for "$1")"
+    printf '%s\n' "${mount_root}/${BACKUP_DIR}"
 }
 
 #######################################################################################################################################################################################################################################################
@@ -326,7 +375,8 @@ function archive_root_for() {
 #   The mount check is on the MOUNT ROOT: `mountpoint -q` is only ever true of an actual mount point, so asking it about the BACKUP_DIR subdirectory is always false. Without the mount check, an unmounted drive leaves a stale empty directory and the archive silently fills the system disk.
 function validate_external_media() {
     local media_name="$1"
-    local mount_root="/${MOUNT_NAME}/${USER_NAME}/${media_name}"
+    local mount_root
+    mount_root="$(mount_root_for "${media_name}")"
     local backup_path
     backup_path="$(target_dir_for "${media_name}")"
     if ! mountpoint -q "${mount_root}" 2>/dev/null; then
@@ -406,7 +456,7 @@ if [[ -n "${DEST_OVERRIDE}" ]]; then
     fi
 else
     CONFIGURED_COUNT="${#MEDIA_NAMES[@]}"
-    echo "devices: checking ${CONFIGURED_COUNT} configured"
+    echo "devices: checking ${CONFIGURED_COUNT} configured (mount root ${MEDIA_ROOT}; an entry beginning with / is its own root)"
     for MEDIA_NAME in "${MEDIA_NAMES[@]}"; do
         if validate_external_media "${MEDIA_NAME}"; then
             TARGET_DIRS+=("$(target_dir_for "${MEDIA_NAME}")")

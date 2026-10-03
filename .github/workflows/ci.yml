@@ -267,6 +267,16 @@ jobs:
           # enable --now). PATH-stubbed; no live Duplicati. util/ is not
           # pre-commit-lint-gated.
           python3 -m unittest -v tests/test_duplicati_scheduled_backup.py
+          # tests/test_juniper_backup_tier2_lane.py: the tier-2 USB archive lane
+          # (recovery plan B6 / I-20). The runner's mount root is the scheduler's
+          # JUNIPER_BACKUP_MEDIA_ROOT (default /run/media/$USER, not the retired
+          # /media/pcalnon); an absolute device entry is used as-is and is still
+          # mount-checked; the installed scheduler reaches the installed runner under
+          # one root; juniper-backup-failure.service records into this lane's state
+          # dir; the installer's --dry-run writes nothing, root and a missing Linger
+          # are refused before any write, copies replace symlinks. PATH-stubbed
+          # mountpoint/gpg/systemctl; scratch trees only, never a real drive.
+          python3 -m unittest -v tests/test_juniper_backup_tier2_lane.py
           python3 -m unittest -v tests/test_editable_install_drift_check.py
           # tests/test_env_floor_drift_check.py: gap-I-2 floor-drift checker --
           # installed juniper-* (dist-info METADATA) vs the target repo's pyproject

@@ -124,6 +124,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Tier 2 finds its drives under `/run/media` again, and gains its installer, its failure unit and a
+  gate** (B6 / I-20 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`;
+  `util/juniper-backup.bash`; `util/install_juniper_backup_timer.bash`, new;
+  `util/systemd/juniper-backup-failure.service`, new; `tests/test_juniper_backup_tier2_lane.py`, new).
+  udisks2 2.10.91 moved removable-media automounts from `/media/<user>` to `/run/media/<user>` on
+  2026-09-07, and the runner still forced `/media/pcalnon/<name>`, so every tier-2 run after that
+  skipped both sticks and exited 1. Its scheduler, `util/juniper-backup-scheduled.bash`, already
+  looked under `/run/media`, so every run it judged due would have ended the same way. The runner now
+  reads the scheduler's three location settings under the same names and defaults:
+  `JUNIPER_BACKUP_MEDIA_ROOT` (default `/run/media/$USER`), `JUNIPER_BACKUP_DEVICES` and
+  `JUNIPER_BACKUP_DIR`. An entry beginning with `/` is its own mount root, for the fstab drive of §7.9
+  of `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`, and the
+  mount guard applies to it unchanged. The installer copies the runner, the scheduler and the shared
+  reporter into `~/.local/bin/` and the four units into `~/.config/systemd/user/`, then enables the
+  timer and the path unit. Its `--dry-run` writes nothing, and it refuses root and a missing `Linger`
+  before any write. `juniper-backup-failure.service` points the reporter at this lane's state dir;
+  without it, a tier-2 failure would be recorded in the Duplicati lane's `failures.log`. The suite
+  kills 23 of 23 mutants, the pre-change runner among them
+  (`util/ad-hoc/2026-10-03_juniper_backup_tier2_mutation_check.py`, new). Until the lane's first
+  success, a run with no stick mounted reads `FAILED`, not `SKIPPED`, because the scheduler counts
+  "never succeeded" as stale; do the OK run first.
 - **The launcher suites' kill helper killed nothing for a nohup'd stub, so the stub outlived its
   test and raced `TemporaryDirectory` cleanup** (juniper-ml#2046; `tests/process_cleanup.py`, new;
   `tests/test_isolated_stack_script.py`; `tests/test_experiment_stack_script.py`). That turned `main`
