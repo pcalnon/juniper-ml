@@ -94,7 +94,8 @@ Remaining work, in order:
    contract.py:72; cascor publish.yml's TestPyPI check imports from the checkout.
 
 Owner-only (never do these; never approve deploy gates; merge approval is per-session, so ask again):
-- Widen CROSS_REPO_DISPATCH_TOKEN (the PAT in juniper-data) to pcalnon/juniper-recurrence with
+- **DONE 2026-10-03.** The owner widened the token. Verified the same day: notify-consumers run 37114403856 in juniper-data was green, and the `repository_dispatch` bench run it started in juniper-recurrence (37114410788) was green too. The original item follows, for context.
+  Widen CROSS_REPO_DISPATCH_TOKEN (the PAT in juniper-data) to pcalnon/juniper-recurrence with
   Contents: Read and write, AND Actions: Read. #431's confirm step needs Actions: Read. 0.16.0's
   notify job got a 403 again on 2026-09-24. recurrence#178 is OPEN; close it once a release's own
   notify job and the bench run it starts are both green. [ALSO P4]
