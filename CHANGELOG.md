@@ -127,25 +127,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tier 2 finds its drives under `/run/media` again, and gains its installer, its failure unit and a
   gate** (B6 / I-20 of
   `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`;
-  `util/juniper-backup.bash`; `util/install_juniper_backup_timer.bash`, new;
-  `util/systemd/juniper-backup-failure.service`, new; `tests/test_juniper_backup_tier2_lane.py`, new).
+  `util/juniper-backup.bash`; `util/duplicati_backup_failure.bash`; `util/install_juniper_backup_timer.bash`,
+  new; `util/systemd/juniper-backup-failure.service`, new; `tests/test_juniper_backup_tier2_lane.py`, new).
   udisks2 2.10.91 moved removable-media automounts from `/media/<user>` to `/run/media/<user>` on
   2026-09-07, and the runner still forced `/media/pcalnon/<name>`, so every tier-2 run after that
   skipped both sticks and exited 1. Its scheduler, `util/juniper-backup-scheduled.bash`, already
-  looked under `/run/media`, so every run it judged due would have ended the same way. The runner now
-  reads the scheduler's three location settings under the same names and defaults:
-  `JUNIPER_BACKUP_MEDIA_ROOT` (default `/run/media/$USER`), `JUNIPER_BACKUP_DEVICES` and
-  `JUNIPER_BACKUP_DIR`. An entry beginning with `/` is its own mount root, for the fstab drive of §7.9
-  of `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`, and the
-  mount guard applies to it unchanged. The installer copies the runner, the scheduler and the shared
-  reporter into `~/.local/bin/` and the four units into `~/.config/systemd/user/`, then enables the
-  timer and the path unit. Its `--dry-run` writes nothing, and it refuses root and a missing `Linger`
-  before any write. `juniper-backup-failure.service` points the reporter at this lane's state dir;
-  without it, a tier-2 failure would be recorded in the Duplicati lane's `failures.log`. The suite
-  kills 23 of 23 mutants, the pre-change runner among them
-  (`util/ad-hoc/2026-10-03_juniper_backup_tier2_mutation_check.py`, new). Until the lane's first
-  success, a run with no stick mounted reads `FAILED`, not `SKIPPED`, because the scheduler counts
-  "never succeeded" as stale; do the OK run first.
+  looked under `/run/media`, so every run it judged due would have ended the same way.
+  - **The runner's settings.** It now reads the scheduler's three location settings under the same
+    names and defaults: `JUNIPER_BACKUP_MEDIA_ROOT` (default `/run/media/$USER`),
+    `JUNIPER_BACKUP_DEVICES` and `JUNIPER_BACKUP_DIR`. For the relative form the two therefore name
+    the same path.
+  - **The absolute form.** An entry beginning with `/` is its own mount root, for the fstab drive of
+    §7.9 of `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`. It
+    is runner-only until the scheduler learns it.
+  - **The drive bound.** The mount guard does not protect the system disk: `mountpoint -q` is true of
+    `/`, `/home`, `/tmp` and `/run/user/<uid>`. So every device's mount root, in either form, must lie
+    strictly under the literal `DRIVE_PARENTS` (`/mnt`, `/media`, `/run/media`), written plainly, or
+    the run exits 2. A newline in the device list is refused the same way.
+  - **The installer.** It copies the runner, the scheduler and the shared reporter into `~/.local/bin/`
+    and the four units into `~/.config/systemd/user/`, then enables the timer and the path unit. Its
+    `--dry-run` writes nothing, and it refuses root and a missing `Linger` before any write.
+  - **The failure unit.** `juniper-backup-failure.service` points the reporter at this lane's state
+    dir. The reporter (1.1.0) now titles its notification with the failed unit; it announced every
+    failure as "Duplicati backup FAILED".
+  - **The acceptance order.** It is printed in both installer modes and documented in
+    `docs/REFERENCE.md`. Do the OK run first, with **both** configured sticks mounted: one stick is rc 4
+    (PARTIAL), so `FAILED` with no stamp. Until that first success, a run with no stick mounted reads
+    `FAILED`, not `SKIPPED`. Never run the scheduler with `--dry-run` by hand: it stamps the preview as
+    a success.
+  - **The gate.** The suite kills 30 of 30 mutants, the pre-change runner among them
+    (`util/ad-hoc/2026-10-03_juniper_backup_tier2_mutation_check.py`, new). Seven of them come from the
+    PR's review.
 - **The launcher suites' kill helper killed nothing for a nohup'd stub, so the stub outlived its
   test and raced `TemporaryDirectory` cleanup** (juniper-ml#2046; `tests/process_cleanup.py`, new;
   `tests/test_isolated_stack_script.py`; `tests/test_experiment_stack_script.py`). That turned `main`

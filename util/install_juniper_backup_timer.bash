@@ -195,18 +195,23 @@ act systemctl --user daemon-reload
 say "==> systemctl --user enable --now ${ENABLE_UNITS[*]}"
 act systemctl --user enable --now "${ENABLE_UNITS[@]}"
 
+# The acceptance notes print in BOTH modes: the dry run is the preview an operator reads first.
 if (( DRY_RUN )); then
-    say "[dry-run] nothing was written."
-    exit 0
+    say "[dry-run] nothing was written. What follows applies after a real run."
+else
+    say
+    say "Installed and enabled."
 fi
-
-say
-say "Installed and enabled. Acceptance (design AC-10, §8 P3 step 2) reads ${STATE_DIR}/last-run.status."
-say "Do the OK run FIRST. Until one run has succeeded, a run with no stick mounted reads result=FAILED, not"
-say "SKIPPED: the scheduler counts 'never succeeded' as older than STALE_DAYS, and OnFailure= fires."
-say "    systemctl --user list-timers juniper-backup.timer   # the weekly window is scheduled"
-say "    # Mount a stick. The .path unit should start a due run (hours: every repo); if it does not, start"
-say "    # juniper-backup.service by hand. Expect result=OK and verified archives on every mounted stick."
-say "    systemctl --user status juniper-backup.path         # still active 30 s after the plug-in"
-say "    systemctl --user start juniper-backup.service       # AFTER the OK run, no stick mounted -> result=SKIPPED"
-say "    bash util/ad-hoc/2026-08-26_backup_restore_drill.bash   # the class-1 drill"
+say "Acceptance (design AC-10, §8 P3 step 2) reads ${STATE_DIR}/last-run.status. In this order:"
+say "  1. Do the OK run FIRST, with BOTH configured sticks mounted (by default EBC5-F0A3 and DFF3-2782). One"
+say "     stick is not enough: the runner writes it and exits 4 (PARTIAL), the scheduler records"
+say "     result=FAILED and stamps nothing, and the next plug-in rebuilds the whole set. The .path unit"
+say "     should start a due run (hours: every repo); if it does not, start juniper-backup.service by hand."
+say "       systemctl --user status juniper-backup.path         # still active 30 s after the plug-in"
+say "  2. Then, with no stick mounted: result=SKIPPED. Before any success, the same run reads result=FAILED"
+say "     (the scheduler counts 'never succeeded' as older than STALE_DAYS) and OnFailure= fires."
+say "       systemctl --user start juniper-backup.service"
+say "  3. The class-1 drill: bash util/ad-hoc/2026-08-26_backup_restore_drill.bash"
+say "  The weekly window: systemctl --user list-timers juniper-backup.timer"
+say "Never run juniper-backup-scheduled.bash with --dry-run by hand. It passes the flag to the runner, the"
+say "preview exits 0, and the scheduler then stamps a success and writes result=OK with no archive written."

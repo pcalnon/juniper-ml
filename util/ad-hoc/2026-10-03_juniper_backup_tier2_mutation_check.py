@@ -20,8 +20,9 @@
 #
 # Description:
 #    Mutation check for tests/test_juniper_backup_tier2_lane.py: does the gate go RED when the tier-2 lane regresses in each of the
-#    ways it exists to catch -- the runner's mount root, the absolute device form, the mount guard, --dry-run, the installer's
-#    refusals and copies, and the failure unit's routing?
+#    ways it exists to catch -- the runner's mount root, the absolute device form, the mount guard, the drive bound (DRIVE_PARENTS),
+#    --dry-run, the installer's refusals, copies and acceptance notes, the failure unit's routing and the notification's title?
+#    M23-M29 were added for the review of PR #2114 (validation lane PB, 2026-10-03): each models one finding it raised.
 #
 #    Each mutation is applied to a COPY of the lane (runner, scheduler, reporter, installer, the four units, the suite and its
 #    helper) under a temp dir, and the suite is run there with `python3 -m unittest`. The live tree is never edited, so an
@@ -47,13 +48,14 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 RUNNER = "util/juniper-backup.bash"
 SCHEDULER = "util/juniper-backup-scheduled.bash"
+REPORTER = "util/duplicati_backup_failure.bash"
 INSTALLER = "util/install_juniper_backup_timer.bash"
 FAILURE_UNIT = "util/systemd/juniper-backup-failure.service"
 SUITE = "tests/test_juniper_backup_tier2_lane.py"
 COPIED = [
     RUNNER,
     SCHEDULER,
-    "util/duplicati_backup_failure.bash",
+    REPORTER,
     INSTALLER,
     "util/systemd/juniper-backup.timer",
     "util/systemd/juniper-backup.path",
@@ -87,6 +89,13 @@ MUTATIONS = [
     ("M20", FAILURE_UNIT, "duplicati-backup-failure.bash juniper-backup.service", "duplicati-backup-failure.bash duplicati-backup.service", "the record names (and tails) the wrong unit"),
     ("M21", FAILURE_UNIT, "%h/.local/state/juniper-backup", "%h/.local/state/duplicati", "the state dir points at the other lane"),
     ("M22", SCHEDULER, '"${JUNIPER_BACKUP_MEDIA_ROOT:-/run/media/${USER}}"', '"${JUNIPER_BACKUP_MEDIA_ROOT:-/media/${USER}}"', "the scheduler's root drifts away from the runner's"),
+    ("M23", RUNNER, '        is_drive_mount_root "${_mount_root}" || {', "        true || {", "no drive bound: a mounted system path (/, /home, /run/user/<uid>) is a destination"),
+    ("M24", RUNNER, '        is_drive_mount_root "${_mount_root}" || {', '        [[ "${_media}" != /* ]] || is_drive_mount_root "${_mount_root}" || {', "the bound covers absolute entries only, not the relative form through a root"),
+    ("M25", RUNNER, ' && "${rest}/" != *"/../"* ]]', " ]]", "a walk out of the bound (/mnt/../home) is accepted"),
+    ("M26", RUNNER, "[[ \"${JUNIPER_BACKUP_DEVICES-}\" != *$'\\n'* ]] ||", "true ||", "a newline in the device list is read past, silently dropping every device after it"),
+    ("M27", REPORTER, '"Backup FAILED: ${UNIT}"', '"Duplicati backup FAILED"', "a tier-2 failure is announced as the Duplicati lane's"),
+    ("M28", INSTALLER, '    say "[dry-run] nothing was written. What follows applies after a real run."', '    say "[dry-run] nothing was written. What follows applies after a real run."\n    exit 0', "the dry run exits before the acceptance notes"),
+    ("M29", INSTALLER, "Do the OK run FIRST, with BOTH configured sticks mounted (by default EBC5-F0A3 and DFF3-2782). One", "Do the OK run FIRST: mount a stick. One", "the acceptance note goes back to 'mount a stick', which is rc 4 -> FAILED"),
 ]
 
 # Whole-file mutations: the file as it stood at a pinned commit. M00 is the runner this change replaces (the branch's base,

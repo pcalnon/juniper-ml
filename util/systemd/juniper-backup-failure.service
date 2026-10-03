@@ -12,7 +12,8 @@ Type=oneshot
 # where util/juniper-backup-scheduled.bash writes last-run.status.
 Environment=DUPLICATI_STATE_DIR=%h/.local/state/juniper-backup
 
-# The unit name is $1: it is what the record is headed with and whose journal is tailed.
+# The unit name is $1: it heads the record, selects the journal tail and titles the
+# desktop notification ("Backup FAILED: juniper-backup.service").
 ExecStart=%h/.local/bin/duplicati-backup-failure.bash juniper-backup.service
 
 # Deliberately NOT chained to another OnFailure=. If the reporter itself fails
