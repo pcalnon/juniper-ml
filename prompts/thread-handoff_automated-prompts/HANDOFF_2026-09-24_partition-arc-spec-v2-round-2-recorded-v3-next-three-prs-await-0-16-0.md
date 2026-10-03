@@ -1,5 +1,7 @@
 # Thread handoff: partition-arc residue, part 2. The Decision 12 spec v2 failed review round 2 and is recorded; v3 is next, and three PRs wait on juniper-data v0.16.0
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md` (consolidated handoff for P5 — partition arc / Decision 12 spec). History only; do not act on this file's items.
+
 **Date**: 2026-09-24. This supersedes an unpublished 2026-09-23 draft of this handoff.
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-23_partition-arc-residue-stores-conformed-canopy-advisory-decision-12-spec-unsound.md`
 **Why now**: the harness compacted this thread once already. CLAUDE.md treats that as a handoff that should already have happened. A logical phase also closed: review round 2 of the spec is recorded, and the v3 fold is a context-heavy phase of its own.

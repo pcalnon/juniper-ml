@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-24 — round-42 follow-up lane: four PRs await validation or fix-forward, and the owner's observability release gates the Sentry fix
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_defect-register-round-42-consolidated.md` (consolidated handoff for P3, defect register round 42, both lanes). History only; do not act on this file's items.
+
 **Session handing off**: `bc31e993-97b0-4a01-ae04-cb39593eb647`, which `ListAgents` shows as **`defect reg [042116]`**. It wrote this file. Never message it.
 
 **Predecessors**:

@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-24 — logging arc: P0.4 and P1.4 merged, round 2 half-reconciled; finish it, then P2.1
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_logging-arc-consolidated.md` (consolidated handoff for the logging redesign arc). History only; do not act on this file's items.
+
 > **UNVALIDATED.** The owner asked for this handoff without validation lanes and with minimal
 > tokens. Every claim cites its source; re-derive anything load-bearing before acting on it.
 > Memory: `feedback_validate_handoff_prompts_independently`.
