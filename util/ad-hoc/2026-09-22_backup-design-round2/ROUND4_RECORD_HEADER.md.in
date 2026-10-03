@@ -1,0 +1,361 @@
+# Backup design — consensus rounds 4–8, verbatim validator reports
+
+**Project**: Juniper (workstation backup infrastructure, host `yamaguchi`)
+**Author**: Paul Calnon
+**Date**: 2026-09-24
+**Procedure**: [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
+**Artifact validated**: [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`](JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md) — round 4 read local commit `d9f44a78` over `main` at `df21367d`; round 5 read local commit `edf8c432`, round 6 `7265dc1f`, round 7 `2c9efe85` and round 8 `f90a87e7`, all over `main` at `6c23fdde`
+**Earlier rounds**: [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`](JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md) and [`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`](JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md) (rounds 2 and 3)
+
+---
+
+## What round 4 was for
+
+The first draft of the change that records the owner's 2026-09-24 amendment of D-8, repairs text the
+2026-09-22 rulings left stale, corrects "all 877 dindex volumes", adds the §12 rows that were owed, and
+adopts the owner's SMART-script refactor that closing ml#2045 dropped. That draft was the working scope of
+items 3, 4 and 5 of `HANDOFF_2026-09-24_backup-arc-seven-decisions-ruled-smart-passed-p0-is-next.md`.
+
+Three validators, launched together, none seeing another's output. Each was told to refute rather than
+confirm, and to re-derive every claim from git objects, `gh` or the host — read-only, with no secret file,
+journal capture or Duplicati binary touched — never from the document itself:
+
+| Lens | Brief |
+| --- | --- |
+| A — fact re-probe | every factual claim the draft adds or changes, in all three files it touched |
+| B — consequence and consistency attack | grant the premises, attack the conclusions, and read the **whole** design, not only the diff |
+| C — amputation and scope | what the draft dropped from the text it replaced, and whether the handoff's items were discharged |
+
+## What round 4 found
+
+- **Lens A**: 41 confirmed, 10 refuted, 2 unverifiable.
+- **Lens B**: 28 refuted, 4 unverifiable, 10 confirmed sound. Most of its refutations are aimed not at the
+  draft but at §8's procedure itself, and four of them are rated high: an operator following §8 literally
+  could re-lock the recovered database, pass the pre-backup guard without its `TargetURL` check, or copy a
+  cleartext database into the backup Source.
+- **Lens C**: 2 real losses, 3 refuted claims.
+
+The lenses overlapped on the draft's own errors: note 10.1e credited round 1 with a placement round 2 made;
+note 12b recorded one of the SMART adoption's changes out of several; the edit script said "the day before"
+of a same-day merge; the SMART header called its device palette an inventory. Lens A alone found that the
+edit script's fence gate could not see indented blocks. Lens B went after §8's procedure systematically —
+lens A also caught step 0(a), and lens C step −1's `--check` — and what it found there is the reason for the
+STOP block now at the top of §8.
+
+Three statements in round 4 were themselves imprecise, and are recorded rather than silently corrected:
+
+- lens A's row 27 cites "§5 note 2" for the 22 + 1 `Invalid slot` split, which is §4.2's note 2;
+- lens C's "other finding" 8 says round 3's 15 defects map to the `r3-*` edits, when two of them (D11 and D13)
+  have no edit;
+- the briefs themselves — not a validator — said `origin/pr-2045-head` was the owner's commit `b0223f18`, when
+  that ref is the PR's tip `f6363b9a`, three commits later (lens A, first "other problem").
+
+## Disposition of round 4
+
+Two owner rulings of 2026-09-24 shaped it. **Narrow change, then fix §8**: this change applies the
+corrections to its own draft, records §8's defects behind a STOP, and leaves the procedure fixes to a
+follow-up change with its own validation round. **P0's gate is P0.5a items 1, 2 and 4**, with items 5–7
+alongside (the design's note 10.1f). Source column: round 4's lens and row, or the lens's section for findings
+outside its table. The later tables cite round 4's rows as "round 4's Bn", because each round numbers its own.
+
+| Finding | Source | Disposition |
+| --- | --- | --- |
+| Note 10.1e: round 1 put the scrub in a P0.5 bucket; round 2's split made it P0.5a | A20, B20, C other-4 | applied |
+| Note 10.1e: the leaking passes predate `DEBUG_MODE` | A23 | applied; made precise in rounds 5 and 6 |
+| Note 10.1e: `Restart=always`, the `ExecStart` path P0.5a item 1 deletes, and the step-3 probe outside the unit | A25, B21 | applied |
+| Note 10.1e: one of S-1's 23 lines came from an `ExecStart=` revision | A27 | applied |
+| §10.2 step 2 and note 10.1e: S-6's sign-in URLs follow the scrub | B9 | applied — the gate counts unexpired tokens |
+| §6: S-2's value is the live passphrase, so P0.5b does not retire it | B10 | applied, and widened in round 5 |
+| §12's round-3 row ("its 15 defects are the `r3-*` edits") and §11's "15 defects, all applied"; round 3's missing artifact row | A35, A other; C §12 for the row | applied; D11's row added; D13 recorded open (note 12a) |
+| §12 ml#2067 row: ml#2045 changed more of this file than the front matter | A41 | applied; its move of note 10.2b adopted, its table re-padding declined |
+| Note 12b: the SMART adoption's header, mode and omitted sites | A43, C26, C scope | applied; completed in round 5 |
+| Note 12a: the ml#1999 row had no file list | C §12 | applied — a D11 row carries it |
+| §8 step −1: `--check` exits 0 even on drift | C6 | applied |
+| P0 step 0(c): "measured on 2026-08-23" is only a recording date; the figure's own source | A10, A7, B C3 | applied — "recorded", and attributed to the script's lines 33–35 |
+| Note 10.2a: the dead "§12" citation | C other-1 | applied — §3.4 |
+| P1 step 5: "P1 scrubs nothing" beside P1 step 2 | C other-3 | applied — "no log scrub" |
+| Front matter: P0.5a items 1, 2 and 4–7 gate P0 | B12 | owner ruling — items 1, 2 and 4 (note 10.1f) |
+| SMART header: the palette is not a live inventory | A45, C other-6 | applied; its replacement was itself wrong, fixed in round 5 |
+| Edit script: "the day before", docstring scope, indented fences unguarded | A49, A51, B28, C other-5 | applied; the fence guard was mutation-checked on an indented block |
+| §10.2's notes print a, c, b | A other | applied, as ml#2045's move |
+| §10.2's heading | B25 | applied — "confirm the scrub, rotate, re-encrypt" |
+| Front-matter status line | C other-7 | **missed by round 4's correction**; applied in round 5's |
+| Step 0(a) cannot pass; D-1's flag has no durable home under D-6 | A other, B1 | STOP item 1 — follow-up |
+| P1 step 1's key command overwrites the old key | B2 | STOP item 2 — follow-up |
+| Step 10's dry-run passes on an empty URL; step 9's client not landed | B3 | STOP item 3 — follow-up |
+| A timer restart after step 8 copies a cleartext database | B4 | STOP item 4 — follow-up |
+| `ProtectSystem=strict` without `ReadWritePaths=` (P0.5a item 2 and §7.7) | B8 | STOP item 5 — follow-up |
+| P0.5b's premise and its placement before step 10's `pause` | B5, B6 | in the STOP's re-derive list — follow-up |
+| Procedure B starts the server before step 8 installs the unit | B7 | in the STOP's re-derive list — follow-up |
+| AC-8's undefined "hardening timestamp" | B22 | follow-up; since round 6, note 10.1e anchors its own rule to P0.5a item 4's `--rotate` |
+| §8's phase-order sentence | B23 | applied in rounds 5 and 6 (the P0.5 exception, then step 9's client change) |
+| B11, B13–B18, B24, B26, B27, B U1–U4; wrapper v2's `die` path with an `=`-less word | B, A other | follow-up |
+| The tagged `confirm_a0_premise.bash` comment still says "here" | A other, B19, C other-2 | follow-up — a tagged block and its landed copy change together |
+
+---
+
+## What round 5 was for
+
+Round 4's corrections, before they merged: an earlier arc of this project measured that half of a correction
+pass's defects were introduced by the corrections themselves. Two validators, launched together, each reading
+the frozen commit `edf8c432`, each told to refute:
+
+| Lens | Brief |
+| --- | --- |
+| A — fact re-probe | every claim the corrections add or change, and this record's authored part |
+| B — consistency, consequence and residue | the whole design against the corrections; every round-4 disposition against the design; what the corrections dropped |
+
+## What round 5 found
+
+- **Lens A**: 62 confirmed, 16 refuted, 1 unverifiable.
+- **Lens B**: 23 refuted, 8 confirmed sound, 2 unverifiable.
+
+Most of the refutations were in the corrections' own text — all of lens A's, whose brief confined it to that
+text and this record, and most of lens B's: a SMART header claim replaced by another false one, a status line never changed although this record said it was, a guard said to check "nothing" when
+it skips one check of several. The rest were older text that the corrections now contradicted: §10.2 still
+naming P0 as the next action beside a STOP, P0.5b still claiming to close S-2 beside §6's correction, R-6 still
+saying `nologin` "immediately" beside the new gate. Both lenses also found that host state had moved during
+the session: the two `su - duplicati` shells §6 held open had exited, and `/home/duplicati/.bash_history` had
+been rewritten at 14:56:34 — which the design now records as note sink-b and puts to the owner.
+
+## Disposition of round 5
+
+Source column: round 5's lens and row; round 4's rows are cited as "round 4's Bn". Round 6 found five of these
+dispositions false in part; each such row says where it was completed.
+
+| Finding | Source | Disposition |
+| --- | --- | --- |
+| Status line still "VALIDATED" above the STOP | A77, B1 | applied |
+| "without checking anything"; "the one check" | A3, A9, B5 | applied — "without its `TargetURL` check", one of two; P0 step 10's copy only in round 6 |
+| The STOP's scope: P2–P4, §6's owner actions, no exit criterion | B4 | applied as "all of §8 held; §6's owner actions are not §8 steps" — which round 6 found false, since S-4's `chmod 0600` is also P0.5a item 5; the scope is now the owner's ruling (the design's note 10.1g) |
+| §10.2 still names P0 as the next action | B3 | applied |
+| D-9's two flags installed by no artifact and no step | B6 | re-derived, and added to the STOP |
+| Round 3's D13, inherited by P1 step 2 | B7 | added to the STOP |
+| Items 5 and 7 timed to events the procedure does not guarantee | B8 | added to the STOP's re-derive list |
+| P0.5b's claim to close S-1 and S-2 against §6 | B9, A other-2 | added to the STOP's re-derive list |
+| §6: the frozen 811-volume copy, `PASSPHRASE_OLD`, §10.2 step 8 | B10, A other-11 | applied |
+| §10.2 step 2's gate omits S-2 | B11 | applied; the token lifetime is not stated |
+| §11: round-4 entry, "two rounds", state line | A37, A39, A other-1, B12 | applied |
+| Note 10.1e: "v2 today" breaks on a branch switch or a replacement in the 0777 `bin/` | B13 | applied; the gate now reads "items 1, 2 and 4, in that order" |
+| The round-2 record's "15 defects, all applied" | B14 | applied |
+| "Debug mode" in §1, §4 and §5 against note 10.1e | B15, A other-3 | note 10.1e says which passes are unrecorded and names the phrase; those sections unchanged |
+| The 16:41–16:50 passes' revision | A20 | applied — note 10.1e says it is recorded nowhere; its opening sentence stopped asserting it only in round 6 |
+| AC-8's and note 10.1e's terms differ | B16, A other-4 | note 10.1e uses AC-8's term; defining it stays round 4's B22 follow-up, and since round 6 note 10.1e anchors its own rule to P0.5a item 4's `--rotate` |
+| The SMART header's replacement claim | A51, B17 | applied |
+| §8's phase-order sentence | B18 | applied — the P0.5 exception; step 9's client change added in round 6 |
+| "And no other" dropped from the front matter | B19 | applied |
+| R-6's "immediately"; P0.5a's "(depends on nothing)" | B20, A other-8 | applied — but the heading's replacement, "(none depends on the recovery)", was false too; it went in round 6, with the P0 preamble's and P0.5a intro's forms of the claim |
+| Note 12b's omissions | A49, A75, B21 | applied |
+| STOP item 5 names only P0.5a item 2 | B22 | applied — §7.7 too |
+| This record's own inaccuracies | A70, A71, A74, A78, B23, A other-9 | applied in this preamble and the round-4 table |
+| Note 10.1f's quoting; the shells called "live" | A30, A32, B24, B2, A other-5 | applied in note 10.1f, §6's action cell and note sink-b, and the owner told; P0.5a item 7, §4.1 note (a) and the sink row's first cell only in round 6 |
+| ml#2045 "re-padded four tables' delimiter rows" | A47, A60 | applied — four whole tables, every row |
+| Note 12b cited P0 step 8's over-broad file-mode rule | A other-6 | applied in 12b; P0 step 8's own sentence is follow-up |
+| The sign-in URL is logged whatever the token flag says | A other-7 | follow-up |
+| Archiver: "bytes" that were characters; its docstring | A other-10 | applied |
+| "Prints no value" dropped from note 10.1e without a record | B residue | applied — note 10.1e names the `die` path |
+
+---
+
+## What round 6 was for
+
+Round 5's corrections, before they merged, for the reason round 5 ran. Two validators, launched together at
+15:53 CDT, each reading the frozen commit `7265dc1f`, each told to refute:
+
+| Lens | Brief |
+| --- | --- |
+| A — fact re-probe | every claim round 5's corrections add or change, the edit script's replay, and this record's authored part |
+| B — consistency, consequence and operator reading | the whole design against the corrections, every round-5 disposition, and what an operator reading it that day would do |
+
+Both stopped mid-run — the session's usage limit, per the orchestrator's session; the subagent metadata shows
+only the gap, 15:53 to 18:33 — and were resumed at 18:33 CDT, each with its own context intact and neither shown
+the other's output; both finished against the same frozen commit. One error was in a brief, not in a validator:
+lens B's gave "in that order" as part of the owner's ruling on P0's gate, which set no order (lens A, row 2).
+The briefs are not archived here, so both statements rest on the orchestrator's session transcript. Both lenses
+list their own constraint slips at the end of their reports; none touched a secret file, the service or the
+backup tree.
+
+## What round 6 found
+
+- **Lens A**: 171 confirmed, 9 refuted, 1 unverifiable. The edit script rebuilds `7265dc1f`'s design and
+  round-2 record byte-for-byte from `main` and is idempotent.
+- **Lens B**: 17 refuted, 2 unverifiable, 41 confirmed sound; 5 of round 5's 29 dispositions false in part.
+
+Lens B's worst findings were in what the owner could do that day. The STOP's exemption sentence was false —
+S-4's `chmod 0600` is also P0.5a item 5. Note sink-b's count was case-sensitive and told the owner to wipe a
+file that may hold key candidates nobody has tested. And the design still described host state that had moved:
+the root `vim` and its swap file were gone — the swap file by 2026-09-22 19:10:21 at the latest, before this
+session began (round 7, lens A row 8). Lens B also argued that the STOP held steps no defect touches, leaving the
+0777 `bin/`, the S-7 file and tier 2 open; the owner then ruled what the STOP holds. Lens A found attributions
+wrong — "in that order" credited to a ruling that set no order, round 4's fact-lens counts given as the whole
+round's, and two items filed in note 12b under the wrong cause. It also found two of the edit script's gates
+blind: a second copy of a long line the round-2 record already carried, and a rewrite inside one of its
+fences, both exited 0.
+
+## Disposition of round 6
+
+The owner ruled on 2026-09-24 what the STOP holds (the design's note 10.1g). Source column: round 6's lens and
+row; "B §1" is lens B's first section and "B drops" its third. Lens A reported after lens B's corrections had
+been applied, so its corrections are a second pass. That pass also completed what the first had missed: the sink
+row's first cell, and the "depends on nothing" claim at two sites no lens named. Round 7 found four of the
+dispositions below true only in part; each such row says where it was completed.
+
+| Finding | Source | Disposition |
+| --- | --- | --- |
+| The STOP's exemption: S-4's `chmod 0600` is P0.5a item 5; which of §6's actions it releases | B1, A1 | owner ruling — the STOP's held and released lists (note 10.1g); the rest of §6's actions (note S-now) and the transcript row's limit only in round 7 |
+| The STOP holds steps no defect touches | B3 | owner ruling — P0.5a items 1, 5, 6 and 7 and P3 released, within two limits |
+| The STOP's exit criterion ("them"); reading held | B5 | applied — items 1–5, the two findings beneath them and the open questions; reading released |
+| Round 5's B4 row: no ruling recorded | B19 | overtaken by the ruling |
+| Note sink-b: a case-sensitive count, and a wipe on the count | B2 | applied — case-insensitive and never printed; no wipe until P0 step 3 has tested what the file holds |
+| Root's history: wipe "once §5.4's search is done", a search no §8 step lists | B4 | applied — counted now, wiped after P0 step 3; §5.4 says no step extracts a candidate yet; §5.3's "(§8 owner actions)" only in round 7 |
+| A reader arriving by a §8 heading never sees the STOP | B6 | applied — a marker under every phase heading |
+| R-6 times `nologin` to the §7.3 unit's first start | B7, A7 | applied — step 8's first start |
+| The root `vim` and its swap file are gone | B8 | applied — §6's `.swp` row, §4.1 note (a), note sink-b; §5.4 and §11 only in round 7 |
+| The shells still called live: P0.5a item 7, §4.1 note (a), the sink row | B §1, A4 | applied — the sink row's first cell in the second pass |
+| "And no other" beside an order the STOP calls defective; item 6 "in the same session" | B9 | applied in the front matter; the P0 preamble, P0.5a's intro and note 10.1f only in round 7 |
+| Step 10: "the one check §7.5 item 6 says the guard exists for" | B10 | applied — one of two |
+| The frozen 811-volume copy and `PASSPHRASE_OLD` have no route | B11 | applied — note S-3c; the decision is the owner's and is follow-up |
+| §10.2 step 2's gate: S-2's active key line; a case-insensitive count cannot reach zero | B12 | applied |
+| This record's tables: labels that change meaning between rounds; round 4's B23 twice | B13 | applied — source keys, "round 4's Bn", B23's own row |
+| Note 10.1e: AC-8's undefined term replaced "after the scrub" | B14 | applied — anchored to P0.5a item 4's `--rotate` |
+| "(none depends on the recovery)", and the same claim elsewhere | B15, A8 | applied — the heading first, the P0 preamble and P0.5a's intro in the second pass. That pass also rewrote the base text's "true of five", which was accurate about the revision it describes; round 7 found the rewrite an anachronism, and it now says the restart came later |
+| §8's phase-order sentence omits step 9's client change | B16 | applied |
+| §11's and this record's "about half"; "each is applied" | B17, A5 | applied |
+| Note 10.1e: the leaks "came from the wrapper before `DEBUG_MODE` existed" | B18 | applied — "no committed revision gates them before `64677ab0`" |
+| §12's "adopted", A35's subject, note 10.1e's `ExecStart` path — all dropped | B drops | applied — restored |
+| "In that order" credited to the owner's ruling | A2 | applied — note 10.1f and the P0 preamble say the order is the design's |
+| §11 gives round 4's fact-lens counts as the round's | A3 | applied |
+| Note 12b files §10.2's next action and the round count as leftovers | A6 | applied — both under this change's rounds; ml#2057 wrote the first on 2026-09-23 |
+| The edit script's guards: a copied long line and the round-2 record's fences pass; stale phrases checked in the design only | A9 | applied — long lines counted, fences and stale phrases checked per file; `--self-test` watches each gate fail |
+| The edit script's closing `git diff`, run outside a repository, silently becomes `--no-index` | the self-test's control | applied — it runs only inside a repository |
+| §6: what §10.2 step 7's swap does with the local pre-rotation set | A10 (unverifiable) | applied — §6 says §10.2 does not say; that gap is follow-up |
+
+---
+
+## What round 7 was for
+
+Round 6's corrections, before they merged. Two validators, launched together at 19:04 CDT, each reading the
+frozen commit `2c9efe85`, each told to refute:
+
+| Lens | Brief |
+| --- | --- |
+| A — fact re-probe | every claim round 6's corrections add or change, the edit script's replay and self-test, and this record's authored part, every round-6 row included |
+| B — consistency, consequence and operator reading | the whole design against the corrections, every round-6 disposition, and what the owner's release lets the owner do that day |
+
+Lens A's brief paraphrased the P0-gate ruling as "items 5–7 alongside"; the option the owner chose said they
+"run in the same session", which is why this record rejects lens A's row 7.
+
+## What round 7 found
+
+- **Lens A**: 176 confirmed, 13 refuted, 2 unverifiable. The edit script rebuilds `2c9efe85`'s design and
+  round-2 record byte-for-byte from `main`, a second run changes nothing, and `--self-test` passes 8 of 8 with
+  each mutant failing on the gate it targets.
+- **Lens B**: 18 refuted, 1 unverifiable, 65 confirmed sound; 4 of round 6's 27 dispositions false in part.
+
+Both lenses found that the release had made old text live. The released sink checklist told the owner to purge
+transcripts and wipe `duplicati`'s `.viminfo` under neither of the ruling's limits, and "anything that only
+reads" took in P0 step 0(c), which runs `duplicati-cli` with the passphrase from binaries item 1 has not yet
+secured. Three places still bound items 5–7 to the recovery session, and the front matter still called §8 not
+executable at all. Three findings matter once the follow-up lands: P1 step 4's `cp -a` nests a second copy if
+item 5 made one, the unit does not mask that copy, and no step extracts a key candidate from the history files
+the first limit protects. Lens A also found the second pass's rewrite of "true of five" an anachronism, and
+note 10.1g overstating round 6's finding about items 5 and 7. Lens B confirmed the release itself sound: item 1
+is safe to run now (after it, a restart fails the start limit and the server stays down, as §4.3 predicts), no
+step needs a `duplicati` login shell, item 5's fingerprint reconciliation is defined, and P3 needs nothing from
+P0–P2.
+
+## Disposition of round 7
+
+The design now reads two of the ruling's phrases narrowly, and says so in note 10.1g: "Read-only steps" as reads
+that change nothing outside a scratch directory and run no Duplicati binary (round 8's wording — the first,
+"write nothing", was false of its own example), and "this arc's reports" as every round of the arc, archived
+verbatim into a record merged to `main`. Both hold back more than the words alone; the owner may widen them.
+(Round 7 itself quoted the phrases as "only reads" and "this arc's validation reports"; round 8 found that those
+were not the owner's words, and the design and this record now quote the ruling.) Source column: round 7's lens and row; "B §1" is lens B's first section and "B drop" its third.
+
+| Finding | Source | Disposition |
+| --- | --- | --- |
+| The transcript row carries no limit, and the limit reads as already met | B1, A2 | applied — the row cites note 10.1g's limit, which now names every round, archived and merged |
+| "Anything that only reads" takes in P0 step 0(c) | B2 | applied — reads that change nothing outside a scratch directory and run no Duplicati binary; step −1's re-stage and merge stay held |
+| `/home/duplicati/.viminfo`: "wipe" | B3, A2 | applied — counted now, wiped with the history files after P0 step 3 |
+| Item 5's copy-out, and the delete it seemed to release | B4, B §1 | applied — item 5 makes P1 step 4's copy and the delete stays with P1 step 4; the nesting `cp -a` is in the STOP |
+| "Items 5–7 run in the same session" at three sites | B5, B §1 | applied — "may run now"; note 10.1f quotes the ruling's own words |
+| The front matter: "NOT EXECUTABLE"; "do not execute §8 yet" | B6, A3 | applied — held except what note 10.1g releases; item 1's place in the order |
+| §5.4's "owes one" is in no exit criterion | B7 | applied — in the STOP, among the findings the release makes live |
+| §6's S-3 to S-6 actions have no phase | B8, B §1 | applied — note S-now |
+| The root-history grep, copied from the raw file, counts a literal pipe | B9, A9 | applied — `-e` patterns, which need no escape |
+| §5.4 and §11 still list the swap file; "Both are root-only reads" | B10, A5, B §1 | applied — four history files, each needing root |
+| §7.3.1: `nologin` "once the migration is accepted" | B11, A11 | applied |
+| `InaccessiblePaths=` does not mask item 5's copy | B12 | in the STOP — follow-up; a tagged block and its landed copy change together |
+| §7.11's `bin/`; P3's heading; §10.2's "exactly as §8 is" | B13 | applied to §10.2 in round 7; §7.11 and P3 step 2 only in round 8, which found this row false in part; P3's heading kept, so its anchor survives, with the release marker beneath it |
+| The `.swp` row: "the exit wrote nothing" | B14 (unverifiable) | applied — "did not write the unit"; a normal exit writes a viminfo |
+| Note 10.1g: items 5 and 7 untouched by any defect | B15, A1 | applied — questioned only on their timing |
+| Note S-3c's options: staging space, "Delete forever", the no-move rule | B16, A12 | applied |
+| §5.3's "(§8 owner actions)" | B17, A10, B §1 | applied |
+| §11's round-6 entry: "every finding is applied" | B18 | applied — four only after round 7; the first correction said three (round 8) |
+| Note 12b: where the two limits live; P0 step 10 | B19, A2, A13 | applied |
+| Note 10.1e narrowed "which working copy they ran" | B drop | applied — restored |
+| The second pass's "true of five" rewrite | A4 | applied — "was true of five"; the restart came later, from round 2's D8 |
+| §10.2 step 2 credits P1 step 2 with the moved-aside `.env` | A6 | applied only after round 8 found the edit missing — P0 step 2 moved it, and only P4 step 2 removes it |
+| "Same session" is not the ruling's word | A7 | **rejected** — the option the owner chose says "run in the same session"; lens A's brief paraphrased it |
+| The swap file was gone by 2026-09-22, before the session | A8 | applied — the `.swp` row, this record's round-6 section, §11 and the edit script |
+| The briefs' wording and the usage-limit stop rest on the session | A14, A15 (unverifiable) | applied — attributed to the orchestrator's session transcript |
+
+## What round 8 was for
+
+Round 7's corrections, before they merged. Two validators, launched at 19:53 and 19:54 CDT, each reading the
+frozen commit `f90a87e7`, each told to refute:
+
+| Lens | Brief |
+| --- | --- |
+| A — fact re-probe | every claim round 7's corrections add or change, the edit script's replay and self-test, and this record's authored part, every round-7 row included |
+| B — consistency, consequence and operator reading | the whole design against the corrections, every round-7 disposition, and what the owner's release lets the owner do that day |
+
+Lens B's brief gave the ruling's phrase as "read-only steps"; the design and this record had been quoting it as
+"only reads". The owner's words, as the session that took the ruling recorded them in its handoff, are "Read-only steps
+may run." — the design and this record now quote that, and mark the design's reading of it as a reading (note 10.1g).
+
+## What round 8 found
+
+- **Lens A**: 155 confirmed (88 in the design, 57 in this record, 10 in the edit script), 4 refuted, 1
+  unverifiable. The edit script rebuilds `f90a87e7`'s design and round-2 record byte-for-byte from `main`, a
+  second run changes nothing, and `--self-test` passes 8 of 8.
+- **Lens B**: 11 refuted, 1 unverifiable, 95 confirmed sound; 3 of round 7's 25 dispositions false — one wholly
+  (A6, recorded as applied but never made), two in part (B13, B18).
+
+The pattern of rounds 5–7 held: the defects clustered in the corrections' own text. The one that mattered most
+was a correction **recorded as applied but never made** — round 7's A6 row said §10.2 step 2 now credits P0
+step 2 with moving the old `.env` aside and P4 step 2 with removing it, and the line was byte-identical to the
+commit before. Three findings touched what the release lets the owner do today: the transcript row told the
+owner to "count-grep now" with no command, and a count typed with a value on argv would create the very sink the
+row exists for; §5.3 had turned a pointer at root's shell history into "look before then", with no way to look
+without printing a line that may carry `--passphrase`; and item 5's copy-out, as written, left the escrow's
+long-term home group-writable by the service user and could nest a second copy into an existing directory.
+Lens B also found the STOP's released bullet presenting the design's narrow reading as the owner's words, the
+P0 preamble reading item 1 as held, note 10.1g's present tense false against the block it cites, and the
+front-matter bullet dropping both the released reads and P3 step 3's wait on D-5. Lens A confirmed item 1 has
+not run, the swap-file timing, every step claim in the STOP, note S-3c's figures and the `-e` grep fix.
+
+## Disposition of round 8
+
+Every finding is applied in the edit script's rebuild of the design, except the one only the owner can settle
+and the three lens B marked out of scope, which are follow-up. Source column: round 8's lens and row.
+
+| Finding | Source | Disposition |
+| --- | --- | --- |
+| §10.2 step 2's moved-aside `.env` — recorded as applied in round 7, never made | A1, B8, B §1 | applied — P0 step 2 moved it, only P4 step 2 removes it; the round-7 row now says so |
+| The front-matter STOP bullet omits the released reads and P3 step 3's wait | A2, B9 | applied — "P3's tier-2 fix … and the reads it names" |
+| §11's round-6 entry: "three of them only after round 7" | A3, B12 | applied — four; the round-7 row now says the first correction said three |
+| "Reads that write nothing", whose named example writes a scratch tree | A4, B10 | applied — reads that change nothing outside a scratch directory and run no Duplicati binary, at all three sites |
+| §5.4: "Those four files" — root's two cannot be confirmed to exist without root | A5 (unverifiable) | applied — "even to confirm that root's two exist, since `/root` is 0700" |
+| The transcript row: "count-grep now", no command | B1 | applied — the row defers to note sink-c: count by value, never with a value on argv, and purge only within the limit; sink-c says the counting method itself is follow-up, so the row no longer tells the owner to act |
+| Item 5's copy-out: `cp -a` carries the 0770 and nests into an existing directory | B2 | applied — confirm the destination does not exist, `chmod 0700` the copy, sha256 both sides |
+| §5.3's "look before then"; §11's "(no shell history names it)" | B3 | applied — look only without printing a line; §11 says pcalnon's history does not name it and root's is unread |
+| P0 preamble and P0.5a intro read item 1 as held | B4 | applied — item 1 is released and may already have run |
+| The re-measuring row conflicts with the transcript row's limit | B5 | applied — a `tool-results/` copy goes in the session that made it (note sink-c) |
+| Note 10.1g's present tense against the STOP it cites | B6 | applied — "the STOP block … then listed" |
+| "Only reads" is not the ruling's phrase | B7 (unverifiable) | applied as far as the record allows — the design and this record quote "Read-only steps may run." and mark the reading; **only the owner's session settles the phrase** (carried as O-3 in the 2026-10-03 assessment) |
+| The no-move bullet's "the one escrow copy" is ambiguous once item 5 makes a second | B11 | applied — the in-tree escrow, which only P1 step 4 deletes, once item 5 or P1 step 4 has copied it out |
+| §7.11 still lists `bin/` to retire after acceptance; P3 step 2 still says to land what ml#1999 landed | B §1 (B13 false in part) | applied — `bin/` is not on §7.11's list; P3 step 2 says the scheduler and three user units landed, the installer and the failure unit have not |
+| The STOP's released and limits bullets drop the ruling's own wording | B drop | applied — both bullets quote the ruling and name the design's reading as a reading |
+| AC-14's raw `\|`, P0 step 1's second listing, §4.1/§7.3.1 "P0.5 closes 0777 `.config`" | B out of scope | follow-up — the §8 change that clears the STOP |

@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 #
-# shellcheck disable=SC2034
-#   The DEVICE_* block below is a deliberate PALETTE: every disk and partition on this host is
-#   named so CURRENT_DEVICE can be repointed by editing one line. shellcheck counts the ones not
-#   currently selected as unused (13 x SC2034), which is true and is the point -- they document
-#   what may be selected. The repo's hook runs at --severity=warning and SC2034 is a warning, so
-#   without this the file cannot be committed. No other finding is suppressed: SC2034 is the ONLY
-#   code shellcheck reports here.
+# The DEVICE_* block below is a deliberate PALETTE of names, so CURRENT_DEVICE can be repointed by
+# editing one line. It is NOT the host's inventory: on 2026-09-24 sdb, sdb1, sdb2, sdc4 and sdd1 did
+# not exist (sdc4 left the partition table by 2026-09-08, before this script was written), sdd and sdg
+# were 0-byte devices, and the nvme0n1 system disk was never listed -- so check `lsblk` before
+# repointing. Every constant is exported (the owner's 2026-09-23 refactor), and shellcheck counts an
+# exported variable as used, so the palette entries not currently selected raise nothing and no
+# SC2034 directive is needed. Un-export them and SC2034 returns -- 12 findings, measured on the
+# pre-refactor copy -- and the repo's hook, which runs at --severity=warning, refuses the commit.
 #####################################################################################################################################################################################################################################################
 #
 #####################################################################################################################################################################################################################################################
@@ -15,70 +16,74 @@
 #####################################################################################################################################################################################################################################################
 # Define script constants
 
-TRUE=0
-FALSE=1
+export TRUE=0
+export FALSE=1
 
 
 #####################################################################################################################################################################################################################################################
 # Define Script Variables
-USERNAME="pcalnon"
+export USERNAME="pcalnon"
 
-DEVICE_SDA="/dev/sda"
-DEVICE_SDA1="/dev/sda1"
-DEVICE_SDB="/dev/sdb"
-DEVICE_SDB1="/dev/sdb1"
-DEVICE_SDB2="/dev/sdb2"
-DEVICE_SDC="/dev/sdc"
-DEVICE_SDC1="/dev/sdc1"
-DEVICE_SDC2="/dev/sdc2"
-DEVICE_SDC3="/dev/sdc3"
-DEVICE_SDC4="/dev/sdc4"
-DEVICE_SDD="/dev/sdd"
-DEVICE_SDD1="/dev/sdd1"
-CURRENT_DEVICE="${DEVICE_SDA}"
-DEVICE_LABEL="${CURRENT_DEVICE##*/}"
+export DEVICE_SDA="/dev/sda"
+export DEVICE_SDA1="/dev/sda1"
+export DEVICE_SDB="/dev/sdb"
+export DEVICE_SDB1="/dev/sdb1"
+export DEVICE_SDB2="/dev/sdb2"
+export DEVICE_SDC="/dev/sdc"
+export DEVICE_SDC1="/dev/sdc1"
+export DEVICE_SDC2="/dev/sdc2"
+export DEVICE_SDC3="/dev/sdc3"
+export DEVICE_SDC4="/dev/sdc4"
+export DEVICE_SDD="/dev/sdd"
+export DEVICE_SDD1="/dev/sdd1"
+export CURRENT_DEVICE="${DEVICE_SDA}"
+export DEVICE_LABEL="${CURRENT_DEVICE##*/}"
 
-TEST_TYPE_SHORT="short"
-TEST_TYPE_LONG="long"
-CURRENT_TEST_TYPE="${TEST_TYPE_LONG}"
+export TEST_TYPE_SHORT="short"
+export TEST_TYPE_LONG="long"
+export CURRENT_TEST_TYPE="${TEST_TYPE_LONG}"
 
-TIMESTAMP="$(date +%F_%T)"
+# ONE clock read. Separate `date +%F` and `date +%T` calls can straddle midnight and pair one day's
+# date with the next day's time -- a stamp a whole day wrong. Assign, then export: `export X="$(...)"`
+# returns export's status, which would hide a failed date.
+TIMESTAMP="$(date +%F_%T)" || { echo "Error: Failed to get timestamp"; exit 1; }
+export TIMESTAMP
 
-OUTPUT_FILE_EXT="out"
+export OUTPUT_FILE_EXT="out"
 
 
 #####################################################################################################################################################################################################################################################
 # Define Environment Constants
 
 # Define Directory Name Constants
-HOME_DIR_NAME="home"
-USER_DIR_NAME="${USERNAME}"
-DEVELOPMENT_DIR_NAME="Development"
-LANGUAGE_DIR_NAME="python"
-PROJECT_DIR_NAME="Juniper"
-APPLICATION_DIR_NAME="juniper-ml"
-REPORTS_DIR_NAME="reports"
-SMART_CHECKS_DIR_NAME="smart"
+export HOME_DIR_NAME="home"
+export USER_DIR_NAME="${USERNAME}"
+export DEVELOPMENT_DIR_NAME="Development"
+export LANGUAGE_DIR_NAME="python"
+export PROJECT_DIR_NAME="Juniper"
+export APPLICATION_DIR_NAME="juniper-ml"
+export REPORTS_DIR_NAME="reports"
+export SMART_CHECKS_DIR_NAME="smart"
 
 # Define Directory Constants
-HOME_DIR="/${HOME_DIR_NAME}"
-USER_DIR="${HOME_DIR}/${USER_DIR_NAME}"
-DEVELOPMENT_DIR="${USER_DIR}/${DEVELOPMENT_DIR_NAME}"
-LANGUAGE_DIR="${DEVELOPMENT_DIR}/${LANGUAGE_DIR_NAME}"
-PROJECT_DIR="${LANGUAGE_DIR}/${PROJECT_DIR_NAME}"
-APPLICATION_DIR="${PROJECT_DIR}/${APPLICATION_DIR_NAME}"
-REPORTS_DIR="${APPLICATION_DIR}/${REPORTS_DIR_NAME}"
-SMART_CHECKS_DIR="${REPORTS_DIR}/${SMART_CHECKS_DIR_NAME}"
+export HOME_DIR="/${HOME_DIR_NAME}"
+export USER_DIR="${HOME_DIR}/${USER_DIR_NAME}"
+export DEVELOPMENT_DIR="${USER_DIR}/${DEVELOPMENT_DIR_NAME}"
+export LANGUAGE_DIR="${DEVELOPMENT_DIR}/${LANGUAGE_DIR_NAME}"
+export PROJECT_DIR="${LANGUAGE_DIR}/${PROJECT_DIR_NAME}"
+export APPLICATION_DIR="${PROJECT_DIR}/${APPLICATION_DIR_NAME}"
+export REPORTS_DIR="${APPLICATION_DIR}/${REPORTS_DIR_NAME}"
+export SMART_CHECKS_DIR="${REPORTS_DIR}/${SMART_CHECKS_DIR_NAME}"
 
 # Define output file constants
-START_TESTS_FILENAME_ROOT="smart-t-${CURRENT_TEST_TYPE}-${DEVICE_LABEL}"
-CHECK_RESULT_FILENAME_ROOT="smart-xall_results-${DEVICE_LABEL}"
+export START_TESTS_FILENAME_ROOT="smart-t-${CURRENT_TEST_TYPE}-${DEVICE_LABEL}"
+export CHECK_RESULT_FILENAME_ROOT="smart-xall_results-${DEVICE_LABEL}"
 
-START_TESTS_FILENAME="${START_TESTS_FILENAME_ROOT}_${TIMESTAMP}.${OUTPUT_FILE_EXT}"
-CHECK_RESULT_FILENAME="${CHECK_RESULT_FILENAME_ROOT}_${TIMESTAMP}.${OUTPUT_FILE_EXT}"
+export START_TESTS_FILENAME="${START_TESTS_FILENAME_ROOT}_${TIMESTAMP}.${OUTPUT_FILE_EXT}"
+export CHECK_RESULT_FILENAME="${CHECK_RESULT_FILENAME_ROOT}_${TIMESTAMP}.${OUTPUT_FILE_EXT}"
 
-START_TESTS_FILE="${SMART_CHECKS_DIR}/${START_TESTS_FILENAME}"
-CHECK_RESULT_FILE="${SMART_CHECKS_DIR}/${CHECK_RESULT_FILENAME}"
+export START_TESTS_FILE="${SMART_CHECKS_DIR}/${START_TESTS_FILENAME}"
+export CHECK_RESULT_FILE="${SMART_CHECKS_DIR}/${CHECK_RESULT_FILENAME}"
 
 
 #####################################################################################################################################################################################################################################################
@@ -102,11 +107,13 @@ CHECK_RESULT="$(not "${START_TESTS}")"
 # Perform current smart test task
 
 if [[ "${START_TESTS}" == "${TRUE}" ]]; then
-    # Start the tests
+
+    # Start the SMART tests
     smartctl -t "${CURRENT_TEST_TYPE}" "${CURRENT_DEVICE}" > "${START_TESTS_FILE}" 2>&1
     chown "${USERNAME}":"${USERNAME}" "${START_TESTS_FILE}"
 elif [[ "${CHECK_RESULT}" == "${TRUE}" ]]; then
-    # display the results of the smart tests
+
+    # display the results of the SMART tests
     smartctl --xall "${CURRENT_DEVICE}" > "${CHECK_RESULT_FILE}" 2>&1
     chown "${USERNAME}":"${USERNAME}" "${CHECK_RESULT_FILE}"
 elif [[ ( ( "${START_TESTS}" == "${FALSE}" ) && ( "${CHECK_RESULT}" == "${FALSE}" ) ) || ( ( "${START_TESTS}" == "${TRUE}" ) && ( "${CHECK_RESULT}" == "${TRUE}" ) ) ]]; then
