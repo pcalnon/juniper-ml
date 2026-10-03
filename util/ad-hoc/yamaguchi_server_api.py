@@ -73,7 +73,6 @@ _CRED_LINE = re.compile(rf"^(?:export\s+)?{CRED_KEY}=(.*)$")
 
 JOB_VERBS = ("export", "delete", "run", "log")
 TASK_VERBS = ("abort", "task")
-SERVER_VERBS = ("status", "serverstate", "pause", "resume", "progress")
 VERBS = ("status", "serverstate", "pause", "resume", "export", "abort", "delete", "import", "run", "progress", "log", "task")
 # Always .fullmatch(): a `$` anchor also matches before a trailing newline, so "7\n" would pass.
 JOB_ID = re.compile(r"[1-9][0-9]*")

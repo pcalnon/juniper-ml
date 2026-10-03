@@ -241,10 +241,10 @@ class CredentialAndIdTest(_Watchdog):
         self.assertEqual(self.fake.requests, [])
 
     def test_an_unsafe_credential_reads_unreachable_and_sends_nothing(self) -> None:
-        os.chmod(self.cred, 0o644)
+        os.chmod(self.cred, 0o640)  # group-readable is enough to be refused
         verdict, code, details = self.check()
         self.assertEqual((verdict, code), ("ALERT", "UNREACHABLE"))
-        self.assertIn("mode 0644", details)
+        self.assertIn("mode 0640", details)
         self.assertEqual(self.fake.requests, [])
 
 
@@ -351,7 +351,7 @@ class UnitAndDeployContractTest(unittest.TestCase):
         for number, line in enumerate(self.deploy_lines):
             if predicate(line.strip()):
                 return number
-        self.fail("no matching line in the deploy script")
+        raise AssertionError("no matching line in the deploy script")
 
     def test_the_unit_passes_the_id_as_one_braced_word(self) -> None:
         exec_lines = [line for line in self.unit.splitlines() if line.startswith("ExecStart=")]

@@ -65,17 +65,16 @@ from yamaguchi_server_api import CRED_FILE_ENV, credential_path, read_credential
 BASE = os.environ.get("DUPLICATI_URL", "http://127.0.0.1:8300").rstrip("/")
 # Read before B2 and ignored since; see the module docstring.
 RETIRED_ENV = ("DUPLICATI_PW_FILE", "DUPLICATI_PW_KEY")
-_retired_noted = False
+# Names already reported, so a long session that re-authenticates on every 401 says so once.
+_retired_reported: set[str] = set()
 
 
 def _password() -> str:
     """The WEB-UI password, from the one credential file both API clients read."""
-    global _retired_noted
-    if not _retired_noted:
-        _retired_noted = True
-        for name in RETIRED_ENV:
-            if os.environ.get(name):
-                print(f"note: {name} is set but no longer read; the web-UI password comes from {credential_path()} ({CRED_FILE_ENV} overrides)", file=sys.stderr)
+    for name in RETIRED_ENV:
+        if os.environ.get(name) and name not in _retired_reported:
+            _retired_reported.add(name)
+            print(f"note: {name} is set but no longer read; the web-UI password comes from {credential_path()} ({CRED_FILE_ENV} overrides)", file=sys.stderr)
     return read_credential()
 
 

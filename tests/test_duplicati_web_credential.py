@@ -159,8 +159,8 @@ class CredentialRefusalTest(_TempDir):
         target = write_credential(self.dir / "target", f"{KEY}={FIXTURE_MARKER}\n", 0o600)
         self.path.symlink_to(target)
         self.assertEqual(api.read_credential(str(self.path)), FIXTURE_MARKER)
-        os.chmod(target, 0o644)
-        self.assert_refused(self.path, "mode 0644")
+        os.chmod(target, 0o640)  # group-readable is enough to be refused; nothing here needs world bits
+        self.assert_refused(self.path, "mode 0640")
 
     def test_a_bare_secret_is_refused_not_posted(self) -> None:
         """duplicati_api.py used to post the WHOLE file as the password when no key matched."""
@@ -220,7 +220,7 @@ class DuplicatiApiClientTest(_TempDir):
             mock.patch("urllib.request.urlopen", self.fake.urlopen),
             mock.patch.object(dapi, "BASE", STUB_BASE),
             mock.patch.object(api, "BASE", STUB_BASE),
-            mock.patch.object(dapi, "_retired_noted", False),
+            mock.patch.object(dapi, "_retired_reported", set[str]()),
         ):
             patcher.start()
             self.addCleanup(patcher.stop)
@@ -263,7 +263,7 @@ class DuplicatiApiClientTest(_TempDir):
         self.assertEqual(bodies, [{"Password": FIXTURE_MARKER, "RememberMe": False}, {"Password": FIXTURE_MARKER}])
 
     def test_a_refused_file_sends_nothing(self) -> None:
-        os.chmod(self.path, 0o644)
+        os.chmod(self.path, 0o640)
         for login in (api.login, dapi.login):
             with self.subTest(client=login.__module__):
                 with self.assertRaises(api.CredentialError):

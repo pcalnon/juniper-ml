@@ -302,10 +302,10 @@ class LoginAndTransportTest(_Cli):
         self.assertEqual(self.fake.paths(), [LOGIN])
 
     def test_an_unsafe_credential_file_sends_nothing(self) -> None:
-        os.chmod(self.cred, 0o644)
+        os.chmod(self.cred, 0o640)  # group-readable is enough to be refused
         rc, out, err = self.run_cli("serverstate")
         self.assertEqual((rc, out), (1, ""))
-        self.assertIn("mode 0644", err)
+        self.assertIn("mode 0640", err)
         self.assert_nothing_sent()
 
     def test_an_unreachable_server_exits_1(self) -> None:
