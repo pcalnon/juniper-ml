@@ -342,8 +342,9 @@ class TestRunnerMountRoot(unittest.TestCase):
     def test_default_root_falls_back_to_id_when_user_is_unset(self) -> None:
         try:
             real_name = pwd.getpwuid(os.getuid()).pw_name
-        except KeyError:
-            self.skipTest("this uid has no passwd entry, so `id -un` has no name to return")
+        except KeyError as exc:
+            # raise, not self.skipTest(): the same SkipTest, but a path CodeQL can see ends here.
+            raise unittest.SkipTest("this uid has no passwd entry, so `id -un` has no name to return") from exc
         with tempfile.TemporaryDirectory() as tmp:
             fx = _Tier2Fixture(tmp)
             result = fx.run_runner(env=fx.env(USER=None))
