@@ -1,12 +1,12 @@
 # HANDOFF 2026-10-03 — dynamic-workflow harness design (CONSOLIDATED): v3 sits UNTRACKED in one worktree, round 2 never relaunched, no PR
 
-> **UPDATE 2026-10-03 — item 0 is DONE.** At the owner's request, the six files went to `main` byte-for-byte, as v3, still DRAFT. They arrived in the signed PR that also added this note. Search `gh pr list --search "dynamic-workflow harness v3"` for the PR, and see the git log of the six paths. The files are therefore no longer a sole copy.
+> **UPDATE 2026-10-03 — item 0 is DONE.** At the owner's request, the six files went to `main` as v3, still DRAFT. They are byte-for-byte except for two lint fixes CI required. The grounding-inventories record's three site-relative `/docs/en/` links now point at `https://code.claude.com/docs/en/`, and the round-2 record ends with one newline instead of two. They arrived in the signed PR that also added this note. Search `gh pr list --search "dynamic-workflow harness v3"` for the PR, and see the git log of the six paths. The files are therefore no longer a sole copy.
 >
 > What changes for the rest of this file:
 >
 > - Rounds 2 and 3, the v4 fold and the gates (items 1–3) now edit the files **on `main`**, from a fresh branch. They no longer work from the untracked copies in `structured-inventing-fairy`.
 > - Item 4's PR becomes a v4 **update** PR, not the PR that adds the files.
-> - The worktree copies are now redundant. Leave them in place until the next session confirms that `main` holds identical bytes (`cmp` per file).
+> - The worktree copies are now redundant. Leave them in place until the next session confirms that `main` holds the same content (`cmp` per file; the two lint-fixed files differ only as described above).
 > - Nothing else below has changed.
 
 **Consolidated sources**:
