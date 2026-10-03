@@ -64,7 +64,9 @@ Lane A (E2E):
 
 1. **UPDATE 2026-10-03: the code fix is DONE, in canopy#694, merged as `5ff4241c`.** What remains of this item:
    - F-CANOPY-015's live re-drive and F-059's live check, against a writable cascor.
-   - F-CANOPY-056's fix, which F-059 no longer masks.
+   - ~~F-CANOPY-056's fix, which F-059 no longer masks.~~ **DONE in code 2026-10-03: canopy#696, merged as `3cc4fdb2`.** It still needs the
+     live drive. That drive should also watch for a possible feedback loop: `render_session` writes values that are `queue_control`'s Inputs.
+     The loop is unverified; see the F-056 status bullet in `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`.
    - The range-end off-by-one follow-up: cascor's `end` is exclusive, while the slider sends an inclusive value. `test_replay_player_panel_gate_coverage.py` pins that outbound value.
 
    The original item follows, for context. **AG — F-CANOPY-059 fix (P0, ledger item 16).** `replay_player_panel.py` still does `range_value = summary.get("range") or [start, end]`
