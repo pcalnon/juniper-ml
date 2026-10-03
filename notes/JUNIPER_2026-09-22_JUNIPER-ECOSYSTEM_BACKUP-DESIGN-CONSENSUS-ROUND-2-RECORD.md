@@ -28,7 +28,8 @@ the change list and the recorded dissent, none seeing another's output:
 
 **Round 3** is a single-agent confirmation pass over round 2's edit set, reading a **frozen** document. It
 confirmed 13 of the 20 corrections outright, found 6 present-but-incomplete, and swept every internal
-cross-reference — 15 defects, all applied. Its sharpest finding was the one round 2 created: the
+cross-reference — 15 defects, of which 13 were applied (D11 and D13 were not — found by round 4 on
+2026-09-24; the design's §11). Its sharpest finding was the one round 2 created: the
 P0.5a/P0.5b split had been made by *adding headings* rather than by relocating content, so the re-key
 procedure was still printed in full inside the list headed "before anything in P0" — the exact ordering
 error the split exists to prevent. Its report is archived here too (`a84d1b8fcbaed0754`).
