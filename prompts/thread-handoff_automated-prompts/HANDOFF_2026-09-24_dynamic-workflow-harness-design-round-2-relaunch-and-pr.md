@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-24 — dynamic-workflow harness design: relaunch consensus round 2, apply it, open the PR
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_dynamic-workflow-harness-consolidated.md` (consolidated handoff for dynamic-workflow harness design). History only; do not act on this file's items.
+
 **Session**: `dynamic workflow` (worktree `structured-inventing-fairy`, session `bb39e9fe-5809-451e-aacc-ec9d703a5fe0`)
 **Predecessor**: none (first handoff of this arc). Written without verification at the owner's request; every fact below is as the predecessor left it, not re-probed.
 

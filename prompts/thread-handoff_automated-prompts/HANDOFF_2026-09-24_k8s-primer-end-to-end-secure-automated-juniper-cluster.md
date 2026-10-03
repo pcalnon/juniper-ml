@@ -1,5 +1,7 @@
 # Handoff: Kubernetes primer for an end-to-end, secure, automated, production-ready Juniper cluster
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_k8s-primer-consolidated.md` (consolidated handoff for the k8s primer path). History only; do not act on this file's items.
+
 **Date**: 2026-09-24 · **Originating session**: `k8s` · **Status**: primer NOT started. **This handoff is UNVALIDATED**: the owner asked for no validation and for minimal token use, so treat every "lead" below as a hypothesis to check.
 
 ## Goal

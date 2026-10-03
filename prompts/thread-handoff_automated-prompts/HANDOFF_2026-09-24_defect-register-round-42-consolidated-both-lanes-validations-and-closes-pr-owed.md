@@ -1,5 +1,7 @@
 # Handoff (CONSOLIDATED): defect-register round 42, both lanes. Validations, fix-forwards and the closes PR are owed
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_defect-register-round-42-consolidated.md` (consolidated handoff for P3, defect register round 42, both lanes). History only; do not act on this file's items.
+
 **Written:** 2026-09-25, drafted about 01:35Z and brought up to date between 02:10Z and 03:45Z, by session `2fba4397` ("defect reg [24f8d8]"). "At writing" means that window; where a time matters, it is given. The owner's sweeper merges open PRs while you read: trust `gh`, not this file, for any PR's state.
 **This file:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_defect-register-round-42-consolidated-both-lanes-validations-and-closes-pr-owed.md`. It is UNTRACKED in `fizzy-hugging-dream` until the consolidation PR ships it. Give this path to any session that asks for the consolidated handoff.
 

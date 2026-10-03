@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-24 — data 0.16.0 is on PyPI and pinned, the stack generates equities, and Wave 4 waits on the token
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_release-and-distribution-consolidated.md` (consolidated handoff for release & distribution). History only; do not act on this file's items.
+
 **Session**: container-registry rollout, session `containers [2703c8]`. It worked every startable
 item of the predecessor named below, plus the gaps it found on the way (see *What this session
 did*).
