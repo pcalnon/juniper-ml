@@ -62,7 +62,12 @@ for your lane; then put ONE owner message containing every owner-gated item belo
 
 Lane A (E2E):
 
-1. **AG — F-CANOPY-059 fix (P0, ledger item 16).** `replay_player_panel.py` still does `range_value = summary.get("range") or [start, end]`
+1. **UPDATE 2026-10-03: the code fix is DONE, in canopy#694, merged as `5ff4241c`.** What remains of this item:
+   - F-CANOPY-015's live re-drive and F-059's live check, against a writable cascor.
+   - F-CANOPY-056's fix, which F-059 no longer masks.
+   - The range-end off-by-one follow-up: cascor's `end` is exclusive, while the slider sends an inclusive value. `test_replay_player_panel_gate_coverage.py` pins that outbound value.
+
+   The original item follows, for context. **AG — F-CANOPY-059 fix (P0, ledger item 16).** `replay_player_panel.py` still does `range_value = summary.get("range") or [start, end]`
    then indexes `range_value[0]` (canopy `main` `58b467ca`, `:508` and `:534`) [VERIFIED 2026-10-03: source fetched via gh]. Convert cascor's
    `range` dict to `[start, end]` in the readout and the range slider; list or no range must keep working; regression test on Phase 1's measured
    payload (segment 7), correct `test_p2_wave_batch_a.py:179-190` and sweep sibling fixtures claiming "measured" shapes. Then F-CANOPY-015's live

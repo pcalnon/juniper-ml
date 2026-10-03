@@ -9150,6 +9150,17 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
 
 **F-CANOPY-059 — against cascor, the CAN-015 replay player never shows a session: canopy#532's fix for F-CANOPY-015 reads `range` from `data.session`, where cascor serves a dict, and the readout indexes it as a list, so `render_session` raises `KeyError: 0` on every session cascor serves and the Replay tab stays at "▶ No active replay session" with no control reachable, while cascor stays in REPLAYING and refuses training until a Reset Training or an API stop (P0, canopy repo; a regression from canopy#532; found 2026-09-24 by round 2 of this phase's validation, Lane R2-F; OPEN).**
 
+- **Status 2026-10-03: FIXED IN CODE by canopy#694, merged as `5ff4241c`. Not yet driven live, so it stays OPEN until the live re-drive.**
+  `ReplayPlayerPanel._session_range` converts cascor's `{start, end}` dict, the legacy list, or a
+  missing range into a `[lo, hi]` pair clamped to the snapshot window. The new
+  `src/tests/unit/frontend/test_f059_replay_range_dict.py` runs the registered `render_session` on
+  Phase 1's measured payload (segment 7). It raises `KeyError: 0` against the parent and renders the
+  active view with the fix. canopy#532's mislabelled "measured" fixture in `test_p2_wave_batch_a.py`
+  now uses cascor's shapes. The canopy frontend unit suite passed in full (2,545). Three items remain:
+  - The live re-drive needs a writable cascor, not the trio (Still owed, item 16).
+  - F-CANOPY-056 is now unmasked.
+  - A follow-up: cascor's `range.end` is exclusive, but the slider sends its inclusive upper value.
+
 - **The mechanism.** cascor's `/replay` route nests `state_summary()` at `data.session`
   (`src/api/routes/snapshots.py:449`), and `state_summary()` returns `"range": {"start": …, "end": …}`, a dict,
   as it has since cascor#178 (`e01f57f`, merged 2026-05-03T00:55:26Z). `confirm_snapshot_op` stores that `data` block as the
