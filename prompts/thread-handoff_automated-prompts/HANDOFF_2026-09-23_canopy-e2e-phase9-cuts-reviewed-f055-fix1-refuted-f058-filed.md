@@ -1,5 +1,7 @@
 # Thread handoff — canopy E2E arc, Phase 9: the idle cuts reviewed through three rounds, F-055's first fix refuted in review, F-CANOPY-058 filed
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_canopy-consolidated.md` (consolidated handoff for P2 canopy: E2E validation arc + canopy-selection arc). History only; do not act on this file's items.
+
 **Written**: 2026-09-23, evening. The thread ran long: two canopy changes went through five consensus lanes, so
 a fresh thread takes the remaining merges and the redesign.
 

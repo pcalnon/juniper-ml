@@ -1,5 +1,7 @@
 # Thread handoff — canopy E2E arc, Phase 8 closed: F-CANOPY-054 fixed (canopy#670), F-CANOPY-055 filed, the idle cuts measured but not yet a PR
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_canopy-consolidated.md` (consolidated handoff for P2 canopy: E2E validation arc + canopy-selection arc). History only; do not act on this file's items.
+
 **Written**: 2026-09-23, at a phase boundary. Canopy#670 had merged and the juniper-ml Phase 8 ledger PR had been
 opened (see "State at handoff"). The thread had run long: one compaction had already happened, and three
 review rounds had run.

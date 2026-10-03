@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-21 — backup redesign: consensus round 1 complete, reconciliation pending, §8 must not be executed
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_backup-arc-consolidated.md` (consolidated handoff for P1 backup-infrastructure arc). History only; do not act on this file's items.
+
 Continue the Juniper backup-infrastructure redesign arc. The design document is the document of
 record for everything below; every bare `§` refers to it unless another file is named:
 `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`.
