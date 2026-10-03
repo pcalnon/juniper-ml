@@ -1,5 +1,7 @@
 # HANDOFF — canopy E2E arc, Phase 7: F-CANOPY-053 and F-CANOPY-048 fixed and verified live, F-CANOPY-054 open
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_canopy-consolidated.md` (consolidated handoff for P2 canopy: E2E validation arc + canopy-selection arc). History only; do not act on this file's items.
+
 **Date**: 2026-09-22 · **Session**: <https://claude.ai/code/session_0171uABjF34XxFiu1n1L9wcG> ·
 **Worktree**: `juniper-ml/.claude/worktrees/lively-humming-pixel` (branch `worktree-lively-humming-pixel`,
 all work pushed to PR branch `docs/canopy-e2e-phase7-2026-09-22`)

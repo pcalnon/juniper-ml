@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-24 — backup arc: D-8/STOP change paused mid-round-8 (not yet PR'd)
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_backup-arc-consolidated.md` (consolidated handoff for P1 backup-infrastructure arc). History only; do not act on this file's items.
+
 Continue the Juniper backup arc (host `yamaguchi`). Design of record: `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` ("D"). Tier 1 down since 2026-09-18, tier 2 since 2026-09-07. **Unvalidated handoff** (owner asked for minimal tokens).
 
 ## State

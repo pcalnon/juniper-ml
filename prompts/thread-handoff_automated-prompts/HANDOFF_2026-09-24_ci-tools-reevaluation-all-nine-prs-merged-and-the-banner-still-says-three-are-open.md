@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-24 — ci-tools re-evaluation: all nine PRs merged, and the banner still says three are open
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_ci-tools-reevaluation-consolidated.md` (consolidated handoff for the ci-tools re-evaluation). History only; do not act on this file's items.
+
 **Session**: "ci tools", the re-evaluation of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`
 **Predecessor**: `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`. Its status banner is this arc's main artifact.
 **Container-registry arc tip**: `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`

@@ -1,5 +1,7 @@
 # HANDOFF — The structure screen was blind to its founding incident, and five open items in `util/experiments/`
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_perf-lane-consolidated.md` (consolidated handoff for the performance lane + util/experiments residue). History only; do not act on this file's items.
+
 **Date**: 2026-09-22
 **Session**: `1202f4c2-c2e6-4e37-828d-db9b061f63a0` (`https://claude.ai/code/session_01Ew6dQC9sU4y7CtaCCaxYtB`)
 **Worktree**: `juniper-ml/.claude/worktrees/gentle-kindling-pascal`

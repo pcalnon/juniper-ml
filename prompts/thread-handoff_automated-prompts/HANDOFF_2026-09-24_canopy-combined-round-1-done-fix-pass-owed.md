@@ -1,5 +1,7 @@
 # Handoff: canopy combined — one draft from three canopy handoffs; round 1 done, fix pass and round 2 owed
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_canopy-consolidated.md` (consolidated handoff for P2 canopy: E2E validation arc + canopy-selection arc). History only; do not act on this file's items.
+
 **Date**: 2026-09-24, ~21:20Z.
 **Session**: "canopy combined", worktree `.claude/worktrees/bubbly-meandering-pie`.
 **This handoff is NOT validated**: the owner asked for none.

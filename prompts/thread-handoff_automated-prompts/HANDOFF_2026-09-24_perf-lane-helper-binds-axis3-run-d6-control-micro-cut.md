@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-24 — the thread-width helper binds, PF-2 axis 3 runs, D6's zero is proven non-vacuous, and the 3.14 micro reference is cut
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_perf-lane-consolidated.md` (consolidated handoff for the performance lane + util/experiments residue). History only; do not act on this file's items.
+
 Successor to
 [`HANDOFF_2026-09-23_perf-lane-d1-debt-clear-flip-pf1-rebaselined-pf2-axis2-ceiling-5882.md`](HANDOFF_2026-09-23_perf-lane-d1-debt-clear-flip-pf1-rebaselined-pf2-axis2-ceiling-5882.md)
 (ml#2048). **§2 below consumes that handoff item by item.** Its §5 traps and §7 retained state

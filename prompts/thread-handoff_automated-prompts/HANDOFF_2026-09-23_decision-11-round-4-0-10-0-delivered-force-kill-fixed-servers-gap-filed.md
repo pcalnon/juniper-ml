@@ -1,5 +1,7 @@
 # HANDOFF — decision 11 round 4: juniper-ml 0.10.0 delivered, #2046 fixed at the class level, and the `[servers]` extra found hollow
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_release-and-distribution-consolidated.md` (consolidated handoff for release & distribution). History only; do not act on this file's items.
+
 **Date**: 2026-09-23 · **Session**: <https://claude.ai/code/session_01YU3r6fhJViZTi7af6DzqeZ>
 **Worktree**: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/wiggly-imagining-pine`
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-23_decision-11-round-3-0-10-0-cut-and-every-record-closed.md`
