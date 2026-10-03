@@ -17,16 +17,19 @@ Other aliases:
 
 **Document of record** for this arc, called "the design" below: `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`. In this file a bare `§` always means the design.
 
-> **READ FIRST — a concurrent session re-measured the host on 2026-10-03.** After this file was drafted, session `652c1204` (worktree `cached-swinging-summit`) wrote `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` as this arc's new assessment and plan of record. At the time of writing that file existed only in that worktree, not on `main`, and a
-> three-lane validation round on it was in progress. Its findings, as recorded in the auto-memory `project_backup_service_user_migration_2026-09-21.md` § 2026-10-03 [UNVERIFIED — reported by that session, not re-probed here]:
+> **READ FIRST — a concurrent session re-measured the host on 2026-10-03, and its assessment is now on `main`.** Session `652c1204` (worktree `cached-swinging-summit`) wrote
+> `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` as this arc's assessment and plan of record. It was validated by three independent lanes (fact re-probe,
+> consequence attack, continuity hunt) and every finding is folded in or recorded as dissent in its §8. Its headline facts, re-measured on the host rather than read from the record:
 >
 > - The host is unchanged since 09-24, and **none of the owner's 09-24 released actions has run**.
 > - The service `.env` was rewritten on 2026-09-22 with two active keys (`SETTINGS_ENCRYPTION_KEY_OLD` and `SETTINGS_ENCRYPTION_KEY`). No record documents this.
 > - The live wrapper is v2. On the next start it exits 78 on the `_OLD` line, before preflight. The record's "neither wrapper revision can parse" is obsolete.
-> - All five STOP defects are re-confirmed in the artifacts.
-> - Its plan runs in phases: A, land the ruling; B, fix the five defects and clear the STOP; C, the released owner actions; D, P0; E, hardening.
+> - All five STOP defects are re-confirmed in the artifacts, and three more were found in them: the installer cannot complete a first install, Procedure A2 wipes the UI password's only home
+>   (`pbkdf-config`), and D-9's signin-token flag is applied unconditionally. **Procedure A0 is the default recovery path**, as the design ranked it.
+> - The `/var/log/syslog*` copies of the 09-20 secret echoes have rotated away; the journal copy is intact, so the D-8 scrub is journal-only.
+> - Its plan runs in phases: A, land the ruling (this file's step 1, sub-steps 1a–1h); B, fix the defects in the artifacts and clear the STOP; C, the released owner actions; D, P0 with a rehearsal first; E, hardening.
 >
-> **Before acting on anything below, check whether that plan has reached `main`, and coordinate with its session.** Where the two documents conflict, the newer host measurement wins.
+> **Read that file before acting on anything below.** This file keeps the session mechanics (step 1's sub-steps, the traps, the carried-item inventory); the assessment keeps the measured state, the issues register and the phase plan. Where the two conflict, the newer host measurement wins.
 
 ---
 
