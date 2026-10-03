@@ -63,7 +63,8 @@ def reflow_line(line, width):
 
 
 def process(path, width, check):
-    lines = open(path, encoding="utf-8").read().split("\n")
+    with open(path, encoding="utf-8") as fh:
+        lines = fh.read().split("\n")
     out, in_fence, changed, unfixable = [], False, 0, []
     for i, line in enumerate(lines, 1):
         if line.lstrip().startswith("```"):
@@ -82,7 +83,8 @@ def process(path, width, check):
         out.extend(reflow_line(line, width))
         changed += 1
     if not check and changed:
-        open(path, "w", encoding="utf-8").write("\n".join(out))
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write("\n".join(out))
     return changed, unfixable
 
 
