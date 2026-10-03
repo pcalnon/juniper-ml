@@ -23,4 +23,3 @@ Round 1 produced 59 corrections (design Appendix D and Appendix E) and one archi
 | --- | --- | --- |
 | A | execute: §6.2 script under a stub runtime (three scenarios), §8.1–§8.2 on fixtures incl. a reset between ticks, the §7.3 patch-id test on the six squash-merged branches Lane B1 named, `open_signed_pr.py` modes that do not yet exist, the `claudey` bypass citation, the §5.1 merge rule, the §4.3 case-2 regex over all headers, Appendix E spot-checks | `general-purpose` |
 | B | refute the corrections: the timer + `-p` child surface, the heartbeat, code-created worktrees without isolation, the docs-branch model across squash merges, case 2/case 3 liveness, `VERIFY_PENDING` with one refuter, the own-token debit vs account-wide headroom, calibration resolution, `-p` visibility, Appendix E rows vs text | `general-purpose` |
-
