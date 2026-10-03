@@ -9005,6 +9005,23 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
 
 **F-CANOPY-056 — against cascor, the CAN-015 replay player drops every control's result: `_merge_session` overlays cascor's `{status, data, meta}` envelope, so play, pause, seek, speed and range never reach the session and a Stop never clears it, and the weight drain keeps running until the page reloads or a successful model select rebuilds the tab bar; masked today by F-CANOPY-059, which keeps the player's controls from rendering at all (P1, canopy repo; found 2026-09-23 by the cuts' round-1 adversarial lane, widened 2026-09-24 by the ledger's validation; OPEN).**
 
+- **Status 2026-10-03: FIXED IN CODE by canopy#696, merged as `3cc4fdb2`. Not yet driven live, so it stays OPEN until the live re-drive.**
+  - `_merge_session` handles `stop` first: any successful Stop clears the session. It then unwraps the envelope
+    (`_control_payload`) and maps cascor's `result` onto the stored session (`_apply_control_result`):
+    - the integer `time_index` goes to `time_index.current`;
+    - `paused` sets `playing`;
+    - the summary keys go to `data.session`, where `render_session` reads them.
+  - The local fallback's `speed` and `range` now land there too. Before, they went to the top level, which
+    `render_session` does not read on a cascor-stored session.
+  - The new `src/tests/unit/frontend/test_f056_replay_control_envelope.py` (19 tests) builds each action's
+    envelope as cascor `main`'s route builds it. It drives the registered `dispatch_control` from Phase 1's
+    measured session, and renders the result. Its 9 control tests fail on the parent (`49ffaeae`). The canopy
+    frontend unit suite passed in full (2,564).
+  - **Unverified risk, for the live re-drive.** `render_session` writes the scrubber, speed and range values,
+    which are `queue_control`'s Inputs. If Dash fires `queue_control` for callback-written values, each render
+    would send a control request whose result renders again. That loop would predate this fix. Watch for
+    repeated `/replay/control` requests.
+
 - **The mechanism.** `_merge_session` (`src/frontend/components/replay_player_panel.py`) copies the old
   session and overlays the backend's response whenever that response is non-empty (`if data:
   new.update(data)`). It reaches its `stop → {"snapshot_id": None}` branch only for an empty response.
@@ -9158,7 +9175,7 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   active view with the fix. canopy#532's mislabelled "measured" fixture in `test_p2_wave_batch_a.py`
   now uses cascor's shapes. The canopy frontend unit suite passed in full (2,545). Three items remain:
   - The live re-drive needs a writable cascor, not the trio (Still owed, item 16).
-  - F-CANOPY-056 is now unmasked.
+  - F-CANOPY-056 is now unmasked. Fixed in code the same day by canopy#696; see its own status bullet.
   - A follow-up: cascor's `range.end` is exclusive, but the slider sends its inclusive upper value.
 
 - **The mechanism.** cascor's `/replay` route nests `state_summary()` at `data.session`
@@ -9703,6 +9720,8 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
     - Its regression test must use the payload Phase 1 measured (segment 7), not a typed list. Correct
       `test_p2_wave_batch_a.py:179-190`, whose fixture says it is "the exact shape measured off the running
       service" and is not, and sweep the other fixtures that make the same claim.
+    - **Status 2026-10-03:** F-CANOPY-059's fix merged (canopy#694), and so did F-CANOPY-056's (canopy#696).
+      What remains is one live drive that verifies F-CANOPY-015, F-CANOPY-059 and F-CANOPY-056 together.
     - Then F-CANOPY-015's live re-drive, then F-CANOPY-056's fix, which needs a reachable control to verify.
       Each of these drives starts a replay, so each needs a cascor that may be written, not the shared trio's.
       Each must end its replay (the sidebar's Reset Training, or a stop through cascor's `/replay/control`), and
