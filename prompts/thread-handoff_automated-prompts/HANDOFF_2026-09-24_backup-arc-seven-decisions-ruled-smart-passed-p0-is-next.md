@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-24 — backup arc: seven decisions ruled, sda SMART passed, P0 is the next action
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_backup-arc-consolidated.md` (consolidated handoff for P1 backup-infrastructure arc). History only; do not act on this file's items.
+
 Continue the **Juniper backup-infrastructure arc** (host `yamaguchi`, Duplicati 2.4.0.0). The design of
 record is
 [`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`](../../notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md).

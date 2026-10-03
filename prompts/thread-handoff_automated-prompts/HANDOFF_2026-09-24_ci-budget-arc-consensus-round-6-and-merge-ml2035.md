@@ -1,5 +1,7 @@
 # HANDOFF 2026-09-24 — CI-budget arc: consensus round 6, then merge ml#2035
 
+> **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_ci-budget-arc-consolidated.md` (consolidated handoff for the CI-budget arc). History only; do not act on this file's items.
+
 - **From session**: `36979dd7-9695-4932-8e7f-158acf63af9c`, worktree `.claude/worktrees/ancient-yawning-biscuit`
 - **Validation**: none. The owner asked for a token-minimal handoff without a validation round.
 - **Document of record**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`
