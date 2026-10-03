@@ -4,13 +4,20 @@ Documentation=file:///home/pcalnon/Development/python/Juniper/juniper-ml/util/ad
 # Candidate B for plan §7 criterion 4 (server-run failure alerting). NOT installed
 # by default -- Paul picks the architecture. Asks the server from the OUTSIDE, so it
 # also catches the classes a job-level --run-script-after cannot: never ran, job
-# definition vanished, server down, run stuck.
+# definition vanished, server down, run stuck, run held by a pause.
+# Install with util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>, never by
+# copying this file alone: the job id lives in the drop-in that script writes.
 
 [Service]
 Type=oneshot
-# Reads DUPLICATI_WEB_CREDENTIAL in-process from the repo .env (absolute path in the
-# API client) and the passphrase never -- nothing secret is on the command line.
-ExecStart=/usr/bin/python3 /home/pcalnon/Development/python/Juniper/juniper-ml/util/ad-hoc/yamaguchi_watchdog.py
+# Reads the web-UI credential in-process from ~/.config/duplicati-backup/web-credential
+# (0600; the API client refuses a group- or world-accessible file) and the passphrase
+# never -- nothing secret is on the command line or in the environment.
+# The job id has NO default: a rebuilt job is not id 2. The deploy script writes it to
+# yamaguchi-watchdog.service.d/backup-id.conf as Environment=YAMAGUCHI_BACKUP_ID=<id>.
+# The braced form expands to exactly ONE argument, so without the drop-in the watchdog
+# receives an empty --backup-id and records ALERT JOB_MISSING instead of checking a job.
+ExecStart=/usr/bin/python3 /home/pcalnon/Development/python/Juniper/juniper-ml/util/ad-hoc/yamaguchi_watchdog.py --backup-id ${YAMAGUCHI_BACKUP_ID}
 # A non-zero exit is the ALERT itself; the durable record is already written. The
 # unit then reads "failed" in `systemctl --user --failed` -- a second signal, on purpose.
 # NOTE: the script path is the PRIMARY checkout; deploy only after the PR that adds

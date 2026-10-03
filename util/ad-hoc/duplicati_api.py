@@ -4,19 +4,24 @@ Project:     Juniper
 Sub-Project: juniper-ml
 Application: util/ad-hoc
 Author:      Paul Calnon
-Version:     0.1.0
+Version:     0.2.0
 License:     MIT License
 
 Minimal authenticated client for the local Duplicati web-service API.
 
-Duplicati 2.3.x issues short-lived access tokens, so a long operational session
+Duplicati issues short-lived access tokens, so a long operational session
 loses its token repeatedly; this re-authenticates on demand rather than making
-the caller handle 401s.  The password is read from a file and is never passed on
-a command line (it would be visible in ``ps``).
+the caller handle 401s.  The web-UI password is read in-process from the 0600
+credential file that util/ad-hoc/yamaguchi_server_api.py also reads -- through
+the same function, read_credential() there, whose docstring is the file's
+contract -- and is never passed on a command line (it would be visible in
+``ps``), never placed in the environment, and never printed.
 
 Deliberately has no write helpers beyond ``call()`` -- the destructive verbs on
 this API (Repair, purge-broken-files, destination operations) must stay explicit
-at the call site, not be wrapped in convenience functions.
+at the call site, not be wrapped in convenience functions.  It also has no
+job-scoped verbs: the job id is part of the endpoint the caller types
+(``backup/<id>/log``), so there is no default id to get wrong.
 
 Usage
 -----
@@ -25,8 +30,17 @@ Usage
 
 Environment
 -----------
-    DUPLICATI_URL        default http://127.0.0.1:8300
-    DUPLICATI_PW_FILE    default .env  (the WEB-UI password, not the archive passphrase)
+    DUPLICATI_URL                   default http://127.0.0.1:8300
+    DUPLICATI_WEB_CREDENTIAL_FILE   default ~/.config/duplicati-backup/web-credential
+                                    (the WEB-UI password, not the archive passphrase)
+
+``DUPLICATI_PW_FILE`` and ``DUPLICATI_PW_KEY`` are NO LONGER READ (B2 of the
+2026-10-03 recovery plan).  They pointed this client at the primary checkout's
+world-readable ``.env`` (exposure S-5), and ``DUPLICATI_PW_FILE`` also names the
+ARCHIVE passphrase file in ``duplicati_purge_dryrun.bash`` -- one variable for two
+different secrets.  A set value is reported once on stderr and ignored.  The old
+bare-secret fallback, which posted the whole file as the password when no key
+matched, went with them.
 
 TWO DIFFERENT SECRETS -- do not conflate them:
   * the **web-UI password** (used by duplicati_api.py to authenticate to :8300)
@@ -41,47 +55,28 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import sys
 import urllib.error
 import urllib.request
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from yamaguchi_server_api import CRED_FILE_ENV, credential_path, read_credential  # noqa: E402 -- sibling module; path fixed one line above
+
 BASE = os.environ.get("DUPLICATI_URL", "http://127.0.0.1:8300").rstrip("/")
-# The WEB-UI password. Distinct from the archive GPG passphrase -- see the
-# module docstring. resources/duplicati.env was removed when the UI password
-# was rotated 2026-08-23; the current value lives in the repo-root .env.
-PW_FILE = os.environ.get("DUPLICATI_PW_FILE", ".env")
+# Read before B2 and ignored since; see the module docstring.
+RETIRED_ENV = ("DUPLICATI_PW_FILE", "DUPLICATI_PW_KEY")
+_retired_noted = False
 
 
 def _password() -> str:
-    """Read the WEB-UI password from PW_FILE.
-
-    Selects by NAME, not position. The file may hold several secrets -- it
-    currently carries both a new archive passphrase and the UI password -- and
-    matching the first KEY=VALUE line silently returns whichever happens to be
-    first, producing a 401 that looks like a wrong password rather than a wrong
-    key. DUPLICATI_PW_KEY overrides; the candidates below are tried in order.
-    """
-    with open(PW_FILE) as fh:
-        raw = fh.read()
-
-    explicit = os.environ.get("DUPLICATI_PW_KEY")
-    candidates = [explicit] if explicit else [
-        "DUPLICATI_UI_PASSWORD", "UI_PASSWORD", "PASSPHRASE_OLD", "PASSPHRASE",
-    ]
-    for key in candidates:
-        m = re.search(rf"^[ \t]*(?:export[ \t]+)?{re.escape(key)}=(.*)$", raw, re.M)
-        if not m:
-            continue
-        val = m.group(1).strip()
-        if len(val) >= 2 and val[0] == val[-1] and val[0] in "'\"":
-            val = val[1:-1]
-        if val:
-            return val
-    if explicit:
-        raise SystemExit(f"no {explicit}= entry in {PW_FILE}")
-    # bare-secret file
-    return raw.strip()
+    """The WEB-UI password, from the one credential file both API clients read."""
+    global _retired_noted
+    if not _retired_noted:
+        _retired_noted = True
+        for name in RETIRED_ENV:
+            if os.environ.get(name):
+                print(f"note: {name} is set but no longer read; the web-UI password comes from {credential_path()} ({CRED_FILE_ENV} overrides)", file=sys.stderr)
+    return read_credential()
 
 
 def login() -> str:
