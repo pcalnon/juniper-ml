@@ -4,11 +4,21 @@
 # Sub-Project:  juniper-ml
 # Application:  Duplicati Backup Failure Reporter
 # Author:       Paul Calnon
-# Version:      1.0.0
+# Version:      1.1.0
 # License:      MIT
 ############################################################################################################################################################
 #
-# Invoked by `OnFailure=` on duplicati-backup.service.
+# Invoked through `OnFailure=` by two lanes, each with its own reporter unit:
+#   duplicati-backup-failure.service  for duplicati-backup.service (the default $1 and state dir)
+#   juniper-backup-failure.service    for juniper-backup.service (tier 2; its unit points
+#                                     DUPLICATI_STATE_DIR at ~/.local/state/juniper-backup)
+# $1 is the failed unit. It heads the record, selects the journal tail and titles the
+# notification, so a report always names the lane that actually failed.
+#
+# HISTORY
+#   1.1.0  2026-10-03  The notification is titled with $1. It read "Duplicati backup FAILED"
+#                      for every caller, so a tier-2 failure was announced as the Duplicati
+#                      lane's: a report about a lane that had not failed.
 #
 # WHY THIS EXISTS
 #   "A backup that silently stops is indistinguishable from one that works."
@@ -51,12 +61,12 @@ WHEN="$(date -Is)"
 # Best-effort desktop notification. Never allowed to affect the exit status.
 if command -v notify-send > /dev/null 2>&1; then
     notify-send --urgency=critical \
-        "Duplicati backup FAILED" \
+        "Backup FAILED: ${UNIT}" \
         "${WHEN}
 See ${FAILURE_LOG}" > /dev/null 2>&1 || true
 fi
 
 # Exit 0: this reporter succeeded at reporting. The failure itself is already
-# recorded on duplicati-backup.service, and a non-zero here would only add a
-# second, confusing failed unit.
+# recorded on the failed unit, and a non-zero here would only add a second,
+# confusing failed unit.
 exit 0

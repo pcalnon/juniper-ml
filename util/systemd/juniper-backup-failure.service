@@ -1,0 +1,21 @@
+[Unit]
+Description=Record and announce a Juniper USB archive (tier 2) failure
+Documentation=file:///home/pcalnon/Development/python/Juniper/juniper-ml/util/duplicati_backup_failure.bash
+
+[Service]
+Type=oneshot
+
+# The reporter is SHARED with the Duplicati lane, and its defaults are that lane's:
+# ~/.local/state/duplicati/failures.log and that directory's last-run.status. Without
+# this line a tier-2 failure would be appended to the WRONG lane's log beside the WRONG
+# lane's status file -- a report about a lane that did not fail. This directory is
+# where util/juniper-backup-scheduled.bash writes last-run.status.
+Environment=DUPLICATI_STATE_DIR=%h/.local/state/juniper-backup
+
+# The unit name is $1: it heads the record, selects the journal tail and titles the
+# desktop notification ("Backup FAILED: juniper-backup.service").
+ExecStart=%h/.local/bin/duplicati-backup-failure.bash juniper-backup.service
+
+# Deliberately NOT chained to another OnFailure=. If the reporter itself fails
+# there is nothing useful left to escalate to, and a loop of failing reporters
+# would bury the original failure.

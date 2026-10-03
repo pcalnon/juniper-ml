@@ -267,6 +267,16 @@ jobs:
           # enable --now). PATH-stubbed; no live Duplicati. util/ is not
           # pre-commit-lint-gated.
           python3 -m unittest -v tests/test_duplicati_scheduled_backup.py
+          # tests/test_juniper_backup_tier2_lane.py: the tier-2 USB archive lane
+          # (recovery plan B6 / I-20). The runner's mount root is the scheduler's
+          # JUNIPER_BACKUP_MEDIA_ROOT (default /run/media/$USER, not the retired
+          # /media/pcalnon); an absolute device entry is used as-is and is still
+          # mount-checked; the installed scheduler reaches the installed runner under
+          # one root; juniper-backup-failure.service records into this lane's state
+          # dir; the installer's --dry-run writes nothing, root and a missing Linger
+          # are refused before any write, copies replace symlinks. PATH-stubbed
+          # mountpoint/gpg/systemctl; scratch trees only, never a real drive.
+          python3 -m unittest -v tests/test_juniper_backup_tier2_lane.py
           python3 -m unittest -v tests/test_editable_install_drift_check.py
           # tests/test_env_floor_drift_check.py: gap-I-2 floor-drift checker --
           # installed juniper-* (dist-info METADATA) vs the target repo's pyproject
@@ -986,6 +996,25 @@ jobs:
           # resolved, so DBPATH must be resolved too or the comparison matches nothing).
           # Also pins the scan shape: one find, not a readlink fork per fd on the host.
           python3 -m unittest -v tests/test_duplicati_db_holder_guard.py
+          # tests/test_duplicati_web_credential.py: B2 of the 2026-10-03 backup recovery plan --
+          # the ONE web-UI credential file both Duplicati API clients read
+          # (~/.config/duplicati-backup/web-credential, not the checkout's world-readable .env).
+          # Pins the format, refusal of any group/other bit (path, mode, owner -- never content),
+          # a FIFO refused without hanging, the shared reader, the retired DUPLICATI_PW_FILE /
+          # DUPLICATI_PW_KEY ignored, no bare-secret fallback, and the password sent only as the
+          # login body. util/ad-hoc is outside every pre-commit Python hook, so this is the gate.
+          python3 -m unittest -v tests/test_duplicati_web_credential.py
+          # tests/test_yamaguchi_server_api.py: the serverstate / pause / resume verbs P0 step 10
+          # needs (the STOP's item 3), exit codes 0 Running / 2 Paused / 64 usage, the read-back
+          # after pause and resume, a job id required before any credential read or request, and
+          # a failed export that leaves stdout EMPTY (it feeds the guard dry-run's TargetURL).
+          python3 -m unittest -v tests/test_yamaguchi_server_api.py
+          # tests/test_yamaguchi_watchdog.py: design 7.6 -- Paused with a non-empty scheduler
+          # queue alerts PAUSED_WITH_QUEUE (YAM 8.22); freshness anchored on the newest Backup,
+          # keyset-paged and bounded; --backup-id required, an empty one recorded durably; the
+          # record line format; and the unit + deploy script contract, checked statically (the
+          # deploy script changes systemd user units and is never executed by a test).
+          python3 -m unittest -v tests/test_yamaguchi_watchdog.py
           # tests/test_matrix_set_verdicts.py: Hermetic gate for the E2E matrix verdict writer `util/ad-hoc/2026-09-02_matrix_set_verdicts.py` (`util/` is outside every pre-commit Python hook), which shipped with zero tests: verdict tokens, row identity, and the write-back path.
           python3 -m unittest -v tests/test_matrix_set_verdicts.py
           # tests/test_e2e_matrix_fill.py: Hermetic gate for the E2E matrix bulk-fill writer, which shipped with zero tests: which cells a fill may touch, and that an already-filled cell is not silently overwritten.
