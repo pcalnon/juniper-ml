@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.65
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -18,6 +18,7 @@
 - [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
 - [Juniper Project-Tree Backup](#juniper-project-tree-backup)
+- [Duplicati Export Operation Token](#duplicati-export-operation-token)
 - [Editable Install Drift Check](#editable-install-drift-check)
 - [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell)
 - [Pytest Orphan Reaper](#pytest-orphan-reaper)
@@ -744,6 +745,69 @@ It then runs `systemctl --user daemon-reload` and `systemctl --user enable --now
 | Archive huge / includes `data/` `venv/` | Exclude flags inert (quoted or absolute). Confirm `--dry-run` `tar args:` shows `--exclude=<leaf>/<name>`. |
 | Backup of a restored tree looks like today's | Timestamp is when the backup ran. Pass `--label`. |
 | `cascor-snapshots` missing from the archive | `EXCLUDE_CASCOR_SNAPSHOTS=0` (the script's `TRUE`). Default `1` includes the corpus. |
+
+---
+
+## Duplicati Export Operation Token
+
+`python3 util/ad-hoc/yamaguchi_server_api.py export <id>` does not obtain the token Duplicati 2.4.0.0's export route requires. Passing a job id is not enough. This page is that route's contract. It is not the scheduled `$HOME` lane, not the project-tree `.tbz2.gpg` lane, and not the web-credential / `serverstate` / watchdog call surface (how to log in, exit 2 meaning Paused, the watchdog drop-in).
+
+### What the shipped client sends
+
+`export` in [`util/ad-hoc/yamaguchi_server_api.py`](../util/ad-hoc/yamaguchi_server_api.py) logs in, then calls:
+
+```text
+GET /api/v1/backup/<id>/export?export-passwords=false
+Authorization: Bearer <access token>
+```
+
+`req()` adds that Bearer header and no other credential. The client never calls `POST /api/v1/auth/issuetoken/export` and never sets a `token` query parameter.
+
+A non-200 leaves stdout empty and exits 1. The reason is one stderr line, `export <id> failed <status>: …`. Empty stdout is deliberate: the function comment says a guard dry-run `json.load`s that stdout for `TargetURL`, so a failure message must not sit where the JSON goes. An empty body is a failed export. It is not a job whose target URL is blank, and it must not be treated as that check having passed.
+
+### What 2.4.0.0 requires
+
+On tag `v2.4.0.0_stable_2026-09-03`, `Duplicati/WebserverCore/Endpoints/V1/Backup/BackupGet.cs` maps `GET /backup/{id}/export` **without** `.RequireAuthorization()`. The handler's `token` argument is a required query string (`[FromQuery] string token`, not `string?`). It calls `ReadSingleOperationToken` and accepts the token only when `Operation` is `"export"`.
+
+Sibling routes on the same type (`/backup/{id}`, `/log`, `/export-cmdline`, `/export-argsonly`) do use `.RequireAuthorization()` and do not take this query token.
+
+The token is minted by `POST /api/v1/auth/issuetoken/export` in `Duplicati/WebserverCore/Endpoints/V1/Auth.cs`. That route **does** require the Bearer access token. It accepts only the operations `export`, `bugreport`, and `websocket`, and it returns a single-operation token. A missing `token` query parameter fails binding before `ReadSingleOperationToken` runs (HTTP 400). The shipped client always omits it, so `export` cannot complete this route.
+
+`tests/test_yamaguchi_server_api.py` stubs `GET /api/v1/backup/7/export` as HTTP 200. The suite therefore stays green while the live route rejects the call the test describes.
+
+`GET /api/v1/backup/{id}` is a different document. It requires Bearer, and the handler calls `MaskSensitiveInformation()` before returning `Schedule`, `Backup`, and `DisplayNames`. That is the read used by `yamaguchi_census.py`, `yamaguchi_config_record.py`, and the three `yamaguchi_edit_*.py` helpers. The export route instead calls `PrepareBackupForExport` and writes an `application/octet-stream` attachment. Do not substitute one for the other.
+
+The same `token=` query was already recorded, against an earlier line number, in the "`duplicati-server-util` and the export format" section of [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-STEP-REPORTS-RECORD.md`](../notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-STEP-REPORTS-RECORD.md).
+
+### Helpers that still default to job 2
+
+`yamaguchi_server_api.py` and `yamaguchi_watchdog.py` require a job id and have no default: a rebuilt job is not id 2. These six still default to 2, so a bare invocation talks to job 2:
+
+| Script | Flag | Default |
+|--------|------|---------|
+| `util/ad-hoc/yamaguchi_census.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_config_record.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_edit_setting.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_edit_sources.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_edit_target.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/duplicati_build_fresh_job.py` | `--source-job` | `2` (the job whose sources and filters are copied; this flag is not `--backup-id`) |
+
+Read the id from `yamaguchi_server_api.py status` before any of them writes. `duplicati_build_fresh_job.py` prints and validates unless `--create` is set; the default source job is still 2 on that preview.
+
+### Do not `systemctl revert duplicati.service`
+
+Note 6a of [`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md) says the rekey drop-in under `/run/systemd/system/duplicati.service.d/` is removed with `systemctl revert`.
+
+`systemctl revert` restores the vendor unit: it deletes drop-ins and an `/etc/systemd/system/duplicati.service` that overrides a vendor unit of the same name. The Debian package installs that vendor unit at `lib/systemd/system/duplicati.service` (the step-reports note's "Packaging" section). No script on `main` runs the revert. The plan's `util/ad-hoc/2026-10-0X_rekey_settings_key.bash` is not in the tree. Clearing a `/run` drop-in is `rm` of that drop-in and `systemctl daemon-reload`.
+
+### Operator pitfalls
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| `export` exits 1, stdout empty, stderr `export N failed 400` | The operation token was not sent. Bearer on `GET …/export` is not the check this route performs. |
+| A guard dry-run sees an empty remote URL | Export stdout was empty. That is a failed export, not a job with no target. |
+| Census or an edit helper changes job 2 | `--backup-id` or `--source-job` was left at its default. Pass the id from `status`. |
+| `systemctl revert duplicati.service` removed the installed unit | Revert deletes the override of the vendor unit, not only the runtime drop-in. |
 
 ---
 
@@ -3201,6 +3265,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
   - As of [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/1612) also pins `observed_context_apps` (amend pre-flight): publisher from PR heads, `main` fallback, exact-name negative control, and `57789` (Bandit) must not count as a publisher of `Memory Budget`. Operator surface: [Required-Context Ruleset Writer](#required-context-ruleset-writer).
 - `tests/test_duplicati_web_credential.py` -- B2 of the 2026-10-03 backup recovery plan: the ONE web-UI credential file both Duplicati API clients read, `~/.config/duplicati-backup/web-credential` (0600), through `yamaguchi_server_api.read_credential`. It replaces the primary checkout's world-readable `.env` (exposure S-5). Pins the one-line `DUPLICATI_WEB_CREDENTIAL=` format; refusal of any group or other bit, of a non-regular file (a FIFO without hanging), and of zero or two key lines, each message naming path, mode and owner but never content. Also pins that the retired `DUPLICATI_PW_FILE` / `DUPLICATI_PW_KEY` are ignored, that the bare-secret fallback is gone, and that the password leaves only as the login body. `tests/duplicati_api_stub.py` replaces `urlopen`, so no socket opens.
 - `tests/test_yamaguchi_server_api.py` -- The `serverstate` / `pause` / `resume` verbs P0 step 10 needs (the 2026-09-24 STOP's item 3). Pins: exit 0 Running / 2 Paused / 64 usage; `pause` indefinite and read back; a job id required before any credential read or request; a failed `export` leaving stdout empty, since it feeds the guard dry-run's `TargetURL`; and the `status` / `log` strings the bash callers grep.
+  The export cases stub HTTP 200 and do not send an operation token. The live route's contract is [Duplicati Export Operation Token](#duplicati-export-operation-token).
 - `tests/test_yamaguchi_watchdog.py` -- Design §7.6 for `util/ad-hoc/yamaguchi_watchdog.py`: `Paused` with a non-empty `SchedulerQueueIds` alerts `PAUSED_WITH_QUEUE` (YAM §8.22); freshness is anchored on the newest **Backup**, keyset-paged and bounded; `--backup-id` is required, and an empty one is recorded durably as `JOB_MISSING`. Also pins the record line format, a `notify-send` child that never sees the password, and the unit / deploy-script contract, checked statically because the deploy script changes systemd user units. `util/ad-hoc/2026-10-03_b2_mutation_check.py` puts 25 defects back across the three B2 suites, one at a time, and requires the suite assigned to each to fail.
 - `tests/test_register_open_set.py` -- The defect register's open-set counter, which had zero tests: which rows count as open, that a dagger or letter suffix is part of the id, and that the count and the enumerated list cannot disagree.
 - `tests/test_register_status_crosscheck.py` -- The register's third reading: §4 **FIXED rows, the §2 prose enumeration and the §5.1 verification table must agree three ways. `**FIXED` counts only in the STATUS cell -- a §5.1 row that merely mentions it is not a close -- and a missing §4 heading is an error rather than an empty-and-AGREE.
@@ -7003,6 +7068,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.48  | 2026-09-04 | Pointer-follow soak operator surface: `--dry-run` is exempt from the terminal-verdict stop (juniper-ml#1690); do not drive n≈8–10; era split required; `source-recovered` stays in the denominator; soak-probes reaper pidfile |
 | 0.6.60  | 2026-09-05 | Canopy E2E unfilled-rows ledger: plan re-drives from `e2e_unfilled_rows.py` (matrix status cells only; `C2.` / `M-`; exit 0). `e2e_row_coverage.py` is an estimator and can list already-`PASS` rows as remaining |
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
+| 0.6.65  | 2026-10-04 | Duplicati export operation token: `yamaguchi_server_api.py export` sends Bearer only; 2.4.0.0 `GET /backup/{id}/export` requires a single-operation token from `POST /api/v1/auth/issuetoken/export` and does not use Bearer. Six helpers still default to job 2. `systemctl revert duplicati.service` deletes a vendor-unit override. Skipped 0.6.62 (in-flight docs PR #2119, web API client runbook) and 0.6.63–0.6.64 (in-flight replay re-drive pages #2122 / #2125). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -7502,6 +7568,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-04
+**Version:** 0.6.65
 **Maintainer:** Paul Calnon

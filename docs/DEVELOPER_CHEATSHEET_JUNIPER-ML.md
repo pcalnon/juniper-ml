@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.65
+**Date**: 2026-10-04
 **Project**: juniper-ml
 
 ---
@@ -33,6 +33,7 @@
 | `systemctl --user enable --now duplicati-backup.timer` | Enable the overnight timer **after** a first full backup and a restore drill |
 | `systemctl --user list-timers duplicati-backup.timer`  | Confirm the next `duplicati-backup.timer` fire time |
 | `util/juniper-backup.bash --dry-run`                   | Preview per-repo `.tbz2.gpg` archives (writes nothing) |
+| `python3 util/ad-hoc/yamaguchi_server_api.py status`   | List Yamaguchi jobs. `export <id>` cannot succeed against Duplicati 2.4.0.0 (needs an operation token) |
 | `util/juniper-backup.bash`                             | Build-once, replicate ciphertext to every attached configured drive |
 | `gpg -d ARCHIVE.tbz2.gpg \| tar -xjf -`                | Restore one repo archive (bzip2; needs a recipient YubiKey) |
 | `util/experiment_stack.bash --dry-run --up --cascor`   | Preview a per-run experiment stack (ports 8110–8289; no side effects) |
@@ -894,6 +895,9 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Duplicati `FATAL` unmounted dest / tmpfs tempdir | Mount the backup volume; point `DUPLICATI_TEMP_DIR` at any disk-backed path (the runner refuses a RAM-backed one outright, and `/tmp` is tmpfs here) |
 | Duplicati skip then next run escalates | Expected — skip overwrites `result=OK`. Inspect `~/.local/state/duplicati/{last-run.status,failures.log}` |
 | `juniper-backup` restore `tar` fails | Use `-xjf`, not `-xzf`. Archives are bzip2 (`.tbz2.gpg`). |
+| `yamaguchi_server_api.py export` exits 1, stdout empty | Duplicati 2.4.0.0 `GET /backup/{id}/export` requires `POST /api/v1/auth/issuetoken/export`. The client sends Bearer only. See [REFERENCE](REFERENCE.md#duplicati-export-operation-token). |
+| Census or edit helper touched job 2 | Those scripts still default `--backup-id` (or `--source-job`) to 2. Pass the id from `status`. |
+| `systemctl revert duplicati.service` deleted the unit | Revert removes the vendor-unit override, not only a `/run` drop-in. The recovery plan's note 6a names revert; no script on `main` runs it. |
 | `juniper-backup` exit 4 PARTIAL | A device/copy failed; already-verified archives stay. Re-run makes a new UUID. |
 | `juniper-backup` `FATAL: gpg recipient not found` | Both `ENCRYPT_KEYS` UIDs must resolve in the local keyring before tar starts. |
 | `juniper-backup` `SKIP … is not a mount point` | Drive unattached (would fill `/`). Attach it, or pass `--dest DIR`. |
@@ -1102,6 +1106,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local `MEMORY.md` gate; hook-not-line; CI cannot see `~/.claude`
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- `e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
 - [Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) -- per-repo `.tbz2.gpg` (restore `-xjf`); not the Duplicati `$HOME` lane
+- [Duplicati Export Operation Token](REFERENCE.md#duplicati-export-operation-token) -- `export` sends Bearer only; 2.4.0.0 requires `issuetoken/export`; six helpers still default to job 2
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- required-context classifier; 2026-08-10 class; text-mode 0 can still carry `ERROR:`
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; exit 2 = failed to measure; idle populated is VALID
@@ -1119,6 +1124,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-04
+**Version:** 1.0.65
 **Maintainer:** Paul Calnon
