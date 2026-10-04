@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.66
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -48,6 +48,7 @@
 - [Snapshot Sidecar Chain](#snapshot-sidecar-chain)
 - [Suite Driver](#suite-driver)
 - [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable)
+- [Recurrence Crossval Hyperparameters](#recurrence-crossval-hyperparameters)
 - [Experiment Stats Summary (SS8.3)](#experiment-stats-summary-ss83)
 - [Run lister / pruner (`list_runs.py`)](#run-lister--pruner-list_runspy)
 - [Snapshot Attribution Dataset Pin](#snapshot-attribution-dataset-pin)
@@ -3497,6 +3498,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
     - Root-cause note: [`notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md`](../notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md); cascor-side fidelity fix cascor#504; candidate-param plumbing gap cascor#505.
   - Each poll samples the loopback `/metrics` allowlist (`candidate_correlation` / `hidden_units_total` / `training_loss` / `training_accuracy_ratio` / step-duration sum+count) into `artifacts/results/metrics_series.csv` -- correlation exists ONLY there, never in `/v1/metrics/history` rows; a 404 (metrics disabled, G-3) degrades sampling, not the run.
   - Recurrence drive (Wave 2.3): health-gates `/v1/health/ready`, then the **synchronous** `POST /v1/train` (the response IS completion — no poll loop; the Q-2 budget is the request's socket timeout → `timed_out`), then optional `POST /v1/predict` (`predict.from_dataset_split`, default `test`) and `POST /v1/crossval` (same LMU hyperparams as `train:` for bench comparability); every phase refs the dataset by content-addressed `dataset_id` (H-8).
+  - Null `train:` values are dropped before those recurrence POSTs; the service fills the rest. See [Recurrence Crossval Hyperparameters](#recurrence-crossval-hyperparameters).
   - Predict/crossval failures are recorded, and the run continues to the manifest (acceptance failure), never dying mid-evidence. `outputs.save_model: true` (G-18) re-runs the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` as a manifest-recorded extra step (the CLI has no `--params` flag, so the dataset_id ref is the only faithful form).
   - Collects `metrics_final.json` / `metrics_history.json` / `topology.json` / `decision_boundary.npz` (2-D input only) + optional `POST /v1/snapshots` (cascor), `train_response.json` / `predict_response.json` / `crossval_response.json` (recurrence); ALWAYS writes the §13.4 `manifest.json` (also for stalled / timed-out / failed runs) and prints a one-screen summary.
   - **409 preempt (§3.4)**: `start_fresh: true` does NOT stop a live run — the lifecycle lock is held, so the 409 is raised before `start_fresh` is consulted, and after a driver-side stall/budget abort the naive re-run dies on `Training already in progress`. A 409 now gets ONE preemption attempt: `POST /v1/training/stop`; wait for the lifecycle to leave the active set; retry starting once.
@@ -4717,6 +4719,7 @@ Test seams (operator-visible): `JUNIPER_SUITE_LAUNCHER`, `JUNIPER_SUITE_DRIVER`,
 | Repeats are not repeats | `include` cells do not inherit `matrix`. Put the repeat axis on `matrix` (PF-1's `experiment.description` list). |
 | `make_baseline` / `compare_baseline` names "no countable work" on a recurrence suite | Expected — recurrence has no work-done counter. Report the run (`read_run_metrics.py --run RUN_DIR --json`); do not cut a speed-only baseline. See [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable). |
 | Recurrence `work_invariant` is false even when every cell looks the same | Third state: `work_countable` is false, so the invariant is false because the question does not apply — not because the counts differed. Use `--json`; the human table is cascor-shaped. |
+| Recurrence crossval eval r² is catastrophic while the YAML says `readout: rff` | The crossval body omitted the train keys. `POST /v1/crossval` fits a fresh model per fold from that body; it does not reuse the trained weights. See [Recurrence Crossval Hyperparameters](#recurrence-crossval-hyperparameters). |
 
 Do **not** point experiment ports at `plant_all` / isolated-stack ports, and do not use this launcher when you need canopy (use `isolated_stack.bash` or the host stack instead).
 
@@ -5356,6 +5359,91 @@ python util/experiments/compare_baseline.py --baseline SOME-TAG --suite SUITE_DI
 Coverage: `tests/test_read_run_metrics.py` (`RecurrenceKindTest`) and `tests/test_make_baseline.py` (`RecurrenceRefusalTest`) land with #1683.
 
 In-flight [#1689](https://github.com/pcalnon/juniper-ml/pull/1689) adds `tests/test_work_countable_contract.py` for the leftover those cannot see: `compare()` REFUSED (exit 2) with the honest reason (not FAIL / not "not a set of repeats"), waiver cannot override, planted cascor histogram counts do not make an uncountable suite `work_invariant`, and `drive` wins when both timing keys are present.
+
+---
+
+## Recurrence Crossval Hyperparameters
+
+How `util/experiments/run_experiment.py` builds `POST /v1/crossval`, and how juniper-recurrence `main` fills a field the body left out. The fold-geometry block (`crossval:`) and the model block (`train:`) are different objects. A request that carries only the first one is a different fit from the E-H suite.
+
+Verified on this repo's `main` in `util/experiments/run_experiment.py` (`_lmu_hyperparams`, `_run_recurrence`). The fill-in below is juniper-recurrence `main`:
+
+- [`schemas.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/schemas.py) — `TrainRequest` / `CrossValRequest`
+- [`routers/crossval.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/routers/crossval.py) and [`routers/training.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/routers/training.py)
+- [`_readout.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/_readout.py) `build_lmu_regressor`
+- [`settings.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/settings.py) `default_d` / `default_theta` / `default_ridge`
+
+### What each call fits
+
+| Call | Model it scores |
+|------|-----------------|
+| `POST /v1/train` | One fit. Hyperparameters are the body; omitted fields use the table below. The response `final_metrics` are **in-sample** (`metrics_scope: "in_sample"`). |
+| `POST /v1/predict` | The model that train left in the process. The driver sends only `dataset.dataset_id` and `split`. It does not re-send ridge or readout. |
+| `POST /v1/crossval` | A **new** `LMURegressor` per fold, built by `build_lmu_regressor` from the crossval body. It does not load the weights train just stored. Held-out numbers are `folds[].eval_metrics`, `eval_aggregate`, and `eval_std`. |
+
+The driver keeps train and crossval aligned by copying one dict onto both bodies. A hand-written crossval that omits that dict is the service default, including when the process already holds an RFF model from an earlier train.
+
+### What the driver puts on the wire
+
+`_lmu_hyperparams` keeps `train:` entries whose value is not `None`. YAML `theta: null`, and any other null train key, is removed before `POST /v1/train`, `POST /v1/crossval`, and the G-18 `juniper-recurrence train` re-run (`outputs.save_model`).
+
+`config/experiment.resolved.yaml` still shows the null, because `driver_resolved.train` is the parsed block. On a recurrence run `service_training_params.available` is false: the recurrence service exposes no training-parameters endpoint, so that file does not record the ridge or θ the service used.
+
+When `crossval:` is present, CV is on and the body is:
+
+- `dataset.dataset_id`
+- `n_folds` (required integer ≥ 2), `scheme` (default `expanding`), `embargo` (default `0`), `min_train` only when set
+- the filtered train keys
+
+A missing `crossval:` block leaves CV off. The same defaults exist on the service (`scheme` `expanding`, `embargo` `0`). `n_folds` has no service default; the schema requires it (`ge=2`).
+
+### What an omitted model field becomes
+
+`build_lmu_regressor` is the single translation for train, crossval, and the train CLI.
+
+| Omitted field | Resolved value |
+|---------------|----------------|
+| `readout` | `linear` |
+| `d` | `settings.default_d` (code default **16**) |
+| `theta` | `settings.default_theta` (code default **null**). Null means each fold resolves θ from that fold's elapsed time. |
+| `ridge` on the linear rung | `settings.default_ridge` (code default **0.0**; the type also allows the string `gcv`) |
+| `ridge` on the RFF rung | **`gcv`**. `default_ridge` is not consulted. |
+| `rff_features` / `rff_gamma` when `readout` is `rff` | **256** / **`median`** |
+| `ridge` when `readout` is `mlp` | Rejected. The MLP regularises with `mlp_weight_decay`. RFF knobs on a linear or omitted readout are also a schema **422**. |
+
+`service.default_ridge` in an experiment YAML is that Setting. It applies when the request omits `ridge` and the rung is linear. The reference experiment [`irregular-sine-rff.yaml`](https://github.com/pcalnon/juniper-recurrence/blob/main/conf/experiments/irregular-sine-rff.yaml) sets `service.default_ridge: 0.0` and, in the driver block, `train.ridge: 1.0` with `train.readout: rff`. An explicit `ridge: 0.0` on an RFF body is an unregularised solve. Omitting `ridge` on an RFF body selects GCV.
+
+The train and crossval start logs print pre-fit `theta` (often `None`) and `readout` (`req.readout or "linear"`). They do not print ridge. `CrossValResponse` does not echo resolved ridge, gamma, or per-fold θ. The router sets `theta = req.theta if req.theta is not None else settings.default_theta` before the model sees it, so a JSON null does not override a configured `default_theta`. Data-driven θ is the case where that value is null, which is the code default and the reference YAML.
+
+`util/experiments/stats_summary.py` labels a missing `train.readout` as `linear`. That matches an omitted request field. It is not evidence that a YAML `readout: rff` was the body that ran.
+
+A second `POST /v1/crossval` while `crossval_lock` is held returns **409** (`a cross-validation run is already in progress`).
+
+### E-H suite
+
+[`util/experiments/suites/p4/e-h-recurrence-real-data.yaml`](../util/experiments/suites/p4/e-h-recurrence-real-data.yaml) overrides the dataset (`equities_seq`, AAPL, 2015-01-01 → 2022-01-01, `lookback: 64`, `regression_target: log_return`) and inherits the reference experiment's train block. The comment on that suite expects r² near 0. The body the driver builds (theta dropped because the YAML value is null, and `default_theta` is null, so θ stays data-driven):
+
+```json
+{"dataset": {"dataset_id": "<id>"}, "n_folds": 5, "scheme": "expanding", "embargo": 2,
+ "d": 16, "ridge": 1.0, "readout": "rff", "rff_features": 256, "rff_gamma": "median"}
+```
+
+The same fold geometry with no model keys is the service default: linear, `d` 16, data-driven θ, ridge 0.0.
+
+```json
+{"dataset": {"dataset_id": "<id>"}, "n_folds": 5, "scheme": "expanding", "embargo": 2}
+```
+
+### Operator pitfalls
+
+| What you see | What the service did |
+|--------------|----------------------|
+| Crossval eval r² blows up; the suite YAML says `readout: rff` and `ridge: 1.0` | The POST omitted those keys. Crossval fitted a new linear model at `default_ridge` 0.0. The start log's `readout=linear` means the field was absent. `experiment.resolved.yaml` can still show `theta: null` and the train block — nulls are dropped on the wire. |
+| `service.default_ridge: 1.0` and an RFF request that omits `ridge` | RFF's omitted ridge is `gcv`. `default_ridge` is the linear fallback. |
+| `train.theta: null` together with `service.default_theta: 91` | The driver never sends the null, so the service default is the θ every fold uses. Data-driven θ needs `default_theta` null. |
+| Train r² quoted as the held-out result | `final_metrics` are in-sample. Held-out numbers are the crossval eval fields. |
+| `POST /v1/crossval` returns 409 | One crossval at a time. Wait, or read `GET /v1/crossval/status` for the run already in process. |
+| `rff_features` set while `readout` is omitted | Schema 422. RFF knobs require `readout: rff`. |
 
 ---
 
@@ -7003,6 +7091,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.48  | 2026-09-04 | Pointer-follow soak operator surface: `--dry-run` is exempt from the terminal-verdict stop (juniper-ml#1690); do not drive n≈8–10; era split required; `source-recovered` stays in the denominator; soak-probes reaper pidfile |
 | 0.6.60  | 2026-09-05 | Canopy E2E unfilled-rows ledger: plan re-drives from `e2e_unfilled_rows.py` (matrix status cells only; `C2.` / `M-`; exit 0). `e2e_row_coverage.py` is an estimator and can list already-`PASS` rows as remaining |
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
+| 0.6.66  | 2026-10-04 | Recurrence crossval hyperparameters: the driver copies `train:` onto `POST /v1/crossval` and drops nulls. Omitted readout is linear; omitted linear ridge is `default_ridge` (0.0); omitted RFF ridge is `gcv`. Crossval fits a fresh model per fold, so a parameter-less body is a different fit from the E-H RFF train block. Skipped 0.6.62–0.6.65 (in-flight docs PRs #2119, #2122, #2125, #2128). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -7502,6 +7591,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-04
+**Version:** 0.6.66
 **Maintainer:** Paul Calnon

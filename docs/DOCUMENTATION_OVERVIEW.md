@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.54
+**Version:** 0.2.59
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -55,6 +55,7 @@
 | **List or prune experiment RUN_DIRs**   | [REFERENCE — Run lister / pruner](REFERENCE.md#run-lister--pruner-list_runspy) (directory-truth; `--prune` deletes the `RUN_DIR`, `--down` keeps `artifacts/`) | docs/ |
 | **Run a multi-cell experiment suite**   | [REFERENCE — Suite Driver](REFERENCE.md#suite-driver) (`run_suite.py`: expansion, resume, cascor parallel floor, Grafana env toggle) + [CLI experimentation plan](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) Wave 7 | docs/ + notes/ |
 | **Report (not gate) a recurrence perf run** | [REFERENCE — Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) (`work_countable` third state; `make_baseline` / `compare_baseline` refuse; PF-5/6/7 report-only) + [P2 plan](../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md) | docs/ + notes/ |
+| **Read a recurrence crossval that ignored the YAML readout** | [REFERENCE — Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters) (driver drops null `train:` keys; omitted readout is linear and omitted linear ridge is 0.0; crossval fits a fresh model per fold) | docs/ |
 | **Read a run's `stats.json` / `summary.md`** | [REFERENCE — Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) (de-ratified `wall_seconds`, per-poll step duration, `scrape_confirmed` tri-state, recurrence timings under `outcome.timings`) | docs/    |
 | **Check which generators an env can run** | [REFERENCE — Generator Availability Matrix](REFERENCE.md#generator-availability-matrix-on-host) (gates, mnist/equities install paths, probe one-liner) | docs/    |
 | **Run `equities` / `equities_seq` without a 422** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (14-symbol refuse; unit is symbols because cost is per request; silent slice deleted) | docs/    |
@@ -240,6 +241,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.2.54
+**Last Updated:** 2026-10-04
+**Version:** 0.2.59
 **Maintainer:** Paul Calnon

@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.66
+**Date**: 2026-10-04
 **Project**: juniper-ml
 
 ---
@@ -1009,6 +1009,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Recurrence `work_invariant` is false on identical-looking cells | Third state: `work_countable` is false, so the invariant is false because the question does not apply. Use `--json`. |
 | `stats.json` `wall_seconds` looks like the SPEED half | De-ratified `timings.total` (plots + bring-up). Cascor SPEED is `mean_step_seconds` via `read_run_metrics`. |
 | Recurrence `stats.recurrence` has no duration | Expected — train/crossval seconds are `outcome.timings`. `n_epochs` is not a work count. |
+| Recurrence crossval eval r² blows up; YAML says `readout: rff` | The crossval POST omitted the train keys. Each fold fits a new model from that body (linear, `default_ridge` 0.0). See [REFERENCE — Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters). |
 | `scrape_confirmed` is null / `target_file_written` is true | Unreachable Prometheus ≠ zero series. Five PF-1 runs wrote a target and Prometheus held nothing. |
 | `python util/experiments/stats_summary.py` does nothing useful | No `__main__`. The driver writes the files; you `jq` them. |
 | HTTP 429 missing `Retry-After` | `SecurityMiddleware` must pass `exc.headers` into the `JSONResponse`. |
@@ -1084,6 +1085,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Train / Val / Test Partition Contract](REFERENCE.md#train--val--test-partition-contract) -- shipped `*_full` vs design-closed `X_val`
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default 503-name universe, per-request cost, silent `max_symbols` slice
 - [Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) -- PF-5/6/7 report-only; `work_countable` third state; baseline/compare refuse
+- [Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters) -- omitted readout is linear; omitted linear ridge is `default_ridge` 0.0; omitted RFF ridge is `gcv`; crossval does not reuse the trained weights
 - [Suite Report Gate Inputs](REFERENCE.md#suite-report-gate-inputs) -- `run_suite` P2 1.4: both gate inputs in `aggregate.csv` / `REPORT.md`; `--compare-baseline` reporting only
 - [Run lister / pruner](REFERENCE.md#run-lister--pruner-list_runspy) -- `list_runs.py` directory-truth scan; `--prune` ≠ `--down`
 - [Suite Driver](REFERENCE.md#suite-driver) -- `run_suite.py` expansion, resume, cascor parallel floor, Grafana env toggle
@@ -1119,6 +1121,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-04
+**Version:** 1.0.66
 **Maintainer:** Paul Calnon
