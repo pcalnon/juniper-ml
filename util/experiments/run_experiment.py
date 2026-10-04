@@ -37,7 +37,8 @@ WHAT IT DOES (SS6.3, in order):
 Exit codes (SS6.3 item 8):
   0  success (run COMPLETED and the acceptance checks passed)
   1  run did not meet acceptance criteria (stalled, timed_out, interrupted, G-6 shape mismatch,
-     or an essential artifact could not be collected)
+     an essential artifact could not be collected, or a recurrence run ended ``degraded`` -- train
+     succeeded but an ENABLED predict / crossval / save_model phase failed)
   2  misuse / validation error (bad CLI, bad YAML, unknown/unavailable generator, 422 from the API)
   3  service unreachable (health-wait timeout or repeated connection failures)
   4  run reached FAILED / a 5xx from a service
@@ -50,8 +51,11 @@ dataset on the run's juniper-data first (content-addressed ``dataset_id`` for th
 drives every phase by ``dataset_id`` ref (H-8: never a bare name). Optional ``POST /v1/predict``
 (re-refs the dataset with ``predict.from_dataset_split``, default ``test``) and ``POST /v1/crossval``
 (same LMU hyperparameters as the train block, so bench comparability holds -- SS10.4) follow; a
-predict/crossval failure is recorded and the run continues to the manifest (acceptance failure,
-exit 1) rather than dying mid-evidence. ``outputs.save_model: true`` (G-18: service mode leaves no
+predict/crossval failure is recorded and the run continues to the manifest rather than dying
+mid-evidence. Every phase leaves a record in the manifest's ``phases`` block (``ok``, ``failed``
+with its ``error``, ``skipped`` when not enabled, ``not_reached``), and a run whose train succeeded
+but whose ENABLED predict, crossval or save_model phase failed is ``outcome: "degraded"`` (exit 1),
+never ``succeeded`` (W0.3, F-D1). ``outputs.save_model: true`` (G-18: service mode leaves no
 model artifact) re-runs the ``juniper-recurrence train`` CLI with ``--dataset <dataset_id>`` + the
 identical hyperparameter flags + ``--out .../model.npz`` as an explicit, manifest-recorded extra step
 -- the CLI has no ``--params`` flag (``main.py``), so the ``dataset_id`` ref is the only faithful form.
@@ -219,6 +223,19 @@ EXIT_RUN_FAILED = 4
 
 MANIFEST_SCHEMA = "juniper-experiment-manifest/1"
 DRIVER_WAVE = "2.6"
+
+# W0.3 (F-D1): the recurrence manifest's per-phase record, ``phases``. Each phase is ``ok``,
+# ``failed`` (with an ``error``), ``skipped`` (not enabled in the config, so never asked for) or
+# ``not_reached`` (enabled, but the run ended before it). Adding the key does not bump
+# MANIFEST_SCHEMA: no reader dispatches on the schema string, and the earlier additive changes
+# (``teardown_preempt``, the ``metrics_scraped`` split) left it unchanged as well.
+PHASE_STATUSES = frozenset({"ok", "failed", "skipped", "not_reached"})
+#: The phases that run only after a successful train. One of these not ending ``ok`` while ENABLED
+#: is what makes a recurrence run ``degraded`` -- see :func:`derive_recurrence_outcome`.
+RECURRENCE_AUX_PHASES: Tuple[str, ...] = ("predict", "crossval", "save_model")
+#: Written when a phase starts and overwritten when it finishes, so a phase cut short by an
+#: interrupt or an uncaught exception is recorded as begun-and-failed rather than ``not_reached``.
+PHASE_CUT_SHORT = "the phase started but did not finish (interrupted, or the run aborted mid-phase)"
 
 # SS13.4 git-provenance repos, probed relative to the ecosystem root (best-effort).
 MANIFEST_GIT_REPOS: Tuple[str, ...] = ("juniper-cascor", "juniper-recurrence", "juniper-data", "juniper-data-client", "juniper-deploy", "juniper-ml")
@@ -1890,6 +1907,33 @@ def _save_model_rerun(train_block: Dict[str, Any], dataset_id: str, split: str, 
     return result
 
 
+def _incomplete_aux_phases(phases: Mapping[str, Any]) -> List[str]:
+    """The post-train phases that were neither ``ok`` nor ``skipped``, in run order."""
+    return [name for name in RECURRENCE_AUX_PHASES if _mapping(phases.get(name)).get("status") not in ("ok", "skipped")]
+
+
+def derive_recurrence_outcome(phases: Mapping[str, Any]) -> str:
+    """``degraded`` or ``succeeded`` for a recurrence run whose train phase succeeded (W0.3, F-D1).
+
+    ``degraded`` means a phase the config ENABLED -- predict, crossval or save_model -- did not
+    end ``ok``: it failed, which is the case the driver produces, or it was never reached, which
+    fails closed. ``succeeded`` needs positive evidence for every enabled phase. A phase that was
+    not enabled is ``skipped`` and cannot degrade anything.
+
+    Derived from the per-phase records and from nothing else -- in particular NOT from
+    ``acceptance.ok``. Acceptance also collects plot-render errors and, once W5.4 lands,
+    metric-band failures; neither says that a phase failed to run. Read from acceptance, a bad
+    metric would turn into ``degraded`` instead of the ``failed`` / ``flagged`` W5.4 rules on,
+    and "the science is bad" would become indistinguishable from "the suite did not do what it
+    was asked".
+
+    Before this the outcome came from the train phase alone, so a cell whose ``/v1/crossval``
+    422'd was recorded ``succeeded`` (exit 1, ``acceptance.ok`` false), and ``run_suite.py``
+    copied that, counted a success and exited 0.
+    """
+    return "degraded" if _incomplete_aux_phases(phases) else "succeeded"
+
+
 def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_path: Path, run_dir: Path) -> int:
     data_url, app_url, ports = resolve_endpoints(run_dir, args.data_url, args.recurrence_url, kind="recurrence")
     max_wall = float(args.max_wall_seconds) if args.max_wall_seconds is not None else config["outputs"]["max_wall_seconds"]
@@ -1925,31 +1969,47 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
     save_model_rerun: Optional[Dict[str, Any]] = None
     plots_record: Dict[str, Any] = {"requested": list(config["outputs"]["plots"]), "rendered": [], "skipped": []}
     exit_code = EXIT_ACCEPTANCE
+    # W0.3 (F-D1): one record per phase, carried on the manifest as `phases`. The outcome is
+    # derived from these records (derive_recurrence_outcome), never from `acceptance_reasons`.
+    phases: Dict[str, Dict[str, Any]] = {
+        "train": {"status": "not_reached"},
+        "predict": {"status": "not_reached" if config["predict"]["enabled"] else "skipped"},
+        "crossval": {"status": "not_reached" if config["crossval"]["enabled"] else "skipped"},
+        "save_model": {"status": "not_reached" if config["outputs"]["save_model"] else "skipped"},
+    }
 
     def _phase(name: str, t0: float) -> None:
         timings[name] = round(time.monotonic() - t0, 3)
 
+    def _record_phase(name: str, status: str, error: Optional[str] = None) -> None:
+        phases[name] = {"status": status} if error is None else {"status": status, "error": error}
+
     def _aux_phase(label: str, method_url: Tuple[str, str], body: Dict[str, Any], out_name: Optional[str]) -> Optional[Any]:
         """Drive an optional post-train phase; failures are recorded, never fatal (the train
-        evidence already exists -- dying here would lose the manifest, the G-18 class)."""
+        evidence already exists -- dying here would lose the manifest, the G-18 class). The
+        phase's record says which it was: ``ok``, or ``failed`` with the error (W0.3)."""
         t0 = time.monotonic()
+        _record_phase(label, "failed", PHASE_CUT_SHORT)
         try:
             code, payload = _http_json(method_url[0], method_url[1], body=body, timeout=max_wall)
         except ServiceUnreachable as exc:
             _phase(label, t0)
             collect_errors.append({"artifact": label, "essential": "true", "error": str(exc)})
             acceptance_reasons.append(f"{label} failed: {exc}")
+            _record_phase(label, "failed", str(exc))
             return None
         _phase(label, t0)
         if code != 200:
             detail = f"HTTP {code}: {_detail(payload)}"
             collect_errors.append({"artifact": label, "essential": "true", "error": detail})
             acceptance_reasons.append(f"{label} failed: {detail}")
+            _record_phase(label, "failed", detail)
             return None
         if out_name is not None:
             path = results_dir / out_name
             _write_json(path, payload)
             artifacts.append(path)
+        _record_phase(label, "ok")
         return payload
 
     total_t0 = time.monotonic()
@@ -1969,6 +2029,7 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
         hyper = _lmu_hyperparams(config["train"])
         train_ok = False
         t0 = time.monotonic()
+        _record_phase("train", "failed", PHASE_CUT_SHORT)
         try:
             code, payload = _http_json("POST", f"{app_url}/v1/train", body={"dataset": {"dataset_id": dataset_id, "split": dataset_cfg["split"]}, **hyper}, timeout=max_wall)
         except RequestTimeout as exc:
@@ -1976,8 +2037,14 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             log.error("synchronous POST /v1/train exceeded the wall-clock budget %.1fs -- outcome: timed_out (Q-2): %s", max_wall, exc)
             outcome = "timed_out"
             acceptance_reasons.append("outcome: timed_out")
+            _record_phase("train", "failed", f"exceeded the {max_wall:.1f}s wall-clock budget (Q-2): {exc}")
+        except ServiceUnreachable as exc:
+            _record_phase("train", "failed", str(exc))
+            raise
         else:
             _phase("train", t0)
+            if code != 200:
+                _record_phase("train", "failed", f"HTTP {code}: {_detail(payload)}")
             if code == 422:
                 raise ConfigError(f"POST /v1/train rejected (422): {_detail(payload)}")
             if code != 200:
@@ -1987,10 +2054,10 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             _write_json(path, payload)
             artifacts.append(path)
             train_ok = True
+            _record_phase("train", "ok")
             log.info("train complete: n_epochs=%s stopped_reason=%s", train_summary.get("n_epochs"), train_summary.get("stopped_reason"))
 
         if train_ok:
-            outcome = "succeeded"
             if config["predict"]["enabled"]:
                 predict_payload = _aux_phase("predict", ("POST", f"{app_url}/v1/predict"), {"dataset": {"dataset_id": dataset_id, "split": config["predict"]["from_dataset_split"]}}, "predict_response.json")
                 if isinstance(predict_payload, dict):
@@ -2012,14 +2079,24 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
                     crossval_full = crossval_payload
             if config["outputs"]["save_model"]:
                 t0 = time.monotonic()
+                _record_phase("save_model", "failed", PHASE_CUT_SHORT)
                 model_path = results_dir / "model.npz"
                 save_model_rerun = _save_model_rerun(config["train"], str(dataset_id), dataset_cfg["split"], data_url, model_path)
                 _phase("save_model", t0)
                 if save_model_rerun.get("ok"):
+                    _record_phase("save_model", "ok")
                     if model_path.is_file():
                         artifacts.append(model_path)
                 else:
-                    acceptance_reasons.append(f"save_model re-run failed: {save_model_rerun.get('error') or save_model_rerun.get('stderr_tail') or save_model_rerun.get('returncode')}")
+                    save_error = str(save_model_rerun.get("error") or save_model_rerun.get("stderr_tail") or save_model_rerun.get("returncode")).strip()
+                    acceptance_reasons.append(f"save_model re-run failed: {save_error}")
+                    _record_phase("save_model", "failed", save_error)
+            # Set only now, from the phase records. It used to be set to `succeeded` BEFORE the
+            # aux phases ran, so an exception the handlers below do not catch left `succeeded` on
+            # the manifest of a run that never finished them.
+            outcome = derive_recurrence_outcome(phases)
+            if outcome == "degraded":
+                log.error("outcome: degraded -- train succeeded but an enabled phase did not: %s", "; ".join(f"{name} {phases[name].get('status')}: {phases[name].get('error')}" for name in _incomplete_aux_phases(phases)))
         if config["outputs"]["plots"]:
             t0 = time.monotonic()
             plots_record, plot_errors, plot_paths = _render_recurrence_plots(config, plots_dir, dataset_response, data_url, train_summary, predict_full, crossval_full, f"{experiment_name} {run_id}")
@@ -2027,7 +2104,10 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             _phase("plots", t0)
             acceptance_reasons.extend(plot_errors)
         if train_ok:
-            exit_code = EXIT_SUCCESS if not acceptance_reasons else EXIT_ACCEPTANCE
+            # R6 -- the plan's RECOMMENDED ruling, applied pending the owner's: a `degraded` run exits
+            # non-zero. Keyed on the outcome as well as on the reasons, so the exit code cannot drift
+            # back to 0 if an aux-phase failure ever stops appending an acceptance reason.
+            exit_code = EXIT_SUCCESS if outcome == "succeeded" and not acceptance_reasons else EXIT_ACCEPTANCE
         else:
             exit_code = EXIT_ACCEPTANCE
     except KeyboardInterrupt:
@@ -2079,6 +2159,9 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             "service_urls": {"data": data_url, "recurrence": app_url},
             "timings": timings,
             "outcome": outcome,
+            # W0.3: what each phase did -- the record `outcome` is derived from, and what
+            # run_suite prints for a degraded cell (`degraded (crossval failed: ...)`).
+            "phases": phases,
             "acceptance": {"ok": exit_code == EXIT_SUCCESS, "reasons": acceptance_reasons},
             "completion_reason": None,
             "drive_loop": {},
@@ -2113,7 +2196,7 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
         except OSError as exc:
             log.error("cannot write %s: %s", manifest_path, exc)
 
-    _print_summary(run_id, experiment_name, generator, dataset_response, outcome, exit_code, acceptance_reasons, timings, {}, run_dir, kind="recurrence")
+    _print_summary(run_id, experiment_name, generator, dataset_response, outcome, exit_code, acceptance_reasons, timings, {}, run_dir, kind="recurrence", phases=phases)
     return exit_code
 
 
@@ -2129,6 +2212,7 @@ def _print_summary(
     loop_stats: Dict[str, Any],
     run_dir: Path,
     kind: str = "cascor",
+    phases: Optional[Dict[str, Any]] = None,
 ) -> None:
     print("=" * 68)
     print(f"run_experiment summary -- {run_id}")
@@ -2136,6 +2220,9 @@ def _print_summary(
     print(f"experiment : {experiment_name} ({kind})")
     print(f"dataset    : {generator} dataset_id={dataset_response.get('dataset_id')}")
     print(f"outcome    : {outcome}   exit={exit_code}")
+    if phases:
+        rendered = " ".join(f"{name}={_mapping(record).get('status')}" for name, record in phases.items())
+        print(f"phases     : {rendered}")
     if reasons:
         print(f"reasons    : {'; '.join(reasons)}")
     if loop_stats:

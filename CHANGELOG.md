@@ -153,6 +153,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `util/ad-hoc/2026-10-03_b2_mutation_check.py` kills 38 of 38 mutations, up from 25. Two anchors
     moved with the code and thirteen mutations are new, five of them from the fix-forward's two
     validation lanes.
+- **A recurrence run that loses an enabled phase is `degraded`, not `succeeded`, and the suite says
+  so and exits non-zero** (W0.3, closes F-D1 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  `util/experiments/run_experiment.py`, `util/experiments/run_suite.py`). The driver set the outcome
+  from the train phase alone, so the audited Scenario-A cell whose `/v1/crossval` 422'd on the
+  missing `X_full` key was recorded `succeeded` with `exit_code: 1` and `acceptance.ok: false`, and
+  `run_suite.py` copied it, printed `succeeded`, counted a success and exited 0.
+  - **The phase record.** The recurrence manifest gains `phases`: `train` / `predict` / `crossval` /
+    `save_model`, each `ok`, `failed` with its `error`, `skipped` (not enabled) or `not_reached`.
+    `MANIFEST_SCHEMA` stays `juniper-experiment-manifest/1`, as it did for every earlier additive key.
+  - **The outcome is derived from those records, never from `acceptance.ok`.** Acceptance also
+    collects plot errors and, once W5.4 lands, metric-band failures, so a plot that cannot render
+    still leaves the run `succeeded` (exit 1). A degraded run exits `EXIT_ACCEPTANCE` (1): the plan's
+    recommended ruling R6, applied pending the owner's. The cascor path is unchanged: it has no
+    predict / crossval / save_model phases, and its optional `snapshot_at_end` is a non-essential
+    collect step that does not fail acceptance.
+  - **The suite.** `degraded` joins `TERMINAL_OUTCOMES`; the summary line reads
+    `Cells: N total, X succeeded, Y degraded, Z failed/other, W not run.`; `REPORT.md` lists each
+    degraded cell under `## Degraded cells` with the phase it lost; the console prints
+    `degraded (crossval failed: HTTP 422: …)`; `--resume` re-runs it; the exit code stays 1.
+  - **Four existing assertions changed from `succeeded` to `degraded`** in
+    `tests/test_run_experiment.py` (predict, crossval, missing-CLI and failing-CLI `save_model`
+    arms). They pinned the defect; each keeps its other assertions and gains the phase record.
+- **The suite report carries the recurrence r2 again** (W0.4, closes F-D2 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  `util/experiments/run_suite.py`). `_headline_metrics` read `train_r2` / `cv_r2` / `r2` at the top
+  of `stats["recurrence"]`, a shape `stats_summary.py` never wrote, so every recurrence cell got
+  `metrics: {}` and neither `aggregate.csv` nor `REPORT.md` showed an r2. It now reads
+  `final_metrics.r2` → `train_r2`, `crossval.eval_aggregate.r2` → `cv_r2`, `crossval.eval_std.r2` →
+  `cv_r2_std` and `dataset_descriptor.n_windows` → `n_windows`. A null `crossval` yields no `cv_*`
+  key, and the test is `isinstance`, not truthiness, so `0.0` and `-18081.0` both reach the report.
+  The cascor keys are read as before.
 - **Tier 2 finds its drives under `/run/media` again, and gains its installer, its failure unit and a
   gate** (B6 / I-20 of
   `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`;
