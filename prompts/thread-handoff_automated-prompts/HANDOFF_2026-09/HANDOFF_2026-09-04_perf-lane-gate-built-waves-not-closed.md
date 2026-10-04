@@ -48,7 +48,7 @@ refused; that is the guard working, not a fault.) If that state directory is cle
 not because anything drifted.
 
 **Immediate next actions, cheapest first. All item numbers refer to
-[`notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md)
+[`notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md)
 unless stated otherwise.**
 
 0. ~~Land `ml#1735`, then the comparator defects.~~ **DONE 2026-09-05.** `ml#1741` `d8c0fc81`
@@ -68,7 +68,7 @@ unless stated otherwise.**
    three gate suites run **88 tests**.
 2. **Free — P4 (Documentation) is a whole PHASE that is missing and never started.** §1.1 of the
    phasing note
-   ([`JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md`](../../notes/JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md))
+   ([`JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md`](../../../notes/JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md))
    defines it as the operator surface in `docs/REFERENCE.md` + the cheatsheet + the baseline
    directory documented as a first-class artifact location, and it is **the last gate before §12
    development may begin**. `docs/REFERENCE.md` and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`
@@ -80,7 +80,7 @@ unless stated otherwise.**
    undocumented `max_epochs: 200` / no `output_epochs`, parked in
    `PENDING_EPOCH_SPLIT_DECISIONS` in `tests/test_experiment_config_schemas.py` — deliberately not
    blessed. Also still open and named in §5 of the P2 plan and §6 of the P1 design
-   ([`JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md`](../../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md)):
+   ([`JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md`](../../../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md)):
    **whether the run tier ever gates CI.** Item 1.4 deliberately leaves `run_suite`'s exit code
    untouched by a verdict *pending that decision* — a test is named for it.
 4. **Free — item 0.1 is the reason Wave 0 is not closed**: the P2 plan's own §6 acceptance still
@@ -102,7 +102,7 @@ unless stated otherwise.**
    a quiet window**.
 8. **Wave 4 (PF-8) exists and is unblocked.** Do **4.3 before 4.1**: re-scope PF-8 against the
    headroom sweep first, because §8.4 of the instrument-resolution results
-   ([`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md))
+   ([`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md))
    already answers "is contention real". 4.1 must not reuse the sweep driver's naive teardown, and
    cascor `parallel > 1` is still refused from one checkout (`util/experiments/run_suite.py:18-20`).
 
@@ -122,7 +122,7 @@ unless stated otherwise.**
   correct and stands.** This bullet claimed the band mixed normalizations, "the 13% is
   `(max−min)/max` on the 20 s runs, the 20.5% is `max/min−1` on the sweep's quiet blocks". Recomputed
   from the six values in §5 / §8.4 of
-  [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md):
+  [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md):
   the two quiet 20 s runs (18.42 → 20.81 ms) give **12.98%** under `max/min − 1` and **11.48%** under
   `(max−min)/max`, so the 13.0% figure is *already* `max/min − 1` — the same formula as the 20.5%.
   The band was never mixed. Worse, **15.0% is the `modest load 4/16` run** (18.42 → 21.18 ms), a
@@ -277,7 +277,7 @@ PR in this lane — treat a mismatch as a prompt to enumerate, not as a fault.
 
 The predecessor carried these and an earlier draft of this handoff dropped every one. From §0/§0.1/§4
 of the tail re-probe
-([`JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md`](../../notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md)):
+([`JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md`](../../../notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md)):
 
 - **The title-repair ACCEPTANCE GATE — work-destroying if dropped.** §5 of that document records
   that **163 of 172 broken titles were produced BY a repair pass**. Any further repair must be gated
@@ -349,7 +349,7 @@ juniper-service-core work all have other owners and moved independently.
 ## 9. Consensus validation of this document
 
 Validated under
-[`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
+[`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 — two Lane A agents re-deriving from raw artifacts with independent entry points (forbidden from
 using `read_run_metrics.py` or the session's own ad-hoc scripts), two Lane B agents briefed to
 refute.

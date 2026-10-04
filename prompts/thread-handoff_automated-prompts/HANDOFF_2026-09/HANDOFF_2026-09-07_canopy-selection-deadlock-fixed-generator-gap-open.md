@@ -3,9 +3,9 @@
 - **Date**: 2026-09-07
 - **Arc**: juniper-canopy model/dataset selection catch-22 (the "Recurrence cannot be selected" defect)
 - **Session**: `catch-22`
-- **Design of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md) — **§12 is 57 lines; this handoff does not replace it**
-- **Evaluation of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md) — §6.1 (X1–X7), §6.4 (Y1–Y9)
-- **Consensus validation**: [`notes/JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md`](../../notes/JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md) — **read §4, §5, §7 AND §8.2**
+- **Design of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md) — **§12 is 57 lines; this handoff does not replace it**
+- **Evaluation of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md) — §6.1 (X1–X7), §6.4 (Y1–Y9)
+- **Consensus validation**: [`notes/JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md`](../../../notes/JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md) — **read §4, §5, §7 AND §8.2**
 - **Browser evidence**: `reports/2026-09-05_canopy-deadlock-consensus/browser_acceptance.md` (on `main`)
   and `…/browser_acceptance_prb.md` (**lands with `ml#1809`; if that PR is still open, read it there**)
 

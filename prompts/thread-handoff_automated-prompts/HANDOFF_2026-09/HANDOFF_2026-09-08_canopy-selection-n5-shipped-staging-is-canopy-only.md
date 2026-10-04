@@ -4,8 +4,8 @@
 - **Arc**: juniper-canopy model/dataset selection reachability (the "Recurrence cannot be selected" defect)
 - **Session**: `glistening-bouncing-biscuit`
 - **Predecessor**: [`HANDOFF_2026-09-07_canopy-selection-deadlock-fixed-generator-gap-open.md`](HANDOFF_2026-09-07_canopy-selection-deadlock-fixed-generator-gap-open.md) — its items 1 and 2 are closed here; items 3–10 are carried forward unchanged below
-- **Design of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md) — §4.9 now carries a dated correction; **§12 is unchanged and is the next phase**
-- **Consensus validation**: [`notes/JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md`](../../notes/JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md) — §7 item 2 now carries the same correction
+- **Design of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md) — §4.9 now carries a dated correction; **§12 is unchanged and is the next phase**
+- **Consensus validation**: [`notes/JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md`](../../../notes/JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md) — §7 item 2 now carries the same correction
 
 ---
 

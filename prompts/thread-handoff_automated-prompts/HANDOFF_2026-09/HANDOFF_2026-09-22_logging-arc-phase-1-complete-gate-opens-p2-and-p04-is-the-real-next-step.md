@@ -16,7 +16,7 @@ Successor to
 > ## ⚠ VALIDATION STATUS: INDEPENDENT CONSENSUS DID **NOT** RUN — VALIDATE THIS BEFORE TRUSTING IT
 >
 > Consensus was attempted per
-> [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md):
+> [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md):
 > **Lane A ×3 on distinct entry points** (git/GitHub; the source tree; re-derivation of every
 > number), to be followed by **Lane B ×2 opposing briefs**. **All three Lane A agents died on the
 > account's weekly API rate limit** (resets 2026-09-23 22:00 America/Chicago) before returning a
@@ -392,7 +392,7 @@ Listed because they are evidence the unverified remainder is not clean:
 ## 8. Independent validation, 2026-09-23
 
 Run per
-[`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
+[`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 against this document **frozen at juniper-ml `7b226ca0`**, cascor at `0d2d826` (and `010d035` where
 the text pins it). Every lane read by `git show <sha>:<path>`, so no branch movement could reach it.
 

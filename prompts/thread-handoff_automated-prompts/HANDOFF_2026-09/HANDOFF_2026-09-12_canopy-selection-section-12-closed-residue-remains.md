@@ -4,7 +4,7 @@
 - **Arc**: juniper-canopy model/dataset selection reachability (the "Recurrence cannot be selected" defect)
 - **Session**: `resilient-strolling-bachman`
 - **Predecessor**: [`HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md`](HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md) — its item 1 is **closed** here; items 2–8 are carried forward, each **re-verified against `main` today** rather than inherited
-- **Design of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md) — **§12 now closes at §12.8**; §12.6 and §12.7 carry this arc's corrections
+- **Design of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md) — **§12 now closes at §12.8**; §12.6 and §12.7 carry this arc's corrections
 - **Status addendum**: [§ Status as of 2026-09-21](#status-as-of-2026-09-21) — read that FIRST. Three of the eleven items below are closed, two are materially misstated, and the residue is larger than this document records. The body below is preserved unedited as the 09-12 record.
 
 ---

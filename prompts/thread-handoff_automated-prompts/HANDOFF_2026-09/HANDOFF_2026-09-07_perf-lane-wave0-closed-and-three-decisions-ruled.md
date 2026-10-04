@@ -28,7 +28,7 @@ was blocked behind is ruled. What remains splits cleanly into *needs an idle hos
 at all*.
 
 **Item numbers refer to
-[`notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md)
+[`notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md)
 unless stated otherwise.**
 
 ### Immediate, in order
@@ -38,7 +38,7 @@ unless stated otherwise.**
    the fix is `gh api -X PUT repos/pcalnon/juniper-ml/pulls/1811/update-branch`, not a force-push.
 2. **Free — Wave 4 item 4.3, and do it BEFORE 4.1.** Re-scope PF-8 against the headroom sweep first:
    §8.4 of
-   [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md)
+   [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md)
    already answers the neighbouring question ("is contention real"), so PF-8 may be narrower than
    Wave 4 assumes — or redundant. **Answer that before building 4.1's harness.**
 3. **Free — item 2.4 is UNBLOCKED** by the 2.5 ruling. It *establishes* a cascor micro timing
@@ -386,7 +386,7 @@ correct there, not a loss.
 
 The predecessor notes that an earlier draft dropped every one of these. Re-probed 2026-09-07 where
 cheap. From §0/§0.1/§4 of
-[`JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md`](../../notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md):
+[`JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md`](../../../notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md):
 
 - **The title-repair ACCEPTANCE GATE — work-destroying if dropped.** §5 of that document records
   that **163 of 172 broken titles were produced BY a repair pass**. Any further repair must be gated
@@ -427,7 +427,7 @@ owners and moved independently during this session.
 ## 10. Consensus validation
 
 Validated under
-[`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md).
+[`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md).
 Sized to the **top-right cell** of its §3 — a document of record, **overturning** two findings
 already written into one, carrying **universal quantifiers**. Round 1: **3 Lane A on deliberately
 disjoint entry points** (A1 git/GitHub only; A2 source/config only; A3 the live machine) and **2 Lane

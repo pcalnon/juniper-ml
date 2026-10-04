@@ -31,7 +31,7 @@ Successor to
 >
 > | §1 item | state on 2026-09-22 |
 > |---|---|
-> | **1 — six owner decisions, "put them to the owner"** | **DONE, on 2026-09-11, hours after this file was written.** All six RULED: [`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](../../notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md) (`juniper-ml#1927`). Per-decision status in the table below. **Do not re-ask the owner.** |
+> | **1 — six owner decisions, "put them to the owner"** | **DONE, on 2026-09-11, hours after this file was written.** All six RULED: [`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](../../../notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md) (`juniper-ml#1927`). Per-decision status in the table below. **Do not re-ask the owner.** |
 > | **2 — a micro cut on an idle host** | **STILL BLOCKED (5th session), and the recipe below is now BROKEN** — see the `0003` block in §1 item 2. |
 > | **3 — three narrowed ICV residuals** | **UNTOUCHED.** Still open, still optional. The 09-16 sweep closed a *different* residual (its own draft's), not these. |
 >
@@ -39,12 +39,12 @@ Successor to
 >
 > | D | ruling (2026-09-11) | state 2026-09-22 |
 > |---|---|---|
-> | **D1** cascor thread-pin defect | measure later output passes at widths > 2 first | **The WIDTH question is answered** — [`…THREAD-WIDTH-SWEEP.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md): widths 2–8 indistinguishable, keep 2 (16 is 4.97–7.42× worse across both runs — see ⚠ 2 for the mechanism qualifier). **The DEFECT is not repaired and the repair is still an open owner item** — see the ⚠ below. |
+> | **D1** cascor thread-pin defect | measure later output passes at widths > 2 first | **The WIDTH question is answered** — [`…THREAD-WIDTH-SWEEP.md`](../../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md): widths 2–8 indistinguishable, keep 2 (16 is 4.97–7.42× worse across both runs — see ⚠ 2 for the mechanism qualifier). **The DEFECT is not repaired and the repair is still an open owner item** — see the ⚠ below. |
 > | **D2** `runtime:` block via the env route | implement, **gated** on a two-phase cap sweep | **route half measured** — it binds, and capping helps (the published −33% is measured on a contaminated column and **understates** it, ⚠ 3 below); **epoch-count half never delivered** — see ⚠ below. **IMPLEMENTED 2026-09-22**, this session. |
 > | **D3** PF-3 | unblock via D2, then a quiet host | **still blocked** — D2's code has only just landed, and the host has never been quiet. |
 > | **D4** PF-2 retarget | retarget at the candidate phase + 2 axes | **SPEC'd**; axis 3 calibrated (viable, gate on *accuracy*, sample 2,3,4,5). **Axis 2 needs an OWNER CALL** — 250 → 500,000 is unreachable, juniper-data caps `n_points_per_spiral` at 10,000. |
 > | **D5** CI floor-check hazard | relocate onto the execution path | **SHIPPED** — `check_cascor_parallel_floor`, `util/experiments/run_suite.py:162`, called from `main`. Six assertions reference it, of which **three are refusals** (`assertRaisesRegex`) and three are allow-cases. |
-> | **D6** `epochs_completed` | re-measure the spread before gating | **DISCHARGED 2026-09-22** — spread is **zero**, and D6's premise is refuted. [`notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`](../../notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md). |
+> | **D6** `epochs_completed` | re-measure the spread before gating | **DISCHARGED 2026-09-22** — spread is **zero**, and D6's premise is refuted. [`notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`](../../../notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md). |
 >
 > ## ⚠ Three corrections to what the 09-16 sweep is usually quoted as having settled
 >
@@ -66,7 +66,7 @@ Successor to
 >
 > **3. The sweep's "initial pass" column is not the initial pass**, and its §2.1 3.3× gap is an
 > artifact of that. Full correction, with the reconciling arithmetic, is now in
-> [`notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md) §2.
+> [`notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`](../../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md) §2.
 > The −33% **understates** the real capping benefit — recomputed from first-pass figures it is
 > **−49.2%** (2.2838 s -> 1.1593 s, medians of 3). D1's conclusion and the cascor#531
 > non-reproduction are unaffected.
@@ -106,7 +106,7 @@ Successor to
 ---
 
 Document of record:
-[`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](../../notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md)
+[`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](../../../notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md)
 ("the ICV note"), shipped on `juniper-ml#1896`. "The attribution note" is
 `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-LIBRARY-ATTRIBUTION.md`; "the
 probe note" is `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md`; "the

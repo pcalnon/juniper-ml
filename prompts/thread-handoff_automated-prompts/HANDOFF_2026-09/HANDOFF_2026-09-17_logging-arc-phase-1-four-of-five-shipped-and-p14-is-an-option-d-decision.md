@@ -10,7 +10,7 @@ Successor to
 > **UPDATED 2026-09-21 — READ §0.0 FIRST.** This document was validated against both repos on
 > 2026-09-21 by one independent agent plus a five-agent consensus review (Lane A ×3 distinct entry
 > points, Lane B ×2 opposing briefs) per
-> [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md).
+> [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md).
 > Its state claims all hold. **Five of its factual claims do not**, one whole remaining-work item
 > (§0.5) is moot, and the measurement §0.1 step 2 asked for has been taken — and it **reframes the
 > P1.4 decision**. §0.0 carries all of it. Where §0.0 and a later section disagree, §0.0 is current.
@@ -256,7 +256,7 @@ one-line change that collapses ~1,000–1,300 ns to roughly the cost of two dict
 ### 0.0.6 Lane B verdict — two opposing briefs, and they converge
 
 Run per
-[`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
+[`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 §2 Lane B: one agent briefed to argue **for** wiring, one **against**, each required to name the
 fact that most weakens its own case. **They agree on every operative point**, which is the strongest
 signal this review produced:

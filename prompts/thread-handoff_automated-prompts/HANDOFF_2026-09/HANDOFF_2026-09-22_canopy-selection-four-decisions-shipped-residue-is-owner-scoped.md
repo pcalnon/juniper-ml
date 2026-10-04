@@ -4,7 +4,7 @@
 - **Arc**: juniper-canopy model/dataset selection reachability (the "Recurrence cannot be selected" defect)
 - **Session**: `velvety-pondering-frost` (`session_01AkuYSrqxuHKY19ZhVS24VW`)
 - **Predecessor**: [`HANDOFF_2026-09-12_canopy-selection-section-12-closed-residue-remains.md`](HANDOFF_2026-09-12_canopy-selection-section-12-closed-residue-remains.md) — its § *Status as of 2026-09-21* addendum is this session's work-in-progress record and was corrected **five** times (the fifth is below, § Key context); **this document supersedes it**
-- **Designs of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md) (§12 closed at §12.9) and [`notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](../../notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md) (§5.6.1 records OQ-6's closure)
+- **Designs of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md) (§12 closed at §12.9) and [`notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](../../../notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md) (§5.6.1 records OQ-6's closure)
 - **Validation**: three adversarial agents + one peer session returned **29 defects against this document's first draft**; all are folded in. See § Validation record — this document is not self-certifying.
 
 ---
@@ -110,7 +110,7 @@ writers race for the dropdown's value — the `§4.1`-vs-`§4.10` two-writer con
 `src/main.py` has `@app.post("/api/model/select")` at `:4014` and **no GET route**;
 `/api/train/status` (`:3764-3772`) returns `{"backend", "execution", **status}` with **no
 `nn_model`**. So `current_nn_model` is write-only and a reload shows "Active: CasCor" over a
-recurrence backend. Register entry: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md) §6.4.
+recurrence backend. Register entry: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md`](../../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md) §6.4.
 
 **The design phases this as PR 2 alongside item 1**
 (`…REACHABILITY-DESIGN.md:349` — *"§4.10 hydration, **both** axes (X1's dataset-side sibling, Y3)
@@ -159,7 +159,7 @@ only `G7` anywhere in canopy `src/` is a header comment
 > the same sentence.
 
 **4. `Y2` — model persistence for recurrence. Waves 2 and 3.**
-**Design of record: [`notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md)**
+**Design of record: [`notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`](../../../notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md)**
 (juniper-ml#1949, #1950). §11 carries the owner rulings — a **bind mount** mirroring cascor (not a
 named volume), no-deletion inherited from §6.4, and a third service status `"restored"` with
 `restored_from`. §11.4 fixes the order: recurrence service → juniper-deploy bind mount → canopy wiring.
@@ -187,7 +187,7 @@ the `else` branch writes cascor-shaped meta via h5py — zero LMU state — and 
 > restore cannot find what the save claimed to write.
 >
 > **Neither this item nor the design counts the third.**
-> [`notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md)
+> [`notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`](../../../notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md)
 > §8 item 3 and §11.4 step 3 both name two. Peer session `canopy` **claims wave 3 and will handle
 > all three there.**
 >
