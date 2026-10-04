@@ -29,6 +29,9 @@ Other aliases:
 > - The `/var/log/syslog*` copies of the 09-20 secret echoes have rotated away; the journal copy is intact, so the D-8 scrub is journal-only.
 > - Its plan runs in phases: A, land the ruling (this file's step 1, sub-steps 1a–1h); B, fix the defects in the artifacts and clear the STOP; C, the released owner actions; D, P0 with a rehearsal first; E, hardening.
 >
+> **Newer still (2026-10-04): Phase A is on `main` (ml#2113), the executor PRs ml#2114 and ml#2115 are merged, and Phase B's fold-in was cut mid-way by a usage limit.**
+> Resume from `HANDOFF_2026-10-03_backup-phase-b-fold-in-pending.md`, which supersedes this file's goal statement and step 1; this file still holds the traps and the carried-item inventory.
+>
 > **Read that file before acting on anything below.** This file keeps the session mechanics (step 1's sub-steps, the traps, the carried-item inventory); the assessment keeps the measured state, the issues register and the phase plan. Where the two conflict, the newer host measurement wins.
 
 ---
