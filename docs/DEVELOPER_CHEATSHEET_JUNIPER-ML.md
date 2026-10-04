@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.70
+**Date**: 2026-10-04
 **Project**: juniper-ml
 
 ---
@@ -657,6 +657,11 @@ Queues/ready/slots inherit `JUNIPER_E2E_CANOPY_URL` (no `--base-url`). See [REFE
 
 Tip: `util/experiment_stack.bash` is the **per-run** launcher (data `8110–8139` / cascor `8230–8259` / recurrence `8260–8289`) — not isolated-stack and not `plant_all`. Never canopy; never `JuniperProject.pid`; never repo `.env`. Pidfiles come from post-health `ss` (F-6), not `$!`. From a worktree set `JUNIPER_EXP_PROJECT_DIR`. Drive with `python util/experiments/run_experiment.py --config … --run-dir …` (exit `0`–`4`). Full contract: [REFERENCE — Experiment Stack](REFERENCE.md#experiment-stack-utilities).
 
+Tip: on `main`, recurrence `--up` starts `serve` once the console script exists and `/v1/health/ready` answers.
+juniper-ml#2139 (W0.2) inserts `bash util/recurrence_env_preflight.bash` before `serve` (scoped `pip check`, installed model and service-core pins, `derive_full_split`).
+A refusal tears the partial run down; read `$RUN_DIR/logs/launch.log`. `--skip-env-preflight` or `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` (suites need the env var) warns and still serves.
+CUDA `pip check` lines are unrelated. [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight).
+
 Tip: `compare_baseline.py` is a **split** gate (exact `step_count`, ungated speed). The #1710 counterexample is
 **settled**: a corpus census (333 runs) showed all 29 divergences are explained by `completion_reason`, and #1733 made
 the termination branch part of the precondition — a branch flip now REFUSES (2) instead of FAILing (1). #1741 + #1743
@@ -1084,6 +1089,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Train / Val / Test Partition Contract](REFERENCE.md#train--val--test-partition-contract) -- shipped `*_full` vs design-closed `X_val`
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default 503-name universe, per-request cost, silent `max_symbols` slice
 - [Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) -- PF-5/6/7 report-only; `work_countable` third state; baseline/compare refuse
+- [Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) -- W0.2 (juniper-ml#2139): scoped `pip check` + installed pins + `derive_full_split` before `serve`; on `main`, readiness still misses F-E1
 - [Suite Report Gate Inputs](REFERENCE.md#suite-report-gate-inputs) -- `run_suite` P2 1.4: both gate inputs in `aggregate.csv` / `REPORT.md`; `--compare-baseline` reporting only
 - [Run lister / pruner](REFERENCE.md#run-lister--pruner-list_runspy) -- `list_runs.py` directory-truth scan; `--prune` ≠ `--down`
 - [Suite Driver](REFERENCE.md#suite-driver) -- `run_suite.py` expansion, resume, cascor parallel floor, Grafana env toggle
@@ -1119,6 +1125,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-04
+**Version:** 1.0.70
 **Maintainer:** Paul Calnon

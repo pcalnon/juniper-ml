@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.70
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -38,6 +38,7 @@
 - [Ruleset Context Audit](#ruleset-context-audit)
 - [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost)
 - [Post-Merge Main Verification](#post-merge-main-verification)
+- [Recurrence Env Preflight](#recurrence-env-preflight)
 - [Experiment Stack Utilities](#experiment-stack-utilities)
 - [PF Scenario Suites](#pf-scenario-suites)
 - [Perf-Lane Work Gate](#perf-lane-work-gate)
@@ -1352,6 +1353,8 @@ Troubleshooting:
 Recording click-by-click verdicts into the 298-row matrix is a **separate write path**: [Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes).
 
 Defaults: data `8101` (dedicated `python3.14` venv), cascor `8202` (`JuniperCascor1`), canopy `8051` (`JuniperCanopy1` service mode). Scratch under `${TMPDIR:-/tmp}/juniper-e2e`. Exactly one of `--up` / `--down` / `--status` is required (misuse exits `2`).
+
+`--with-recurrence` adds a fourth leg on `8211` (override `JUNIPER_E2E_RECURRENCE_PORT`) between cascor and canopy. The console script comes from `JUNIPER_E2E_RECURRENCE_CONDA` (default `JuniperCascor1`). On this tree the leg starts once that script is executable and `/v1/health/ready` returns 200. The check that refuses a stale env before `serve` is [Recurrence Env Preflight](#recurrence-env-preflight).
 
 ```bash
 util/isolated_stack.bash --dry-run --up   # preview only
@@ -4262,6 +4265,100 @@ gh run download <run-id> -n sequence-safety-report
 
 Related: the per-PR `sequence-safety` job in `ci.yml` is a **required** ruleset context (absent from Quality Gate `needs:`). Fleet predicted-merge shells out to the same symbol CLI on a throwaway merge result (`util/fleet_triage/predict_merge.py` → the `juniper-symbol-loss-check` console script (juniper-ci-tools >=0.8.0); the 2026-07-28 flood-census ad-hoc screens are retired under `util/ad-hoc/retired/` with a `_RETIRED-2026-08-05` suffix).
 
+## Recurrence Env Preflight
+
+Operator contract for the check that refuses to `serve` juniper-recurrence from an env whose recurrence closure is stale.
+It ships in [juniper-ml#2139](https://github.com/pcalnon/juniper-ml/pull/2139) (W0.2 of [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md), finding F-E2).
+
+On `main` (this page's tree, tip `f01a438c`) both launchers still accept the recurrence env on two signals: the `juniper-recurrence` console script exists, and `GET /v1/health/ready` returns 200.
+That pair is what let a stale `JuniperCascor1` serve on 2026-10-03 (F-E1 in the same plan).
+The env was serving `juniper-recurrence-model` 0.1.5, which has no `derive_full_split`, and `juniper-service-core` 0.5.0, under the pins the installed app declared (`juniper-recurrence-model>=0.3.0,<0.4.0` and `juniper-service-core>=0.6.0,<0.8.0`).
+Readiness passed. Every `POST /v1/crossval` with `split="full"` then returned 422 `missing required key 'X_full'`.
+
+The rest of this section applies on a tree that contains #2139. Until that commit is present, a green `/v1/health/ready` does not mean `split="full"` can run, and `--skip-env-preflight` is an unknown flag (misuse exit 2).
+
+### What #2139 checks
+
+`util/recurrence_env_preflight.bash` is committed mode `0644`. Run it with `bash`. Three checks. Each is `<python> -s …`, and the script `cd`s to `/` first, so a package in `~/.local` cannot mask a hole in the env and the caller's checkout cannot shadow an installed module.
+
+The interpreter is the one `serve` will run. Each launcher reads the console script's shebang.
+A plain absolute `python*` path is used as written. A missing shebang, or a `/bin/sh` trampoline, falls back to `<conda>/envs/<env>/bin/python`.
+A shebang that names an interpreter the 2026-09-12 `JuniperCascor1` 3.13 → 3.14 upgrade deleted is passed through unchanged, so the preflight names that path.
+The path is made absolute. Symlinks stay unresolved: a venv `bin/python` points at the base interpreter, and resolving it would judge the base install.
+
+| Check | Finding when |
+|-------|----------------|
+| `pip check`, scoped | The requiring distribution, or the one named after `but you have`, is in the closure: `juniper-recurrence`, `juniper-recurrence-model`, `juniper-recurrence-client`, `juniper-service-core`, `juniper-observability`, `juniper-data-client`, `juniper-model-core`. A non-zero `pip check` with no parsed line is itself a finding. |
+| Version pins | The **installed** `juniper-recurrence` (`importlib.metadata.requires`) declares an unconditional requirement on `juniper-recurrence-model` or `juniper-service-core` that the installed version fails, the dependency is missing, or the installed version is not PEP 440. An editable install's metadata is its `pyproject.toml` as of the last `pip install -e`. |
+| Import | `from juniper_recurrence_model.data import derive_full_split` raises. The recorded text is the last non-empty line of the interpreter's output. |
+
+A `pip check` line outside that closure is printed as `ENV PREFLIGHT: unrelated to recurrence (not a finding)` and does not refuse.
+`JuniperCascor1`'s CUDA conflicts (`cuda-bindings`) are in that bucket. A non-zero `pip check` made only of those lines still exits 0 from the preflight.
+An unrecognised line whose first token is a closure distribution is still a finding, so a reworded closure conflict cannot read as clean.
+Other unrecognised lines are printed as `ENV PREFLIGHT: pip check also said (not a finding)`.
+
+Pins are evaluated with `packaging` when that distribution imports, otherwise with `pip._vendor.packaging`, and `prereleases=True`. With neither import, the probe says the pin check falls back to `pip check`'s verdict and continues. A marker that does not evaluate with `extra=""` is skipped, so `juniper-recurrence-model[torch]…; extra == "torch"` is not a pin `serve` needs. Missing `juniper-recurrence` metadata is a finding (`is this the env serve runs from?`).
+
+### Exit codes
+
+| Exit | Meaning | Last line |
+|------|---------|-----------|
+| 0 | No findings. | `ENV PREFLIGHT OK: no findings` |
+| 0 | `--skip`, and there were findings. Every check still ran. | `WARNING: ENV PREFLIGHT SKIPPED — <n> finding(s) ignored; juniper-recurrence will serve from an env that FAILED its preflight` |
+| 0 | `--skip`, and there were no findings. | `ENV PREFLIGHT OK: no findings (--skip had nothing to override)` |
+| 1 | Refused. `serve` is not started. | `ENV PREFLIGHT REFUSED: <n> finding(s); fix the env or pass --skip-env-preflight` |
+| 2 | Misuse (`--python` missing or unknown argument). Usage goes to stderr. | — |
+
+A refusal prints each finding as `FINDING:` with the interpreter's own text (the `pip check` line, or the exception line). `--skip` prints the same text as `WARNING: ENV PREFLIGHT SKIPPED — <finding>`.
+
+The script's own flag is `--skip`. The launchers' flag is `--skip-env-preflight`. They are different spellings; the launcher translates.
+
+Standalone, once the file is in the tree:
+
+```bash
+bash util/recurrence_env_preflight.bash --python /opt/miniforge3/envs/JuniperCascor1/bin/python
+bash util/recurrence_env_preflight.bash --python /opt/miniforge3/envs/JuniperCascor1/bin/python --skip
+bash util/recurrence_env_preflight.bash --help
+```
+
+### Where the launchers call it
+
+Cascor is not checked. `--dry-run` prints the `bash` line and returns before the script runs. A refusal fails the recurrence leg, and `do_up` tears the partial stack down. The experiment launcher logs `bring-up failed — tearing the partial run back down`. The isolated launcher logs `bring-up failed — tearing the partial trio back down`. `$RUN_DIR/logs` is kept (experiment teardown does not delete it; isolated `--down` removes `data`, the data venv, and `*.pid`, and leaves `logs/`).
+
+| Launcher | When | Skip | Durable log |
+|----------|------|------|-------------|
+| `util/experiment_stack.bash --up --recurrence` | After the console script is confirmed executable, before `serve`. Env `JUNIPER_EXP_RECURRENCE_CONDA` (default `JuniperCascor1`). | `--skip-env-preflight` or `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` | `$JUNIPER_EXP_RUN_ROOT/<RUN_ID>/logs/launch.log` (default root `~/.local/state/juniper-experiments`) |
+| `util/isolated_stack.bash --up --with-recurrence` | Same point. The preflight and `serve` both run with `LD_LIBRARY_PATH` emptied, matching the cascor leg's torch shadow. The experiment launcher does not empty `LD_LIBRARY_PATH` for this check. | `--skip-env-preflight` or `JUNIPER_E2E_SKIP_ENV_PREFLIGHT=1` | `${JUNIPER_E2E_RUN_DIR:-${TMPDIR:-/tmp}/juniper-e2e}/logs/launch.log`. The run dir is reused, so the file accumulates; every line is timestamped. |
+
+`util/experiments/run_suite.py` builds a fixed `--up` argv (`--up --<app> --config … --experiment <cell_id>`, plus `--grafana-bridge` when `JUNIPER_SUITE_GRAFANA_BRIDGE` is set).
+It has no slot for `--skip-env-preflight`. The skip reaches that caller through `JUNIPER_EXP_SKIP_ENV_PREFLIGHT` in the environment `run_suite.py` already forwards.
+On a failed `--up` the suite row stores the last 500 characters of stderr when stderr is non-empty, otherwise of stdout (`run_suite.py`, the launcher-failure assignment).
+The full report is `launch.log`.
+
+Both launchers also echo every preflight line to stdout with their `[script]` prefix.
+
+There is still no dedicated recurrence conda env. Both launchers default to `JuniperCascor1` (plan F-E5). The preflight judges that env; it does not create another one.
+
+Repairing the env is plan W0.1, recorded as juniper-recurrence#189. The plan's 2026-10-04 status is: the model half is applied (bench 37/37; `/v1/crossval` 200 without `PYTHONPATH`); the service-core half is deferred because a live cascor on `:8202` imports from the same env. Reinstalling `juniper-service-core` under that listener is the step the plan left undone.
+
+### Pitfalls
+
+| Symptom | What it is |
+|---------|------------|
+| `/v1/health/ready` is 200 and `POST /v1/crossval` is 422 `missing required key 'X_full'` | F-E1. On `main` the launchers never imported `derive_full_split`. On a #2139 tree this shape means the preflight was skipped, or `serve` was started by something other than these two launchers (Compose has no launcher preflight; that gap is plan W3.0b). |
+| `ENV PREFLIGHT REFUSED` and the `FINDING:` lines name the model pin, the service-core pin, or `derive_full_split` | The interpreter `serve` would use failed the closure check. Repair is W0.1. Lines marked `unrelated to recurrence` are not the refusal. |
+| `WARNING: ENV PREFLIGHT SKIPPED —` and the service still reaches ready | The emergency override. `split="full"` can still 422. The warning is in `launch.log`. |
+| `FINDING: interpreter not found or not executable` naming `python3.13` under `JuniperCascor1` | The console script's shebang still names the interpreter the 3.14 upgrade removed. Reinstall the console script into the current env. The preflight leaves the symlink unresolved on purpose. |
+| `--dry-run --up --recurrence` prints the preflight line and the env is stale | Dry-run does not execute the script. |
+| Editing `pyproject.toml` did not change the pin result | The probe reads installed distribution metadata. An editable install updates that metadata at the next `pip install -e`. |
+| Isolated `--with-recurrence` refused and experiment `--recurrence` did not, on the same env | The isolated leg empties `LD_LIBRARY_PATH` for the preflight and for `serve`. The experiment leg does not. An import that depends on the inherited library path can differ. |
+| `ENV PREFLIGHT: packaging is importable neither as a distribution nor as pip's vendored copy` | The pin check is skipped. `pip check`'s scoped verdict and the import probe still run. That sentence alone is not a refusal. |
+| Suite row `error` is 500 characters and does not contain `FINDING:` | `run_suite.py` kept the tail of stderr, or the tail of stdout. Open `$RUN_DIR/logs/launch.log`. |
+
+Coverage on the #2139 tree: `tests/test_recurrence_env_preflight.py`, and the `recurrence_up` call sites in `tests/test_experiment_stack_script.py` and `tests/test_isolated_stack_script.py`.
+
+---
+
 ## Experiment Stack Utilities
 
 `util/experiment_stack.bash` + `util/experiments/run_experiment.py` are the **per-run** CLI experimentation tooling (plan Wave 2.1–2.6; this section is Wave 2.7). They bring up a throwaway juniper-data instance plus **cascor and/or recurrence** (never canopy), drive a single experiment YAML against that stack, and write plots/stats/manifest under a durable `RUN_DIR`. The Wave 7.3 PF scenario instruments that drive them as a matrix are [§ PF Scenario Suites](#pf-scenario-suites).
@@ -4275,6 +4372,8 @@ Multi-cell campaigns use `util/experiments/run_suite.py` (Wave 7.1 / 7.5) — op
 Primary design: [`notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md). Preflight evidence: [`notes/JUNIPER_2026-07-30_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P0-PREFLIGHT-EVIDENCE.md`](../notes/JUNIPER_2026-07-30_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P0-PREFLIGHT-EVIDENCE.md).
 
 This is **not** the isolated E2E trio (`util/isolated_stack.bash` on `8101`/`8202`/`8051`) and **not** the host stack (`plant_all` / `8100`/`8201`/`8050`). Recurrence **timings** already land on the manifest; the split gate still has **no recurrence work counter** — see [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable) (lands with juniper-ml#1683).
+
+The recurrence leg on this tree starts once the console script exists and `/v1/health/ready` returns 200. The scoped env check that runs before `serve` is [Recurrence Env Preflight](#recurrence-env-preflight) (juniper-ml#2139).
 
 Recurrence YAML still allow-lists `dataset.split` / `predict.from_dataset_split` as `{train, test, full}` — `"validation"` is exit 2. That is the shipped NPZ contract, not the closed design. Operator surface: [Train / Val / Test Partition Contract](#train--val--test-partition-contract).
 
@@ -6988,6 +7087,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.70  | 2026-10-04 | Recurrence env preflight (W0.2, juniper-ml#2139, F-E2): before `serve`, both launchers run a scoped `pip check`, the installed app's model and service-core pins, and a `derive_full_split` import. `main` still gates on the console script plus `/v1/health/ready`. `--skip-env-preflight` warns and still serves. Skipped 0.6.62–0.6.69 (in-flight docs PRs). |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -7502,6 +7602,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-04
+**Version:** 0.6.70
 **Maintainer:** Paul Calnon
