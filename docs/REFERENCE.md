@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.69
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -48,6 +48,7 @@
 - [Snapshot Sidecar Chain](#snapshot-sidecar-chain)
 - [Suite Driver](#suite-driver)
 - [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable)
+- [Recurrence Equities CV Measurement](#recurrence-equities-cv-measurement)
 - [Experiment Stats Summary (SS8.3)](#experiment-stats-summary-ss83)
 - [Run lister / pruner (`list_runs.py`)](#run-lister--pruner-list_runspy)
 - [Snapshot Attribution Dataset Pin](#snapshot-attribution-dataset-pin)
@@ -5359,6 +5360,78 @@ In-flight [#1689](https://github.com/pcalnon/juniper-ml/pull/1689) adds `tests/t
 
 ---
 
+## Recurrence Equities CV Measurement
+
+How to read the W0.8 replay and the W0.9 matrix that landed in juniper-ml#2130. This page does not change the driver. A crossval body that omits the model keys is still the cell that blew up, and the E-H suite does not enforce an acceptance band.
+
+Write-up: [`notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`](../notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md).
+Captures: `reports/2026-10-04_recurrence-equities-cv-matrix/`.
+Instrument: `util/ad-hoc/2026-10-04_recurrence_equities_cv_matrix.py` (`replay` wrote the two HTTP files; `matrix` wrote the 24-cell table).
+The plan that records the verdict is [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) v1.3.0.
+That note's own status says the v1.3.0 additions have not had the consensus review the plan requires before R5 is ruled.
+
+### The two HTTP captures
+
+Both requests use dataset `equities_seq-6.0.0-15505731cba5b86d` (AAPL, 2015-01-01 through 2022-01-01, lookback 64, `regression_target: log_return`, seed 20260807). `00-dataset-create.json` records `n_samples` 1698.
+
+```bash
+jq '{request, http_status, r2: .response.eval_aggregate.r2, r2_std: .response.eval_std.r2}' \
+  reports/2026-10-04_recurrence-equities-cv-matrix/10-crossval-eh-rff.json
+jq '{request, http_status, r2: .response.eval_aggregate.r2, r2_std: .response.eval_std.r2}' \
+  reports/2026-10-04_recurrence-equities-cv-matrix/10-crossval-service-defaults.json
+```
+
+| File | Body that was POSTed | `eval_aggregate.r2` |
+|------|----------------------|---------------------|
+| `10-crossval-eh-rff.json` | `readout: rff`, `ridge: 1.0`, `rff_features: 256`, `rff_gamma: median`, `d: 16`, `n_folds: 5`, `scheme: expanding`, `embargo: 2`. No `theta`. `_lmu_hyperparams` in `util/experiments/run_experiment.py` drops `None`, and the E-H train block's theta is null. | **-0.11526096841533144** (std 0.07353723443032745). HTTP 200. |
+| `10-crossval-service-defaults.json` | Fold geometry only (`n_folds`, `scheme`, `embargo`, `dataset_id`). No readout, ridge, or `d`. | **-20344.637730773607** (std 36730.52121489702). HTTP 200. |
+
+The E-H suite comment in `util/experiments/suites/p4/e-h-recurrence-real-data.yaml` expects r² near 0, not a negative blowup. The first capture is that class. An aggregate near −0.12 on next-day log returns means the fit shows no demonstrated skill at this horizon. That is the ceiling the comment names.
+
+The second capture matches the matrix row `linear / 0.0 / off` in `22-matrix-table.md` (printed aggregate −20344.64). The investigation note identifies that row as the service default a body with no model keys receives (`readout=linear`, `ridge=0.0`). Quote the class, not one digit: the same note records the 2026-10-03 audit aggregate as −18081 on this `dataset_id`, and says the fold-0 digit moved because the linear design is ill-conditioned (`23-linear-conditioning.json`).
+
+`22-matrix-table.md` prints the E-H cell as −0.12. The HTTP JSON is the replay figure.
+
+### What the matrix decides
+
+Twenty-four cells: readout `linear` or `rff`, ridge `0.0` / `1.0` / `gcv`, producer `normalize_features` off or on, theta fold-resolved or configured at 91.0. The normalised artifact in `23-linear-conditioning.json` is `equities_seq-6.0.0-fa3aae11ac374c94`. Every configured row in `22-matrix-table.md` equals its fold-resolved twin, so theta is not a lever on this artifact.
+
+From that table:
+
+- Every `ridge = 0.0` row is catastrophic on both readouts and both normalisations. The normalised linear ridge-0 aggregate is −4289388869437.35.
+- Linear `ridge = 1.0` on the raw artifact is still catastrophic (aggregate −2063.68).
+- RFF `ridge = 1.0` is the sane class: −0.12 raw (the HTTP −0.115) and −0.14 with producer normalisation.
+- Producer normalisation does not rescue ridge 0, and it does not improve the sane RFF cell.
+- The four fold-resolved GCV rows select `1e+03` on 15 of 20 folds. A GCV eval r² near 0 on this artifact is a penalty at the top of the printed grid, not an interior λ. Widening that grid is proposed plan item W5.9. It is not shipped.
+
+The plan's W1.1 bundle, written after this measurement, is `normalize_features: false` plus `readout: rff`, `ridge: 1.0`, `rff_features: 256`, `rff_gamma: median`. That is a recommendation in the plan. It is not a change to the service default.
+
+### Checksum is not the content pin
+
+`00-dataset-create.json` stores checksum `c02004e1708e489aea48aa0a985b2eb797ee190d340080ea547dcf363bfed261` on `equities_seq-6.0.0-15505731cba5b86d`. Investigation-note §1.1 records a different checksum (`037baab7…`) on the 2026-10-03 archive of that same id, and says the 28 arrays were byte-identical. The plan files that as **F-P8**: the meta checksum fingerprints the NPZ container, including zip entry timestamps, not the arrays. A checksum mismatch on one `dataset_id` is not evidence the series changed.
+
+### What this measurement does not do
+
+- It does not change the service default or `_lmu_hyperparams`. A hand-written crossval that sends only fold geometry is still the cell that blew up. Retiring that default is proposed plan item W5.8 and still needs the owner.
+- It does not install an acceptance band. The note's §3.4 recommends `cv_r2` in [−1.0, +0.5] as a defect detector. R5 is not ruled, and the E-H suite does not gate on it.
+- Scope is one ticker, one window, seed 20260807, `d = 16`, five expanding folds. It does not speak to multi-ticker folds or the held-out `test` partition.
+- The note's verdict is **GO**: the E-H configuration is not the blowup, so the plan treats the remaining P5 work as tuning and documentation. Consensus review of the v1.3.0 additions is still owed.
+
+### Operator pitfalls
+
+| What you see | What it means |
+|--------------|----------------|
+| Equities crossval eval r² in the tens of thousands | The body omitted the model keys, or it set linear ridge 0. The E-H RFF capture is −0.115. Compare `10-crossval-service-defaults.json` with `10-crossval-eh-rff.json`. |
+| Quote −18081 as a property of this dataset | That is the 2026-10-03 audit digit for the default cell. The 2026-10-04 capture of the same `dataset_id` is −20344.64. Same class; the digit is not stable. |
+| `checksum` changed, so the series drifted | F-P8. The `dataset_id` is the content pin. The 2026-10-04 mint's checksum is the `c02004e1…` value in `00-dataset-create.json`. |
+| RFF ridge 1.0 aggregate −0.12 means the suite comment failed | The comment expects r² near 0, not a blowup. −0.12 is that ceiling on this artifact. |
+| Turn `normalize_features` on to fix the blowup | The normalised linear ridge-0 cell is worse. The sane RFF cell is slightly worse too (−0.14 vs −0.12). |
+| GCV aggregate near 0 means the penalty was tuned | 15 of 20 folds on the fold-resolved GCV rows sit on `1e+03`. |
+
+Re-running the instrument needs a live recurrence stack (`util/experiment_stack.bash --up --recurrence`) and that env's interpreter. `replay` POSTs the two bodies; `matrix` refits the 24 cells in-process. The script docstring uses data `127.0.0.1:8110` and recurrence `127.0.0.1:8260`.
+
+---
+
 ## Experiment Stats Summary (SS8.3)
 
 `util/experiments/stats_summary.py` is **not a CLI**. The driver loads it as a sibling module and writes `artifacts/results/stats.json` + `artifacts/results/summary.md` on every outcome (succeeded, stalled, timed_out, failed). A render exception is recorded on the manifest as `stats_error` and **never** costs the manifest write (`run_experiment.py` `_emit_stats`). Schema: `juniper-experiment-stats/1`. Stdlib only — stats render on any host the driver runs on.
@@ -6988,6 +7061,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.69  | 2026-10-04 | Recurrence equities CV measurement (W0.8/W0.9, juniper-ml#2130): HTTP E-H RFF ridge 1.0 aggregate is −0.115; the bare body matches the linear ridge-0 row at −20344.64; checksum is not the content pin (F-P8); GO is not an acceptance band. Skipped 0.6.62–0.6.68 (in-flight docs PRs). |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -7502,6 +7576,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-04
+**Version:** 0.6.69
 **Maintainer:** Paul Calnon
