@@ -3,8 +3,8 @@
 - **Project**: Juniper — juniper-recurrence (with juniper-data, juniper-data-client, juniper-canopy, juniper-ml experiment stack)
 - **Author**: Paul Calnon
 - **Date**: 2026-10-03
-- **Version**: 1.2.0
-- **Status**: VALIDATED BY CONSENSUS (two rounds; round-2 corrections applied; dissent on the milestone dates recorded) — planning only; no code changed, nothing committed. Record: `JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-PLAN-CONSENSUS-VALIDATION.md`.
+- **Version**: 1.3.0
+- **Status**: VALIDATED BY CONSENSUS at v1.2.0 (two rounds; record: `JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-PLAN-CONSENSUS-VALIDATION.md`); **P0 execution started 2026-10-04** (v1.3.0: W0.8/W0.9 measured, verdict GO, status table live, W5.8/W5.9 proposed, F-P8 added). The v1.3.0 additions are the author's and have not been through a consensus round; the W5.1 note they rest on is owed one before R5 is ruled.
 - **Owner**: Paul Calnon
 - **Template**: `notes/templates/TEMPLATE_DEVELOPMENT_ROADMAP.md`
 - **Evidence**: `juniper-ml/.amp/in/artifacts/recurrence-equities-audit/` (103 files; git-excluded; see §2.3 for the index)
@@ -164,6 +164,7 @@ All numeric keys were 100 % finite in the audited artifacts (which were minted w
 | F-P5 | Major | Per-symbol fetch failures are caught and skipped; the universe can shrink silently with no truncation metadata. | `equities/generator.py:319-329`; `equities_seq/generator.py:156-168` | juniper-data |
 | F-P6 | Minor | No positivity/finiteness guard on `close` before `return`/`log_return`; a zero close yields Inf/NaN in `y_reg` (caught downstream by the reader). | `equities/generator.py:1283-1302` | juniper-data |
 | F-P7 | Major (science) | Partitions are split-major with entity blocks inside each split; the retired `_full` was entity-major; `derive_full_split` faithfully rebuilds entity-major. Expanding folds by row index over a multi-ticker `full` view are therefore **not chronological**. | `equities_seq/generator.py:274-300`; `juniper_recurrence_model/data.py:103-126` | juniper-recurrence (CV design) |
+| F-P8 | Minor (added v1.3.0) | The meta `checksum` fingerprints the NPZ **container**, not the arrays: two mints of one `dataset_id` (2026-10-03, 2026-10-04) differ in checksum while all 28 arrays are byte-identical. A checksum comparison reports a false "changed"; the `dataset_id` did pin the content. | `JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md` §1.1 | juniper-data (doc, or hash the arrays) |
 
 Details (DATA):
 
@@ -257,6 +258,13 @@ That configuration is sufficient on its own to produce eval r2 in the thousands 
 
 **W0.8** replays the exact E-H request (RFF, `ridge=1.0`, 256 features, median gamma) on the same frozen dataset id and captures resolved theta, ridge, gamma and per-fold prediction/target ranges before any suite or model change is proposed; **W0.9** widens that to a matrix and issues the go/no-go for P5.
 The earlier draft's normalisation hypothesis is withdrawn as a hypothesis-of-record; it survives only as candidate (b).
+
+**F-SCI1 — resolved 2026-10-04 (v1.3.0).** Both measurements are in `JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`, and the paragraph above is superseded by its §2.
+The E-H configuration replayed on the frozen artifact gives eval r² −0.080 / −0.050 / −0.102 / −0.086 / −0.258, aggregate **−0.115** (RMSE 0.0186, at the target's own std) — the "r² ≈ 0" the suite comment expects; the service defaults on the same artifact the same day give −20,345 (fold 0 −93,606).
+The 24-cell matrix confirms **candidate (a)**: every `ridge = 0.0` cell is catastrophic in both readouts and both normalisations; the linear rung stays catastrophic at `ridge = 1.0` because it does not standardise the memory block (raw feature scales up to 7.9e11), while the RFF rung standardises per fold and is sane at `ridge = 1.0` (−0.115 raw, −0.142 normalised).
+Candidate **(c)** is refuted (theta resolves to 91.0 in every fold; configured and fold-resolved cells are identical), **(b)** is refuted as the lever (normalisation makes the unregularised solve worse, −4.3e12, and does not rescue linear ridge 1.0), and **(d)** is not implicated (the one rung that standardises per fold is the one that works).
+The mechanism is conditioning: the 242-column linear design has numerical rank 113–161 and condition number 1e22–1e32 per fold, so the min-norm solve extrapolates eval rows along near-null directions with amplification up to 2.6e4; the same ill-posedness is why the audited digits (−83,452) did not reproduce (−93,606) on byte-identical arrays and code.
+**Verdict: GO** — W5.1 is a tuning-and-documentation task; the service default `readout=linear`, `ridge=0.0` must not be used for equities (proposed W5.8); the GCV grid's ceiling of 1000 was selected in 15 of 20 GCV folds (proposed W5.9).
 
 ### 3.10 Deployment pins (DEPLOY)
 
@@ -392,7 +400,10 @@ Details (P0):
 
 Details (P1):
 
-- **W1.1** — The bundle: `fundamentals_fill: drop`, `normalize_features` per W0.9's finding, `regression_target: log_return`, explicit `symbols`. (a) is the plan's recommendation; (b) needs ruling R1. (a) can be drafted before W0.9 reports but is not merged until it has, so the documented bundle never names a value the matrix contradicts.
+- **W1.1** — The dataset half of the bundle: `fundamentals_fill: drop`, **`normalize_features: false`**, `regression_target: log_return`, explicit `symbols`.
+  The `false` is W0.9's finding (2026-10-04): producer normalisation does not help the sane configuration (−0.115 raw vs −0.142 normalised) and makes the unsafe one worse (`JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md` §2.3(b)).
+  The model half, which W0.9 showed decides the outcome: `readout: rff`, `ridge: 1.0` (or `gcv` once the grid ceiling is lifted, proposed W5.9), `rff_features: 256`, `rff_gamma: median`.
+  (a) is the plan's recommendation; (b) needs ruling R1. W0.9 has reported, so (a) may merge.
 - **W1.2** — Recommended precedence (R7): generic-form defaults never override the registry seed; an explicitly edited recurrence-aware form field wins over the seed; a read-only JSON "effective request" preview is shown before Start and logged at INFO.
   Tests: (1) untouched generic form → body equals the seed exactly; (2) staged `n_samples` + untouched equities fields → body has schema keys only and still equals the seed; (3) explicitly edited `regression_target: next_close` → body carries it and the preview matches.
 - **W1.3** — The default change is breaking for a `y_*`-only artifact. R8 decides whether it ships in recurrence 0.6.0 (pre-1.0 minor, CHANGELOG "Breaking") or waits behind a deprecation warning.
@@ -464,8 +475,14 @@ Details (P4):
 | W5.5 | F-D8 | juniper-ml | `stats_summary.py`: regression target summary (mean/std/min/max/finite fraction) per split. | Unit test on the audited artifact. | S |
 | W5.6 | F-D6 | juniper-ml | Implement `--shared-equities-cache <dir>` (plan H-9) as an explicit opt-in; default stays per-run; this item adds its own runbook section (W4.1 lands earlier and cannot document it). | Launcher test; runbook section present in the same PR. | S |
 | W5.7 | F-P5, F-P6 | juniper-data | Record dropped-symbol list in `meta.data_quality`; refuse (or flag) when a **requested** symbol is lost; guard `close > 0` and finite before computing return targets. | Generator tests. | S |
+| W5.8 | F-SCI1 (cause); **proposed by W0.9, needs owner acceptance** | juniper-recurrence + model | Retire the unsafe service default (`readout=linear`, `ridge=0.0`: what a bare request gets, and what produced −18,081): `default_ridge` → `"gcv"`, and/or per-fold standardisation on the linear rung; at minimum document the hazard. Details below. | Route test: a bare `/v1/crossval` on the E-H artifact aggregates above −1; model test: the linear rung standardises train-fold-only. | S–M |
+| W5.9 | F-SCI1 (GCV ceiling); **proposed by W0.9** | juniper-recurrence-model | `_GCV_GRID = logspace(-6, 3, 60)` tops out at 1000, which 15 of 20 GCV folds selected; extend the grid or warn on an edge selection so "GCV-selected" is a selection. | Unit test: an edge selection is reported; the E-H GCV cells re-run off the ceiling. | S |
 
 Details (P5):
+
+- **W5.8** — Preferred: `Settings.default_ridge` `0.0` → `"gcv"` (a pre-1.0 "Changed" entry in recurrence 0.6.0; `conf/experiments/irregular-sine-rff.yaml` pins `default_ridge: 0.0` explicitly, so the reference experiment is unaffected).
+  Complementary: give the linear rung the per-fold, train-only standardisation the RFF rung already has (`readouts.py::_standardize_fit`), so a float ridge means the same thing on both rungs.
+  Minimum: document on the route and in canopy's registry seed that the linear rung with `ridge=0.0` is a min-norm solve that extrapolates on non-stationary inputs (`JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md` §2.4, §3.2).
 
 - **W5.1** — On **no-go** (E-H config also blows up) the note is a model/CV defect investigation. Candidates, each with a falsifying experiment: (a) unregularised linear readout on a 240-dim memory with fold-local rank deficiency; (b) RFF median-gamma fitted on drifting inputs; (c) `dt` in calendar days vs the configured theta; (d) per-fold standardisation on a non-stationary memory.
   On **go** it documents why the service default (linear, `ridge=0.0`) must not be used for equities and records the sane number. Fold-local preprocessing is **required regardless** (see the R4 note).
@@ -486,7 +503,7 @@ Round 2 judged the v1.1.0 M1 (2026-11-07) non-credible: P1 then held one L, thre
 
 | Milestone | Target Date | Version(s) | Description | Status |
 | --- | --- | --- | --- | --- |
-| M0 — Truthful path, go/no-go issued | 2026-10-24 | juniper-ml 0.10.x, recurrence 0.5.x, canopy 0.8.x | P0 merged: env repaired (operator recipe recorded), scoped preflight, phase-derived `degraded` outcome, headline metrics on four fixtures, 422 detail, CLI `--params`, `metrics_scope` label, W0.8 replay written up, **W0.9 matrix run and the P5 go/no-go issued** | Planned (owner to confirm date) |
+| M0 — Truthful path, go/no-go issued | 2026-10-24 | juniper-ml 0.10.x, recurrence 0.5.x, canopy 0.8.x | P0 merged: env repaired (operator recipe recorded), scoped preflight, phase-derived `degraded` outcome, headline metrics on four fixtures, 422 detail, CLI `--params`, `metrics_scope` label, W0.8 replay written up, **W0.9 matrix run and the P5 go/no-go issued** | In Progress — **GO** issued 2026-10-04; W0.1 model half, W0.6, W0.7 (service) merged; the rest in PRs; owner to confirm date |
 | M1 — Runnable from both entry points, contract deployed | 2026-11-21 | recurrence 0.6.0, model 0.4.0, data-client 0.6.0, canopy 0.9.0, **juniper-data 0.17.0** | P1 merged: canopy filtering/preview (R7), `y_reg` required (R8), validator gaps (R2), operation-id/timeout/identity semantics, 401/429/`restored`, R1/R3 applied, W1.12; **requires W1.11's code half**; publications (0.17.0, W1.13) per the W1.11 slip rule — if pending, "code complete, publication pending" | Planned (owner to confirm date) |
 | M2 — Diagnosable | 2026-12-12 | recurrence 0.6.x, canopy 0.9.x | P2 + P3 merged: request ids, exception/inventory/diagnostic logging, failure metrics, compositional CI, realistic fixtures, deep readiness, crossval route test, #178 | Planned (owner to confirm date) |
 | M3 — Documented | 2026-12-12 | all | P4 merged: runbooks (exclusive-ownership statement; no r² interpretation before R5), README fixes, parent `AGENTS.md`, versions | Planned (owner to confirm date) |
@@ -542,14 +559,14 @@ Round 2 judged the v1.1.0 M1 (2026-11-07) non-credible: P1 then held one L, thre
 
 | Priority | Feature / Fix | Status | Phase | Target Version |
 | --- | --- | --- | --- | --- |
-| **P0** | Env repair (operator recipe) + scoped launcher preflight (W0.1, W0.2) | Planned | 0 | juniper-ml 0.10.x |
+| **P0** | Env repair (operator recipe) + scoped launcher preflight (W0.1, W0.2) | In Progress — W0.1 model half applied 2026-10-04 (bench 37/37; `/v1/crossval` 200 without `PYTHONPATH`), service-core half deferred (live cascor on `:8202` imports from the env), recipe recorded (juniper-recurrence#189); W0.2 PR in flight | 0 | juniper-ml 0.10.x |
 | **P0** | Suite phase-derived `degraded` outcome + exit code (W0.3, R6) | Planned | 0 | juniper-ml 0.10.x |
 | **P0** | Headline metrics schema on four fixtures (W0.4) | Planned | 0 | juniper-ml 0.10.x |
 | **P0** | Canopy 422 detail end to end (W0.5) | Planned | 0 | canopy 0.8.x |
 | **P0** | CLI `--params`/`--params-file` (W0.6) | Planned | 0 | recurrence 0.5.x |
 | **P0** | `metrics_scope: in_sample` label, service + canopy panel (W0.7) | Planned | 0 | recurrence 0.5.x, canopy 0.8.x |
-| **P0** | E-H crossval replay diagnostic (W0.8) | Planned | 0 | note |
-| **P0** | Controlled matrix and P5 go/no-go (W0.9) | Planned | 0 | note |
+| **P0** | E-H crossval replay diagnostic (W0.8) | Done 2026-10-04 — §1 of `JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`: E-H config eval r² −0.115 (per fold −0.08 … −0.26); service defaults −20,345 on the same artifact | 0 | note |
+| **P0** | Controlled matrix and P5 go/no-go (W0.9) | Done 2026-10-04 — §2 of `JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md` (24 cells); verdict **GO**: (a) confirmed, (b)/(c) refuted, (d) not implicated; consensus review owed before R5 | 0 | note |
 | **P1** | Documented param bundle; optional preset (W1.1, R1) | Planned | 1 | juniper-data docs / 0.17.0 |
 | **P1** | Canopy schema-filtered params, precedence, preview (W1.2, R7) | Planned | 1 | canopy 0.9.0 |
 | **P1** | Explicit target selection (W1.3, R8) | Planned | 1 | model 0.4.0, recurrence 0.6.0 |
@@ -572,7 +589,7 @@ Round 2 judged the v1.1.0 M1 (2026-11-07) non-credible: P1 then held one L, thre
 | **P3** | Realistic fixtures + error-path tests (W3.2) | Planned | 3 | recurrence 0.6.x |
 | **P3** | Bench equities lane, drift prose, #178 triggers, canopy env, canopy regression module (W3.3–W3.7) | Planned | 3 | — |
 | **P4** | Runbooks ×2 (exclusive ownership; r² text deferred to R5), README, parent `AGENTS.md`, versions, stale refs, banners (W4.1–W4.6) | Planned | 4 | — |
-| **P5** | CV cause investigation note, content gated by W0.9 (W5.1) | Planned | 5 | note |
+| **P5** | CV cause investigation note, content gated by W0.9 (W5.1) | In Progress — verdict GO, so W5.1 is tuning + documentation; §1–§2 written (`JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`); remaining: consensus review, R5 ruling | 5 | note |
 | **P5** | Entity-grouped chronological CV via model-core `order`/`groups` (W5.2) | Planned | 5 | recurrence 0.6.x, model 0.4.x |
 | **P5** | Predict OOS metrics with scope/split/identity through canopy; `test_r2` (W5.3) | Planned | 5 | recurrence 0.6.x, canopy 0.9.x, juniper-ml 0.11.0 |
 | **P5** | Acceptance-band facility + E-H band (W5.4, R5, R6) | Planned | 5 | juniper-ml 0.11.0 |
@@ -605,6 +622,7 @@ Round 2 judged the v1.1.0 M1 (2026-11-07) non-credible: P1 then held one L, thre
 
 - Owner rulings **R1–R8** (§"Risks & Assumptions"). R6 (degraded exit semantics) gates W0.3 and so is needed first; R2, R3, R7, R8 gate P1 items (W1.4, W1.8, W1.2, W1.3); R1 is optional (W1.1b); R5 waits on W0.9's verdict; R4 is converted to a note (no ruling needed).
 - P0 in one PR per repo (juniper-ml, juniper-recurrence, juniper-canopy) plus the operator env repair on the host (W0.1); re-run Scenario A and attach the new `registry.jsonl` showing `degraded` → then `succeeded` after W0.1; run W0.8 and write §1 of the W5.1 note; run the W0.9 matrix once W0.1 and W0.6 have landed and issue the go/no-go as §2 — M0 closes on that verdict.
+  **Progress 2026-10-04**: W0.8 and W0.9 are done and the verdict is GO (`JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`); juniper-recurrence#189 (W0.1 recipe) and #190 (W0.6, W0.7 service half) are merged; juniper-ml was split into two PRs (W0.2; W0.3 + W0.4) for independent review; the Scenario-A re-run with `degraded` is still owed once W0.3 lands; the W5.1 note's consensus review is owed before R5.
 - P1 in dependency order: juniper-data-client (W1.4) → juniper-recurrence-model (W1.3, W1.4) → juniper-recurrence (W1.5 service half) → juniper-canopy (W1.2, W1.5 canopy half, W1.6, W1.7) → juniper-ml (W1.5 driver half, W1.9, W1.10); juniper-data (W1.1, W1.8, W1.11 release) and juniper-deploy (W1.11 pins + smoke, W1.12) in parallel; W1.13 publications last, in data-client → model → recurrence → canopy order.
 
 ### Next Release (v0.6.0 juniper-recurrence / v0.9.0 juniper-canopy / v0.11.0 juniper-ml)
@@ -792,3 +810,4 @@ Producer-side `normalize_features: true` remains a valid convenience for the hap
 | 2026-10-03 | 1.0.0 | Initial audit and development plan; pending consensus validation | Paul Calnon |
 | 2026-10-03 | 1.1.0 | Round-1 consensus corrections: F-SCI1 rewritten (cause unresolved); new §3.10 DEPLOY and §3.11 CONCURRENCY classes; F-S9 added; P0 gains W0.6–W0.8; W1.0 go/no-go; W1.11 release/pins moved to P1 as an M1 requirement; W1.12, W3.0a/b added; W5.2/W5.4 rewritten; R4 → note; R6–R8 added; milestones rebaselined. Itemised in the consensus note. | Paul Calnon |
 | 2026-10-03 | 1.2.0 | Round-2 consensus corrections: F-SCI1 CV population 1,698 windows (not 1,346), per-fold RMSE, F-E1 evidence, F-CON2 wording; W1.0 → **W0.9** closing P0 (M0 requires it); W1.13 release train; W1.11 slip rule; W5.4 missing-metric by mode; W5.2/W5.6/W3 order fixes; milestones rebaselined (owner to confirm); Status → validated. Itemised in the consensus note. | Paul Calnon |
+| 2026-10-04 | 1.3.0 | P0 execution: W0.8/W0.9 measured (`JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`); F-SCI1 resolved, **verdict GO**; W1.1 bundle fixed (`normalize_features: false` + model half); W5.8/W5.9 proposed; F-P8 added; W0.1 model half applied, recipe recorded (juniper-recurrence#189), service-core half deferred; status table and M0 track the P0 PRs. Not consensus-reviewed. | Paul Calnon |
