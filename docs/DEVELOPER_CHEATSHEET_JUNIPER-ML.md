@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.64
+**Date**: 2026-10-04
 **Project**: juniper-ml
 
 ---
@@ -126,6 +126,7 @@
 | `python3 util/ad-hoc/e2e_finding_triage.py --open-only`    | Same, hide FIXED/ACCEPTED rows (totals still include them) |
 | `python3 util/ad-hoc/e2e_f037_render_census.py`        | F-CANOPY-037 11-session topology-paint census (isolated stack; does not judge the rate) |
 | `python3 util/ad-hoc/register_open_set.py` | Re-derive defect-register open/fixed counts (`**FIXED` token; cwd = repo root) |
+| `bash util/ad-hoc/2026-10-04_replay_redrive_stack.bash --up` | CAN-015 replay re-drive on `8113`/`8214`/`8063` (needs `JUNIPER_REDRIVE_ECO`; refuses the shared trio) |
 | `python3 util/ad-hoc/register_status_crosscheck.py` | Third reading of §2 / §4 / §5.1 (`AGREE` / `DISAGREE`; any cwd) |
 | `python3 util/requirements_consolidate.py --check-roundtrip` | Requirements corpus gate (`by-area` only; exit 0/1) |
 | `python3 util/requirements_consolidate.py --check-views` | Derived `by-repo` / `by-status` must match the `by-area` projection |
@@ -651,6 +652,8 @@ Tip: `util/isolated_stack.bash` is kill-by-port (not `JuniperProject.pid`). Afte
 Post-[#785](https://github.com/pcalnon/juniper-ml/pull/785), `activate_conda` restores `set -u` after conda activate (pre-fix left nounset off for the rest of `--up`).
 Full contract: [REFERENCE — Isolated Stack E2E](REFERENCE.md#isolated-stack-e2e-utilities).
 
+Tip: a CAN-015 replay replaces that cascor's network. Bring the stack up with `util/ad-hoc/2026-10-04_replay_redrive_stack.bash` (`JUNIPER_REDRIVE_ECO` outside the primary tree; ports `8113`/`8214`/`8063`). Replay an explicit `POST /v1/snapshots`. An automatic `create_snapshot` has `length=0`. [REFERENCE — CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive).
+
 Tip: F-CANOPY-027 is **12-slot dash-renderer starvation**, not missing wiring (FIXED canopy#507/#509/#511). Terminal render callbacks lose `sortPriority` DESC arbitration.
 Do **not** add a new Interval/poller (F-027 rule; canopy#524 shared `metrics-panel-metrics-store`). Isolated stack only (`JuniperCanopy1`; empty `LD_LIBRARY_PATH`).
 Queues/ready/slots inherit `JUNIPER_E2E_CANOPY_URL` (no `--base-url`). See [REFERENCE — F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes).
@@ -1098,6 +1101,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Memory-Budget Slack (Planning)](REFERENCE.md#memory-budget-slack-planning) -- headroom is not a CI input; size slack from `measure-growth` `max`, floored at 2,000
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default `equities` is 422 at 14 symbols; unit is symbols because cost is per request
 - [F-039 Store Probe](REFERENCE.md#f-039-store-probe) -- apply / soak / report / revert; read the whole series; `--target topology` refuses
+- [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) -- throwaway wrapper on `8113`/`8214`/`8063`; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start
 - [Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- exit **2** is P-5 free-threaded; exit **4** is May-7 wheel layout
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local `MEMORY.md` gate; hook-not-line; CI cannot see `~/.claude`
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- `e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
@@ -1119,6 +1123,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-04
+**Version:** 1.0.64
 **Maintainer:** Paul Calnon

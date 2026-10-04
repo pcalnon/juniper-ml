@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **CAN-015 replay re-drive runbook.** `docs/REFERENCE.md` documents
+  `util/ad-hoc/2026-10-04_replay_redrive_stack.bash` as the on-main entry point:
+  throwaway ports `8113` / `8214` / `8063`, a scratch eco outside the primary tree,
+  and refusals for the shared trio, a taken port, and a `--down` pid the run did not
+  record. Replay the explicit `POST /v1/snapshots`. Automatic `create_snapshot` omits
+  `include_training_state`, so `length=0`. Stop or `reset()` before the next Start.
 - **`ceremony.py --target-sha`: the tag, the CI gate and the notes describe one commit**
   (`util/release_train/ceremony.py`). By default the Release tags the owning repo's `main` as it is
   at cut time, while the notes come from the `--ecosystem-root` checkout. The two agree only if

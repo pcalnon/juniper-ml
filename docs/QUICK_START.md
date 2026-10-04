@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.40
+**Version:** 0.3.43
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -175,6 +175,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [P4 Campaign Suites](REFERENCE.md#p4-campaign-suites) -- 19 YAML catalog; `include` does not inherit `matrix`; cap-128 H2H is n=2; recurrence P4 cells report, they do not gate
 - [Memory-Budget Slack (Planning)](REFERENCE.md#memory-budget-slack-planning) -- `measure-growth` sizes a ceiling; headroom below that figure is not a `Memory Budget` failure
 - [F-039 Store Probe](REFERENCE.md#f-039-store-probe) -- apply / soak / report / revert when a canopy store looks empty after a correct wire response; read the whole series; `--target topology` refuses
+- [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) -- throwaway ports off `8101`/`8202`/`8051`; replay the explicit `POST /v1/snapshots` (automatic snapshots have `length=0`); Stop before the next Start
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local Claude Code index gate; 200/25k silent newest-first truncate; hook-not-line 120 on NEW slugs; CI cannot see `~/.claude`
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; one green session is not a claim; exit 2 = failed to measure
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy event-loop blocking; slice-1a count is **58**; C5 remedy refuted
@@ -190,6 +191,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.3.39
+**Last Updated:** 2026-10-04
+**Version:** 0.3.43
 **Status:** Active

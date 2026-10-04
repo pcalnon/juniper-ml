@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.64
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -26,6 +26,7 @@
 - [Conda Env Torch Shadow Diagnostic (P-5)](#conda-env-torch-shadow-diagnostic-p-5)
 - [Agent Suite Doctor](#agent-suite-doctor)
 - [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities)
+- [CAN-015 Replay Re-drive](#can-015-replay-re-drive)
 - [F-039 Store Probe](#f-039-store-probe)
 - [Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes)
 - [F-CANOPY-027 Poller Starvation Probes](#f-canopy-027-poller-starvation-probes)
@@ -1485,10 +1486,115 @@ Troubleshooting:
 | Control-WS `403` / reconnect churn | Cascor allowlist + canopy Origin must both be canopy's origin (`http://127.0.0.1:<CANOPY_PORT>`). See checklist §4. |
 | Topology / metrics store looks empty while the wire is correct | Do not trust a browser `_store()` read or the first TOPOPROBE lines. Run the apply / soak / report / revert loop in [F-039 Store Probe](#f-039-store-probe). |
 | One green topology paint "proves" F-CANOPY-037 | 2 of 11 was the finding — a single session is ~18% likely while still broken. Run [F-CANOPY-037 Render Census](#f-canopy-037-render-census). |
+| Replay scrubber stuck at 0, or the shared trio's network changed after a replay | `start_replay` loads the snapshot into that cascor. Use the throwaway wrapper and an explicit `POST /v1/snapshots`. See [CAN-015 Replay Re-drive](#can-015-replay-re-drive). |
 
 Do **not** point isolated ports at the host stack or run `--up` on ports `plant_all` already owns.
 
 Store-apply contradictions (correct `/api/topology` body, empty DOM) are a different class from bring-up failures — see [F-039 Store Probe](#f-039-store-probe).
+
+---
+
+## CAN-015 Replay Re-drive
+
+A live check of canopy's replay player replaces that cascor process's network (`LifecycleManager.start_replay` calls `_load_snapshot_to_network`). Drive it with [`util/ad-hoc/2026-10-04_replay_redrive_stack.bash`](../util/ad-hoc/2026-10-04_replay_redrive_stack.bash), which hard-sets throwaway ports and then `exec`s [`util/isolated_stack.bash`](../util/isolated_stack.bash). The shared trio is that helper's defaults: data `8101`, cascor `8202`, canopy `8051`.
+
+The player and snapshot contracts below were read from cascor `95cdc562`
+(`src/api/lifecycle/manager.py`, `src/cascade_correlation/cascade_correlation.py`)
+and canopy `1b2dd438` (`src/frontend/components/replay_player_panel.py`).
+Those commits are the two repos' `main` as of 2026-10-04.
+One recorded drive is in
+[`JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`](../notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md)
+and [`reports/2026-10-04_canopy-replay-redrive/verdicts.json`](../reports/2026-10-04_canopy-replay-redrive/verdicts.json):
+11 rows, all `PASS`, on snapshot `snapshot_20261004T112734Z`.
+
+### Throwaway wrapper
+
+`JUNIPER_REDRIVE_ECO` is required. It must already hold `juniper-data/`, `juniper-cascor/`, and `juniper-canopy/`. The wrapper resolves it with `realpath` and refuses (exit 2) when the path is `/home/pcalnon/Development/python/Juniper` or anything under that directory.
+
+```bash
+export JUNIPER_REDRIVE_ECO=/path/to/scratch/eco
+export JUNIPER_REDRIVE_DATA_SHA=<data sha>
+export JUNIPER_REDRIVE_CASCOR_SHA=<cascor sha>
+export JUNIPER_REDRIVE_CANOPY_SHA=<canopy sha>
+bash util/ad-hoc/2026-10-04_replay_redrive_stack.bash --up
+bash util/ad-hoc/2026-10-04_replay_redrive_stack.bash --status
+bash util/ad-hoc/2026-10-04_replay_redrive_stack.bash --down
+bash util/ad-hoc/2026-10-04_replay_redrive_stack.bash --dry-run --up
+```
+
+Hard-set after the caller's environment is read, so an exported port cannot move a leg: data `8113`, cascor `8214`, canopy `8063`, recurrence `8223`. `--with-recurrence` is refused. Port `8223` is still in the listener set, so `--up` and `--down` require it to be free even though recurrence is not started.
+
+| Refuse (exit 2) | When |
+|-----------------|------|
+| `JUNIPER_REDRIVE_ECO` empty, missing, or inside the primary ecosystem root | Before any port check |
+| A leg directory is missing | `juniper-data`, `juniper-cascor`, or `juniper-canopy` |
+| `--with-recurrence`, or no `--up` / `--status` / `--down` | The wrapper does not start recurrence |
+| A hard-set port is on the forbidden list | `8101` `8202` `8051` `8211` `8100` `8201` `8050` `8111` `8212` `8061` `8221` `8055` `8056` |
+| `--up` and `8113`, `8214`, `8063`, or `8223` already has a listener | A failed bring-up would kill that listener by port |
+| `--down` and the listener's pid is absent from `${ECO}/run/*.pid` | Includes a listener whose pid `ss` cannot see |
+
+Also exported before `exec`: `JUNIPER_E2E_PROJECT_DIR` (the eco path), `JUNIPER_E2E_RUN_DIR` (`${ECO}/run`), `JUNIPER_E2E_DATA_EXTRAS=api`, and both snapshot directories set to `${ECO}/run/cascor-snapshots`. `JUNIPER_DATA_GIT_SHA` is `JUNIPER_REDRIVE_DATA_SHA` and may be empty. The cascor and canopy sha variables are written only into the wrapper's log line.
+
+Cascor reads `JUNIPER_CASCOR_SNAPSHOTS_DIR` in `_get_snapshots_dir` at process start. `isolated_stack.bash` forwards `JUNIPER_E2E_CANOPY_SNAPSHOT_DIR` as canopy's `JUNIPER_CANOPY_SNAPSHOT_DIR`. Canopy lists snapshots from that local directory, so the two paths have to match or the Snapshots tab is empty while the `.h5` is on cascor.
+
+`--down` remains kill-by-port. It does not delete `JUNIPER_CASCOR_SNAPSHOTS_DIR`, and it does not sweep `<project>/juniper-cascor/cascor-snapshots`. `--dry-run` skips the wrapper's listener checks and lets the stack print its commands. When a leg is a tarball rather than a git checkout, `isolated_stack.bash` cannot `rev-parse` it, and cascor and canopy report `git_sha: null` on `/v1/health`. The recorded drive was that shape.
+
+### A replayable snapshot
+
+`_ReplaySession.length` (`manager.py`) is the longest of `train_loss`, `value_loss`, `train_accuracy`, and `value_accuracy`. Empty arrays yield `length=0`. Playable indexes are `[0, length - 1]`. `range_end` starts at `length`, and `set_range` documents `[start, end)`.
+
+| Writer | Training history |
+|--------|------------------|
+| `CascadeCorrelationNetwork.create_snapshot`, called at the end of `train_output_layer` | Calls `_save_to_hdf5` without `include_training_state`. That argument defaults to `False`. The same call passes `include_training_data=False`, which drops the dataset, not the history. |
+| `LifecycleManager.save_snapshot` (`POST /v1/snapshots`) | `serializer.save_network(..., include_training_state=True)` |
+
+With `JUNIPER_CASCOR_SNAPSHOTS_DIR` set before process start, both writers use that directory. After a fit, the newest listed file can be the automatic one. Replay the id from the explicit POST.
+
+The ledger records one explicit save, taken after two immediate Start/Stop cycles, that also held no loss arrays. The driver saves after a fit that has reported `is_running` or `is_training` and then gone idle. Cascor logs `Snapshot replay started: <id> (length=N)`. Require `N > 0`.
+
+`start_training` raises `Cannot start training while replaying a snapshot` while the FSM is `REPLAYING`. Stop (`POST /v1/snapshots/<id>/replay/control` with `action=stop`) or `reset()` (it stops the replay thread) before the next Start.
+
+The driver's short spirals fit posts these canopy keys together: `nn_output_epochs` `40`, `nn_max_total_epochs` `40`, `nn_max_iterations` `12`, `cn_training_iterations` `20`, `nn_max_hidden_units` `32`. Set the output-epoch budget and the total-epoch budget to the same value. The service applies `max_epochs` only to the initial output pass; later passes read `output_epochs`.
+
+```bash
+curl -s -X POST http://127.0.0.1:8214/v1/snapshots \
+  -H 'Content-Type: application/json' \
+  -d '{"description":"replay re-drive"}'
+```
+
+### What the player must show
+
+[`util/ad-hoc/2026-10-04_replay_redrive.py`](../util/ad-hoc/2026-10-04_replay_redrive.py) drives one browser session against `8113` / `8214` / `8063` and exits 0 only when every row is `PASS`.
+
+```bash
+LIBTORCH= LD_LIBRARY_PATH= /opt/miniforge3/envs/JuniperCanopy1/bin/python \
+  util/ad-hoc/2026-10-04_replay_redrive.py \
+  --run-dir /path/to/scratch/eco/run \
+  --out reports/replay-redrive-out
+```
+
+`--snapshot ID` skips the explicit save and replays that id. `--skip-train` skips the spirals fit. The cascor access log is `--run-dir/logs/juniper-cascor.log`. Control requests are counted there (`POST /v1/snapshots/<id>/replay/control`), not in the browser.
+
+On canopy `1b2dd438`:
+
+- `range`, `speed`, and `weights_available` are on `data.session`. A V2 badge reads `V2 ✓ weights`. Reading the top-level block leaves the badge at `V1 (metrics only)`.
+- Cascor's `range` is `{"start", "end"}` with an exclusive `end`. The slider is inclusive, so the displayed high is `end - 1` and `queue_control` sends `hi + 1`. `time_index.snapshot_window.end_epoch` is a length; the last index is `end_epoch - 1`, and `end_epoch == 0` stays `(0, 0)` because the helper returns `max(start, end)`. The legacy `window.end_epoch` is already the last index.
+- `render_session` writes the scrubber, speed, and range, which are Inputs of `queue_control`. A value that already matches the session returns `dash.no_update`. The graph-cycle exemption `can015-replay-player-control-loop` does not stop the POST. An idle player sends none. Speed compares the nested summary, default `SPEED_DEFAULT` `1.0`. Range compares inclusive to inclusive.
+- A successful Stop stores `snapshot_id: None` and the panel returns to idle.
+
+The driver opens the snapshot's `Load` menu (the replay item is a dropdown item; it scrolls the toggle into view and uses `click(force=True)`), reads Radix thumbs from `aria-valuenow` / `aria-valuemax`, and polls readout text to a deadline. One sample after a sleep is not a settled reading. Playwright is the `JuniperCanopy1` interpreter above, with `LIBTORCH` and `LD_LIBRARY_PATH` empty, same as the cascor leg.
+
+### Operator pitfalls
+
+| Symptom | What it means |
+|---------|----------------|
+| Scrubber max is 0 and seek does nothing | The file is a `create_snapshot` (no history), or the explicit save ran before `train_loss` was written. POST `/v1/snapshots` after the fit reaches a terminal status and replay that id. Require `length=N` with `N > 0` in the cascor log. |
+| Snapshots tab is empty while cascor has the `.h5` | Canopy's snapshot dir and `JUNIPER_CASCOR_SNAPSHOTS_DIR` differ. The wrapper sets both before `--up`. |
+| The next Start fails with "while replaying" | The FSM is still `REPLAYING`. Stop the player, or call `reset()`, then Start. |
+| An idle player keeps POSTing `/replay/control` | `render_session` echoed into `queue_control`. The guard is the three comparisons above. |
+| The range readout is one past the last frame | `range.end` or `snapshot_window.end_epoch` was used as an inclusive index. |
+| `--down` stopped the shared trio | The ports were `8101` / `8202` / `8051`. Use the wrapper: it refuses those ports and refuses a pid it did not record. |
+| `--up` refuses port `8223` | That port is in the wrapper's listener set. Recurrence is not started, and the port still has to be free. |
 
 ---
 
@@ -7003,6 +7109,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.48  | 2026-09-04 | Pointer-follow soak operator surface: `--dry-run` is exempt from the terminal-verdict stop (juniper-ml#1690); do not drive n≈8–10; era split required; `source-recovered` stays in the denominator; soak-probes reaper pidfile |
 | 0.6.60  | 2026-09-05 | Canopy E2E unfilled-rows ledger: plan re-drives from `e2e_unfilled_rows.py` (matrix status cells only; `C2.` / `M-`; exit 0). `e2e_row_coverage.py` is an estimator and can list already-`PASS` rows as remaining |
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
+| 0.6.64  | 2026-10-04 | CAN-015 replay re-drive: `util/ad-hoc/2026-10-04_replay_redrive_stack.bash` is the on-main entry point (ports `8113`/`8214`/`8063`, refuses the shared trio and a taken port, refuses `--down` for a pid it did not record). Replay the explicit `POST /v1/snapshots`; automatic `create_snapshot` omits `include_training_state` (`length=0`). Skipped 0.6.62 (in-flight docs PR #2119) and 0.6.63 (in-flight docs PR #2122, which still says the wrapper is not on `main`). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -7502,6 +7609,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-04
+**Version:** 0.6.64
 **Maintainer:** Paul Calnon
