@@ -13,9 +13,9 @@ in; every figure below is post-correction.
 ## Handoff prompt (copy this into the new thread)
 
 Continue the **shared-session-memory** arc in `juniper-ml`. Plan:
-[`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md);
+[`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md);
 protocol + terminal soak result:
-[`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`](../../notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md)
+[`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`](../../../notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md)
 (§7 how to run a probe, §12 pilot + side-findings, §13 batch 2, §14 terminal result).
 
 **The soak is COMPLETE and the budget is hardened.** What remains is a prioritised
@@ -74,7 +74,7 @@ backlog, not an interrupted task.
      simulates absence. It passes identically whether the helper fails open or closed.
    - `util/memory_budget_check.py:69` / `:75` accept **only** the bare `<path>` trailer,
      while
-     [`notes/JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-ARCHITECTURE-SYNTHESIS-2.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-ARCHITECTURE-SYNTHESIS-2.md)`:538`
+     [`notes/JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-ARCHITECTURE-SYNTHESIS-2.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-ARCHITECTURE-SYNTHESIS-2.md)`:538`
      mandates a `<path> — <reason>` form and even claims the checker fails a bare one —
      the exact inverse. An author following the design docs writes a trailer that is
      silently ignored and stays red.

@@ -12,7 +12,7 @@ session and nothing is promoted** — merges are the owner's per-PR call.
 ## Handoff prompt (copy this into the new thread)
 
 Continue the **shared-session-memory** arc in `juniper-ml`, P5 fleet rollout. Authorities:
-plan §P5 in [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
+plan §P5 in [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
 (its `NOT STARTED` banner is fixed by **ml#1376, pending merge** — until then the banner lies);
 tracker **ml#1326** (retitled IN PROGRESS; its comments are the live per-repo ledger); the
 predecessor handoff for mechanism facts and owner decisions, none of which changed.

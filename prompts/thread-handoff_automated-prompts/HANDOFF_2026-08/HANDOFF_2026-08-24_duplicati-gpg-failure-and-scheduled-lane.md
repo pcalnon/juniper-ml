@@ -8,9 +8,9 @@ Predecessor: [`HANDOFF_2026-08-23_duplicati-fresh-set-and-purge.md`](HANDOFF_202
 Its §3 items **4** (linger) and **5** (alerting) are **closed and verified**.
 
 Notes of record — read before acting on the old archive:
-[`…DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md`](../../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) ·
-[`…DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](../../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md) ·
-⛔ [`…DUPLICATI-DB-RESTORE-RUNBOOK.md`](../../notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_DUPLICATI-DB-RESTORE-RUNBOOK.md)
+[`…DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md`](../../../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) ·
+[`…DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](../../../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md) ·
+⛔ [`…DUPLICATI-DB-RESTORE-RUNBOOK.md`](../../../notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_DUPLICATI-DB-RESTORE-RUNBOOK.md)
 — **WITHDRAWN, DO NOT EXECUTE.** It is a complete, plausible, step-numbered runbook whose
 premise is false: it restores the archived 2026-07-12 DB, which *already contains the wedge*.
 It is retained as a specimen. Anyone grepping `notes/` for a Duplicati procedure will find it.

@@ -30,7 +30,7 @@ handoff: **8 of 9 governable repos have a memory-budget port merged or open, all
 promoted.** juniper-slacker has no `AGENTS.md` and nothing to govern.
 
 Authorities, in order:
-- Plan §P5: [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
+- Plan §P5: [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
   — its status banner, rate table, promotion procedure and porting hazards are rewritten in
   **ml#1376 (open)**. Until that merges, `main`'s copy still says *NOT STARTED*; read the PR.
 - Tracking issue **ml#1326** — title fixed; the comment thread is the live tracker (the peer's

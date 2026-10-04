@@ -5,7 +5,7 @@ Continue the Duplicati Yamaguchi backup arc. Predecessor:
 Its traps remain binding and are **not** restated — but note that the "not restated" chain is now
 nine handoffs deep, so read at minimum note **§2** (the restart trap — *not* reachable from the
 §8.15–§8.17 pointer below), **§8.14**, and **§8.15–§8.17** of
-[`JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md`](../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
+[`JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md`](../../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
 
 > **Read §0 before anything else.** The retirement/cleanup phase of this arc is finished, but a
 > validation pass on 2026-08-29 found a restorability gap that outranks every item previously

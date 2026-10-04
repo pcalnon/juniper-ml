@@ -8,7 +8,7 @@ Continue the **CLI experimentation program residual work** (successor to `HANDOF
   - Chain: the driver's spiral-only inline `dataset` source made cascor substitute its in-process fallback for the configured juniper-data dataset
   - The fallback was param-deaf (`n_per_spiral` vs `n_points_per_spiral` → 200 pts, no noise/seed) and **unit-radius** (1/(4π) normalized); at that scale the default candidate init (`randn×0.1`) leaves every tanh candidate in its linear regime, where the output-layer-converged residual is least-squares-orthogonal → best-of-pool correlation pinned ≈2.7e-4 → `grow_network` breaks `below_threshold` at iteration 1 (0 units, chance acc).
   - Same run at radius-10 scale: 12 units, 0.995 acc.
-  - Full write-up: [`notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md`](../../notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md).
+  - Full write-up: [`notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md`](../../../notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md).
   - Repro committed as cascor `util/ad-hoc/f_p4_1_spiral_service_repro.py`.
   - CUDA-OOM noise excluded by `CUDA_VISIBLE_DEVICES=` control.
 - **cascor#504 (OPEN PR)** — fallback `_generate_spiral_data` honors SpiralParams (`n_points_per_spiral`/`n_rotations`/`noise`/`radius`/`seed`, legacy key kept), radius-10 default; 33/33 route tests + pre-commit green.

@@ -50,7 +50,7 @@ owner on 2026-08-15 from Settings → Rules.
 
 It is now **independently reproducible**: `gh api /apps/amp-for-github --jq .id` returns `1276151`. That
 supersedes
-[`notes/JUNIPER_2026-08-05_JUNIPER-ML_BYPASS-ACTOR-RESEARCH.md:25`](../../notes/JUNIPER_2026-08-05_JUNIPER-ML_BYPASS-ACTOR-RESEARCH.md),
+[`notes/JUNIPER_2026-08-05_JUNIPER-ML_BYPASS-ACTOR-RESEARCH.md:25`](../../../notes/JUNIPER_2026-08-05_JUNIPER-ML_BYPASS-ACTOR-RESEARCH.md),
 which recorded the App as unresolved after ~190 public slug probes — the working slug is `amp-for-github`.
 Worth remembering as technique: the research's probe list simply never tried that string.
 
@@ -78,7 +78,7 @@ eight:
 | Integration 4362741    | `pull_request` | owner's release-train App (`vars.RELEASE_TRAIN_APP_ID`) | **KEEP** — required for the exempt archive lane |
 
 **`946600` is the live exposure.**
-[`…STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md:139`](../../notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md)
+[`…STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md:139`](../../../notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md)
 records it as "UNIDENTIFIED — not previously recorded anywhere" and **absent from juniper-ml**; it is
 present now (ruleset `updated_at` 2026-08-12), and also on juniper-data, juniper-cascor-client and
 juniper-deploy. Slug probes did not resolve it this session; its id sits in the same mid-2025 AI-agent
@@ -154,7 +154,7 @@ fired 2026-08-14T22:50 on a transient `cancelled`; main CI went green on `3857d1
 released at 23:05, and PyPI has served 0.9.0 since 23:36. The HALT was moot.
 
 python3 util/ad-hoc/e2e_matrix_fill.py \ in
-[`WORKTREE-CLEANUP-PROCEDURE-V2.md`](../../notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md),
+[`WORKTREE-CLEANUP-PROCEDURE-V2.md`](../../../notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md),
 which covers single-worktree cleanup only.
 
 **Do not drive a bulk pass with `scripts/cleanup_session_worktrees.py`.** Its only liveness guard is

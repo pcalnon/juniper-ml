@@ -5,7 +5,7 @@
 **Prepared by**: Claude Code (Opus 4.8)
 **Created**: 2026-06-25
 **Purpose**: Close out the `juniper-recurrence` **full-audit remediation** backlog. The audit
-([`notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md`](../../notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md),
+([`notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md`](../../../notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md),
 shipped as juniper-ml#546) is the **source of truth** for every finding ID. As of this handoff **every
 High-sev (H1, H2) and every Medium except DOC-06 is addressed.** What remains is one docs-only PR
 (**DOC-06**), plus two server-side gating items that are **Paul's** to action.
@@ -79,7 +79,7 @@ tasks 1–2 (juniper-ml #560/#561, recurrence #65) were already merged (see the 
 1. **DOC-06 (this session's work)** — backfill the **5** missing
    `juniper-recurrence/notes/releases/` files (§0 step 4 lists them): app `v0.1.0`, app `v0.1.1`, model
    `v0.1.0`, model `v0.1.2`, **client `v0.1.0`**. Author from
-   [`juniper-ml/notes/templates/TEMPLATE_RELEASE_NOTES.md`](../../notes/templates/TEMPLATE_RELEASE_NOTES.md)
+   [`juniper-ml/notes/templates/TEMPLATE_RELEASE_NOTES.md`](../../../notes/templates/TEMPLATE_RELEASE_NOTES.md)
    (the template lives in **juniper-ml**, not recurrence). Four of the five have a crib source in
    `juniper-ml/notes/releases/` (`…_v0.1.0`, `…_v0.1.1`, model `…_v0.1.0/_v0.1.2`); **client v0.1.0 has
    none — author fresh** from the tag's CHANGELOG/diff. **Naming nuance:** match the recurrence repo's own

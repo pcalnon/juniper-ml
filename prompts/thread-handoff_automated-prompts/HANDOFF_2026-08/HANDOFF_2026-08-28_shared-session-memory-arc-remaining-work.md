@@ -16,12 +16,12 @@ facts are cited from ml#1450's prep note (commit `021590a9`), not from messages.
 ## Handoff prompt (copy this into the new thread)
 
 Continue the **shared-session-memory** arc in `juniper-ml`. Plan of record:
-[`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
+[`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
 (§4 phases, §5 owner decisions, §6 the soak, §7 residual risk); tracker **ml#1326** (the ledger —
 read newest first with `gh issue view 1326 --repo pcalnon/juniper-ml --json comments --jq
 '.comments[-3:]'`; every comment is authored by `pcalnon`, so a session is identified by the
 worktree/branch it names); soak ledger
-[`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`](../../notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md).
+[`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`](../../../notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md).
 
 **Dup-guard first — durable identifiers, not session names.** (1) `gh pr view 1450 --repo
 pcalnon/juniper-ml --json state,headRefName`: while OPEN the cut session (`p5 memory` lineage,

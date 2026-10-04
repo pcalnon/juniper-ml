@@ -4,7 +4,7 @@ Continue the Duplicati Yamaguchi backup arc. Predecessor:
 [`HANDOFF_2026-08-29_duplicati-reboot-and-root-tail.md`](HANDOFF_2026-08-29_duplicati-reboot-and-root-tail.md).
 Its traps remain binding and are **not** restated — but the "not restated" chain is now **ten**
 handoffs deep, so read at minimum note **§2** (the restart trap), **§8.14**, and **§8.15–§8.19** of
-[`JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md`](../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
+[`JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md`](../../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
 
 > **Read §0 and §1 first.** Three of the predecessor's five items are now DONE. But a validation
 > pass on 2026-08-30 found a premise repeated **three** times in the note is false, and a tooling

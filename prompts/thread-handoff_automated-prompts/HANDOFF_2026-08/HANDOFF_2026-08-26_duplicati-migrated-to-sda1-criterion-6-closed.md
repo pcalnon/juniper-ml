@@ -4,7 +4,7 @@
 Predecessor: [`HANDOFF_2026-08-26_duplicati-decisions-executed-root-gated-tail.md`](HANDOFF_2026-08-26_duplicati-decisions-executed-root-gated-tail.md)
 — its §0 outcomes, §2 traps and the prohibitions it inherits remain binding and are NOT
 restated. Read it, then note
-[§8.10–§8.13](../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
+[§8.10–§8.13](../../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
 
 > ⚠️ **The destination changed.** It is now **`/mnt/Backups/Ubuntu/Yamaguchi`** (sda1), not
 > `/media/pcalnon/temp_backups/Yamaguchi`. Any command, script or memory naming the old path

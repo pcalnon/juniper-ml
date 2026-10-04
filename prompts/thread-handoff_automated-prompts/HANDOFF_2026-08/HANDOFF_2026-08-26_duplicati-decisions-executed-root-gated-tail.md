@@ -4,7 +4,7 @@
 Predecessor: [`HANDOFF_2026-08-25_duplicati-widened-scope-recertified-paul-gated-tail.md`](HANDOFF_2026-08-25_duplicati-widened-scope-recertified-paul-gated-tail.md)
 — its §0 decisions, §3 traps, §4 identifiers, §5 prohibitions and its **§2 items 5–11** remain
 binding and are NOT restated here. Read it first, then the note's new
-[§8.9](../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
+[§8.9](../../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
 Every remaining item needs root or a decision Paul has not yet given — execute picked ones,
 do not re-derive them, do not redo anything in §0.
 

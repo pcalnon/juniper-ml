@@ -25,7 +25,7 @@ copy → item 7; key question → item 4**, **11 carried by precise reference** 
 the 2026-08-24 handoff §4 items 3–5, 7 and §6 damage facts, all still binding). Its ⏳ rows
 are all superseded by §1.
 
-Note of record for everything below: [`…DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md` **§8**](../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md)
+Note of record for everything below: [`…DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md` **§8**](../../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md)
 (what changed, task 8, census, ladder, tooling, Paul's decisions with exact edits, criteria
 status, retirement inventory **with the KEEP list**). Read it before acting. ⛔ The
 DB-restore runbook stays WITHDRAWN.

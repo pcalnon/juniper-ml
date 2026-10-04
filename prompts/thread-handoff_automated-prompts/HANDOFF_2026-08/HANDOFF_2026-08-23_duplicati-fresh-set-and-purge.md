@@ -11,8 +11,8 @@ Merged this arc: **ml#1263**, **ml#1268**, **ml#1269**.
 > identifier. §5a and §1a exist because an adversarial review found the first draft had dropped
 > the never-Repair / never-`kill -9` rules and omitted the new job's dbpath — i.e. the words
 > were previously being spent on the wrong things, not merely on too many things.
-Findings of record: [`notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md`](../../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) ·
-Plan: [`…_DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](../../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md)
+Findings of record: [`notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md`](../../../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) ·
+Plan: [`…_DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](../../../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md)
 
 ---
 

@@ -3,7 +3,7 @@
 Continue the backup arc. Predecessor:
 [`HANDOFF_2026-08-26_duplicati-migrated-to-sda1-criterion-6-closed.md`](HANDOFF_2026-08-26_duplicati-migrated-to-sda1-criterion-6-closed.md)
 — its §2 traps and inherited prohibitions remain binding and are NOT restated. Read it, then
-the note's new [§8.14](../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
+the note's new [§8.14](../../../notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md).
 
 > ⚠️ Two things the predecessor said are now **wrong**: `--tempdir` is no longer on sdc4, and
 > "under 10 minutes" is not a floor. Both corrected below.

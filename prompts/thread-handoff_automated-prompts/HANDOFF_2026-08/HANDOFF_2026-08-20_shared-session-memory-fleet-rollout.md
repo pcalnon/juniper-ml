@@ -10,7 +10,7 @@ before archiving. Their findings are folded in; figures below are post-correctio
 ## Handoff prompt (copy this into the new thread)
 
 Continue the **shared-session-memory** effort in `juniper-ml`. Plan:
-[`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md);
+[`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md);
 its §4a/§4b execution logs are authoritative for what shipped.
 
 **Plan phases P0–P4 and P0b are complete. P5 (fleet rollout) has not started**, and

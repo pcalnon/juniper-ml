@@ -38,14 +38,14 @@ Use this file as the opening prompt for a fresh thread, per the mandatory thread
    handoff's own worktree `juniper-ml--docs--handoff-canopy-a1-iv-deploy--*` once its PR merges.
 
 3. **Read the design-of-record docs (in juniper-ml `notes/`):**
-   - [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](../../notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md)
+   - [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](../../../notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md)
      — **the A1 selection-UI design (A1-iv's spec).** Paul chose a **DEDICATED full-width
      model-surface table** (not a sidebar dropdown) for 10–20+ models+variants; multi-axis
      capability predicate (ndim + temporal; task_type inert); label-suffix reasons on greyed
      options; swappable conflict policy; inline ✕; status-enum registry.
-   - [`JUNIPER_2026-06-23_JUNIPER-CANOPY_A1-III-DASHBOARD-INTEGRATION-SCOPE.md`](../../notes/JUNIPER_2026-06-23_JUNIPER-CANOPY_A1-III-DASHBOARD-INTEGRATION-SCOPE.md)
+   - [`JUNIPER_2026-06-23_JUNIPER-CANOPY_A1-III-DASHBOARD-INTEGRATION-SCOPE.md`](../../../notes/JUNIPER_2026-06-23_JUNIPER-CANOPY_A1-III-DASHBOARD-INTEGRATION-SCOPE.md)
      — the A1-iii scope; its "Boundary" section defines exactly what was deferred to A1-iv.
-   - [`JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md`](../../notes/JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md)
+   - [`JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md`](../../../notes/JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md)
      — decisions D1-A/D5/D6 (the execution-paradigm bridge already built).
 
 4. **Collision-check + create your worktree off FRESH `origin/main`** (never trust the local

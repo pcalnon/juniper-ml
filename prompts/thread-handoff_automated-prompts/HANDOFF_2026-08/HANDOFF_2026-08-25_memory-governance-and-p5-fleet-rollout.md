@@ -18,14 +18,14 @@ primary source before being applied. Figures are re-probed, not inherited — th
 Continue the **shared-session-memory** arc in `juniper-ml`, now in its **P5 fleet-rollout** phase.
 
 Authorities, in order:
-- Plan: [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
+- Plan: [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
   — §P5 holds the full porting procedure (ml#1318). **Its status banner is STALE** — it still reads
   *"Status: NOT STARTED. No tracking issue exists in any repo."* Both halves are false. Fix it first;
   it is the document every future session executes from.
-- Soak ledger: [`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`](../../notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md)
+- Soak ledger: [`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`](../../../notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md)
   — §7 is the operating procedure, §14 the terminal result.
-- Memory mechanism facts: [`notes/JUNIPER_2026-08-18_JUNIPER-ML_CLAUDE-CODE-MEMORY-MECHANISM-FACTS.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_CLAUDE-CODE-MEMORY-MECHANISM-FACTS.md)
-  and [`…MEMORY-ARCHITECTURE-SYNTHESIS-2.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-ARCHITECTURE-SYNTHESIS-2.md).
+- Memory mechanism facts: [`notes/JUNIPER_2026-08-18_JUNIPER-ML_CLAUDE-CODE-MEMORY-MECHANISM-FACTS.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_CLAUDE-CODE-MEMORY-MECHANISM-FACTS.md)
+  and [`…MEMORY-ARCHITECTURE-SYNTHESIS-2.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-ARCHITECTURE-SYNTHESIS-2.md).
 - Tracking issue: **ml#1326** (title still says `(NOT STARTED)` — also stale).
 
 The predecessor's nine-finding backlog is **closed**. What remains is P5 plus three owner decisions.

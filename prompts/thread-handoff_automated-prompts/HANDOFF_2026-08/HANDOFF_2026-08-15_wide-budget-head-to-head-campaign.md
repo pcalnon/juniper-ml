@@ -66,11 +66,11 @@ Also already fixed, and load-bearing here:
 > `_W11_TRAINING_KEY_MAP` carries the key — say so rather than running it.
 
 Source of record:
-[smoke note](../../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-HEAD-TO-HEAD-SMOKE-EVIDENCE.md)
+[smoke note](../../../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-HEAD-TO-HEAD-SMOKE-EVIDENCE.md)
 (its §6 limits, its §8 disposition),
-[R-5 note](../../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-R5-SERVICE-VS-CLI-EVIDENCE.md),
+[R-5 note](../../../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-R5-SERVICE-VS-CLI-EVIDENCE.md),
 and — the numeric basis for this campaign's sizing —
-[E-I note](../../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-E-I-CAP-CEILING-EVIDENCE.md).
+[E-I note](../../../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-E-I-CAP-CEILING-EVIDENCE.md).
 
 ---
 

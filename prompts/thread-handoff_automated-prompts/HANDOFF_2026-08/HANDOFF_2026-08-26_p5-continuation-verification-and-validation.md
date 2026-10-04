@@ -16,7 +16,7 @@ pass over THIS document is owed to the next session — run the lenses **sequent
 ## Handoff prompt (copy this into the new thread)
 
 Continue the **shared-session-memory** arc in `juniper-ml`, P5 fleet rollout. Authorities: plan §P5
-in [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
+in [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
 (banner, steps b/d and the precondition record are current as of this handoff's PR; the measurement
 paragraph by ml#1398); tracker **ml#1326** (its comments are the live ledger — newest first).
 
