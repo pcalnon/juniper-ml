@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.67
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -18,6 +18,7 @@
 - [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
 - [Juniper Project-Tree Backup](#juniper-project-tree-backup)
+- [Duplicati Export and an Absent Watchdog Job Id](#duplicati-export-and-an-absent-watchdog-job-id)
 - [Editable Install Drift Check](#editable-install-drift-check)
 - [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell)
 - [Pytest Orphan Reaper](#pytest-orphan-reaper)
@@ -525,6 +526,7 @@ Troubleshooting:
 ## Scheduled Duplicati Backup Lane
 
 Host-level `$HOME` backup under `systemd --user`, independent of the GNOME tray instance and of Duplicati's own scheduler (the server DB `Schedule` table was empty when this lane shipped). Merged in [juniper-ml#1292](https://github.com/pcalnon/juniper-ml/pull/1292). This is **not** `util/juniper-backup.bash` — that script is the project-tree / external-media leg. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
+The Yamaguchi server's `export` token and the outside watchdog's absent job id are [Duplicati Export and an Absent Watchdog Job Id](#duplicati-export-and-an-absent-watchdog-job-id).
 
 The 2026-07-13 archive damage went undetected for six weeks because the only runner was a gnome-shell-launched scope under a user manager with `Linger=no`: it died at logout and nothing said so. This lane is the replacement.
 
@@ -744,6 +746,124 @@ It then runs `systemctl --user daemon-reload` and `systemctl --user enable --now
 | Archive huge / includes `data/` `venv/` | Exclude flags inert (quoted or absolute). Confirm `--dry-run` `tar args:` shows `--exclude=<leaf>/<name>`. |
 | Backup of a restored tree looks like today's | Timestamp is when the backup ran. Pass `--label`. |
 | `cascor-snapshots` missing from the archive | `EXCLUDE_CASCOR_SNAPSHOTS=0` (the script's `TRUE`). Default `1` includes the corpus. |
+
+---
+
+## Duplicati Export and an Absent Watchdog Job Id
+
+How `python3 util/ad-hoc/yamaguchi_server_api.py export` obtains the token Duplicati 2.4.0.0's export route requires, and how `util/ad-hoc/yamaguchi_watchdog.py` records a run whose unit passed no job id. The contract is [juniper-ml#2134](https://github.com/pcalnon/juniper-ml/pull/2134) (`yamaguchi_server_api.py` 0.2.1). The scheduled `$HOME` lane and the project-tree `.tbz2.gpg` lane are the sections above.
+
+Two facts are still true of `main` until that commit is the tree you run:
+
+- `export` logs in, then calls `GET /api/v1/backup/<id>/export?export-passwords=false` with the Bearer access token only (`req()`). On tag `v2.4.0.0_stable_2026-09-03`, `BackupGet.cs` maps that route without `.RequireAuthorization()` and requires a `token` query string whose operation is `export`. The live call is HTTP 400. Stdout stays empty and the process exits 1.
+- The watchdog declares `--backup-id` as `required=True`. Omitting the flag is argparse's exit 2 and writes no record. An empty `--backup-id` (the flag is present, the value is empty) is already `ALERT` `JOB_MISSING`, recorded before login.
+
+### `export` once #2134 is the tree
+
+```text
+python3 util/ad-hoc/yamaguchi_server_api.py export 7
+python3 util/ad-hoc/yamaguchi_server_api.py export --backup-id 7
+```
+
+The job id is required and has no default: a rebuilt job is not id 2. It is a positive integer with no leading zero (`[1-9][0-9]*`, full match), positional or `--backup-id`. A usage error exits 64 before the credential file is read.
+
+The client reads the web-UI password from `~/.config/duplicati-backup/web-credential` (mode `0600`, one `DUPLICATI_WEB_CREDENTIAL=` line; `DUPLICATI_WEB_CREDENTIAL_FILE` overrides the path). That password is the web UI password. The archive passphrase lives in `~/.config/duplicati-backup/env`. After login it does two calls:
+
+1. `POST /api/v1/auth/issuetoken/export` with `Authorization: Bearer <access token>`. `Auth.cs` requires that header and returns a single-operation token. The client accepts a non-empty string under `Token` or `token`.
+2. `GET /api/v1/backup/<id>/export?export-passwords=false&token=<operation token>`. `req()` also attaches the Bearer header on this GET. The export route ignores it. The query `token` is what the route checks. The vendor CLI (`ExportBackupAsync`) and the shipped UI do the same two steps.
+
+The operation token is a JWT valid for about a minute. It stays in memory, leaves only as that query parameter, and is never printed. A failure line prints the server's error body, never the request URL.
+
+Stdout is the job JSON, and nothing else, only when the response is HTTP 200 and `Backup.TargetURL` is a non-empty string. Every other outcome exits 1 with nothing on stdout:
+
+| Failure | Stderr |
+|---------|--------|
+| `issuetoken` status is not 200, or 200 with no usable `Token` / `token` | `export <id>: issuetoken failed <status>: …` |
+| export status is not 200, or 200 without a non-empty `Backup.TargetURL` | `export <id> failed <status>: …` |
+
+A 200 `issuetoken` body with no usable field is reported with a fixed message. The body is not printed: it may hold the token under a name this client does not read. Only a status of 400 or above has its body printed, and that error body does not carry the token. A failed `issuetoken` does not call the export route.
+
+Empty stdout is load-bearing.
+P0 step 10 of [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`](../notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md) `json.load`s that stdout for `TargetURL`.
+A failed export inside a command substitution becomes `DUPLICATI__REMOTEURL=""`, and the guard skips its TargetURL comparison when that value is empty.
+The dry run still has to refuse an empty URL.
+This verb guarantees it never prints a message where the JSON goes, and it never reports success for a body without that URL.
+
+`GET /api/v1/backup/{id}` is a different document.
+`yamaguchi_config_record.py` reads `Schedule`, `Backup`, and `DisplayNames` from it, and the edit helpers read the same route (the passphrase comes back masked).
+`yamaguchi_census.py` uses that read as well.
+`export` calls `GET /api/v1/backup/{id}/export` and prints the JSON body. The two responses are not substitutes.
+
+On `main` before #2134, `tests/duplicati_api_stub.py` answers a token-less export HTTP 200.
+That is how [juniper-ml#2115](https://github.com/pcalnon/juniper-ml/pull/2115) merged a client the product refuses.
+#2134's stub answers before any canned route: a token-less export is 400, a token the stub never signed is 500, a token issued for another operation is 401, and `issuetoken` without the Bearer token is 401.
+`tests/test_yamaguchi_server_api.py` pins each status, and that the operation token appears in neither stdout nor stderr.
+
+### An absent watchdog id is a recorded alert
+
+```text
+python3 util/ad-hoc/yamaguchi_watchdog.py --backup-id 7
+bash util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id 7
+```
+
+#2134 changes `--backup-id` from `required=True` to default `""`. An omitted flag and an empty value take the same path, before login: verdict `ALERT`, code `JOB_MISSING`, exit 1, one durable line. The id field on that line is `backup=INVALID`. The details name the character count and point at `yamaguchi_watchdog_deploy.bash --backup-id <id>`.
+
+| Exit | Meaning, once #2134 is the tree |
+|------|----------------------------------|
+| 0 | `OK` |
+| 1 | `ALERT`, including `JOB_MISSING`, `UNREACHABLE`, `PAUSED_WITH_QUEUE`, `NO_RUNS`, `NOT_SUCCESS`, `STALE`, `STUCK` |
+| 2 | `UNDETERMINED`: `STATE_UNKNOWN`, `LOG_UNAVAILABLE`, or `EXCEPTION`. Also an alert. |
+| 64 | Usage: an unknown flag, a non-numeric `--max-age-hours`, or `--backup-id` with no value. Writes no record. |
+
+An omitted id is an alert because a usage error writes nothing. On 2026-10-03 the primary checkout synced #2115 while the live timer still ran the pre-B2 unit, which passes no `--backup-id`. The 2026-10-04 12:00 check exited 2 and wrote nothing.
+
+Each run appends one line to `~/.local/state/duplicati/server-watchdog.log`, overwrites `server-watchdog.status` with that line, and on any non-OK also appends `server-failures.log`. The line is `<timestamp> <verdict> <code> backup=<id> <details>`. `notify-send` runs after those files are written; its argv is the code and the details. `--no-notify` skips it. `--state-dir` overrides the directory.
+
+A bare `python3 util/ad-hoc/yamaguchi_watchdog.py` is a real check: it records `JOB_MISSING` in the live state directory and notifies. Pass `--state-dir` and `--no-notify` to look without touching those files.
+
+Run `yamaguchi_watchdog_deploy.bash` immediately after every sync of the primary checkout that changes the watchdog.
+The #2134 header says to do that before the web credential exists: until `~/.config/duplicati-backup/web-credential` is in place, every check records `ALERT` `UNREACHABLE`, which is the signal that header describes.
+Until `yamaguchi_server_api.py status` can log in, the id named on the earlier records is `2` (Procedures A0, A, and A2 keep that id).
+Deploy with `--backup-id 2`, and deploy again with the new id only after Procedure B.
+The deploy script itself still refuses, exit 2, when `--backup-id` is missing or not a positive integer, and that refusal changes nothing on the host.
+It also refuses when `Linger` is not `yes`, or when the primary checkout lacks the script or a unit whose `ExecStart` contains the literal `--backup-id ${YAMAGUCHI_BACKUP_ID}`.
+
+The deploy script copies the service and timer into `~/.config/systemd/user/`, writes `yamaguchi-watchdog.service.d/backup-id.conf` (`Environment=YAMAGUCHI_BACKUP_ID=<id>`), reloads, and enables `yamaguchi-watchdog.timer` (`OnCalendar=*-*-* 12:00:00`, `Persistent=true`). Copying `util/systemd/yamaguchi-watchdog.service` by hand leaves `YAMAGUCHI_BACKUP_ID` unset. An empty expansion is the empty-id `JOB_MISSING` case.
+
+### Helpers that still default to job 2
+
+These six still default to job 2, on `main` and in #2134. A bare invocation talks to job 2. `yamaguchi_server_api.py` and the watchdog have no default.
+
+| Script | Flag | Default |
+|--------|------|---------|
+| `util/ad-hoc/yamaguchi_census.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_config_record.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_edit_setting.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_edit_sources.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_edit_target.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/duplicati_build_fresh_job.py` | `--source-job` | `2` (the job whose sources and filters are copied; this flag is not `--backup-id`) |
+
+Read the id from `yamaguchi_server_api.py status` before any of them writes. `duplicati_build_fresh_job.py` prints and validates unless `--create` is set; the default source job on that preview is still 2.
+
+### Clearing a `/run` rekey drop-in
+
+Note 6a of [`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md) says the rekey drop-in under `/run/systemd/system/duplicati.service.d/` is removed with `systemctl revert`.
+`systemctl revert` restores the vendor unit: it deletes drop-ins and an `/etc/systemd/system/duplicati.service` that overrides a vendor unit of the same name.
+The Debian package installs that unit at `lib/systemd/system/duplicati.service` (Packaging in [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-STEP-REPORTS-RECORD.md`](../notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-STEP-REPORTS-RECORD.md); the loaded fragment recorded there is `/usr/lib/systemd/system/duplicati.service`).
+No script in this tree runs `systemctl revert`. The plan's `util/ad-hoc/2026-10-0X_rekey_settings_key.bash` is not in the tree.
+Clearing a `/run` drop-in is `rm` of that drop-in and `systemctl daemon-reload`.
+
+### Operator pitfalls
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| `export` exits 1, stdout empty, stderr `export N failed 400` on the tree before #2134 | The operation token was not sent. Bearer on `GET …/export` is the header `req()` adds; the route checks the `token` query parameter. #2134 issues that token inside `export`. |
+| `export` exits 1, stdout empty, stderr `export N: issuetoken failed …` | Login succeeded and `POST /api/v1/auth/issuetoken/export` did not return a usable token. The export route was not called. |
+| A guard dry-run sees an empty remote URL | Export stdout was empty. That is a failed export. The dry run has to refuse an empty `TargetURL`; a 200 whose `Backup.TargetURL` is missing or blank is also a failed export once #2134 is the tree. |
+| Watchdog 12:00 check exited 2 and `server-watchdog.log` has no new line | The unit passed no `--backup-id`, and the script on `main` treats that as argparse usage (exit 2, no record). #2134 records it as `ALERT` `JOB_MISSING`. Deploy with `--backup-id`. |
+| Watchdog `JOB_MISSING`, `backup=INVALID` | The flag was omitted or empty. Re-run `yamaguchi_watchdog_deploy.bash --backup-id <id>`. Copying the unit alone leaves the drop-in unset. |
+| Census or an edit helper changes job 2 | `--backup-id` or `--source-job` was left at its default. Pass the id from `status`. |
+| `systemctl revert duplicati.service` removed the installed unit | Revert deletes the override of the vendor unit, including an `/etc` copy, along with the runtime drop-in. Remove the `/run` drop-in with `rm` and `daemon-reload`. |
 
 ---
 
@@ -3201,7 +3321,9 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
   - As of [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/1612) also pins `observed_context_apps` (amend pre-flight): publisher from PR heads, `main` fallback, exact-name negative control, and `57789` (Bandit) must not count as a publisher of `Memory Budget`. Operator surface: [Required-Context Ruleset Writer](#required-context-ruleset-writer).
 - `tests/test_duplicati_web_credential.py` -- B2 of the 2026-10-03 backup recovery plan: the ONE web-UI credential file both Duplicati API clients read, `~/.config/duplicati-backup/web-credential` (0600), through `yamaguchi_server_api.read_credential`. It replaces the primary checkout's world-readable `.env` (exposure S-5). Pins the one-line `DUPLICATI_WEB_CREDENTIAL=` format; refusal of any group or other bit, of a non-regular file (a FIFO without hanging), and of zero or two key lines, each message naming path, mode and owner but never content. Also pins that the retired `DUPLICATI_PW_FILE` / `DUPLICATI_PW_KEY` are ignored, that the bare-secret fallback is gone, and that the password leaves only as the login body. `tests/duplicati_api_stub.py` replaces `urlopen`, so no socket opens.
 - `tests/test_yamaguchi_server_api.py` -- The `serverstate` / `pause` / `resume` verbs P0 step 10 needs (the 2026-09-24 STOP's item 3). Pins: exit 0 Running / 2 Paused / 64 usage; `pause` indefinite and read back; a job id required before any credential read or request; a failed `export` leaving stdout empty, since it feeds the guard dry-run's `TargetURL`; and the `status` / `log` strings the bash callers grep.
+  On this tree the export cases still stub `GET /api/v1/backup/{id}/export` as HTTP 200 with no operation token. [juniper-ml#2134](https://github.com/pcalnon/juniper-ml/pull/2134) makes the stub refuse that call (400 token-less, 500 unknown token, 401 another operation's token) and pins `POST /api/v1/auth/issuetoken/export`. Operator surface: [Duplicati Export and an Absent Watchdog Job Id](#duplicati-export-and-an-absent-watchdog-job-id).
 - `tests/test_yamaguchi_watchdog.py` -- Design §7.6 for `util/ad-hoc/yamaguchi_watchdog.py`: `Paused` with a non-empty `SchedulerQueueIds` alerts `PAUSED_WITH_QUEUE` (YAM §8.22); freshness is anchored on the newest **Backup**, keyset-paged and bounded; `--backup-id` is required, and an empty one is recorded durably as `JOB_MISSING`. Also pins the record line format, a `notify-send` child that never sees the password, and the unit / deploy-script contract, checked statically because the deploy script changes systemd user units. `util/ad-hoc/2026-10-03_b2_mutation_check.py` puts 25 defects back across the three B2 suites, one at a time, and requires the suite assigned to each to fail.
+  On this tree an omitted `--backup-id` is argparse's exit 2 and writes nothing. #2134 records that omission as `JOB_MISSING` and moves usage errors to exit 64 (the watchdog's 2 means `UNDETERMINED`). Operator surface: [Duplicati Export and an Absent Watchdog Job Id](#duplicati-export-and-an-absent-watchdog-job-id).
 - `tests/test_register_open_set.py` -- The defect register's open-set counter, which had zero tests: which rows count as open, that a dagger or letter suffix is part of the id, and that the count and the enumerated list cannot disagree.
 - `tests/test_register_status_crosscheck.py` -- The register's third reading: §4 **FIXED rows, the §2 prose enumeration and the §5.1 verification table must agree three ways. `**FIXED` counts only in the STATUS cell -- a §5.1 row that merely mentions it is not a close -- and a missing §4 heading is an error rather than an empty-and-AGREE.
 - `tests/test_soak_next_probe_split.py` -- `pick_next` least-coverage-first selection, lifted to module scope so it can be tested: pre-intervention rows must not enter the run counter, or a probe the intervention never touched looks already-sampled and billed sessions keep landing on the covered ones.
@@ -3230,6 +3352,8 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Installer **copies** (never symlinks) the runner, OnFailure reporter, and three user units; does **not** `enable --now` the timer.
   - Runner fail-closes on empty/short passphrase, unmounted dest, wrong-filesystem dest, and tmpfs `--tempdir`; `flock` / DB-open holders `skip_or_fail` (a skip overwrites `result=OK`, so the next skip always escalates).
   - `--no-auto-compact=true` is load-bearing. Distinct from `util/juniper-backup.bash` (project-tree `tar | gpg -e`). Operator surface: [`docs/REFERENCE.md` § Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane).
+- `util/ad-hoc/yamaguchi_server_api.py` / `util/ad-hoc/yamaguchi_watchdog.py` / `util/ad-hoc/yamaguchi_watchdog_deploy.bash` -- Yamaguchi server REST client (`127.0.0.1:8300`) and the outside-the-job watchdog.
+  On `main`, `export` sends the Bearer token only, and an omitted watchdog `--backup-id` exits 2 with no record. [juniper-ml#2134](https://github.com/pcalnon/juniper-ml/pull/2134) issues `POST /api/v1/auth/issuetoken/export` inside `export` and records an omitted id as `ALERT` `JOB_MISSING`. Operator surface: [Duplicati Export and an Absent Watchdog Job Id](#duplicati-export-and-an-absent-watchdog-job-id).
 - `util/juniper-backup.bash` -- Per-repo project-tree archive to attached external media: `tar -cjf` (bzip2) piped into `gpg -e` (asymmetric, two `ENCRYPT_KEYS`). Build once, copy ciphertext. `--dry-run` writes nothing. Restore is `gpg -d FILE | tar -xjf -` (not `-xzf`). Exit 0/1/2/4. Unattended verify is `--list-packets` only. Drives are found under `JUNIPER_BACKUP_MEDIA_ROOT` (default `/run/media/$USER`), read under the same name and default as the scheduler. An absolute device entry is its own mount root. Every mount root must lie under `/mnt`, `/media` or `/run/media` (exit 2 otherwise), and exit 0 needs every configured device mounted. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
 - `util/install_juniper_backup_timer.bash` / `util/juniper-backup-scheduled.bash` / `util/systemd/juniper-backup{,-failure}.service` / `util/systemd/juniper-backup.{timer,path}` -- Tier-2 lane under `systemd --user` (recovery plan B6). The installer copies the runner, the scheduler and the shared OnFailure reporter into `~/.local/bin/` and the four units into `~/.config/systemd/user/`, then `daemon-reload` and `enable --now` the timer and the path unit. `--dry-run` writes nothing; it refuses root and a missing `Linger` before any write. Both modes print the acceptance order: the OK run first, with both sticks mounted. Run it with `bash`. `juniper-backup-failure.service` points the reporter at `~/.local/state/juniper-backup`, and the reporter (1.1.0) titles the notification with the failed unit. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
 - `util/soak_next_probe.py` -- Emits the next pointer-follow soak probe's **task only** (unprimed). Default pick is least-covered then registry order; `--probe-id` needs the **full slug** (`P19-port-check-fail-opens`, not `P19`); `--reveal` is scoring-only; `--status` is post-intervention run counts with no task text. Tests: `tests/test_soak_next_probe.py`.
@@ -7003,6 +7127,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.48  | 2026-09-04 | Pointer-follow soak operator surface: `--dry-run` is exempt from the terminal-verdict stop (juniper-ml#1690); do not drive n≈8–10; era split required; `source-recovered` stays in the denominator; soak-probes reaper pidfile |
 | 0.6.60  | 2026-09-05 | Canopy E2E unfilled-rows ledger: plan re-drives from `e2e_unfilled_rows.py` (matrix status cells only; `C2.` / `M-`; exit 0). `e2e_row_coverage.py` is an estimator and can list already-`PASS` rows as remaining |
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
+| 0.6.67  | 2026-10-04 | Duplicati export token and absent watchdog id (juniper-ml#2134). `export` issues `issuetoken/export` then `token=`; token is never printed; a 200 without `Backup.TargetURL` fails empty. Omitted `--backup-id` is `JOB_MISSING` (usage is 64). Before that merge, Bearer-only export and omitted-id exit 2. Supersedes in-flight #2128. Skipped 0.6.62–0.6.66. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -7502,6 +7627,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-04
+**Version:** 0.6.67
 **Maintainer:** Paul Calnon
