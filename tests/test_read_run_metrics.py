@@ -380,5 +380,29 @@ class RecurrenceKindTest(unittest.TestCase):
         self.assertEqual(summary["kinds"], ["recurrence"])
 
 
+class DegradedOutcomeTest(unittest.TestCase):
+    """W0.3: ``degraded`` is a COMPLETE run that lost a post-train phase, not a driver-stopped one.
+
+    ``TRUNCATING_TERMINATIONS`` names the outcomes that stop the DRIVER before the workload, so the
+    step histogram measures the budget rather than the code. A degraded run's train finished, so
+    the set deliberately leaves it out -- the explicit enum is the drift-prone site, which is why
+    the exclusion is pinned rather than left to chance. Its consumers still refuse a degraded cell:
+    ``make_baseline`` / ``compare_baseline`` test ``outcome != "succeeded"``.
+    """
+
+    def test_degraded_is_not_a_truncating_termination(self):
+        self.assertNotIn("degraded", rrm.TRUNCATING_TERMINATIONS)
+
+    def test_a_degraded_run_passes_through_and_is_not_reported_truncated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run = Path(tmp) / "rec"
+            (run / "artifacts" / "results").mkdir(parents=True)
+            (run / "manifest.json").write_text(json.dumps({"run_id": "rec", "outcome": "degraded", "timings": {"train": 0.5, "crossval": 0.1}}), encoding="utf-8")
+            row = rrm.read_run(run)
+        self.assertEqual(row["outcome"], "degraded")
+        self.assertEqual(row["kind"], "recurrence")
+        self.assertEqual(rrm.summarise([row])["truncated_terminations"], [])
+
+
 if __name__ == "__main__":
     unittest.main()

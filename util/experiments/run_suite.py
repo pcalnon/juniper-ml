@@ -26,8 +26,9 @@ Usage:
                                          [--only CELL_ID ...]
 
 Exit codes: 0 = every cell in the FULL EXPANSION has succeeded (in this invocation or
-an earlier one resumed with --resume); 1 = suite completed with failed or not-run cells
-(or aggregation found none succeeded); 2 = misuse / suite-validation error.
+an earlier one resumed with --resume); 1 = suite completed with failed, degraded or not-run
+cells (or aggregation found none succeeded); 2 = misuse / suite-validation error.
+A ``degraded`` cell trained but lost a phase its config enabled (W0.3); it is never a success.
 So a partial --only run exits 1 even when every selected cell succeeded -- by design:
 under --resume, 0 means "the suite is now complete". Read the cell's outcome instead
 (docs/REFERENCE.md § "Resume, --only, and exit codes"; this line said "every executed
@@ -78,7 +79,23 @@ RUN_ID_BANNER = re.compile(r"Experiment run (\S+) is up")
 SUITE_KEYS = frozenset({"schema_version", "suite", "execution", "matrix", "include", "exclude", "outputs"})
 SUITE_SUITE_KEYS = frozenset({"name", "description", "app", "base_config", "seed_policy"})
 EXECUTION_KEYS = frozenset({"mode", "max_parallel", "continue_on_failure", "per_run_timeout_seconds", "stall_seconds", "max_wall_seconds"})
-TERMINAL_OUTCOMES = frozenset({"succeeded", "failed", "stalled", "timed_out"})
+# `degraded` (W0.3, F-D1): the driver's outcome for a recurrence run whose train succeeded but
+# whose ENABLED predict / crossval / save_model phase failed. Terminal -- the run is over -- but
+# NOT a success: the summary counts it on its own, `--resume` re-runs it, and it keeps the suite's
+# exit code non-zero (R6, the plan's recommended ruling, applied pending the owner's).
+TERMINAL_OUTCOMES = frozenset({"succeeded", "degraded", "failed", "stalled", "timed_out"})
+
+# W0.4 (F-D2): each recurrence headline column and the path to it inside `stats["recurrence"]`, as
+# `stats_summary.build_stats` writes that block. The first reader looked for `train_r2` / `cv_r2` /
+# `r2` at the TOP of the block -- a shape no writer ever produced -- so every recurrence cell got
+# `metrics: {}` and aggregate.csv / REPORT.md carried no r2 at all. `n_windows` is the TRAIN
+# descriptor's window count, the same number REPORT.md's "reported instead" line prints.
+RECURRENCE_HEADLINE_PATHS = (
+    ("train_r2", ("final_metrics", "r2")),
+    ("cv_r2", ("crossval", "eval_aggregate", "r2")),
+    ("cv_r2_std", ("crossval", "eval_std", "r2")),
+    ("n_windows", ("dataset_descriptor", "n_windows")),
+)
 
 
 class SuiteError(Exception):
@@ -582,7 +599,30 @@ def _read_registry(suite_dir: Path) -> "dict[str, dict]":
     return rows
 
 
+def _is_metric(value) -> bool:
+    """A number worth a column. An isinstance test, NEVER truthiness: `cv_r2 == 0.0` is a real
+    result and must be surfaced, as must `-18081.0`. `bool` is an `int` subclass and is excluded."""
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _dig(block, path: "tuple[str, ...]"):
+    """`block[path[0]][path[1]]...`, or None as soon as a level is absent or not a mapping --
+    which is how a `crossval: null` block yields no `cv_*` key rather than an exception."""
+    for key in path:
+        if not isinstance(block, dict):
+            return None
+        block = block.get(key)
+    return block
+
+
 def _headline_metrics(run_dir: Path) -> dict:
+    """The per-cell numbers ``aggregate.csv`` / ``REPORT.md`` carry, read from the run's stats.json.
+
+    Recurrence reads the nested shape ``stats_summary.build_stats`` writes (W0.4, F-D2 -- see
+    ``RECURRENCE_HEADLINE_PATHS``). A missing or null ``crossval`` block yields no ``cv_*`` key at
+    all: an absent cross-validation is not a cross-validation that scored nothing. The cascor keys
+    are read exactly as before.
+    """
     stats_file = run_dir / "artifacts" / "results" / "stats.json"
     out: dict = {}
     if not stats_file.exists():
@@ -591,13 +631,52 @@ def _headline_metrics(run_dir: Path) -> dict:
         stats = json.loads(stats_file.read_text())
     except (OSError, ValueError):
         return out
-    for key in ("cascor", "recurrence"):
-        block = stats.get(key)
-        if isinstance(block, dict):
-            for metric in ("final_accuracy", "test_accuracy", "val_accuracy", "train_r2", "cv_r2", "r2"):
-                if isinstance(block.get(metric), (int, float)):
-                    out[metric] = block[metric]
+    if not isinstance(stats, dict):
+        return out
+    cascor = stats.get("cascor")
+    if isinstance(cascor, dict):
+        for metric in ("final_accuracy", "test_accuracy", "val_accuracy"):
+            if isinstance(cascor.get(metric), (int, float)):
+                out[metric] = cascor[metric]
+    recurrence = stats.get("recurrence")
+    if isinstance(recurrence, dict):
+        for column, path in RECURRENCE_HEADLINE_PATHS:
+            value = _dig(recurrence, path)
+            if _is_metric(value):
+                out[column] = value
     return out
+
+
+def _failed_phase_summary(phases) -> str:
+    """``crossval failed: HTTP 422: ...`` for each phase the driver's manifest records as neither
+    ``ok`` nor ``skipped`` -- the same rule ``run_experiment.derive_recurrence_outcome`` uses.
+
+    Reads the per-phase block ``run_experiment.py`` writes (W0.3). ``""`` when there is none, so a
+    manifest from a driver that predates the block falls back to the bare outcome.
+    """
+    if not isinstance(phases, dict):
+        return ""
+    parts = []
+    for name, record in phases.items():
+        if not isinstance(record, dict) or record.get("status") in ("ok", "skipped"):
+            continue
+        if record.get("status") == "failed":
+            parts.append(f"{name} failed: {record.get('error') or 'no error recorded'}")
+        else:
+            parts.append(f"{name} {record.get('status')}")
+    return "; ".join(parts)
+
+
+def _outcome_line(row: dict) -> str:
+    """The outcome plus the parenthesised reason the suite prints for one cell.
+
+    A degraded cell names the phase it lost -- ``degraded (crossval failed: HTTP 422: ...)`` --
+    from the driver's per-phase record; every other outcome keeps the suite-level ``error`` it
+    always printed.
+    """
+    detail = _failed_phase_summary(row.get("phases")) if row.get("outcome") == "degraded" else ""
+    detail = detail or row.get("error") or ""
+    return f"{row.get('outcome')}" + (f" ({detail})" if detail else "")
 
 
 def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher: Path, driver: Path, python_bin: str, extra_env: "dict[str, str] | None" = None, stall_seconds: "float | None" = None, max_wall_seconds: "float | None" = None, suite_name: "str | None" = None, runtime_env: "dict[str, str] | None" = None) -> dict:
@@ -692,6 +771,10 @@ def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher
             try:
                 manifest = json.loads(manifest_file.read_text())
                 row["outcome"] = manifest.get("outcome", "failed")
+                # W0.3: carry the driver's per-phase record, so the console line and REPORT.md
+                # can say WHICH phase a degraded cell lost without re-opening its manifest.
+                if isinstance(manifest.get("phases"), dict):
+                    row["phases"] = manifest["phases"]
             except (OSError, ValueError):
                 row["outcome"] = "failed"
                 row["error"] = "unreadable manifest.json"
@@ -779,13 +862,16 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
                 ]
             )
     succeeded = [c for c in cells if registry.get(c["cell_id"], {}).get("outcome") == "succeeded"]
-    failed = [c for c in cells if registry.get(c["cell_id"], {}).get("outcome") not in (None, "succeeded")]
+    # W0.3: counted on its own rather than folded into failed/other, so the summary says what
+    # happened -- and never into `succeeded`, which is what the driver used to record (F-D1).
+    degraded = [c for c in cells if registry.get(c["cell_id"], {}).get("outcome") == "degraded"]
+    failed = [c for c in cells if registry.get(c["cell_id"], {}).get("outcome") not in (None, "succeeded", "degraded")]
     lines = [
         f"# Suite report — {suite['name']}",
         "",
         f"{suite.get('description', '')}".strip(),
         "",
-        f"Cells: {len(cells)} total, {len(succeeded)} succeeded, {len(failed)} failed/other, {len(cells) - len(succeeded) - len(failed)} not run.",
+        f"Cells: {len(cells)} total, {len(succeeded)} succeeded, {len(degraded)} degraded, {len(failed)} failed/other, {len(cells) - len(succeeded) - len(degraded) - len(failed)} not run.",
         "",
         "| cell | outcome | step_count | mean step (ms) | wall (s) | " + " | ".join(override_keys + metric_keys) + " |",
         "|---|---|---|---|---|" + "---|" * (len(override_keys) + len(metric_keys)),
@@ -799,6 +885,15 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
             f"| {cell['cell_id']} | {row.get('outcome') or 'not-run'} | {cell_gate.get('step_count') or ''} | "
             f"{f'{mean_step * 1000:.3f}' if isinstance(mean_step, float) else ''} | {row.get('wall_seconds') or ''} | " + " | ".join(values) + " |"
         )
+    if degraded:
+        lines += [
+            "",
+            "## Degraded cells",
+            "",
+            "These cells trained, but a phase their config enabled did not complete. They are not counted as succeeded, and the suite exits non-zero.",
+            "",
+        ]
+        lines += [f"- {cell['cell_id']}: {_failed_phase_summary(registry.get(cell['cell_id'], {}).get('phases')) or 'no phase record in the registry row'}" for cell in degraded]
 
     counts = {g.get("step_count") for g in gate.values() if g.get("step_count") is not None}
     fingerprints = {g.get("workload_fingerprint") for g in gate.values() if g.get("workload_fingerprint")}
@@ -865,7 +960,7 @@ def main(argv: "list[str] | None" = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--suite", type=Path, required=True)
     parser.add_argument("--dry-run", action="store_true", help="Print the expanded cell list and every command; write nothing")
-    parser.add_argument("--resume", metavar="SUITE_ID", default=None, help="Resume an existing suite dir, skipping cells already terminal in registry.jsonl")
+    parser.add_argument("--resume", metavar="SUITE_ID", default=None, help="Resume an existing suite dir, skipping only cells whose registry.jsonl outcome is already 'succeeded' (failed / degraded / stalled / timed_out cells re-run)")
     parser.add_argument("--only", nargs="*", default=None, metavar="CELL_ID", help="Execute only these cell ids")
     parser.add_argument(
         "--compare-baseline",
@@ -980,7 +1075,7 @@ def main(argv: "list[str] | None" = None) -> int:
         row["suite_id"] = suite_id
         _append_jsonl(suite_dir / "registry.jsonl", row)
         _append_jsonl(DEFAULT_RUN_ROOT / "index.jsonl", {"suite_id": suite_id, "cell_id": cell["cell_id"], "run_id": row.get("run_id"), "outcome": row.get("outcome"), "run_dir": row.get("run_dir")})
-        print(f"[suite] {cell['cell_id']}: {row['outcome']}" + (f" ({row.get('error')})" if row.get("error") else ""), flush=True)
+        print(f"[suite] {cell['cell_id']}: {_outcome_line(row)}", flush=True)
 
     any_failed = False
     if mode == "parallel" and max_parallel > 1:
