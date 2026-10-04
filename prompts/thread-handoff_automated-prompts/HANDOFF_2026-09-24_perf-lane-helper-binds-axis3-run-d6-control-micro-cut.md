@@ -3,7 +3,7 @@
 > **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_perf-lane-consolidated.md` (consolidated handoff for the performance lane + util/experiments residue). History only; do not act on this file's items.
 
 Successor to
-[`HANDOFF_2026-09-23_perf-lane-d1-debt-clear-flip-pf1-rebaselined-pf2-axis2-ceiling-5882.md`](HANDOFF_2026-09-23_perf-lane-d1-debt-clear-flip-pf1-rebaselined-pf2-axis2-ceiling-5882.md)
+[`HANDOFF_2026-09-23_perf-lane-d1-debt-clear-flip-pf1-rebaselined-pf2-axis2-ceiling-5882.md`](HANDOFF_2026-09/HANDOFF_2026-09-23_perf-lane-d1-debt-clear-flip-pf1-rebaselined-pf2-axis2-ceiling-5882.md)
 (ml#2048). **§2 below consumes that handoff item by item.** Its §5 traps and §7 retained state
 still hold, and so do the handoffs it points through (09-22, 09-11, 09-10, 09-09, 09-07). The
 09-22 handoff's §8 carried-items table is still the brief for the carried items.
