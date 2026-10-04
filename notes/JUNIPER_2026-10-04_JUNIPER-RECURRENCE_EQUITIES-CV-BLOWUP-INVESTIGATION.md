@@ -89,6 +89,14 @@ Same arrays (§1.1), same model code (`juniper-recurrence-model` at `be081fae` b
 
 **W0.1 acceptance, in passing**: both requests returned 200 with no `PYTHONPATH` on a decision-11 artifact — the request that returned 422 `missing required key 'X_full'` in the audit. The model half of the env repair is verified.
 
+### 1.4 The suite path records the same number (Scenario A re-run, after W0.3 / W0.4 merged)
+
+The audit's Scenario A — `run_suite.py --suite p4/e-h-recurrence-real-data.yaml` through the launcher — was re-run on 2026-10-04 from juniper-ml `main` at `3420a1a5` (W0.3 / W0.4 merged in juniper-ml#2145) against the model-repaired env (`reports/2026-10-04_recurrence-equities-cv-matrix/scenario-a-rerun/`).
+Where the audit recorded the equities cell as `succeeded` with `exit_code: 1`, `acceptance.ok: false`, `metrics: {}` and a 422'd crossval, the registry now reads: `outcome: succeeded`, `exit_code: 0`, `phases: {train: ok, predict: ok, crossval: ok, save_model: ok}`, `metrics: {train_r2: 0.1163, cv_r2: -0.1153, cv_r2_std: 0.0735, n_windows: 1346}`.
+`REPORT.md` says `Cells: 2 total, 2 succeeded, 0 degraded, 0 failed/other, 0 not run.` and carries the four columns. The control cell (irregular sine) reports `cv_r2 0.975`.
+The `cv_r2` is the §1.2 aggregate to four decimals — the suite's E-H row, driven as an operator drives it, now produces the sane number this note measured by hand, and the four F-D1 / F-D2 symptoms are gone from the same artifact that showed them.
+(From a `.claude/worktrees/` checkout the suite needs `JUNIPER_EXP_PROJECT_DIR=/home/pcalnon/Development/python/Juniper`, because its `base_config` walks to a sibling repo; the loader documents the override.)
+
 ---
 
 ## 2. W0.9 — the controlled matrix

@@ -1,0 +1,3 @@
+cell_id,name,run_id,outcome,exit_code,wall_seconds,step_count,mean_step_seconds,dataset.generator,dataset.params,cv_r2,cv_r2_std,n_windows,train_r2
+c000-cd6f1c31,,20261004T221425Z-ad56,succeeded,0,16.064,,,,,0.9749239559080349,0.0036413221573580374,3149,0.9794807734649803
+c001-0d8782ae,equities-seq-aapl,20261004T221441Z-3835,succeeded,0,30.1,,,equities_seq,"{'symbols': ['AAPL'], 'start_date': '2015-01-01', 'end_date': '2022-01-01', 'lookback': 64, 'regression_target': 'log_return', 'seed': 20260807}",-0.11526096841533144,0.07353723443032745,1346,0.11632826498677562
