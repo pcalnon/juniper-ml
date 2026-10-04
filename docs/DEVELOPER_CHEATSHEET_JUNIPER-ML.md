@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.62
+**Date**: 2026-10-04
 **Project**: juniper-ml
 
 ---
@@ -34,6 +34,9 @@
 | `systemctl --user list-timers duplicati-backup.timer`  | Confirm the next `duplicati-backup.timer` fire time |
 | `util/juniper-backup.bash --dry-run`                   | Preview per-repo `.tbz2.gpg` archives (writes nothing) |
 | `util/juniper-backup.bash`                             | Build-once, replicate ciphertext to every attached configured drive |
+| `python3 util/ad-hoc/yamaguchi_server_api.py status`   | List Yamaguchi Duplicati jobs on `127.0.0.1:8300` (web password from `web-credential`, mode `0600`) |
+| `python3 util/ad-hoc/yamaguchi_server_api.py serverstate` | Exit 0 Running, 2 Paused, 64 usage. `pause` is indefinite until `resume` |
+| `python3 util/ad-hoc/yamaguchi_watchdog.py --backup-id ID` | Outside check of that job. Exit 1 is ALERT; `--backup-id` has no default |
 | `gpg -d ARCHIVE.tbz2.gpg \| tar -xjf -`                | Restore one repo archive (bzip2; needs a recipient YubiKey) |
 | `util/experiment_stack.bash --dry-run --up --cascor`   | Preview a per-run experiment stack (ports 8110–8289; no side effects) |
 | `util/experiment_stack.bash --up --cascor --config PATH` | Bring up data+cascor for one experiment run (`--recurrence` for LMU) |
@@ -725,6 +728,9 @@ Full contract: [REFERENCE — Scheduled Duplicati Backup Lane](REFERENCE.md#sche
 Tip: `util/juniper-backup.bash` writes per-repo `.tbz2.gpg` (bzip2). Restore with `gpg -d FILE | tar -xjf -`, not `-xzf`. `--dry-run` must exit without writing. Exit 4 is PARTIAL (already-verified copies stay). Unattended verify is `--list-packets` only — it does not prove the tar is intact. Distinct from the Duplicati `$HOME` lane.
 Full contract: [REFERENCE — Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup).
 
+Tip: both Duplicati API clients read `~/.config/duplicati-backup/web-credential` (mode `0600`, one `DUPLICATI_WEB_CREDENTIAL=` line). That is the web-UI password, not the archive `PASSPHRASE` in `env`. `serverstate` exit 2 means Paused; usage is 64. `export` / `run` / `delete` need a job id (no default; `delete` also needs `--yes`). A failed `export` leaves stdout empty. The watchdog requires `--backup-id`; deploy writes the drop-in — do not copy the unit alone. `DUPLICATI_PW_FILE` is ignored.
+Full contract: [REFERENCE — Duplicati Web API Clients](REFERENCE.md#duplicati-web-api-clients).
+
 Tip: before merging a Cursor-fleet batch, run `python util/fleet_triage/predict_merge.py --batch --json`.
 Prefer heal PRs first (title/branch tokens `restore`/`heal`/`repair`/`fix-first` sort ahead of colliding
 feat PRs); never treat script exit `0` as “all clean” — read each `verdict`. Symbol screen matches
@@ -893,6 +899,9 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Duplicati timer silent after logout | Linger was `no` — the original failure class. Confirm `list-timers duplicati-backup.timer` |
 | Duplicati `FATAL` unmounted dest / tmpfs tempdir | Mount the backup volume; point `DUPLICATI_TEMP_DIR` at any disk-backed path (the runner refuses a RAM-backed one outright, and `/tmp` is tmpfs here) |
 | Duplicati skip then next run escalates | Expected — skip overwrites `result=OK`. Inspect `~/.local/state/duplicati/{last-run.status,failures.log}` |
+| API client `FATAL` on `web-credential` | File missing, not `0600`, or not exactly one `DUPLICATI_WEB_CREDENTIAL=` line. Not the `PASSPHRASE` file. See [REFERENCE](REFERENCE.md#duplicati-web-api-clients). |
+| `serverstate` exits 2 | Server is `Paused`, not a usage error (usage is 64). `resume` if a queue is waiting. |
+| Watchdog `JOB_MISSING` with an empty id | Drop-in missing. `yamaguchi_watchdog_deploy.bash --backup-id <id>` from `status`. Do not copy the unit alone. |
 | `juniper-backup` restore `tar` fails | Use `-xjf`, not `-xzf`. Archives are bzip2 (`.tbz2.gpg`). |
 | `juniper-backup` exit 4 PARTIAL | A device/copy failed; already-verified archives stay. Re-run makes a new UUID. |
 | `juniper-backup` `FATAL: gpg recipient not found` | Both `ENCRYPT_KEYS` UIDs must resolve in the local keyring before tar starts. |
@@ -1102,6 +1111,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local `MEMORY.md` gate; hook-not-line; CI cannot see `~/.claude`
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- `e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
 - [Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) -- per-repo `.tbz2.gpg` (restore `-xjf`); not the Duplicati `$HOME` lane
+- [Duplicati Web API Clients](REFERENCE.md#duplicati-web-api-clients) -- `0600` web-credential; `serverstate` exit 2 is Paused; watchdog `--backup-id` has no default
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- required-context classifier; 2026-08-10 class; text-mode 0 can still carry `ERROR:`
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; exit 2 = failed to measure; idle populated is VALID
@@ -1119,6 +1129,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-04
+**Version:** 1.0.62
 **Maintainer:** Paul Calnon
