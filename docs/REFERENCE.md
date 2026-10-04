@@ -3129,8 +3129,10 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
   shape-assert pass/mismatch, unstageable-generator refusal), the recurrence path (synchronous train 200/409/422/socket-timeout arms, predict/crossval `dataset_id` refs +
   record-and-continue on failure, the G-18 `save_model` CLI re-run via a PATH stub + missing-CLI acceptance failure), `ports.json` endpoint resolution, the §13.4 manifest
   written for every outcome, and the full 0/1/2/3/4 exit matrix incl. `RedactedEnv` subprocess arms.
+  W0.3 (`DegradedOutcomeTest` / `DeriveRecurrenceOutcomeTest`): the manifest's per-phase `phases` record, driven by real stub-service failures — a crossval 422 on the missing `X_full` key is `outcome: degraded` with exit 1, every phase `ok` is `succeeded`, a plot-only acceptance failure stays `succeeded`, and a disabled phase is `skipped` and cannot degrade.
   csv_import operator surface (APD-DATA-018, the half that lives in this repo): `create_dataset` 422 is `ConfigError` / exit 2 on both the recurrence and cascor paths (create runs *before* staging; a 500 stays `RunFailed`); csv_import is registered-available on the stub but not in `STAGEABLE_GENERATOR_ALIASES`, so a successful create still cannot stage (the arc_agi-only unstageable arm is a false green if csv_import is added to the alias map).
 - `tests/test_read_run_metrics.py` -- Hermetic tests for `util/experiments/read_run_metrics.py` (P2 item 0.4): last-row `step_count`, scrape tri-state (`None` is not `False`), `work_invariant` negative control. juniper-ml#1613 adds `WorkloadFingerprintTest` (cosmetic `description`/`name` ignored, `seed` is not, missing YAML is `None` not a shared identity, `single_workload` false when identities are unknown). `util/` is outside pre-commit Python hooks, so this unittest is the gate.
+  W0.3 pins `degraded` OUT of `TRUNCATING_TERMINATIONS`: a complete run that lost a post-train phase, not a driver-stopped one.
 - `tests/test_make_baseline.py` -- Hermetic tests for `util/experiments/make_baseline.py` (P2 item 1.1): no `--force`, refuse broken work invariant / failed / unmeasured / `validation_warnings` (override recorded), `HOST.json` python-mismatch caveat. juniper-ml#1613 adds mixed-workload refusal + fingerprint recording. Operator surface: [Perf-lane metrics and baselines](#perf-lane-metrics-and-baselines).
 - `tests/test_compare_baseline.py` -- Hermetic gate for `util/experiments/compare_baseline.py` (P2 item 1.2, ships in juniper-ml#1622).
   Pins the three outcomes staying distinct: PASS/FAIL on the exactly-compared work half (**exit 1**, not merely non-zero), REFUSED on identity or host mismatch (exit 2), WAIVED never collapsing into PASS.
@@ -3141,6 +3143,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
   extracted statically via AST (cascor `Settings`; recurrence `Settings` + the in-repo service-core `SettingsBase`), so no torch-heavy app import is needed. Cross-repo walk gated like `test_doc_tools_drift.py` (`GITHUB_ACTIONS=true` or `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`; sibling-absent skips loudly); the AST-extractor self-check always runs.
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`: `load_suite` plus oversize-stall / wall-pin / timeout-ordering. Operator surface: [P4 Campaign Suites](#p4-campaign-suites).
 - `tests/test_run_suite.py` -- Behavioral suite-driver coverage, including P2 item 1.4 (`GateInputsInAggregateTest` / `ComparisonReportingTest`): `aggregate.csv` must carry both gate inputs beside `wall_seconds`; `REPORT.md` must say `wall_seconds` is DE-RATIFIED and print work-invariant / single-workload; `--compare-baseline` is reporting-only (missing tag and FAIL verdict still exit 0). Operator surface: [Suite Report Gate Inputs](#suite-report-gate-inputs).
+  W0.3 / W0.4 (`DegradedSuiteTest` / `OutcomeLineTest` / `HeadlineMetricsTest`): a `degraded` cell is counted on its own in the summary line, listed under `## Degraded cells`, printed `degraded (crossval failed: …)`, re-run by `--resume` and keeps the exit at `1`; `_headline_metrics` surfaces `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` on the plan's four fixtures (audited `crossval: null`, successful, `0.0`, `-18081.0`).
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`, which no test loaded before it: every suite must pass `run_suite.load_suite` (catching the unknown-`execution:`-key / `stall_second` typo class that otherwise surfaces hours into a GPU campaign), and any oversize `app: cascor` suite must declare an `execution.stall_seconds` above the driver's `DEFAULT_STALL_SECONDS` (read from the driver source, not hardcoded).
   Fourth contract: `execution.per_run_timeout_seconds` must sit **above** the wall budget (`>` not `>=`) so the driver writes the honest manifest — `perf/pf5` shipped 900/900 and was raised to 1800. Operator surfaces: [§ PF Scenario Suites](#pf-scenario-suites) and [P4 Campaign Suites](#p4-campaign-suites).
 - `tests/test_memory_index_check.py` -- Hermetic gate for `util/memory_index_check.py` (`util/` is outside every pre-commit Python hook, so this suite IS the gate).
@@ -3497,13 +3500,14 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
     - Root-cause note: [`notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md`](../notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md); cascor-side fidelity fix cascor#504; candidate-param plumbing gap cascor#505.
   - Each poll samples the loopback `/metrics` allowlist (`candidate_correlation` / `hidden_units_total` / `training_loss` / `training_accuracy_ratio` / step-duration sum+count) into `artifacts/results/metrics_series.csv` -- correlation exists ONLY there, never in `/v1/metrics/history` rows; a 404 (metrics disabled, G-3) degrades sampling, not the run.
   - Recurrence drive (Wave 2.3): health-gates `/v1/health/ready`, then the **synchronous** `POST /v1/train` (the response IS completion — no poll loop; the Q-2 budget is the request's socket timeout → `timed_out`), then optional `POST /v1/predict` (`predict.from_dataset_split`, default `test`) and `POST /v1/crossval` (same LMU hyperparams as `train:` for bench comparability); every phase refs the dataset by content-addressed `dataset_id` (H-8).
-  - Predict/crossval failures are recorded, and the run continues to the manifest (acceptance failure), never dying mid-evidence. `outputs.save_model: true` (G-18) re-runs the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` as a manifest-recorded extra step (the CLI has no `--params` flag, so the dataset_id ref is the only faithful form).
+  - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) re-runs the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` as a manifest-recorded extra step (the CLI has no `--params` flag, so the dataset_id ref is the only faithful form).
+    Every phase leaves a record in the manifest's `phases` block (`ok` / `failed` + `error` / `skipped` when not enabled / `not_reached`). `degraded` = train succeeded but an ENABLED predict, crossval or save_model phase did not; it is derived from those records, never from `acceptance.ok`, so a plot-only acceptance failure stays `succeeded`.
   - Collects `metrics_final.json` / `metrics_history.json` / `topology.json` / `decision_boundary.npz` (2-D input only) + optional `POST /v1/snapshots` (cascor), `train_response.json` / `predict_response.json` / `crossval_response.json` (recurrence); ALWAYS writes the §13.4 `manifest.json` (also for stalled / timed-out / failed runs) and prints a one-screen summary.
   - **409 preempt (§3.4)**: `start_fresh: true` does NOT stop a live run — the lifecycle lock is held, so the 409 is raised before `start_fresh` is consulted, and after a driver-side stall/budget abort the naive re-run dies on `Training already in progress`. A 409 now gets ONE preemption attempt: `POST /v1/training/stop`; wait for the lifecycle to leave the active set; retry starting once.
   - Preemption is decided on **lifecycle state, not message text**: cascor's `routes/training.py:117` wraps every start failure as 409 (including "Training data not provided"), so only `STARTED` / `PAUSED` are preempted. `REPLAYING` rejects all training commands (exit is `/replay/control`) and `INVESTIGATING` needs `/retrain` / `/resume` — a stop there would fail and bury the real reason.
   - **Inert stall window**: when `--stall-seconds >=` the resolved wall budget, the Q-2 stall detector can never fire (the budget ends the run first) — a healthy long candidate phase is then labeled `timed_out` rather than `stalled`. Reported as a WARNING plus `driver.stall_window_inert` on the manifest, never fatal: the run is valid, only its guard is weaker than declared.
   - The driver is the sole place both Q-2 knobs are resolved, so it is the only layer that can see their interaction — the suite gate structurally cannot, since a budget may be inherited from `base_config` (`pf3-cascor-pool-scaling` shipped exactly this shape: a 1200 s window against a 600 s inherited budget).
-  - Exit codes: 0 success / 1 acceptance (stalled, timed_out, G-6 mismatch, missing essential artifact) / 2 misuse-validation / 3 unreachable / 4 FAILED-5xx. Tests: `tests/test_run_experiment.py`.
+  - Exit codes: 0 success / 1 acceptance (stalled, timed_out, G-6 mismatch, missing essential artifact, recurrence `degraded`) / 2 misuse-validation / 3 unreachable / 4 FAILED-5xx. Tests: `tests/test_run_experiment.py`.
 - `util/thread_width.py` -- The perf lane's shared thread-width helper; **every new instrument that reads an OpenMP width goes through it** (`tests/test_thread_width.py` fails CI otherwise). `OpenMPRuntime()` opens only a runtime already in `/proc/self/maps`, with `RTLD_NOLOAD`, and raises on none / two / an unmapped path; `.max_threads()` is the calling thread's ICV and mutates nothing; record `.path` with every result. `install_torch_getter_guard(torch)` makes `torch.get_num_threads()` raise off the main thread, because on a thread torch has not initialised it re-pins the ICV (16 → 8 unset; invisible 2 → 2 under `OMP_NUM_THREADS=2`, which is why the guard is unconditional). **Do not `CDLL("libgomp.so.1")`**: torch 2.11.0+cu130 maps its BUNDLED `torch/lib/libgomp.so.1`, opening the soname BEFORE `import torch` makes torch bind the env's copy instead, and a manylinux `libgomp-<hash>.so.1` makes the soname load a second, independent runtime. `python util/thread_width.py --self-check` (in an env with torch) measures all of it. Six pre-helper instruments are grandfathered by name.
 - `util/experiments/read_run_metrics.py` -- Canonical reader for the perf-lane's two ratified inputs (P2 item 0.4). Last row of `metrics_series.csv` (`step_sum` / `step_count`); de-ratifies `wall_seconds` and `timings.drive`. `workload_fingerprint` strips cosmetic `experiment.description`/`name`. Recurrence returns `work_countable: False`. Path-invoked; `--sweep` is docstring-only. Operator surface: [Perf-Lane Work Gate](#perf-lane-work-gate). Tests: `tests/test_read_run_metrics.py`.
 - `util/experiments/make_baseline.py` -- Operator-only Q-8 writer (P2 item 1.1 / P1 §4). Writes `baselines/<tag>/{baseline.json,HOST.json,manifests/}` under `--run-root` (default `~/.local/state/juniper-experiments`).
@@ -3522,6 +3526,8 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   Wave 7.3 instruments: [§ PF Scenario Suites](#pf-scenario-suites). `include` cells carry only their own overrides and do **not** inherit `matrix` (`expand_cells`) — PF-1's repeats are a matrix axis for that reason.
   - Do not confuse `execution.max_wall_seconds` with `execution.per_run_timeout_seconds`: the latter is only the **subprocess** timeout, which kills the driver from the OUTSIDE and records `timed_out` where the driver would otherwise write an honest `timed_out` manifest (§13.4). Size `per_run_timeout_seconds` ABOVE the wall budget so the driver is the one that stops.
   - A suite could always reach the budget through a dotted `outputs.max_wall_seconds` override (`suites/p4/e-i-cascor-cap-ceiling.yaml:71` does exactly that), but before this key, an un-overridden cell silently inherited `base_config`'s value — 3600 s for `spiral-baseline` — with no signal. Both mechanisms are accepted by the R-6 gate. Tests: `tests/test_run_suite.py`.
+  - `degraded` (W0.3) is in `TERMINAL_OUTCOMES` but never a success: the summary line counts it on its own, `REPORT.md` lists it under `## Degraded cells`, the console prints `degraded (crossval failed: …)` from the manifest's `phases` record, `--resume` re-runs it and the exit stays `1`.
+  - `_headline_metrics` (W0.4) reads `final_metrics.r2` → `train_r2`, `crossval.eval_aggregate.r2` → `cv_r2`, `crossval.eval_std.r2` → `cv_r2_std` and `dataset_descriptor.n_windows` → `n_windows` from `stats["recurrence"]`; a null `crossval` writes no `cv_*` value.
   - **`include` does not inherit `matrix`.** Empty matrix still yields one cell per `base_config`. P4 catalog + the cap-128 n=2 trap: [P4 Campaign Suites](#p4-campaign-suites).
 - `util/experiments/read_run_metrics.py` -- Canonical reader for the cascor perf-lane gate inputs (P2 item 0.4). Reads the last `metrics_series.csv` step-duration row (`step_count` / `step_sum`); `summarise().work_invariant` is true iff every cell shares one count.
   - `timings.drive` and `aggregate.csv` `wall_seconds` are de-ratified. `--sweep` is docstring-only, not a flag.
@@ -4404,7 +4410,7 @@ Kind selection from YAML shape: `training:` → cascor path; `train:` / `crossva
 | Exit | Meaning |
 |------|---------|
 | `0` | Success (COMPLETED + acceptance) |
-| `1` | Acceptance failure (stalled, timed_out, G-6 mismatch, missing essential artifact, predict/crossval fail) |
+| `1` | Acceptance failure (stalled, timed_out, G-6 mismatch, missing essential artifact; a failed enabled predict / crossval / save_model phase is `outcome: degraded`) |
 | `2` | Misuse/validation (bad CLI/YAML/generator, API `422`) |
 | `3` | Unreachable (health-wait/connection-failures) |
 | `4` | Run-`FAILED`/service-`5xx` |
@@ -5088,6 +5094,8 @@ Design of record: [`notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN
 | `REPORT.md` cell table | `step_count`, mean step **in milliseconds** (`mean_step_seconds * 1000`), then wall (s). CSV stays in seconds. |
 | `REPORT.md` **Gate inputs** | States `wall_seconds` is DE-RATIFIED, then two suite-level verdicts (computed independently, not via `summarise()`). |
 | `REPORT.md` **Baseline comparison** | Only when `--compare-baseline TAG` is passed. The text is `compare_baseline.render(...)`. |
+| Recurrence headline columns (W0.4) | `train_r2`, `cv_r2`, `cv_r2_std`, `n_windows` in both files, read from `stats.json`'s nested `recurrence` block. A cell whose crossval failed or was disabled leaves the `cv_*` cells **empty**, never `0`. |
+| `REPORT.md` summary line + **Degraded cells** (W0.3) | `Cells: N total, X succeeded, Y degraded, Z failed/other, W not run.` A degraded cell is never counted as succeeded; each one is listed with the phase it lost. |
 
 Suite-level verdicts:
 
@@ -5113,7 +5121,7 @@ The flag compares the just-written suite against `JUNIPER_EXP_RUN_ROOT/baselines
 | Exit | Meaning |
 |------|---------|
 | `0` | Every executed cell succeeded (a FAIL/REFUSED/missing-baseline comparison does **not** override this) |
-| `1` | Suite completed with failed / other-than-succeeded cells |
+| `1` | Suite completed with failed / `degraded` / other-than-succeeded cells |
 | `2` | Misuse / suite-validation error |
 
 A missing tag is **not** fatal: `_run_comparison` catches `CompareError` and writes `comparison could not run: …`. Without the flag there is no `## Baseline comparison` section. To get the comparator's own exit codes (0 PASS/WAIVED, 1 FAIL, 2 REFUSED), run `compare_baseline.py` directly.
@@ -5206,14 +5214,14 @@ Parallel cells also get the H-11 budget (`thread_budget_env`): `split = max(1, n
 
 ### Resume, `--only`, and exit codes
 
-`--resume SUITE_ID` skips a cell only when `registry.jsonl` already has `outcome == "succeeded"`. Failed / stalled / timed_out cells **re-run**. The argparse help saying "terminal" is looser than the code.
+`--resume SUITE_ID` skips a cell only when `registry.jsonl` already has `outcome == "succeeded"`. Failed / `degraded` / stalled / timed_out cells **re-run**. The argparse help said "skipping cells already terminal" until W0.3, which was looser than the code; it now says the same as this paragraph.
 
 When `outputs.suite_dir` is set, that path is the suite dir and `--resume` is only the id written onto new registry rows. Otherwise the dir is `$JUNIPER_EXP_RUN_ROOT/suites/<SUITE_ID>` (`SUITE_ID` is `--resume` or `{name}-{UTC}`).
 
 | Exit | Meaning |
 |------|---------|
 | `0` | Every cell in the **full expansion** has `outcome == succeeded` in the registry |
-| `1` | Suite finished with failed / not-run cells, or a cell failed |
+| `1` | Suite finished with failed / `degraded` / not-run cells, or a cell failed |
 | `2` | Suite YAML / `--only` / `--resume` dir / materialise validation |
 
 `--only` still aggregates the full expansion. Unselected cells that are not already `succeeded` count as not-run, so a partial `--only` exits `1` even when every selected cell succeeded. Resume a previous suite (or `--only` the entire expansion) when you need exit `0`.
@@ -5251,6 +5259,7 @@ Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor par
 | Healthy pool ≥ 16 marked `stalled` at ~130 s | Candidate phase does not advance `current_epoch`. Set `execution.stall_seconds` (P4 E-A). |
 | Cap-128 cell `timed_out` at 3600 s | Inherited `spiral-baseline` wall. Set `execution.max_wall_seconds` or a dotted `outputs.max_wall_seconds` override (E-I measured 4243.6 s). |
 | `--resume` re-ran a failed cell | Expected — only `succeeded` is skipped. |
+| Cell printed `degraded (crossval failed: …)`, suite exit `1` | Train succeeded but an enabled phase did not (W0.3). Read the cell's `phases` in `registry.jsonl` / `manifest.json`. A crossval `422` naming `X_full` means the recurrence env serves a model without `derive_full_split` — F-E1 of [the equities audit plan](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md). |
 | `--only` one cell, exit `1`, cell succeeded | Aggregate scores the full expansion; unselected cells are not-run. |
 | `--dry-run` still listed cells you `--only`'d out | Dry-run prints the full product. |
 | Bridged vs unbridged PF-1 hashes differ | Do not put the bridge in the suite YAML. Use `JUNIPER_SUITE_GRAFANA_BRIDGE=1`. |
