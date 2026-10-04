@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.63
+**Date**: 2026-10-04
 **Project**: juniper-ml
 
 ---
@@ -123,6 +123,7 @@
 | `LD_LIBRARY_PATH= python util/ad-hoc/e2e_f027_queues.py --tab 'Candidate Metrics'` | F-CANOPY-027 queued-vs-unwired probe (live isolated canopy; `JuniperCanopy1`; `JUNIPER_E2E_CANOPY_URL` default `http://127.0.0.1:8051`) |
 | `python3 util/ad-hoc/2026-09-02_worktree_inuse_probe.py WT [WT ...]` | Wider in-use check: STRONG cwd/open-fd exit 1; WEAK cmdline is CAUTION only |
 | `python3 util/ad-hoc/e2e_finding_triage.py`                | Canopy E2E ledger triage (header-only; ACCEPTED ≠ FIXED ≠ OPEN) |
+| `JUNIPER_E2E_DATA_PORT=8113 JUNIPER_E2E_CASCOR_PORT=8214 JUNIPER_E2E_CANOPY_PORT=8063 util/isolated_stack.bash --dry-run --up` | Preview a CAN-015 replay re-drive stack (off the `8101`/`8202`/`8051` trio). Also set the snapshot dir — [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive). |
 | `python3 util/ad-hoc/e2e_finding_triage.py --open-only`    | Same, hide FIXED/ACCEPTED rows (totals still include them) |
 | `python3 util/ad-hoc/e2e_f037_render_census.py`        | F-CANOPY-037 11-session topology-paint census (isolated stack; does not judge the rate) |
 | `python3 util/ad-hoc/register_open_set.py` | Re-derive defect-register open/fixed counts (`**FIXED` token; cwd = repo root) |
@@ -835,6 +836,8 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Planned next segment from `e2e_row_coverage.py` | Estimator. Use `e2e_unfilled_rows.py` against the ledger. |
 | Isolated canopy live but Candidate Metrics / Decision Boundary / Topology frozen at mount defaults | 12-slot starvation, not unwired. `e2e_f027_queues.py` first (queued-and-stuck vs never queued). Do **not** add a new Interval. See [REFERENCE — F-CANOPY-027](REFERENCE.md#f-canopy-027-poller-starvation-probes). |
 | Finding triage still shows an OPEN P0 after the body says FIXED | Disposition is the last 170 chars of the **header**, not the body. Put `FIXED` / `HEALED` / `ACCEPTED` in `**F-… — …**`. |
+| Replay scrubber stuck at 0–0 | Automatic `create_snapshot` omits history (`length=0`). `POST /v1/snapshots` after the fit finishes and replay that id. Keep the drive off `8101`/`8202`/`8051`. [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive). |
+| Next Start fails with "while replaying" | FSM is still `REPLAYING`. Stop the player, or `reset()`, then Start. |
 | Finding triage counts ACCEPTED as still blocking Phase 2 | ACCEPTED is owner-deferred, not OPEN. `--open-only` hides it; totals still list `accepted`. |
 | Finding triage exit 0 with open P0/P1 | Always exits 0. Read the totals block. |
 | One green topology paint "closes" F-037 | Need 11 sessions. Census exit 0 with `painted==0` is a measured miss, not a harness fail. `scope=invalid` means train first. [F-CANOPY-037](REFERENCE.md#f-canopy-037-render-census). |
@@ -1104,6 +1107,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) -- per-repo `.tbz2.gpg` (restore `-xjf`); not the Duplicati `$HOME` lane
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- required-context classifier; 2026-08-10 class; text-mode 0 can still carry `ERROR:`
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition
+- [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) -- throwaway ports; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; exit 2 = failed to measure; idle populated is VALID
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- shipped count is 58; v1 is the name-matching negative example; C5 remedy refuted
 - [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop; do not run n≈8–10; `--force` is an open owner decision; full slugs; `--class` on miss
@@ -1119,6 +1123,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-04
+**Version:** 1.0.63
 **Maintainer:** Paul Calnon

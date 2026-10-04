@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.54
+**Version:** 0.2.56
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -39,6 +39,7 @@
 | **Triage fleet PRs / sequence-safety**  | [REFERENCE.md § Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety)                                 | docs/    |
 | **Triage resident-hazard gaps after an AGENTS.md cut** | [REFERENCE — Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage) (count grows after a cut; health is score ≥ 3) + [fleet record](../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_RESIDENT-HAZARD-GAP-TRIAGE.md) | docs/ + notes/ |
 | **Run the isolated E2E trio**           | [Isolated-stack E2E checklist](../notes/JUNIPER_2026-07-21_JUNIPER-ECOSYSTEM_ISOLATED-STACK-E2E-CHECKLIST.md) + [REFERENCE — Isolated Stack](REFERENCE.md#isolated-stack-e2e-utilities) | notes/ + docs/ |
+| **Re-drive the CAN-015 replay player**  | [REFERENCE — CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) (throwaway ports; explicit `POST /v1/snapshots`; `length=0` means the automatic snapshot) | docs/ |
 | **Write canopy E2E matrix verdicts**    | [REFERENCE — Canopy E2E Matrix Writes](REFERENCE.md#canopy-e2e-matrix-writes) (fill is dry-run; set-verdicts is not; do not plan from `e2e_row_coverage.py`) | docs/    |
 | **Diagnose F-CANOPY-027 poller starvation (12-slot pool)** | [REFERENCE — F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) + [cheatsheet](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/ |
 | **Triage canopy E2E findings (P0/P1 exit)** | [REFERENCE — Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) (`e2e_finding_triage.py`; ACCEPTED ≠ FIXED ≠ OPEN) | docs/ |
@@ -240,6 +241,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.2.54
+**Last Updated:** 2026-10-04
+**Version:** 0.2.56
 **Maintainer:** Paul Calnon

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **CAN-015 replay re-drive runbook** (`docs/REFERENCE.md` § CAN-015 Replay Re-drive). A live
+  player check loads the snapshot into that cascor, so it stays off the isolated trio
+  (`8101` / `8202` / `8051`) and uses one per-run snapshot directory. Automatic
+  `create_snapshot` files omit training history (`length=0`); replay the id from
+  `POST /v1/snapshots` after the fit finishes. The player's inclusive slider, the
+  render-echo guard, and Stop-or-reset before the next Start are the checks.
 - **`ceremony.py --target-sha`: the tag, the CI gate and the notes describe one commit**
   (`util/release_train/ceremony.py`). By default the Release tags the owning repo's `main` as it is
   at cut time, while the notes come from the `--ecosystem-root` checkout. The two agree only if

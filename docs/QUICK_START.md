@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.40
+**Version:** 0.3.42
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -143,6 +143,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) -- 12-slot dash-renderer starvation (FIXED); do not add a new Interval; isolated stack only
 - [Worktree Divergence / in-use probe](REFERENCE.md#worktree-divergence-is-a-memory-cost) -- cwd-only liveness is not enough; STRONG cwd/open-fd vs WEAK cmdline
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only P0/P1 open-count; ACCEPTED is a third disposition; always exits 0
+- [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) -- throwaway ports off `8101`/`8202`/`8051`; replay the explicit `POST /v1/snapshots` (automatic snapshots have `length=0`); Stop before the next Start
 - [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) -- csv_import 128 MiB bound (422 until opt-in); experiment-stack `IMPORT_DIR` pitfall; equities `max_symbols` still silent
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-graph paint tally; exit 0 is not a paint PASS
 - [Defect Register Close Protocol](REFERENCE.md#defect-register-close-protocol) -- `**FIXED` token, cwd pitfall, third reading vs the two §4 counters
@@ -190,6 +191,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.3.39
+**Last Updated:** 2026-10-04
+**Version:** 0.3.42
 **Status:** Active
