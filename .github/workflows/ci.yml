@@ -894,6 +894,13 @@ jobs:
           # Documented in AGENTS.md but never wired into this job until R-6 -- so the stall_seconds
           # passthrough the P4 suites now depend on was itself ungated.
           python3 -m unittest -v tests/test_run_suite.py
+          # tests/test_recurrence_phase_error_body.py: the W0.3 phase record copies
+          # `_detail` into the manifest, the acceptance reasons and the suite line.
+          # Pins body-key selection, the 500-character cut, a falsy detail, a non-JSON
+          # 422 and a validation-list 422 staying degraded (exit 1), and the four-way
+          # suite count. No live stack. util/ is not pre-commit-lint-gated, so this
+          # unittest is the gate.
+          python3 -m unittest -v tests/test_recurrence_phase_error_body.py
           # tests/test_list_runs.py: hermetic tests for util/experiments/list_runs.py, the Wave 7.2
           # safety-gated run lister/pruner -- state classification, --older-than, and the prune
           # safety gates, over synthetic RUN_ROOT fixtures. Also previously unwired.

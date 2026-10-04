@@ -2902,6 +2902,7 @@ python3 -m unittest -v tests/test_compare_baseline.py
 python3 -m unittest -v tests/test_make_baseline.py
 python3 -m unittest -v tests/test_experiment_config_schemas.py
 python3 -m unittest -v tests/test_run_suite.py
+python3 -m unittest -v tests/test_recurrence_phase_error_body.py
 python3 -m unittest -v tests/test_list_runs.py
 python3 -m unittest -v tests/test_snapshot_index.py
 python3 -m unittest -v tests/test_snapshot_classify.py
@@ -3144,6 +3145,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`: `load_suite` plus oversize-stall / wall-pin / timeout-ordering. Operator surface: [P4 Campaign Suites](#p4-campaign-suites).
 - `tests/test_run_suite.py` -- Behavioral suite-driver coverage, including P2 item 1.4 (`GateInputsInAggregateTest` / `ComparisonReportingTest`): `aggregate.csv` must carry both gate inputs beside `wall_seconds`; `REPORT.md` must say `wall_seconds` is DE-RATIFIED and print work-invariant / single-workload; `--compare-baseline` is reporting-only (missing tag and FAIL verdict still exit 0). Operator surface: [Suite Report Gate Inputs](#suite-report-gate-inputs).
   W0.3 / W0.4 (`DegradedSuiteTest` / `OutcomeLineTest` / `HeadlineMetricsTest`): a `degraded` cell is counted on its own in the summary line, listed under `## Degraded cells`, printed `degraded (crossval failed: …)`, re-run by `--resume` and keeps the exit at `1`; `_headline_metrics` surfaces `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` on the plan's four fixtures (audited `crossval: null`, successful, `0.0`, `-18081.0`).
+- `tests/test_recurrence_phase_error_body.py` -- Phase-error bodies the W0.3 producer suites do not script. `detail` wins over `message` and is cut at 500 characters; a sibling `input` stays out of the phase record; a falsy `detail` of `0` falls through to `message`; a non-JSON 422 and a validation-list 422 stay `degraded` at exit 1. An empty phase summary falls through to the suite error, and the report counts succeeded / degraded / failed / not-run as four buckets.
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`, which no test loaded before it: every suite must pass `run_suite.load_suite` (catching the unknown-`execution:`-key / `stall_second` typo class that otherwise surfaces hours into a GPU campaign), and any oversize `app: cascor` suite must declare an `execution.stall_seconds` above the driver's `DEFAULT_STALL_SECONDS` (read from the driver source, not hardcoded).
   Fourth contract: `execution.per_run_timeout_seconds` must sit **above** the wall budget (`>` not `>=`) so the driver writes the honest manifest — `perf/pf5` shipped 900/900 and was raised to 1800. Operator surfaces: [§ PF Scenario Suites](#pf-scenario-suites) and [P4 Campaign Suites](#p4-campaign-suites).
 - `tests/test_memory_index_check.py` -- Hermetic gate for `util/memory_index_check.py` (`util/` is outside every pre-commit Python hook, so this suite IS the gate).
