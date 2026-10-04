@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.54
+**Version:** 0.2.62
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -55,6 +55,7 @@
 | **List or prune experiment RUN_DIRs**   | [REFERENCE — Run lister / pruner](REFERENCE.md#run-lister--pruner-list_runspy) (directory-truth; `--prune` deletes the `RUN_DIR`, `--down` keeps `artifacts/`) | docs/ |
 | **Run a multi-cell experiment suite**   | [REFERENCE — Suite Driver](REFERENCE.md#suite-driver) (`run_suite.py`: expansion, resume, cascor parallel floor, Grafana env toggle) + [CLI experimentation plan](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) Wave 7 | docs/ + notes/ |
 | **Report (not gate) a recurrence perf run** | [REFERENCE — Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) (`work_countable` third state; `make_baseline` / `compare_baseline` refuse; PF-5/6/7 report-only) + [P2 plan](../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md) | docs/ + notes/ |
+| **Re-run the E-H equities crossval measurement** | [REFERENCE — Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) (`replay` / `matrix`; exit 0 is not HTTP 200; digits stay in the investigation note) | docs/ + notes/ |
 | **Read a run's `stats.json` / `summary.md`** | [REFERENCE — Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) (de-ratified `wall_seconds`, per-poll step duration, `scrape_confirmed` tri-state, recurrence timings under `outcome.timings`) | docs/    |
 | **Check which generators an env can run** | [REFERENCE — Generator Availability Matrix](REFERENCE.md#generator-availability-matrix-on-host) (gates, mnist/equities install paths, probe one-liner) | docs/    |
 | **Run `equities` / `equities_seq` without a 422** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (14-symbol refuse; unit is symbols because cost is per request; silent slice deleted) | docs/    |
@@ -165,6 +166,7 @@ Each subpackage has its own `README.md`, `CHANGELOG.md`, and `pyproject.toml`.
 | **JUNIPER_2026-07-21_JUNIPER-ECOSYSTEM_ISOLATED-STACK-E2E-CHECKLIST.md**                       | Checklist   | Dedicated data/cascor/canopy E2E trio via `util/isolated_stack.bash` (compose contract also in [REFERENCE](REFERENCE.md#isolated-stack-e2e-utilities)) |
 | **JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P4-STUDIES-EVIDENCE.md** | Evidence | First-nine P4 studies (E-A…E-H, 55 cells — historical); operator catalog of the current 19 YAMLs in [REFERENCE — P4 Campaign Suites](REFERENCE.md#p4-campaign-suites) |
 | **JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md** | Plan   | Per-run experiment stack + driver (Waves 2.1–2.7); operator contract + partial-`--up` teardown in [REFERENCE](REFERENCE.md#experiment-stack-utilities); P4 §10.5 catalog in [REFERENCE — P4 Campaign Suites](REFERENCE.md#p4-campaign-suites) |
+| **JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md** | Investigation | W0.8/W0.9 measured writeup and P5 verdict. How to re-run the instruments, and which exits are not results, is in [REFERENCE](REFERENCE.md#recurrence-equities-crossval-instruments) |
 | **JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md** | Design | Q-8 baseline directory + regression definition; operator surface in [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) |
 | **JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md** | Plan   | Split work/speed gate + wave table. The "step_count is deterministic" premise is **settled with a condition** — exact within a termination branch (ml#1733) — and all six comparator defects are closed (ml#1741/ml#1743); never CI-wire — P1 §6 closed that 2026-09-07 on structural grounds (host identity blocks on hosted runners). Operator surface in [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) |
 | **JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md**                        | Test matrix | 298-row canopy click-by-click ledger. Write path in [REFERENCE](REFERENCE.md#canopy-e2e-matrix-writes) (do not hand-edit status cells) |
@@ -240,6 +242,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.2.54
+**Last Updated:** 2026-10-04
+**Version:** 0.2.62
 **Maintainer:** Paul Calnon

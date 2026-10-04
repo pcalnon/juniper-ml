@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.69
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -49,6 +49,7 @@
 - [Suite Driver](#suite-driver)
 - [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable)
 - [Experiment Stats Summary (SS8.3)](#experiment-stats-summary-ss83)
+- [Recurrence Equities Crossval Instruments](#recurrence-equities-crossval-instruments)
 - [Run lister / pruner (`list_runs.py`)](#run-lister--pruner-list_runspy)
 - [Snapshot Attribution Dataset Pin](#snapshot-attribution-dataset-pin)
 - [P4 Campaign Suites](#p4-campaign-suites)
@@ -3474,6 +3475,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
     `socat "TCP-LISTEN:<port>,bind=<gateway>,fork,reuseaddr" "TCP:127.0.0.1:<port>"` relay per scraped service (pids under `RUN_DIR/relays/`), and write the §7.2 target file
     to `<JUNIPER_EXP_DEPLOY_DIR>/prometheus/targets/<RUN_ID>.json` (labels `service` / `environment=host-experiment` / `run_id` / `experiment`; removed at teardown).
     Without it, `--status` reports the run as UNSCRAPED.
+- `util/ad-hoc/2026-10-04_recurrence_equities_cv_matrix.py` / `2026-10-04_recurrence_equities_linear_conditioning.py` -- W0.8 HTTP replay and W0.9 in-process matrix for the E-H equities artifact, plus the linear-design conditioning companion. Dataset selector and fold geometry are hard-coded. `replay` returns 0 on a non-200 crossval. A matrix cell error is recorded and the grid continues. Operator surface: [Recurrence Equities Crossval Instruments](#recurrence-equities-crossval-instruments).
 - `util/experiments/run_experiment.py` -- Single-run experiment driver (plan §6.3; Wave 2.2 = the cascor **service** path, Wave 2.3 = the recurrence **service** path, Waves 2.4/2.5 = the §8.1/§8.2 plot sets via `plots_cascor.py` / `plots_recurrence.py` (2.5 closes G-5), Wave 2.6 = the §8.3 stats/summary via `stats_summary.py`).
   - Stats (§8.3): every run also writes `artifacts/results/stats.json` + human-readable `summary.md` (stdlib-only renderer, every outcome incl. stalled/failed): identity / dataset-shape (tabular vs sequence from meta) / outcome-timing blocks from the manifest, cascor candidate-correlation-per-round + step-duration p50/p95 from the driver's own `metrics_series.csv` (honestly labeled per-poll means -- true per-step quantiles are not recoverable from a sum/count exposition), the recurrence train/CV/θ/readout block.
     Operator read-path: [Experiment Stats Summary (SS8.3)](#experiment-stats-summary-ss83).
@@ -5442,6 +5444,76 @@ The driver now reports two named facts (`JUNIPER_EXP_PROMETHEUS_URL`, default `h
 Coverage: `tests/test_run_experiment.py` (`StatsSummaryUnitTest` + e2e stats assertions for both kinds). `util/` is not pre-commit-lint-gated; that unittest is the gate.
 
 After a cascor suite finishes, compare it to a named Q-8 baseline with [`util/experiments/compare_baseline.py`](#perf-lane-split-comparator) — identity first, work exact, speed reported.
+
+
+## Recurrence Equities Crossval Instruments
+
+Two ad-hoc scripts re-run the W0.8 / W0.9 measurement that [`notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`](../notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md) writes up. They are instruments, not `run_experiment.py`. The note owns the measured table and the P5 verdict. This page is how to run them, and which exits are not results.
+
+Both scripts hard-code the E-H dataset selector from [`util/experiments/suites/p4/e-h-recurrence-real-data.yaml`](../util/experiments/suites/p4/e-h-recurrence-real-data.yaml). There is no flag for symbols, dates, lookback, seed, or fold geometry.
+
+| Knob | Value the script sends |
+| --- | --- |
+| generator | `equities_seq`, `persist=True` |
+| `symbols` / window / `lookback` / `regression_target` / `seed` | `AAPL`, `2015-01-01` → `2022-01-01`, `64`, `log_return`, `20260807` |
+| folds | `n_folds` 5, `scheme` `expanding`, `embargo` 2 |
+| E-H model body (`replay` label `eh-rff` only) | `d` 16, `ridge` 1.0, `readout` `rff`, `rff_features` 256, `rff_gamma` `median`. No `theta` key |
+| `service-defaults` body | dataset id plus the three fold keys. No readout, ridge, `d`, theta, or RFF keys |
+| matrix model | `d` 16. RFF features 256 and gamma `median` only when that cell's readout is `rff`. `default_ridge` passed to the builder is `0.0` |
+
+`replay` creates the dataset on juniper-data first (HTTP timeout 900 s), then POSTs `/v1/crossval` twice on that `dataset_id`. The script header states why: a cold fetch inside the recurrence request can trip the service's data-client timeout. The recurrence URL only receives an id.
+
+`matrix` does not call recurrence. It downloads the artifact through `juniper_data_client` (timeout 900 s), builds the `full` view with `sequence_data_from_arrays(arrays, "full")`, and fits one fresh model per fold per cell.
+
+The grid is `{normalize off, on} × {linear, rff} × {ridge 0.0, 1.0, gcv} × {theta fold-resolved, configured}` — 24 cells. Fold-resolved passes `theta=None`. Configured passes the median of `sum(dt)` over the full sequence. A cell that raises is stored with an `error` key and the grid continues.
+
+[`util/ad-hoc/2026-10-04_recurrence_equities_linear_conditioning.py`](../util/ad-hoc/2026-10-04_recurrence_equities_linear_conditioning.py) loads the matrix module from the same directory. For the same two artifacts (raw, and `normalize_features: true`) it fits linear / ridge 0.0 / `d` 16 / data-driven theta.
+
+It records the 2-norm condition number of the design `[memory block | target_dt | 1]`, a numerical rank, and how far eval rows sit in the train design's weakest 10 right-singular directions. It reads `_memory_block`, `_side_channel`, and `_readout`. A rename of those attributes breaks the script.
+
+### How to run
+
+Bring up a per-run stack (`util/experiment_stack.bash --up --recurrence`). Read `data` and `recurrence` from that run's `ports.json`. The ranges are data `8110`–`8139` and recurrence `8260`–`8289`. `8110` and `8260` in the script header are the range floors, not a reservation.
+
+Use the recurrence env's interpreter (stack default `JuniperCascor1`). `replay` imports numpy at module load. `matrix` and the companion also import `juniper_data_client`, `juniper_recurrence_model`, `juniper_model_core`, and `juniper_recurrence`.
+
+```bash
+PY=/opt/miniforge3/envs/JuniperCascor1/bin/python   # example path from the script header
+"$PY" util/ad-hoc/2026-10-04_recurrence_equities_cv_matrix.py \
+    replay --data-url "http://127.0.0.1:${DATA_PORT}" \
+    --recurrence-url "http://127.0.0.1:${REC_PORT}" --out-dir reports/<dir>
+"$PY" util/ad-hoc/2026-10-04_recurrence_equities_cv_matrix.py \
+    matrix --data-url "http://127.0.0.1:${DATA_PORT}" --out-dir reports/<dir>
+"$PY" util/ad-hoc/2026-10-04_recurrence_equities_linear_conditioning.py \
+    --data-url "http://127.0.0.1:${DATA_PORT}" --out-dir reports/<dir>
+```
+
+`persist=True` stores the artifact on whichever data service `--data-url` names. Point it at the per-run stack.
+
+### Files
+
+| Command | Writes under `--out-dir` |
+| --- | --- |
+| `replay` | `00-dataset-create.json`, `01-recurrence-health.json`, `10-crossval-eh-rff.json`, `10-crossval-service-defaults.json` |
+| `matrix` | `20-matrix-datasets.json`, `21-matrix-cells.json`, `22-matrix-table.md` |
+| conditioning | `23-linear-conditioning.json` |
+
+One recorded run using these names is `reports/2026-10-04_recurrence-equities-cv-matrix/`. Re-running writes only the directory you pass.
+
+### What exit 0 does not mean
+
+| Observation | What the script actually did |
+| --- | --- |
+| Printed `DIFFERENT` next to `equities_seq-6.0.0-15505731cba5b86d` | Comparison only. `replay` continues on the id it just created and still returns 0. |
+| Crossval HTTP status is not 200 | The body is printed and the JSON is written. `replay` still returns 0. A failed dataset create (HTTP outside 200/201, a non-dict body, or an empty `dataset_id`) is `SystemExit` before any crossval POST. |
+| `GET /v1/health` was not 200 | Recorded in `01-recurrence-health.json`. It does not gate the two POSTs. The stack's own ready check is `/v1/health/ready`. |
+| A matrix row says `ERROR` | That cell was caught. The process returns 0. A failed dataset create inside `_load_full` is not caught and aborts the grid. |
+| `memory_z_*` stays finite on a constant column | `_z_against` replaces a non-positive column std with `1.0` before dividing. Keys: `max_abs_z`, `p99_abs_z`, `frac_rows_any_gt5`, `frac_rows_any_gt10`. |
+| Conditioning `cond_2norm` is `inf` | `sigma_min` was 0. The script still returns 0 when it finishes the folds. |
+| You wanted resolved ridge, gamma, or per-fold theta from the HTTP body | `replay` saves that body as the service returned it. Those resolved values are what `matrix` reads off the in-process model (`theta_resolved`, `ridge_resolved`, `gamma_resolved`). |
+| A required flag was omitted | argparse usage (exit 2). Nothing is written. |
+
+The investigation note is where a re-run's class of result is interpreted. It also records the instrument's limits: one ticker, one window, one seed, `d` 16, five expanding folds, and those private attributes. Do not treat a reprinted blow-up figure as a regression pin; the note says those digits are not stable.
 
 
 ## Generator Availability Matrix (On-Host)
@@ -7502,6 +7574,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-04
+**Version:** 0.6.69
 **Maintainer:** Paul Calnon

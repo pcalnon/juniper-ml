@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.40
+**Version:** 0.3.48
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -150,6 +150,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- Playwright scorer for Topology-tab rows; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
 - [Snapshot Sidecar Chain](REFERENCE.md#snapshot-sidecar-chain) -- index / classify / backfill the cascor archive (`--root`, not `JUNIPER_CASCOR_SNAPSHOTS_DIR`)
 - [Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) -- PF-5/6/7 report-only; `read_run_metrics.py --json`; `make_baseline` / `compare_baseline` refuse a recurrence suite
+- [Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) -- re-run the E-H W0.8/W0.9 scripts; exit 0 is not a passing crossval
 - [Perf-lane metrics and baselines](REFERENCE.md#perf-lane-metrics-and-baselines) -- `read_run_metrics.py` / `make_baseline.py`; gate `step_count` exactly, never `wall_seconds` or `timings.drive`
 - [Perf-Lane Split Comparator](REFERENCE.md#perf-lane-split-comparator) -- `compare_baseline.py`: identity first, work exact / speed reported, exit 0/1/2 (#1622)
 - [Canopy E2E Matrix Writes](REFERENCE.md#canopy-e2e-matrix-writes) -- fill / set-verdicts / rescore for the click-by-click ledger (fill is dry-run; set-verdicts is not)
@@ -190,6 +191,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.3.39
+**Last Updated:** 2026-10-04
+**Version:** 0.3.48
 **Status:** Active

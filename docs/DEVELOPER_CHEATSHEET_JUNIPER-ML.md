@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.69
+**Date**: 2026-10-04
 **Project**: juniper-ml
 
 ---
@@ -60,6 +60,7 @@
 | `util/experiment_stack.bash --down RUN_ID`             | Tear down a run (pidfile-first; keeps `artifacts/`) |
 | `python util/experiments/list_runs.py`                 | List experiment `RUN_DIR`s (directory-truth; default `~/.local/state/juniper-experiments`) |
 | `python util/experiments/list_runs.py --prune --older-than 7 --dry-run` | Preview prune of `down`/`stale` runs older than 7 days (never deletes) |
+| `python util/ad-hoc/2026-10-04_recurrence_equities_cv_matrix.py replay --data-url URL --recurrence-url URL --out-dir DIR` | W0.8 HTTP replay of the E-H crossval body and a no-model-keys control. Exit 0 is not HTTP 200. Read ports from `ports.json`. |
 | `python3 -m unittest -v tests/test_list_runs.py`       | Lister/pruner state + `--prune` safety pins |
 | `LD_LIBRARY_PATH= /opt/miniforge3/envs/JuniperCanopy1/bin/python util/ad-hoc/e2e_seg17_topology_driver.py --step probe` | Score Topology-tab rows against isolated `:8051` (`STEPS` names only) |
 | `util/ad-hoc/2026-09-04_canopy_verify_instance.bash up SRC [PORT]` | Second canopy from a worktree (default `:8052`); does not restart `:8051` |
@@ -657,6 +658,8 @@ Queues/ready/slots inherit `JUNIPER_E2E_CANOPY_URL` (no `--base-url`). See [REFE
 
 Tip: `util/experiment_stack.bash` is the **per-run** launcher (data `8110–8139` / cascor `8230–8259` / recurrence `8260–8289`) — not isolated-stack and not `plant_all`. Never canopy; never `JuniperProject.pid`; never repo `.env`. Pidfiles come from post-health `ss` (F-6), not `$!`. From a worktree set `JUNIPER_EXP_PROJECT_DIR`. Drive with `python util/experiments/run_experiment.py --config … --run-dir …` (exit `0`–`4`). Full contract: [REFERENCE — Experiment Stack](REFERENCE.md#experiment-stack-utilities).
 
+Tip: the W0.8/W0.9 instruments create the equities dataset on the `--data-url` you pass (`persist=True`) before recurrence sees an id. Read ports from that run's `ports.json`; `8110`/`8260` are range floors. `DIFFERENT` and a non-200 crossval still exit 0. A matrix cell error is recorded and the grid continues. Measured digits live in the investigation note. See [REFERENCE — Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments).
+
 Tip: `compare_baseline.py` is a **split** gate (exact `step_count`, ungated speed). The #1710 counterexample is
 **settled**: a corpus census (333 runs) showed all 29 divergences are explained by `completion_reason`, and #1733 made
 the termination branch part of the precondition — a branch flip now REFUSES (2) instead of FAILing (1). #1741 + #1743
@@ -871,6 +874,8 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | P4 `timed_out` with no `manifest.json` | `per_run_timeout_seconds` ≤ driver wall — raise the subprocess ceiling. |
 | Quoted 3-seed spread at P4 cap 128 | Stale `suite.description`. n = 2 (`r0`/`r1`). |
 | `make_baseline` exit 2 on P4 E-D…E-G | Expected — recurrence work is not countable (#1683). |
+| Equities crossval replay printed `DIFFERENT` or a non-200 and exited 0 | Expected. The frozen id is a print check; a non-200 body is saved and not a failure. A failed dataset create is `SystemExit` before any POST. See [REFERENCE](REFERENCE.md#recurrence-equities-crossval-instruments). |
+| Matrix cell printed `ERROR` and the process exited 0 | Expected. That cell is in `21-matrix-cells.json`. A failed dataset create aborts the whole grid. |
 | Driver exit `2` / API `422` on default `equities` | Universe > 14 symbols. Set `dataset.params.symbols` to a short list, or `allow_truncation: true` (writes `DatasetMeta.truncation`). |
 | Requested `max_symbols: 50` still caps at 14 | Request may only lower the ceiling. Raise `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS` on the data service. |
 | Cascor YAML with `generator: equities_seq` | Expected `ConfigError` — not in `STAGEABLE_GENERATOR_ALIASES`. Use the recurrence path or flat `equities`. |
@@ -1115,10 +1120,11 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Canopy E2E Matrix Writes](REFERENCE.md#canopy-e2e-matrix-writes) -- fill / set-verdicts / rescore; do not plan from `e2e_row_coverage.py`
 - [F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) -- 12-slot dash-renderer starvation (FIXED canopy#507/#509/#511); do not add a new Interval
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session `topodiag` tally; exit 0 is not a paint PASS
+- [Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) -- W0.8/W0.9 replay and matrix; exit 0 is not a passing crossval
 - [SOPS Usage Guide](../notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) -- complete secrets management reference
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-04
+**Version:** 1.0.69
 **Maintainer:** Paul Calnon
