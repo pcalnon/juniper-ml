@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.71
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -47,6 +47,7 @@
 - [CSV Import Byte Cap](#csv-import-byte-cap)
 - [Snapshot Sidecar Chain](#snapshot-sidecar-chain)
 - [Suite Driver](#suite-driver)
+- [Recurrence Upstream Error Text](#recurrence-upstream-error-text)
 - [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable)
 - [Experiment Stats Summary (SS8.3)](#experiment-stats-summary-ss83)
 - [Run lister / pruner (`list_runs.py`)](#run-lister--pruner-list_runspy)
@@ -4692,6 +4693,7 @@ Test seams (operator-visible): `JUNIPER_SUITE_LAUNCHER`, `JUNIPER_SUITE_DRIVER`,
 | Health timeout mid-`--up` | Inspect `$RUN_DIR/logs/`; cold recurrence often needs the default `90s` — raise `JUNIPER_EXP_HEALTH_TIMEOUT` only after fixing the service. Partial bring-up should already have called `teardown_run` (see above). |
 | `bring-up failed — tearing the partial run back down` | Expected on a failed `*_up` leg — `do_up` auto-tears down. Check `$RUN_DIR/logs/` + `teardown.json`; confirm port locks released under `JUNIPER_EXP_LOCK_ROOT` before retrying. |
 | `ENV PREFLIGHT REFUSED: <n> finding(s)` on the recurrence leg | The env `serve` would run from is stale (W0.2; the F-E1 shape). Read the `FINDING:` lines in stdout or `$RUN_DIR/logs/launch.log` and repair the env (plan W0.1). `--skip-env-preflight` / `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` serves anyway, loudly — expect `/v1/crossval` to 422. |
+| A recurrence phase error quotes a header value | The HTTP `detail` is the upstream exception text, and the driver copies it into the manifest. Do not paste that file. See [Recurrence Upstream Error Text](#recurrence-upstream-error-text). |
 | Worktree can't find cascor `src/` | Set `JUNIPER_EXP_PROJECT_DIR` to the real ecosystem root. |
 | Teardown killed the wrong process / left orphans | Pre-F-6 `$!` class — confirm pidfiles came from `record_listener_pid` (post-health `ss`), not shell `$!`. |
 | Log says `pidfile path refused — falling back to the recorded port` | Pid reuse / cmdline mismatch refused the pidfile kill; port fallback should still stop **this run's** listener. If WARNING persists, inspect `ss -tlnpH "sport = :<port>"` before reuse. |
@@ -6983,6 +6985,66 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 ---
 
+## Recurrence Upstream Error Text
+
+A recurrence HTTP error's `detail` is the upstream exception text. `util/experiments/run_experiment.py` copies that text into the run record. Canopy's status bar omits 5xx details (juniper-canopy#702). This driver does not, and nothing in juniper-ml redacts it.
+
+Checked 2026-10-04 against juniper-ml `origin/main` (`d31b7c21`), juniper-recurrence `juniper_recurrence/routers/_common.py` `map_data_error`, and juniper-data-client `client.py` / `exceptions.py`. This page is the copy path. It does not replace the env preflight, the degraded-outcome mechanics, omitted-key fill-in, or the equities CV measurement.
+
+### What the service puts in `detail`
+
+`map_data_error` interpolates `{exc}` into every status it returns:
+
+| Exception | Status | Detail |
+|-----------|--------|--------|
+| `JuniperDataNotFoundError` | 404 | `dataset not found: {exc}` |
+| `JuniperDataConnectionError`, `JuniperDataTimeoutError` | 502 | `juniper-data unreachable: {exc}` |
+| `JuniperDataValidationError` or a bare `ValueError` | 422 | `invalid dataset: {exc}` |
+| `JuniperDataConfigurationError` | 500 | `data-client misconfigured: {exc}` |
+| anything else | 502 | `data fetch failed: {exc}` |
+
+`JuniperDataClientError` is the base class and is not one of those branches. The data client wraps `requests.RequestException` as `JuniperDataClientError("Request failed: …")` (`client.py`). `requests.utils._validate_header_part` raises `InvalidHeader` when a header contains leading whitespace, a reserved character, or a return. `InvalidHeader` is a `RequestException`. Its message includes the rejected header part:
+
+`Invalid leading whitespace, reserved character(s), or return character(s) in header value: {header_part!r}`
+
+The exception the service sees is the `JuniperDataClientError` wrapper, which is not a `ValueError`, so this takes the generic 502 (`data fetch failed: …`), not the 422 branch. The value pattern is `^\S[^\r\n]*\Z`, so a leading space or a CR/LF in `JUNIPER_DATA_API_KEY` is rejected and the rejected value — the key — rides in the body. A trailing space is accepted.
+
+juniper-ml#2151 records the relay as F-S10 and proposes W1.14 (stop relaying 5xx exception text, and refuse a whitespace key at settings load). That change is not in recurrence `main`.
+
+### Where the driver stores it
+
+`_detail` in `util/experiments/run_experiment.py` reads FastAPI `detail`, then `message`, then `error`, and keeps 500 characters. A non-JSON body is stored as `{"detail": raw[:500]}`.
+
+That string, plus a short `HTTP {code}: ` prefix, is written into:
+
+- `manifest.json` `phases.<name>.error` for a failed train, predict, crossval, or save_model phase. The `finally` block writes the manifest even when train raises `RunFailed`.
+- `manifest.json` `acceptance.reasons` for a train `RunFailed` (`POST /v1/train -> HTTP {code}: …`).
+- the driver log (`log.error`) and the stdout `reasons` line.
+- `collect_errors` when predict or crossval returns non-200 after a successful train.
+
+`util/experiments/run_suite.py` copies `phases` onto the cell row in `registry.jsonl`. A degraded cell prints the phase error on the console (`degraded (crossval failed: HTTP 502: …)`) and under `REPORT.md` `## Degraded cells`. A failed train is outcome `failed`: the summary table does not repeat the text, but `registry.jsonl` `phases` and `manifest.json` still have it.
+
+If the driver exits with no manifest, the suite stores the last 300 characters of its stdout or stderr on the row's `error`. A launcher `--up` failure stores the last 500 characters of stderr (or stdout).
+
+The 500-character cap does not remove a header value. The value sits inside the exception sentence, and that sentence fits.
+
+### Operator rule
+
+Treat these as secret-bearing when train, predict, or crossval failed while the service was calling juniper-data:
+
+- `$RUN_DIR/manifest.json` (`phases.*.error`, `acceptance.reasons`, `collect_errors`)
+- the suite's `registry.jsonl` `phases`, and `error` when the no-manifest tail was stored
+- `REPORT.md` `## Degraded cells`, and the console `[suite]` line for a degraded cell
+- the driver log and the stdout `reasons` line
+
+Do not paste them into a ticket, a PR, or chat. If the text contains a header value, rotate that key and remove the leading whitespace or CR/LF from `JUNIPER_DATA_API_KEY` before the next launch. Recurrence `main` still interpolates `{exc}`.
+
+```text
+HTTP 502: data fetch failed: Request failed: Invalid leading whitespace, reserved character(s), or return character(s) in header value: '<rejected header value>'
+```
+
+The quoted part is the rejected header value. Do not copy a real one out of a manifest.
+
 ## Version History
 
 > **Four version numbers below are claimed twice** — `0.6.19`, `0.6.27`, `0.6.40` and
@@ -7002,6 +7064,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.71  | 2026-10-04 | Recurrence upstream error text: `map_data_error` interpolates `{exc}` (a padded data API key rides the generic 502); the experiment driver copies `detail` (500 chars) into `manifest.json`, `registry.jsonl`, and degraded-cell lines. Canopy omits 5xx details; this driver does not. Skipped 0.6.62–0.6.70 (in-flight docs PRs). |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |

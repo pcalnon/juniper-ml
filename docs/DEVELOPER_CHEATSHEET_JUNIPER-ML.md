@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.71
+**Date**: 2026-10-04
 **Project**: juniper-ml
 
 ---
@@ -1038,6 +1038,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Suite exit `2` unknown `execution:` key | Typo (`stall_second`). R-6 (`tests/test_experiment_suite_yamls.py`) catches this on shipped suites. |
 | Suite exit `2` cascor parallel | Launched cascor below 0.10.0 or version unreadable — sequential, or retarget `JUNIPER_EXP_CASCOR_SRC_DIR`. |
 | Suite cells `stalled` ~130 s then finish | Candidate-phase inert stall — set `execution.stall_seconds`; size `per_run_timeout_seconds` above the wall. |
+| Recurrence phase error quotes a header value | The HTTP `detail` is upstream exception text and the driver copies it. Do not paste the manifest. [Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text). |
 | `--resume` re-runs a green cell | Only `registry.jsonl` `succeeded` is skipped; missing resume dir is exit `2`. |
 | Repeats ran the smoke config | `include` does not inherit `matrix` — put the repeat axis on `matrix` (PF-1). |
 
@@ -1087,6 +1088,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Suite Report Gate Inputs](REFERENCE.md#suite-report-gate-inputs) -- `run_suite` P2 1.4: both gate inputs in `aggregate.csv` / `REPORT.md`; `--compare-baseline` reporting only
 - [Run lister / pruner](REFERENCE.md#run-lister--pruner-list_runspy) -- `list_runs.py` directory-truth scan; `--prune` ≠ `--down`
 - [Suite Driver](REFERENCE.md#suite-driver) -- `run_suite.py` expansion, resume, cascor parallel floor, Grafana env toggle
+- [Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text) -- a 502 `detail` can contain a rejected data API key; the driver copies it into the manifest
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
 - [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence
@@ -1119,6 +1121,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-04
+**Version:** 1.0.71
 **Maintainer:** Paul Calnon
