@@ -894,6 +894,12 @@ jobs:
           # Documented in AGENTS.md but never wired into this job until R-6 -- so the stall_seconds
           # passthrough the P4 suites now depend on was itself ungated.
           python3 -m unittest -v tests/test_run_suite.py
+          # tests/test_recurrence_degraded_phase_edges.py: edges of the W0.3/W0.4 outcome
+          # and headline readers the producer suites do not reach -- a missing or non-mapping
+          # phase record fails closed, a top-level decoy r2 is not a headline, a blank phase
+          # error is not the word None, and a dropped connection on predict stays degraded
+          # (exit 1, crossval still runs) while one on train is unreachable (exit 3).
+          python3 -m unittest -v tests/test_recurrence_degraded_phase_edges.py
           # tests/test_list_runs.py: hermetic tests for util/experiments/list_runs.py, the Wave 7.2
           # safety-gated run lister/pruner -- state classification, --older-than, and the prune
           # safety gates, over synthetic RUN_ROOT fixtures. Also previously unwired.
