@@ -2896,6 +2896,7 @@ python3 -m unittest -v tests/test_juniper_plant_all.py
 python3 -m unittest -v tests/test_juniper_chop_all.py
 python3 -m unittest -v tests/test_isolated_stack_script.py
 python3 -m unittest -v tests/test_experiment_stack_script.py
+python3 -m unittest -v tests/test_recurrence_env_preflight.py
 python3 -m unittest -v tests/test_run_experiment.py
 python3 -m unittest -v tests/test_read_run_metrics.py
 python3 -m unittest -v tests/test_compare_baseline.py
@@ -3111,6 +3112,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
     no listener, so kill-by-port cannot be what fired), removes the target file, releases the lockdirs, writes `teardown.json`, and preserves `artifacts/`.
   Live `cascor_up` / `canopy_up` compose pins (`TestCascorUp` / `TestCanopyUp` — fake `conda.sh` + PATH stubs; juniper-ml#813). Wired into `ci.yml` beside the `test_juniper_{plant,chop}_all.py` launcher tests.
   - Live compose coverage for `data_up` (`TestDataUpLive`: venv create/skip, pip extras, `PYTHON_GIL=0`, pidfile, missing-`python3.14` abort — juniper-ml#807).
+- `tests/test_recurrence_env_preflight.py` -- Hermetic tests for `util/recurrence_env_preflight.bash` (W0.2 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, F-E2). A fake `python` (`tests/recurrence_env_fakes.py`) drives the branch matrix: the F-E1 stale env exits 1 with both juniper `pip check` lines and the `derive_full_split` ImportError verbatim; CUDA-only `pip check` noise exits 0; `--skip` exits 0 with every finding as `WARNING: ENV PREFLIGHT SKIPPED —`; a violated pin alone refuses; every call passes `-s` first and runs from `/`. A real offline venv (`--without-pip`, the test interpreter's pip symlinked in) checks it against pip's own output. The `recurrence_up` call sites are pinned in the two launcher suites.
 - `tests/test_snapshot_index.py` -- Hermetic tests for `util/snapshot_index.py` (design §6.2). Pins bytes-attr decode, append-only rescan, `--limit` deferred-vs-present counting, D-C provenance filters, the query-time `dataset_id` join, and an AST read-only guard. Operator surface: [Snapshot Sidecar Chain](#snapshot-sidecar-chain).
 - `tests/test_snapshot_classify.py` -- Hermetic tests for `util/snapshot_classify.py` (handoff 2026-08-22 §2.4). Pins the two-axis category/health rule (attributed zero-node is category 5, not empty), `readable`-is-not-loadable, iterations-not-epochs, replace-not-append sidecar, `--write`/`--from-sidecar` refusals, and the train-stage scratch-root + unimplemented exits. Operator surface: [Snapshot Sidecar Chain](#snapshot-sidecar-chain).
 - `tests/test_snapshot_backfill.py` -- Hermetic tests for `util/snapshot_backfill.py` (handoff §3.4). Pins the four derivation levels, the `380/380` of `15927` trainability claim staying in `population`, never-invented run identity, both format-attribute spellings mapping to cohort B, and an AST read-only guard. Operator surface: [Snapshot Sidecar Chain](#snapshot-sidecar-chain).
@@ -3438,6 +3440,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - On `main`, `topo` M-06 is `label == want OR hidden count == want`; M-07 asserts container display only; `topoevents` M-12 scores empty-space clear as product FAIL.
   - Trust `STEPS`, not the module docstring's stale "NOT IMPLEMENTED" list (`topostate` / `topoexport` exist). Operator surface: [Canopy E2E Topology Driver](#canopy-e2e-topology-driver).
 - `util/ad-hoc/e2e_w6_dataset_driver.py` / `util/ad-hoc/e2e_seg16_dataset_driver.py` -- Isolated-stack Playwright drivers for the canopy dataset matrix (W6 COLD migration vs §3.6 Dataset View). `--steps` (W6, comma tokens only) vs `--step` (seg16, required). W6 **stops before** `#restart-confirm-button` (`reset=True` wipes the live network). Shared helpers from `e2e_w3_params_driver.py`; W6 does **not** inherit W3's range parser. Operator surface: [Canopy E2E Dataset Drivers](#canopy-e2e-dataset-drivers).
+- `util/recurrence_env_preflight.bash` -- W0.2 recurrence env preflight (closes F-E2): `--python PATH [--skip]`. Runs `PATH -s -m pip check` scoped to the recurrence closure (a line counts when its requiring or its `but you have` distribution is `juniper-recurrence{,-model,-client}`, `juniper-service-core`, `juniper-observability`, `juniper-data-client` or `juniper-model-core`, so the env's CUDA conflicts never refuse), the model / service-core pins the installed `juniper-recurrence` declares, and the `derive_full_split` import — each with `-s`, from `/`. Exit 0 clean · 1 refused (findings verbatim, then `ENV PREFLIGHT REFUSED`) · 2 misuse; `--skip` warns and exits 0. Committed 0644: run it with `bash`. Tests: `tests/test_recurrence_env_preflight.py`.
 - `util/experiment_stack.bash` -- Brings up / tears down a **per-run** experiment stack (dedicated juniper-data + `--cascor` and/or `--recurrence`; never canopy) for the
   [CLI experimentation plan](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) §6.2 (Wave 2.1).
   `--up` (with `--shared-data URL` / `--config PATH` / `--experiment NAME` / `--grafana-bridge`), `--down <RUN_ID>|--all-mine`, `--status [RUN_ID]`, `--dry-run`; misuse exits 2.
@@ -4677,6 +4680,7 @@ Test seams (operator-visible): `JUNIPER_SUITE_LAUNCHER`, `JUNIPER_SUITE_DRIVER`,
 | `JUNIPER_EXP_HEALTH_TIMEOUT` | `90` | Per-service health wait (seconds) |
 | `JUNIPER_EXP_KILL_TIMEOUT` | `10` | SIGTERM → SIGKILL grace (seconds) |
 | `JUNIPER_EXP_CONDA_ACTIVATE` | `0` | `1` = `conda activate` instead of direct env-bin |
+| `JUNIPER_EXP_SKIP_ENV_PREFLIGHT` | `0` | `1` = `--skip-env-preflight`: the recurrence env preflight warns instead of refusing (for `run_suite.py`, which cannot pass the flag) |
 | `JUNIPER_SUITE_GRAFANA_BRIDGE` | unset | `1` / `true` / `yes` / `on` adds `--grafana-bridge` to every suite `--up` (never a suite-YAML key) |
 | `JUNIPER_SUITE_LAUNCHER` / `JUNIPER_SUITE_DRIVER` / `JUNIPER_SUITE_PYTHON` | in-tree defaults | Test / operator seams for the suite driver |
 
@@ -4687,6 +4691,7 @@ Test seams (operator-visible): `JUNIPER_SUITE_LAUNCHER`, `JUNIPER_SUITE_DRIVER`,
 | Misuse exit `2` on `--up` | Need exactly one action and at least one of `--cascor` / `--recurrence`. |
 | Health timeout mid-`--up` | Inspect `$RUN_DIR/logs/`; cold recurrence often needs the default `90s` — raise `JUNIPER_EXP_HEALTH_TIMEOUT` only after fixing the service. Partial bring-up should already have called `teardown_run` (see above). |
 | `bring-up failed — tearing the partial run back down` | Expected on a failed `*_up` leg — `do_up` auto-tears down. Check `$RUN_DIR/logs/` + `teardown.json`; confirm port locks released under `JUNIPER_EXP_LOCK_ROOT` before retrying. |
+| `ENV PREFLIGHT REFUSED: <n> finding(s)` on the recurrence leg | The env `serve` would run from is stale (W0.2; the F-E1 shape). Read the `FINDING:` lines in stdout or `$RUN_DIR/logs/launch.log` and repair the env (plan W0.1). `--skip-env-preflight` / `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` serves anyway, loudly — expect `/v1/crossval` to 422. |
 | Worktree can't find cascor `src/` | Set `JUNIPER_EXP_PROJECT_DIR` to the real ecosystem root. |
 | Teardown killed the wrong process / left orphans | Pre-F-6 `$!` class — confirm pidfiles came from `record_listener_pid` (post-health `ss`), not shell `$!`. |
 | Log says `pidfile path refused — falling back to the recorded port` | Pid reuse / cmdline mismatch refused the pidfile kill; port fallback should still stop **this run's** listener. If WARNING persists, inspect `ss -tlnpH "sport = :<port>"` before reuse. |

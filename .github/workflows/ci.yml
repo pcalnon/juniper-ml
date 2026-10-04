@@ -841,6 +841,12 @@ jobs:
           # the F-6 listener-pid rule + --dry-run and teardown behaviour (PATH-stubbed ss/curl/docker/
           # socat; no services, no docker, no network).
           python3 -m unittest -v tests/test_experiment_stack_script.py
+          # tests/test_recurrence_env_preflight.py: stdlib-only tests of util/recurrence_env_preflight.bash,
+          # the W0.2 recurrence env preflight both launchers run before `serve` (equities end-to-end plan,
+          # F-E2). A fake interpreter drives the branch matrix (a stale env refuses with its lines verbatim;
+          # unrelated pip check noise does not; --skip warns; a violated pin alone refuses); a REAL offline
+          # venv (--without-pip, this pip symlinked in) checks it against pip's own output. No network.
+          python3 -m unittest -v tests/test_recurrence_env_preflight.py
           # tests/test_run_experiment.py: hermetic tests for
           # util/experiments/run_experiment.py (CLI experimentation plan Waves
           # 2.2-2.6: cascor + recurrence service paths, the SS8.1/SS8.2 plot

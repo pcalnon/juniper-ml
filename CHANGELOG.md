@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Both launchers refuse a stale recurrence env before `serve` (W0.2)**
+  (`util/recurrence_env_preflight.bash`, new; `util/experiment_stack.bash`;
+  `util/isolated_stack.bash`; `tests/test_recurrence_env_preflight.py`, new, wired into `ci.yml`
+  and `docs/REFERENCE.md`; `tests/recurrence_env_fakes.py`, new). W0.2 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`,
+  closing F-E2 and the launcher half of F-E5. On 2026-10-03 the default env, `JuniperCascor1`,
+  served `juniper-recurrence-model` 0.1.5 (no `derive_full_split`) and `juniper-service-core`
+  0.5.0 under an app pinned `>=0.3.0,<0.4.0` / `>=0.6.0,<0.8.0`. Both launchers accepted it
+  because the console script existed and `/v1/health/ready` answered, and every
+  `POST /v1/crossval` then 422'd. `recurrence_up` now checks the interpreter the console script
+  runs under, each probe as `python -s` from `/`: `pip check` scoped to the recurrence closure (a
+  line counts when its requiring or its "but you have" distribution is in it, so the env's CUDA
+  conflicts never refuse), the model / service-core pins the installed `juniper-recurrence`
+  declares, and the `derive_full_split` import. A finding fails the leg, so the partial run is
+  torn down, and the lines are printed verbatim to stdout and to the new
+  `$RUN_DIR/logs/launch.log`. `--skip-env-preflight` (or `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` /
+  `JUNIPER_E2E_SKIP_ENV_PREFLIGHT=1`) keeps every check and prints each finding as
+  `WARNING: ENV PREFLIGHT SKIPPED —` instead. **The as-served `JuniperCascor1` is refused until
+  W0.1's env repair lands**, by design: it still carries `juniper-service-core` 0.5.0.
 - **`ceremony.py --target-sha`: the tag, the CI gate and the notes describe one commit**
   (`util/release_train/ceremony.py`). By default the Release tags the owning repo's `main` as it is
   at cut time, while the notes come from the `--ecosystem-root` checkout. The two agree only if
