@@ -36,6 +36,10 @@
 #     --config PATH      Stage an experiment YAML into the RUN_DIR (see CONFIG below).
 #     --experiment NAME  Value for the Prometheus 'experiment' target label (§7.2).
 #     --grafana-bridge   OPT-IN: start the socat relays + write the Prometheus target file.
+#     --skip-env-preflight
+#                        With --recurrence: still run the recurrence env preflight (see
+#                        RECURRENCE ENV PREFLIGHT below), but report its findings as WARNINGs
+#                        instead of refusing the leg. Emergencies only.
 #   --down RUN_ID        Tear the run down (pidfile-first), release its port locks,
 #                        remove its relays + target file. Keeps artifacts/.
 #     --all-mine         With --down: tear down EVERY run under the run root.
@@ -70,6 +74,9 @@
 #   JUNIPER_EXP_KILL_TIMEOUT    — SIGTERM -> SIGKILL grace, seconds (default: 10)
 #   JUNIPER_EXP_CONDA_ACTIVATE  — 1 to `conda activate` before launching instead of using the
 #                                 env's bin/ directly (see CONDA below)
+#   JUNIPER_EXP_SKIP_ENV_PREFLIGHT
+#                               — 1 = --skip-env-preflight, for a caller that cannot pass the flag
+#                                 (run_suite.py invokes --up with a fixed argv)
 #
 # CONDA: services are launched through direct env-bin paths
 # (${JUNIPER_EXP_CONDA_DIR}/envs/<env>/bin/...), which is what the P0 evidence run used and
@@ -83,6 +90,15 @@
 # each app projects the file's service: block above env (§5.1). Neither launch passes an app
 # --config flag — the env var is the threading mechanism, so the launcher CLI keeps owning
 # the bind (§5.2).
+#
+# RECURRENCE ENV PREFLIGHT (W0.2 of juniper-ml
+# notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md):
+# before `serve`, recurrence_up runs util/recurrence_env_preflight.bash against the interpreter
+# the console script will run under — `pip check` scoped to the recurrence closure, the model and
+# service-core pins, and the `derive_full_split` import — and fails the leg on any finding, so the
+# partial run is torn down like any other failed leg. The report goes to stdout AND to
+# $RUN_DIR/logs/launch.log. The console script existing and /v1/health/ready were the only gates
+# before, and on 2026-10-03 a stale JuniperCascor1 passed both (F-E1 / F-E2).
 ###########################################################################################################################################################################################################
 set -euo pipefail
 
@@ -145,6 +161,11 @@ HEALTH_TIMEOUT="${JUNIPER_EXP_HEALTH_TIMEOUT:-90}"
 KILL_TIMEOUT="${JUNIPER_EXP_KILL_TIMEOUT:-10}"
 CONDA_ACTIVATE="${JUNIPER_EXP_CONDA_ACTIVATE:-0}"
 
+# W0.2 recurrence env preflight (RECURRENCE ENV PREFLIGHT above). Run with `bash`: the script is
+# committed 0644, because a GitHub-signed API commit carries no file mode.
+ENV_PREFLIGHT="${SCRIPT_DIR}/recurrence_env_preflight.bash"
+SKIP_ENV_PREFLIGHT="${JUNIPER_EXP_SKIP_ENV_PREFLIGHT:-0}"
+
 
 ###########################################################################################################################################################################################################
 # Mutable run state
@@ -180,7 +201,7 @@ usage() {
     cat <<USAGE
 ${SCRIPT_NAME} — per-run experiment stack (data ${DATA_PORT_MIN}-${DATA_PORT_MAX} / cascor ${CASCOR_PORT_MIN}-${CASCOR_PORT_MAX} / recurrence ${RECURRENCE_PORT_MIN}-${RECURRENCE_PORT_MAX})
 
-Usage: ${SCRIPT_NAME} --up (--cascor | --recurrence) [--shared-data URL] [--config PATH] [--experiment NAME] [--grafana-bridge] [--dry-run]
+Usage: ${SCRIPT_NAME} --up (--cascor | --recurrence) [--shared-data URL] [--config PATH] [--experiment NAME] [--grafana-bridge] [--skip-env-preflight] [--dry-run]
        ${SCRIPT_NAME} --down (RUN_ID | --all-mine) [--dry-run]
        ${SCRIPT_NAME} --status [RUN_ID] [--dry-run]
        ${SCRIPT_NAME} --help
@@ -192,6 +213,9 @@ Usage: ${SCRIPT_NAME} --up (--cascor | --recurrence) [--shared-data URL] [--conf
   --config PATH      Stage an experiment YAML into the run dir; its service: block reaches the apps via JUNIPER_*_CONFIG_FILE (Waves 3.1/3.3).
   --experiment NAME  Prometheus 'experiment' target label (default: config basename).
   --grafana-bridge   OPT-IN: start socat relays and write the Prometheus target file.
+  --skip-env-preflight
+                     With --recurrence: run the recurrence env preflight but only WARN (stdout + logs/launch.log) instead of refusing a stale env.
+                     Env equivalent: JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1. Emergencies only.
   --down RUN_ID      Tear down a run (pidfile-first); --all-mine tears down every run.
   --status [RUN_ID]  Probe a run, or list every run under the run root.
   --dry-run          Print every command without executing it (creates/kills nothing).
@@ -274,6 +298,66 @@ require_env_bin() {
         log "ERROR: ${bin_name} not found in conda env '${env_name}' (${path})"
         return 1
     fi
+}
+
+# The interpreter a console script actually runs under: its shebang. pip writes a plain absolute
+# one (`#!/opt/miniforge3/envs/JuniperCascor1/bin/python3.14` on this host, where bin/python is a
+# symlink to that same file) unless the path is too long or holds a space, when it writes a
+# /bin/sh trampoline instead; anything but a plain absolute python shebang falls back to the
+# env's bin/python. A shebang naming an interpreter that no longer exists is returned as-is, so
+# the preflight names it — the 2026-09-12 JuniperCascor1 3.13 -> 3.14 upgrade deleted the
+# interpreter that older console scripts' shebangs still named.
+console_script_python() {
+    local script="$1" fallback="$2" first=""
+    if [[ -r "${script}" ]]; then
+        IFS= read -r first <"${script}" || true
+    fi
+    first="${first%$'\r'}"
+    if [[ "${first}" == '#!/'* ]]; then
+        first="${first:2}"
+        first="${first%%[[:space:]]*}"
+        if [[ "${first##*/}" == python* ]]; then
+            printf '%s' "${first}"
+            return 0
+        fi
+    fi
+    printf '%s' "${fallback}"
+}
+
+# log() to stdout, plus the same line, timestamped, into the run's ${LOG_DIR}/launch.log. stdout
+# is what run_suite.py captures, and it keeps only a 500-char tail of it, on failure only;
+# launch.log is the copy that survives — where a --skip-env-preflight launch stays loud.
+log_launch() {
+    log "$*"
+    if ! printf '%s [%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${SCRIPT_NAME}" "$*" >>"${LOG_DIR}/launch.log" 2>/dev/null; then
+        log "WARNING: could not append to ${LOG_DIR}/launch.log"
+    fi
+}
+
+# W0.2: run the recurrence env preflight against the interpreter `serve` will run under, and fail
+# on a finding. Every line of its report goes through log_launch.
+#
+# Explicit returns, not set -e: recurrence_up runs as ``recurrence_up || failed=1``, which
+# disables set -e for this body too (bash OR-list rule). The script is run with `bash` because
+# it is committed 0644; a missing or crashing script fails closed, like a refusal.
+run_env_preflight() {
+    local python_bin="$1" out="" rc=0 line
+    local -a args=(--python "${python_bin}")
+    if [[ "${SKIP_ENV_PREFLIGHT}" == "1" ]]; then
+        args+=(--skip)
+    fi
+    log_launch "recurrence env preflight: bash ${ENV_PREFLIGHT} ${args[*]}"
+    out="$(bash "${ENV_PREFLIGHT}" "${args[@]}" 2>&1)" || rc=$?
+    while IFS= read -r line; do
+        if [[ -n "${line}" ]]; then
+            log_launch "${line}"
+        fi
+    done <<<"${out}"
+    if (( rc != 0 )); then
+        log_launch "ERROR: recurrence env preflight refused ${python_bin} (exit ${rc}); serve NOT started. Repair the env (plan W0.1), or pass --skip-env-preflight to launch it anyway."
+        return 1
+    fi
+    return 0
 }
 
 
@@ -729,16 +813,23 @@ cascor_up() {
 # Bring-up: juniper-recurrence (console script, plan §6.1)
 ###########################################################################################################################################################################################################
 recurrence_up() {
-    local serve_bin config_env=""
+    local serve_bin python_bin config_env="" skip_flag=""
     serve_bin="$(env_bin "${RECURRENCE_CONDA}" juniper-recurrence)"
+    # The preflight must judge the interpreter `serve` actually runs under (console_script_python).
+    python_bin="$(console_script_python "${serve_bin}" "$(env_bin "${RECURRENCE_CONDA}" python)")"
     [[ -n "${CONFIG_PATH}" ]] && config_env="JUNIPER_RECURRENCE_CONFIG_FILE=${RUN_DIR}/config/experiment.yaml "
+    [[ "${SKIP_ENV_PREFLIGHT}" == "1" ]] && skip_flag=" --skip"
     banner "juniper-recurrence  ->  http://127.0.0.1:${RECURRENCE_PORT}  (${RECURRENCE_CONDA})"
+    announce "bash ${ENV_PREFLIGHT} --python ${python_bin}${skip_flag}   # W0.2 recurrence env preflight: a finding refuses the leg; report -> ${LOG_DIR}/launch.log"
     announce "cd ${RUN_DIR} && JUNIPER_RECURRENCE_METRICS_ENABLED=true JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false JUNIPER_DATA_URL=${DATA_URL} ${config_env}${serve_bin} serve --host 127.0.0.1 --port ${RECURRENCE_PORT}   # nohup -> ${LOG_DIR}/juniper-recurrence.log"
     if is_dry; then return 0; fi
 
     # See data_up: ``recurrence_up || failed=1`` disables set -e inside this body.
     require_env_bin "${RECURRENCE_CONDA}" juniper-recurrence || return 1
     ensure_dir "${LOG_DIR}"
+    # W0.2 (F-E2): refuse a stale env HERE, before serve. Readiness cannot: a stale model passes
+    # /v1/health/ready and then fails every split="full" request (F-E1).
+    run_env_preflight "${python_bin}" || return 1
     record_launch_env "juniper-recurrence" \
         "JUNIPER_RECURRENCE_METRICS_ENABLED=true" \
         "JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false" \
@@ -1215,6 +1306,7 @@ while [[ $# -gt 0 ]]; do
         --cascor) WANT_CASCOR=1 ;;
         --recurrence) WANT_RECURRENCE=1 ;;
         --grafana-bridge) WANT_BRIDGE=1 ;;
+        --skip-env-preflight) SKIP_ENV_PREFLIGHT=1 ;;
         --all-mine) ALL_MINE=1 ;;
         --dry-run) DRY_RUN=1 ;;
         --config)
