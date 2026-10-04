@@ -21,7 +21,10 @@ Pins, each able to fail for the reason it exists:
   state -- a 200 alone does not prove the scheduler moved;
 * every job-scoped verb refuses a missing, malformed or contradictory id BEFORE reading the
   credential or sending anything, and server-wide verbs refuse an id;
-* a failed ``export`` leaves stdout EMPTY and exits 1 (its stdout feeds ``json.load``);
+* ``export`` first POSTs ``/api/v1/auth/issuetoken/export`` and passes that token as the
+  ``token`` query parameter (2.4.0.0's export route ignores the Bearer header and 400s
+  without it). The operation token is not printed. A failed ``export`` leaves stdout
+  EMPTY and exits 1 (its stdout feeds ``json.load``);
 * the strings the bash callers grep (``"ActiveTask": null``, ``"SchedulerQueueIds": []``,
   ``target=``, ``"ParsedResult": "Success"``) are unchanged;
 * the password is sent only as the login body and printed nowhere.
@@ -54,6 +57,8 @@ SCRIPT_TIMEOUT_SECONDS = 20
 LOGIN = ("POST", "/api/v1/auth/login")
 ZERO_DATE = "0001-01-01T00:00:00Z"
 TARGET = "file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi"
+# Distinct from the stub bearer: the export route rejects an access token in the query.
+OP_TOKEN = "single-op-export-token"
 
 
 def state(program="Running", queue=None, end=ZERO_DATE, active=None):
@@ -213,20 +218,62 @@ class JobIdRequiredTest(_Cli):
 
     def test_export_by_flag_or_position_prints_only_the_json(self) -> None:
         config = {"Backup": {"ID": "7", "TargetURL": TARGET}, "Schedule": {"Repeat": "1D"}}
+        self.fake.route("POST", "/api/v1/auth/issuetoken/export", 200, {"Token": OP_TOKEN})
         self.fake.route("GET", "/api/v1/backup/7/export", 200, config)
         for argv in (("export", "--backup-id", "7"), ("export", "7"), ("export", "7", "--backup-id", "7")):
             with self.subTest(argv=argv):
                 self.fake.requests.clear()
-                rc, out, _ = self.run_cli(*argv)
+                rc, out, err = self.run_cli(*argv)
                 self.assertEqual(rc, 0)
                 self.assertEqual(json.loads(out), config, "stdout must be exactly the JSON the design's guard dry-run parses")
-                self.assertEqual(self.fake.requests[-1].query, {"export-passwords": "false"})
+                self.assertNotIn(OP_TOKEN, out)
+                self.assertNotIn(OP_TOKEN, err)
+                issued = [r for r in self.fake.requests if r.path == "/api/v1/auth/issuetoken/export"]
+                self.assertEqual(len(issued), 1)
+                self.assertIsNone(issued[0].body)
+                self.assertEqual(issued[0].headers.get("authorization"), f"Bearer {STUB_BEARER_MARKER}")
+                download = self.fake.requests[-1]
+                self.assertEqual((download.method, download.path), ("GET", "/api/v1/backup/7/export"))
+                self.assertEqual(download.query, {"export-passwords": "false", "token": OP_TOKEN})
+                self.assertNotEqual(download.query["token"], STUB_BEARER_MARKER)
+
+    def test_export_accepts_a_lowercase_token_field(self) -> None:
+        """Newtonsoft emits ``Token``. A camelCase body must still be used, and not dumped to stderr."""
+        config = {"Backup": {"ID": "7", "TargetURL": TARGET}}
+        self.fake.route("POST", "/api/v1/auth/issuetoken/export", 200, {"token": OP_TOKEN})
+        self.fake.route("GET", "/api/v1/backup/7/export", 200, config)
+        rc, out, err = self.run_cli("export", "7")
+        self.assertEqual(rc, 0)
+        self.assertEqual(json.loads(out), config)
+        self.assertEqual(self.fake.requests[-1].query["token"], OP_TOKEN)
+        self.assertNotIn(OP_TOKEN, err)
 
     def test_a_failed_export_leaves_stdout_empty(self) -> None:
         """An empty TargetURL makes the guard skip its TargetURL check (STOP item 3): fail LOUDLY and print no JSON."""
+        self.fake.route("POST", "/api/v1/auth/issuetoken/export", 200, {"Token": OP_TOKEN})
         rc, out, err = self.run_cli("export", "--backup-id", "7")
         self.assertEqual((rc, out), (1, ""))
         self.assertIn("export 7 failed 404", err)
+        self.assertNotIn(OP_TOKEN, err)
+        self.assertNotIn(OP_TOKEN, out)
+
+    def test_a_failed_issuetoken_does_not_download_and_leaves_stdout_empty(self) -> None:
+        """No operation token: do not call the export route (it would 400) and print nothing the guard could parse."""
+        self.fake.route("GET", "/api/v1/backup/7/export", 200, {"Backup": {"TargetURL": TARGET}})
+        rc, out, err = self.run_cli("export", "--backup-id", "7")
+        self.assertEqual((rc, out), (1, ""))
+        self.assertIn("export 7 failed 404", err)
+        self.assertIn(("POST", "/api/v1/auth/issuetoken/export"), self.fake.paths())
+        self.assertNotIn(("GET", "/api/v1/backup/7/export"), self.fake.paths())
+        self.assertNotIn(FIXTURE_MARKER, err)
+
+    def test_an_issuetoken_body_without_a_token_is_not_echoed(self) -> None:
+        self.fake.route("POST", "/api/v1/auth/issuetoken/export", 200, {"Unexpected": OP_TOKEN})
+        rc, out, err = self.run_cli("export", "7")
+        self.assertEqual((rc, out), (1, ""))
+        self.assertIn("no Token", err)
+        self.assertNotIn(OP_TOKEN, err)
+        self.assertNotIn(("GET", "/api/v1/backup/7/export"), self.fake.paths())
 
     def test_run_posts_and_reports_failure(self) -> None:
         self.fake.route("POST", "/api/v1/backup/7/run", 200, {"Status": "OK", "ID": 31})
@@ -320,6 +367,7 @@ class LoginAndTransportTest(_Cli):
     def test_the_password_travels_only_as_the_login_body(self) -> None:
         self.fake.route("GET", "/api/v1/serverstate", 200, state())
         self.fake.route("POST", "/api/v1/serverstate/pause", 200, {})
+        self.fake.route("POST", "/api/v1/auth/issuetoken/export", 200, {"Token": OP_TOKEN})
         self.fake.route("GET", "/api/v1/backup/7/export", 200, {"Backup": {"ID": "7"}})
         for argv in (("serverstate",), ("pause",), ("export", "7")):
             self.run_cli(*argv)
