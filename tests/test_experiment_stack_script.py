@@ -32,6 +32,12 @@ pins:
   conda / network / docker;
 - ``do_up`` partial-failure → ``teardown_run`` (locks released, recorded data
   listener killed) when a later service fails require_env_bin.
+- the W0.2 recurrence env preflight: ``recurrence_up`` runs
+  ``util/recurrence_env_preflight.bash`` (via ``bash`` -- it is committed 0644) against the
+  console script's interpreter AFTER the bin check and BEFORE ``serve``; a stale env fails the
+  leg with the findings in stdout and ``$RUN_DIR/logs/launch.log``, and ``--skip-env-preflight``
+  / ``JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1`` turn them into WARNINGs and serve anyway. The script's
+  own branch matrix lives in ``tests/test_recurrence_env_preflight.py``.
 - OR-list fail-closed: ``*_up || failed=1`` disables ``set -e`` inside each
   ``*_up``, so critical steps must ``|| return 1`` (health-timeout + live listener
   must not false-green; activate_conda must not mask conda failure; bridge failure
@@ -59,6 +65,18 @@ import unittest
 from pathlib import Path
 
 from tests.process_cleanup import force_kill
+from tests.recurrence_env_fakes import (
+    CUDA_BINDINGS_LINE,
+    IMPORT_ERROR_LINE,
+    MODEL_PIN_LINE,
+    PINS_OK,
+    PINS_STALE,
+    PREFLIGHT_SCRIPT,
+    SERVICE_CORE_PIN_LINE,
+    SKIP_MARKER,
+    read_calls,
+    write_fake_python,
+)
 from tests.redacted_env import RedactedEnv
 
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "experiment_stack.bash"
@@ -896,6 +914,7 @@ class TestDocumentedOverrides(unittest.TestCase):
             "JUNIPER_EXP_CONDA_DIR",
             "JUNIPER_EXP_HEALTH_TIMEOUT",
             "JUNIPER_EXP_KILL_TIMEOUT",
+            "JUNIPER_EXP_SKIP_ENV_PREFLIGHT",
         ):
             self.assertIn(var, SCRIPT_TEXT)
 
@@ -948,6 +967,8 @@ class _DryRunHarness(unittest.TestCase):
             "JUNIPER_EXP_DEPLOY_DIR": str(root / "deploy"),
             "JUNIPER_EXP_PROJECT_DIR": "/opt/juniper-exp-fixture",
             "JUNIPER_EXP_CONDA_DIR": str(conda_dir),
+            # Pinned off so an operator's exported skip cannot change what a dry run prints.
+            "JUNIPER_EXP_SKIP_ENV_PREFLIGHT": "0",
             "PATH": str(stub_bin) + os.pathsep + "/usr/bin:/bin",
         }
         return env
@@ -1024,6 +1045,32 @@ class TestDryRunUp(_DryRunHarness):
             self.assertIn("Reusing shared juniper-data at http://127.0.0.1:8100", out)
             self.assertNotIn("-m juniper_data", out)
             self.assertIn("JUNIPER_DATA_URL=http://127.0.0.1:8100", out)
+
+    def test_dry_up_recurrence_announces_the_env_preflight_and_runs_nothing(self) -> None:
+        # W0.2: the dry run prints the preflight it would run -- against the env's interpreter,
+        # since the fixture console script's shebang is not a python one -- and runs nothing.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result = self._dry_up(root, "--recurrence")
+            self.assertEqual(result.returncode, 0, msg=result.stderr + result.stdout)
+            python = root / "conda" / "envs" / "JuniperCascor1" / "bin" / "python"
+            self.assertIn(f"$ bash {PREFLIGHT_SCRIPT} --python {python}   # W0.2 recurrence env preflight", result.stdout)
+            self.assertLess(result.stdout.index("recurrence env preflight"), result.stdout.index("serve --host 127.0.0.1 --port 8260"))
+            self.assertNotIn("ENV PREFLIGHT", result.stdout, "a dry run must not execute the preflight")
+            self.assertFalse((root / "runs").exists(), "dry-run --up must not create the run root")
+
+    def test_dry_up_skip_env_preflight_passes_skip_by_flag_and_by_env(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            python = root / "conda" / "envs" / "JuniperCascor1" / "bin" / "python"
+            want = f"$ bash {PREFLIGHT_SCRIPT} --python {python} --skip   # W0.2"
+            by_flag = self._dry_up(root, "--recurrence", "--skip-env-preflight")
+            self.assertEqual(by_flag.returncode, 0, msg=by_flag.stderr + by_flag.stdout)
+            self.assertIn(want, by_flag.stdout)
+            env = {**self._env(root, root / "path-stubs", root / "conda"), "JUNIPER_EXP_SKIP_ENV_PREFLIGHT": "1"}
+            by_env = _run("--dry-run", "--up", "--recurrence", env_extra=env)
+            self.assertEqual(by_env.returncode, 0, msg=by_env.stderr + by_env.stdout)
+            self.assertIn(want, by_env.stdout)
 
 
 class TestAllocatePort(unittest.TestCase):
@@ -1849,6 +1896,7 @@ class _LiveUpHarness(unittest.TestCase):
         data_port: str = "68110",
         cascor_port: str = "68230",
         recurrence_port: str = "68260",
+        skip_env_preflight: str = "0",
     ) -> str:
         # Concatenate (do not f-string) so bash `${...}` in extracts stay literal.
         return (
@@ -1856,6 +1904,9 @@ class _LiveUpHarness(unittest.TestCase):
             'SCRIPT_NAME="experiment_stack.bash"\n'
             "DRY_RUN=0\n"
             "CONDA_ACTIVATE=0\n"
+            # W0.2: recurrence_up runs the REAL preflight script against the fixture env's python.
+            f'ENV_PREFLIGHT="{PREFLIGHT_SCRIPT}"\n'
+            f'SKIP_ENV_PREFLIGHT="{skip_env_preflight}"\n'
             f'CONDA_DIR="{conda_dir}"\n'
             f'PROJECT_DIR="{project_dir}"\n'
             f'CASCOR_SRC_DIR="{project_dir}/juniper-cascor/src"\n'
@@ -1873,7 +1924,19 @@ class _LiveUpHarness(unittest.TestCase):
             'log() { echo "[${SCRIPT_NAME}] $*"; }\n'
             'banner() { echo ""; echo "[${SCRIPT_NAME}] === $* ==="; }\n'
             'announce() { echo "[${SCRIPT_NAME}] \\$ $*"; }\n'
-            'is_dry() { [[ "${DRY_RUN}" == "1" ]]; }\n' + _extract_experiment_fn("require_cmd") + _extract_experiment_fn("ensure_dir") + _extract_experiment_fn("env_bin") + _extract_experiment_fn("require_env_bin") + _extract_experiment_fn("port_listener_pid") + _extract_experiment_fn("proc_cmdline") + _extract_experiment_fn("wait_for_health") + _extract_experiment_fn("record_listener_pid") + _extract_experiment_fn("record_launch_env")
+            'is_dry() { [[ "${DRY_RUN}" == "1" ]]; }\n'
+            + _extract_experiment_fn("require_cmd")
+            + _extract_experiment_fn("ensure_dir")
+            + _extract_experiment_fn("env_bin")
+            + _extract_experiment_fn("require_env_bin")
+            + _extract_experiment_fn("console_script_python")
+            + _extract_experiment_fn("log_launch")
+            + _extract_experiment_fn("run_env_preflight")
+            + _extract_experiment_fn("port_listener_pid")
+            + _extract_experiment_fn("proc_cmdline")
+            + _extract_experiment_fn("wait_for_health")
+            + _extract_experiment_fn("record_listener_pid")
+            + _extract_experiment_fn("record_launch_env")
         )
 
     def _run_harness(self, harness: str, *, stub_bin: Path) -> subprocess.CompletedProcess[str]:
@@ -2064,7 +2127,31 @@ class TestCascorUpLive(_LiveUpHarness):
 
 
 class TestRecurrenceUpLive(_LiveUpHarness):
-    """Behavioral pins for live ``recurrence_up`` (ready health + metrics/rate-limit env)."""
+    """Behavioral pins for live ``recurrence_up`` (ready health + metrics/rate-limit env + W0.2 env preflight).
+
+    The preflight is the REAL ``util/recurrence_env_preflight.bash``; only the env's interpreter
+    is a fake (``tests/recurrence_env_fakes.py``), answering its three calls with canned text.
+    """
+
+    def _stage_recurrence_env(self, root: Path, **python_kwargs) -> "tuple[Path, Path, Path, Path, Path, Path]":
+        """Listening console-script stub + a fake env python; return (stub_bin, run_dir, marker_dir, listeners_dir, project_dir, conda_dir)."""
+        run_dir = root / "run"
+        marker_dir = root / "markers"
+        listeners_dir = root / "listeners"
+        project_dir = root / "project"
+        conda_dir = root / "conda"
+        (project_dir / "juniper-cascor" / "src").mkdir(parents=True)
+        stub_bin = _stage_live_path_stubs(root, listeners_dir)
+        _write_listening_env_bin(
+            conda_dir / "envs" / "JuniperCascor1" / "bin" / "juniper-recurrence",
+            listeners_dir=listeners_dir,
+            marker_dir=marker_dir,
+            label="recurrence",
+        )
+        python_kwargs.setdefault("pins", PINS_OK)
+        python_kwargs.setdefault("calls_log", root / "python-calls.log")
+        write_fake_python(conda_dir / "envs" / "JuniperCascor1" / "bin" / "python", **python_kwargs)
+        return stub_bin, run_dir, marker_dir, listeners_dir, project_dir, conda_dir
 
     def test_happy_path_ready_health_and_listener(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -2074,6 +2161,7 @@ class TestRecurrenceUpLive(_LiveUpHarness):
             listeners_dir = root / "listeners"
             project_dir = root / "project"
             conda_dir = root / "conda"
+            calls_log = root / "python-calls.log"
             (project_dir / "juniper-cascor" / "src").mkdir(parents=True)
             stub_bin = _stage_live_path_stubs(root, listeners_dir)
             _write_listening_env_bin(
@@ -2082,6 +2170,8 @@ class TestRecurrenceUpLive(_LiveUpHarness):
                 marker_dir=marker_dir,
                 label="recurrence",
             )
+            # W0.2: a recurrence env now has to pass the preflight before serve; this one is clean.
+            write_fake_python(conda_dir / "envs" / "JuniperCascor1" / "bin" / "python", pins=PINS_OK, calls_log=calls_log)
             harness = self._common_prelude(run_dir=run_dir, conda_dir=conda_dir, project_dir=project_dir) + _extract_experiment_fn("recurrence_up") + "recurrence_up\n"
             result = self._run_harness(harness, stub_bin=stub_bin)
             pid_path = run_dir / "juniper-recurrence.pid"
@@ -2099,9 +2189,212 @@ class TestRecurrenceUpLive(_LiveUpHarness):
                 args = (marker_dir / "recurrence.args").read_text()
                 self.assertIn("serve", args)
                 self.assertIn("68260", args)
+                # W0.2: the preflight ran (all three calls), passed, and left its report in launch.log.
+                self.assertEqual(len(read_calls(calls_log)), 3)
+                self.assertIn("[experiment_stack.bash] ENV PREFLIGHT OK: no findings\n", result.stdout)
+                self.assertIn("ENV PREFLIGHT OK: no findings", (run_dir / "logs" / "launch.log").read_text())
             finally:
                 if child_pid is not None:
                     force_kill(child_pid)
+
+    def test_a_stale_env_is_refused_before_serve(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stub_bin, run_dir, marker_dir, listeners_dir, project_dir, conda_dir = self._stage_recurrence_env(root, pip_check=(CUDA_BINDINGS_LINE, MODEL_PIN_LINE, SERVICE_CORE_PIN_LINE), pins=PINS_STALE, import_error=IMPORT_ERROR_LINE)
+            harness = self._common_prelude(run_dir=run_dir, conda_dir=conda_dir, project_dir=project_dir) + _extract_experiment_fn("recurrence_up") + "set +e\nrecurrence_up\necho STATUS=$?\n"
+            result = self._run_harness(harness, stub_bin=stub_bin)
+            listener = listeners_dir / "68260.pid"
+            try:
+                out = result.stdout
+                self.assertIn("STATUS=1", out, msg=out + result.stderr)
+                self.assertIn(f"[experiment_stack.bash] FINDING: {MODEL_PIN_LINE}\n", out)
+                self.assertIn(f"[experiment_stack.bash] FINDING: {SERVICE_CORE_PIN_LINE}\n", out)
+                self.assertIn("[experiment_stack.bash] ENV PREFLIGHT REFUSED: 5 finding(s); fix the env or pass --skip-env-preflight\n", out)
+                self.assertIn("serve NOT started", out)
+                # serve never ran: no argv marker, no listener, no pidfile, no health wait, no launch.env record.
+                self.assertFalse((marker_dir / "recurrence.args").exists(), "a refused env must never reach serve")
+                self.assertFalse(listener.exists())
+                self.assertFalse((run_dir / "juniper-recurrence.pid").exists())
+                self.assertNotIn("Waiting for juniper-recurrence health", out)
+                self.assertFalse((run_dir / "env" / "launch.env").exists(), "the preflight must run before record_launch_env")
+                # The durable copy: every finding and the verdict, in the run's launch.log.
+                run_launch_log = (run_dir / "logs" / "launch.log").read_text()
+                self.assertIn(f"FINDING: {MODEL_PIN_LINE}\n", run_launch_log)
+                self.assertIn(f"FINDING: {SERVICE_CORE_PIN_LINE}\n", run_launch_log)
+                self.assertIn("ENV PREFLIGHT REFUSED: 5 finding(s)", run_launch_log)
+                self.assertIn("serve NOT started", run_launch_log)
+            finally:
+                if listener.exists():
+                    force_kill(int(listener.read_text().strip()))
+
+    def test_skip_env_preflight_warns_into_launch_log_and_serves(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stub_bin, run_dir, _marker_dir, listeners_dir, project_dir, conda_dir = self._stage_recurrence_env(root, pip_check=(MODEL_PIN_LINE, SERVICE_CORE_PIN_LINE), pins=PINS_STALE, import_error=IMPORT_ERROR_LINE)
+            harness = self._common_prelude(run_dir=run_dir, conda_dir=conda_dir, project_dir=project_dir, skip_env_preflight="1") + _extract_experiment_fn("recurrence_up") + "recurrence_up\n"
+            result = self._run_harness(harness, stub_bin=stub_bin)
+            pid_path = run_dir / "juniper-recurrence.pid"
+            listener = listeners_dir / "68260.pid"
+            try:
+                out = result.stdout
+                self.assertEqual(result.returncode, 0, msg=result.stderr + out)
+                self.assertIn("juniper-recurrence is healthy", out)
+                self.assertTrue(pid_path.is_file(), "--skip-env-preflight must still serve")
+                self.assertIn(f"[experiment_stack.bash] {SKIP_MARKER} {MODEL_PIN_LINE}\n", out)
+                self.assertIn(f"[experiment_stack.bash] {SKIP_MARKER} 5 finding(s) ignored", out)
+                self.assertNotIn("REFUSED", out)
+                run_launch_log = (run_dir / "logs" / "launch.log").read_text()
+                self.assertIn(" --skip\n", run_launch_log, "launch.log must record that the preflight ran with --skip")
+                self.assertIn(f"{SKIP_MARKER} {SERVICE_CORE_PIN_LINE}\n", run_launch_log)
+                self.assertIn(f"{SKIP_MARKER} 5 finding(s) ignored; juniper-recurrence will serve from an env that FAILED its preflight\n", run_launch_log)
+            finally:
+                if pid_path.is_file():
+                    force_kill(int(pid_path.read_text().strip()))
+                if listener.exists():
+                    force_kill(int(listener.read_text().strip()))
+
+
+class TestConsoleScriptPython(unittest.TestCase):
+    """The preflight must judge the interpreter ``serve`` runs under: the console script's shebang."""
+
+    FALLBACK = "/fallback/envs/JuniperCascor1/bin/python"
+
+    def _resolve(self, script_text: "str | None") -> str:
+        with tempfile.TemporaryDirectory() as tmp:
+            script = Path(tmp) / "juniper-recurrence"
+            if script_text is not None:
+                script.write_text(script_text)
+            harness = "set -euo pipefail\n" + _extract_experiment_fn("console_script_python") + f'console_script_python "{script}" "{self.FALLBACK}"\n'
+            result = subprocess.run(["/bin/bash", "-c", harness], capture_output=True, text=True, env=RedactedEnv(os.environ), timeout=SCRIPT_TIMEOUT_SECONDS)
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        return result.stdout
+
+    def test_a_plain_python_shebang_is_the_interpreter(self) -> None:
+        # The shape pip wrote on this host: `#!/opt/miniforge3/envs/JuniperCascor1/bin/python3.14`.
+        self.assertEqual(self._resolve("#!/opt/env/bin/python3.14\nimport sys\n"), "/opt/env/bin/python3.14")
+
+    def test_shebang_arguments_and_a_carriage_return_are_dropped(self) -> None:
+        self.assertEqual(self._resolve("#!/opt/env/bin/python3.14 -E\n"), "/opt/env/bin/python3.14")
+        self.assertEqual(self._resolve("#!/opt/env/bin/python3\r\nimport sys\r\n"), "/opt/env/bin/python3")
+
+    def test_an_interpreter_that_no_longer_exists_is_returned_for_the_preflight_to_name(self) -> None:
+        self.assertEqual(self._resolve("#!/opt/deleted/bin/python3.13\n"), "/opt/deleted/bin/python3.13")
+
+    def test_anything_else_falls_back_to_the_env_python(self) -> None:
+        trampoline = "#!/bin/sh\n'''exec' \"/opt/a path/bin/python\" \"$0\" \"$@\"\n' '''\n"
+        for text in ("#!/usr/bin/env bash\n", "#!/usr/bin/env python3\n", trampoline, "import sys\n", "", None):
+            with self.subTest(text=text):
+                self.assertEqual(self._resolve(text), self.FALLBACK)
+
+
+class TestRecurrenceEnvPreflightWiring(unittest.TestCase):
+    """W0.2 (F-E2) wiring by text: which script, which interpreter, which order, which flag."""
+
+    def test_the_preflight_is_the_util_script_beside_the_launcher(self) -> None:
+        self.assertIn('ENV_PREFLIGHT="${SCRIPT_DIR}/recurrence_env_preflight.bash"', SCRIPT_CODE)
+        self.assertTrue(PREFLIGHT_SCRIPT.is_file())
+        self.assertEqual(PREFLIGHT_SCRIPT.parent, SCRIPT_PATH.parent)
+
+    def test_the_skip_flag_and_its_env_equivalent_are_wired_and_documented(self) -> None:
+        self.assertIn('SKIP_ENV_PREFLIGHT="${JUNIPER_EXP_SKIP_ENV_PREFLIGHT:-0}"', SCRIPT_CODE)
+        self.assertIn("--skip-env-preflight) SKIP_ENV_PREFLIGHT=1 ;;", SCRIPT_CODE)
+        help_text = _run("--help").stdout
+        self.assertIn("[--skip-env-preflight]", help_text)
+        self.assertIn("JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1", help_text)
+
+    def test_recurrence_up_runs_it_after_the_bin_check_and_before_anything_is_launched(self) -> None:
+        body = _strip_comment_lines(_extract_experiment_fn("recurrence_up"))
+        dry_return = body.index("if is_dry; then return 0; fi")
+        bin_check = body.index('require_env_bin "${RECURRENCE_CONDA}" juniper-recurrence || return 1')
+        preflight = body.index('run_env_preflight "${python_bin}" || return 1')
+        self.assertLess(body.index('announce "bash ${ENV_PREFLIGHT} --python ${python_bin}${skip_flag}'), dry_return, "a dry run prints the preflight")
+        self.assertLess(dry_return, preflight, "a dry run must not execute the preflight")
+        self.assertLess(bin_check, preflight)
+        self.assertLess(preflight, body.index('record_launch_env "juniper-recurrence"'))
+        self.assertLess(preflight, body.index('nohup "${serve_bin}" serve'))
+
+    def test_it_judges_the_console_scripts_interpreter(self) -> None:
+        body = _extract_experiment_fn("recurrence_up")
+        self.assertIn('python_bin="$(console_script_python "${serve_bin}" "$(env_bin "${RECURRENCE_CONDA}" python)")"', body)
+
+    def test_it_runs_the_script_with_bash_and_fails_closed(self) -> None:
+        # The script is committed 0644 (an API-signed commit carries no mode): exec'ing it would fail.
+        body = _strip_comment_lines(_extract_experiment_fn("run_env_preflight"))
+        self.assertIn('out="$(bash "${ENV_PREFLIGHT}" "${args[@]}" 2>&1)" || rc=$?', body)
+        self.assertIn("args+=(--skip)", body)
+        self.assertRegex(body, r"if \(\( rc != 0 \)\); then\n[^\n]*\n\s*return 1\n")
+        self.assertIn('>>"${LOG_DIR}/launch.log"', _extract_experiment_fn("log_launch"))
+
+
+class TestDoUpRefusesAStaleRecurrenceEnv(unittest.TestCase):
+    """End to end through ``do_up``: a stale env fails the recurrence leg and the run is torn down."""
+
+    def test_stale_env_fails_the_leg_keeps_the_report_and_tears_the_run_down(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            run_root = root / "runs"
+            lock_root = root / "locks"
+            project_dir = root / "project"
+            conda_dir = root / "conda"
+            listeners_dir = root / "listeners"
+            marker_dir = root / "markers"
+            (project_dir / "juniper-cascor" / "src").mkdir(parents=True)
+            stub_bin = _stage_live_path_stubs(root, listeners_dir)
+            _write_listening_env_bin(conda_dir / "envs" / "JuniperData" / "bin" / "python", listeners_dir=listeners_dir, marker_dir=marker_dir, label="data")
+            _write_listening_env_bin(conda_dir / "envs" / "JuniperCascor1" / "bin" / "juniper-recurrence", listeners_dir=listeners_dir, marker_dir=marker_dir, label="recurrence")
+            # The as-served host env on 2026-10-04: the model repaired, service-core still stale.
+            write_fake_python(
+                conda_dir / "envs" / "JuniperCascor1" / "bin" / "python",
+                pip_check=(CUDA_BINDINGS_LINE, SERVICE_CORE_PIN_LINE),
+                pins=("APP 0.5.0 packaging", "OK juniper-recurrence-model 0.3.0 <0.4.0,>=0.3.0", "BAD juniper-service-core 0.5.0 <0.8.0,>=0.6.0"),
+            )
+            env = RedactedEnv(
+                os.environ,
+                JUNIPER_EXP_RUN_ROOT=str(run_root),
+                JUNIPER_EXP_LOCK_ROOT=str(lock_root),
+                JUNIPER_EXP_DEPLOY_DIR=str(root / "deploy"),
+                JUNIPER_EXP_PROJECT_DIR=str(project_dir),
+                JUNIPER_EXP_CONDA_DIR=str(conda_dir),
+                JUNIPER_EXP_HEALTH_TIMEOUT="4",
+                JUNIPER_EXP_KILL_TIMEOUT="5",
+                JUNIPER_EXP_SKIP_ENV_PREFLIGHT="0",
+                PATH=str(stub_bin) + os.pathsep + "/usr/bin:/bin",
+            )
+            result = subprocess.run(
+                ["/bin/bash", str(SCRIPT_PATH), "--up", "--recurrence", "--experiment", "stale-env"],
+                capture_output=True,
+                text=True,
+                env=env,
+                timeout=TEARDOWN_TIMEOUT_SECONDS,
+            )
+            data_listener = listeners_dir / "8110.pid"
+            try:
+                out = result.stdout
+                self.assertNotEqual(result.returncode, 0, msg=out + result.stderr)
+                self.assertIn(f"[experiment_stack.bash] FINDING: {SERVICE_CORE_PIN_LINE}\n", out)
+                self.assertIn("[experiment_stack.bash] ENV PREFLIGHT REFUSED: 2 finding(s); fix the env or pass --skip-env-preflight\n", out)
+                self.assertIn("bring-up failed — tearing the partial run back down", out)
+                self.assertNotIn(" is up ===", out)
+                self.assertFalse((marker_dir / "recurrence.args").exists(), "serve must never start on a refused env")
+                runs = list(run_root.iterdir()) if run_root.is_dir() else []
+                self.assertEqual(len(runs), 1, f"expected one partial RUN_DIR, got {runs}")
+                run_dir = runs[0]
+                run_launch_log = (run_dir / "logs" / "launch.log").read_text()
+                self.assertIn(f"FINDING: {SERVICE_CORE_PIN_LINE}\n", run_launch_log)
+                self.assertIn("serve NOT started", run_launch_log)
+                self.assertTrue((run_dir / "teardown.json").is_file(), "teardown_run must write teardown.json")
+                self.assertFalse((lock_root / "8110.lock").exists(), "data port lock must be released")
+                self.assertFalse((lock_root / "8260.lock").exists(), "recurrence port lock must be released")
+                if data_listener.is_file():
+                    pid = int(data_listener.read_text().strip())
+                    for _ in range(60):
+                        if not Path(f"/proc/{pid}").exists():
+                            break
+                        time.sleep(0.1)
+                    self.assertFalse(Path(f"/proc/{pid}").exists(), "partial teardown must kill the data listener")
+            finally:
+                if data_listener.is_file():
+                    force_kill(int(data_listener.read_text().strip()))
 
 
 class TestDoUpPartialFailureTeardown(unittest.TestCase):
