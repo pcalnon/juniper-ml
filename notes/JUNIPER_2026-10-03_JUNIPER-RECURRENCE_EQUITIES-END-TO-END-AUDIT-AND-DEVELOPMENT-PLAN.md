@@ -143,6 +143,7 @@ Details (DRV):
 | F-S7 | Minor | The train start log reports `theta=None` for data-driven theta; the resolved value (`median(sum(dt))`) is never logged. | `routers/training.py:88`; `model.py:172-179` | juniper-recurrence |
 | F-S8 | Minor | Readiness/metadata: recurrence never fetches or checks `task_type`; it validates the NPZ and reads `y_reg` directly, so it is indifferent to the 5.0.0/6.0.0 relabel (good) but cannot tell the operator a classification artifact was fed to a regression fit (bad, see F-S2). | `juniper_recurrence/data.py:73-92` | juniper-recurrence |
 | F-S9 | Major | Inner timeout nobody configures: `load_sequence_data` constructs `JuniperDataClient(base_url=…, api_key=…)` with no `timeout`, so the client default of **30 s** governs dataset creation; no setting exposes it. | `juniper_recurrence/data.py:73`; `juniper_data_client/client.py:178-188,204`; `settings.py:174-178` | juniper-recurrence |
+| F-S10 | Major (security; added v1.3.0) | `map_data_error` relays the data client's exception text in its `502 "data fetch failed: {exc}"`; the client words a refused header as `Request failed: … in header value: ' <key>'`, so a padded `JUNIPER_DATA_API_KEY` reaches every `/v1/train` caller's 502 body and the service log. W0.5 therefore shows a **4xx** detail only. | `routers/_common.py:55`; `routers/training.py:58-60`; reproduced live (juniper-canopy#702) | juniper-recurrence (proposed W1.14) |
 
 Details (SVC):
 
@@ -397,6 +398,7 @@ Details (P0):
 | W1.11 | F-P4, F-DEP1 | juniper-data + juniper-ml + juniper-deploy | **(moved from P5)** Release juniper-data 0.17.0 (`equities_seq` 6.0.0/regression, #437); bump the juniper-ml `[all]` floor; move the Compose pins (one PR per pin); add a canopy → recurrence → juniper-data smoke to `juniper-deploy-test`. | PyPI 0.17.0 probe shows `regression`; wheel probe re-run; `docker compose config` shows the new pins; smoke passes on published images. **M1 requires it**; slip rule in Details. | M (release + ops) |
 | W1.12 | F-DEP2 | juniper-deploy + juniper-recurrence | Add the snapshot bind mount the persistence design decided on (`JUNIPER_RECURRENCE_SNAPSHOTS_DIR` + `volumes:` entry) to the recurrence Compose service; document that no restore-on-boot exists and that `restored` is reached only via `POST /v1/snapshots/restore`. | `docker compose config` shows the mount; a save → container restart → list → restore round trip passes in the deploy smoke. | S |
 | W1.13 | — (release train) | five repos (Details) | **P1 release train**: publish recurrence 0.6.0, model 0.4.0, data-client 0.6.0, canopy 0.9.0 after their P1 items merge; move the remaining Compose pins; re-run the W1.11 smoke. | PyPI/GHCR probes for all four; `docker compose config` shows the pins; smoke green on published images. | M (release + ops) |
+| W1.14 | F-S10 (**proposed 2026-10-04, needs owner acceptance**) | juniper-recurrence | `map_data_error` stops relaying the data client's text on a 5xx (fixed phrase + upstream status; full text at WARNING only); a padded / whitespace API key is refused at settings load. Then canopy may show 5xx details (one line, juniper-canopy#702). | Route test: a client error quoting a header value yields a 502 body without it; settings test: padded key refused. | S |
 
 Details (P1):
 
@@ -503,7 +505,7 @@ Round 2 judged the v1.1.0 M1 (2026-11-07) non-credible: P1 then held one L, thre
 
 | Milestone | Target Date | Version(s) | Description | Status |
 | --- | --- | --- | --- | --- |
-| M0 — Truthful path, go/no-go issued | 2026-10-24 | juniper-ml 0.10.x, recurrence 0.5.x, canopy 0.8.x | P0 merged: env repaired (operator recipe recorded), scoped preflight, phase-derived `degraded` outcome, headline metrics on four fixtures, 422 detail, CLI `--params`, `metrics_scope` label, W0.8 replay written up, **W0.9 matrix run and the P5 go/no-go issued** | In Progress — **GO** issued 2026-10-04; W0.1 model half, W0.6, W0.7 (service) merged; the rest in PRs; owner to confirm date |
+| M0 — Truthful path, go/no-go issued | 2026-10-24 | juniper-ml 0.10.x, recurrence 0.5.x, canopy 0.8.x | P0 merged: env repaired (operator recipe recorded), scoped preflight, phase-derived `degraded` outcome, headline metrics on four fixtures, 422 detail, CLI `--params`, `metrics_scope` label, W0.8 replay written up, **W0.9 matrix run and the P5 go/no-go issued** | In Progress — **GO** 2026-10-04; W0.2–W0.7 merged; only W0.1's service-core half is open (deferred); owner to confirm date |
 | M1 — Runnable from both entry points, contract deployed | 2026-11-21 | recurrence 0.6.0, model 0.4.0, data-client 0.6.0, canopy 0.9.0, **juniper-data 0.17.0** | P1 merged: canopy filtering/preview (R7), `y_reg` required (R8), validator gaps (R2), operation-id/timeout/identity semantics, 401/429/`restored`, R1/R3 applied, W1.12; **requires W1.11's code half**; publications (0.17.0, W1.13) per the W1.11 slip rule — if pending, "code complete, publication pending" | Planned (owner to confirm date) |
 | M2 — Diagnosable | 2026-12-12 | recurrence 0.6.x, canopy 0.9.x | P2 + P3 merged: request ids, exception/inventory/diagnostic logging, failure metrics, compositional CI, realistic fixtures, deep readiness, crossval route test, #178 | Planned (owner to confirm date) |
 | M3 — Documented | 2026-12-12 | all | P4 merged: runbooks (exclusive-ownership statement; no r² interpretation before R5), README fixes, parent `AGENTS.md`, versions | Planned (owner to confirm date) |
@@ -559,12 +561,12 @@ Round 2 judged the v1.1.0 M1 (2026-11-07) non-credible: P1 then held one L, thre
 
 | Priority | Feature / Fix | Status | Phase | Target Version |
 | --- | --- | --- | --- | --- |
-| **P0** | Env repair (operator recipe) + scoped launcher preflight (W0.1, W0.2) | In Progress — W0.1 model half applied 2026-10-04 (bench 37/37; `/v1/crossval` 200 without `PYTHONPATH`), service-core half deferred (live cascor on `:8202` imports from the env), recipe recorded (juniper-recurrence#189); W0.2 PR in flight | 0 | juniper-ml 0.10.x |
-| **P0** | Suite phase-derived `degraded` outcome + exit code (W0.3, R6) | Planned | 0 | juniper-ml 0.10.x |
-| **P0** | Headline metrics schema on four fixtures (W0.4) | Planned | 0 | juniper-ml 0.10.x |
-| **P0** | Canopy 422 detail end to end (W0.5) | Planned | 0 | canopy 0.8.x |
-| **P0** | CLI `--params`/`--params-file` (W0.6) | Planned | 0 | recurrence 0.5.x |
-| **P0** | `metrics_scope: in_sample` label, service + canopy panel (W0.7) | Planned | 0 | recurrence 0.5.x, canopy 0.8.x |
+| **P0** | Env repair (operator recipe) + scoped launcher preflight (W0.1, W0.2) | W0.2 Done 2026-10-04 (juniper-ml#2139); W0.1 In Progress — model half applied (bench 37/37; `/v1/crossval` 200 without `PYTHONPATH`), service-core half deferred (live cascor on `:8202` imports from the env), recipe recorded (juniper-recurrence#189) | 0 | juniper-ml 0.10.x |
+| **P0** | Suite phase-derived `degraded` outcome + exit code (W0.3, R6) | Done 2026-10-04 (juniper-ml#2145; applies the recommended R6 pending the owner's ruling) | 0 | juniper-ml 0.10.x |
+| **P0** | Headline metrics schema on four fixtures (W0.4) | Done 2026-10-04 (juniper-ml#2145) | 0 | juniper-ml 0.10.x |
+| **P0** | Canopy 422 detail end to end (W0.5) | Done 2026-10-04 (juniper-canopy#702; 4xx detail only — a 5xx detail relays upstream text, F-S10) | 0 | canopy 0.8.x |
+| **P0** | CLI `--params`/`--params-file` (W0.6) | Done 2026-10-04 (juniper-recurrence#190) | 0 | recurrence 0.5.x |
+| **P0** | `metrics_scope: in_sample` label, service + canopy panel (W0.7) | Done 2026-10-04 (juniper-recurrence#190, juniper-canopy#702) | 0 | recurrence 0.5.x, canopy 0.8.x |
 | **P0** | E-H crossval replay diagnostic (W0.8) | Done 2026-10-04 — §1 of `JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`: E-H config eval r² −0.115 (per fold −0.08 … −0.26); service defaults −20,345 on the same artifact | 0 | note |
 | **P0** | Controlled matrix and P5 go/no-go (W0.9) | Done 2026-10-04 — §2 of `JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md` (24 cells); verdict **GO**: (a) confirmed, (b)/(c) refuted, (d) not implicated; consensus review owed before R5 | 0 | note |
 | **P1** | Documented param bundle; optional preset (W1.1, R1) | Planned | 1 | juniper-data docs / 0.17.0 |

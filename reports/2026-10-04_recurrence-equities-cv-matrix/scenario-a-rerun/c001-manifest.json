@@ -1,0 +1,343 @@
+{
+  "acceptance": {
+    "ok": true,
+    "reasons": []
+  },
+  "artifacts": [
+    "artifacts/plots/crossval_folds.png",
+    "artifacts/plots/dataset_overview.png",
+    "artifacts/plots/dt_histogram.png",
+    "artifacts/plots/forecast_vs_truth.png",
+    "artifacts/plots/metrics_table.png",
+    "artifacts/plots/residuals.png",
+    "artifacts/results/crossval_response.json",
+    "artifacts/results/model.npz",
+    "artifacts/results/predict_response.json",
+    "artifacts/results/stats.json",
+    "artifacts/results/summary.md",
+    "artifacts/results/train_response.json",
+    "config/experiment.yaml"
+  ],
+  "cell_id": null,
+  "collect_errors": [],
+  "completion_reason": null,
+  "config_copy_path": "/home/pcalnon/.local/state/juniper-experiments/20261004T221441Z-3835/config/experiment.yaml",
+  "config_path": "/home/pcalnon/.local/state/juniper-experiments/suites/e-h-recurrence-real-data-20261004T221425Z/cells/c001-0d8782ae/experiment.yaml",
+  "config_resolved_path": "/home/pcalnon/.local/state/juniper-experiments/20261004T221441Z-3835/config/experiment.resolved.yaml",
+  "config_sha256": "4df980223a41294a4d9e9cf888b80fb39618626e12c72d2b9eec0c085af7363d",
+  "crossval": {
+    "eval_aggregate": {
+      "loss": 0.0003806249700834248,
+      "mae": 0.013371934065211014,
+      "mse": 0.0003806249700834248,
+      "r2": -0.11526096841533144,
+      "rmse": 0.018570140171317355
+    },
+    "eval_std": {
+      "loss": 0.0002463118887720995,
+      "mae": 0.004151768887388219,
+      "mse": 0.0002463118887720995,
+      "r2": 0.07353723443032745,
+      "rmse": 0.005981209250732683
+    },
+    "n_folds": 5,
+    "task_type": "regression"
+  },
+  "dataset": {
+    "dataset_id": "equities_seq-6.0.0-15505731cba5b86d",
+    "generator": "equities_seq",
+    "meta": {
+      "artifact_formats": [
+        "npz"
+      ],
+      "checksum": "c02004e1708e489aea48aa0a985b2eb797ee190d340080ea547dcf363bfed261",
+      "class_distribution": null,
+      "created_at": "2026-10-04T22:14:49.303256Z",
+      "created_by": null,
+      "data_quality": null,
+      "dataset_id": "equities_seq-6.0.0-15505731cba5b86d",
+      "dataset_name": null,
+      "dataset_version": null,
+      "description": null,
+      "dt_scaling": null,
+      "expires_at": null,
+      "generator": "equities_seq",
+      "generator_version": "6.0.0",
+      "lookback": 64,
+      "n_classes": null,
+      "n_features": 15,
+      "n_samples": 1698,
+      "n_test": 176,
+      "n_train": 1346,
+      "n_val": 176,
+      "params": {
+        "allow_truncation": false,
+        "basis_price_field": "close",
+        "end_date": "2022-01-01",
+        "fundamentals_fill": "nan",
+        "incomplete_rows": null,
+        "lookback": 64,
+        "max_symbols": 14,
+        "normalize_features": false,
+        "purchase_date": "2000-01-03",
+        "regression_target": "log_return",
+        "seed": 20260807,
+        "start_date": "2015-01-01",
+        "symbols": [
+          "AAPL"
+        ],
+        "test_ratio": 0.1,
+        "train_ratio": 0.8,
+        "use_cache": true,
+        "val_ratio": 0.1,
+        "week52_window": 252
+      },
+      "parent_dataset_id": null,
+      "sequence": true,
+      "tags": [
+        "experiment",
+        "e-h-recurrence-real-data-c001-0d8782ae"
+      ],
+      "target_scaling": null,
+      "task_type": "regression",
+      "time_unit": "calendar_days",
+      "truncation": null,
+      "ttl_seconds": null
+    },
+    "params": {
+      "end_date": "2022-01-01",
+      "lookback": 64,
+      "regression_target": "log_return",
+      "seed": 20260807,
+      "start_date": "2015-01-01",
+      "symbols": [
+        "AAPL"
+      ]
+    },
+    "split": "train",
+    "version": "6.0.0"
+  },
+  "drive_loop": {},
+  "driver": {
+    "max_wall_seconds": 900.0,
+    "metric_families": [
+      "juniper_cascor_candidate_correlation",
+      "juniper_cascor_hidden_units_total",
+      "juniper_cascor_training_loss",
+      "juniper_cascor_training_accuracy_ratio",
+      "juniper_cascor_training_step_duration_seconds_sum",
+      "juniper_cascor_training_step_duration_seconds_count"
+    ],
+    "plots": {
+      "rendered": [
+        "dataset_overview",
+        "dt_histogram",
+        "forecast_vs_truth",
+        "residuals",
+        "crossval_folds",
+        "metrics_table"
+      ],
+      "requested": [
+        "dataset_overview",
+        "dt_histogram",
+        "forecast_vs_truth",
+        "residuals",
+        "crossval_folds",
+        "metrics_table"
+      ],
+      "skipped": []
+    },
+    "poll_interval": 5.0,
+    "stall_seconds": 120.0,
+    "wave": "2.6"
+  },
+  "environment": {
+    "nproc": 16,
+    "platform": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+    "python": "3.14.7",
+    "thread_env": {
+      "CASCOR_NUM_PROCESSES": null,
+      "MKL_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null
+    }
+  },
+  "experiment": {
+    "description": "Irregular-\u0394t sine, RFF readout, walk-forward CV (DP-3 rung 2a)",
+    "name": "e-h-recurrence-real-data-c001-0d8782ae"
+  },
+  "g6_shape_check": null,
+  "git": {},
+  "metrics_scraped": {
+    "grafana_bridge": false,
+    "prometheus_url": "http://127.0.0.1:9090",
+    "reason": "grafana bridge was OFF for this run; nothing was published to scrape",
+    "scrape_confirmed": false,
+    "series_found": null,
+    "target_file": "/home/pcalnon/.local/state/juniper-experiments/20261004T221441Z-3835/artifacts/prometheus_target.json",
+    "target_file_written": false
+  },
+  "outcome": "succeeded",
+  "packages": {
+    "juniper-canopy": {
+      "version": "0.5.0"
+    },
+    "juniper-cascor": {
+      "editable_source": "/home/pcalnon/Development/python/Juniper/juniper-cascor",
+      "version": "0.11.0"
+    },
+    "juniper-cascor-client": {
+      "editable_source": "/home/pcalnon/Development/python/Juniper/juniper-cascor-client",
+      "version": "0.8.0"
+    },
+    "juniper-cascor-model": {
+      "version": "0.1.0"
+    },
+    "juniper-cascor-protocol": {
+      "version": "0.2.0"
+    },
+    "juniper-cascor-worker": {
+      "version": "0.4.0"
+    },
+    "juniper-ci-tools": {
+      "version": "0.8.0"
+    },
+    "juniper-config-tools": {
+      "version": "0.1.0"
+    },
+    "juniper-data": {
+      "editable_source": "/home/pcalnon/Development/python/Juniper/juniper-data",
+      "version": "0.14.0"
+    },
+    "juniper-data-client": {
+      "editable_source": "/home/pcalnon/Development/python/Juniper/juniper-data-client",
+      "version": "0.5.0"
+    },
+    "juniper-doc-tools": {
+      "version": "0.1.1"
+    },
+    "juniper-ml": {
+      "version": "0.6.0"
+    },
+    "juniper-model-core": {
+      "version": "0.2.0"
+    },
+    "juniper-observability": {
+      "version": "0.4.0"
+    },
+    "juniper-recurrence": {
+      "editable_source": "/home/pcalnon/Development/python/Juniper/juniper-recurrence/juniper-recurrence",
+      "version": "0.5.0"
+    },
+    "juniper-recurrence-client": {
+      "editable_source": "/home/pcalnon/Development/python/Juniper/juniper-recurrence/juniper-recurrence-client",
+      "version": "0.3.0"
+    },
+    "juniper-recurrence-model": {
+      "editable_source": "/home/pcalnon/Development/python/Juniper/juniper-recurrence/juniper-recurrence-model",
+      "version": "0.3.0"
+    },
+    "juniper-service-core": {
+      "version": "0.5.0"
+    }
+  },
+  "phases": {
+    "crossval": {
+      "status": "ok"
+    },
+    "predict": {
+      "status": "ok"
+    },
+    "save_model": {
+      "status": "ok"
+    },
+    "train": {
+      "status": "ok"
+    }
+  },
+  "ports": {
+    "cascor": null,
+    "data": 8110,
+    "data_url": "http://127.0.0.1:8110",
+    "experiment": "c001-0d8782ae",
+    "grafana_bridge": false,
+    "recurrence": 8260,
+    "run_id": "20261004T221441Z-3835"
+  },
+  "predict": {
+    "shape": [
+      176,
+      1
+    ]
+  },
+  "run_id": "20261004T221441Z-3835",
+  "save_model_rerun": {
+    "cmd": [
+      "/opt/miniforge3/envs/JuniperCascor1/bin/juniper-recurrence",
+      "train",
+      "--dataset",
+      "equities_seq-6.0.0-15505731cba5b86d",
+      "--split",
+      "train",
+      "--out",
+      "/home/pcalnon/.local/state/juniper-experiments/20261004T221441Z-3835/artifacts/results/model.npz",
+      "--d",
+      "16",
+      "--ridge",
+      "1.0",
+      "--readout",
+      "rff",
+      "--rff-features",
+      "256",
+      "--rff-gamma",
+      "median"
+    ],
+    "ok": true,
+    "returncode": 0
+  },
+  "schema": "juniper-experiment-manifest/1",
+  "seeds": {
+    "dataset": 20260807,
+    "experiment": 20260729
+  },
+  "service_urls": {
+    "data": "http://127.0.0.1:8110",
+    "recurrence": "http://127.0.0.1:8260"
+  },
+  "snapshot": null,
+  "stats_error": null,
+  "suite_id": null,
+  "timings": {
+    "crossval": 11.28,
+    "dataset_create": 2.906,
+    "health_wait": 0.016,
+    "plots": 1.716,
+    "predict": 0.391,
+    "save_model": 3.233,
+    "total": 22.603,
+    "train": 3.06
+  },
+  "train": {
+    "dataset": {
+      "dataset_id": "equities_seq-6.0.0-15505731cba5b86d",
+      "has_seq_lengths": false,
+      "has_target_dt": true,
+      "lookback": 64,
+      "n_features": 15,
+      "n_windows": 1346,
+      "name": null,
+      "output_dim": 1,
+      "split": "train"
+    },
+    "final_metrics": {
+      "loss": 0.00029384856819352243,
+      "mae": 0.011502149105555557,
+      "mse": 0.00029384856819352243,
+      "r2": 0.11632826498677562,
+      "rmse": 0.017142011789563164
+    },
+    "n_epochs": 1,
+    "stopped_reason": "converged"
+  },
+  "validation_warnings": []
+}
