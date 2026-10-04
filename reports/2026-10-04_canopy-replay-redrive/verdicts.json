@@ -1,0 +1,241 @@
+{
+  "notes": {
+    "started": "2026-10-04T11:28:16Z",
+    "health": {
+      "data": {
+        "status": "ok",
+        "version": "0.16.0",
+        "service": "juniper-data",
+        "git_sha": "29be6d35ef53",
+        "build_date": "2026-10-04T11:15:44Z"
+      },
+      "cascor": {
+        "status": "ok",
+        "version": "0.11.0",
+        "service": "juniper-cascor",
+        "git_sha": null,
+        "build_date": "2026-10-04T11:16:06Z"
+      },
+      "canopy": {
+        "status": "ok",
+        "service": "juniper-canopy",
+        "timestamp": 1791113296.1658454,
+        "version": "0.6.0",
+        "active_connections": 0,
+        "training_active": false,
+        "demo_mode": false,
+        "juniper_data_available": true,
+        "backend_status": "ok",
+        "backend_status_stale": false,
+        "backend_status_age_seconds": 0.71,
+        "git_sha": null,
+        "build_date": "2026-10-04T11:16:10Z"
+      }
+    },
+    "snapshot": {
+      "id": "snapshot_20261004T112734Z"
+    },
+    "cascor_fsm_after_replay_start": "REPLAYING",
+    "initial_readouts": {
+      "fsm": "REPLAYING",
+      "weights": "V2 \u2713 weights",
+      "epoch": "0 / 14",
+      "range": "[0, 14]",
+      "speed": "1\u00d7"
+    },
+    "initial_thumbs": {
+      "scrubber": [
+        {
+          "now": "0",
+          "min": "0",
+          "max": "14"
+        }
+      ],
+      "range": [
+        {
+          "now": "0",
+          "min": "0",
+          "max": "14"
+        },
+        {
+          "now": "14",
+          "min": "0",
+          "max": "14"
+        }
+      ]
+    },
+    "range_after": {
+      "readout": "[0, 12]",
+      "thumbs": [
+        {
+          "now": "0",
+          "min": "0",
+          "max": "14"
+        },
+        {
+          "now": "12",
+          "min": "0",
+          "max": "14"
+        }
+      ],
+      "target": "[0, 12]"
+    },
+    "finished": "2026-10-04T11:30:08Z"
+  },
+  "rows": [
+    {
+      "check": "F-CANOPY-059 active view renders for a cascor session",
+      "verdict": "PASS",
+      "detail": {
+        "active_displayed": true,
+        "idle_displayed": false,
+        "snapshot_id_text": "snapshot_20261004T112734Z"
+      },
+      "at": "2026-10-04T11:28:43Z"
+    },
+    {
+      "check": "F-CANOPY-015 nested summary read (badge, range, speed)",
+      "verdict": "PASS",
+      "detail": {
+        "fsm": "REPLAYING",
+        "weights": "V2 \u2713 weights",
+        "epoch": "0 / 14",
+        "range": "[0, 14]",
+        "speed": "1\u00d7"
+      },
+      "at": "2026-10-04T11:28:46Z"
+    },
+    {
+      "check": "window end: sliders stop at the last frame (length - 1)",
+      "verdict": "PASS",
+      "detail": {
+        "cascor_length": 15,
+        "scrubber_max": "14",
+        "range_thumbs": [
+          {
+            "now": "0",
+            "min": "0",
+            "max": "14"
+          },
+          {
+            "now": "14",
+            "min": "0",
+            "max": "14"
+          }
+        ],
+        "range_readout": "[0, 14]"
+      },
+      "at": "2026-10-04T11:28:47Z"
+    },
+    {
+      "check": "echo loop: an idle player sends no control requests",
+      "verdict": "PASS",
+      "detail": {
+        "control_requests_at_start_of_window": 0,
+        "during_15s_idle": 0
+      },
+      "at": "2026-10-04T11:29:03Z"
+    },
+    {
+      "check": "F-CANOPY-056 play reaches cascor and the status",
+      "verdict": "PASS",
+      "detail": {
+        "observed": true,
+        "control_requests": [
+          "200"
+        ],
+        "status": "\u2713 Playing",
+        "epoch": "0 / 14",
+        "range": "[0, 14]",
+        "speed": "1\u00d7"
+      },
+      "at": "2026-10-04T11:29:14Z"
+    },
+    {
+      "check": "F-CANOPY-056 pause",
+      "verdict": "PASS",
+      "detail": {
+        "observed": true,
+        "control_requests": [
+          "200"
+        ],
+        "status": "\u2713 Paused",
+        "epoch": "14 / 14",
+        "range": "[0, 14]",
+        "speed": "1\u00d7"
+      },
+      "at": "2026-10-04T11:29:24Z"
+    },
+    {
+      "check": "F-CANOPY-056 seek: scrubber 14 -> 11 reaches the readout",
+      "verdict": "PASS",
+      "detail": {
+        "observed": true,
+        "control_requests": [
+          "200",
+          "200",
+          "200"
+        ],
+        "status": "\u2713 Seeked",
+        "epoch": "11 / 14",
+        "range": "[0, 14]",
+        "speed": "1\u00d7"
+      },
+      "at": "2026-10-04T11:29:39Z"
+    },
+    {
+      "check": "F-CANOPY-056 speed change reaches the readout",
+      "verdict": "PASS",
+      "detail": {
+        "observed": true,
+        "control_requests": [
+          "200"
+        ],
+        "status": "\u2713 Speed updated",
+        "epoch": "11 / 14",
+        "range": "[0, 14]",
+        "speed": "1.1\u00d7"
+      },
+      "at": "2026-10-04T11:29:49Z"
+    },
+    {
+      "check": "range end: upper thumb -2 round-trips through cascor's exclusive end",
+      "verdict": "PASS",
+      "detail": {
+        "observed": true,
+        "control_requests": [
+          "200",
+          "200"
+        ],
+        "status": "\u2713 Range updated",
+        "epoch": "11 / 14",
+        "range": "[0, 12]",
+        "speed": "1.1\u00d7"
+      },
+      "at": "2026-10-04T11:29:59Z"
+    },
+    {
+      "check": "F-CANOPY-056 Stop returns the player to idle",
+      "verdict": "PASS",
+      "detail": {
+        "idle_shown": true,
+        "control_requests": [
+          "200"
+        ],
+        "cascor_fsm": "STOPPED",
+        "canopy_fsm": "STOPPED"
+      },
+      "at": "2026-10-04T11:30:08Z"
+    },
+    {
+      "check": "after: Start works once the replay has ended",
+      "verdict": "PASS",
+      "detail": {
+        "start_status": 200,
+        "start_body": "{\"status\":\"started\",\"ok\":true,\"is_training\":true}",
+        "observed_running_or_completed": true
+      },
+      "at": "2026-10-04T11:30:08Z"
+    }
+  ]
+}
