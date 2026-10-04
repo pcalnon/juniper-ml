@@ -6,7 +6,7 @@
 **Status**: closes §5's selection question; raises no new owner decision
 
 Closes the item carried as §5 of
-[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md)
+[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md)
 and listed there as work item 5: *"The 10 unexplained pilot runs — 17.5% of the pilot's probe
 runs, absent from the corpus with no recorded basis. A selection question upstream of every
 rate here."*
@@ -187,7 +187,7 @@ unrelated prose. Citations to that rule in this note and in
 
 ## 7. Documents
 
-- [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md)
+- [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md)
   — §5 (the open question), §3.F′ (the ledger leak), §6.8 (owner decision 8).
 - [`notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md`](JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md)
   — the mechanism re-audit and the 24/43 figure this note compares against.

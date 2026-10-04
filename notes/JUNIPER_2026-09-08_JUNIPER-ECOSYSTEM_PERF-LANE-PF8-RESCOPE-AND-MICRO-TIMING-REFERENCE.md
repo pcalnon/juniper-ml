@@ -3,7 +3,7 @@
 Successor to the P2 plan's Wave 2 and Wave 4 rows
 ([`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md))
 and to §1 items 2–4 of the 2026-09-07 handoff
-([`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_perf-lane-wave0-closed-and-three-decisions-ruled.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_perf-lane-wave0-closed-and-three-decisions-ruled.md)).
+([`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_perf-lane-wave0-closed-and-three-decisions-ruled.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-07_perf-lane-wave0-closed-and-three-decisions-ruled.md)).
 Item numbers below refer to the P2 plan unless stated otherwise.
 
 **Three things happened, in the order the handoff required.** Item 4.3 was answered before any

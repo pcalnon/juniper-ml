@@ -815,7 +815,7 @@ Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical
 8. **P1.4 → option C, "Adopt: fix the levels and wire it to a real call site."** Ruled
    **2026-09-11**; **transcribed here 2026-09-21**. **Provenance, stated because it is thin**: the
    only record of this ruling is §4 of
-   [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-17_logging-arc-phase-1-four-of-five-shipped-and-p14-is-an-option-d-decision.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-17_logging-arc-phase-1-four-of-five-shipped-and-p14-is-an-option-d-decision.md).
+   [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-17_logging-arc-phase-1-four-of-five-shipped-and-p14-is-an-option-d-decision.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-17_logging-arc-phase-1-four-of-five-shipped-and-p14-is-an-option-d-decision.md).
    That document asserts the ruling is "recorded canonically in §13.1" — it was not, until this
    entry. [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) carries **zero
    comments**, so there is no primary source. **Owner: please confirm or correct this entry.**

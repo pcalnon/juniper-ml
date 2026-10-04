@@ -217,7 +217,7 @@ process — and not "unpickling a tensor" in general. See §7.
 ## 4. What this changes for the owner decisions
 
 **Nothing is re-opened and no decision is taken here.** The six open decisions listed in
-[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-10_perf-lane-burst-is-libgomp-and-the-pin-binds-the-constructor-thread.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-10_perf-lane-burst-is-libgomp-and-the-pin-binds-the-constructor-thread.md)
+[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-10_perf-lane-burst-is-libgomp-and-the-pin-binds-the-constructor-thread.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-10_perf-lane-burst-is-libgomp-and-the-pin-binds-the-constructor-thread.md)
 §1 stand unchanged in substance. **One** of them is better informed — the cascor thread-pin
 defect, whose extent is now bounded. The `runtime:` block decision is **unchanged**; it appears
 below only because this work reconfirms its existing rationale, not because anything moved:

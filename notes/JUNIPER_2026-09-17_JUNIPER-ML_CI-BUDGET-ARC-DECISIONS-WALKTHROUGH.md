@@ -7,7 +7,7 @@
 beside it; none is transcribed from the handoff that opened the arc.
 
 Opened from
-[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)
+[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)
 §3, which left ten items — four of them owner decisions.
 
 ---
@@ -80,7 +80,7 @@ checks every week. The header's *"No additional secret is required for the commo
 made that read as fine.
 
 > **Refined 2026-09-22** (the re-evaluation in
-> [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)).
+> [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)).
 > "Does not trigger" is right in effect and incomplete as a mechanism. All 18 `GITHUB_TOKEN` PRs
 > this workflow opened (#325–#1932) ran **zero jobs** at opening, in two shapes. 5 got no
 > `pull_request` run when opened, the latest #1139 on 2026-08-17, which got runs only after the
@@ -163,7 +163,7 @@ The checker justified C2's base-relative form by pointing at *"6 in a pre-existi
 
 **Those six were not pre-existing.** They were juniper-ml#1746's residue — a `### Usage` section
 whose six `python3 util/memory_index_check.py …` commands sat unfenced and rendered as prose.
-[`HANDOFF_2026-09-07_flood2-cohort-zero-and-the-1799-reland-damage.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_flood2-cohort-zero-and-the-1799-reland-damage.md)
+[`HANDOFF_2026-09-07_flood2-cohort-zero-and-the-1799-reland-damage.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-07_flood2-cohort-zero-and-the-1799-reland-damage.md)
 said explicitly to fence them rather than ratify them as `base 6` — and that instruction was
 carried unactioned through three handoffs.
 
@@ -289,7 +289,7 @@ second happened to include.
    > move the diff base to `HEAD^1`, the test-merge commit's first parent:
    > `github.event.pull_request.base.sha` can lag it, so the screen also examines markdown only
    > main changed, and a required check would block a PR for another PR's damage. Record:
-   > [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)
+   > [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)
    > § Re-evaluation 2026-09-22.
 3. **`juniper-cascor-client`'s budget** if that repo comes back into play (§1) — re-measure first.
 
@@ -308,8 +308,8 @@ second happened to include.
 ## 9. Documents
 
 **REFERENCED**:
-[`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md),
-[`HANDOFF_2026-09-07_flood2-cohort-zero-and-the-1799-reland-damage.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_flood2-cohort-zero-and-the-1799-reland-damage.md),
+[`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md),
+[`HANDOFF_2026-09-07_flood2-cohort-zero-and-the-1799-reland-damage.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-07_flood2-cohort-zero-and-the-1799-reland-damage.md),
 [`JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`](JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md),
 [`JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-2-DISPOSITION-ANALYSIS.md`](JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-2-DISPOSITION-ANALYSIS.md),
 [`JUNIPER_2026-09-12_JUNIPER-ML_WORKTREE-CLEANUP-PROTOCOL-V3-DESIGN.md`](JUNIPER_2026-09-12_JUNIPER-ML_WORKTREE-CLEANUP-PROTOCOL-V3-DESIGN.md),
