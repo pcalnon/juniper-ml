@@ -62,7 +62,16 @@ for your lane; then put ONE owner message containing every owner-gated item belo
 
 Lane A (E2E):
 
-1. **UPDATE 2026-10-03: the code fix is DONE, in canopy#694, merged as `5ff4241c`.** What remains of this item:
+1. **DONE 2026-10-04 — this item is closed.** F-CANOPY-015, F-059 and F-056 are FIXED and were verified live on a throwaway stack: 11 of 11 checks
+   passed (evidence `reports/2026-10-04_canopy-replay-redrive/verdicts.json`). Three PRs did it:
+   - canopy#694 (F-059), canopy#696 (F-056) and canopy#697.
+   - canopy#697 fixed the range-end off-by-one and the window end, and guarded the render-echo loop.
+   - Merge commits: `5ff4241c`, `3cc4fdb2` and `1b2dd438`.
+
+   To drive it again, use `util/ad-hoc/2026-10-04_replay_redrive_stack.bash` and `util/ad-hoc/2026-10-04_replay_redrive.py`, and replay an EXPLICIT save
+   (`POST /v1/snapshots`). cascor's automatic per-pass snapshots carry no history. The entries below are history.
+
+   **UPDATE 2026-10-03: the code fix is DONE, in canopy#694, merged as `5ff4241c`.** What remains of this item:
    - F-CANOPY-015's live re-drive and F-059's live check, against a writable cascor.
    - ~~F-CANOPY-056's fix, which F-059 no longer masks.~~ **DONE in code 2026-10-03: canopy#696, merged as `3cc4fdb2`.** It still needs the
      live drive. That drive should also watch for a possible feedback loop: `render_session` writes values that are `queue_control`'s Inputs.

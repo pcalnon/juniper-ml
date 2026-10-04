@@ -3931,11 +3931,15 @@ worth answering so the two working panels aren't relying on defaults either.
 
 **F-CANOPY-015 — the replay player reads three session fields one nesting level too shallow; the weights
 badge therefore reports V1 for a V2 snapshot while two sibling misreads are silently masked by
-coincidence (P2, OPEN; root-caused, empirically confirmed).**
+coincidence (P2; root-caused, empirically confirmed; FIXED by canopy#532 with canopy#694, verified live on canopy `1b2dd438` 2026-10-04).**
 
 > **Pointer added in Phase 9 (2026-09-24):** this finding's fix, canopy#532, reads `range` at the right level
 > but indexes cascor's dict as a list, so every session cascor serves now crashes the player: F-CANOPY-059
 > (P0).
+>
+> **Verified live 2026-10-04** (the replay re-drive under F-CANOPY-059's status; evidence
+> `reports/2026-10-04_canopy-replay-redrive/verdicts.json`). On a 15-frame V2 snapshot, the player showed the
+> `V2 ✓ weights` badge, the range `[0, 14]` and the speed `1×`, all read from `data.session`.
 
 cascor's replay-start payload nests the live session summary under a `session` key. Measured directly off
 the running service, the `data` block's keys are
@@ -9003,8 +9007,16 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
 
 ### New findings
 
-**F-CANOPY-056 — against cascor, the CAN-015 replay player drops every control's result: `_merge_session` overlays cascor's `{status, data, meta}` envelope, so play, pause, seek, speed and range never reach the session and a Stop never clears it, and the weight drain keeps running until the page reloads or a successful model select rebuilds the tab bar; masked today by F-CANOPY-059, which keeps the player's controls from rendering at all (P1, canopy repo; found 2026-09-23 by the cuts' round-1 adversarial lane, widened 2026-09-24 by the ledger's validation; OPEN).**
+**F-CANOPY-056 — against cascor, the CAN-015 replay player drops every control's result: `_merge_session` overlays cascor's `{status, data, meta}` envelope, so play, pause, seek, speed and range never reach the session and a Stop never clears it, and the weight drain keeps running until the page reloads or a successful model select rebuilds the tab bar; masked today by F-CANOPY-059, which keeps the player's controls from rendering at all (P1, canopy repo; found 2026-09-23 by the cuts' round-1 adversarial lane, widened 2026-09-24 by the ledger's validation; FIXED by canopy#696 with canopy#697, verified live on canopy `1b2dd438` 2026-10-04).**
 
+- **Status 2026-10-04: VERIFIED LIVE, so FIXED.** The re-drive under F-CANOPY-059's status covered it.
+  - Play and pause each reached cascor once. Pause's result moved the readout to `14 / 14`, the index play
+    had advanced to.
+  - A 3-step seek showed cascor's landed index, `11 / 14`, and the speed readout followed the slider.
+  - Stop returned the panel to idle, with cascor and canopy both STOPPED.
+  - The "unverified risk" in the next bullet did not occur: no control request arrived during 15 idle
+    seconds, and every action sent exactly as many requests as user steps. canopy#697 had added the echo
+    guard before this drive, so the drive does not show whether the loop was live before #697.
 - **Status 2026-10-03: FIXED IN CODE by canopy#696, merged as `3cc4fdb2`. Not yet driven live, so it stays OPEN until the live re-drive.**
   - `_merge_session` handles `stop` first: any successful Stop clears the session. It then unwraps the envelope
     (`_control_payload`) and maps cascor's `result` onto the stored session (`_apply_control_result`):
@@ -9165,8 +9177,33 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   gate returning `no_update` for global lanes on a tab-only change addresses the tab trigger alone. Neither
   addresses the second Input, and the design must.
 
-**F-CANOPY-059 — against cascor, the CAN-015 replay player never shows a session: canopy#532's fix for F-CANOPY-015 reads `range` from `data.session`, where cascor serves a dict, and the readout indexes it as a list, so `render_session` raises `KeyError: 0` on every session cascor serves and the Replay tab stays at "▶ No active replay session" with no control reachable, while cascor stays in REPLAYING and refuses training until a Reset Training or an API stop (P0, canopy repo; a regression from canopy#532; found 2026-09-24 by round 2 of this phase's validation, Lane R2-F; OPEN).**
+**F-CANOPY-059 — against cascor, the CAN-015 replay player never shows a session: canopy#532's fix for F-CANOPY-015 reads `range` from `data.session`, where cascor serves a dict, and the readout indexes it as a list, so `render_session` raises `KeyError: 0` on every session cascor serves and the Replay tab stays at "▶ No active replay session" with no control reachable, while cascor stays in REPLAYING and refuses training until a Reset Training or an API stop (P0, canopy repo; a regression from canopy#532; found 2026-09-24 by round 2 of this phase's validation, Lane R2-F; FIXED by canopy#694, verified live on canopy `1b2dd438` 2026-10-04).**
 
+- **Status 2026-10-04: VERIFIED LIVE, so FIXED. This is the replay re-drive (Still owed, item 16), which also
+  verified F-CANOPY-015, F-CANOPY-056 and canopy#697.**
+  - **The stack.** It was a throwaway stack, not the trio: data `:8113`, cascor `:8214`, canopy `:8063`
+    (`util/ad-hoc/2026-10-04_replay_redrive_stack.bash`).
+    - Each leg ran from a tarball of `main`: data `29be6d35`, cascor `95cdc562`, canopy `1b2dd438`.
+      `/proc/<pid>/cwd` confirmed that each leg ran from its extracted tree.
+    - The trio's pids were unchanged before and after.
+  - **The driver** was `util/ad-hoc/2026-10-04_replay_redrive.py`, with Playwright and force-clicks. It counted
+    requests in cascor's own access log, read slider values from the Radix thumb's `aria-valuenow` /
+    `aria-valuemax`, and polled every readout to a deadline.
+  - **11 of 11 checks passed**, in `reports/2026-10-04_canopy-replay-redrive/verdicts.json`. On a 15-frame V2
+    snapshot:
+    - the active view rendered;
+    - the window ended at 14, not 15;
+    - no request arrived in 15 idle seconds;
+    - play, pause, 3 seeks, speed and 2 range steps sent 1, 1, 3, 1 and 2 requests;
+    - the range readout came back `[0, 12]` after the upper thumb moved from 14 to 12;
+    - Stop returned the panel to idle;
+    - Start worked afterwards.
+  - **A fixture trap, recorded for the next drive.** cascor's AUTOMATIC per-output-pass snapshots carry no
+    training history: `cascade_correlation.py` saves them without `include_training_state`. A replay of one
+    has `length=0`, so the sliders run 0–0 and nothing can be sought. The first attempt hit this. Use an
+    explicit save, `POST /v1/snapshots` (`manager.save_snapshot`, `include_training_state=True`).
+    - Not explained: an explicit save taken after two immediate Start/Stop cycles also held no loss arrays.
+      The driver now saves right after a completed fit.
 - **Status 2026-10-03: FIXED IN CODE by canopy#694, merged as `5ff4241c`. Not yet driven live, so it stays OPEN until the live re-drive.**
   `ReplayPlayerPanel._session_range` converts cascor's `{start, end}` dict, the legacy list, or a
   missing range into a `[lo, hi]` pair clamped to the snapshot window. The new
@@ -9177,6 +9214,11 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   - The live re-drive needs a writable cascor, not the trio (Still owed, item 16).
   - F-CANOPY-056 is now unmasked. Fixed in code the same day by canopy#696; see its own status bullet.
   - A follow-up: cascor's `range.end` is exclusive, but the slider sends its inclusive upper value.
+    Fixed by canopy#697, merged 2026-10-04 as `1b2dd438`. The same PR fixed two more problems:
+    - the window end: cascor's `end_epoch` is a length, so the last index is `end_epoch - 1`;
+    - the render-echo loop.
+
+    All three were verified live in the 2026-10-04 drive.
 
 - **The mechanism.** cascor's `/replay` route nests `state_summary()` at `data.session`
   (`src/api/routes/snapshots.py:449`), and `state_summary()` returns `"range": {"start": …, "end": …}`, a dict,
@@ -9648,6 +9690,10 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
    fault"). This item first cited `894a2cc7`, which is canopy#674.
 7. **CAN-015's replay-player loop** (Phase 8 item 8; the trigger shape is Phase 7 item 9). Now joined by
    F-CANOPY-056 and F-CANOPY-057, both P1, behind F-CANOPY-059 (item 16).
+   - **Status 2026-10-04:** F-CANOPY-059 and F-CANOPY-056 are FIXED and verified live (item 16).
+     - The HDF5 player's own control loop (`can015-replay-player-control-loop`) is guarded by canopy#697's echo
+       check, and the live drive saw no echo request.
+     - F-CANOPY-057 stays open.
 8. **M-CANDIDATES-10/-11** (Phase 8 item 9), now re-drivable (Phase 7 item 10).
 9. Unchanged (Phase 8 item 10; Phase 7 item 11): M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16
    fade half, and F-038's browser-level test gap.
@@ -9722,6 +9768,8 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
       service" and is not, and sweep the other fixtures that make the same claim.
     - **Status 2026-10-03:** F-CANOPY-059's fix merged (canopy#694), and so did F-CANOPY-056's (canopy#696).
       What remains is one live drive that verifies F-CANOPY-015, F-CANOPY-059 and F-CANOPY-056 together.
+    - **DONE 2026-10-04:** that drive ran on a throwaway stack and passed 11 of 11 checks (F-CANOPY-059's status).
+      All three findings are FIXED. The rest of this item is history.
     - Then F-CANOPY-015's live re-drive, then F-CANOPY-056's fix, which needs a reachable control to verify.
       Each of these drives starts a replay, so each needs a cascor that may be written, not the shared trio's.
       Each must end its replay (the sidebar's Reset Training, or a stop through cascor's `/replay/control`), and
