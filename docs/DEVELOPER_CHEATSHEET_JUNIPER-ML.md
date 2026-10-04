@@ -51,7 +51,7 @@
 | `python util/experiments/run_suite.py --suite PATH --compare-baseline TAG` | Same, plus a reporting-only comparator verdict in `REPORT.md` (FAIL still exits 0) |
 | `python util/experiments/run_suite.py --suite PATH --dry-run` | Preview suite expansion + `--up` / drive / `--down` (writes nothing) |
 | `python util/experiments/run_suite.py --suite PATH --resume SUITE_ID` | Re-run non-`succeeded` cells only (`degraded` re-runs; only `succeeded` is skipped) |
-| `jq '{outcome, phases}' "$RUN_DIR/manifest.json"` | Recurrence phase record after juniper-ml#2131 (`degraded` vs a plot-only exit 1) |
+| `jq '{outcome, phases}' "$RUN_DIR/manifest.json"` | Recurrence phase record after juniper-ml#2145 (`degraded` vs a plot-only exit 1) |
 | `python util/experiments/read_run_metrics.py --run RUN_DIR --json` | Read ratified perf metrics; recurrence → `work_countable: false` (use JSON; the table is cascor-shaped) |
 | `jq '.outcome.timings' $RUN_DIR/artifacts/results/stats.json` | Read Wave 2.6 timings; recurrence train/crossval live here, not under `.recurrence` |
 | `jq '.cascor.training_step_duration.basis, .provenance.metrics_scraped.scrape_confirmed' $RUN_DIR/artifacts/results/stats.json` | Per-poll (not per-step) p50/p95; scrape_confirmed is tri-state |
@@ -684,9 +684,9 @@ Full contract: [REFERENCE — Perf-Lane Split Comparator](REFERENCE.md#perf-lane
 
 Tip: `run_suite` `aggregate.csv` / `REPORT.md` now carry both gate inputs (`step_count` WORK, mean step SPEED) beside de-ratified `wall_seconds`. `--compare-baseline TAG` pastes a verdict but **does not** change the suite exit code (P1 §6 still open). Report table is milliseconds; CSV is seconds. See [REFERENCE — Suite Report Gate Inputs](REFERENCE.md#suite-report-gate-inputs).
 
-Tip: on a tree with juniper-ml#2131, a recurrence cell that trained but lost an enabled predict / crossval / `save_model` phase is `degraded`, and the suite exits 1.
+Tip: on a tree with juniper-ml#2145, a recurrence cell that trained but lost an enabled predict / crossval / `save_model` phase is `degraded`, and the suite exits 1.
 `train_r2` is `stats.recurrence.final_metrics.r2`; `cv_r2` is `crossval.eval_aggregate.r2` (empty, not 0, when crossval is null). `0.0` and `-18081.0` are real.
-Before #2131 that cell is still `succeeded` with exit 1 and empty r².
+Before #2145 (current `main`; #2131 was closed unmerged) that cell is still `succeeded` with exit 1 and empty r². Cascor headline accuracy columns stay empty.
 See [REFERENCE — Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics).
 
 Tip: on a failed `*_up` leg, `do_up` auto-calls `teardown_run` (because `ports.json` is written before launches). Expect `bring-up failed — tearing the partial run back down`, then inspect `$RUN_DIR/logs/` + `teardown.json` before retrying. Pidfile refuse → kill-by-port on the recorded port only (open #923).
@@ -1002,10 +1002,10 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Suite exit `2` unknown execution key | Typo (`stall_second` / `max_wall_second`) — allow-list is exact. |
 | Suite exit `2` cascor parallel | Need launched cascor ≥ 0.10.0 (`JUNIPER_EXP_CASCOR_SRC_DIR`) or `mode: sequential`. Unreadable version refuses. |
 | Suite `--only` one cell, exit `1`, cell succeeded | Aggregate scores the full expansion; unselected cells are not-run. |
-| Suite `--resume` re-ran a failure | Expected — only `succeeded` is skipped. `degraded` re-runs (juniper-ml#2131). |
+| Suite `--resume` re-ran a failure | Expected — only `succeeded` is skipped. `degraded` re-runs (juniper-ml#2145). |
 | Cell printed `degraded (crossval failed: …)`, suite exit 1 | Train succeeded; an enabled phase did not. Read `phases` in `manifest.json`. An `X_full` 422 is F-E1 (stale model wheel), not a science result. |
 | Recurrence `aggregate.csv` has no `cv_r2` / the cell is blank | Crossval was null, disabled, or failed. Blank is not 0. `train_r2` still comes from `final_metrics.r2`. |
-| Suite exit 0, cell `succeeded`, `acceptance.ok: false` | Pre-#2131 tree. The lost phase was not the outcome. |
+| Suite exit 0, cell `succeeded`, `acceptance.ok: false` | Pre-#2145 tree, including current `main`. The lost phase was not the outcome. |
 | Suite bridged vs unbridged hashes differ | Use `JUNIPER_SUITE_GRAFANA_BRIDGE=1`; do not put the bridge in the YAML. |
 | `residuals.png` has only 2 panels | Optional `target_dt_*` missing or length-mismatched — pred/truth still plotted; not a SKIP. |
 | PF-1 `--dry-run` shows ≠5 cells or mixed budgets | Repeats leaked into `include`, or the 4000/4000 epoch pair was split. Stop. |
@@ -1096,7 +1096,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Suite Report Gate Inputs](REFERENCE.md#suite-report-gate-inputs) -- `run_suite` P2 1.4: both gate inputs in `aggregate.csv` / `REPORT.md`; `--compare-baseline` reporting only
 - [Run lister / pruner](REFERENCE.md#run-lister--pruner-list_runspy) -- `list_runs.py` directory-truth scan; `--prune` ≠ `--down`
 - [Suite Driver](REFERENCE.md#suite-driver) -- `run_suite.py` expansion, resume, cascor parallel floor, Grafana env toggle
-- [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- `degraded` is not a success (exit 1); `train_r2` / `cv_r2` from nested `stats.recurrence` (juniper-ml#2131)
+- [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- `degraded` is not a success (exit 1); `train_r2` / `cv_r2` from nested `stats.recurrence` (juniper-ml#2145)
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
 - [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence

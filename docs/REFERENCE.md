@@ -5270,11 +5270,13 @@ Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor par
 
 Operator contract for a recurrence run that **trained** and then lost a phase the config asked for, and for the r² columns `run_suite.py` copies onto `aggregate.csv` / `REPORT.md`.
 
-Code: `util/experiments/run_experiment.py` (`derive_recurrence_outcome`, manifest `phases`) and `util/experiments/run_suite.py` (`_headline_metrics`, `TERMINAL_OUTCOMES`). Design: [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) W0.3 (F-D1) and W0.4 (F-D2). Ships in [juniper-ml#2131](https://github.com/pcalnon/juniper-ml/pull/2131).
+Code: `util/experiments/run_experiment.py` (`derive_recurrence_outcome`, manifest `phases`) and `util/experiments/run_suite.py` (`_headline_metrics`, `TERMINAL_OUTCOMES`). Design: [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) W0.3 (F-D1) and W0.4 (F-D2).
 
-**On a tree that does not contain #2131**, the driver still sets the outcome from the train phase alone. The audited Scenario-A cell (crossval HTTP 422, missing NPZ key `X_full`) was recorded `outcome: succeeded`, `exit_code: 1`, `acceptance.ok: false`. The suite printed `succeeded`, counted a success, and exited 0.
+Ships in [juniper-ml#2145](https://github.com/pcalnon/juniper-ml/pull/2145). That pull request re-lands #2131, which was closed unmerged; the driver and the suite are the same.
 
-Headline r² was empty because the reader looked for `train_r2` / `cv_r2` / `r2` at the **top** of `stats["recurrence"]`, a shape `stats_summary.build_stats` never writes. Use the contract below only on a tree that contains #2131.
+**On current `main`, which does not contain #2145**, the driver still sets the outcome from the train phase alone. The audited Scenario-A cell (crossval HTTP 422, missing NPZ key `X_full`) was recorded `outcome: succeeded`, `exit_code: 1`, `acceptance.ok: false`. The suite printed `succeeded`, counted a success, and exited 0.
+
+Headline r² was empty because the reader looked for `train_r2` / `cv_r2` / `r2` at the **top** of `stats["recurrence"]`, a shape `stats_summary.build_stats` never writes. Use the contract below only on a tree that contains #2145.
 
 Cascor does not gain `phases` or `degraded`. It has no predict / crossval / `save_model` phases.
 
@@ -5333,7 +5335,7 @@ A crossval `422` whose error names `X_full` is F-E1 of the equities audit plan: 
 
 A null or missing `crossval` writes **no** `cv_*` key. The CSV cell is empty, not `0`. The test is `isinstance` of `int` or `float`, excluding `bool`, so `0.0` and `-18081.0` both reach the report. `None` and strings are dropped. A missing, unreadable, or non-object `stats.json` yields `{}`.
 
-Cascor columns are unchanged: `final_accuracy`, `test_accuracy`, `val_accuracy`, each kept when `isinstance(..., (int, float))`.
+Cascor columns are unchanged, and they stay empty. The reader still looks for `final_accuracy`, `test_accuracy`, and `val_accuracy` at the top of `stats.cascor` and keeps a value when `isinstance(..., (int, float))` (this path does not exclude `bool`). `build_stats` never writes those three names. It nests `train_accuracy` and `val_accuracy` under `cascor.final`, and `f1`, `precision`, `recall`, and `roc_auc` under `cascor.eval_scalars`. W0.4 did not change that path.
 
 ```bash
 jq '{train_r2: .recurrence.final_metrics.r2, cv_r2: .recurrence.crossval.eval_aggregate.r2, cv_r2_std: .recurrence.crossval.eval_std.r2, n_windows: .recurrence.dataset_descriptor.n_windows, shapes_n_windows: .dataset.shapes.n_windows}' \
@@ -5352,7 +5354,7 @@ jq '{train_r2: .recurrence.final_metrics.r2, cv_r2: .recurrence.crossval.eval_ag
 
 | Symptom | What it is |
 |---------|------------|
-| Cell `succeeded`, `exit_code: 1`, `acceptance.ok: false`, suite exit 0 | Pre-#2131 tree. The phase failed; the outcome was copied from train. Re-run on a tree that contains #2131. |
+| Cell `succeeded`, `exit_code: 1`, `acceptance.ok: false`, suite exit 0 | Pre-#2145 tree, including current `main`. The phase failed; the outcome was copied from train. Re-run on a tree that contains #2145. |
 | Console `degraded (crossval failed: HTTP 422: … NPZ artifact is missing required key 'X_full')`, suite exit 1 | Train succeeded; enabled crossval did not. Env is F-E1 until W0.1 lands. The suite is telling the truth. |
 | `## Degraded cells` says `no phase record in the registry row` | Registry row predates `phases`. Open the cell's `manifest.json`. |
 | `cv_r2` column missing, or the CSV cell is blank | Crossval was null, disabled, or failed. Blank is not a score of 0. |
@@ -5361,6 +5363,7 @@ jq '{train_r2: .recurrence.final_metrics.r2, cv_r2: .recurrence.crossval.eval_ag
 | Plot skipped / matplotlib missing, outcome still `succeeded`, exit 1 | Acceptance failure that is not a phase. Not `degraded`. |
 | `--resume` ran the degraded cell again | Expected. Only `succeeded` is skipped. |
 | `make_baseline` refuses a degraded recurrence cell | Expected (`outcome != succeeded`), and recurrence is not countable anyway. |
+| Cascor cell, headline accuracy columns empty | Expected. The reader asks for top-level `final_accuracy` / `test_accuracy` / `val_accuracy`; `build_stats` does not write them. Recurrence r² is the path W0.4 fixed. |
 
 Coverage: `tests/test_run_experiment.py` (`DegradedOutcomeTest`, `DeriveRecurrenceOutcomeTest`), `tests/test_run_suite.py` (`DegradedSuiteTest`, `OutcomeLineTest`, `HeadlineMetricsTest`), `tests/test_read_run_metrics.py` (`DegradedOutcomeTest`).
 
@@ -7108,7 +7111,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.48  | 2026-09-04 | Pointer-follow soak operator surface: `--dry-run` is exempt from the terminal-verdict stop (juniper-ml#1690); do not drive n≈8–10; era split required; `source-recovered` stays in the denominator; soak-probes reaper pidfile |
 | 0.6.60  | 2026-09-05 | Canopy E2E unfilled-rows ledger: plan re-drives from `e2e_unfilled_rows.py` (matrix status cells only; `C2.` / `M-`; exit 0). `e2e_row_coverage.py` is an estimator and can list already-`PASS` rows as remaining |
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
-| 0.6.67  | 2026-10-04 | Recurrence degraded outcome and headline metrics (juniper-ml#2131, W0.3 / W0.4): a lost enabled predict / crossval / save_model phase is `degraded` and the suite exits 1; `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` come from nested `stats.recurrence`. A tree without #2131 still records that cell `succeeded` with empty r². Skipped 0.6.62–0.6.66 (in-flight docs PRs #2119, #2122, #2125, #2128, #2132). |
+| 0.6.67  | 2026-10-04 | Recurrence degraded outcome and headline metrics (juniper-ml#2145, re-land of closed #2131; W0.3 / W0.4): a lost enabled predict / crossval / save_model phase is `degraded` and the suite exits 1; `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` come from nested `stats.recurrence`. Current `main` still records that cell `succeeded` with empty r². Cascor headline accuracy stays empty. Skipped 0.6.62–0.6.66 (in-flight docs PRs #2119, #2122, #2125, #2128, #2132). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
