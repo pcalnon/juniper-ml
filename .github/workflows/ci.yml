@@ -1004,6 +1004,11 @@ jobs:
           # DUPLICATI_PW_KEY ignored, no bare-secret fallback, and the password sent only as the
           # login body. util/ad-hoc is outside every pre-commit Python hook, so this is the gate.
           python3 -m unittest -v tests/test_duplicati_web_credential.py
+          # tests/test_duplicati_api_call_retry.py: duplicati_api.call re-authenticates once on 401
+          # and returns every other HTTP error as data. The credential suite only drives call() on
+          # HTTP 200, so a retry that reuses the rejected token, loops, or raises on a 503 would
+          # stay green. No socket is opened.
+          python3 -m unittest -v tests/test_duplicati_api_call_retry.py
           # tests/test_yamaguchi_server_api.py: the serverstate / pause / resume verbs P0 step 10
           # needs (the STOP's item 3), exit codes 0 Running / 2 Paused / 64 usage, the read-back
           # after pause and resume, a job id required before any credential read or request, and
