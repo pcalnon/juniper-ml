@@ -894,6 +894,13 @@ jobs:
           # Documented in AGENTS.md but never wired into this job until R-6 -- so the stall_seconds
           # passthrough the P4 suites now depend on was itself ungated.
           python3 -m unittest -v tests/test_run_suite.py
+          # tests/test_recurrence_aux_timeout_and_exit.py: W0.3/W0.4 edges the producer
+          # suites do not reach -- a crossval wall-clock timeout stays degraded (exit 1)
+          # and save_model still runs; an HTTP 200 list or JSON null stays succeeded;
+          # a save_model CLI that exits 1 with empty stderr records the return code;
+          # headline columns are independent; a forced degraded with no acceptance
+          # reason still exits 1.
+          python3 -m unittest -v tests/test_recurrence_aux_timeout_and_exit.py
           # tests/test_list_runs.py: hermetic tests for util/experiments/list_runs.py, the Wave 7.2
           # safety-gated run lister/pruner -- state classification, --older-than, and the prune
           # safety gates, over synthetic RUN_ROOT fixtures. Also previously unwired.
