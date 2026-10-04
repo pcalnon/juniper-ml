@@ -9,6 +9,7 @@ live services, no writes outside tempdirs.
 
 from __future__ import annotations
 
+import csv
 import importlib.util
 import io
 import json
@@ -76,7 +77,9 @@ def _write_stub_launcher(path: Path, marker_dir: Path, fail_up: bool = False) ->
     path.chmod(path.stat().st_mode | stat.S_IEXEC)
 
 
-def _write_stub_driver(path: Path, outcome: str = "succeeded", per_cell: "dict | None" = None) -> None:
+def _write_stub_driver(path: Path, outcome: str = "succeeded", per_cell: "dict | None" = None, manifest_extra: "dict | None" = None) -> None:
+    """``manifest_extra`` maps an outcome to extra manifest keys written with it -- the W0.3 arms
+    use it to give a ``degraded`` cell the per-phase record the real driver writes."""
     path.write_text(
         "#!/usr/bin/env python3\n"
         "import json, sys, pathlib\n"
@@ -85,14 +88,15 @@ def _write_stub_driver(path: Path, outcome: str = "succeeded", per_cell: "dict |
         "run_dir.mkdir(parents=True, exist_ok=True)\n"
         f"per_cell = {per_cell!r}\n"
         f"outcome = {outcome!r}\n"
+        f"manifest_extra = {manifest_extra!r} or {{}}\n"
         "cfg = pathlib.Path(args['--config']).read_text()\n"
         "if per_cell:\n"
         "    for token, oc in per_cell.items():\n"
         "        if token in cfg:\n"
         "            outcome = oc\n"
         # argv is recorded so tests can assert what the suite actually forwarded to the
-        # driver (e.g. --stall-seconds); run_suite only reads 'outcome' from the manifest.
-        "(run_dir / 'manifest.json').write_text(json.dumps({'outcome': outcome, 'argv': sys.argv[1:]}))\n"
+        # driver (e.g. --stall-seconds); run_suite reads only 'outcome' and 'phases' from the manifest.
+        "(run_dir / 'manifest.json').write_text(json.dumps({'outcome': outcome, 'argv': sys.argv[1:], **manifest_extra.get(outcome, {})}))\n"
         "sys.exit(0 if outcome == 'succeeded' else 1)\n"
     )
     path.chmod(path.stat().st_mode | stat.S_IEXEC)
@@ -506,8 +510,14 @@ class MaterialiseTest(unittest.TestCase):
                 run_suite.materialise_cell(cell, {"name": "s"}, root / "suite", None)
 
 
+# The per-phase record run_experiment.py writes for the audited F-D1 cell: train and predict
+# succeeded, the enabled crossval 422'd on the missing X_full key, save_model was not enabled.
+X_FULL_ERROR = "HTTP 422: NPZ artifact is missing required key 'X_full'"
+DEGRADED_PHASES = {"train": {"status": "ok"}, "predict": {"status": "ok"}, "crossval": {"status": "failed", "error": X_FULL_ERROR}, "save_model": {"status": "skipped"}}
+
+
 class MainLoopTest(unittest.TestCase):
-    def _setup(self, *, cof: str = "true", fail_marker: "str | None" = None, fail_up: bool = False):
+    def _setup(self, *, cof: str = "true", fail_marker: "str | None" = None, fail_up: bool = False, degraded_marker: "str | None" = None):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         root = Path(tmp.name)
@@ -521,8 +531,10 @@ class MainLoopTest(unittest.TestCase):
         launcher = root / "stub_launcher.bash"
         _write_stub_launcher(launcher, markers, fail_up=fail_up)
         driver = root / "stub_driver.py"
-        per_cell = {fail_marker: "failed"} if fail_marker else None
-        _write_stub_driver(driver, per_cell=per_cell)
+        per_cell = {fail_marker: "failed"} if fail_marker else {}
+        if degraded_marker:
+            per_cell[degraded_marker] = "degraded"
+        _write_stub_driver(driver, per_cell=per_cell or None, manifest_extra={"degraded": {"phases": DEGRADED_PHASES}})
         self._env = {"JUNIPER_SUITE_LAUNCHER": str(launcher), "JUNIPER_SUITE_DRIVER": str(driver), "JUNIPER_SUITE_PYTHON": sys.executable}
         self._old_run_root = run_suite.DEFAULT_RUN_ROOT
         run_suite.DEFAULT_RUN_ROOT = run_root  # type: ignore[attr-defined]
@@ -954,6 +966,192 @@ class ComparisonReportingTest(MainLoopTest):
         root, suite_dir, _, _ = self._setup()
         self._main("--suite", str(root / "suite.yaml"))
         self.assertNotIn("## Baseline comparison", (suite_dir / "REPORT.md").read_text())
+
+
+class DegradedSuiteTest(MainLoopTest):
+    """W0.3 (F-D1): a ``degraded`` cell is not a success -- not in the summary line, not in
+    ``REPORT.md``, not in the exit code -- and the console names the phase it lost.
+
+    The audited Scenario-A suite printed ``succeeded`` for a cell whose crossval 422'd, wrote
+    ``2 succeeded`` into REPORT.md and exited 0, because the driver had recorded ``succeeded``.
+    """
+
+    def _registry(self, suite_dir: Path) -> "list[dict]":
+        return [json.loads(line) for line in (suite_dir / "registry.jsonl").read_text().splitlines()]
+
+    def test_a_degraded_cell_is_counted_reported_and_fails_the_suite(self) -> None:
+        root, suite_dir, _markers, run_root = self._setup(degraded_marker="max_hidden_units: 4")
+        rc, out = self._main("--suite", str(root / "suite.yaml"))
+        self.assertNotEqual(rc, 0, msg=out)
+        self.assertEqual(rc, 1, msg=out)
+        self.assertIn(f"degraded (crossval failed: {X_FULL_ERROR})", out)
+        report = (suite_dir / "REPORT.md").read_text()
+        self.assertIn("Cells: 2 total, 1 succeeded, 1 degraded, 0 failed/other, 0 not run.", report)
+        self.assertIn("## Degraded cells", report)
+        self.assertIn(f"crossval failed: {X_FULL_ERROR}", report)
+        # Round trip: registry.jsonl and index.jsonl carry the outcome; the registry row carries the phase record.
+        registry = self._registry(suite_dir)
+        self.assertEqual(sorted(row["outcome"] for row in registry), ["degraded", "succeeded"])
+        degraded_row = next(row for row in registry if row["outcome"] == "degraded")
+        self.assertEqual(degraded_row["phases"], DEGRADED_PHASES)
+        self.assertEqual(degraded_row["exit_code"], 1)
+        index = [json.loads(line) for line in (run_root / "index.jsonl").read_text().splitlines()]
+        self.assertEqual(sorted(row["outcome"] for row in index), ["degraded", "succeeded"])
+        with (suite_dir / "aggregate.csv").open(newline="", encoding="utf-8") as handle:
+            self.assertEqual(sorted(row["outcome"] for row in csv.DictReader(handle)), ["degraded", "succeeded"])
+
+    def test_degraded_is_a_terminal_outcome(self) -> None:
+        self.assertIn("degraded", run_suite.TERMINAL_OUTCOMES)
+
+    def test_resume_reruns_a_degraded_cell(self) -> None:
+        root, suite_dir, markers, _ = self._setup(degraded_marker="max_hidden_units: 4")
+        rc, _ = self._main("--suite", str(root / "suite.yaml"))
+        self.assertEqual(rc, 1)
+        ups_before = len(list(markers.glob("up-*")))
+        rc, out = self._main("--suite", str(root / "suite.yaml"), "--resume", suite_dir.name)
+        self.assertEqual(rc, 1, msg=out)  # the stub degrades the same cell again
+        self.assertEqual(len(list(markers.glob("up-*"))), ups_before + 1, "resume must re-run the degraded cell, and only it")
+        self.assertIn("skipped (resume)", out)
+
+    def test_stop_on_failure_stops_after_a_degraded_cell(self) -> None:
+        root, suite_dir, _, _ = self._setup(cof="false", degraded_marker="max_hidden_units: 2")
+        rc, _ = self._main("--suite", str(root / "suite.yaml"))
+        self.assertEqual(rc, 1)
+        self.assertEqual([row["outcome"] for row in self._registry(suite_dir)], ["degraded"], "continue_on_failure: false must stop after a degraded cell")
+
+
+class OutcomeLineTest(unittest.TestCase):
+    """The per-cell console line: a degraded cell names the phase it lost; nothing else changes."""
+
+    def test_a_degraded_cell_names_the_failed_phase(self) -> None:
+        self.assertEqual(run_suite._outcome_line({"outcome": "degraded", "phases": DEGRADED_PHASES, "error": None}), f"degraded (crossval failed: {X_FULL_ERROR})")
+
+    def test_an_enabled_phase_left_not_reached_is_named_too(self) -> None:
+        # The driver fails closed on it (derive_recurrence_outcome), so the summary must name it.
+        phases = {"train": {"status": "ok"}, "predict": {"status": "not_reached"}, "crossval": {"status": "skipped"}}
+        self.assertEqual(run_suite._outcome_line({"outcome": "degraded", "phases": phases}), "degraded (predict not_reached)")
+
+    def test_a_degraded_cell_without_a_phase_record_prints_the_bare_outcome(self) -> None:
+        self.assertEqual(run_suite._outcome_line({"outcome": "degraded", "error": None}), "degraded")
+
+    def test_other_outcomes_keep_the_suite_level_error(self) -> None:
+        self.assertEqual(run_suite._outcome_line({"outcome": "failed", "error": "unreadable manifest.json", "phases": DEGRADED_PHASES}), "failed (unreadable manifest.json)")
+        self.assertEqual(run_suite._outcome_line({"outcome": "succeeded", "error": None}), "succeeded")
+
+
+STATS_SUMMARY_PATH = REPO_ROOT / "util" / "experiments" / "stats_summary.py"
+_stats_spec = importlib.util.spec_from_file_location("stats_summary_for_run_suite_tests", STATS_SUMMARY_PATH)
+stats_summary = importlib.util.module_from_spec(_stats_spec)
+_stats_spec.loader.exec_module(stats_summary)
+
+# The dataset / outcome / recurrence blocks of the audited Scenario-A stats.json (the equities_seq
+# AAPL cell, run 20261003T091414Z-4ba6), copied verbatim. Its crossval 422'd, so `crossval` is null.
+# It carries TWO window counts: `dataset.shapes.n_windows` (1698, every partition) and the train
+# descriptor's `n_windows` (1346). The headline reads the descriptor -- the number REPORT.md's
+# "reported instead" line already prints -- and the fixture keeps both so that choice is pinned.
+AUDITED_SCENARIO_A_STATS = {
+    "schema": "juniper-experiment-stats/1",
+    "dataset": {"generator": "equities_seq", "generator_version": "6.0.0", "split": "train", "task_type": "regression", "shapes": {"kind": "sequence", "lookback": 64, "n_features": 15, "n_test": 176, "n_train": 1346, "n_windows": 1698}},
+    "outcome": {"outcome": "succeeded", "acceptance": {"ok": False, "reasons": ["crossval failed: HTTP 422: invalid dataset: NPZ artifact is missing required key 'X_full'"]}},
+    "recurrence": {
+        "crossval": None,
+        "dataset_descriptor": {"dataset_id": "equities_seq-6.0.0-15505731cba5b86d", "has_seq_lengths": False, "has_target_dt": True, "lookback": 64, "n_features": 15, "n_windows": 1346, "name": None, "output_dim": 1, "split": "train"},
+        "final_metrics": {"loss": 0.00029384856819352243, "mae": 0.011502149105555557, "mse": 0.00029384856819352243, "r2": 0.11632826498677562, "rmse": 0.017142011789563164},
+        "n_epochs": 1,
+        "readout": {"hyperparameters": {"d": 16, "rff_features": 256, "rff_gamma": "median", "ridge": 1.0}, "rung": "rff"},
+        "stopped_reason": "converged",
+        "theta": {"note": "data-driven (resolved from per-window elapsed time)", "value": None},
+    },
+}
+
+
+def _recurrence_stats(*, train_r2: float, cv_r2: "float | None" = None, cv_r2_std: "float | None" = None) -> dict:
+    """A stats dict made by the REAL writer, ``stats_summary.build_stats``, from driver-shaped
+    payloads, then round-tripped through JSON the way the driver writes it. The crossval nesting
+    was never observed in an audited artifact (that run's crossval failed), so these fixtures go
+    through the writer rather than restating its shape -- a writer change breaks them loudly."""
+    manifest = {"run_id": "r", "experiment": {"name": "e"}, "timings": {"train": 0.5}, "outcome": "succeeded", "acceptance": {"ok": True, "reasons": []}, "dataset": {"meta": {"sequence": True, "n_samples": 1698}}}
+    train = {"final_metrics": {"r2": train_r2, "rmse": 0.017}, "n_epochs": 1, "stopped_reason": "converged", "dataset": {"n_windows": 1346, "lookback": 64}}
+    crossval = None
+    if cv_r2 is not None:
+        crossval = {"task_type": "regression", "n_folds": 3, "folds": [{"fold": 0, "eval_metrics": {"r2": cv_r2}, "n_epochs": 1}], "eval_aggregate": {"r2": cv_r2, "rmse": 0.02}, "eval_std": {"r2": cv_r2_std, "rmse": 0.001}}
+    return json.loads(json.dumps(stats_summary.build_stats(manifest, kind="recurrence", train_summary=train, crossval=crossval, train_config={"d": 16, "readout": "rff"})))
+
+
+class HeadlineMetricsTest(unittest.TestCase):
+    """W0.4 (F-D2): ``_headline_metrics`` reads the shape ``stats_summary.build_stats`` writes.
+
+    It used to look for ``train_r2`` / ``cv_r2`` / ``r2`` at the TOP of ``stats["recurrence"]``,
+    where no writer ever put them, so every recurrence cell's ``metrics`` was ``{}`` and
+    aggregate.csv / REPORT.md carried no r2 at all. The four fixtures are the plan's: the audited
+    ``crossval: null`` shape, a successful crossval, ``cv_r2 == 0.0`` and ``cv_r2 == -18081.0``.
+    """
+
+    def _run_dir(self, stats: dict) -> Path:
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        run_dir = Path(tmp.name) / "run"
+        (run_dir / "artifacts" / "results").mkdir(parents=True)
+        (run_dir / "artifacts" / "results" / "stats.json").write_text(json.dumps(stats))
+        return run_dir
+
+    def test_the_audited_shape_yields_train_r2_and_n_windows_and_no_cv_key(self) -> None:
+        metrics = run_suite._headline_metrics(self._run_dir(AUDITED_SCENARIO_A_STATS))
+        self.assertEqual(metrics, {"train_r2": 0.11632826498677562, "n_windows": 1346})
+        self.assertEqual([key for key in metrics if key.startswith("cv_")], [], "a null crossval must yield NO cv_* key, not a zero")
+
+    def test_a_successful_crossval_surfaces_cv_r2_and_its_std(self) -> None:
+        metrics = run_suite._headline_metrics(self._run_dir(_recurrence_stats(train_r2=0.52, cv_r2=0.31, cv_r2_std=0.07)))
+        self.assertEqual(metrics, {"train_r2": 0.52, "cv_r2": 0.31, "cv_r2_std": 0.07, "n_windows": 1346})
+
+    def test_a_zero_cv_r2_is_surfaced_not_dropped(self) -> None:
+        # The truthiness trap: `if value:` drops 0.0, and a 0.0 r2 is exactly the "no skill" result.
+        metrics = run_suite._headline_metrics(self._run_dir(_recurrence_stats(train_r2=0.0, cv_r2=0.0, cv_r2_std=0.0)))
+        self.assertIn("cv_r2", metrics)
+        self.assertEqual(metrics, {"train_r2": 0.0, "cv_r2": 0.0, "cv_r2_std": 0.0, "n_windows": 1346})
+
+    def test_a_large_negative_cv_r2_is_surfaced_verbatim(self) -> None:
+        # The E-H blow-up class: a -18081 aggregate must reach the report as -18081.0, unclamped.
+        metrics = run_suite._headline_metrics(self._run_dir(_recurrence_stats(train_r2=0.11, cv_r2=-18081.0, cv_r2_std=36000.5)))
+        self.assertEqual(metrics["cv_r2"], -18081.0)
+        self.assertEqual(repr(metrics["cv_r2"]), "-18081.0")
+        self.assertEqual(metrics["cv_r2_std"], 36000.5)
+
+    def test_non_numbers_are_not_surfaced(self) -> None:
+        stats = _recurrence_stats(train_r2=0.5, cv_r2=0.3, cv_r2_std=0.1)
+        stats["recurrence"]["final_metrics"]["r2"] = True  # bool is an int subclass, not a metric
+        stats["recurrence"]["crossval"]["eval_aggregate"]["r2"] = None
+        stats["recurrence"]["crossval"]["eval_std"]["r2"] = "0.1"
+        self.assertEqual(run_suite._headline_metrics(self._run_dir(stats)), {"n_windows": 1346})
+
+    def test_aggregate_csv_and_report_gain_the_recurrence_columns(self) -> None:
+        audited = self._run_dir(AUDITED_SCENARIO_A_STATS)
+        blown_up = self._run_dir(_recurrence_stats(train_r2=0.11, cv_r2=-18081.0, cv_r2_std=36000.5))
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        suite_dir = Path(tmp.name) / "suite"
+        suite_dir.mkdir()
+        rows = [
+            {"cell_id": "c000", "run_dir": str(audited), "outcome": "degraded", "phases": DEGRADED_PHASES, "metrics": run_suite._headline_metrics(audited)},
+            {"cell_id": "c001", "run_dir": str(blown_up), "outcome": "succeeded", "metrics": run_suite._headline_metrics(blown_up)},
+        ]
+        (suite_dir / "registry.jsonl").write_text("".join(json.dumps(row) + "\n" for row in rows))
+        cells = [{"cell_id": "c000", "name": "audited", "overrides": {}}, {"cell_id": "c001", "name": "blown-up", "overrides": {}}]
+        self.assertEqual(run_suite.aggregate(suite_dir, {"name": "t", "description": "headline columns"}, cells), 1)
+        with (suite_dir / "aggregate.csv").open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            header = list(reader.fieldnames or [])
+            csv_rows = list(reader)
+        for column in ("train_r2", "cv_r2", "cv_r2_std", "n_windows"):
+            self.assertIn(column, header)
+        self.assertEqual(csv_rows[0]["train_r2"], "0.11632826498677562")
+        self.assertEqual(csv_rows[0]["cv_r2"], "", "the audited cell has no crossval -- its cv_r2 cell must be empty, not 0")
+        self.assertEqual(csv_rows[0]["n_windows"], "1346")
+        self.assertEqual(csv_rows[1]["cv_r2"], "-18081.0")
+        report = (suite_dir / "REPORT.md").read_text()
+        self.assertIn("-18081.0", report)
+        self.assertIn("0.11632826498677562", report)
+        self.assertIn("Cells: 2 total, 1 succeeded, 1 degraded, 0 failed/other, 0 not run.", report)
 
 
 # =====================================================================================

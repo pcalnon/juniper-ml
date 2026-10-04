@@ -28,6 +28,10 @@ for BOTH the run's juniper-data and cascor (their endpoint sets are disjoint). C
   --dataset/--split/--out + JUNIPER_DATA_URL env; missing CLI -> acceptance failure;
   nonzero CLI / TimeoutExpired -> acceptance failure with recorded error;
   ``LD_LIBRARY_PATH=''`` hygiene);
+* W0.3 (F-D1): the manifest's per-phase ``phases`` record and the ``degraded`` outcome derived
+  from it -- driven by real stub-service failures (a crossval 422 on the missing ``X_full`` key),
+  never from ``acceptance.ok`` (a plot-only acceptance failure stays ``succeeded``), plus the
+  pure ``derive_recurrence_outcome`` arms;
 * cascor essential-collect failure after COMPLETED (exit 1) and mid-drive consecutive poll
   unreachability (exit 3, ``torn_down_early``);
 * G-6 ``check_g6_shape`` None/missing ``input_size`` fail-closed (anti-silence when shape
@@ -135,6 +139,9 @@ class _ScriptedState:
         self.train_delay = 0.0
         self.predict_status = 200
         self.crossval_status = 200
+        # The `detail` a failing /v1/crossval answers with. The W0.3 arms script the real F-D1
+        # body (a 422 naming the missing `X_full` key) so the phase record is asserted verbatim.
+        self.crossval_detail = "crossval stub error"
         self.metrics_final_status = 200
         self.metrics_history_status = 200
         # After this many /v1/training/status responses, drop the listening socket so
@@ -438,7 +445,7 @@ class _StubHandler(BaseHTTPRequestHandler):
                 self._send(200, json.dumps({"predictions": [[0.1], [0.2], [0.3], [0.4]], "shape": [4, 1]}).encode("utf-8"))
         elif path == "/v1/crossval":
             if state.crossval_status != 200:
-                self._send(state.crossval_status, json.dumps({"detail": "crossval stub error"}).encode("utf-8"))
+                self._send(state.crossval_status, json.dumps({"detail": state.crossval_detail}).encode("utf-8"))
             else:
                 descriptor = {"dataset_id": "ds-stub123", "name": None, "split": "full", "n_windows": 100, "lookback": 64, "n_features": 3, "output_dim": 1, "has_target_dt": True, "has_seq_lengths": False}
                 self._send(
@@ -1535,6 +1542,8 @@ class RecurrencePathTest(_StubTestCase):
         manifest = _manifest(self.run_dir)
         self.assertEqual(manifest["outcome"], "succeeded")
         self.assertTrue(manifest["acceptance"]["ok"])
+        # W0.3: every enabled phase records `ok`; save_model is not enabled here, so `skipped`.
+        self.assertEqual(manifest["phases"], {"train": {"status": "ok"}, "predict": {"status": "ok"}, "crossval": {"status": "ok"}, "save_model": {"status": "skipped"}})
         self.assertEqual(manifest["train"]["final_metrics"]["r2"], 0.91)
         self.assertEqual(manifest["train"]["stopped_reason"], "converged")
         self.assertEqual(manifest["predict"], {"shape": [4, 1]})
@@ -1564,6 +1573,10 @@ class RecurrencePathTest(_StubTestCase):
         manifest = _manifest(self.run_dir)
         self.assertIsNone(manifest["predict"])
         self.assertIsNone(manifest["crossval"])
+        # W0.3: a phase the config never asked for is `skipped` and cannot degrade the run.
+        self.assertEqual(manifest["outcome"], "succeeded")
+        self.assertEqual(manifest["phases"]["predict"], {"status": "skipped"})
+        self.assertEqual(manifest["phases"]["crossval"], {"status": "skipped"})
 
     def test_train_409_exits_4(self) -> None:
         self.state.train_status = 409
@@ -1572,11 +1585,19 @@ class RecurrencePathTest(_StubTestCase):
         manifest = _manifest(self.run_dir)
         self.assertEqual(manifest["outcome"], "failed")
         self.assertFalse(manifest["acceptance"]["ok"])
+        # W0.3: the train failure is recorded on its phase, and the enabled aux phases were never reached.
+        self.assertEqual(manifest["phases"]["train"], {"status": "failed", "error": "HTTP 409: train stub 409"})
+        self.assertEqual(manifest["phases"]["predict"], {"status": "not_reached"})
+        self.assertEqual(manifest["phases"]["crossval"], {"status": "not_reached"})
 
     def test_train_422_exits_2(self) -> None:
         self.state.train_status = 422
         code, _ = _invoke(self._config(), self.run_dir)
         self.assertEqual(code, rx.EXIT_MISUSE)
+        # The manifest is still written (from the finally), and it says which phase refused.
+        manifest = _manifest(self.run_dir)
+        self.assertEqual(manifest["phases"]["train"], {"status": "failed", "error": "HTTP 422: train stub 422"})
+        self.assertEqual(manifest["phases"]["crossval"], {"status": "not_reached"})
 
     def test_create_dataset_422_is_config_error(self) -> None:
         """APD-DATA-018: oversized csv_import without opt-in is misuse, not a 5xx."""
@@ -1622,6 +1643,11 @@ class RecurrencePathTest(_StubTestCase):
         self.assertEqual(manifest["outcome"], "timed_out")
         self.assertEqual(self._posts("/v1/predict"), [])
         self.assertEqual(self._posts("/v1/crossval"), [])
+        # W0.3: the timed-out train is a failed phase; the enabled aux phases were never reached.
+        self.assertEqual(manifest["phases"]["train"]["status"], "failed")
+        self.assertIn("wall-clock budget", manifest["phases"]["train"]["error"])
+        self.assertEqual(manifest["phases"]["predict"], {"status": "not_reached"})
+        self.assertEqual(manifest["phases"]["crossval"], {"status": "not_reached"})
 
     def test_predict_failure_continues_to_crossval(self) -> None:
         self.state.predict_status = 500
@@ -1629,7 +1655,11 @@ class RecurrencePathTest(_StubTestCase):
         self.assertEqual(code, rx.EXIT_ACCEPTANCE)
         self.assertEqual(len(self._posts("/v1/crossval")), 1)
         manifest = _manifest(self.run_dir)
-        self.assertEqual(manifest["outcome"], "succeeded")
+        # W0.3 (F-D1): an enabled phase failed after a successful train -> `degraded`, never
+        # `succeeded`. This assertion read "succeeded" until W0.3: it pinned the defect.
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertEqual(manifest["phases"]["predict"], {"status": "failed", "error": "HTTP 500: predict stub error"})
+        self.assertEqual(manifest["phases"]["crossval"], {"status": "ok"})
         self.assertFalse(manifest["acceptance"]["ok"])
         self.assertTrue(any("predict" in reason for reason in manifest["acceptance"]["reasons"]))
         self.assertTrue((self.run_dir / "artifacts" / "results" / "crossval_response.json").is_file())
@@ -1643,7 +1673,10 @@ class RecurrencePathTest(_StubTestCase):
         self.assertEqual(len(self._posts("/v1/predict")), 1)
         self.assertEqual(len(self._posts("/v1/crossval")), 1)
         manifest = _manifest(self.run_dir)
-        self.assertEqual(manifest["outcome"], "succeeded")
+        # W0.3 (F-D1): read "succeeded" until W0.3 -- the assertion pinned the defect.
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertEqual(manifest["phases"]["crossval"], {"status": "failed", "error": "HTTP 500: crossval stub error"})
+        self.assertEqual(manifest["phases"]["predict"], {"status": "ok"})
         self.assertFalse(manifest["acceptance"]["ok"])
         self.assertTrue(any("crossval" in reason for reason in manifest["acceptance"]["reasons"]))
         self.assertEqual(manifest["predict"], {"shape": [4, 1]})
@@ -1678,6 +1711,8 @@ class RecurrencePathTest(_StubTestCase):
         self.assertEqual((capture / "ld.txt").read_text(encoding="utf-8").strip(), "")
         manifest = _manifest(self.run_dir)
         self.assertTrue(manifest["save_model_rerun"]["ok"])
+        self.assertEqual(manifest["phases"]["save_model"], {"status": "ok"})
+        self.assertEqual(manifest["outcome"], "succeeded")
         self.assertTrue((self.run_dir / "artifacts" / "results" / "model.npz").is_file())
         self.assertIn("artifacts/results/model.npz", manifest["artifacts"])
 
@@ -1691,7 +1726,10 @@ class RecurrencePathTest(_StubTestCase):
             code, _ = _invoke(config, self.run_dir)
         self.assertEqual(code, rx.EXIT_ACCEPTANCE)
         manifest = _manifest(self.run_dir)
-        self.assertEqual(manifest["outcome"], "succeeded")
+        # W0.3 (F-D1, and F-D4's "the run still `succeeded`"): read "succeeded" until W0.3.
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertEqual(manifest["phases"]["save_model"]["status"], "failed")
+        self.assertIn("not found on PATH", manifest["phases"]["save_model"]["error"])
         self.assertFalse(manifest["save_model_rerun"]["ok"])
         self.assertTrue(any("save_model" in reason for reason in manifest["acceptance"]["reasons"]))
 
@@ -1709,7 +1747,9 @@ class RecurrencePathTest(_StubTestCase):
             code, _ = _invoke(config, self.run_dir)
         self.assertEqual(code, rx.EXIT_ACCEPTANCE)
         manifest = _manifest(self.run_dir)
-        self.assertEqual(manifest["outcome"], "succeeded")
+        # W0.3 (F-D1): read "succeeded" until W0.3 -- the assertion pinned the defect.
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertEqual(manifest["phases"]["save_model"], {"status": "failed", "error": "train boom"})
         rerun = manifest["save_model_rerun"]
         self.assertFalse(rerun["ok"])
         self.assertEqual(rerun["returncode"], 1)
@@ -1725,6 +1765,121 @@ class RecurrencePathTest(_StubTestCase):
         self.assertFalse(result["ok"])
         self.assertIn("timed out", result["error"].lower())
         self.assertIn("cmd", result)
+
+
+class DegradedOutcomeTest(_StubTestCase):
+    """W0.3 (F-D1): the recurrence outcome is DERIVED from the per-phase records.
+
+    Every arm drives a real phase result out of the stub service -- never a hand-edited manifest.
+    Before W0.3 the driver set ``outcome: succeeded`` from the train phase alone: the audited
+    Scenario-A cell whose ``/v1/crossval`` 422'd on the missing ``X_full`` key was recorded
+    ``succeeded`` with ``exit_code: 1`` and ``acceptance.ok: false``, and ``run_suite.py`` copied
+    that outcome, counted a success and exited 0.
+    """
+
+    X_FULL_DETAIL = "NPZ artifact is missing required key 'X_full'"
+
+    def _stub_recurrence_cli(self) -> Path:
+        """A PATH stub for ``juniper-recurrence train`` that writes its ``--out`` file and exits 0."""
+        bindir = self.tmp / "bin"
+        bindir.mkdir()
+        stub = bindir / "juniper-recurrence"
+        stub.write_text("#!/bin/bash\n" "prev=''\nout=''\n" 'for a in "$@"; do [ "$prev" = "--out" ] && out="$a"; prev="$a"; done\n' '[ -n "$out" ] && : > "$out"\n' "exit 0\n", encoding="utf-8")
+        stub.chmod(0o755)
+        return bindir
+
+    def test_crossval_422_is_degraded_and_exits_non_zero(self) -> None:
+        self.state.crossval_status = 422
+        self.state.crossval_detail = self.X_FULL_DETAIL
+        code, stdout = _invoke(_write_config(self.tmp, _recurrence_config()), self.run_dir)
+        self.assertNotEqual(code, rx.EXIT_SUCCESS, stdout)
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE, "a crossval 422 is a failed phase, not a config error")
+        manifest = _manifest(self.run_dir)
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertEqual(manifest["phases"]["crossval"], {"status": "failed", "error": f"HTTP 422: {self.X_FULL_DETAIL}"})
+        self.assertEqual(manifest["phases"]["train"], {"status": "ok"})
+        self.assertEqual(manifest["phases"]["predict"], {"status": "ok"})
+        self.assertEqual(manifest["phases"]["save_model"], {"status": "skipped"})
+        for name, record in manifest["phases"].items():
+            self.assertIn(record["status"], rx.PHASE_STATUSES, name)
+        self.assertFalse(manifest["acceptance"]["ok"])
+        # The train evidence survives the lost phase.
+        self.assertEqual(manifest["train"]["final_metrics"]["r2"], 0.91)
+        # stats.json / summary.md carry the outcome through verbatim.
+        results = self.run_dir / "artifacts" / "results"
+        self.assertEqual(json.loads((results / "stats.json").read_text(encoding="utf-8"))["outcome"]["outcome"], "degraded")
+        self.assertIn("**Outcome**: degraded", (results / "summary.md").read_text(encoding="utf-8"))
+        self.assertIn("outcome    : degraded", stdout)
+        self.assertIn("crossval=failed", stdout)
+
+    def test_every_phase_ok_is_succeeded(self) -> None:
+        cfg = _recurrence_config()
+        cfg["outputs"]["save_model"] = True
+        bindir = self._stub_recurrence_cli()
+        with mock.patch.dict(os.environ, {"PATH": f"{bindir}:{os.environ['PATH']}"}):
+            code, stdout = _invoke(_write_config(self.tmp, cfg), self.run_dir)
+        self.assertEqual(code, rx.EXIT_SUCCESS, stdout)
+        manifest = _manifest(self.run_dir)
+        self.assertEqual(manifest["outcome"], "succeeded")
+        self.assertTrue(manifest["acceptance"]["ok"])
+        self.assertEqual(manifest["phases"], {name: {"status": "ok"} for name in ("train", "predict", "crossval", "save_model")})
+
+    def test_an_acceptance_failure_alone_is_not_degraded(self) -> None:
+        """A failure that is not a phase -- a requested plot that cannot render -- fails acceptance
+        (exit 1) but leaves the outcome ``succeeded``. Derived from ``acceptance.ok`` it would read
+        ``degraded``, and so would every W5.4 metric-band failure."""
+        cfg = _recurrence_config()
+        cfg["outputs"]["plots"] = ["metrics_table"]
+        with mock.patch.object(rx, "_load_plots_module", side_effect=ImportError("matplotlib stub-missing")):
+            code, _ = _invoke(_write_config(self.tmp, cfg), self.run_dir)
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+        manifest = _manifest(self.run_dir)
+        self.assertFalse(manifest["acceptance"]["ok"])
+        self.assertTrue(any("matplotlib" in reason for reason in manifest["acceptance"]["reasons"]))
+        self.assertEqual(manifest["outcome"], "succeeded")
+        self.assertEqual({record["status"] for record in manifest["phases"].values()}, {"ok", "skipped"})
+
+    def test_disabled_crossval_is_skipped_and_cannot_degrade(self) -> None:
+        # The service WOULD 422 a crossval here. Disabled, it is never asked, so it cannot degrade.
+        self.state.crossval_status = 422
+        self.state.crossval_detail = self.X_FULL_DETAIL
+        cfg = _recurrence_config()
+        cfg.pop("crossval")
+        code, _ = _invoke(_write_config(self.tmp, cfg), self.run_dir)
+        self.assertEqual(code, rx.EXIT_SUCCESS)
+        self.assertEqual(self._posts("/v1/crossval"), [])
+        manifest = _manifest(self.run_dir)
+        self.assertEqual(manifest["phases"]["crossval"], {"status": "skipped"})
+        self.assertEqual(manifest["phases"]["predict"], {"status": "ok"})
+        self.assertEqual(manifest["outcome"], "succeeded")
+        self.assertTrue(manifest["acceptance"]["ok"])
+
+
+class DeriveRecurrenceOutcomeTest(unittest.TestCase):
+    """The pure derivation: only the phase records decide, and success needs positive evidence."""
+
+    @staticmethod
+    def _phases(**overrides: str) -> dict:
+        phases = {name: {"status": "ok"} for name in ("train", *rx.RECURRENCE_AUX_PHASES)}
+        phases.update({name: {"status": status} for name, status in overrides.items()})
+        return phases
+
+    def test_every_enabled_phase_ok_is_succeeded(self) -> None:
+        self.assertEqual(rx.derive_recurrence_outcome(self._phases()), "succeeded")
+
+    def test_each_failed_aux_phase_is_degraded(self) -> None:
+        for name in rx.RECURRENCE_AUX_PHASES:
+            self.assertEqual(rx.derive_recurrence_outcome(self._phases(**{name: "failed"})), "degraded", name)
+
+    def test_skipped_phases_never_degrade(self) -> None:
+        self.assertEqual(rx.derive_recurrence_outcome(self._phases(predict="skipped", crossval="skipped", save_model="skipped")), "succeeded")
+
+    def test_an_enabled_phase_never_reached_fails_closed(self) -> None:
+        self.assertEqual(rx.derive_recurrence_outcome(self._phases(crossval="not_reached")), "degraded")
+
+    def test_the_status_vocabulary_is_closed(self) -> None:
+        self.assertEqual(rx.PHASE_STATUSES, frozenset({"ok", "failed", "skipped", "not_reached"}))
+        self.assertEqual(rx.RECURRENCE_AUX_PHASES, ("predict", "crossval", "save_model"))
 
 
 @unittest.skipUnless(HAVE_NUMPY and HAVE_MPL, "numpy + matplotlib required for the SS8.1 plot set")
