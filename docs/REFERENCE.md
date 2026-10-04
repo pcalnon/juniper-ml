@@ -2,7 +2,7 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.67
+**Version:** 0.6.68
 **Status:** Active
 **Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -7127,7 +7127,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.48  | 2026-09-04 | Pointer-follow soak operator surface: `--dry-run` is exempt from the terminal-verdict stop (juniper-ml#1690); do not drive n≈8–10; era split required; `source-recovered` stays in the denominator; soak-probes reaper pidfile |
 | 0.6.60  | 2026-09-05 | Canopy E2E unfilled-rows ledger: plan re-drives from `e2e_unfilled_rows.py` (matrix status cells only; `C2.` / `M-`; exit 0). `e2e_row_coverage.py` is an estimator and can list already-`PASS` rows as remaining |
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
-| 0.6.67  | 2026-10-04 | Duplicati export token and absent watchdog id (juniper-ml#2134). `export` issues `issuetoken/export` then `token=`; token is never printed; a 200 without `Backup.TargetURL` fails empty. Omitted `--backup-id` is `JOB_MISSING` (usage is 64). Before that merge, Bearer-only export and omitted-id exit 2. Supersedes in-flight #2128. Skipped 0.6.62–0.6.66. |
+| 0.6.68  | 2026-10-04 | Duplicati export token and absent watchdog id (juniper-ml#2134). `export` issues `issuetoken/export` then `token=`; token is never printed; a 200 without `Backup.TargetURL` fails empty. Omitted `--backup-id` is `JOB_MISSING` (usage is 64). Before that merge, Bearer-only export and omitted-id exit 2. Supersedes in-flight #2128. Skipped 0.6.62–0.6.67 (#2135 took 0.6.67). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -7628,5 +7628,5 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 ---
 
 **Last Updated:** 2026-10-04
-**Version:** 0.6.67
+**Version:** 0.6.68
 **Maintainer:** Paul Calnon
