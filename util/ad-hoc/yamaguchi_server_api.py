@@ -4,7 +4,7 @@ Project:     Juniper
 Sub-Project: juniper-ml
 Application: util/ad-hoc
 Author:      Paul Calnon
-Version:     0.2.0
+Version:     0.2.1
 License:     MIT License
 
 Minimal authenticated client for the Duplicati 2.4.0.0 server REST API on the
@@ -16,6 +16,17 @@ Auth: POST /api/v1/auth/login with the web-UI password, read in-process from
 the credential file below -- never argv, never the environment of this process
 or of a child, never printed. The JWT access token is held in memory only and
 sent as a Bearer header; every verb goes through login() and req().
+
+`export` is the one exception on the wire. 2.4.0.0's
+GET /api/v1/backup/{id}/export ignores the Bearer header: it requires a query
+parameter `token` holding a single-operation token for "export", issued by the
+Bearer-authorised POST /api/v1/auth/issuetoken/export (BackupGet.cs and Auth.cs
+at the 2.4.0.0 tag; the vendor CLI's ExportBackupAsync and the shipped UI do
+the same two steps). Without it every export is HTTP 400, and the design's
+P0 step 10 dry-run then starts the pre-backup guard with
+DUPLICATI__REMOTEURL="" -- which skips the guard's TargetURL comparison. The
+operation token is a JWT valid for about a minute; it is held in memory, sent
+only as that query parameter, and never printed.
 
 CREDENTIAL FILE (B2 of the 2026-10-03 recovery plan; design section 7.6)
     ~/.config/duplicati-backup/web-credential -- mode 0600, owned by the
@@ -62,6 +73,7 @@ import re
 import stat
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 BASE = "http://127.0.0.1:8300"
@@ -91,7 +103,9 @@ verbs (exit 0 = done, 1 = the request failed or was refused, 64 = usage error):
                       PAUSED_WITH_QUEUE once a run is queued). Exit 0 only if Paused after.
   resume              POST /api/v1/serverstate/resume -- a queued overdue run starts at once.
                       Exit 0 only if Running after.
-  export <id>         the job's configuration JSON on stdout, and nothing else on stdout
+  export <id>         the job's configuration JSON on stdout, and nothing else on stdout.
+                      Obtains a short-lived single-operation token first; any failure exits 1
+                      with nothing on stdout (a caller must still refuse an empty TargetURL).
   delete <id>         delete a job; --remote-files also deletes its volumes; needs --yes
   run <id>            start the job
   log <id>            newest run results, one JSON line each
@@ -302,6 +316,57 @@ def _set_state(tok, verb, want):
     return 0
 
 
+def _single_operation_token(tok, operation):
+    """POST /api/v1/auth/issuetoken/<operation> with the Bearer token; returns ``(status, token, body)``.
+
+    ``token`` is None unless the server answered 200 with a non-empty ``Token`` (PascalCase, as
+    the rest of this API; ``token`` is accepted too). The value is never printed: a 200 without
+    a usable field is reported with a fixed message rather than the body, which might hold the
+    token under a shape this client does not recognise.
+    """
+    status, body = req("POST", f"/api/v1/auth/issuetoken/{operation}", tok)
+    token = None
+    if status == 200 and isinstance(body, dict):
+        for key in ("Token", "token"):
+            value = body.get(key)
+            if isinstance(value, str) and value:
+                token = value
+                break
+    return status, token, body
+
+
+def _target_url(body):
+    """Backup.TargetURL when the body is a job export carrying a non-empty one, else None."""
+    backup = body.get("Backup") if isinstance(body, dict) else None
+    url = backup.get("TargetURL") if isinstance(backup, dict) else None
+    return url if isinstance(url, str) and url else None
+
+
+def _export(tok, target):
+    """The job's export JSON on stdout -- or, on any failure, NOTHING on stdout and exit 1.
+
+    stdout is consumed by `json.load` in the design's guard dry-run (P0 step 10). An empty stdout
+    is hygiene, not protection: a command substitution turns a failed export into an empty
+    DUPLICATI__REMOTEURL, and the guard skips its TargetURL check on an empty value -- so the dry
+    run itself must refuse an empty URL, as the design's command does. What this verb guarantees
+    is narrower: it never prints a message where the JSON goes, and it never reports success for a
+    body without a non-empty Backup.TargetURL.
+    """
+    status, op, body = _single_operation_token(tok, "export")
+    if not op:
+        # Only an error status has its body printed: a 2xx/3xx body could hold the token under a
+        # status this client does not use. An error body never carries one.
+        detail = body if status >= 400 else {"error": "the issuetoken response carried no usable Token"}
+        return _failed(f"export {target}: issuetoken", status, detail)
+    query = urllib.parse.urlencode({"export-passwords": "false", "token": op})
+    status, body = req("GET", f"/api/v1/backup/{target}/export?{query}", tok)
+    if status != 200 or _target_url(body) is None:
+        # The server's error body -- never the request URL, which carries the operation token.
+        return _failed(f"export {target}", status, body)
+    print(json.dumps(body, indent=1))
+    return 0
+
+
 def _dispatch(args, target, tok, cfg):
     if args.cmd == "status":
         _, state = req("GET", "/api/v1/serverstate", tok)
@@ -325,14 +390,7 @@ def _dispatch(args, target, tok, cfg):
         return _set_state(tok, "resume", "Running")
 
     if args.cmd == "export":
-        # stdout is consumed by `json.load` in the design's guard dry-run (P0 step 10), and an
-        # empty TargetURL there makes the guard skip its TargetURL check -- so a failure must
-        # leave stdout EMPTY and exit non-zero, never print a message where the JSON goes.
-        status, body = req("GET", f"/api/v1/backup/{target}/export?export-passwords=false", tok)
-        if status != 200:
-            return _failed(f"export {target}", status, body)
-        print(json.dumps(body, indent=1))
-        return 0
+        return _export(tok, target)
 
     if args.cmd == "abort":
         status, body = req("POST", f"/api/v1/task/{target}/abort", tok)

@@ -16,7 +16,10 @@
 # --backup-id is REQUIRED and has no default. A rebuilt job is not id 2 (Procedure B's
 # sqlite_sequence starts at 1), and a watchdog pointed at an id the server does not have alerts
 # JOB_MISSING forever (design §7.6). Read the id from
-# `python3 util/ad-hoc/yamaguchi_server_api.py status`. It is written to the drop-in
+# `python3 util/ad-hoc/yamaguchi_server_api.py status` once the web credential exists (design P0
+# step 9). Until then `status` cannot log in, and the id is the one every earlier status record
+# names, `backup=2`, which Procedures A0, A and A2 keep: deploy with --backup-id 2, and re-run
+# with the new id only after Procedure B. It is written to the drop-in
 # yamaguchi-watchdog.service.d/backup-id.conf as Environment=YAMAGUCHI_BACKUP_ID=<id>, and the
 # unit hands it to the watchdog as --backup-id.
 #
@@ -26,10 +29,18 @@
 # (WantedBy=timers.target, Persistent=true), runs one check now, and prints the durable status
 # line. B depends on Linger=yes for the user -- a lingerless session is the 42-day-outage
 # mechanism -- so that is asserted first.
+#
+# WHEN: immediately after every sync of the primary checkout that changes the watchdog. From
+# that moment the live timer runs the synced script through whatever unit is installed: on
+# 2026-10-04 the pre-B2 unit (no --backup-id) ran the B2 script, which then treated the absent
+# id as a usage error, and the 12:00 check exited 2 with no record. The script now records an
+# absent id as ALERT JOB_MISSING, but the job is still not checked until this runs. Do NOT wait
+# for the web credential: until ~/.config/duplicati-backup/web-credential exists (design P0
+# step 9) every check records ALERT UNREACHABLE durably, which is the signal intended.
 set -euo pipefail
 
 usage() {
-    echo "usage: bash $0 --backup-id <id>   (the job's numeric id, from: python3 util/ad-hoc/yamaguchi_server_api.py status)" >&2
+    echo "usage: bash $0 --backup-id <id>   (the job's numeric id, from: python3 util/ad-hoc/yamaguchi_server_api.py status -- or 2 until that can log in; see the header)" >&2
 }
 
 # --- arguments: refused before anything on the host is read or changed --------------------------
@@ -79,9 +90,9 @@ if [ ! -f "$PRIMARY/util/ad-hoc/yamaguchi_watchdog.py" ]; then
     exit 2
 fi
 # The unit installed below must hand the id to the watchdog. A primary checkout that predates
-# that ships a unit without it, and the watchdog -- which requires --backup-id -- would exit 2 on
-# every fire without writing a record. The single quotes are deliberate: the unit file must
-# contain the literal ${YAMAGUCHI_BACKUP_ID}, which systemd expands.
+# that ships a unit without it, so the drop-in written below would never reach the watchdog and
+# every fire would check no job. The single quotes are deliberate: the unit file must contain the
+# literal ${YAMAGUCHI_BACKUP_ID}, which systemd expands.
 # shellcheck disable=SC2016
 if ! grep -qF -- '--backup-id ${YAMAGUCHI_BACKUP_ID}' "$PRIMARY/util/systemd/yamaguchi-watchdog.service"; then
     echo "REFUSE: $PRIMARY/util/systemd/yamaguchi-watchdog.service does not pass --backup-id from YAMAGUCHI_BACKUP_ID -- sync the primary checkout to main first" >&2

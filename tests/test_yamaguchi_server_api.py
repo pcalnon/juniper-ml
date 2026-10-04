@@ -21,7 +21,13 @@ Pins, each able to fail for the reason it exists:
   state -- a 200 alone does not prove the scheduler moved;
 * every job-scoped verb refuses a missing, malformed or contradictory id BEFORE reading the
   credential or sending anything, and server-wide verbs refuse an id;
-* a failed ``export`` leaves stdout EMPTY and exits 1 (its stdout feeds ``json.load``);
+* ``export`` first POSTs ``/api/v1/auth/issuetoken/export`` with the Bearer token and passes the
+  single-operation token it returns as the ``token`` query parameter -- 2.4.0.0's export route
+  ignores the Bearer header and answers 400 without it, which is how ml#2115 shipped an export
+  that failed on every call. The stub enforces that rule itself, so a token-less client fails
+  here; the operation token is printed nowhere;
+* a failed ``export`` -- at either step -- leaves stdout EMPTY and exits 1 (its stdout feeds
+  ``json.load``), and a failed issuetoken never reaches the export route;
 * the strings the bash callers grep (``"ActiveTask": null``, ``"SchedulerQueueIds": []``,
   ``target=``, ``"ParsedResult": "Success"``) are unchanged;
 * the password is sent only as the login body and printed nowhere.
@@ -44,7 +50,7 @@ import urllib.error
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-from tests.duplicati_api_stub import AD_HOC, FIXTURE_MARKER, STUB_BASE, STUB_BEARER_MARKER, FakeDuplicati, load_ad_hoc, write_credential
+from tests.duplicati_api_stub import AD_HOC, FIXTURE_MARKER, ISSUE_EXPORT_TOKEN, STUB_BASE, STUB_BEARER_MARKER, STUB_OPERATION_MARKER, FakeDuplicati, load_ad_hoc, write_credential
 from tests.redacted_env import RedactedEnv
 
 api = load_ad_hoc("yamaguchi_server_api")
@@ -54,6 +60,8 @@ SCRIPT_TIMEOUT_SECONDS = 20
 LOGIN = ("POST", "/api/v1/auth/login")
 ZERO_DATE = "0001-01-01T00:00:00Z"
 TARGET = "file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi"
+# The issuetoken response's field name, PascalCase as 2.4.0.0 writes it; the client also takes "token".
+OP_FIELD = "Token"
 
 
 def state(program="Running", queue=None, end=ZERO_DATE, active=None):
@@ -217,16 +225,100 @@ class JobIdRequiredTest(_Cli):
         for argv in (("export", "--backup-id", "7"), ("export", "7"), ("export", "7", "--backup-id", "7")):
             with self.subTest(argv=argv):
                 self.fake.requests.clear()
-                rc, out, _ = self.run_cli(*argv)
-                self.assertEqual(rc, 0)
+                rc, out, err = self.run_cli(*argv)
+                self.assertEqual(rc, 0, err)
                 self.assertEqual(json.loads(out), config, "stdout must be exactly the JSON the design's guard dry-run parses")
-                self.assertEqual(self.fake.requests[-1].query, {"export-passwords": "false"})
+                self.assertEqual(self.fake.paths(), [LOGIN, ISSUE_EXPORT_TOKEN, ("GET", "/api/v1/backup/7/export")])
+                issue, download = self.fake.requests[1], self.fake.requests[2]
+                self.assertEqual(issue.headers.get("authorization"), f"Bearer {STUB_BEARER_MARKER}", "issuetoken is the Bearer-authorised step")
+                self.assertIsNone(issue.body)
+                self.assertEqual(download.query, {"export-passwords": "false", "token": STUB_OPERATION_MARKER})
+                self.assertNotIn(STUB_OPERATION_MARKER, out + err, "the operation token is printed nowhere")
+
+    def test_the_stub_refuses_an_export_the_product_refuses(self) -> None:
+        """The fixture's own fidelity, status by status, against 2.4.0.0 (BackupGet.cs, Auth.cs, JWTProvider.cs).
+
+        ml#2115's stub answered the token-less export 200, so its suite pinned a call that 2.4.0.0 refuses.
+        """
+        for job in ("7", "8"):
+            self.fake.route("GET", f"/api/v1/backup/{job}/export", 200, {"Backup": {"TargetURL": TARGET}})
+        self.fake.route("POST", "/api/v1/auth/issuetoken/bugreport", 200, {OP_FIELD: "stub-bugreport-marker"})
+        for job in ("7", "8"):  # the rule is the route's, not one job's
+            self.assertEqual(api.req("GET", f"/api/v1/backup/{job}/export?export-passwords=false", STUB_BEARER_MARKER), (400, {"error": ""}), "binding fails: an empty 400")
+        self.assertEqual(api.req("GET", f"/api/v1/backup/7/export?token={STUB_BEARER_MARKER}", STUB_BEARER_MARKER)[0], 500, "the access token is not a token ReadSingleOperationToken accepts")
+        self.assertEqual(api.req("GET", "/api/v1/backup/7/export?token=forged")[0], 500)
+        self.assertEqual(api.req(*ISSUE_EXPORT_TOKEN), (401, {"error": ""}), "issuetoken requires the Bearer token")
+        self.assertEqual(api.req(*ISSUE_EXPORT_TOKEN, "some-other-bearer")[0], 401, "and that exact one")
+        self.assertEqual(api.req("POST", "/api/v1/auth/issuetoken/foo", STUB_BEARER_MARKER)[0], 400, "an operation Auth.cs does not list")
+        self.assertEqual(api.req("POST", "/api/v1/auth/issuetoken/bugreport", STUB_BEARER_MARKER)[0], 200)
+        self.assertEqual(api.req("GET", "/api/v1/backup/7/export?token=stub-bugreport-marker")[0], 401, "a token signed for another operation")
+        self.assertEqual(api.req(*ISSUE_EXPORT_TOKEN, STUB_BEARER_MARKER), (200, {"Token": STUB_OPERATION_MARKER}))
+        self.assertEqual(api.req("GET", f"/api/v1/backup/7/export?token={STUB_OPERATION_MARKER}")[0], 200, "the export route has no Bearer authorization")
+
+    def test_export_tolerates_a_lowercase_token_field(self) -> None:
+        """2.4.0.0 writes `Token` (PascalCase, PropertyNamingPolicy = null); the lowercase spelling is accepted defensively."""
+        config = {"Backup": {"ID": "7", "TargetURL": TARGET}}
+        self.fake.route(*ISSUE_EXPORT_TOKEN, 200, {OP_FIELD.lower(): "camel-operation-marker"})
+        self.fake.route("GET", "/api/v1/backup/7/export", 200, config)
+        rc, out, err = self.run_cli("export", "7")
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(json.loads(out), config)
+        self.assertEqual(self.fake.requests[-1].query["token"], "camel-operation-marker")
+        self.assertNotIn("camel-operation-marker", err)
 
     def test_a_failed_export_leaves_stdout_empty(self) -> None:
         """An empty TargetURL makes the guard skip its TargetURL check (STOP item 3): fail LOUDLY and print no JSON."""
         rc, out, err = self.run_cli("export", "--backup-id", "7")
         self.assertEqual((rc, out), (1, ""))
         self.assertIn("export 7 failed 404", err)
+        self.assertNotIn(STUB_OPERATION_MARKER, err)
+
+    def test_a_failed_issuetoken_leaves_stdout_empty_and_never_downloads(self) -> None:
+        self.fake.route("GET", "/api/v1/backup/7/export", 200, {"Backup": {"TargetURL": TARGET}})
+        for status in (400, 401, 500):
+            with self.subTest(status=status):
+                self.fake.requests.clear()
+                self.fake.route(*ISSUE_EXPORT_TOKEN, status, {"Error": "refused"})
+                rc, out, err = self.run_cli("export", "7")
+                self.assertEqual((rc, out), (1, ""))
+                self.assertIn(f"export 7: issuetoken failed {status}", err)
+                self.assertNotIn(("GET", "/api/v1/backup/7/export"), self.fake.paths())
+
+    def test_a_non_error_issuetoken_body_is_never_echoed(self) -> None:
+        """Only a 200 is used, and only an error status (>= 400) has its body printed: a 2xx/3xx body may carry the token."""
+        self.fake.route("GET", "/api/v1/backup/7/export", 200, {"Backup": {"TargetURL": TARGET}})
+        for status in (201, 202, 204):
+            with self.subTest(status=status):
+                self.fake.requests.clear()
+                self.fake.route(*ISSUE_EXPORT_TOKEN, status, {OP_FIELD: "non-error-operation-marker"})
+                rc, out, err = self.run_cli("export", "7")
+                self.assertEqual((rc, out), (1, ""))
+                self.assertIn(f"export 7: issuetoken failed {status}", err)
+                self.assertNotIn("non-error-operation-marker", err)
+                self.assertNotIn(("GET", "/api/v1/backup/7/export"), self.fake.paths())
+
+    def test_an_issuetoken_body_without_a_token_is_not_echoed(self) -> None:
+        """A 200 whose Token field is missing may still hold the token under another name: report, never print it."""
+        self.fake.route("GET", "/api/v1/backup/7/export", 200, {"Backup": {"TargetURL": TARGET}})
+        bodies: tuple[object, ...] = ({"Unexpected": "renamed-operation-marker"}, {OP_FIELD: ""}, {OP_FIELD: None}, ["renamed-operation-marker"])
+        for body in bodies:
+            with self.subTest(body=body):
+                self.fake.requests.clear()
+                self.fake.route(*ISSUE_EXPORT_TOKEN, 200, body)
+                rc, out, err = self.run_cli("export", "7")
+                self.assertEqual((rc, out), (1, ""))
+                self.assertIn("carried no usable Token", err)
+                self.assertNotIn("renamed-operation-marker", err)
+                self.assertNotIn(("GET", "/api/v1/backup/7/export"), self.fake.paths())
+
+    def test_a_non_object_export_body_is_a_failure(self) -> None:
+        """A 200 without a non-empty TargetURL would hand the guard dry-run an empty URL (an empty body reads as {})."""
+        payloads: tuple[object, ...] = ([], "a json string", None, {"Schedule": {"Repeat": "1D"}}, {"Backup": "7"}, {"Backup": {}}, {"Backup": {"TargetURL": ""}}, {"Backup": {"TargetURL": 7}})
+        for payload in payloads:
+            with self.subTest(payload=payload):
+                self.fake.route("GET", "/api/v1/backup/7/export", 200, payload)
+                rc, out, _ = self.run_cli("export", "7")
+                self.assertEqual((rc, out), (1, ""))
 
     def test_run_posts_and_reports_failure(self) -> None:
         self.fake.route("POST", "/api/v1/backup/7/run", 200, {"Status": "OK", "ID": 31})

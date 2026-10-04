@@ -1013,11 +1013,13 @@ jobs:
           # tests/test_yamaguchi_server_api.py: the serverstate / pause / resume verbs P0 step 10
           # needs (the STOP's item 3), exit codes 0 Running / 2 Paused / 64 usage, the read-back
           # after pause and resume, a job id required before any credential read or request, and
-          # a failed export that leaves stdout EMPTY (it feeds the guard dry-run's TargetURL).
+          # export's single-operation token (2.4.0.0 answers 400 without one), and a failed export
+          # that leaves stdout EMPTY (it feeds the guard dry-run's TargetURL).
           python3 -m unittest -v tests/test_yamaguchi_server_api.py
           # tests/test_yamaguchi_watchdog.py: design 7.6 -- Paused with a non-empty scheduler
           # queue alerts PAUSED_WITH_QUEUE (YAM 8.22); freshness anchored on the newest Backup,
-          # keyset-paged and bounded; --backup-id required, an empty one recorded durably; the
+          # keyset-paged and bounded; no default job id -- an absent or empty --backup-id is
+          # recorded durably, a usage error exits 64; the
           # record line format; and the unit + deploy script contract, checked statically (the
           # deploy script changes systemd user units and is never executed by a test).
           python3 -m unittest -v tests/test_yamaguchi_watchdog.py
