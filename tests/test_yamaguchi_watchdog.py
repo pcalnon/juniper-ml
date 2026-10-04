@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""``util/ad-hoc/yamaguchi_watchdog.py``: the §7.6 checks, the mandatory job id, and its deploy path.
+"""``util/ad-hoc/yamaguchi_watchdog.py``: the §7.6 checks, the job id with no default, and its deploy path.
 
 Project:     Juniper
 Sub-Project: juniper-ml
@@ -10,8 +10,9 @@ License:     MIT License
 YAM §8.22 recorded a 42.6 h outage that the watchdog could not see: the server sat ``Paused``
 with the day's run queued, and the watchdog never looked at ``ProgramState``. The same section
 found it anchored freshness on the newest log entry of ANY operation, so a Compact would reset
-the backup clock. Design §7.6 adds both checks; B2 of the 2026-10-03 recovery plan makes the job
-id mandatory, because the deployed unit took none and a rebuilt job is not id 2.
+the backup clock. Design §7.6 adds both checks; B2 of the 2026-10-03 recovery plan removes the job
+id's default of 2, because a rebuilt job is not id 2, and the ml#2115 fix-forward records an ABSENT
+id rather than exiting 2 with no record, because the deployed unit took none.
 
 Pins, each able to fail for the reason it exists:
 
@@ -23,8 +24,10 @@ Pins, each able to fail for the reason it exists:
   with a bounded budget that stops on a server that ignores ``offset``;
 * the pre-B2 verdicts keep their codes and meaning (NO_RUNS, LOG_UNAVAILABLE, JOB_MISSING,
   RUNNING, STUCK, NOT_SUCCESS on the newest entry);
-* ``--backup-id`` is required; an EMPTY one (the unit without its drop-in) leaves a durable
-  ``JOB_MISSING`` record and sends nothing;
+* the job id has no default: an EMPTY ``--backup-id`` (the unit without its drop-in) and an
+  ABSENT one (the pre-B2 unit running this script) each leave a durable ``JOB_MISSING`` record
+  and send nothing, while a real usage error exits 64 -- never 2, which means UNDETERMINED --
+  and writes no record;
 * the record line keeps ``<when> <verdict> <code> backup=<id> <details>`` on one line, and the
   notify-send child sees neither the password nor a variable carrying it;
 * the unit hands the id over braced (one argv word) and the deploy script refuses, before touching
@@ -263,11 +266,30 @@ class MainAndRecordTest(_Watchdog):
         path = self.state_dir / name
         return path.read_text(encoding="utf-8").splitlines() if path.exists() else []
 
-    def test_backup_id_is_required(self) -> None:
-        rc, _, err = self.run_main("--state-dir", str(self.state_dir), "--no-notify")
-        self.assertEqual(rc, 2)
-        self.assertIn("--backup-id", err)
-        self.assertFalse(self.state_dir.exists(), "a usage error writes no record")
+    def test_an_absent_backup_id_leaves_a_durable_record(self) -> None:
+        """A unit that passes no --backup-id at all -- the pre-B2 unit running the B2 script.
+
+        That was a usage error (exit 2, no record) until the ml#2115 fix-forward: the primary checkout
+        synced past ml#2115 on 2026-10-03, and the live timer's 2026-10-04 12:00 check exited 2 with
+        nothing written. Absent is now judged as empty: JOB_MISSING, recorded, nothing sent.
+        """
+        rc, out, _ = self.run_main("--state-dir", str(self.state_dir), "--no-notify")
+        self.assertEqual(rc, 1)
+        status = self.read_state("server-watchdog.status")
+        self.assertEqual(len(status), 1)
+        self.assertRegex(status[0], r"^\S+ ALERT JOB_MISSING backup=INVALID --backup-id is not a job id .*yamaguchi_watchdog_deploy\.bash --backup-id <id>")
+        self.assertEqual(len(self.read_state("server-failures.log")), 1)
+        self.assertEqual(out.strip(), status[0])
+        self.assertEqual(self.fake.requests, [])
+
+    def test_a_usage_error_exits_64_and_writes_no_record(self) -> None:
+        """64, not argparse's 2: the watchdog's 2 means UNDETERMINED, which the unit reports as an alert."""
+        for argv in (("--backup-id", JOB, "--max-age-hours", "soon"), ("--backup-id", JOB, "--bogus"), ("--backup-id",)):
+            with self.subTest(argv=argv):
+                rc, _, err = self.run_main(*argv, "--state-dir", str(self.state_dir), "--no-notify")
+                self.assertEqual(rc, 64)
+                self.assertIn("error:", err)
+                self.assertFalse(self.state_dir.exists(), "a usage error writes no record")
         self.assertEqual(self.fake.requests, [])
 
     def test_the_unit_without_its_drop_in_leaves_a_durable_record(self) -> None:

@@ -54,14 +54,23 @@ WHY A POLLING WATCHDOG AND NOT ONLY --run-script-after
     Durable record FIRST (append-only log + a status file), desktop
     notification best-effort (notify-send may have no session bus). Exit 0 = OK,
     1 = ALERT, 2 = UNDETERMINED (also alerts: an undetermined backup is not a
-    verified one). The record line is
+    verified one), 64 = usage error (argparse's own 2 would read as UNDETERMINED).
+    The record line is
         <when> <verdict> <code> backup=<id> <details>
     on one line; yamaguchi_reboot_verify.bash reads its first field as the timestamp.
 
-    --backup-id is REQUIRED and has no default: a rebuilt job is not id 2 (Procedure B's
-    sqlite_sequence starts at 1), and a watchdog pointed at the wrong id alerts JOB_MISSING
-    forever (design §7.6). The deployed unit passes it from the drop-in that
-    util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id> writes.
+    The job id has NO default: a rebuilt job is not id 2 (Procedure B's sqlite_sequence
+    starts at 1), and a watchdog pointed at the wrong id alerts JOB_MISSING forever (design
+    §7.6). The deployed unit passes it from the drop-in that
+    util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id> writes. An ABSENT
+    --backup-id is judged exactly like an empty one -- ALERT JOB_MISSING, recorded durably --
+    and is not a usage error, because a usage error writes no record: when the primary
+    checkout was synced past ml#2115 on 2026-10-03, the live timer ran this script through a
+    unit that passes no --backup-id, and the 2026-10-04 12:00 check exited 2 with nothing
+    written. Run the deploy script immediately after each such sync; it does not need the
+    web credential (until that file exists every check records ALERT UNREACHABLE). The same
+    rule makes a BARE manual run a real check: it records JOB_MISSING in the live state files
+    and notifies, so pass --state-dir and --no-notify to look without touching them.
 
     The web-UI credential is read in-process from ~/.config/duplicati-backup/web-credential
     (0600) by yamaguchi_server_api.read_credential -- never from the primary checkout's .env,
@@ -290,10 +299,18 @@ def record(args, verdict, code, details):
     return line
 
 
+class _UsageParser(argparse.ArgumentParser):
+    """Usage errors exit 64 (EX_USAGE, the client's EXIT_USAGE), so that one never reads as UNDETERMINED (2)."""
+
+    def error(self, message):
+        self.print_usage(sys.stderr)
+        self.exit(api.EXIT_USAGE, f"{self.prog}: error: {message}\n")
+
+
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="alert when the server-run Yamaguchi backup did not run, did not succeed, is stuck, or is held by a pause")
+    ap = _UsageParser(description="alert when the server-run Yamaguchi backup did not run, did not succeed, is stuck, or is held by a pause")
     ap.add_argument("--base", default=api.BASE)
-    ap.add_argument("--backup-id", required=True, help="the job's numeric id -- REQUIRED, no default: a rebuilt job is not id 2. The deployed unit passes it from YAMAGUCHI_BACKUP_ID (util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>)")
+    ap.add_argument("--backup-id", default="", help="the job's numeric id -- no default job: a rebuilt job is not id 2, and an absent or empty id records ALERT JOB_MISSING. The deployed unit passes it from YAMAGUCHI_BACKUP_ID (util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>)")
     ap.add_argument("--max-age-hours", type=float, default=26.0, help="newest BACKUP older than this = STALE (daily job + slack)")
     ap.add_argument("--max-run-hours", type=float, default=6.0, help="an active task older than this = STUCK (full run was 2h12m)")
     ap.add_argument("--state-dir", default=os.path.expanduser("~/.local/state/duplicati"))

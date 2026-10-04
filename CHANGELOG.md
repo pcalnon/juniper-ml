@@ -124,6 +124,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The Duplicati API client's `export` works against 2.4.0.0, and the watchdog records an absent
+  job id instead of exiting silently** (the ml#2115 fix-forward, B2 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`;
+  `util/ad-hoc/yamaguchi_server_api.py` 0.2.1; `util/ad-hoc/yamaguchi_watchdog.py`;
+  `util/ad-hoc/yamaguchi_watchdog_deploy.bash`; `tests/duplicati_api_stub.py`). ml#2115's validation
+  lane found both defects, and they merged unfixed.
+  - **`export` obtains the single-operation token.** In 2.4.0.0, `GET /api/v1/backup/{id}/export` has
+    no Bearer authorization. It requires a `token` query parameter holding a single-operation token
+    for `export` (`BackupGet.cs`), which only the Bearer-authorised
+    `POST /api/v1/auth/issuetoken/export` issues (`Auth.cs`). The client sent the Bearer header alone,
+    so every export was HTTP 400. P0 step 10 of
+    `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` would then
+    have started the pre-backup guard with `DUPLICATI__REMOTEURL=""`, which skips the guard's
+    TargetURL comparison. The client now issues the token first, as the vendor CLI and the shipped
+    UI do, and prints it nowhere. A 200 without a non-empty `Backup.TargetURL` now also fails with
+    nothing on stdout. The export code follows Cursor PR #2129, which this supersedes.
+  - **The stub enforces the product's rule.** `tests/duplicati_api_stub.py` answered a token-less
+    export 200, so ml#2115's suite pinned a call the product refuses. Before any canned route, it now
+    answers as 2.4.0.0 does: a token-less export 400, a token it never signed 500, a token issued for
+    another operation 401, and an issuetoken without the Bearer token 401. A test pins each status.
+  - **An absent `--backup-id` is recorded.** It was a usage error: exit 2 and no record. The primary
+    checkout picked up ml#2115 on 2026-10-03, and the live timer then ran the new script through the
+    pre-B2 unit, which passes no id: the 2026-10-04 12:00 check exited 2 and wrote nothing. An absent
+    id is now judged like an empty one, as a durable `ALERT JOB_MISSING`. Usage errors exit 64,
+    because the watchdog's 2 means UNDETERMINED. The deploy script now says to run it immediately
+    after a sync, with `--backup-id 2` until the web credential exists to look the id up.
+  - `util/ad-hoc/2026-10-03_b2_mutation_check.py` kills 38 of 38 mutations, up from 25. Two anchors
+    moved with the code and thirteen mutations are new, five of them from the fix-forward's two
+    validation lanes.
 - **Tier 2 finds its drives under `/run/media` again, and gains its installer, its failure unit and a
   gate** (B6 / I-20 of
   `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`;

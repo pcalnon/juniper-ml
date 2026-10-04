@@ -15,6 +15,19 @@ NOTHING was sent on the paths that must refuse before contacting the server.
 ``STUB_BASE`` is a closed loopback port, never the live server's 8300. A test that forgot to
 install the stub would therefore fail with "connection refused" rather than reach a real
 Duplicati -- and the credential it carries is a fixture written by the test, never a real one.
+
+One product rule is enforced BEFORE any canned route, because a stub that answered a request the
+real server refuses is how ml#2115 merged an ``export`` that 400s on every call: 2.4.0.0's
+``GET /api/v1/backup/{id}/export`` has no Bearer authorization and requires a ``token`` query
+parameter holding a single-operation token for "export" (``BackupGet.cs``), which only the
+Bearer-authorised ``POST /api/v1/auth/issuetoken/export`` hands out (``Auth.cs``). So, whatever route
+a test installed for those paths, the stub answers as 2.4.0.0 does (``DuplicatiWebserver.cs``'s
+exception mapping): a token-less export 400 with an empty body (binding fails before the handler); a
+token it never issued 500, because ``ReadSingleOperationToken`` throws on a token it did not sign --
+the access token included; a token it issued for ANOTHER operation 401 (``Operation != "export"``); an
+issuetoken without the Bearer token an empty 401; and an issuetoken for an operation outside
+``export`` / ``bugreport`` / ``websocket`` 400. The export issuetoken route is routed by default, like
+login, and a test may re-route it to fail or route another operation's.
 """
 
 from __future__ import annotations
@@ -23,6 +36,7 @@ import importlib
 import io
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -31,6 +45,13 @@ from pathlib import Path
 
 STUB_BASE = "http://127.0.0.1:9"
 STUB_BEARER_MARKER = "stub-access-marker"
+# The single-operation token the default issuetoken route hands out. Distinct from the Bearer
+# marker: the export route must not accept the access token in place of an operation token.
+STUB_OPERATION_MARKER = "stub-export-operation-marker"
+ISSUE_EXPORT_TOKEN = ("POST", "/api/v1/auth/issuetoken/export")
+_ISSUE_PATH = re.compile(r"/api/v1/auth/issuetoken/([^/]+)")
+_EXPORT_PATH = re.compile(r"/api/v1/backup/[^/]+/export")
+_OPERATIONS = ("export", "bugreport", "websocket")  # Auth.cs: issuetoken refuses any other with 400
 # Throwaway literal, not a credential. It carries the shell metacharacters the real secrets
 # on this host do ('$', '&', '@', '#', '^'), so a value that leaks through a shell or a
 # format string is still recognisable in an assertion.
@@ -104,10 +125,35 @@ class FakeDuplicati:
         self.bearer = bearer
         self.routes: dict = {}
         self.requests: list[Recorded] = []
+        # Per operation, every Token/token a 200 issuetoken response carried: the tokens the stub "signed".
+        self.operation_tokens: dict[str, set[str]] = {}
         self.route("POST", "/api/v1/auth/login", 200, {"AccessToken": bearer})
+        self.route(*ISSUE_EXPORT_TOKEN, 200, {"Token": STUB_OPERATION_MARKER})
 
     def route(self, method: str, path: str, status: int = 200, payload: object = None, *, handler=None) -> None:
         self.routes[(method, path)] = handler if handler is not None else (status, payload)
+
+    def _product_refusal(self, method: str, path: str, query: dict, headers: dict):
+        """The 2.4.0.0 export-flow refusals, applied before any canned route; None when none applies.
+
+        A payload of None is an EMPTY body, as the product sends for these two 401/400 cases.
+        """
+        issue = _ISSUE_PATH.fullmatch(path)
+        if method == "POST" and issue:
+            if headers.get("authorization") != f"Bearer {self.bearer}":
+                return 401, None  # .RequireAuthorization(): an empty 401 (with WWW-Authenticate)
+            if issue.group(1) not in _OPERATIONS:
+                return 400, {"Error": "Invalid operation", "Code": 400}  # Auth.cs: BadRequestException
+        if method == "GET" and _EXPORT_PATH.fullmatch(path):
+            if "token" not in query:
+                return 400, None  # binding of the required [FromQuery] string token fails: an empty 400 in Production
+            token = query["token"]
+            if token in self.operation_tokens.get("export", set()):
+                return None
+            if any(token in tokens for operation, tokens in self.operation_tokens.items() if operation != "export"):
+                return 401, {"Error": "Invalid operation", "Code": 401}  # BackupGet.cs: Operation != "export"
+            return 500, {"Error": "An error occurred", "Code": 500}  # ReadSingleOperationToken throws: not a token it signed
+        return None
 
     def urlopen(self, request, timeout=None):
         url = request.full_url
@@ -121,14 +167,22 @@ class FakeDuplicati:
         method = request.get_method()
         self.requests.append(Recorded(method, url, parts.path, query, headers, body))
         route = self.routes.get((method, parts.path))
-        if route is None:
+        refusal = self._product_refusal(method, parts.path, query, headers)
+        if refusal is not None:
+            status, payload = refusal
+        elif route is None:
             status, payload = 404, {"Error": f"not routed: {method} {parts.path}"}
         elif callable(route):
             status, payload = route(query)
         else:
             status, payload = route
+        issue = _ISSUE_PATH.fullmatch(parts.path)
+        if method == "POST" and issue and status == 200 and isinstance(payload, dict):
+            tokens = self.operation_tokens.setdefault(issue.group(1), set())
+            tokens.update(v for k, v in payload.items() if k in ("Token", "token") and isinstance(v, str) and v)
         if status >= 400:
-            raise urllib.error.HTTPError(url, status, "stub", None, io.BytesIO(json.dumps(payload).encode()))  # type: ignore[arg-type]
+            raw = b"" if payload is None else json.dumps(payload).encode()
+            raise urllib.error.HTTPError(url, status, "stub", None, io.BytesIO(raw))  # type: ignore[arg-type]
         return FakeResponse(status, payload)
 
     def paths(self) -> list[tuple[str, str]]:
