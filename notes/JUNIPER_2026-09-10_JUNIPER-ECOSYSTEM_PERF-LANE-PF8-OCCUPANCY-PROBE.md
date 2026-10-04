@@ -3,7 +3,7 @@
 Successor to §1.3 of the re-scope note
 ([`JUNIPER_2026-09-08_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-RESCOPE-AND-MICRO-TIMING-REFERENCE.md`](JUNIPER_2026-09-08_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-RESCOPE-AND-MICRO-TIMING-REFERENCE.md))
 and to §1 items 2 and 3 of the 2026-09-09 handoff
-([`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_perf-lane-pf8-needs-no-harness-micro-reference-cut-pf2-axis-inert.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_perf-lane-pf8-needs-no-harness-micro-reference-cut-pf2-axis-inert.md)).
+([`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_perf-lane-pf8-needs-no-harness-micro-reference-cut-pf2-axis-inert.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_perf-lane-pf8-needs-no-harness-micro-reference-cut-pf2-axis-inert.md)).
 Item numbers refer to the P2 plan
 ([`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md))
 unless stated otherwise; "the sweep note" is

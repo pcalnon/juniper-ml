@@ -4,7 +4,7 @@
 **Author**: Paul Calnon
 **Date**: 2026-08-23
 **Status**: Findings established; remediation not yet designed
-**Predecessor**: [`HANDOFF_2026-08-22_duplicati-dbpath-and-recovery.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-22_duplicati-dbpath-and-recovery.md)
+**Predecessor**: [`HANDOFF_2026-08-22_duplicati-dbpath-and-recovery.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08/HANDOFF_2026-08-22_duplicati-dbpath-and-recovery.md)
 
 ---
 

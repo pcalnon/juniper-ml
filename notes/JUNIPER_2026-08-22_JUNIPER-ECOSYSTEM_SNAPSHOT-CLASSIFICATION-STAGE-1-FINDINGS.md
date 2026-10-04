@@ -20,7 +20,7 @@ the one this document first proposed. Line numbers are against juniper-cascor
 **re-derive before editing**.
 
 Successor to the 2026-08-22 handoff
-[`HANDOFF_2026-08-22_snapshot-classification-and-metadata-reconstruction.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-22_snapshot-classification-and-metadata-reconstruction.md),
+[`HANDOFF_2026-08-22_snapshot-classification-and-metadata-reconstruction.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08/HANDOFF_2026-08-22_snapshot-classification-and-metadata-reconstruction.md),
 whose §3 item 1 (classifier) is what this closes.
 
 ---

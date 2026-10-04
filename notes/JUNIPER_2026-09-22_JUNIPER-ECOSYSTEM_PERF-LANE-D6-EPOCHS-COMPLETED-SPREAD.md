@@ -316,5 +316,5 @@ measurement exercises. The correction is recorded rather than quietly fixed beca
 this document is exactly the kind of thing that would make the next round unfalsifiable.
 
 The 09-17 work was found during a state re-probe of
-[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_perf-lane-burst-terminator-is-the-result-queue-unpickle-and-the-getter-repins.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_perf-lane-burst-terminator-is-the-result-queue-unpickle-and-the-getter-repins.md)
+[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_perf-lane-burst-terminator-is-the-result-queue-unpickle-and-the-getter-repins.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-11_perf-lane-burst-terminator-is-the-result-queue-unpickle-and-the-getter-repins.md)
 and is not this session's work.

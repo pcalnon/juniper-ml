@@ -1896,7 +1896,7 @@ completing (`FilesUploaded=5`; 818 + 5 = 823), not drift. Next run `2026-08-30T1
 Three of §8.19.1's four owner decisions were executed by the owner overnight (items 2 and 3 in full;
 item 1's sda1 half on 08-29). A validation pass the next morning found two things the arc had been
 carrying wrongly. Handoff:
-[`HANDOFF_2026-08-30_duplicati-cleartext-passphrase-and-escrow-tail.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-30_duplicati-cleartext-passphrase-and-escrow-tail.md).
+[`HANDOFF_2026-08-30_duplicati-cleartext-passphrase-and-escrow-tail.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08/HANDOFF_2026-08-30_duplicati-cleartext-passphrase-and-escrow-tail.md).
 
 #### 8.20.1 Executed by the owner, verified here
 
@@ -2589,7 +2589,7 @@ maintained when it is not** — that is the stale-checker class this arc has now
 #### 8.26.4 Still open after this section
 
 Unchanged and enumerated in
-[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md).
+[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md).
 The item that most needs re-stating here, because §8.23's closure obscured it: **criterion 5
 (logout/login + reboot survival) has never been exercised** — `journalctl --list-boots` shows one boot
 ID spanning 2026-08-16 → 2026-09-07. §8.23 refuted a reboot *hazard*; it did not discharge the
@@ -2802,7 +2802,7 @@ its *unaided return* half and its *the schedule actually fires* half, the latter
 
 **Open, agent-actionable**: the seven-repo drift-guard test port; §8.26.3's frozen evidence mirror;
 the §8.11.3 removal PR. All enumerated in
-[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md).
+[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md).
 
 **Corrections to §8.26 forced by this section**: §8.26.1's row *"sdc4 unmounted — partition **intact**
 … retired from service, not destroyed"* is **false as of 2026-09-07/08**; the partition is gone.

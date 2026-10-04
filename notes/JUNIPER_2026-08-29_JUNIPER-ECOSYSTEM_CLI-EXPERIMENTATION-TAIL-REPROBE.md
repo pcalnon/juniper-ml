@@ -1,7 +1,7 @@
 # CLI-experimentation arc — tail re-probe (2026-08-29)
 
 **Subject**: every item in the "remaining tail — UNOWNED" section of
-[`HANDOFF_2026-08-29_cli-experimentation-tail-and-requirements-corpus.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-29_cli-experimentation-tail-and-requirements-corpus.md) §3,
+[`HANDOFF_2026-08-29_cli-experimentation-tail-and-requirements-corpus.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08/HANDOFF_2026-08-29_cli-experimentation-tail-and-requirements-corpus.md) §3,
 re-probed against the tree at `origin/main` = `d1f949e9`.
 
 **Why**: the handoff itself warns that its own T7 line numbers went stale between drafts

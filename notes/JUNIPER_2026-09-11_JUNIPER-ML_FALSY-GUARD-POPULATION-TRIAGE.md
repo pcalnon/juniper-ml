@@ -3,7 +3,7 @@
 **Date**: 2026-09-11
 **Repo**: juniper-ml
 **Arc**: cursor-fleet round 2, standing item 2
-**Predecessor**: [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_cursor-fleet-round-2-closed-and-three-numbers-that-were-instrument-artifacts.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_cursor-fleet-round-2-closed-and-three-numbers-that-were-instrument-artifacts.md)
+**Predecessor**: [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_cursor-fleet-round-2-closed-and-three-numbers-that-were-instrument-artifacts.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-11_cursor-fleet-round-2-closed-and-three-numbers-that-were-instrument-artifacts.md)
 
 ---
 

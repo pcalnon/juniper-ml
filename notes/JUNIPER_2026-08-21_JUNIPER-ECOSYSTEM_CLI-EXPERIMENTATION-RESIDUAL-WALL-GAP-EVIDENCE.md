@@ -893,7 +893,7 @@ by any logging change.
 - The **per-run fixed overhead** exposed by §8.1 is a new target with no instrument — the existing
   phase split separates candidate from output only.
 
-Full open surface: [`HANDOFF_2026-08-23_logging-pathology-fallout-and-perf-lane.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-23_logging-pathology-fallout-and-perf-lane.md).
+Full open surface: [`HANDOFF_2026-08-23_logging-pathology-fallout-and-perf-lane.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08/HANDOFF_2026-08-23_logging-pathology-fallout-and-perf-lane.md).
 
 ### 8.3 Teardown attestation
 

@@ -12,7 +12,7 @@
 ## 1. What this is
 
 A consensus validation of
-[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-04_soak-per-probe-characterisation.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-04_soak-per-probe-characterisation.md),
+[`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-04_soak-per-probe-characterisation.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-04_soak-per-probe-characterisation.md),
 which was written under context pressure and archived (ml#1658) carrying an explicit
 **UNVERIFIED** banner. That banner was honest and load-bearing: the document is wrong in ways
 that would have cost sessions and turned `main` red.
