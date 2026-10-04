@@ -28,6 +28,13 @@ The deploy script is mutated as TEXT only -- its suite checks it statically and 
 
 Run from anywhere:  python3 util/ad-hoc/2026-10-03_b2_mutation_check.py
 Exit 0 = every mutation killed; 1 = at least one survived; 2 = baseline red or an anchor missing.
+
+2026-10-04, the ml#2115 fix-forward: two anchors moved with the code (export's failure branch is
+now in _export; the watchdog's id is default="" rather than required=True), and thirteen mutations
+were added for what it changed -- export's single-operation token and its TargetURL check, the stub
+that enforces 2.4.0.0's statuses (400 token-less, 500 unsigned, 401 another operation), the absent id
+recorded as JOB_MISSING, and the watchdog's usage exit 64. Five of them came from the fix-forward's
+two validation lanes: three statuses the stub had wrong or unpinned, and two branches no test reached.
 """
 
 from __future__ import annotations
@@ -50,6 +57,7 @@ DAPI = "util/ad-hoc/duplicati_api.py"
 WATCHDOG = "util/ad-hoc/yamaguchi_watchdog.py"
 UNIT = "util/systemd/yamaguchi-watchdog.service"
 DEPLOY = "util/ad-hoc/yamaguchi_watchdog_deploy.bash"
+STUB = "tests/duplicati_api_stub.py"
 
 # (name, file, anchor -- must occur exactly once, replacement, suite expected to kill it)
 MUTATIONS = [
@@ -63,13 +71,26 @@ MUTATIONS = [
     ("serverstate exits 0 when Paused", CLIENT, '    if program == "Paused":\n        return 2', '    if program == "Paused":\n        return 0', "cli"),
     ("a missing job id defaults to 2", CLIENT, "    if not given:\n        ap.error(", '    if not given:\n        given = {"2"}\n    if False:\n        ap.error(', "cli"),
     ("job id matched as a prefix (accepts 7\\n, 2/../x)", CLIENT, "    if not JOB_ID.fullmatch(bid):", "    if not JOB_ID.match(bid):", "cli"),
-    ("pre-B2 export failure: message on stdout, exit 0", CLIENT, '            return _failed(f"export {target}", status, body)', '            print(f"export failed {status}: {body}")\n            return 0', "cli"),
+    ("pre-B2 export failure: message on stdout, exit 0", CLIENT, '        return _failed(f"export {target}", status, body)', '        print(f"export failed {status}: {body}")\n        return 0', "cli"),
+    ("export sends no operation token (ml#2115 as merged)", CLIENT, '{"export-passwords": "false", "token": op}', '{"export-passwords": "false"}', "cli"),
+    ("export passes the Bearer access token as the operation token", CLIENT, '"token": op}', '"token": tok}', "cli"),
+    ("export downloads although issuetoken failed", CLIENT, "    if not op:\n", "    if False:\n", "cli"),
+    ("the operation token is printed", CLIENT, "    query = urllib.parse.urlencode(", '    print(f"token={op}", file=sys.stderr)\n    query = urllib.parse.urlencode(', "cli"),
+    ("an export body without a TargetURL ({} included) is printed as success", CLIENT, "    if status != 200 or _target_url(body) is None:", "    if status != 200 or not isinstance(body, dict):", "cli"),
+    ("an empty TargetURL counts as one", CLIENT, "    return url if isinstance(url, str) and url else None", "    return url if isinstance(url, str) else None", "cli"),
+    ("a non-error issuetoken body is echoed (it may carry the token)", CLIENT, '        detail = body if status >= 400 else {"error": "the issuetoken response carried no usable Token"}', "        detail = body", "cli"),
+    ("stub answers 401 for a token it never signed (2.4.0.0 answers 500)", STUB, '            return 500, {"Error": "An error occurred", "Code": 500}', '            return 401, {"Error": "Invalid operation", "Code": 401}', "cli"),
+    ("stub's issuetoken accepts any Bearer token", STUB, '            if headers.get("authorization") != f"Bearer {self.bearer}":', '            if not headers.get("authorization", "").startswith("Bearer "):', "cli"),
+    ("stub's export rule covers one job only", STUB, '_EXPORT_PATH = re.compile(r"/api/v1/backup/[^/]+/export")', '_EXPORT_PATH = re.compile(r"/api/v1/backup/7/export")', "cli"),
+    ("stub applies no product rule: a token-less export is answered (the fixture that hid ml#2115)", STUB, "        refusal = self._product_refusal(method, parts.path, query, headers)", "        refusal = None", "cli"),
     ("usage errors exit argparse's 2 again", CLIENT, "EXIT_USAGE = 64", "EXIT_USAGE = 2", "cli"),
     ("server-wide verbs silently accept an id", CLIENT, '        ap.error(f"{args.cmd} is server-wide', '        pass\n    if False:\n        ap.error(f"{args.cmd} is server-wide', "cli"),
     ("login failure prints the password", CLIENT, 'sys.exit(f"FATAL: login failed ({status}): {json.dumps(body)[:300]}")', 'sys.exit(f"FATAL: login failed ({status}) with {read_credential()}")', "cli"),
     ("PAUSED_WITH_QUEUE never fires (pre-B2)", WATCHDOG, "        if queue:", "        if False:", "wd"),
     ("freshness from ANY operation (pre-B2 gap 2)", WATCHDOG, '            if result.get("MainOperation") == "Backup":', "            if True:", "wd"),
-    ("watchdog --backup-id defaults to 2 (pre-B2)", WATCHDOG, '"--backup-id", required=True,', '"--backup-id", default="2",', "wd"),
+    ("watchdog --backup-id defaults to 2 (pre-B2)", WATCHDOG, '"--backup-id", default="",', '"--backup-id", default="2",', "wd"),
+    ("an absent --backup-id is a usage error again: no record (ml#2115 as merged)", WATCHDOG, '"--backup-id", default="",', '"--backup-id", required=True,', "wd"),
+    ("watchdog usage errors exit argparse's 2 (reads as UNDETERMINED)", WATCHDOG, "    ap = _UsageParser(", "    ap = argparse.ArgumentParser(", "wd"),
     ("an invalid id is sent to the server", WATCHDOG, "    if not JOB_ID.fullmatch(backup_id):", "    if False:", "wd"),
     ("an unknown ProgramState passes silently", WATCHDOG, '    if program not in ("Running", "Paused"):', "    if False:", "wd"),
     ("log paging without offset", WATCHDOG, '("" if offset is None else f"&offset={offset}")', '""', "wd"),
