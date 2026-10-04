@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.40
+**Version:** 0.3.49
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -136,6 +136,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Open-PR Budget Alarm](REFERENCE.md#open-pr-budget-alarm) -- daily report-only open-PR / `cursor/` queue guardrail
 - [Ruleset Scope Guard](REFERENCE.md#ruleset-scope-guard) -- `~ALL` re-arms deleted dependabot/Copilot bypass rows; exit 2 is not clean
 - [Experiment Stack Utilities](REFERENCE.md#experiment-stack-utilities) -- per-run cascor/recurrence experiments via `util/experiment_stack.bash` + `run_experiment.py` (failed `--up` auto-tears down)
+- [Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) -- before recurrence `serve`: scoped `pip check`, installed pins, `derive_full_split` (juniper-ml#2139; current `main` does not run it)
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments (`--dry-run` first; PF-1 matched 4000/4000 epochs; `JUNIPER_SUITE_GRAFANA_BRIDGE`; PF-4/PF-8 are not driver suites)
 - [Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) -- `read_run_metrics` / `make_baseline` / `compare_baseline`; sound since ml#1743, but **never** wire the exact `step_count` gate to CI — P1 design §6 closed 2026-09-07; host identity blocks on hosted runners, so it would exit 2 REFUSED every time
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default `equities` / `equities_seq` is 422 at 14 symbols (cost is per request; silent slice deleted in data#354)
@@ -190,6 +191,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.3.39
+**Last Updated:** 2026-10-04
+**Version:** 0.3.49
 **Status:** Active
