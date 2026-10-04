@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Watchdog active-task scope.** `tests/test_yamaguchi_watchdog_active_task_scope.py` pins the B2
+  branches `tests/test_yamaguchi_watchdog.py` cannot see: a later log page that fails is
+  `LOG_UNAVAILABLE`; a log entry with no `ID` ends the scan; a short task for another job leaves a
+  stale backup stale; a stuck task for another job alerts before the log; a non-200 task read falls
+  through; a bare task id that has run too long is `STUCK`; `main` still writes the record when
+  `parse_iso` raises.
 - **`ceremony.py --target-sha`: the tag, the CI gate and the notes describe one commit**
   (`util/release_train/ceremony.py`). By default the Release tags the owning repo's `main` as it is
   at cut time, while the notes come from the `--ecosystem-root` checkout. The two agree only if
