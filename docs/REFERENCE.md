@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.75
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -72,6 +72,7 @@
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
 - [Ruleset Scope Guard](#ruleset-scope-guard)
 - [Sibling Packages](#sibling-packages)
+- [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals)
 - [Version History](#version-history)
 - [Build and Release](#build-and-release)
 - [Flood-Remediation CI Gates](#flood-remediation-ci-gates)
@@ -4153,6 +4154,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 
 - **CR-024 body limit** — `RequestBodyLimitMiddleware` treats `Content-Length` as an early-reject hint only and **always** stream-caps `POST` / `PUT` / `PATCH` against the cumulative limit (default 10 MiB), so an under-declared header or a chunked body with none still 413s. Skipping the stream when the declared length is present-and-small is the classic bypass.
 - **Auth before rate limit** — with API keys configured, `APIKeyAuth` runs first, so a 401 never consumes a rate-limit token. Blank / whitespace-only configured keys are filtered out (the `auth_posture.real_keys` rule) so an empty secret file cannot enable auth that then accepts an empty `X-API-Key`.
+- **Non-ASCII API keys are a 401, not a 500** — `APIKeyAuth.validate` compares UTF-8 bytes (`surrogatepass`). Comparing `str` with `hmac.compare_digest` raises `TypeError` on any non-ASCII character, which used to escape as a 500, skip `FailedAuthThrottle`, and (under Sentry's default local-variable capture) ship the configured key. Published `juniper-service-core` 0.7.0 still has the `str` compare. Operator surface: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
 - **429 header passthrough** — `RateLimiter` raises `HTTPException` carrying `Retry-After` + `X-RateLimit-*`; `SecurityMiddleware.dispatch` must rebuild `JSONResponse(..., headers=exc.headers)`. RateLimiter unit tests alone do not exercise that catch path.
 - **Control-WS log sanitizing** — reject logs that interpolate untrusted Origin/command text; go through the module-local `_sanitize_for_log` helpers (`control_security` strips `\r`/`\n`; `control_stream` also drops other C0 controls, keeping tabs) so CRLF cannot forge multi-line control-plane records. Sanitizing changes log records only, never handshake outcomes or ack JSON.
 - **Zero rate limit** — `ws_control_rate_limit_per_sec=0` builds a `LeakyBucket` with no refill; `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop.
@@ -6893,6 +6895,8 @@ Available extras:
 | `sentry`     | `sentry-sdk[fastapi]>=2.0.0` |
 | `all`        | Both optional groups         |
 
+`configure_sentry` never sends frame-local variables (`include_local_variables=False`; there is no parameter to turn them back on), and its `before_send` hook also deletes frame `vars`. Published **0.4.0** still uses the SDK default (`True`). Why, and what a non-ASCII `X-API-Key` does to that path: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
+
 Publish and CI constraints:
 
 1. `ci-observability.yml` runs package tests on Python 3.12 and 3.13, then builds and validates the distribution.
@@ -6921,6 +6925,33 @@ Publish and CI constraints:
 - **Blank API keys.** `APIKeyAuth` filters blank / whitespace-only configured keys (the `auth_posture.real_keys` rule), so an empty secret file cannot enable auth that would then accept an empty `X-API-Key`.
 - **Rate-limit keying.** `RateLimiter._get_key` buckets by `key:<api_key>` when the request is authenticated, otherwise by `ip:<client.host>` — falling back to `ip:unknown` when Starlette reports no client. Authenticated callers therefore get their own budget rather than sharing one per source IP (and a shared NAT egress cannot exhaust an authenticated client's budget).
 - **Worker mTLS half-config.** `TLSConfig` (`juniper_service_core.workers.security`) fails closed: with TLS enabled and only one of `cert_file` / `key_file` set, it raises `ValueError` naming both paths, rather than returning a bare `SSLContext` with neither chain nor key. A silent half-config is the dangerous shape — it looks "TLS enabled" to callers while presenting nothing.
+
+#### Non-ASCII API keys and Sentry frame locals
+
+`APIKeyAuth.validate` (`juniper_service_core/security.py`) compares the presented `X-API-Key` with each configured key as UTF-8 bytes, error handler `surrogatepass`. Equality is exact: a configured key that itself contains non-ASCII still matches that same string. A mismatch is an ordinary authentication failure, never an exception.
+
+| Surface | On mismatch | Path |
+|---------|-------------|------|
+| HTTP | **401** `Invalid API key.` | `SecurityMiddleware` catches `HTTPException` and, for 401 only, records the source IP on `FailedAuthThrottle` |
+| WebSocket | close **4001** `Authentication required`, before `accept()` | `ws_authenticate` calls the same `validate`. `BaseHTTPMiddleware` does not see the upgrade, so the HTTP throttle does not cover `/ws/*` |
+
+`FailedAuthThrottle` defaults to **10** failed attempts per source IP per **60** seconds. Once that many 401s are recorded, a further request from that IP inside the window is **429** with `Retry-After`, and the comparison is not run. Only an HTTP 401 is recorded. A 500 is not.
+
+**Why the compare is bytes.** `hmac.compare_digest` raises `TypeError` when either `str` argument holds a non-ASCII character. Starlette decodes header bytes as latin-1, so any byte above `0x7f` arrives at `validate` as a non-ASCII `str`. The canopy#683 validation probe was `X-API-Key: \xa0` (both uvicorn parsers accept it). That raised inside the comparison loop.
+
+The exception is not an `HTTPException`, so it left `SecurityMiddleware` as a **500**. Because only a 401 is recorded, a flood of such keys was never throttled. `ws_authenticate` calls the same `validate`, so the handshake raised out of the stream handler instead of closing **4001**.
+
+**Why `surrogatepass`.** It is the built-in UTF-8 error handler that is both total and injective. A lone surrogate (for example `"\ud800"` from a JSON-decoded config value) encodes instead of raising, and no two distinct strings share an encoding. `surrogateescape` fails both tests: it raises on `"\ud800"`, and it maps `"\xe9"` and `"\udcc3\udca9"` onto the same bytes. Strict UTF-8 raises on a lone surrogate. Either of those would turn a config value into an exception again.
+
+**What Sentry received.** The SDK default is `include_local_variables=True`, which snapshots every frame's locals into the error event. `EventScrubber` redacts locals by **name**. `api_key` (the presented key) is on its default denylist; `candidate` (the loop variable holding the **configured** key) is not. No name list covers the next local.
+
+`juniper_observability.sentry.configure_sentry` therefore passes `include_local_variables=False`, and there is deliberately no parameter to turn capture back on. The `before_send` hook `_strip_sensitive_headers` also deletes `vars` from each `exception.values[*].stacktrace`, each `threads.values[*].stacktrace`, and a top-level `stacktrace`.
+
+The option does not cover the opt-in `PureEvalIntegration` (sentry-sdk 2.58.0): its event processor writes frame `vars` without consulting the flag, and processors run before `before_send`. The hook keeps the name `_strip_sensitive_headers` because juniper-data and juniper-cascor import it by that name.
+
+**Published wheels do not have this yet.** `juniper-service-core` `pyproject.toml` is still **0.7.0** and `juniper-observability` is still **0.4.0**; both notes live under `[Unreleased]` (juniper-ml#2086). A service installed from those wheels still 500s on a non-ASCII key, still fails to throttle that flood, and can still send `candidate` to Sentry. The fix is the source in this checkout. Do not catch the `TypeError`, and do not re-enable frame locals to see why the 500 happened — that is the leak.
+
+Gate: `juniper-service-core/tests/test_security.py`, `tests/test_middleware.py` (`test_security_middleware_401_not_500_on_a_non_ascii_key`, `test_non_ascii_key_failures_are_counted_by_the_throttle`), `tests/test_t2_websocket.py` (`test_ws_authenticate_closes_4001_on_a_non_ascii_key`); `juniper-observability/tests/test_sentry.py`.
 
 #### Control WS log sanitizer
 
@@ -6980,6 +7011,9 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Worker TLS "enabled" but presents no chain | Half-config — `TLSConfig` raises `ValueError` when only one of `cert_file` / `key_file` is set; supply both. |
 | One noisy IP throttles authenticated clients | Expected only for unauthenticated traffic — `RateLimiter` keys authenticated requests as `key:<api_key>`, so confirm the caller is actually sending `X-API-Key`. |
 | Two `task_assign` frames while the first task runs | A mid-task heartbeat must ack without dispatching — confirm the idle guard. |
+| Non-ASCII `X-API-Key` returns 500 | Published `juniper-service-core` 0.7.0 compares keys as `str`. `hmac.compare_digest` raises `TypeError`, and that is not an `HTTPException`. | Use the checkout that encodes UTF-8 with `surrogatepass` (juniper-ml#2086, still unreleased). Do not catch the `TypeError`. |
+| Non-ASCII key flood never 429s | `FailedAuthThrottle` records only HTTP 401s. A 500 was invisible. WebSocket closes are not this throttle. | Same fix. Default is 10 failures / 60 s / source IP, then 429 with `Retry-After`. |
+| Sentry event contains the configured API key | Frame locals were captured. The scrubber redacts `api_key` and misses `candidate`. | `configure_sentry` must pass `include_local_variables=False`. There is no switch to turn locals back on. Published `juniper-observability` 0.4.0 still uses the SDK default. |
 
 ---
 
@@ -7002,6 +7036,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.75  | 2026-10-05 | Non-ASCII API keys and Sentry frame locals: `validate` compares UTF-8 bytes (`surrogatepass`); HTTP mismatch is 401 and counts on `FailedAuthThrottle` (10 / 60 s / IP); WebSocket mismatch closes 4001. Published service-core 0.7.0 still 500s. `configure_sentry` sets `include_local_variables=False` (no opt-in); `before_send` deletes frame `vars` because `PureEvalIntegration` writes them. Published observability 0.4.0 still uses the SDK default. |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |

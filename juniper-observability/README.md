@@ -61,7 +61,11 @@ from juniper_observability.testing import reset_prometheus_registry  # pytest fi
 | `RequestIdMiddleware`, `PrometheusMiddleware` | Starlette middlewares applied across the service fleet. |
 | Health-response models | Pydantic models for the `/v1/health/ready` endpoint. |
 | Structured-JSON logging | Logging configuration with `request_id` propagation. |
-| Sentry init | Initialisation surface with the SEC-10 `before_send` hook always installed. |
+| Sentry init | `configure_sentry` passes `include_local_variables=False` (no switch to turn locals back on) and the SEC-10 `before_send` hook always runs. The hook also deletes frame `vars`. |
+
+`configure_sentry` never captures frame locals. Sentry's `EventScrubber` redacts locals by name, and the name that held the configured API key in the canopy#683 finding (`candidate`) is not on that list. The `before_send` hook deletes `vars` as well, because the opt-in `PureEvalIntegration` (sentry-sdk 2.58.0) writes them without consulting `include_local_variables`. Published **0.4.0** still uses the SDK default. There is no parameter to turn locals back on.
+
+Operator notes: [juniper-ml REFERENCE](../docs/REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
 
 **Per-service metrics stay in each repo.** This package exposes only *cross-cutting* infrastructure;
 service-specific metric definitions (training-loop counters, dataset-gen histograms, websocket gauges)

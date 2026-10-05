@@ -40,7 +40,7 @@ pip install juniper-service-core
 | App factory | `create_app` | Model-agnostic FastAPI app: mounts the health router, then any service-supplied routers. |
 | Settings | `SettingsBase` | `pydantic-settings` base (`service_name`, `host`, `port`, `log_level`); subclass and set your own `env_prefix`. |
 | Health | *(mounted by `create_app`)* | `GET /v1/health` (liveness) + `GET /v1/health/ready` (readiness). |
-| Security | `APIKeyAuth`, `RateLimiter`, `build_api_key_auth`, … | `X-API-Key` authentication + rate limiting. |
+| Security | `APIKeyAuth`, `RateLimiter`, `build_api_key_auth`, … | `X-API-Key` authentication + rate limiting. Keys are compared as UTF-8 bytes (`surrogatepass`). A non-ASCII header that does not match is a **401** (WebSocket close **4001**), never a 500. |
 | Secrets | `get_secret` | Docker `_FILE` secret-indirection reader. |
 | Middleware | `SecurityMiddleware`, `SecurityHeadersMiddleware`, `RequestBodyLimitMiddleware` | Drop-in ASGI middleware. |
 | Launcher | `ManagedService`, `start_service`, `wait_for_health` | Subprocess service launcher (stdlib-only). |
@@ -95,6 +95,16 @@ example — its FastAPI service is essentially this wiring around an LMU regress
   cascor's service tier; cascor's own cutover onto it is in progress.
 
 Any new Juniper model service should build on this rather than re-implementing the plumbing.
+
+## API-key comparison
+
+`APIKeyAuth.validate` compares UTF-8 bytes with `surrogatepass`, not `str`. `hmac.compare_digest` raises `TypeError` when either string holds a non-ASCII character, and Starlette decodes `X-API-Key` bytes as latin-1, so a byte above `0x7f` used to leave `SecurityMiddleware` as a **500**.
+
+Only an HTTP 401 is recorded by `FailedAuthThrottle` (default 10 failures per source IP per 60 seconds, then **429**), so that flood was never throttled. The WebSocket handshake calls the same `validate` and closes **4001** instead of raising.
+
+`surrogatepass` is required: it encodes a lone surrogate (a JSON-decoded config value can contain one) and it does not map two different strings onto the same bytes. `surrogateescape` does both of those wrong.
+
+This behavior is in the source tree (juniper-ml#2086) and is still `[Unreleased]` relative to the PyPI **0.7.0** wheel. A service installed from that wheel still 500s. Do not catch the `TypeError`. The Sentry half of the same incident — frame locals, including the configured key held in `candidate` — is `juniper-observability`'s `configure_sentry`. Operator notes: [juniper-ml REFERENCE](../docs/REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
 
 ## Status
 
