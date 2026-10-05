@@ -2788,7 +2788,7 @@ Related: [Relocation Completeness (G3)](#relocation-completeness-g3),
 
 ### Running every suite
 
-The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th), **169** on 2026-10-03 (`tests/test_juniper_backup_tier2_lane.py`); the drift script above counts, so re-run it rather than trusting this figure. This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
+The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th), **169** on 2026-10-03 (`tests/test_juniper_backup_tier2_lane.py`), **170** on 2026-10-05 (`tests/test_yamaguchi_pre_backup_guard.py`); the drift script above counts, so re-run it rather than trusting this figure. This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
 
 ci.yml is the authoritative list. `tests/test_ci_test_wiring_drift.py` gates that every `tests/test_*.py` on disk is invoked there; `util/ad-hoc/2026-09-10_agents_md_test_list_drift.py` reports any suite CI runs that this list does not name.
 
@@ -2812,6 +2812,7 @@ python3 -m unittest -v tests/test_reap_pytest_orphans.py
 python3 -m unittest -v tests/test_kill_helpers.py
 python3 -m unittest -v tests/test_duplicati_scheduled_backup.py
 python3 -m unittest -v tests/test_juniper_backup_tier2_lane.py
+python3 -m unittest -v tests/test_yamaguchi_pre_backup_guard.py
 python3 -m unittest -v tests/test_editable_install_drift_check.py
 python3 -m unittest -v tests/test_env_floor_drift_check.py
 python3 -m unittest -v tests/test_env_drift_check.py
@@ -2996,6 +2997,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_soak_run_probe.py` -- Gate for `util/soak_run_probe.py`. Hermetic (never launches `claude`). Pins dry-run stdout leaking no task/fact/discriminator, and that a pointer miss is never reported as a scored miss (consistent with source-recovered **or** wrong).
 - `tests/test_cascor_freeze_tell.py` -- **not on main** (open juniper-ml#1667). Pins exact-prefix + sibling/worktree exclusion, independent cmdline/environ/fd/maps arms, and `main()` exit 1 iff any hold. Operator surface: [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell).
 - `tests/test_kill_helpers.py` -- Hermetic process-filter / kill-path tests for `util/kill_all_pythons.bash` and `util/juniper_worker_kill.bash` (PATH-stubbed `ps`/`sudo`/`kill`; bash `kill` builtin disabled; never touches live PIDs)
+- `tests/test_yamaguchi_pre_backup_guard.py` -- Hermetic gate for `util/yamaguchi-pre-backup-guard.bash`, Duplicati's `--run-script-before-required` hook. Exit 0 is the only proceed; exit 5 aborts. Stdout stays empty, because Duplicati parses it as option overrides. `DUPLICATI__*` and `SETTINGS_ENCRYPTION_KEY` are unset before `mountpoint` runs, while the operation name and the remote URL are still enforced. A credential-bearing TargetURL is refused with scheme, length and an 8-character sha256, and the URL itself is absent. One trailing slash matches `file://$DEST_DIR`; a second slash or an extra path segment does not. Allow-listed volume names and `duplicati-verification.json` pass; a foreign name is refused and sanitised (newline and shell metacharacters dropped, 64 characters). A missing destination is not scanned. A `find` that exits 1 is exit 5, not a pass. `mountpoint` is a PATH stub. The mode-0555 arm runs only when the test user is not root, because root's `test -w` ignores mode bits.
 - `tests/test_juniper_backup_tier2_lane.py` -- The tier-2 USB archive lane (recovery plan B6 / I-20). It pins:
   - **The mount root.** `util/juniper-backup.bash` takes it from the scheduler's `JUNIPER_BACKUP_MEDIA_ROOT` (default `/run/media/$USER`, falling back to `id -un` when `USER` is unset). An absolute `JUNIPER_BACKUP_DEVICES` entry is used as-is.
   - **The drive bound.** Every mount root must lie strictly under `/mnt`, `/media` or `/run/media`: `/`, `/home`, `/tmp`, `/run/user/1000`, walks out (`/mnt/../home`), and the relative form through `/` are each refused with exit 2 before any probe. So is a mounted system path that already holds a writable `Juniper-8.0.0.python`. The design roots are accepted.

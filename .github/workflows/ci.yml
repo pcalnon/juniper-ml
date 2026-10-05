@@ -277,6 +277,14 @@ jobs:
           # are refused before any write, copies replace symlinks. PATH-stubbed
           # mountpoint/gpg/systemctl; scratch trees only, never a real drive.
           python3 -m unittest -v tests/test_juniper_backup_tier2_lane.py
+          # tests/test_yamaguchi_pre_backup_guard.py: Duplicati's
+          # --run-script-before-required hook. Exit 5 aborts the backup; stdout
+          # stays empty (Duplicati reads it as option overrides); DUPLICATI__*
+          # and SETTINGS_ENCRYPTION_KEY are dropped before any child runs; a
+          # credential-bearing TargetURL is refused without being printed; a
+          # failed destination scan is exit 5, not a pass. PATH-stubbed
+          # mountpoint; real find except the scan-failure arm.
+          python3 -m unittest -v tests/test_yamaguchi_pre_backup_guard.py
           python3 -m unittest -v tests/test_editable_install_drift_check.py
           # tests/test_env_floor_drift_check.py: gap-I-2 floor-drift checker --
           # installed juniper-* (dist-info METADATA) vs the target repo's pyproject
