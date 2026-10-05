@@ -5,11 +5,11 @@ Project:     Juniper
 Sub-Project: juniper-ml
 Application: util/ad-hoc (single-use operations helper)
 Author:      Paul Calnon
-Version:     0.1.0
+Version:     0.2.0
 License:     MIT License
 Created:     2026-10-05
 Status:      ad-hoc. Written during the 2026-10-05 Actions major outage (githubstatus incident opened
-             21:09Z): queued jobs never received a runner, were CANCELLED after ~20 min with zero steps,
+             19:11Z): queued jobs never received a runner, were CANCELLED after ~20 min with zero steps,
              and every path-scoped aggregate gate then FAILED with "change detection did not succeed".
              Nothing in the PRs' code failed. The remedy is a re-run of every failed / cancelled run on
              the PR's current head once the Actions component is operational, then the normal merge
@@ -21,6 +21,11 @@ script FILE is not inspected. Everything here is `gh` reads, `gh run rerun`, and
 Run:
     python3 util/ad-hoc/2026-10-05_rerun_after_actions_outage.py --repo juniper-recurrence --pr 192 --merge
     python3 util/ad-hoc/2026-10-05_rerun_after_actions_outage.py --repo juniper-ml --pr 2164 --no-merge
+
+The wait ends when the Actions component reads ``operational``. Pass ``--accept-degraded`` to end it on
+``degraded_performance`` as well: at 21:32Z the status page moved to that state with "queued jobs are
+clearing, new jobs are not delayed", and jobs were in fact running again, so a wait for ``operational``
+would have held the re-runs and the merge for the whole tail of the incident.
 """
 
 from __future__ import annotations
@@ -70,21 +75,23 @@ def main() -> int:
     ap.add_argument("--poll-seconds", type=int, default=120)
     ap.add_argument("--max-wait-seconds", type=int, default=4 * 3600)
     ap.add_argument("--merge-timeout", type=int, default=3600)
+    ap.add_argument("--accept-degraded", action="store_true", help="also end the wait on degraded_performance, not only operational")
     group = ap.add_mutually_exclusive_group(required=True)
     group.add_argument("--merge", action="store_true")
     group.add_argument("--no-merge", action="store_true")
     args = ap.parse_args()
 
+    accepted = {"operational"} | ({"degraded_performance"} if args.accept_degraded else set())
     t0 = time.time()
     status = actions_status()
-    while status != "operational":
+    while status not in accepted:
         if time.time() - t0 > args.max_wait_seconds:
             print(f"GAVE UP after {int(time.time() - t0)} s; Actions still {status}", flush=True)
             return 2
         print(f"{time.strftime('%H:%M:%S')} Actions = {status}; waiting {args.poll_seconds} s", flush=True)
         time.sleep(args.poll_seconds)
         status = actions_status()
-    print(f"{time.strftime('%H:%M:%S')} Actions = operational after {int(time.time() - t0)} s", flush=True)
+    print(f"{time.strftime('%H:%M:%S')} Actions = {status} (accepted) after {int(time.time() - t0)} s", flush=True)
 
     sha = head_sha(args.owner, args.repo, args.pr)
     rerun = 0
