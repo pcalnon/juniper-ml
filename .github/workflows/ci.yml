@@ -859,6 +859,13 @@ jobs:
           # manifest, and the 0/1/2/3/4 exit matrix. No live services;
           # util/ is not pre-commit-lint-gated, so this unittest is the gate.
           python3 -m unittest -v tests/test_run_experiment.py
+          # tests/test_recurrence_launch_record_edges.py: the W1.9 / W1.10 edges the two suites
+          # above do not pin. An empty log knob stays off the serve announce; a newline, CR, or
+          # tab in a recorded path stays inside ports.json; unset WANT_BRIDGE / RUN_ID / EXPERIMENT
+          # still write it; a non-executable recorded CLI does not fall back to PATH; a launch
+          # record with no port, or the same port on another host, is set aside; the model probe
+          # is `python -c` from / with no -s. No live services.
+          python3 -m unittest -v tests/test_recurrence_launch_record_edges.py
           # tests/test_read_run_metrics.py: hermetic tests for
           # util/experiments/read_run_metrics.py, the canonical reader for the perf
           # lane's two ratified gate inputs (P2 item 0.4). Pins that the LAST sampled

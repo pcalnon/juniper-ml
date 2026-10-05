@@ -2898,6 +2898,7 @@ python3 -m unittest -v tests/test_isolated_stack_script.py
 python3 -m unittest -v tests/test_experiment_stack_script.py
 python3 -m unittest -v tests/test_recurrence_env_preflight.py
 python3 -m unittest -v tests/test_run_experiment.py
+python3 -m unittest -v tests/test_recurrence_launch_record_edges.py
 python3 -m unittest -v tests/test_read_run_metrics.py
 python3 -m unittest -v tests/test_compare_baseline.py
 python3 -m unittest -v tests/test_make_baseline.py
