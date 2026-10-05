@@ -6,7 +6,9 @@
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
-# Everything below this block is the lane's file, unmodified.
+# Everything below this block is the lane's file, modified 2026-10-05 only to close the files it opens
+# (CodeQL py/file-not-always-closed on juniper-ml#2157); what it computes is unchanged.
+# The edits: util/ad-hoc/2026-10-05_phase10_r1_probes_close_files.py.
 # ---------------------------------------------------------------------------
 """Lane 10-A2 independent F-CANOPY-060 reproduction, stage B (canopy env).
 
@@ -37,7 +39,8 @@ def text_of(node):
 
 dm = object.__new__(DashboardManager)
 dm.logger = logging.getLogger("lane10a2")
-data = json.load(open(IN))
+with open(IN) as fh:
+    data = json.load(fh)
 for name, case in data.items():
     closing = case["data_detail"].rsplit(". ", 1)[-1]
     first = case["data_detail"].split(". ", 1)[0]

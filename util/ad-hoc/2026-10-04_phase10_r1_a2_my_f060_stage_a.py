@@ -6,7 +6,9 @@
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
-# Everything below this block is the lane's file, unmodified.
+# Everything below this block is the lane's file, modified 2026-10-05 only to close the files it opens
+# (CodeQL py/file-not-always-closed on juniper-ml#2157); what it computes is unchanged.
+# The edits: util/ad-hoc/2026-10-05_phase10_r1_probes_close_files.py.
 # ---------------------------------------------------------------------------
 """Lane 10-A2 independent F-CANOPY-060 reproduction, stage A (cascor env).
 
@@ -85,5 +87,6 @@ for name, data_exc in cases.items():
         stances[stance] = f"Training cannot be started: {RuntimeError(msg)}"
     out[name] = {"data_detail": str(data_exc), "client_str": str(client_exc), "client_type": type(client_exc).__name__, "client_status": client_exc.status_code, "canopy_receives": stances}
     print(f"{name}: client {type(client_exc).__name__}({client_exc.status_code}) str starts {str(client_exc)[:40]!r}; token in message: {all(mgr._PROJECT_API_SHORTFALL_REFUSAL_TOKEN in s for s in stances.values())}")
-json.dump(out, open(OUT, "w"), indent=1)
+with open(OUT, "w") as fh:
+    json.dump(out, fh, indent=1)
 print("wrote", OUT.replace(ROOT, "<scratch>"))

@@ -6,7 +6,9 @@
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
-# Everything below this block is the lane's file, unmodified.
+# Everything below this block is the lane's file, modified 2026-10-05 only to close the files it opens
+# (CodeQL py/file-not-always-closed on juniper-ml#2157); what it computes is unchanged.
+# The edits: util/ad-hoc/2026-10-05_phase10_r1_probes_close_files.py.
 # ---------------------------------------------------------------------------
 """Lane 10-B2 probe: what does canopy's apply toast say for the A-N2 answer, and for the answer a
 partition-aware extractor would have produced? Executes DashboardManager._compose_apply_toast at 1b2dd438
@@ -25,7 +27,8 @@ os.chdir(SCRATCH)
 sys.path.insert(0, CANOPY_SRC)
 from frontend.dashboard_manager import DashboardManager  # noqa: E402
 
-rec = json.load(open(ARCHIVE))
+with open(ARCHIVE) as fh:
+    rec = json.load(fh)
 params = rec["request_body"]
 sent = {k: v for k, v in params.items() if k != "nn_model"}
 

@@ -6,7 +6,9 @@
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
-# Everything below this block is the lane's file, unmodified.
+# Everything below this block is the lane's file, modified 2026-10-05 only to close the files it opens
+# (CodeQL py/file-not-always-closed on juniper-ml#2157); what it computes is unchanged.
+# The edits: util/ad-hoc/2026-10-05_phase10_r1_probes_close_files.py.
 # ---------------------------------------------------------------------------
 """Print each line the Phase 10 text cites, so every reference can be eyeballed against its claim."""
 import os
@@ -34,6 +36,7 @@ REFS = [
     ("juniper-canopy/docs/USER_MANUAL.md", [266, 271, 293]),
 ]
 for rel, lines in REFS:
-    src = open(os.path.join(T, rel), encoding="utf-8").read().splitlines()
+    with open(os.path.join(T, rel), encoding="utf-8") as fh:
+        src = fh.read().splitlines()
     for n in lines:
         print(f"{rel.split('/', 1)[1]}:{n}: {src[n - 1].strip()[:150]}")

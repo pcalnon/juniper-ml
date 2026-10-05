@@ -6,13 +6,16 @@
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
-# Everything below this block is the lane's file, unmodified.
+# Everything below this block is the lane's file, modified 2026-10-05 only to close the files it opens
+# (CodeQL py/file-not-always-closed on juniper-ml#2157); what it computes is unchanged.
+# The edits: util/ad-hoc/2026-10-05_phase10_r1_probes_close_files.py.
 # ---------------------------------------------------------------------------
 import json
 import sys
 
 path = sys.argv[1]
-d = json.load(open(path))
+with open(path) as fh:
+    d = json.load(fh)
 h = d["response"]["history"]
 print("keys:", sorted(h.keys()), "count:", h.get("count"))
 for part in ("first_3", "last_20"):

@@ -6,7 +6,9 @@
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
-# Everything below this block is the lane's file, unmodified.
+# Everything below this block is the lane's file, modified 2026-10-05 only to close the files it opens
+# (CodeQL py/file-not-always-closed on juniper-ml#2157); what it computes is unchanged.
+# The edits: util/ad-hoc/2026-10-05_phase10_r1_probes_close_files.py.
 # ---------------------------------------------------------------------------
 """Lane 10-B2 probe: does every path canopy relays cascor rows through drop ``kind``?
 
@@ -49,7 +51,8 @@ def load(name: str, path: str):
 
 
 # cascor's monitor imports one constant from its constants package; read the real value from the tree.
-consts_src = open(os.path.join(CASCOR_SRC, "cascor_constants/constants_api/constants_api_defaults.py")).read()
+with open(os.path.join(CASCOR_SRC, "cascor_constants/constants_api/constants_api_defaults.py")) as fh:
+    consts_src = fh.read()
 buf = None
 for node in ast.parse(consts_src).body:
     if isinstance(node, ast.AnnAssign) and getattr(node.target, "id", "") == "_PROJECT_API_METRICS_BUFFER_SIZE":
@@ -134,7 +137,8 @@ relayed_metrics = by_type["metrics"]["data"]
 relayed_burst_rows = by_type["initial_metrics"]["data"]["metrics"]
 print(f"metrics frame as relayed     : keeps kind={'kind' in relayed_metrics}; flat loss={'loss' in relayed_metrics}; keys={sorted(relayed_metrics)}")
 print(f"initial_metrics as relayed   : {len(relayed_burst_rows)} rows; kinds={[r.get('kind') for r in relayed_burst_rows]}; nested 'metrics' dict={'metrics' in relayed_burst_rows[0]}; flat loss={'loss' in relayed_burst_rows[0]}")
-json.dump(CAPTURED, open(os.path.join(SCRATCH, "relayed_frames.json"), "w"))
+with open(os.path.join(SCRATCH, "relayed_frames.json"), "w") as fh:
+    json.dump(CAPTURED, fh)
 
 from frontend.components.metrics_panel import MetricsPanel  # noqa: E402
 from frontend.dashboard_manager import DashboardManager  # noqa: E402
@@ -149,7 +153,8 @@ for label, events in (("relayed metrics frames only", [relayed_metrics]), ("rela
     print(f"store <- {label:<36}: rows={len(store)} kinds_in_store={[m.get('kind') for m in store]} Training Step tile={step_tile!r} loss tile={loss_str!r} loss y={loss_y} acc trace0 y={acc_y}")
 
 # Extract the clientside extendTraces fast path's JS from metrics_panel.py for the node probe.
-mp_src = open(os.path.join(CANOPY_SRC, "frontend/components/metrics_panel.py")).read()
+with open(os.path.join(CANOPY_SRC, "frontend/components/metrics_panel.py")) as fh:
+    mp_src = fh.read()
 js = None
 for node in ast.walk(ast.parse(mp_src)):
     if isinstance(node, ast.Call) and getattr(node.func, "attr", "") == "clientside_callback" and node.args:
@@ -157,4 +162,5 @@ for node in ast.walk(ast.parse(mp_src)):
         if isinstance(a0, ast.Constant) and isinstance(a0.value, str) and "extendTraces(lossEl" in a0.value:
             js = a0.value
             print(f"extendTraces clientside callback found at metrics_panel.py:{node.lineno}")
-open(os.path.join(SCRATCH, "extend_traces_fn.js"), "w").write(js)
+with open(os.path.join(SCRATCH, "extend_traces_fn.js"), "w") as fh:
+    fh.write(js)

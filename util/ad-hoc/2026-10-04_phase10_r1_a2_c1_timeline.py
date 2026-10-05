@@ -6,13 +6,14 @@
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
-# Everything below this block is the lane's file, unmodified.
+# Everything below this block is the lane's file, modified 2026-10-05 only to close the files it opens
+# (CodeQL py/file-not-always-closed on juniper-ml#2157; and py/unused-import, so `import re` is gone); what it computes is unchanged.
+# The edits: util/ad-hoc/2026-10-05_phase10_r1_probes_close_files.py.
 # ---------------------------------------------------------------------------
 """Claim 1: place the 80 network-stats 503 WARNINGs against the per-case windows (UTC) and backends."""
 import glob
 import json
 import os
-import re
 from datetime import datetime, timedelta, timezone
 
 ROOT = "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/clever-juggling-spring/reports/2026-09-23_canopy-a-n2-generate-stage-train-render"
@@ -27,13 +28,16 @@ for d in sorted(glob.glob(f"{ROOT}/[01][0-9]_*/")):
     if d.rstrip("/").endswith("00_stack"):
         continue
     name = os.path.basename(d.rstrip("/"))
-    s = json.load(open(f"{d}summary.json"))
-    idx = json.load(open(f"{d}index.json"))
+    with open(f"{d}summary.json") as fh:
+        s = json.load(fh)
+    with open(f"{d}index.json") as fh:
+        idx = json.load(fh)
     ts = [parse_utc(e["t_utc"]) for e in idx if e.get("t_utc")]
     tl = sorted(glob.glob(f"{d}dashboard*_timeline.json"))
     caps = []
     for t in tl:
-        j = json.load(open(t))
+        with open(t) as fh:
+            j = json.load(fh)
         caps.append((os.path.basename(t), j if isinstance(j, dict) else {"_list_len": len(j)}))
     cases.append((name, s.get("model"), s.get("model_select", {}).get("backend"), min(ts), max(ts), caps))
 
@@ -44,7 +48,8 @@ for name, model, backend, t0, t1, caps in cases:
         print(f"     {cname}: keys={keys}")
 
 # The WARNING lines, local time -> UTC at -5h (CDT) -- the offset is checked separately.
-lines = [l for l in open(f"{ROOT}/00_stack/logs/juniper-canopy.log", errors="replace") if "Network stats API returned 503" in l]
+with open(f"{ROOT}/00_stack/logs/juniper-canopy.log", errors="replace") as fh:
+    lines = [l for l in fh if "Network stats API returned 503" in l]
 print("\nwarnings:", len(lines))
 stamps = [datetime.strptime(l[:23], "%Y-%m-%d %H:%M:%S,%f").replace(tzinfo=timezone.utc) + timedelta(hours=5) for l in lines]
 print("first/last (UTC if offset is -5h):", stamps[0].strftime("%H:%M:%S"), stamps[-1].strftime("%H:%M:%S"))

@@ -6,7 +6,9 @@
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
-# Everything below this block is the lane's file, unmodified.
+# Everything below this block is the lane's file, modified 2026-10-05 only to close the files it opens
+# (CodeQL py/file-not-always-closed on juniper-ml#2157); what it computes is unchanged.
+# The edits: util/ad-hoc/2026-10-05_phase10_r1_probes_close_files.py.
 # ---------------------------------------------------------------------------
 """Apply the lane's canopy mutations to the scratch copies (never to a repo checkout)."""
 import sys
@@ -15,9 +17,11 @@ ROOT = "/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/8e5
 
 
 def patch(path, old, new):
-    text = open(path).read()
+    with open(path) as fh:
+        text = fh.read()
     assert text.count(old) == 1, (path, old[:60], text.count(old))
-    open(path, "w").write(text.replace(old, new))
+    with open(path, "w") as fh:
+        fh.write(text.replace(old, new))
     print("patched", path.split("lane10A2.")[1], "::", old.strip()[:70])
 
 
