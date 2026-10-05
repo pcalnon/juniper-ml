@@ -11,7 +11,7 @@
 
 ## Handoff goal
 
-Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.4.0): Phase 1 wave 2 in the plan's dependency order, the two remaining wave-1 merges if they have not landed, then W1.11's code half; the owner rulings the plan now lists are the owner's.
+Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.4.1): Phase 1 wave 2 in the plan's dependency order (wave 1 is complete — verify it, do not redo it), then W1.11's code half; the owner rulings the plan now lists are the owner's.
 
 ### Completed so far (all merged unless stated)
 
@@ -21,10 +21,10 @@ Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_
   - cause of record: the service-default readout applied to a chronologically drifting input, both necessary, `ridge 0` the amplifier; an embargoed in-era control (`reconciler-rederive-b1r2.json` F15) is the in-support evidence; (b) stays withdrawn; `cost_basis` is an exactly-constant raw feature.
   - W5.8's preferred option (`default_ridge → gcv` alone) measures **−247**; only gcv **and** per-fold standardisation pass (−0.195 / −0.019, by abstaining), gated on a response flag (**W5.10**); a default-readout change is **W5.11**. W5.9 becomes at-ceiling / null-model reporting (GCV's optimum is the null model in 3 of 5 RFF folds).
   - R5 recommendation of record: `cv_r2 ∈ [−1.0, +0.5]` **and** `cv_r2_std ≤ 0.5`, both `gate`, row-scoped; the v1.0.0 `train_r2` row withdrawn (could never fire); re-measure on W5.2's train + val pool before W5.4 encodes it (fold 4 of today's full-view CV is the entire `test` partition + 107 `val` rows).
-- **Plan v1.4.0**: F-SCI1 statement corrected; F-P8 Major; W5.8 / W5.9 rewritten, W5.10 / W5.11 added; W5.4 band amended; W5.2 → W5.3 / W5.4 and W5.10 → W5.8 edges; W1.1 / W1.3 Details corrected; "Applied pending ruling" paragraph (R2, R3, R8); status table and M0 updated.
+- **Plan v1.4.0, then v1.4.1** (1.4.1 records wave 1 complete — juniper-ml#2164 `c5a62bc7`, juniper-recurrence#192 `d20a581b`, the Actions outage behind both PRs' red checks, the two wave-2 conflicts below): F-SCI1 statement corrected; F-P8 Major; W5.8 / W5.9 rewritten, W5.10 / W5.11 added; W5.4 band amended; W5.2 → W5.3 / W5.4 and W5.10 → W5.8 edges; W1.1 / W1.3 Details corrected; "Applied pending ruling" paragraph (R2, R3, R8); status table and M0 updated.
 - **P1 wave 1**: W1.4 juniper-data-client#222 (float32 enforcement per recommended R2; downstream census clean; the validator is `contract.py:45-135`, the audit's anchor was wrong); W1.3 juniper-recurrence#191 (`target=` API + W1.4 mirror, **default `auto`** — a `reg` default 422s every juniper-data synthetic because they emit `y_*` only; R8's alternative applied pending re-ruling); W1.6 / W1.7 juniper-canopy#722 (version from `GET /openapi.json` — health carries none; documented contract floor, canopy
   never imports the client; **display half still open**, `refresh_model_versions` has no caller); W1.1(a) + W1.8 juniper-data#451 (R3 read as "refuse when `purchase_date` is ≥ 1 weekday after `start_date` under `drop`"; no `generator_version` bump); W1.12 juniper-deploy#242 + juniper-recurrence#193 (mount, preflight, smoke script, tracked `recurrence-snapshots/.gitkeep`; the published 0.5.0 image predates the snapshot routes, so the smoke passes against a `be081fa` build only until W1.13 moves the pin).
-  Every squash verified file-by-file; worktrees and local branches removed.
+  W1.5 service half juniper-recurrence#192 (`d20a581b`) and W1.9 / W1.10 juniper-ml#2164 (`c5a62bc7`) landed last, after the Actions outage (details in Remaining work, item 1). Every squash verified file-by-file; worktrees and local branches removed.
 - **Memory**: index compacted to 18 KB via hub files; the wrong "checksum is container-level" memory replaced by `reference_dataset_id_does_not_pin_content_two_mints_differed.md`; the stale-sibling-primary trap recorded in `reference_stale_local_checkout_clobbers_your_own_work.md`; the arc memory `project_recurrence_equities_p0_arc_2026-10-04.md` updated.
 
 ### Remaining work (in order)
@@ -57,9 +57,10 @@ Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_
 
 ```bash
 cd /home/pcalnon/Development/python/Juniper/juniper-ml   # or a fresh worktree of main
-git log --oneline -5                                   # expect this handoff's docs PR on top of a0a120d5
-gh pr view 192 --repo pcalnon/juniper-recurrence --json state,mergeStateStatus,headRefOid
-gh pr view 2164 --repo pcalnon/juniper-ml --json state,mergeStateStatus,headRefOid
+git log --oneline -5                                   # expect this handoff's docs PR (#2168) above c5a62bc7 (#2164), 1dea3b39 (#2161), a0a120d5
+gh pr view 192 --repo pcalnon/juniper-recurrence --json state,mergeCommit   # expect MERGED, mergeCommit d20a581b
+gh pr view 2164 --repo pcalnon/juniper-ml --json state,mergeCommit          # expect MERGED, mergeCommit c5a62bc7
+ls -d /home/pcalnon/Development/python/Juniper/worktrees/*w1-5* /home/pcalnon/Development/python/Juniper/worktrees/*w1-9* 2>&1   # expect "No such file"
 gh pr list --repo pcalnon/juniper-canopy --state open --search "w1-2"   # wave 2 not yet started: expect nothing
 /opt/miniforge3/envs/JuniperCascor1/bin/python -s -m pip check | grep -i juniper   # still exactly the service-core line
 python3 -m unittest -q tests/test_run_suite.py tests/test_run_experiment.py tests/test_recurrence_env_preflight.py
