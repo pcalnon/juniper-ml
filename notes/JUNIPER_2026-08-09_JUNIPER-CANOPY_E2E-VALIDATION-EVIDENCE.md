@@ -9079,7 +9079,14 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   could not be verified live without starting a replay on the shared trio's cascor. F-CANOPY-059's fix comes
   first, since until then no control renders.
 
-**F-CANOPY-057 — the CAN-015g replay-weight stream is not wired end to end: no replay weight reaches the page (P1 while canopy's manual and FAQ promise the stream, re-rated 2026-09-24; canopy + cascor; found 2026-09-23 by the cuts' round-1 adversarial lane; OPEN).**
+**F-CANOPY-057 — the CAN-015g replay-weight stream is not wired end to end: no replay weight reaches the page (P2 since canopy#684, merged 2026-09-24 as `f2147403`, corrected the manual and FAQ that promised the stream, re-rated 2026-10-04; P1 before that, from 2026-09-24; canopy + cascor; found 2026-09-23 by the cuts' round-1 adversarial lane; OPEN).**
+
+- **Status 2026-10-04: re-rated P2** (round 2 of Phase 10's validation, Lanes 10-R2A and 10-R2B; re-derived by
+  the orchestrator). canopy#684, from branch `fix/idle-cuts-round3-wording`, merged at 2026-09-24T11:10:28Z as
+  `f2147403`, an ancestor of canopy `1b2dd438`, and it changed both files the P1 rested on.
+  `docs/USER_MANUAL.md:764-766` now says "Today no weight sample reaches the page", and
+  `notes/development/REPLAY_V2_FAQ.md` opens with a status note that no replay weight reaches the page. That is
+  the re-rating the Severity bullet below said was owed with the merge. The defect itself stands.
 
 - **Cascor.** The replay frames carry no weights. On `main`, `weights_at` (`src/api/lifecycle/manager.py`) is
   called only by its unit tests, and `_emit_frame` adds no `weights` key (re-derived by `git grep` on
@@ -9107,8 +9114,8 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
 - **Fix direction:** re-land #190's diff on cascor and add `weights` to canopy's relay key set. Also sweep cascor
   for other stacked PRs merged into a base that had already landed. cascor#184 was one, and its retarget,
   cascor#189, landed it.
-- **Severity: P1**, re-rated in round 2 of the ledger's validation (Lanes R2-F and R2-B). canopy `main` still
-  promises the stream (`docs/USER_MANUAL.md:764`, `notes/development/REPLAY_V2_FAQ.md:253`), and plan §6.3's rule
+- **Severity: P1 until canopy#684** (status above), re-rated in round 2 of the ledger's validation (Lanes R2-F
+  and R2-B). canopy `main` then promised the stream (`docs/USER_MANUAL.md:764`, `notes/development/REPLAY_V2_FAQ.md:253`), and plan §6.3's rule
   (`JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360`) makes a documented behaviour that does
   not exist P1, the rule that made F-CANOPY-056 P1. It returns to P2 when the canopy follow-up that corrects both
   files merges (branch `fix/idle-cuts-round3-wording`, Still owed item 13); that re-rating is owed with the
@@ -9693,7 +9700,7 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
    - **Status 2026-10-04:** F-CANOPY-059 and F-CANOPY-056 are FIXED and verified live (item 16).
      - The HDF5 player's own control loop (`can015-replay-player-control-loop`) is guarded by canopy#697's echo
        check, and the live drive saw no echo request.
-     - F-CANOPY-057 stays open.
+     - F-CANOPY-057 stays open, and is P2 since canopy#684 (its status).
 8. **M-CANDIDATES-10/-11** (Phase 8 item 9), now re-drivable (Phase 7 item 10).
 9. Unchanged (Phase 8 item 10; Phase 7 item 11): M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16
    fade half, and F-038's browser-level test gap.
@@ -9783,3 +9790,740 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
     discards an unsaved trained network, while canopy's Replay modal promises "a read-only playback session"
     (`hdf5_snapshots_panel.py:533`), as does the proxy route's docstring (`main.py:2985`). The canopy
     follow-up's FAQ note warns of it. Triage it: canopy's wording, cascor's design, or both (the owner).
+
+## Phase 10 — 2026-10-04: the peer arcs' hand-overs filed — F-CANOPY-060 to -067, two of them P1, one conditionally; two declined; a Phase 1 PASS corrected
+
+**Summary.**
+
+- **No stack and no live drive.** This phase files the items two peer arcs handed over on 2026-09-24. Each was
+  re-derived first, in source read from git objects at pinned commits: canopy `1b2dd438`, cascor `95cdc562`,
+  juniper-data `29be6d35` and juniper-cascor-client `3adc061f`, each equal to its `main` on 2026-10-04.
+  For F-CANOPY-060, F-CANOPY-064's tile and F-CANOPY-065's extractor the functions were also executed
+  (Instruments, below). The rest was read in source, and round 1 of this phase's validation executed more of
+  it.
+- **Eight filed:**
+  - F-CANOPY-060 (P2, OPEN): the shortfall prompt cuts juniper-data's cap refusal short, and never mentions
+    the cap.
+  - F-CANOPY-061 and F-CANOPY-062 (P2): FIXED by canopy#685, recorded here because the defect-register arc
+    cites their ids.
+  - F-CANOPY-063 (P2, OPEN): a canopy test quotes cascor's refusal as "verbatim", and it has not been since
+    cascor#690.
+  - **F-CANOPY-064 (P1, OPEN):** the Training Metrics charts keep accuracy only on rows labelled `output` and
+    plot two numberings on one axis, and canopy's normalizing paths drop the key that tells them apart.
+    Phase 1's own capture showed it on 2026-08-10, and that run's W1-09 PASS is corrected to FAIL.
+  - **F-CANOPY-065 (P1, conditionally; OPEN):** `/api/set_params`'s `applied` list omits every key sent over `/ws/control`,
+    so the toast canopy 0.6.0 promised never reports a key cascor declines there.
+  - F-CANOPY-066 (P2, OPEN): under the recurrence backend, `/api/network/stats` answers 503 on every slow tick.
+  - F-CANOPY-067 (P2 pending a live drive, OPEN): the relay forwards cascor's `initial_metrics` burst
+    unnormalized, so those rows paint loss and accuracy as 0. By source the zeros can persist, which would
+    make it P1 (Still owed, item 18). Found by round 1 of this phase's validation, not handed over.
+- **Two declined:** the selection arc's O4 (an environment artifact) and O9 (a design question, the owner's).
+- **F-CANOPY-057 re-rated P2.** canopy#684 corrected the manual and FAQ that its P1 rested on, the re-rating
+  its entry said was owed with that merge (found in round 2).
+- **Counts** (`e2e_finding_triage.py`): 78 findings, 53 fixed, 1 accepted, 2 withdrawn, **22 open**; no open
+  P0, **6 open P1** and 16 open P2.
+
+### Where the items came from
+
+| item | handed over by | source | disposition |
+|---|---|---|---|
+| F-CANOPY-060 | the defect-register arc, round 42 (id reserved) | that arc's §4.9 routes canopy behaviour to this ledger | filed, P2, OPEN |
+| F-CANOPY-061 | the same (id reserved): the canopy#683 validation's LOW 3 | canopy#685's PR body, row 3 | filed, P2, FIXED by canopy#685 |
+| F-CANOPY-062 | the same (id reserved): that validation's LOW 4 | canopy#685's PR body, row 4 | filed, P2, FIXED by canopy#685 |
+| "Nothing was loaded" | the same, no id reserved | that arc's session `bc31e993` (`defect reg [042116]`) | filed as F-CANOPY-063, P2, OPEN; one half declined |
+| O2 | the canopy selection arc's A-N2 run | `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md` § "Observations (not A-N2 failures)" | filed as F-CANOPY-064, P1, OPEN |
+| O3 | the same | the same | filed as F-CANOPY-065, P1 if the owner's question goes that way (re-rated in round 1), OPEN |
+| O4 | the same | the same | declined: an environment artifact |
+| O5 | the same | the same | filed as F-CANOPY-066, P2, OPEN |
+| O9 | the canopy selection arc | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-24_canopy-selection-four-rulings-shipped-cleanup-and-carry-forwards-remain.md:76-81` | declined: a design question for the owner |
+
+The A-N2 run's O1 is F-CANOPY-055. Its O6, O7 and O8 were not handed over. F-CANOPY-067 was not handed over
+either: round 1 of this phase's validation found it (Consensus record, below).
+
+### New findings
+
+**F-CANOPY-060 — the dataset-shortfall prompt cuts juniper-data's cap refusal short: `_producer_detail_from_refusal` also stops at `" The resulting dataset"`, so "The resulting dataset will be permanently annotated as truncated." never reaches the operator, and the prompt's options never mention the cap (P2, canopy repo, pre-existing; handed over 2026-09-24 by the defect-register arc, round 42; OPEN).**
+
+- **The cut.** `_producer_detail_from_refusal` (`src/frontend/dashboard_manager.py:8404` at canopy `1b2dd438`)
+  takes the text after `Producer detail: ` and cuts it at the first of `" To accept it,"` and
+  `" The resulting dataset"` (`:8410`).
+  - cascor's refusal (`_describe_dataset_fetch_failure`, `src/api/lifecycle/manager.py:4270` at cascor
+    `95cdc562`) puts its own remedy, which always begins "To accept it,", and then its own closing sentence
+    after the producer's text. So the first stop alone removes everything cascor adds.
+  - The second stop can only fire inside juniper-data's text, and juniper-data's cap refusal ends with exactly
+    that phrase (`InputTooLargeError`, `juniper_data/core/limits.py:149-168` at juniper-data `29be6d35`).
+- **A cap refusal reaches the prompt.** cascor recognises a producer refusal by juniper-data's remedy sentence,
+  `Re-submit with allow_truncation=true` (`_PRODUCER_REFUSAL_REMEDY`, `manager.py:245`), on a 422, and its
+  docstring says that both of juniper-data's refusals carry it. So a cap refusal gets the
+  `[dataset_shortfall_refused]` token, and canopy opens its three-way prompt on it.
+  - The equities symbol cap defaults to 14 (`EQUITIES_DEFAULT_MAX_SYMBOLS`, `limits.py:135`).
+  - At juniper-data's defaults a request whose symbols outnumber the cap is refused unless it opts in. A
+    request with no symbols list asks for all 503 bundled constituents; canopy's CHANGELOG records that
+    refusal for the restart modal's old re-stage, since fixed. Today every canopy staging path sends the
+    seed's 5 symbols (`src/model_registry.py:267-277`). The form renders no array field, so `symbols` travels
+    only as that seed (`:234-238`), and from the page the refusal needs `max_symbols`, or a deployment
+    ceiling, below 5. The 503-symbol case needs the API or a YAML (round 1, Lane 10-B1; round 2, Lane
+    10-R2B).
+- **Executed, not only read** (`util/ad-hoc/2026-10-04_phase10_f060_rederive.py`). It runs juniper-data's
+  `limits.py`, cascor's `_describe_dataset_fetch_failure` and canopy's two functions from git objects at the
+  three pinned commits, with a stand-in for juniper-data-client's `Validation error (422): …` rendering.
+  - The cap refusal (503 symbols, cap 14): cascor adds the token and canopy opens the prompt. The text canopy
+    shows ends "…to import the first 14 symbols."; the closing sentence is gone.
+  - The control, an `IncompleteDataError`, keeps its closing sentence.
+  - With `--cut-only-at-remedy`, the proposed fix, the cap's sentence survives, and cascor's remedy and
+    closing sentence still do not leak in.
+- **Why canopy's test missed it.** `src/tests/unit/frontend/test_dataset_shortfall_prompt.py:37-46` says its
+  refusal is cascor's message "as `_describe_dataset_fetch_failure` builds it". Its producer detail, though,
+  lacks juniper-data's own remedy and closing sentences. cascor keys on that remedy, so it would not dress that
+  text as a refusal at all, and the fixture holds no cap refusal.
+- **The options.** Accept and drop both re-stage with `allow_truncation=true`, adding `incomplete_rows` accept
+  or drop (`_restage_payload_with_policy`; `_resolve_dataset_shortfall_handler`). juniper-data applies the
+  cap first and then its incomplete-rows policy to the symbols it kept (`generator.py:314`, then `:338`, at
+  `29be6d35`). So both import at most the first N symbols, N being the effective cap (14 at juniper-data's
+  default), and the choice then decides, as for a shortfall,
+  whether any of those it cannot resolve are kept with placeholder values or dropped (round 1, Lane 10-B2;
+  re-derived by the orchestrator).
+  - The options' words, "Accept broken rows and continue" and "Drop broken rows and continue"
+    (`dashboard_manager.py:8442-8443`; the buttons are at `:2365-2366`), are right about that choice. They
+    never mention the cap. The producer's own sentence, which the prompt does show, is the only text that
+    says what accepting imports: the first N symbols.
+- **Severity: P2**, cosmetic or drift on plan §6.3's rule. The defect-register arc rated it NIT/LOW. The
+  workflow completes, and the producer's remedy is on screen. What is missing is juniper-data's dataset-level
+  permanence sentence, and any mention of the cap.
+- **Fix direction:** cut only at `" To accept it,"`. Word each option for both cases, the cap and then accept
+  or drop, without keying the accept/drop choice away for a cap refusal. Test with each of juniper-data's two refusals
+  as the client renders them.
+
+**F-CANOPY-061 — `_docs_enabled` re-derived the blank-key rule from the raw secret instead of reading the auth object, and one sample pinned it, so the docs switch and API-key authentication could drift apart unseen (P2, canopy repo; handed over 2026-09-24 by the defect-register arc, the canopy#683 validation's LOW 3; FIXED by canopy#685, merged 2026-09-24 as `dc5ea02e`).**
+
+- At canopy `7ab994e5`, canopy#683's merge, `src/main.py:517` read
+  `_docs_enabled = not (get_secret("CANOPY_API_KEY") or "").strip()`. canopy#685 replaced it with
+  `_docs_enabled = not get_api_key_auth().enabled` (`src/main.py:532` at `1b2dd438`). The docs surface now
+  follows the object that decides authentication. Re-derived by reading both commits' `src/main.py` from git
+  objects.
+- canopy#685's own summary of the defect: "`_docs_enabled` re-derived the blank rule, and one sample pinned
+  it". No divergence was observed. The risk was the second copy of the rule.
+- The docs routes are deliberately not auth-exempt, so that relaxing `_docs_enabled` cannot serve the schema
+  to everyone (`src/canopy_constants.py:668-674`). A docs switch computed apart from authentication is the
+  drift that comment guards against.
+- **FIXED without a live re-drive** (round 1, Lane 10-B1). This ledger's usual rule keeps a merged fix OPEN
+  until one (Phase 4's status correction). Neither F-CANOPY-061 nor F-CANOPY-062 is observable through the
+  page, neither has a matrix row, and each is verified by canopy#685's diff and by tests that assert the
+  behaviour both ways: `src/tests/regression/test_outbound_secret_leaks_boot.py:420` and `:429` for this
+  one, and `test_security.py:700` for F-CANOPY-062.
+
+**F-CANOPY-062 — the padded-key WARNING named `CANOPY_API_KEY` when the key came from the file `CANOPY_API_KEY_FILE` names, and the comment above it said a key file could not be padded, though a line break inside a key file survives the strip (P2, canopy repo; handed over 2026-09-24 by the defect-register arc, the canopy#683 validation's LOW 4; FIXED by canopy#685, merged 2026-09-24 as `dc5ea02e`).**
+
+- At `7ab994e5`, `src/security.py` had one `_PADDED_KEY_WARNING`, which names `CANOPY_API_KEY`, under the
+  comment "Only the env var can be padded: ``resolve_secret`` strips a secret FILE." A key file is stripped at
+  its ends only, so a key that spans two lines keeps its line break. The WARNING then named the wrong variable
+  and gave the wrong advice.
+- canopy#685 added `_PADDED_KEY_FILE_WARNING` (`security.py:391` at `1b2dd438`), chosen when the padded value
+  came from `CANOPY_API_KEY_FILE` (`:497`), and rewrote the comment (`:378-386`). It is pinned by
+  `test_security.py`'s `test_a_key_file_with_a_line_break_inside_warns_naming_the_file` (`:700`).
+- canopy#685 also fixed two HIGH secret exposures: padded outbound keys quoted into logs, Sentry and API
+  bodies, and a non-ASCII key that reached Sentry. They are recorded in its PR and in the defect register, not
+  here. Neither was re-derived as a canopy E2E finding.
+- FIXED without a live re-drive, for the reasons under F-CANOPY-061.
+
+**F-CANOPY-063 — a canopy test quotes cascor's start-fresh refusal as "verbatim", and it has not been since cascor#690 changed "Nothing was loaded" to "The staged dataset was not loaded" (P2, canopy repo, test only; handed over 2026-09-24 by the defect-register arc, no id reserved; OPEN).**
+
+- **The drift.** `CASCOR_SENTENCE` (`src/tests/unit/frontend/test_start_fresh_refusal_and_modal_text.py:42` at
+  canopy `1b2dd438`) is commented "verbatim from juniper-cascor's `_refuse_dataset_wider_than_network`"
+  (`:41`).
+  - It ends "Nothing was loaded: the dataset is still staged, and the current network and its results are
+    unchanged."
+  - cascor `95cdc562` says "The staged dataset was not loaded: it is still staged, and the current network
+    and its results are unchanged." (`manager.py:4841`).
+  - cascor#690 made the change, merged 2026-09-25T02:06:36Z as `0fbb447a`, because a start that also carried
+    inline tensors has bound them by then. Its test
+    `test_a_start_that_also_binds_inline_tensors_is_told_only_the_staged_dataset_was_not_loaded` pins it.
+- **Nothing breaks today.** `_start_fresh_required_alert` (`dashboard_manager.py:8359`) reads only the marker
+  and the first sentence, which names the two shapes. The stale tail is never shown or parsed.
+- **The other half was declined.** canopy's alert has a sentence of its own: "Nothing was loaded: the dataset
+  is still staged, and the results shown are still the previous run's." (`:8381`). It is about canopy's own
+  Start, and for that Start it is true:
+  - canopy's Start sends no inline tensors. `start_training_background` posts `start_fresh`, or calls the
+    client's `start_training()` with the service backend's keyword arguments, and no production caller passes
+    tensors.
+  - The staged refusal fires "before anything is bound" (`_refuse_dataset_wider_than_network`'s docstring).
+- **The class.** F-CANOPY-059 shipped through this class: a fixture that claims a measured or verbatim shape
+  it does not have.
+  - Phase 9's item 16 asked for a sweep of "the other fixtures that make the same claim". canopy#694 corrected
+    the one it named, `test_p2_wave_batch_a.py`, and records no sweep.
+  - This phase found four: this one, F-CANOPY-060's fixture, F-CANOPY-064's N6 fixture (rows in the dashboard
+    shape carrying `kind`, a shape no path delivers) and F-CANOPY-065's N5 fake (a flat WS ack, where the
+    real one nests the partition). A claim-text grep finds only the first.
+- **Fix direction:** re-sync the quoted sentence. Pin it to cascor's text with a check that fails when cascor
+  moves, or quote only the marker and claim nothing about the rest. Finish item 16's sweep (item 19), as a
+  comparison of each fixture with the shape its live path delivers: a grep cannot find a wrong shape that
+  claims nothing. For the record, a case-insensitive grep of canopy's tests for "verbatim from", "measured
+  on/off the" and "exact shape" finds eleven lines. Two quote #532's retracted label; the other nine are
+  claim-bearing: `test_availability_unknown_state.py:87`, `test_f035_candidate_loss_from_history.py:139`,
+  `test_f054_replay_block_clientside.py:99`, `test_poller_budget.py:149`, `test_stage2_global_lane.py:114`
+  and `:339`, `test_start_fresh_refusal_and_modal_text.py:41`, and `test_dashboard_manager.py:612` and
+  `:732` (round 1, Lanes 10-A1 and 10-B2).
+
+**F-CANOPY-064 — the Training Metrics charts keep accuracy only on rows labelled `output` and plot cascor's `epoch` field on one x-axis, though cascor labels the growth loop's rows `candidate`, writes two numberings into `epoch` and tells them apart with a `kind` key that canopy's normalizing paths drop: the Classification Metrics chart shows no accuracy line for a CasCor run that grows (one Accuracy point after the run in the A-N2 capture and one mostly hidden in Phase 1's, beside Accuracy tiles of 96.30% and 98.75%), and in service mode the Training Step tile's `kind` filter cannot work, so mid-pass it would show an inner output epoch (P1, canopy repo, with a cascor labelling question; present in Phase 1's own capture of 2026-08-10 and missed there; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O2; widened 2026-10-04; OPEN).**
+
+- **Two numberings in one field.** cascor's monitor writes both into `epoch` and says so
+  (`src/api/lifecycle/monitor.py:282-298` at cascor `95cdc562`).
+  - A `kind="training_step"` row's `epoch` is the 1-based index of a completed training step.
+  - A `kind="output_epoch"` row's `epoch` is the inner epoch within the current output pass, about every
+    25th. The `epoch_end` handler writes these with `accuracy=None` (`manager.py:2058-2065`), so only step
+    rows carry accuracy.
+- **canopy plots them on one axis.** `_parse_metrics` (`src/frontend/components/metrics_panel.py:1951` at
+  canopy `1b2dd438`) and `_create_accuracy_plot` (`:2259`) take `metric.get("epoch", 0)` as x for every row.
+  Whatever accuracy reaches the chart sits at x ≤ N, the step count, on an axis that runs to the inner-epoch
+  budget (round 1, Lane 10-B2).
+- **canopy's normalizing paths drop `kind`.** `_normalize_metric` (`src/backend/cascor_service_adapter.py:1885`)
+  and `_to_dashboard_metric` (`:1960`) rebuild each row from fixed key sets without it. They serve
+  `get_current_metrics` and `get_recent_metrics` (`:457-482`), the relay of cascor's `metrics` frames
+  (`:778`), and the state sync at boot and on a model swap (`CascorStateSync.sync`,
+  `src/backend/state_sync.py:150`).
+  - Two paths do not normalize (round 1, Lanes 10-A1, 10-A2 and 10-B2; re-derived by the orchestrator in
+    source). The relay forwards every other frame type as it came (`:774-780`), cascor's `initial_metrics`
+    burst included; those rows keep `kind` but are flat, which F-CANOPY-067 records. And the clientside
+    `extendTraces` path (`src/frontend/components/metrics_panel.py:1015`) reads flat `e.loss` / `e.accuracy`
+    (`:1032-1037`), so it extends nothing from a relayed `metrics` frame, whose rows are nested. It acts on
+    the burst's flat rows only, plotting both numberings on trace 0 and a missing accuracy as 0 (Lane 10-B2,
+    executed in node).
+  - So no path delivers a row in the dashboard shape that carries `kind`, which is the shape N6's fixture
+    builds.
+- **The Training Step tile.** N6 made the tile honour `kind`: rows without `kind` count as `training_step`
+  (`metrics_panel.py:1664`). With `kind` dropped, every row counts as a step, and the tile shows the newest
+  row's `epoch`.
+  - Executed (`util/ad-hoc/2026-10-04_phase10_o2_rederive.py`). Rows with cascor's keys and numbering, all
+    labelled `output` (three steps, then a pass cut at inner epoch 2501), went through canopy's two
+    normalizers and its real panel. The tile read `2501`; the same rows with `kind` kept read `3`. The chart
+    extents the script prints are artefacts of its all-`output` labelling (Lane 10-B2). Round 1 reproduced
+    the tile with rows from cascor's real `TrainingMonitor`: `441` and `1776` mid-pass against `5` and `2`
+    with `kind` kept (Lane 10-A2), and `2501` (Lane 10-B2).
+  - Not yet observed live. Every A-N2 capture was taken after its run completed, when the newest row is a
+    step row. The archived tiles read 11, 13, 22 and 2, which are correct.
+  - N6's test cannot see this. `test_n6_counter_semantics.py:51` builds its `output_epoch` rows in the
+    dashboard shape with `kind`, a shape no path delivers.
+- **The archived evidence**, the A-N2 control run
+  (`reports/2026-09-23_canopy-a-n2-generate-stage-train-render/01_spirals_control/`):
+  - `13_render_api_metrics_history_limit_0.json`, which the run slimmed to the first 3 and last 20 of its
+    4,422 rows: `output` rows at x = 1, 26 and 51, rows labelled `candidate` at 9,551 to 10,000, and a final
+    `output` row at 11.
+  - `dashboard_final.png`: the Classification Metrics chart on a 0–10k "Iteration" axis shows no accuracy
+    line. The Accuracy tile beside it reads 96.30%, and the Training Step tile 11.
+  - The run used cascor's engine defaults, because its parameter caps were refused (`03_set_params_caps.json`,
+    HTTP 502): Output Epochs (per pass) 10000. canopy's own default is 25 (`src/canopy_constants.py:75`;
+    Lane 10-A2). The chart held canopy's default Sliding Window of 500 rows. Each pass contributes 401 rows
+    (4,422 = 11 × 401 + 11), so the window held only steps 10 and 11, and a zoomed crop shows one accuracy
+    point, at x = 11 (Lanes 10-A2 and 10-B2).
+- **Present since at least 2026-08-10, and missed** (round 1, Lane 10-B1; the capture re-read by the
+  orchestrator). Phase 1's capture of run `20260810T002233Z`,
+  `reports/e2e/20260810T002233Z/M-METRICS-29__post-run-plots.png`, shows the same chart: the 0–10k axis and, at
+  x ≈ 11 under "+Unit #10", a marker cluster beside Accuracy 98.75% and Training Step 11, in which the Recall
+  and ROC-AUC markers cover a mostly hidden Accuracy marker.
+  - Accuracy is trace 0, drawn beneath the scalar series (`metrics_panel.py:2271-2290`; round 3, Lane
+    10-R3B).
+  - No pixel in the cluster matches Accuracy's colour exactly, against 7 of Recall's and 7 of ROC-AUC's
+    (Lane 10-R2B; 11 and 8 within a colour tolerance, the orchestrator's count).
+  - Two pixels where the ROC-AUC and Recall markers meet, `#5d9c64` and `#598c5b`, unmix to about 70%
+    Accuracy green (round 3, Lane 10-R3A; the unmixing re-derived by the orchestrator). On that lane's
+    reading of the axis they sit at about 98.6%, against the tile's 98.75%.
+  - That run scored `W1-01..11 PASS` (`statuses.tsv:81`). The range includes W1 step 9, "loss and accuracy
+    plots accumulate points" (the matrix's §4, W1). Its own capture refutes the accuracy half, since one
+    point, mostly hidden, does not accumulate, so W1-09 is FAIL on F-CANOPY-064 (Matrix effect, below). No later run re-scored it.
+  - M-METRICS-30's PASS in the same run rests on a trace count ("accuracy plot 6 traces", `statuses.tsv:75`).
+    That row tests zoom and pan, which this does not refute, so it stands.
+- **A cascor labelling question**, source-derived and reproduced in round 1 with cascor's real
+  `TrainingMonitor` (Lanes 10-A2, 10-B1 and 10-B2). cascor labels each row with the monitor's phase.
+  - The monitor enters `candidate` at the first grow iteration (`manager.py:2091-2092`) and returns to
+    `output` only at the growth phase's exit (`:2144-2145`).
+  - So the growth loop's output-retraining samples carry `phase: candidate`, and so do the step rows drained
+    during it (`:2078`, `:2115`). The archived `candidate` rows' `epoch` runs to 10,000, the output budget.
+  - canopy keeps accuracy only on rows whose phase contains `output` (`metrics_panel.py:2264`). So most step
+    rows' accuracy never reaches the chart, and the loss chart's "Candidate Training" trace plots
+    output-retraining loss.
+  - By the same source only a growth run's last step row, drained at `:2150` after the return to `output`,
+    carries `output` (Lane 10-B2). So, from the store, one growth run's Accuracy trace has no point during
+    growth and one after it, at any budget. Earlier runs that a plain Start retains each add one point (a
+    plain Start keeps cascor's history, `manager.py:2931`), and F-CANOPY-067's burst can add zero-valued points.
+    The chart's F1, Precision, Recall and ROC-AUC series are not phase-filtered (`metrics_panel.py:2032-2072`),
+    so they gain points during growth (round 2, Lane 10-R2B).
+- **The "Between Hidden Units" display mode** computes its `start_epoch` from the same mixed field
+  (`metrics_panel.py:1610-1624`), so it cannot isolate a segment either. Source only.
+- **Severity: P1**, on plan §6.3's rule ("breaks a documented behaviour").
+  - `docs/USER_MANUAL.md` § Training Metrics Tab promises "loss and accuracy curves" (`:266`) and a "Training
+    & Validation Accuracy" plot (`:271`), to be read as "Accuracy increases steadily" (`:293`). For a CasCor
+    run that grows, the chart shows no accuracy curve at all, whatever the budget.
+  - N6's counter contract, "Training Step" = completed steps, also fails mid-pass in service mode. That half
+    is executed, not observed.
+- **Fix direction.** Carry `kind` through `_normalize_metric` and `_to_dashboard_metric`, normalize or drop the
+  relay's `initial_metrics` burst (F-CANOPY-067), and align the `extendTraces` path with the relay's row
+  shape. Plot each chart on one numbering: the step index for step rows, and within-pass samples on their
+  own axis or not at all. Key accuracy on `kind`, not on `phase`. Correct N6's fixture to the relay's shape.
+  Then drive it live: mid-pass for the tile and after a run for the chart. F-CANOPY-067's rating drive comes
+  first, on unfixed `main` (Still owed, item 18). Whether cascor should label rows by the work that
+  produced them is cascor's question; canopy's fix should not depend on the answer.
+
+**F-CANOPY-065 — `/api/set_params`'s `applied` list omits every key sent over `/ws/control`, so the apply toast canopy 0.6.0 promised never reports a key cascor declines there: canopy's partition extractor never looks where cascor's WS ack carries the partition (P1 if a shipped CHANGELOG promise counts as documented, else P2, the owner's question; canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**
+
+- **Observed** (A-N2, `02_gaussian/03_set_params_caps.json`, 2026-09-23T19:38:06.747Z). The request set five
+  params, and the answer was `{"applied": ["cn_training_iterations"]}`.
+  - In the same second, canopy logged `Cascor params updated via WS: ['max_iterations', 'epochs_max',
+    'max_hidden_units', 'output_epochs']` and `via REST: ['candidate_epochs']` (`02_gaussian/logs/`, local time
+    14:38:06).
+  - The values landed (the A-N2 README, O3).
+- **Where cascor puts the partition.** `update_params` returns the C2a `applied` and `skipped` keys, which
+  "the REST route's ``data`` and the WS ack's ``result`` carry … through untouched" (`manager.py:5446-5448` at
+  cascor `95cdc562`).
+  - The WS ack nests that dict at `data.result` (`create_control_ack_message`, `src/api/websocket/messages.py:193`).
+  - juniper-cascor-client resolves `set_params` with the whole frame (`ws_client.py:822` at `3adc061f`).
+- **Where canopy looks.** `apply_params` merges the WS frame, then the REST envelope, into one dict
+  (`cascor_service_adapter.py:1369`, `:1383`). `_extract_cascor_partition` scans its top level and `data` only
+  (`:1439`). The WS partition sits at `data.result`, and the REST envelope's `data` replaces the WS frame's
+  anyway.
+- **Executed** (`util/ad-hoc/2026-10-04_phase10_o3_rederive.py`, canopy's real extractor on frames shaped as
+  above):
+  - the WS leg alone gives `applied=[]`;
+  - WS then REST, the A-N2 case, gives `['cn_training_iterations']`, A-N2's answer exactly;
+  - REST alone gives `['cn_training_iterations']`;
+  - a mutation that also scans `data.result` recovers the three WS keys and `epochs_max`'s `not-updatable`
+    skip on the WS-only arm. On the mixed arm it does not, because the REST envelope's `data` replaces the WS
+    frame's first. The script writes its own copy of `apply_params`' merge; Lane 10-A2 drove the real one
+    with the same result, and unwrapping the ack in `_apply_params_hot` alone recovered the three WS keys the
+    network took, the fourth's not-updatable skip, and the REST key.
+- **What a user loses.** The apply toast lists no keys. It reads "Parameters applied" unless a skip partition
+  reaches it (`_compose_apply_toast`, `dashboard_manager.py:9091-9145`), and A-N2's answer gives it none. So a
+  key cascor declines on the WS leg is never reported, and when the REST leg reports a skip, the applied count
+  leaves out the WS keys. Executed on A-N2's archived answer, the toast reads "Parameters applied"; with the
+  partition the WS ack carried, "Applied 4 parameter(s); 1 skipped: nn_max_total_epochs (not-updatable)"
+  (round 1, Lane 10-B2; the function re-read by the orchestrator).
+  - The roundtrip verify does not fail on `epochs_max`, but only because of a static backstop
+    (`_DERIVED_READONLY_CASCOR_PARAMS`, `:1296`).
+  - The WS leg is the default: `use_websocket_set_params` is `True` (`src/settings.py:347`), though its
+    comment says "default off".
+- **Why the tests missed it.** The N5 test fakes the WS ack as flat, `{"applied": ["learning_rate"]}`
+  (`src/tests/integration/test_n5_apply_params_ux.py:309`), and the extractor's docstring says "the WS ack
+  carries it flat" (`cascor_service_adapter.py:1429-1430`). The real frame nests the partition at
+  `data.result` (round 1, Lane 10-B1).
+- **Severity: P1**, re-rated in round 1 (Lane 10-B1; re-derived by the orchestrator). canopy's CHANGELOG
+  shipped the promise under 0.6.0: "the toast shows what the live network took vs. declined with the reason
+  (e.g. `epochs_max (not-updatable)`)", with "REST-nested and WS-flat shapes both handled" (canopy
+  `CHANGELOG.md:1975-1980`). The defects plan says canopy renders both sets
+  (`JUNIPER_2026-07-11_JUNIPER-CANOPY_TRAINING-RUNTIME-DEFECTS-PLAN.md:311`). On the default WS leg that
+  example never appears. No manual or REFERENCE text makes this promise, so the P1 holds only if a shipped
+  CHANGELOG or design-plan promise counts as documented under plan §6.3, the owner's question (Consensus
+  record); if not, F-CANOPY-065 is P2. Round 1 also cited F-CANOPY-057 as a precedent. Round 2 withdrew that:
+  F-CANOPY-057's P1 rested on the manual, and has lapsed (its status). The values themselves land.
+- **Fix direction:** unwrap the ack in `_apply_params_hot`, and keep the two legs' partitions apart instead of
+  `update`-merging their dicts; reading `data.result` alone does not fix a mixed Apply (above). Correct the N5
+  fake, the docstring and the "default off" comment, and test with a mixed Apply through the real
+  `apply_params`.
+
+**F-CANOPY-066 — under the recurrence backend, `/api/network/stats` has no branch and answers 503, and the slow lane requests it on every tick, so the log takes a WARNING per tick and the Network Information details panel renders an error (P2, canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O5; OPEN).**
+
+- **Observed:** 80 `WARNING … Network stats API returned 503` lines in the A-N2 stack's canopy log
+  (`reports/2026-09-23_canopy-a-n2-generate-stage-train-render/00_stack/logs/juniper-canopy.log`), re-counted
+  2026-10-04, while a dashboard was open under the recurrence backend.
+- **Source** (canopy `1b2dd438`):
+  - `get_network_stats` (`src/main.py:1579`) has a demo branch and a service branch. Any other backend falls
+    through to `503 {"error": "No network data available"}` (`:1626`). `RecurrenceBackend.backend_type` is
+    `"recurrence"` (`src/backend/recurrence_backend.py:163`).
+  - The slow-lane callback `update_system_panels` (`dashboard_manager.py:4149`) fetches the stats on every
+    slow tick, whether or not the details panel is open.
+  - `_update_network_info_details_handler` logs a WARNING on any answer that is not OK (`:7798`) and renders an
+    error block.
+- **Known in source.** `recurrence_backend.py:58-60` lists as a TODO "A1-iii: handle `backend_type ==
+  "recurrence"` in main.py's route branches; … cascade-panel suppression driven by model-class metadata". This
+  entry gives that item a tracked id, and the selection arc may close it.
+- **Severity: P2**, cosmetic: log noise, and an error block in a collapsed panel that means nothing for a
+  recurrence model.
+- **Fix direction:** suppress the details poll for a backend without a network (A1-iii), or answer a "not
+  applicable" 200 that the panel renders as such.
+
+**F-CANOPY-067 — canopy's metrics relay forwards cascor's `initial_metrics` burst without normalizing it, so after the relay (re)connects while a page is open, up to 100 flat rows can enter the metrics store, where the panel reads their loss and accuracy as 0, or reach the charts through `extendTraces`, which plots a missing accuracy as 0 (P2 pending a live drive, though by source the zeros can persist, which would make it P1; canopy repo; found 2026-10-04 by round 1 of Phase 10's validation, Lanes 10-A1, 10-A2 and 10-B2; OPEN).**
+
+- **The path** (re-derived by the orchestrator in source, at canopy `1b2dd438` and cascor `95cdc562`):
+  - On a connect that is not a resume, cascor's `/ws/training` sends a `state` frame and then an
+    `initial_metrics` burst of recent monitor rows (`src/api/websocket/training_stream.py:281-300`; 100 by
+    default, `ws_initial_metrics_count`, `src/api/settings.py:382`). The rows are cascor's flat monitor rows:
+    `loss` and `accuracy` at the top level, and `kind`.
+  - canopy's relay normalizes only `metrics` frames and broadcasts every other type as it came
+    (`src/backend/cascor_service_adapter.py:774-780`).
+  - The browser bridge pushes each burst row into the metrics buffer (`src/frontend/assets/ws_dash_bridge.js:261-270`),
+    and `_append_ws_metrics_store_handler` appends those rows unchanged to `metrics-panel-metrics-store`
+    (`src/frontend/dashboard_manager.py:7813-7834`).
+  - The panel reads `metric["metrics"]["loss"]` and `["accuracy"]` with a default of 0
+    (`src/frontend/components/metrics_panel.py:1671-1672`, and the plots at `:1952` and `:2260`).
+- **Executed, not observed.** Lane 10-A2 drove a frame from cascor's real `create_initial_metrics_message`
+  through canopy's real relay loop and then its real panel: loss and accuracy plotted as 0, and the tiles read
+  Loss 0.0000 and Accuracy 0.00%. Lane 10-B2 drove canopy's real relay loop against a fake stream: the burst
+  rows kept `kind`, arrived flat, and with them in the store the loss values read `[0,0,0,0]`. Its node run of
+  canopy's real `websocket_client.js` and `ws_dash_bridge.js` showed the burst rows extending the clientside
+  traces with both numberings (F-CANOPY-064).
+- **When it fires** (round 2, Lanes 10-R2A and 10-R2B; re-derived by the orchestrator). cascor sends the burst
+  about 5 s after the relay (re)connects, once its resume handshake times out (`training_stream.py:60-79`), and
+  canopy broadcasts it to every page open then. The relay (re)connects:
+  - on a switch back to CasCor from the LMU model, W8 step 13, clicked on the open page. `/api/model/select`
+    runs `_swap_backend`, which awaits the new backend's `initialize()` (`src/main.py:4100-4101`), and that
+    starts a fresh relay (`src/backend/service_backend.py:460`). cascor still holds its monitor rows, since a
+    plain Start retains them. The swap is real only with the recurrence leg up: with `recurrence_service_url`
+    unset, its default (`src/settings.py:262`), no selection targets the recurrence backend
+    (`src/main.py:3980`), both selects take the no-op branch (`:4087-4090`), and no relay starts (round 3,
+    Lane 10-R3B). The clicking page's tab bar is then rebuilt with a fresh metrics panel
+    (`src/frontend/dashboard_manager.py:2747-2754`), whose view starts in Sliding Window
+    (`metrics_panel.py:642`), so the persistent case below can show only on the other open pages (Lane
+    10-R3B; re-derived by the orchestrator);
+  - at canopy's startup. In the A-N2 log the relay connected at 14:27:30.768, 43 ms after "Application startup
+    complete", and cascor's initial-state frames, the burst among them, arrived at 14:27:35.770
+    (`reports/2026-09-23_canopy-a-n2-generate-stage-train-render/00_stack/logs/juniper-canopy.log:34-37`). A tab
+    that reconnects across a canopy restart within those 5 s can receive it;
+  - after a socket loss while cascor stays up.
+
+  A cascor restart sends an empty burst, since the new process holds no rows, and F-CANOPY-049 and
+  F-CASCOR-004 describe drops the relay does not reconnect from. How long the rows stay was not measured.
+- **Severity: P2 pending a live drive** (round 3). Round 2 rested P2 on the zeros being transient; round 3
+  found that basis false in part (Lanes 10-R3A and 10-R3B; re-derived by the orchestrator in source at canopy
+  `1b2dd438`).
+  - **Transient by source:** the tiles, which read the newest row (`metrics_panel.py:1671-1672`), and the
+    charts on an idle page in the Sliding Window view. The burst stamps the liveness clock
+    (`ws_dash_bridge.js:273`), and after 5 s of quiet the REST poll replaces the store
+    (`dashboard_manager.py:7877`, `:7941`).
+  - **Persistent by source in the Full History and Between Hidden Units views** (Lane 10-R3B). The
+    clientside `extendTraces` callback's only Input is `ws-metrics-buffer`, and it has no view check
+    (`metrics_panel.py:1015-1142`). It plots a missing accuracy as 0 (`:1037`) straight onto the Accuracy
+    trace (`:1095`).
+    - The store has two writers: the WS append, which opts out in these views
+      (`dashboard_manager.py:7827-7828`), and the REST poll, which answers `no_update` to a fetch equal to
+      the store (`:7941`). The history route reads cascor live, through no cache
+      (`src/backend/service_backend.py:335-336`).
+    - The figure callback's Inputs are the store, the theme and the view (`metrics_panel.py:970-972`).
+    - So once a page's store holds cascor's history, the zeros stay on an idle cascor until a reload, a
+      theme or view change, or the next run.
+    - After W8 step 13 that holds when the page fetched after the run ended and not after the fit landed
+      (round 4, Lane 10-R4B; narrowed in round 5, Lane 10-R5B; re-derived by the orchestrator). The
+      recurrence backend answers `[]` until an LMU fit lands (`src/backend/recurrence_backend.py:312-315`),
+      and an empty fetch never replaces a non-empty store (`dashboard_manager.py:7910-7912`). A Full History
+      page fetches once every ~27-37 s (`canopy_constants.py:476-491`), during a run as well, so its store
+      can miss the run's last rows if W8 starts within that cycle. A page that took the fit's single point,
+      or whose store missed the run's last rows, is redrawn by its first fetch from cascor, usually after
+      the burst, so there the zeros last until that fetch, up to about half a minute.
+  - **Not bounded to a few seconds by source, mid-run in the Sliding Window view** (Lanes 10-R3A and 10-R3B). The
+    stream stays live, so the poll is skipped (`:7877`), and the WS append keeps the burst's rows
+    (`:7832-7834`) until a 5 s gap in `metrics` frames or 500 newer rows (the view's default window,
+    `metrics_panel.py:642`, `canopy_constants.py:511`). How long that is in a run was not measured. W8 step
+    13 cannot reach this case, because canopy refuses a model switch while training
+    (`src/main.py:4092-4097`).
+  - So this ledger's own rule, P1 if the zeros persist beyond a few seconds, predicts P1 by source. The
+    drives in Still owed item 18 decide it, on unfixed `main`.
+- **Fix direction:** normalize the burst's rows in the relay as `metrics` frames are, carrying `kind`
+  (F-CANOPY-064), or drop the burst. Decide the rating first, on unfixed `main`, with Still owed item 18's
+  drives, and repeat them after the fix.
+
+### Declined
+
+- **O4: "canopy's `/v1/health` `version` says 0.6.0 while the source is 0.8.1."** This is an environment
+  artifact, not a code defect.
+  - `resolve_app_version` (`src/canopy_constants.py:35-48`) reads installed metadata by design: OBS-1 gave
+    every version surface one source. It falls back to a literal only when the package is not installed.
+  - `JuniperCanopy1`'s `juniper-canopy` is an editable install of the primary checkout, and its metadata still
+    says 0.6.0 (read with `importlib.metadata` on 2026-10-04). pip writes that metadata at install time, so a
+    source bump does not reach it until a reinstall. A wheel, or a fresh `pip install -e`, reports the source's
+    version.
+  - **Instrument note:** on any leg launched from that environment, read `/v1/health`'s `git_sha`, not its
+    `version`.
+- **O9: "after a refused Start, the sidebar's 'Current Dataset' shows the staged dataset."** The title follows
+  the dataset selection by design.
+  - `_dataset_section_title` (`dashboard_manager.py:3260`) is driven by the selected type. The layout comment
+    says why: "so the left menu reflects the actually-selected type" (`:1329-1331`, N7/U-6).
+  - An Apply Dataset leaves the same state. The selection arc found the routes honest (`current_dataset`
+    against `pending_dataset`), and the pending banner says that a dataset is staged.
+  - Whether "Current Dataset" should tell staged from loaded is the owner's design question (the consolidated
+    handoff's C4), not a defect.
+
+### Instruments
+
+All are new, under `util/ad-hoc/`, and dated `2026-10-04_`. Each docstring says how its answer could have come
+out otherwise.
+
+- `phase10_f060_rederive.py`: F-CANOPY-060. It needs only `python3` and the three primaries' object stores.
+  `--cut-only-at-remedy` runs the proposed fix.
+- `phase10_o2_rederive.py`: F-CANOPY-064's relay, panel and tile.
+- `phase10_o3_rederive.py`: F-CANOPY-065's extractor, with its mutation arm.
+- The last two run in `JuniperCanopy1`, with `LIBTORCH` and `LD_LIBRARY_PATH` cleared, against a canopy tree
+  at `1b2dd438`. To extract one: `git -C <canopy> archive --format=tar -o <file> 1b2dd438`, then `tar -xf`.
+- Added in round 1 of this phase's validation (Consensus record, below): `phase10_ledger_round1_corrections.py`,
+  the round's correction pass; `archive_phase10_lane_probes.py`; and the lanes' 25 probes it copied out of
+  tmpfs, `phase10_r1_{a2,b1,b2}_*`. Rounds 2 to 5 added `phase10_ledger_round{2,3,4,5}_corrections.py`.
+
+### Consensus record (§7 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`)
+
+- **Round 1**: four lanes on the frozen `0737d573`, briefed separately with different entry points. Briefs are
+  in `reports/e2e-canopy-2026-09-02/drafts/lane10{A1,A2,B1,B2}_phase10_ledger_brief.md`, and the reports,
+  verbatim, in `reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md`.
+  - Lane 10-A1 re-derived every claim from source at the four pins, read from git objects.
+  - Lane 10-A2 worked from the archived evidence tree and the three instruments. It ran its own reproductions
+    and mutated each instrument to show it could answer otherwise.
+  - Lane 10-B1 was adversarial on dispositions and ratings, including duplicates across the whole ledger and
+    the matrix.
+  - Lane 10-B2 was adversarial on claims beyond the evidence.
+- **Verdicts.** All four returned SOUND-WITH-FIXES. Lane 10-A2 re-derived every number, and its mutations
+  showed `f060` and `o2` adequate. `o3` copies `apply_params`' merge, so it cannot verify F-CANOPY-065's fix
+  until it drives the real one (Lane 10-A2's Finding 3; Still owed, item 20; corrected in round 2).
+- **What round 1 changed:**
+  - a new finding, F-CANOPY-067 (P2), found by three lanes: 10-A1 in source, 10-A2 and 10-B2 by execution;
+  - one rating: F-CANOPY-065, P2 to P1 (Lane 10-B1);
+  - one recorded verdict: W1-09's Phase 1 PASS, now FAIL on F-CANOPY-064 (Lane 10-B1), and F-CANOPY-064's
+    provenance moved back to 2026-08-10;
+  - the counts: 77 to 78 findings, 21 to 22 open, 6 to 7 open P1;
+  - F-CANOPY-064's mechanism. Accuracy keyed on `phase` is now the main cause (Lanes 10-B1 and 10-B2); the
+    "sliver" sentence is withdrawn (Lane 10-B2); the A-N2 run's budgets are cascor's defaults, not canopy's
+    (Lane 10-A2); and its "every path" claim is corrected (Lanes 10-A1, 10-A2 and 10-B2);
+  - F-CANOPY-060's route to the cap refusal, and what its options mean (Lanes 10-B1 and 10-B2);
+  - F-CANOPY-061 and F-CANOPY-062's exemption from the live-re-drive rule, now stated (Lane 10-B1);
+  - F-CANOPY-065's toast text and its fix for a mixed Apply (Lanes 10-A2 and 10-B2), and why its tests missed
+    it (Lane 10-B1);
+  - Still owed items 16, 18, 19 and 20.
+  - The pass is replayable: `util/ad-hoc/2026-10-04_phase10_ledger_round1_corrections.py`, 35 substitutions and
+    8 span rewrites, each anchored to occur exactly once.
+- **Re-derived by the orchestrator before applying**, in source at the pins or in the archive: the relay's frame
+  branch, the browser bridge's `initial_metrics` handler and the store append; the apply toast; `extendTraces`'
+  flat reads; juniper-data's cap-then-policy order; the equities seed's 5 symbols and canopy's default of 25
+  epochs per pass; canopy's 0.6.0 CHANGELOG promise and the defects plan's T3; the N5 fake and the extractor's
+  docstring; Phase 1's capture and `statuses.tsv:75` and `:81`; the fixture's line range. The lanes'
+  executions were not re-run by the orchestrator. Their scripts are archived as
+  `util/ad-hoc/2026-10-04_phase10_r1_{a2,b1,b2}_*` (25 files) by
+  `util/ad-hoc/2026-10-04_archive_phase10_lane_probes.py`.
+- **Unresolved, for the owner:** whether a CHANGELOG or design-plan promise counts as "documented" under plan
+  §6.3. Lane 10-B1 read it so. If it does not, F-CANOPY-065 returns to P2. Round 1 also named F-CANOPY-057
+  here; round 2 removed it, because its P1 rested on the manual and has lapsed.
+- **Slips.** Lanes 10-A2 and 10-B2 each printed a commit's author line, which carries the owner's e-mail
+  address, into their own local tool output (`git show --stat`). Neither repeated or sent it, and the archived
+  reports hold no e-mail-shaped string.
+- **What the evidence cannot support.** Nothing in this phase was driven live. F-CANOPY-064's tile,
+  F-CANOPY-065's toast and F-CANOPY-067 were executed in isolation. The cascor labelling rests on source plus
+  `TrainingMonitor` executions, with the event order read in source. Phase 1's capture is cropped below about
+  90% of the chart.
+
+- **Round 2**: two lanes on the frozen `2134ca2a`, briefed separately on round 1's corrections only. Briefs are
+  in `reports/e2e-canopy-2026-09-02/drafts/lane10R2A_phase10_ledger_brief.md` and
+  `…/lane10R2B_phase10_ledger_corrections_brief.md`, and the reports, verbatim, in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round2.md`.
+  - Lane 10-R2A re-derived every claim the corrections introduced, artifact-first. It replayed round 1's pass
+    on `0737d573` and got `2134ca2a` exactly, outside the two hand-written parts.
+  - Lane 10-R2B was adversarial on the correction pass.
+- **Verdicts.** Both returned SOUND-WITH-FIXES, and §4 of
+  `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` required round 3, since round 2
+  changed a number.
+- **What round 2 changed:**
+  - one disposition, outside Phase 10: F-CANOPY-057, P1 to P2. Its own entry said that re-rating was owed with
+    canopy#684, which had merged (both lanes);
+  - the counts: 7 to 6 open P1, 15 to 16 open P2;
+  - F-CANOPY-065's P1, now stated as conditional on the owner's question, with the F-CANOPY-057 precedent
+    withdrawn (both lanes);
+  - F-CANOPY-067's triggers. A switch back to CasCor (W8 step 13) fires it (both lanes; round 3 added: only
+    when the swap is real). A cascor restart's burst is empty, so a check induced that way could not have
+    failed (Lane 10-R2B; Lane 10-R2A judged item 18 as written still exercised the path; this record said
+    "both lanes" until round 3). Its rating basis became the zeros' transience (Lane 10-R2B), which round 3
+    found false in part;
+  - F-CANOPY-064's accuracy count and header. Phase 1's marker cluster shows only the Recall and ROC-AUC
+    colours (round 3 found a mostly hidden Accuracy marker beneath them); retained runs add points, and the
+    scalar series are not phase-filtered (Lane 10-R2B);
+  - M-METRICS-32's PASS scoped to its append callback (Lane 10-R2B);
+  - F-CANOPY-060's page route, now `max_symbols` or a ceiling below 5, since the form never renders
+    `symbols` (Lane 10-R2B);
+  - round 1's record: `o3`'s adequacy and two attributions (Lane 10-R2B);
+  - wording: a line reference, a key count and a grep claim (both lanes);
+  - Still owed items 13, 18 and 20.
+  - The pass is replayable: `util/ad-hoc/2026-10-04_phase10_ledger_round2_corrections.py`, 22 substitutions and
+    6 span rewrites.
+- **Re-derived by the orchestrator before applying:**
+  - canopy#684's branch, merge and ancestry, and the manual's corrected text;
+  - the model-swap path through `_swap_backend` and `initialize()` to a fresh relay;
+  - the A-N2 log's startup, relay-connect and initial-frame times;
+  - the burst's liveness stamp;
+  - the scalar series' missing phase filter;
+  - cascor's metrics retention on a plain Start;
+  - M-METRICS-32's row;
+  - the seed-only `symbols` comment;
+  - Phase 1's capture, by a pixel count of the series' colours in the cluster, within a colour tolerance: 0
+    Accuracy, 11 Recall and 8 ROC-AUC (exact matches give 0, 7 and 7; round 3).
+
+  Not re-derived: the REST takeover after 5 s of quiet, which is Lane 10-R2B's source reading
+  (`dashboard_manager.py:7877`, `:7941`).
+- **Slips:** none reported. Lane 10-R2B noticed that `juniper-canopy/.git/config` changed at 17:13:33 during its
+  run. Nothing it ran wrote there, and the cause was not investigated.
+
+- **Round 3**: two lanes on the frozen `0d3c337b`, from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane10R3_phase10_ledger_brief.md`, and the reports, verbatim, in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round3.md`.
+  - Lane 10-R3A re-derived every claim round 2's pass introduced, artifact-first. It replayed that pass on
+    `2134ca2a` and got `0d3c337b` exactly, outside the two hand-written parts, and reproduced the counts.
+  - Lane 10-R3B was adversarial on that pass.
+- **Verdicts.** Both returned SOUND-WITH-FIXES, each with a MAJOR finding that changes an action, so §4 of
+  `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 4.
+- **What round 3 changed:**
+  - F-CANOPY-067's rating basis (both lanes' MAJOR). By source the zeros are not transient in two cases: on a
+    page in the Full History or Between Hidden Units view, where the ungated `extendTraces` path paints them and
+    nothing redraws while cascor is idle (Lane 10-R3B), and mid-run in the Sliding Window view, where the store
+    keeps the burst's rows while the stream is live (both lanes; this record credited Lane 10-R3A alone until
+    round 4). The rating stays P2 until the live drive, which the ledger's own rule makes P1 if the zeros
+    persist;
+  - item 18's deciding drive. It runs on unfixed `main`, before the fix (Lane 10-R3B), with the recurrence leg
+    up, without which W8 step 13 is a no-op (Lane 10-R3B), with a page held in Full History (Lane 10-R3B), and
+    with a mid-run burst (Lane 10-R3A). F-CANOPY-064's and F-CANOPY-067's fix directions now point at it;
+  - F-CANOPY-064's reading of Phase 1's capture. The cluster covers a mostly hidden Accuracy marker (Lane
+    10-R3A, by unmixing two pixels, re-derived by the orchestrator; Lane 10-R3B, by draw order, held that
+    the capture neither shows nor excludes it; corrected in round 4). The exact-colour counts, 0, 7 and 7, are Lane
+    10-R2B's, and the 11 and 8 were the orchestrator's (both lanes). W1-09 stays FAIL;
+  - F-CANOPY-057's Severity bullet, no longer in the present tense (both lanes), and Phase 9's items 15 (Lane
+    10-R3B) and 7 (the orchestrator), which still called it P1;
+  - F-CANOPY-065's condition, carried into the heading, the Summary, the provenance table and item 20 (Lane
+    10-R3B);
+  - round 2's record. Its "could not have failed" was Lane 10-R2B's alone, and Lane 10-R2A's contrary reading is
+    now recorded (both lanes).
+  - No number or disposition changed. The counts stay 78 findings, 53 fixed, 1 accepted, 2 withdrawn and 22
+    open, with 6 open P1 and 16 open P2.
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-04_phase10_ledger_round3_corrections.py`,
+    19 substitutions and 4 span rewrites.
+- **Re-derived by the orchestrator before applying**, in source at canopy `1b2dd438` or in the archive:
+  - `extendTraces`' one Input, its missing view check, its 0 for a missing accuracy and its trace-0 target;
+  - the store's two writers, the WS append's opt-out in the history views and its 500-row window, the REST
+    poll's skip while the stream is live and its `no_update` for an equal fetch, and the history route's live,
+    uncached read of cascor (round 2 left the REST takeover as Lane 10-R2B's reading);
+  - the figure callback's Inputs;
+  - the swap's no-op branch when `recurrence_service_url` is unset, at `src/main.py:4087-4090` (Lane 10-R3B
+    cited `:4086-4089`), and its refusal while training;
+  - the clicking page's tab-bar rebuild, with a fresh metrics panel in its default view;
+  - the two pixels' colours in Phase 1's capture, on the light plot background, and their unmixing to about
+    70% Accuracy green.
+
+  Not re-derived: the y-axis reading that puts those pixels at about 98.6% (Lane 10-R3A). The orchestrator's
+  own reading from source, that after a swap the page's first fetch from cascor can redraw the chart after the
+  burst, is new in this pass, and item 18's idle restart was added for it.
+- **Slips:** none reported.
+
+- **Round 4**: two lanes on the frozen `b5cb675d`, run 2026-10-05 from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane10R4_phase10_ledger_brief.md`, and the reports, verbatim, in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round4.md`.
+  - Lane 10-R4A re-derived every claim round 3's pass introduced. It replayed that pass on `0d3c337b` and got
+    `b5cb675d` byte for byte, with no hand-written hunk, and reproduced the counts and the pixel unmixing.
+  - Lane 10-R4B was adversarial on that pass.
+- **Verdicts.** Lane 10-R4A returned SOUND, with no finding. Lane 10-R4B returned SOUND-WITH-FIXES, and its
+  Finding 2 changes an action, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`
+  requires round 5.
+- **What round 4 changed:**
+  - F-CANOPY-067's swap case. Round 3's reading, the orchestrator's, that after W8 step 13 a page's first fetch
+    from cascor "replaces its LMU-era store" so the zeros persist "only if that fetch lands before the burst",
+    was false in a likely case (Lane 10-R4B's words; this record said "the usual case" until round 5). A Full
+    History page keeps cascor's history through the LMU steps unless it fetched after the fit landed or
+    missed the run's last rows (round 5, Lane 10-R5B), so its first fetch after the swap is equal and the
+    zeros persist; where it did take the fit's point, they last until that fetch, up to about half a minute (Lane 10-R4B; Lane 10-R4A
+    found the empty-store half as a condition of its own check);
+  - item 18's restart drives. Each now confirms from canopy's log that every page reconnected before the burst,
+    and repeats if not, and its Sliding Window page is read knowing that a restart can strand the metrics poll for
+    about 30 s (Lane 10-R4B; "up to 30 s" until round 5);
+  - round 3's record. The hidden Accuracy marker rests on Lane 10-R3A's pixels, while Lane 10-R3B held that the
+    capture neither shows nor excludes it, and both round-3 lanes found the mid-run case (Lane 10-R4B).
+  - No number or disposition changed. The counts stay 78 findings, 53 fixed, 1 accepted, 2 withdrawn and 22
+    open, with 6 open P1 and 16 open P2.
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-04_phase10_ledger_round4_corrections.py`,
+    7 substitutions and 1 span rewrites.
+- **Re-derived by the orchestrator before applying**, at canopy `1b2dd438`:
+  - the recurrence backend's empty history before a fit lands, and the empty-fetch guard;
+  - the full-history cadence canopy derives in its own constants from its measured tick ("measured" until
+    round 5);
+  - the strand mechanism and its 30 s watchdog, whose comment names a canopy restart as a cause;
+  - the `Client connected` log line, and that canopy's own `/ws/training` sends no `initial_metrics`.
+
+  Not re-derived: Lane 10-R4B's model of the reconnect odds (about 0.8 within the burst's window at 4 s of
+  downtime, 0.6 at 8 s and 0.4 at 12 s). Item 18 now checks the reconnect in the log instead of relying on it.
+- **Slips:** none reported.
+
+- **Round 5**: two lanes on the frozen `b2375a51`, run 2026-10-05 from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane10R5_phase10_ledger_brief.md`, and the reports, verbatim, in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round5.md`.
+  - Lane 10-R5A re-derived every claim round 4's pass introduced. It replayed that pass on `b5cb675d` and got
+    `b2375a51` byte for byte, with no hand-written hunk, and reproduced the counts.
+  - Lane 10-R5B was adversarial on that pass, and replayed it too.
+- **Verdicts.** Lane 10-R5A returned SOUND and Lane 10-R5B SOUND-WITH-FIXES. No finding of either changes a
+  number, disposition or action, so under §4 **the review ends at round 5**, and this round's wording pass was
+  not itself reviewed. Lane 10-R5B also offered an optional action change: start W8 a full-fetch cycle after
+  the run ends. It is not taken, because the drive decides the rating without it: in every branch the zeros
+  last at least until the first fetch from cascor, up to about half a minute.
+- **What round 5 changed, all wording:**
+  - the swap case's "the usual case", narrowed to the branch it holds in, with the branch where the page's
+    store missed the run's last rows added (Lane 10-R5B);
+  - the restart strand, "about 30 s" rather than "up to 30 s", because the watchdog counts its 30 s from a 5 s
+    slow tick (Lane 10-R5A);
+  - the log line to look for, `Client connected: training-client-…`, because `/ws/control` logs the same
+    words (Lane 10-R5B);
+  - round 4's record: canopy derives the ~27-37 s full-history cadence from its measured tick; it did not
+    measure it (both lanes).
+  - The counts stay 78 findings, 53 fixed, 1 accepted, 2 withdrawn and 22 open, with 6 open P1 and 16 open P2.
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-04_phase10_ledger_round5_corrections.py`,
+    8 substitutions and 0 span rewrites.
+- **Re-derived by the orchestrator before applying**, at canopy `1b2dd438`: the watchdog's clock, which starts
+  at the first slow tick that sees the poll disabled and fires at a later tick 30 s on
+  (`dashboard_manager.py:2536-2545`); the Full History poll's fetch on every 5th tick, during a run as well
+  (`:7877`, `:7883`); and the two socket labels, `training-client-` and `control-client-` (`src/main.py:850`,
+  `:985`).
+- **Slips:** none reported.
+
+### Matrix effect and counts
+
+- No matrix-table row changes. One workflow verdict is corrected from archived evidence: W1-09's PASS in run
+  `20260810T002233Z` (`statuses.tsv:81`, within `W1-01..11`) is refuted by that run's own capture, so W1-09 is
+  FAIL on F-CANOPY-064 (its entry has the evidence). The run's `statuses.tsv` is left as recorded.
+- M-METRICS-32's PASS (re-validated at `04f06ff`) covers its append callback only. Its row also claims a
+  clientside `extendTraces` path, which was never driven and fails by source (F-CANOPY-064; Still owed, item
+  18; round 2, Lane 10-R2B).
+- **Counts**, from `e2e_finding_triage.py`: **78 findings**, 53 fixed, 1 accepted, 2 withdrawn, **22 open**.
+  - **No open P0.**
+  - **6 open P1:** F-CANOPY-055, F-CANOPY-058, F-CANOPY-064, F-CANOPY-065, F-CASCOR-001 and F-CASCOR-002.
+  - 16 open P2. F-CANOPY-057 returned to P2 in round 2 (its status).
+
+### Still owed after this phase
+
+Phase 9's list, items 0 to 17, stands, with these changes:
+
+- **Item 7** is now F-CANOPY-057 alone, P2 since round 2. F-CANOPY-056 and F-CANOPY-059 are FIXED and verified
+  live.
+- **Item 16** is DONE (2026-10-04), except its fixture sweep, which moves to item 19.
+- **Item 13**'s canopy follow-up merged as canopy#684 (`f2147403`, 2026-09-24), and F-CANOPY-057's re-rating
+  that it owed is applied (that entry's status).
+- **Item 15**'s ratings question is narrower now: F-CANOPY-059 (P0) and F-CANOPY-056 (P1) are FIXED, and
+  F-CANOPY-057 is P2 (carried here in round 3, Lane 10-R3B).
+
+New items:
+
+18. **F-CANOPY-064 (P1) and F-CANOPY-067.** First, on unfixed `main`, decide F-CANOPY-067's rating, holding
+    one page in Sliding Window and a second in Full History through each drive (round 3, Lanes 10-R3A and
+    10-R3B):
+    - W8 step 13 after a CasCor run, with the recurrence leg up (`--with-recurrence`), without which both
+      selects are no-ops and no burst is sent;
+    - a canopy restart on an idle cascor, the pages reconnecting within the burst's 5 s. This one is the
+      orchestrator's addition: after a swap, a page that took the LMU fit's point is redrawn by its first
+      fetch from cascor, usually after the burst;
+    - the same restart mid-run, the only one of the three that reaches the mid-run case.
+
+    On each restart drive, confirm from canopy's log that every page's `/ws/training` connect (`Client
+    connected: training-client-…`, `src/communication/websocket_manager.py:399`) comes before the burst, which lands about 5 s
+    after `Cascor metrics stream connected`, and repeat the restart if it does not: pages reconnect on a
+    jittered backoff (`src/frontend/assets/websocket_client.js:162-171`), and nothing re-sends the burst. A
+    restart can also strand a page's metrics poll for about 30 s (the watchdog's 30 s, counted from a 5 s
+    slow tick; `dashboard_manager.py:2497-2555`, `canopy_constants.py:425`), so on these drives the Sliding Window page can hold the burst's rows that
+    long for a reason of its own (round 4, Lane 10-R4B; re-derived by the orchestrator).
+
+    A cascor restart will not do, because its burst is empty. Then carry `kind`, fix the axis, key accuracy
+    on `kind`, correct N6's fixture, normalize or drop the `initial_metrics` burst, and align `extendTraces`
+    with the relay's rows. Then drive it live: mid-pass, after a run, and the same three drives as
+    verification. Confirm from an unslimmed history that only a run's last step row is labelled `output`.
+19. **F-CANOPY-060 and F-CANOPY-063**, and item 16's fixture sweep. Do the sweep by comparing each fixture
+    with the shape its live path delivers, not by a grep. It covers N6's fixture (item 18), N5's WS-ack fake
+    (item 20), F-CANOPY-060's fixture and F-CANOPY-063's quote.
+20. **F-CANOPY-065 (P1, conditionally).** Unwrap the ack in `_apply_params_hot` and keep the legs' partitions apart. Correct
+    the N5 fake, the extractor's "WS-flat" docstring and the "default off" comment. Test with a mixed Apply
+    through the real `apply_params`, and make the `o3` instrument drive it too, since it copies the merge.
+21. **F-CANOPY-066**, with the selection arc's A1-iii.
+22. **Owner: O9's design question** (the consolidated handoff's C4).
+23. **Tell the defect-register arc** that its unreserved "Nothing was loaded" item is F-CANOPY-063, and that
+    F-CANOPY-060 to -062 are filed.
