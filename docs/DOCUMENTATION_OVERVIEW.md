@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.54
+**Version:** 0.2.72
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -63,6 +63,7 @@
 | **Index / classify / backfill the snapshot archive** | [REFERENCE — Snapshot Sidecar Chain](REFERENCE.md#snapshot-sidecar-chain) (`--scan`, two-axis classify, derivation levels, `--root` trap) | docs/    |
 | **Attribute snapshots / pin the dataset instance** | [REFERENCE — Snapshot Attribution Dataset Pin](REFERENCE.md#snapshot-attribution-dataset-pin) (`seeded_params`, `--dataset-seed` vs `--seed`, sidecar-chain `--root` trap) | docs/    |
 | **Run a P4 campaign suite** | [REFERENCE — P4 Campaign Suites](REFERENCE.md#p4-campaign-suites) (19 YAMLs; `include` ≠ `matrix`; cap-128 H2H is n=2; recurrence P4 cells report, they do not gate) | docs/    |
+| **Read a bare recurrence request on an E-H listener** | [REFERENCE — Service Default on an E-H Recurrence Stack](REFERENCE.md#service-default-on-an-e-h-recurrence-stack) (omitted readout/ridge is linear + ridge 0.0; the suite cell posts rff / ridge 1.0; YAML outranks the class default) | docs/    |
 | **Census X7 off-loop / slice 1a** | [REFERENCE — X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) (canopy gate is authority for `main.py` only; count 58; do not quote v1; site-local exemption only) | docs/    |
 | **Re-drive the topology block** | [REFERENCE — Topology Step Order and Blast-Radius IDs](REFERENCE.md#canopy-e2e-topology-step-order-and-blast-radius-ids) (`topostate` first or alone; the `W4-*` IDs are real matrix §4 steps) | docs/    |
 | **Size memory-budget slack after a cut** | [REFERENCE — Memory-Budget Slack (Planning)](REFERENCE.md#memory-budget-slack-planning) (`measure-growth` `max`, floored at 2,000; headroom is not a CI failure) | docs/    |
@@ -240,6 +241,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.2.54
+**Last Updated:** 2026-10-05
+**Version:** 0.2.72
 **Maintainer:** Paul Calnon

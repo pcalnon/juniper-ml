@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.79
+**Date**: 2026-10-05
 **Project**: juniper-ml
 
 ---
@@ -669,6 +669,10 @@ Full contract: [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-g
 
 Tip: default `equities` / `equities_seq` against the bundled 503 names is HTTP **422** at 14 symbols (data#354). Cost is per request, so the cap is in **symbols**, not bytes. Set `symbols: [AAPL, …]` (E-H already does) or `allow_truncation: true`. A request may only *lower* `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS`. `experiment_stack.bash` sets the cache dir, not the cap. Full contract: [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap).
 
+Tip: a recurrence listener launched from the E-H base (`irregular-sine-rff.yaml`) resolves an omitted `readout` and `ridge` to **linear + ridge 0.0**.
+The suite cell posts `train.readout: rff` and `train.ridge: 1.0` (aggregate r² about −0.115). A bare `POST /v1/crossval` on that listener is the −20344.64 capture.
+The copied YAML `service.default_ridge: 0.0` outranks `Settings.default_ridge`. Full contract: [REFERENCE — Service Default on an E-H Recurrence Stack](REFERENCE.md#service-default-on-an-e-h-recurrence-stack).
+
 Tip: do **not** gate on `aggregate.csv` `wall_seconds` or `manifest.timings.drive` (poll-quantized).
 `python util/experiments/read_run_metrics.py SUITE_DIR` reads the last `metrics_series.csv` row.
 `step_count` is exact and fail-on-mismatch (#1613); speed is reported only.
@@ -1094,6 +1098,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments; PF-1 matched epoch pair + matrix-axis repeats; PF-4/PF-8 are not driver suites
 - [Topology Step Order and Blast-Radius IDs](REFERENCE.md#canopy-e2e-topology-step-order-and-blast-radius-ids) -- `topostate` first or alone; the W4/W1 blast-radius IDs are real matrix §4 steps (F-E2E-007 claimed otherwise and was withdrawn)
 - [P4 Campaign Suites](REFERENCE.md#p4-campaign-suites) -- 19 YAML catalog; include ≠ matrix; cap-128 H2H is n=2; recurrence P4 cells do not gate
+- [Service Default on an E-H Recurrence Stack](REFERENCE.md#service-default-on-an-e-h-recurrence-stack) -- omitted readout/ridge is linear + ridge 0.0; the suite cell posts rff / ridge 1.0
 - [Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) -- `read_run_metrics` / `make_baseline` / `compare_baseline`; sound since #1743; NEVER CI-wired — P1 §6 closed 2026-09-07, host identity blocks on hosted runners
 - [Memory-Budget Slack (Planning)](REFERENCE.md#memory-budget-slack-planning) -- headroom is not a CI input; size slack from `measure-growth` `max`, floored at 2,000
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default `equities` is 422 at 14 symbols; unit is symbols because cost is per request
@@ -1119,6 +1124,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-05
+**Version:** 1.0.79
 **Maintainer:** Paul Calnon

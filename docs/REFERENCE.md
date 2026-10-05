@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.79
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -52,6 +52,7 @@
 - [Run lister / pruner (`list_runs.py`)](#run-lister--pruner-list_runspy)
 - [Snapshot Attribution Dataset Pin](#snapshot-attribution-dataset-pin)
 - [P4 Campaign Suites](#p4-campaign-suites)
+- [Service Default on an E-H Recurrence Stack](#service-default-on-an-e-h-recurrence-stack)
 - [X7 Off-Loop Census](#x7-off-loop-census)
 - [Canopy E2E Topology Step Order and Blast-Radius IDs](#canopy-e2e-topology-step-order-and-blast-radius-ids)
 - [MEMORY.md Index Check](#memorymd-index-check)
@@ -5916,11 +5917,41 @@ Only E-F and E-G are `execution.mode: parallel`. Recurrence may parallelise. Cas
 
 P4 cells ran unscraped by design — `JUNIPER_SUITE_GRAFANA_BRIDGE` is an env toggle, not a suite key. The driver's loopback `/metrics` sample still feeds `metrics_series.csv`.
 
+### Service Default on an E-H Recurrence Stack
+
+A recurrence listener started from the E-H base config answers an omitted `readout` and an omitted `ridge` with the **linear** readout at **ridge 0.0**. The suite cell does not send that body.
+
+[`reports/2026-10-04_recurrence-equities-cv-matrix/10-crossval-service-defaults.json`](../reports/2026-10-04_recurrence-equities-cv-matrix/10-crossval-service-defaults.json) is that request: no `readout`, no `ridge`, HTTP 200, `eval_aggregate.r2` **−20344.637730773607** on `equities_seq-6.0.0-15505731cba5b86d`.
+
+`util/experiments/suites/p4/e-h-recurrence-real-data.yaml` sets `base_config` to `juniper-recurrence/conf/experiments/irregular-sine-rff.yaml`. The include overrides only `dataset.generator` and `dataset.params`. `materialise_cell` (`run_suite.py`) deep-sets those dotted keys and leaves `service:` and `train:` in place. The launch is `--config` of the generated `cells/<cell_id>/experiment.yaml`.
+
+That base file's `service:` block sets `default_ridge: 0.0`. `experiment_stack.bash` `recurrence_up` copies the file to `$RUN_DIR/config/experiment.yaml` and exports `JUNIPER_RECURRENCE_CONFIG_FILE` at the copy.
+Recurrence `Settings.settings_customise_sources` orders sources as init, then the YAML `service:` block, then environment, then the class default.
+The copied `0.0` wins over `JUNIPER_RECURRENCE_DEFAULT_RIDGE` and over `Settings.default_ridge` (also `0.0` today). Changing the class default alone leaves a stack launched from this file on ridge 0.0.
+
+`TrainRequest` and `CrossValRequest` leave `readout` and `ridge` at `None` (`juniper_recurrence/schemas.py`). `build_lmu_regressor` treats `readout is None` as `"linear"`, and on that rung uses `ridge if ridge is not None else default_ridge` (`juniper_recurrence/_readout.py`). On the RFF rung an omitted ridge is `"gcv"` (`_RFF_DEFAULT_RIDGE`). `default_ridge` never reaches RFF.
+
+The suite row is the other capture, [`10-crossval-eh-rff.json`](../reports/2026-10-04_recurrence-equities-cv-matrix/10-crossval-eh-rff.json): `readout: rff`, `ridge: 1.0`, `rff_features: 256`, `rff_gamma: median`, aggregate r² **−0.11526096841533144**. Those fields are the base `train:` block. `run_experiment._lmu_hyperparams` posts every non-`None` train key on both `POST /v1/train` and `POST /v1/crossval`. The E-H include does not override them.
+
+A canopy recurrence fit stays on the linear rung. `juniper_canopy.backend.recurrence_backend._HYPERPARAM_KEYS` is `("d", "theta", "ridge")`. `start_training` forwards only keys that were set, and it never sends `readout`. An omitted `ridge` uses the listener's `default_ridge`.
+
+`juniper-recurrence train` resolves the same way: `--readout` and `--ridge` both default to `None` (`juniper_recurrence/main.py`), and a `None` readout is linear. The suite's `outputs.save_model` re-run passes the train-block flags, including `--ridge` and `--readout`. A hand-run CLI that omits them does not.
+
+| Symptom | Check / Fix |
+|---------|-------------|
+| Hand `POST /v1/crossval` on the E-H listener returns r² around −2×10^4 while the suite row is about −0.115 | The listener default is linear + ridge 0.0. The suite posts the `train:` block (`readout: rff`, `ridge: 1.0`). Send those fields. Do not read the suite aggregate as the service default. |
+| Raised `Settings.default_ridge` and the stack still solves ridge 0 | The copied YAML `service.default_ridge: 0.0` sits above the class default and above `JUNIPER_RECURRENCE_DEFAULT_RIDGE`. Change `irregular-sine-rff.yaml`, this suite's `base_config`, in the same launch. |
+| Set `readout: rff` and omitted `ridge`, expecting ridge 0 | RFF's omitted ridge is `"gcv"`, not `default_ridge`. |
+| Canopy recurrence fit ignores an RFF choice | The backend has no readout key. It can forward `ridge` only. The service still resolves linear. |
+
+The suite file header says to expect r² near 0, not a negative blow-up. That holds for the cell the driver posts. It does not hold for a bare request against the same listener.
+
 ### Pitfalls
 
 | Symptom | Cause / fix |
 |---------|-------------|
 | Healthy cascor cell `stalled` at ~130 s | Missing or `<= 120` `stall_seconds` on pool ≥ 16 **or** cap ≥ 64. E-A pool-16 class; E-I width class. |
+| Bare `POST /v1/crossval` on an E-H listener returns r² around −2×10^4 | Omitted `readout` / `ridge` is linear + ridge 0.0. The suite cell posts `train.readout: rff` and `train.ridge: 1.0`. See [Service Default on an E-H Recurrence Stack](#service-default-on-an-e-h-recurrence-stack). |
 | `timed_out` with `exit_code: null` / no `manifest.json` | `per_run_timeout_seconds` ≤ driver wall. Raise the subprocess ceiling, not the wall, so the driver writes the honest row. |
 | Include cell missing matrix axes / inherited 12 iterations | `include` is append-only. Restate every override the cell needs (E-A `wide-pool-long`). |
 | Quoted 3-seed spread at cap 128 | Description is stale. n = 2 (`r0`/`r1`). |
@@ -7017,6 +7048,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.48  | 2026-09-04 | Pointer-follow soak operator surface: `--dry-run` is exempt from the terminal-verdict stop (juniper-ml#1690); do not drive n≈8–10; era split required; `source-recovered` stays in the denominator; soak-probes reaper pidfile |
 | 0.6.60  | 2026-09-05 | Canopy E2E unfilled-rows ledger: plan re-drives from `e2e_unfilled_rows.py` (matrix status cells only; `C2.` / `M-`; exit 0). `e2e_row_coverage.py` is an estimator and can list already-`PASS` rows as remaining |
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
+| 0.6.79  | 2026-10-05 | E-H recurrence stack: omitted `readout` / `ridge` is linear + ridge 0.0 because the copied YAML `service.default_ridge` outranks the class default; the suite cell posts the `train:` block (`rff`, ridge 1.0). Canopy forwards `d` / `theta` / `ridge` only. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -7516,6 +7548,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.79
 **Maintainer:** Paul Calnon
