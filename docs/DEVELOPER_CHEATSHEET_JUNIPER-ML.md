@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.76
+**Date**: 2026-10-05
 **Project**: juniper-ml
 
 ---
@@ -657,6 +657,10 @@ Queues/ready/slots inherit `JUNIPER_E2E_CANOPY_URL` (no `--base-url`). See [REFE
 
 Tip: `util/experiment_stack.bash` is the **per-run** launcher (data `8110–8139` / cascor `8230–8259` / recurrence `8260–8289`) — not isolated-stack and not `plant_all`. Never canopy; never `JuniperProject.pid`; never repo `.env`. Pidfiles come from post-health `ss` (F-6), not `$!`. From a worktree set `JUNIPER_EXP_PROJECT_DIR`. Drive with `python util/experiments/run_experiment.py --config … --run-dir …` (exit `0`–`4`). Full contract: [REFERENCE — Experiment Stack](REFERENCE.md#experiment-stack-utilities).
 
+Tip: on `main`, `outputs.save_model: true` re-runs whichever `juniper-recurrence` is first on the driver's `PATH`, and `recurrence_up` does not point the service at `$RUN_DIR/snapshots` (the audit saw npz files in `$RUN_DIR/recurrence-snapshots`).
+juniper-ml#2164 records `ports.json` `recurrence_launch` after the env preflight and re-runs that CLI only when the interpreter and `juniper-recurrence-model` version still match. A mismatch is `outcome: degraded` (exit 1) and the CLI is not started. A YAML `service:` key still outranks the snapshots dir and the two log knobs.
+Full contract: [REFERENCE — Recurrence launch record](REFERENCE.md#recurrence-launch-record-and-service-env).
+
 Tip: `compare_baseline.py` is a **split** gate (exact `step_count`, ungated speed). The #1710 counterexample is
 **settled**: a corpus census (333 runs) showed all 29 divergences are explained by `completion_reason`, and #1733 made
 the termination branch part of the precondition — a branch flip now REFUSES (2) instead of FAILing (1). #1741 + #1743
@@ -1119,6 +1123,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-05
+**Version:** 1.0.76
 **Maintainer:** Paul Calnon

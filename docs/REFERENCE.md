@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.76
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -39,6 +39,7 @@
 - [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost)
 - [Post-Merge Main Verification](#post-merge-main-verification)
 - [Experiment Stack Utilities](#experiment-stack-utilities)
+- [Recurrence Launch Record and Service Env](#recurrence-launch-record-and-service-env)
 - [PF Scenario Suites](#pf-scenario-suites)
 - [Perf-Lane Work Gate](#perf-lane-work-gate)
 - [Perf-lane metrics and baselines](#perf-lane-metrics-and-baselines)
@@ -4337,11 +4338,79 @@ Port locks use atomic `mkdir "$LOCK_ROOT/<port>.lock"` (`JUNIPER_EXP_LOCK_ROOT`,
 
 `cascor_up` exports `JUNIPER_CASCOR_SNAPSHOTS_DIR=$RUN_DIR/snapshots` (W-6), so each run's cascor writes snapshots into its own `RUN_DIR` instead of the shared root `juniper-cascor/cascor-snapshots/` (the `.h5`-debris class). This is the sanctioned use of the override: the shared root is the default precisely so CLI, service, and container runs find each other's models, and a per-run root is the opt-out for isolated experiments; concurrent bench runs use `python -m bench.run_benchmark --results-dir` (W-7, juniper-recurrence). Two live runs are fully isolated — disjoint ports via the lockdirs, and `--down` of one run touches nothing of the other (pinned by `TestTwoRunConcurrency`).
 
+`recurrence_up` on `main` does not export `JUNIPER_RECURRENCE_SNAPSHOTS_DIR`, so recurrence snapshots follow the service default instead of this directory. See [Recurrence launch record and service env](#recurrence-launch-record-and-service-env).
+
 **Q-6 is resolved (2026-08-15) and the one-cascor-per-checkout rule is retired.** `cascor_up` now also exports `JUNIPER_CASCOR_LOG_DIR=$RUN_DIR/logs` (juniper-cascor#523), so each run's cascor writes its own file log instead of the repo-shared `logs/juniper_cascor.log` (H-7). Requires `juniper-cascor` carrying that override; against an older cascor, the export is simply ignored, and the shared-log constraint below still applies.
 
 Why this mattered more than ordinary log interleaving: **cascor's parent logger writes only to that file** — stdout carries just candidate-worker lines — so the markers that decide a run's verdict (`Training completed`, `Completed solving …`) exist nowhere else. A second cascor process in the same checkout does not merely mix the logs; it **rotates the evidence away**, which is how the F-P1-3 arm A/B run logs were lost. One other cascor process is enough, so the previous mitigation (using a distinct checkout per instance) never actually protected a single run against a long-lived service that shares its checkout.
 
 Data and recurrence instances never had a per-checkout constraint.
+
+#### Recurrence launch record and service env
+
+W1.9 and W1.10 of [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) (F-D4, F-D9, F-L11). The contract below is what juniper-ml#2164 implements. **`main` does not do it yet.**
+
+**What `main` does.** `outputs.save_model: true` re-runs `juniper-recurrence train` through `shutil.which("juniper-recurrence")` on the **driver** process `PATH` (`util/experiments/run_experiment.py` `_save_model_rerun`). The console script the launcher served from is not consulted. A missing CLI fails that phase. Since W0.3 the phase is `outcome: degraded` and the process exits 1. The plan's F-D4 row still says the run stayed `succeeded`; that was the outcome rule before W0.3.
+
+`recurrence_up` creates `$RUN_DIR/snapshots` (cascor already writes there) and does not export `JUNIPER_RECURRENCE_SNAPSHOTS_DIR`. The audit records the service then writing `$RUN_DIR/recurrence-snapshots`, its CWD-relative default, because the launch's cwd is `$RUN_DIR` (F-D9).
+
+`JUNIPER_RECURRENCE_LOG_LEVEL` and `JUNIPER_RECURRENCE_LOG_FORMAT` are not named on the announce line or in `env/launch.env`. The launch does not use `env -i`, so a value already in the parent environment is inherited, and the YAML `service:` block is the explicit route (F-L11). `ports.json` has no `recurrence_launch` object.
+
+**What #2164 changes.** After the env preflight passes, `recurrence_up` rewrites `ports.json` through the same `write_ports_json` writer (a temp file, then rename) and adds one key. A refused preflight adds nothing. A rewrite that fails is logged as `could not record the recurrence launch` in `$RUN_DIR/logs/launch.log`, and `serve` is not started.
+
+`--dry-run` prints the probe and the snapshots variable and does not write the record. `--skip-env-preflight` (or `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1`) only warns; the leg continues, and the record is written.
+
+`serve` is handed three settings, each also named in the announce line and in `env/launch.env`:
+
+| Variable | Value | When |
+|----------|-------|------|
+| `JUNIPER_RECURRENCE_SNAPSHOTS_DIR` | `$RUN_DIR/snapshots` | Always. The directory is shared with cascor, which lists `*.h5`; recurrence lists `*.npz`. |
+| `JUNIPER_RECURRENCE_LOG_LEVEL` | the launcher's own value | Only when that variable is set and non-empty. An unset one is omitted, never exported as an empty string. |
+| `JUNIPER_RECURRENCE_LOG_FORMAT` | the launcher's own value | Same rule. |
+
+A set log variable already reached `serve` by inheritance. For those two, #2164's change is that they are named and recorded. The launcher states juniper-recurrence's resolution order as init/CLI, then the YAML `service:` block (the `--config` file, via `JUNIPER_RECURRENCE_CONFIG_FILE`), then environment, then defaults. A `service:` key for `snapshots_dir`, `log_level`, or `log_format` therefore outranks every row in the table.
+
+`recurrence_launch` is the object added to `ports.json`:
+
+| Key | Meaning |
+|-----|---------|
+| `conda_env` | `JUNIPER_EXP_RECURRENCE_CONDA` as resolved (default `JuniperCascor1`) |
+| `cli` | The `juniper-recurrence` console script `serve` runs |
+| `python` | The interpreter its shebang names. A `/bin/sh` trampoline, or a script that cannot be read, falls back to that env's `bin/python`. A shebang that names a missing interpreter is stored as written. |
+| `model_version` | `juniper-recurrence-model`, from `importlib.metadata.version`, probed **without** `-s` and with cwd `/` (how `serve` imports). `null` when the probe fails or the whole answer is not one token matching `[A-Za-z0-9.+!_-]+`. |
+| `snapshots_dir` | The directory exported above |
+| `log_level`, `log_format` | The values passed through, or `null` when not passed |
+| `config_file` | `$RUN_DIR/config/experiment.yaml` when `--config` was set, otherwise `null` |
+
+The driver copies `ports.json` into `manifest.json` under `ports`. `save_model` executes `recurrence_launch.cli` when that field is a non-empty string and the file is still executable. `shutil.which` stays the fallback only when no CLI was recorded. A recorded CLI that is missing or not executable fails the phase and does not search `PATH`.
+
+Rerun parity runs first. The CLI's interpreter, resolved by the same `console_script_python` rule, must be `recurrence_launch.python`. The comparison uses `os.path.realpath`, so `bin/python` and the `bin/python3.14` it links to count as one interpreter. When they agree and a model version was recorded, that interpreter's `juniper-recurrence-model` version **now** must still equal `recurrence_launch.model_version`. The driver's probe uses the re-run environment, cwd `/`, no `-s`, and a 60-second timeout.
+
+A mismatch sets `save_model_rerun.ok` false, names both sides in `error`, and does not start the CLI. The phase is `failed`, so W0.3 still derives `outcome: degraded` and exit 1. Missing evidence is `unverified`, with a `reason`, and the CLI **does** run. That covers no recorded interpreter, a `null` model version, and a probe that cannot be read. `unverified` is not treated as a match.
+
+`--recurrence-url` other than `http://127.0.0.1:<ports.json recurrence>` (a trailing slash is ignored) sets the record aside. `save_model_rerun.launch_record` explains why, `cli_source` is `path`, and parity stays unverified. No record at all — today's `main`, or a preflight that refused — is the same `PATH` fallback without that note.
+
+On a recorded run, `manifest.save_model_rerun` carries `cli_source` (`launcher` or `path`), `cmd`, and `parity`. A CLI that exits nonzero also carries `returncode` and `stderr_tail` (the last 500 characters). The train CLI itself is limited to 600 seconds. It sets `JUNIPER_DATA_URL` to the run's data instance and clears `LD_LIBRARY_PATH`.
+
+It forwards the YAML `train:` values that are set: `--d`, `--theta`, `--ridge`, `--readout`, `--rff-features`, `--rff-gamma`, `--mlp-hidden`, `--mlp-weight-decay`, `--mlp-lr`, `--mlp-max-epochs`, `--mlp-patience`. The CLI still has no `--params` flag; `--dataset` is the content-addressed id.
+
+`util/isolated_stack.bash` is not part of this change. It writes no `ports.json`, the driver never reads its run directory, it does not create a per-run snapshots directory, and it has no `--config` route. Inheritance is still its only path for the log knobs.
+
+```bash
+jq '{outcome, phase: .phases.save_model, rerun: .save_model_rerun, launch: .ports.recurrence_launch}' \
+  "$RUN_DIR/manifest.json"
+```
+
+| What you see | What it means |
+|--------------|---------------|
+| `cli_source` is `path`, and some other `juniper-recurrence` is earlier on `PATH` | No usable record. On `main` that is every `save_model` re-run. After #2164 it is a set-aside record, a refused preflight, or a run that did not go through `recurrence_up`. |
+| `parity.interpreter` is `mismatch` | The recorded CLI's shebang is a different interpreter than the one `serve` used. The train CLI was not started. |
+| `parity.model_version` is `mismatch` | Same interpreter, different `juniper-recurrence-model` than at `--up`. The train CLI was not started. |
+| `parity.model_version` is `unverified` and the record's `model_version` is `null` | The launch probe did not print one version token. The CLI still runs. |
+| The error says the recorded CLI is missing or not executable | The env's console script moved after `--up`. There is no `PATH` fallback. |
+| `.npz` files under `$RUN_DIR/recurrence-snapshots` | `main` today, or a staged YAML `service.snapshots_dir` outranking the environment variable. |
+| `--up` stops before `serve`, and `launch.log` says the launch could not be recorded | `ports.json` could not be rewritten. Repair the run directory and bring the stack up again. |
+| Preflight refused, and `ports.json` has no `recurrence_launch` | Expected. A refused env records nothing. |
 
 #### F-6 listener pid rule (binding)
 
@@ -4421,6 +4490,8 @@ Kind selection from YAML shape: `training:` → cascor path; `train:` / `crossva
 Always writes §13.4 `manifest.json` (including stalled / timed-out / failed runs). Also writes `artifacts/results/stats.json` + `summary.md` (Wave 2.6; stats failure → `stats_error` on the manifest, never fatal). Plots (Wave 2.4/2.5) render client-side when `outputs.plots` requests them — structurally unavailable data is a per-plot SKIP; render errors / missing matplotlib on a requested plot fail acceptance.
 
 Cascor path polls `GET /v1/training/status` and samples loopback `/metrics` (redirect-following — bare `/metrics` 307s) into `metrics_series.csv`; candidate correlation exists **only** there. Recurrence path uses synchronous `POST /v1/train` (response IS completion; Q-2 budget = socket timeout → `timed_out`). `outputs.save_model: true` re-runs `juniper-recurrence train --dataset <dataset_id> … --out …/model.npz` (G-18).
+
+On `main` that re-run is `shutil.which("juniper-recurrence")` on the driver's `PATH`. juniper-ml#2164 uses the launcher-recorded CLI under rerun parity: [Recurrence launch record and service env](#recurrence-launch-record-and-service-env).
 
 Coverage: `tests/test_run_experiment.py`.
 
@@ -7002,6 +7073,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.76  | 2026-10-05 | Recurrence launch record and service env (juniper-ml#2164, not on `main` yet): `save_model` re-runs `ports.json` `recurrence_launch.cli` under interpreter and model-version parity; `recurrence_up` exports `JUNIPER_RECURRENCE_SNAPSHOTS_DIR` and records log knobs only when set. A YAML `service:` key still outranks env. |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -7516,6 +7588,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.76
 **Maintainer:** Paul Calnon
