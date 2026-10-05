@@ -204,6 +204,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `cv_r2_std` and `dataset_descriptor.n_windows` → `n_windows`. A null `crossval` yields no `cv_*`
   key, and the test is `isinstance`, not truthiness, so `0.0` and `-18081.0` both reach the report.
   The cascor keys are read as before.
+- **The `save_model` re-run runs the CLI the launcher served from, and refuses a different
+  interpreter or model version; the recurrence service gets the run's snapshots dir and the log
+  knobs** (W1.9 and W1.10, closing F-D4, F-D9 and F-L11 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  `util/experiment_stack.bash`, `util/experiments/run_experiment.py`). `save_model` re-ran
+  `juniper-recurrence train` through `shutil.which` on the DRIVER's PATH, which need not be the env
+  the launcher served from (F-D4). The service fell back to its CWD-relative `recurrence-snapshots`
+  although `create_run_dir` makes `$RUN_DIR/snapshots` for it (F-D9). And the launcher recorded no
+  log settings, leaving the YAML `service:` block as the only visible route (F-L11).
+  - **The record (W1.9).** After the env preflight passes, `recurrence_up` rewrites `ports.json`,
+    which the driver already reads, with a `recurrence_launch` object: `conda_env`, `cli`, `python`
+    (the interpreter the CLI's shebang names), `model_version` (probed without `-s` and from `/`, as
+    `serve` imports; `null` when unreadable), `snapshots_dir`, `log_level`, `log_format` and
+    `config_file`. It goes through the one `write_ports_json` writer, now rendered with `printf`
+    (byte-identical output) into a temp file that is renamed into place, so no other key changes. A
+    refused env records nothing, and a record that cannot be written fails the leg before `serve`.
+  - **The re-run (W1.9).** `save_model` executes `recurrence_launch.cli`. `shutil.which` is the
+    fallback only when none is recorded, and a recorded CLI that has gone missing fails the phase
+    instead of falling back. Rerun parity runs first: the CLI's interpreter, resolved exactly as the
+    launcher resolves it, must be the recorded one (compared as resolved paths), and its
+    `juniper-recurrence-model` version must still be the recorded one. A mismatch fails the phase with
+    both sides named, without running the CLI; missing evidence is reported as `unverified`, not
+    guessed. A record for a service the run does not drive (`--recurrence-url` elsewhere) is set
+    aside. `save_model_rerun` gains `cli_source`, `parity` and, when set aside, `launch_record`.
+    W0.3's outcome derivation is untouched: a failed `save_model` phase is `degraded`, exit 1.
+  - **The service env (W1.10).** `recurrence_up` exports
+    `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots` (cascor lists only `*.h5` there, recurrence
+    only `*.npz`) and passes `JUNIPER_RECURRENCE_LOG_LEVEL` / `JUNIPER_RECURRENCE_LOG_FORMAT` when they
+    are set, never exported empty, naming all three in the announce line, `env/launch.env` and
+    `ports.json`. A set log var already reached `serve` by inheritance; what is new is the record. The
+    YAML `service:` block still outranks env (juniper-recurrence `settings.py`
+    `settings_customise_sources`), and the launcher header now says so. `util/isolated_stack.bash` is
+    unchanged: it has no `ports.json`, no per-run snapshots dir and no `--config` route.
+  - **One existing assertion changed**, in `tests/test_experiment_stack_script.py`: the live
+    `recurrence_up` happy path counted 3 calls to the fake interpreter and now counts 4, the
+    preflight's three (each still pinned to pass `-s` first) and then the model-version probe
+    (pinned to run without `-s`, from `/`). New tests: `TestRecurrenceUpLaunchRecord`,
+    `TestRecurrenceLaunchRecordWiring`, `TestPortsJsonRender` and a `TestDryRunUp` arm in that
+    suite; `SaveModelLaunchRecordTest` and `LauncherMirrorTest` in `tests/test_run_experiment.py`.
 - **Tier 2 finds its drives under `/run/media` again, and gains its installer, its failure unit and a
   gate** (B6 / I-20 of
   `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`;
