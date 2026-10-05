@@ -2920,6 +2920,7 @@ python3 -m unittest -v tests/test_duplicati_db_holder_guard.py
 python3 -m unittest -v tests/test_duplicati_web_credential.py
 python3 -m unittest -v tests/test_yamaguchi_server_api.py
 python3 -m unittest -v tests/test_yamaguchi_watchdog.py
+python3 -m unittest -v tests/test_replay_redrive_stack_refusal.py
 python3 -m unittest -v tests/test_matrix_set_verdicts.py
 python3 -m unittest -v tests/test_e2e_matrix_fill.py
 python3 -m unittest -v tests/test_e2e_matrix_rescore.py

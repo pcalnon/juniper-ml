@@ -1023,6 +1023,11 @@ jobs:
           # record line format; and the unit + deploy script contract, checked statically (the
           # deploy script changes systemd user units and is never executed by a test).
           python3 -m unittest -v tests/test_yamaguchi_watchdog.py
+          # tests/test_replay_redrive_stack_refusal.py: the CAN-015 re-drive wrapper refuses
+          # --up on a port that already has a listener and --down for a pid this run did not
+          # record. A miss tears down the shared trio. The ss table is a stub; the one --down
+          # that is allowed through execs isolated_stack.bash against a temp eco and a dead pid.
+          python3 -m unittest -v tests/test_replay_redrive_stack_refusal.py
           # tests/test_matrix_set_verdicts.py: Hermetic gate for the E2E matrix verdict writer `util/ad-hoc/2026-09-02_matrix_set_verdicts.py` (`util/` is outside every pre-commit Python hook), which shipped with zero tests: verdict tokens, row identity, and the write-back path.
           python3 -m unittest -v tests/test_matrix_set_verdicts.py
           # tests/test_e2e_matrix_fill.py: Hermetic gate for the E2E matrix bulk-fill writer, which shipped with zero tests: which cells a fill may touch, and that an already-filled cell is not silently overwritten.
