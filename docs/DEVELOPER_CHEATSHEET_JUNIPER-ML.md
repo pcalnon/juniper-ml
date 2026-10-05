@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.82
+**Date**: 2026-10-05
 **Project**: juniper-ml
 
 ---
@@ -30,6 +30,7 @@
 | `util/juniper_plant_all.bash --systemd`                | Start via `systemctl --user` (no pidfile; curl required) |
 | `util/juniper_chop_all.bash --systemd`                 | Stop via `systemctl --user` (reverse order; soft-fail; no pidfile path) |
 | `util/install_duplicati_timer.bash`                    | Install (copy, not symlink) the `systemd --user` Duplicati backup lane; does **not** enable the timer |
+| `sudo util/install_duplicati_service.bash`             | Install the system Yamaguchi `duplicati.service` (copy, blessed checksum; no `--dry-run`) |
 | `systemctl --user enable --now duplicati-backup.timer` | Enable the overnight timer **after** a first full backup and a restore drill |
 | `systemctl --user list-timers duplicati-backup.timer`  | Confirm the next `duplicati-backup.timer` fire time |
 | `util/juniper-backup.bash --dry-run`                   | Preview per-repo `.tbz2.gpg` archives (writes nothing) |
@@ -717,6 +718,9 @@ Tip: systemd chop soft-fails per unit and always exits `0` without touching the 
 
 Tip: F-CANOPY-037 measured paint in 2 of 11 sessions — `python3 util/ad-hoc/e2e_f037_render_census.py` (default 11). Exit 0 means every session produced PASS or FAIL, even if painted==0; all-zero `hidden_units` is INVALID (nothing to draw), not a render FAIL. No `--base-url`; inherit `JUNIPER_E2E_CANOPY_URL` (default `:8051`). Full contract: [REFERENCE — F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census).
 
+Tip: `sudo util/install_duplicati_service.bash` copies the Yamaguchi server wrapper, unit, defaults, and pre-backup guard (never symlinks). There is no `--dry-run`. A blessed-checksum mismatch exits 4 until `--update-backup-behavior`. The guard's stdout is a Duplicati option override — messages go to stderr; exit 5 aborts the job. Shipped `DAEMON_OPTS` does not include `--require-db-encryption-key`.
+Full contract: [REFERENCE — Yamaguchi Duplicati Server](REFERENCE.md#yamaguchi-duplicati-server).
+
 Tip: `util/install_duplicati_timer.bash` **copies** the Duplicati runner/units (a worktree symlink dies with `git worktree remove`) and does **not** `enable --now`.
 Linger must be `yes`; `~/.config/duplicati-backup/env` must be mode `600` with `PASSPHRASE=`. `--no-auto-compact=true` is load-bearing.
 A skip overwrites `result=OK`, so the next skip always escalates. Distinct from `util/juniper-backup.bash`.
@@ -889,6 +893,9 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Chop preserves pidfile after WARNING stop failures | A `graceful_stop` failed — inspect survivors (`ss -tlnp`), then re-chop or kill manually. |
 | systemd plant: missing `curl` | Install/expose `curl`; abort is before any `systemctl start`. |
 | systemd plant partial after health timeout | Run `util/juniper_chop_all.bash --systemd` (ERR cleanup does not `systemctl stop`). |
+| Yamaguchi installer `exit 4` | Blessed checksum mismatch. Inspect `DRIFT` vs `BEHAVIOUR CHANGE`, then `--update-backup-behavior` only to bless the repo copy. |
+| Yamaguchi server up, option ignored | Unknown names log `Unknown option supplied` and continue. Grep the journal after every `.env` change. |
+| Yamaguchi guard exit 5 | Destination unmounted, TargetURL shape mismatch, or a foreign file. Stdout must stay empty. |
 | Duplicati installer refuses `env` / mode / Linger | `~/.config/duplicati-backup/env` mode `600` with `PASSPHRASE=`; `loginctl enable-linger $USER` |
 | Duplicati timer silent after logout | Linger was `no` — the original failure class. Confirm `list-timers duplicati-backup.timer` |
 | Duplicati `FATAL` unmounted dest / tmpfs tempdir | Mount the backup volume; point `DUPLICATI_TEMP_DIR` at any disk-backed path (the runner refuses a RAM-backed one outright, and `/tmp` is tmpfs here) |
@@ -1101,6 +1108,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- exit **2** is P-5 free-threaded; exit **4** is May-7 wheel layout
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local `MEMORY.md` gate; hook-not-line; CI cannot see `~/.claude`
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- `e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
+- [Yamaguchi Duplicati Server](REFERENCE.md#yamaguchi-duplicati-server) -- system `duplicati.service` on loopback `:8300`; blessed install; guard exit 5
 - [Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) -- per-repo `.tbz2.gpg` (restore `-xjf`); not the Duplicati `$HOME` lane
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- required-context classifier; 2026-08-10 class; text-mode 0 can still carry `ERROR:`
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition
@@ -1119,6 +1127,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-05
+**Version:** 1.0.82
 **Maintainer:** Paul Calnon

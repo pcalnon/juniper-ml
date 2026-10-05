@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.82
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -17,6 +17,7 @@
 - [HTTP Client Base-URL Contract](#http-client-base-url-contract)
 - [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
+- [Yamaguchi Duplicati Server](#yamaguchi-duplicati-server)
 - [Juniper Project-Tree Backup](#juniper-project-tree-backup)
 - [Editable Install Drift Check](#editable-install-drift-check)
 - [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell)
@@ -524,7 +525,7 @@ Troubleshooting:
 
 ## Scheduled Duplicati Backup Lane
 
-Host-level `$HOME` backup under `systemd --user`, independent of the GNOME tray instance and of Duplicati's own scheduler (the server DB `Schedule` table was empty when this lane shipped). Merged in [juniper-ml#1292](https://github.com/pcalnon/juniper-ml/pull/1292). This is **not** `util/juniper-backup.bash` — that script is the project-tree / external-media leg. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
+Host-level `$HOME` backup under `systemd --user`, independent of the GNOME tray instance and of Duplicati's own scheduler (the server DB `Schedule` table was empty when this lane shipped). Merged in [juniper-ml#1292](https://github.com/pcalnon/juniper-ml/pull/1292). The project-tree / external-media leg is [Juniper Project-Tree Backup](#juniper-project-tree-backup). The loopback Yamaguchi server is [Yamaguchi Duplicati Server](#yamaguchi-duplicati-server).
 
 The 2026-07-13 archive damage went undetected for six weeks because the only runner was a gnome-shell-launched scope under a user manager with `Linger=no`: it died at logout and nothing said so. This lane is the replacement.
 
@@ -615,6 +616,7 @@ Do **not** read `DUPLICATI_STALE_DAYS` as "N consecutive skips are allowed." The
 - GPGFlushError investigation (open; not a reason to drop `--no-auto-compact`): [`notes/JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md`](../notes/JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md)
 - `notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_DUPLICATI-DB-RESTORE-RUNBOOK.md` is **withdrawn** — restoring the archived job DB reproduces the wedge. Do not execute it.
 - Project-tree / external-media archives: [Juniper Project-Tree Backup](#juniper-project-tree-backup) (`util/juniper-backup.bash`).
+- Loopback Yamaguchi server (`duplicati.service`, root installer, pre-backup guard): [Yamaguchi Duplicati Server](#yamaguchi-duplicati-server).
 
 Troubleshooting:
 
@@ -632,9 +634,165 @@ Troubleshooting:
 
 ---
 
+## Yamaguchi Duplicati Server
+
+[`util/install_duplicati_service.bash`](../util/install_duplicati_service.bash) installs a **system** `duplicati.service` that runs the Yamaguchi job's Duplicati server on loopback port **8300**.
+
+The pieces are the wrapper [`scripts/duplicati-wrapper.bash`](../scripts/duplicati-wrapper.bash), the unit [`util/systemd/duplicati.service`](../util/systemd/duplicati.service), the defaults file [`util/systemd/duplicati.default`](../util/systemd/duplicati.default), and the pre-backup guard [`util/yamaguchi-pre-backup-guard.bash`](../util/yamaguchi-pre-backup-guard.bash).
+
+They were staged with the [backup design](../notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md). This page describes those files on `origin/main`.
+
+Three neighbouring tools stay on their own pages:
+
+- The `$HOME` overnight timer is [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane) (`util/install_duplicati_timer.bash`, `systemd --user`, `PASSPHRASE=` in `~/.config/duplicati-backup/env`).
+- Per-repo archives on external media are [Juniper Project-Tree Backup](#juniper-project-tree-backup).
+- `util/ad-hoc/yamaguchi_server_api.py` and `util/ad-hoc/yamaguchi_watchdog.py` talk to a server that is already listening. They do not install this unit.
+
+No file under `tests/` names the installer, the wrapper, or the guard. A design note is not that pin.
+
+### Install
+
+```bash
+sudo util/install_duplicati_service.bash
+# after inspecting a blessed-checksum mismatch:
+sudo util/install_duplicati_service.bash --update-backup-behavior
+```
+
+Root is required (`exit 2` otherwise). There is no `--dry-run`; any other argument is ignored. The `duplicati` user and group must already exist. The script does not create them. Copies, never symlinks: a symlink into a checkout would change what the service executes on the next branch switch.
+
+| Installed path | Source | Mode |
+|----------------|--------|------|
+| `/usr/local/lib/duplicati/duplicati-wrapper.bash` | `scripts/duplicati-wrapper.bash` | `0755` root:root |
+| `/etc/systemd/system/duplicati.service` | `util/systemd/duplicati.service` | `0644` root:root |
+| `/etc/default/duplicati` | `util/systemd/duplicati.default` | `0644` root:root |
+| `/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash` | `util/yamaguchi-pre-backup-guard.bash` | `0755` root:root |
+
+The installer does not copy `util/ad-hoc/yamaguchi_server_db_snapshot.py`, and it does not edit the Duplicati job. A job that names the installed guard path as `--run-script-before-required` aborts when that file is missing. Setting that job option is a separate step.
+
+`/usr/local/lib/duplicati/.blessed.sha256` records each installed path's sha256 after every copy has passed `cmp`.
+
+| Blessed file | What a mismatch means |
+|---------------|------------------------|
+| Absent | First install. Nothing to compare. The copy proceeds. |
+| Installed file differs | `DRIFT`: that path was edited outside this installer. The script will not overwrite it on its own. |
+| Repository source differs | `BEHAVIOUR CHANGE`: the checkout moved. Legitimate only when you mean to bless it. |
+
+Either difference without `--update-backup-behavior` exits **4** before any copy. With the flag, the current repository files become the blessed set.
+
+`/home/duplicati/.config/Duplicati` must end as `duplicati:700`. The installer's comment says Duplicati 2.4.0.0 refuses a data folder with any group or other bit, on every start. An existing directory that `stat` does not report as `duplicati:700` exits **1**. The script does not chmod that directory into compliance.
+
+`/etc/credstore/duplicati-settings-key` holds the settings encryption key. Absent or empty prints a NOTE and the install still succeeds. Present and not `root:600` exits **1**. The installer's own creation line is:
+
+```bash
+umask 077
+openssl rand -base64 48 | tr -d '\n' > /etc/credstore/duplicati-settings-key
+chmod 0600 /etc/credstore/duplicati-settings-key
+```
+
+Then `systemctl daemon-reload` and `systemd-analyze verify` on the unit. The installer does not `enable` or `restart` the service. It prints the checks below.
+
+```bash
+sudo -u duplicati /usr/local/lib/duplicati/duplicati-wrapper.bash --print-command
+sudo -u duplicati \
+  DUPLICATI__REMOTEURL=file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi \
+  /usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash
+echo "guard exit=$?"
+systemctl restart duplicati.service && journalctl -u duplicati.service -n 20
+systemd-analyze security duplicati.service
+```
+
+The guard probe sets `DUPLICATI__REMOTEURL` so the TargetURL check runs. A bare run of the guard, with that variable unset, skips the URL check. The installer's comment requires guard exit 0 before the job is resumed.
+
+### Unit and defaults
+
+The unit runs `User=duplicati` `Group=duplicati`, `UMask=0027`, `Nice=19`, idle I/O. `Restart=on-failure` and `RestartSec=30s`: a clean exit 0 stays down. `RequiresMountsFor=/mnt/Backups /home/duplicati`. `ExecStart` is the installed wrapper plus `$DAEMON_OPTS` from `EnvironmentFile=-/etc/default/duplicati` (a missing defaults file does not fail the unit).
+
+`LoadCredential=settings-key:/etc/credstore/duplicati-settings-key` exposes the key as `$CREDENTIALS_DIRECTORY/settings-key`. The unit does not put that key in the environment block or on argv.
+
+`ReadWritePaths=` is `/home/duplicati` and `/mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi`. `AmbientCapabilities=CAP_DAC_READ_SEARCH` lets the server read the backup source without running as root. `IPAddressDeny=any` and `IPAddressAllow=localhost` close the server's own sockets.
+
+`InaccessiblePaths=` includes `/etc/credstore` and `/mnt/Backups/Ubuntu/Dropbox/Backups/_yamaguchi_keys`. A `sudo -u duplicati` session is another process of the same uid, and the unit comment records that the path mask does not cover it. Keep those sessions short.
+
+Shipped `DAEMON_OPTS` in `util/systemd/duplicati.default`:
+
+```text
+--webservice-port=8300 --webservice-interface=loopback --server-datafolder=/home/duplicati/.config/Duplicati --disable-update-check
+```
+
+The file's comment says to append `--require-db-encryption-key` when the database must stay encrypted. The shipped line does not contain that flag. A missing settings key is logged as `NOT SET (the server encrypts nothing new and refuses an encrypted database)`, and the wrapper still execs the server.
+
+The unit also sets `AUTOUPDATER_Duplicati_SKIP_UPDATE=1`, `USAGEREPORTER_Duplicati_LEVEL=none`, and `DO_NOT_TRACK=1`. `DAEMON_OPTS` carries `--disable-update-check` as well.
+
+### Wrapper
+
+The wrapper builds one argument vector and `exec`s `${DUPLICATI_SERVER:-/usr/bin/duplicati-server}`. It does not `eval`. A configuration error exits **78** (`EX_CONFIG`).
+
+Same-named options: a later source replaces the value, and the name stays in first-seen order. Distinct options accumulate.
+
+1. Defaults: `--webservice-interface=loopback`, `--webservice-port=8300`, `--server-datafolder=` `${DUPLICATI_DATA_FOLDER:-/home/duplicati/.config/Duplicati}`.
+2. `--option` lines in `${DUPLICATI_ENV_FILE:-/home/duplicati/.config/Duplicati/.env}`.
+3. Further argv words. Systemd passes each word of `DAEMON_OPTS` separately.
+
+A missing env file is skipped. An unreadable env file exits 78. Accepted lines are blank, a `#` comment, `--option[=value]`, `KEY=VALUE`, and `export KEY=VALUE`. One matching outer quote pair is stripped from a value. Any other line exits 78.
+
+An exported name must match `^(SETTINGS_ENCRYPTION_KEY|DUPLICATI__[A-Z0-9_]+|TMPDIR|TZ|LANG|LC_ALL)$`. A name already present in the environment is left as systemd set it. A `DUPLICATI__*` assignment is exported into the server process. It is not converted into a `--option`.
+
+The settings key comes from `$CREDENTIALS_DIRECTORY/settings-key` when that file is readable and non-empty. An empty credential file exits 78. Otherwise an already-set `SETTINGS_ENCRYPTION_KEY` is kept. The log line prints the character count.
+
+Preflight uses the merged `--server-datafolder`, not the wrapper default. The binary must be executable. The folder must exist, be writable, and be owned by the current user. `${DUPLICATI_REQUIRE_MOUNT:-/mnt/Backups}` must be a mountpoint. An empty `DUPLICATI_REQUIRE_MOUNT` skips that check.
+
+`--print-command` prints the exec line and exits 0. A word matching `(password|passphrase|key|token)=` is printed as `<redacted>`. A rejected word's message prints the text before `=` and sets `value length` to the length of the whole word.
+
+The wrapper does not compare option names with the server. Its header says Duplicati 2.4.0.0 logs `Unknown option supplied: <name>` and continues, so a typo in the env file starts the service with that option ignored. After any env-file change, grep the journal for that warning before treating the start as good.
+
+### Pre-backup guard
+
+The guard is the job's `--run-script-before-required` hook. Exit 0 lets the operation proceed. Exit **5** tells Duplicati not to run. An `ERR` trap turns any other failure into 5, so a bug in the guard stops the backup.
+
+Duplicati reads a run-script's stdout as option overrides (`--option=value` lines change the running job). Every message goes to stderr. Do not `echo` to stdout, and do not `set -x`.
+
+Before any child (`mountpoint`, `find`, `id`), the guard saves `DUPLICATI__OPERATIONNAME` (default `unknown`) and `DUPLICATI__REMOTEURL`, then `unset`s every `DUPLICATI__*` variable and `SETTINGS_ENCRYPTION_KEY`. `unset` does not rewrite this process's `/proc/<pid>/environ`.
+
+| Check | On failure |
+|-------|------------|
+| `${YAMAGUCHI_DEST_MOUNT:-/mnt/Backups}` is a mountpoint | exit 5 |
+| `${YAMAGUCHI_DEST_DIR:-/mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi}` exists and is writable and searchable by this user | exit 5 |
+| A non-empty remote URL equals `file://` plus that directory. One trailing slash on the URL is ignored. | exit 5. The message is the scheme, the length, and the first 8 hex digits of the sha256. The URL is not printed. |
+| The destination's top level holds only `duplicati-*.dblock.zip.aes`, `duplicati-*.dindex.zip.aes`, `duplicati-*.dlist.zip.aes`, and `duplicati-verification.json` | exit 5. The stray basename is reduced to `A-Za-z0-9._-` and cut at 64 characters. |
+
+### Exit codes
+
+| Code | Who | Meaning |
+|------|-----|---------|
+| `0` | installer | Copies verified and blessed. A missing credential file is still 0. |
+| `0` | wrapper `--print-command` | Printed the redacted command. The server was not started. |
+| `0` | guard | Destination checks passed. |
+| `1` | installer | Data folder is not `duplicati:700`, a copy failed `cmp`, or a present credential file is not `root:600`. |
+| `2` | installer | Not root, or a source file is missing. |
+| `4` | installer | Installed copy or repository source disagrees with the blessed checksum, and `--update-backup-behavior` was not passed. Nothing new is copied. |
+| `5` | guard | Duplicati aborts the operation before it touches the destination. |
+| `78` | wrapper | Configuration error. The server is not exec'd. |
+
+### Operator pitfalls
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| Looked for `--dry-run` on the installer | This installer has none. Dry-run the wrapper with `--print-command` as the `duplicati` user. |
+| `exit 4` / `Refusing to install` | Blessed checksum mismatch. Read the `DRIFT` or `BEHAVIOUR CHANGE` line. Pass `--update-backup-behavior` only when the repository copy is what this host should execute. |
+| Hand-edited `/usr/local/lib/duplicati/` | The next install without the flag exits 4. That drift line is the record of the outside edit. |
+| Service is up and an env-file option did nothing | Unknown option names are a journal warning, then ignored. Grep `Unknown option supplied`. |
+| Server started and the log says the settings key is `NOT SET` | The credstore file is missing, and shipped `DAEMON_OPTS` has no `--require-db-encryption-key`. Create the key file. Append the flag in `/etc/default/duplicati` when a missing key must stop the server, then re-bless with `--update-backup-behavior` because that file is in the blessed set. |
+| `must be duplicati-owned mode 0700` | Fix the data folder, then re-run. The script will not chmod an existing tree for you. |
+| Guard exit 5, path is not a mountpoint | `/mnt/Backups` (or `YAMAGUCHI_DEST_MOUNT`) is unmounted. The unit's `RequiresMountsFor=` is the same check at process start. |
+| Guard exit 5 with `scheme=` and `sha256-8=` | The job TargetURL is not `file://` plus `YAMAGUCHI_DEST_DIR`. The log line is a shape, so the URL's credentials stay out of the job log. |
+| A guard message changed the job's options | That text was written to stdout. Duplicati treats stdout as option overrides. Keep guard output on stderr. |
+| `$HOME` timer passphrase file used here | This server reads `/home/duplicati/.config/Duplicati/.env` and the credstore key. `~/.config/duplicati-backup/env` belongs to the `$HOME` lane. |
+
+---
+
 ## Juniper Project-Tree Backup
 
-[`util/juniper-backup.bash`](../util/juniper-backup.bash) archives **each Juniper application repo** as its own bzip2 + OpenPGP file, builds the ciphertext **once**, and copies that finished file onto every attached configured drive. It is the project-tree / external-media leg. It is **not** the Duplicati `$HOME` lane ([Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)).
+[`util/juniper-backup.bash`](../util/juniper-backup.bash) archives **each Juniper application repo** as its own bzip2 + OpenPGP file, builds the ciphertext **once**, and copies that finished file onto every attached configured drive. It is the project-tree / external-media leg. The Duplicati `$HOME` lane is [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane). The loopback Yamaguchi server is [Yamaguchi Duplicati Server](#yamaguchi-duplicati-server).
 
 A coherent restore takes **every** archive that shares one UUID (one run). The timestamp records when the backup **ran**, not what the tree contains — label a `--source` of a restored snapshot.
 
@@ -3236,6 +3394,8 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Phase 1: non-empty `status --porcelain` in the old worktree → `exit 1` (`Commit or stash…`) before any push; `--dry-run` skips the check. Clean tree then pushes when ahead/`-u` when no upstream/skips when synced. Phase 2 refuses an existing `NEW_WORKTREE` path (`exit 1`, never clobbers).
 - `util/ad-hoc/2026-09-02_worktree_inuse_probe.py` -- Independent second opinion for a worktree sweep. STRONG hits (cwd or an open fd inside the tree) exit 1 `REFUSE`; WEAK hits (cmdline substring) print `CAUTION` and do not set the exit code; this process and its parent are excluded from weak by pid so the probe's own argv cannot report every tree in use. Empty argv exits 2. Read-only. Operator surface: [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost).
 - `util/ad-hoc/e2e_finding_triage.py` -- Mechanical P0/P1 open-count for the canopy E2E Phase 2 exit criterion. Reads only line-starting `**F-… — …**` headers; FIXED/HEALED/ACCEPTED from the last 170 chars of that header; ACCEPTED is a third disposition (not FIXED, not OPEN); `--open-only` hides closed rows but still prints full totals; always exits 0. Operator surface: [Canopy E2E Finding Triage](#canopy-e2e-finding-triage).
+- `scripts/duplicati-wrapper.bash` / `util/install_duplicati_service.bash` / `util/yamaguchi-pre-backup-guard.bash` / `util/systemd/duplicati.{service,default}` -- System `duplicati.service` for the Yamaguchi server (loopback `:8300`).
+  - Root installer, copies, blessed-sha256 drift gate (`--update-backup-behavior`, exit 4). Wrapper exit 78. Guard exit 5 aborts the job; stdout is option overrides. No `tests/` suite pins them. Operator surface: [Yamaguchi Duplicati Server](#yamaguchi-duplicati-server).
 - `util/duplicati_scheduled_backup.bash` / `util/install_duplicati_timer.bash` / `util/duplicati_backup_failure.bash` -- Host `$HOME` Duplicati lane under `systemd --user` (#1292).
   - Installer **copies** (never symlinks) the runner, OnFailure reporter, and three user units; does **not** `enable --now` the timer.
   - Runner fail-closes on empty/short passphrase, unmounted dest, wrong-filesystem dest, and tmpfs `--tempdir`; `flock` / DB-open holders `skip_or_fail` (a skip overwrites `result=OK`, so the next skip always escalates).
@@ -7548,6 +7708,7 @@ These variables are consumed by Juniper packages documented in this repository. 
 > `CASCOR_SERVICE_URL` defaults to the cascor service/container port (`8200`). The host-level stack and `util/get_cascor_*.bash` helpers target the host-facing port (`8201`) unless overridden.
 > REST constructor `base_url` values are normalised as of the GitHub-main clients documented in [HTTP Client Base-URL Contract](#http-client-base-url-contract); those env vars are **not** themselves passed through `_normalize_url` unless the caller feeds them into the constructor.
 Local orchestration scripts in `util/` also read the host-stack variables documented in [Host Orchestration Utilities](#host-orchestration-utilities), the E2E overrides in [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities), the per-run experiment overrides in [Experiment Stack Utilities](#experiment-stack-utilities), the Duplicati lane overrides in [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane), and `EXCLUDE_CASCOR_SNAPSHOTS` (script `TRUE` is `0`) and the tier-2 drive settings `JUNIPER_BACKUP_MEDIA_ROOT` / `JUNIPER_BACKUP_DEVICES` / `JUNIPER_BACKUP_DIR` on [Juniper Project-Tree Backup](#juniper-project-tree-backup).
+Yamaguchi server overrides (`DUPLICATI_SERVER`, `DUPLICATI_ENV_FILE`, `DUPLICATI_DATA_FOLDER`, `DUPLICATI_REQUIRE_MOUNT`, `YAMAGUCHI_DEST_MOUNT`, `YAMAGUCHI_DEST_DIR`) are in [Yamaguchi Duplicati Server](#yamaguchi-duplicati-server).
 `JUNIPER_CONDA_DIR` (default `/opt/miniforge3`) is also the conda root for `util/check_conda_env_torch.bash` — see [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5).
 
 Local orchestration scripts in `util/` also read the host-stack variables documented in [Host Orchestration Utilities](#host-orchestration-utilities), the E2E overrides in [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities), the F-039 store-probe overrides in [F-039 Store Probe](#f-039-store-probe) (`JUNIPER_E2E_CANOPY_URL`, `JUNIPER_E2E_CANOPY_LOG`), the per-run experiment overrides in [Experiment Stack Utilities](#experiment-stack-utilities), the Duplicati lane overrides in [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane), and the tier-2 drive settings (`JUNIPER_BACKUP_MEDIA_ROOT`, `JUNIPER_BACKUP_DEVICES`, `JUNIPER_BACKUP_DIR`) in [Juniper Project-Tree Backup](#juniper-project-tree-backup).
@@ -7563,6 +7724,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.82
 **Maintainer:** Paul Calnon
