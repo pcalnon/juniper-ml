@@ -83,12 +83,25 @@ Lane A (E2E):
    `range` dict to `[start, end]` in the readout and the range slider; list or no range must keep working; regression test on Phase 1's measured
    payload (segment 7), correct `test_p2_wave_batch_a.py:179-190` and sweep sibling fixtures claiming "measured" shapes. Then F-CANOPY-015's live
    re-drive, then F-CANOPY-056's fix. **Every drive starts a replay, which replaces cascor's live network** — needs a writable cascor, not the trio.
-2. **AG — Phase 10 ledger PR** filing the peer arcs' items (details in § Context A2). F-CANOPY-060 still present [VERIFIED 2026-10-03:
+2. **DONE 2026-10-05 — this item is closed.** The ledger's Phase 10
+   (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`) files F-CANOPY-060 to -067, declines O4 and O9,
+   corrects Phase 1's W1-09 PASS to FAIL and re-rates F-CANOPY-057 to P2, after five consensus rounds (2026-10-04/05; the
+   last changed no number, disposition or action). Predecessor A is
+   archived with it. The id the defect-register arc should hear about: its unreserved "Nothing was loaded…" item is
+   F-CANOPY-063. The original item follows, for context.
+
+   **AG — Phase 10 ledger PR** filing the peer arcs' items (details in § Context A2). F-CANOPY-060 still present [VERIFIED 2026-10-03:
    `dashboard_manager.py:8410` on canopy main]; F-061/062 to be filed as FIXED-BY canopy#685 [VERIFIED 2026-10-03: merged `dc5ea02e`, body
    items 3 and 4]; the "Nothing was loaded…" copies are now a real divergence [VERIFIED 2026-10-03: absent from cascor main `manager.py`,
    present at canopy main `dashboard_manager.py:8381` and `test_start_fresh_refusal_and_modal_text.py:42`]; O2–O5 and O9 from the selection
    arc. Archive predecessor A in this PR (its branch `dd4413e5` still has no PR).
 3. **AG — F-CANOPY-058 census instrument repair, then the census** (ledger item 0, first half). Blocker: none. [NOT RE-PROBED — from ledger Phase 9]
+   **Status 2026-10-05: run, not yet recorded.** The repaired census v2 passed its synthetic check (6 of 6) and ran live on
+   canopy `main` `60ae1870`. The strand watchdog fired falsely 13 times in ~25 min, each mid-request, and 3 of those fires
+   started eviction cascades (2, 11 and 4 lost responses); the scripted triggers landed too late to test the claim. The
+   files and a results note are outside the repo, in `/home/pcalnon/Development/python/Juniper/backups/2026-10-05_f058_census_v2_final/`.
+   Owed: move them under `util/ad-hoc/2026-10-04_f058_census_v2_*` and record the run as the ledger's Phase 11, with
+   its own consensus rounds.
 4. **AG — one redesign for F-CANOPY-055 + F-CANOPY-058** (ledger item 0, second half): request/ack handshake pacer. Blocked by item 3.
 5. **AG — ledger items 1, 2, 6, 7, 8, 9 (test gap / M-TOPOLOGY-16), 11, 12, 13, 14** (§ Context A7).
 6. **AG — MEMORY.md compaction** (24,929 chars by `wc -m` against a ~25,000-character load limit [VERIFIED 2026-10-03]) `[ALSO all paths]`.
