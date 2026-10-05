@@ -31,7 +31,7 @@ It refuses deletions and renames (not needed here, so not handled), and a branch
 
 Usage:
     gh api -X POST repos/pcalnon/juniper-ml/git/refs -f ref=refs/heads/<branch> -f sha=<full base sha>
-    python3 util/ad-hoc/2026-09-24_push_phase9_signed_groups.py --base <full base sha> --branch <branch> [--dry-run]
+    python3 util/ad-hoc/2026-09-24_push_phase9_signed_groups.py --base <full base sha> --branch <branch> [--subject "<subject>"] [--dry-run]
 """
 
 import argparse
@@ -83,6 +83,9 @@ def main() -> int:
     ap.add_argument("--base", required=True, type=psc.full_sha, help="FULL sha the GitHub branch was created at")
     ap.add_argument("--branch", required=True)
     ap.add_argument("--max-bytes", type=int, default=250_000)
+    # Added 2026-10-05 (Phase 10): the subject was hard-coded to Phase 9's, and a squash merge carries every
+    # upload commit's subject into the merged commit's body.
+    ap.add_argument("--subject", default="docs(canopy-e2e): Phase 9 ledger PR", help="each upload commit's subject, before ', signed upload i/n'")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
@@ -108,7 +111,7 @@ def main() -> int:
     for i, g in enumerate(groups, 1):
         what = "the ledger" if g == [LEDGER] else f"{len(g)} files"
         argv = ["--repo", "juniper-ml", "--branch", args.branch, "--expected-head", head,
-                "--message", f"docs(canopy-e2e): Phase 9 ledger PR, signed upload {i}/{len(groups)} -- {what}"]
+                "--message", f"{args.subject}, signed upload {i}/{len(groups)} -- {what}"]
         for f in g:
             argv += ["--add", f"{REPO_ROOT / f}:{f}"]
         if args.dry_run:
