@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.54
+**Version:** 0.2.66
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -41,7 +41,7 @@
 | **Run the isolated E2E trio**           | [Isolated-stack E2E checklist](../notes/JUNIPER_2026-07-21_JUNIPER-ECOSYSTEM_ISOLATED-STACK-E2E-CHECKLIST.md) + [REFERENCE — Isolated Stack](REFERENCE.md#isolated-stack-e2e-utilities) | notes/ + docs/ |
 | **Write canopy E2E matrix verdicts**    | [REFERENCE — Canopy E2E Matrix Writes](REFERENCE.md#canopy-e2e-matrix-writes) (fill is dry-run; set-verdicts is not; do not plan from `e2e_row_coverage.py`) | docs/    |
 | **Diagnose F-CANOPY-027 poller starvation (12-slot pool)** | [REFERENCE — F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) + [cheatsheet](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/ |
-| **Triage canopy E2E findings (P0/P1 exit)** | [REFERENCE — Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) (`e2e_finding_triage.py`; ACCEPTED ≠ FIXED ≠ OPEN) | docs/ |
+| **Triage canopy E2E findings (P0/P1 exit)** | [REFERENCE — Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) (`e2e_finding_triage.py`; WITHDRAWN ≠ ACCEPTED ≠ FIXED ≠ OPEN) | docs/ |
 | **Score canopy Topology-tab rows**      | [REFERENCE — Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) (`e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half) | docs/ |
 | **Drive canopy dataset-tab / W6 rows**  | [REFERENCE — Canopy E2E Dataset Drivers](REFERENCE.md#canopy-e2e-dataset-drivers) (W6 `--steps` vs §3.6 `--step`; never confirm restart) | docs/ |
 | **Triage Cursor-fleet / predicted-merge PRs** | [REFERENCE — Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety)                            | docs/    |
@@ -240,6 +240,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.2.54
+**Last Updated:** 2026-10-05
+**Version:** 0.2.66
 **Maintainer:** Paul Calnon

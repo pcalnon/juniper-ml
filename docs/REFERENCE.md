@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.73
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -1756,17 +1756,24 @@ The first heading for an id wins. A later restatement of the same id is skipped.
 
 ### Dispositions
 
-Tokens are taken from the **last 170 characters** of the header body (the text between the em-dash and the closing `**`), case-insensitive whole words:
+Tokens are taken from the **last 170 characters** of the header body (the text between the em-dash and the closing `**`), case-insensitive whole words. The script checks them in this order; the first match wins:
 
 | Token in that tail | Printed | Counts as |
 |--------------------|---------|-----------|
-| `FIXED` or `HEALED` | `FIXED` | closed, shipped |
-| `ACCEPTED` and not also FIXED | `ACCEPT` | owner-deferred — **not** open, **not** fixed |
-| neither | `OPEN` | still on the Phase 2 exit criterion |
+| `FIXED` or `HEALED` | `FIXED` | closed, shipped. Wins even if the same tail also says `ACCEPTED` or `WITHDRAWN` |
+| `ACCEPTED`, and not already fixed | `ACCEPT` | owner-deferred — **not** open, **not** fixed. Wins over `WITHDRAWN` |
+| `WITHDRAWN`, and neither of the above | `WITHDR` | the finding was **wrong**. Not open, not fixed, not accepted |
+| none of these | `OPEN` | still on the Phase 2 exit criterion |
 
 **ACCEPTED is a third disposition.** The defect is real and unrepaired, but the owner signed off (plan §6.3 "explicitly deferred"). Counting it as FIXED overstates what shipped; counting it as OPEN keeps an already-settled exit criterion red.
 
-`--open-only` hides FIXED and ACCEPTED rows from the table. The totals block underneath still counts every finding.
+**WITHDRAWN is a fourth disposition.** Nothing was repaired and nothing was accepted: the finding itself was wrong, so there is no defect to leave on the exit criterion. Counting it as OPEN keeps a phantom red; counting it as FIXED claims a repair that never happened.
+
+The printed token is `WITHDR` (six characters, same width as `FIXED` / `ACCEPT` / `OPEN`). The totals block has its own `withdrawn` line. Priority is independent: a withdrawn row still prints the first severity token in the header (`P2`, `LEDGER`, …). It is excluded from the `open P1` / `open P2` lines.
+
+The word has to sit in that 170-character tail. `F-CANOPY-050`'s header is 383 characters and opens with `WITHDRAWN`; it counts as withdrawn only because the tail repeats it (`WITHDRAWN 2026-09-09`). A `WITHDRAWN` that appears only before the tail leaves the row `OPEN`. `F-E2E-007` is the short case: the whole header is inside the window, and the parenthetical's lowercase `withdrawn` is enough (`re.I`).
+
+`--open-only` hides FIXED, ACCEPTED, and WITHDRAWN rows from the table. The totals block underneath still counts every finding, including `withdrawn`.
 
 ### Priority
 
@@ -1775,12 +1782,12 @@ First match of `P0/P1`, `P0`, `P1`, `P2`, `CRITICAL`, or `LEDGER` in the **full*
 ### Constraints
 
 - Always exits **0**. A green shell is not "no open P0/P1".
-- A `FIXED` token more than 170 characters before the end of the header body does **not** close an OPEN tail. Put the disposition in the header, near the end.
-- Putting `FIXED` / `HEALED` / `ACCEPTED` only in the finding's body paragraphs does nothing.
+- A `FIXED` / `HEALED` / `ACCEPTED` / `WITHDRAWN` token more than 170 characters before the end of the header body does **not** change the disposition. Put the disposition in the header, near the end.
+- Putting `FIXED` / `HEALED` / `ACCEPTED` / `WITHDRAWN` only in the finding's body paragraphs does nothing.
 - The printed summary is `header.split(":")[0]` truncated to 78 characters — a colon in the title cuts the line short; the id and disposition are unaffected.
 - A missing `--note` path is an uncaught `FileNotFoundError` (exit 1), not a triage table.
 
-Re-run; the counts drift. On 2026-09-04 against `origin/main` this printed **54** findings, **34** fixed, **1** accepted (`F-CANOPY-004`), **19** open (1 `P0/P1` + 3 `P1` + 15 `P2`).
+Re-run; the counts drift. On 2026-10-05 against `origin/main` `a0a120d5` this printed **70** findings, **51** fixed, **1** accepted (`F-CANOPY-004`), **2** withdrawn (`F-E2E-007`, `F-CANOPY-050`), **16** open (5 `P1` + 11 `P2`). Do not quote that block after the ledger changes.
 Scoring the Topology tab against this trio is a **separate driver**: [Canopy E2E Topology Driver](#canopy-e2e-topology-driver).
 
 ---
@@ -3197,7 +3204,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_termination_branch_precondition.py` -- The termination-branch precondition: `step_count` is deterministic only WITHIN a branch (29 of 79 repeated configs diverge across branches, zero within one), a driver-truncated `outcome` measures the budget rather than the code, and an unannotated cell is its own branch rather than being filtered into unanimity.
 - `tests/test_run_suite_uncountable_report.py` -- REPORT.md's third state: `not countable` must stay distinct from HOLDS and BROKEN, an empty gate must remain the cascor-unmeasured case, and the report must ask `summarise` rather than re-deriving `len(counts) == 1` -- which reads HOLDS on a half-measured suite.
 - `tests/test_worktree_inuse_probe.py` -- Hermetic coverage for `util/ad-hoc/2026-09-02_worktree_inuse_probe.py`, the guard that REFUSES a destructive worktree cleanup: cwd and open-fd hits are STRONG, a cmdline mention alone is only a caution, and a process owned by another user is reported unreadable rather than counted as absent.
-- `tests/test_e2e_finding_triage.py` -- The E2E finding-triage dispositions, which shipped with zero tests: `accepted` is a THIRD state and not a synonym for fixed or open, the first heading wins so a later `fixed` cannot close an earlier `open`, and `--open-only` hides rows without changing the totals.
+- `tests/test_e2e_finding_triage.py` -- The E2E finding-triage dispositions, which shipped with zero tests: `accepted` is a third state and not a synonym for fixed or open, the first heading wins so a later `fixed` cannot close an earlier `open`, and `--open-only` hides rows without changing the totals. The totals regex requires a `withdrawn` line and does not score which rows are withdrawn; that fourth disposition is the operator section above.
 - `tests/test_e2e_finding_triage_nested_bold.py` -- Header truncation in `util/ad-hoc/e2e_finding_triage.py`: a nested-bold heading must not be cut at the inner marker, which would split one finding's identity into two and double-count it.
 - `tests/test_e2e_finding_triage_priority.py` -- `pri_of` first-token severity, lifted out of a nested function so it can be imported: the FIRST severity token anywhere in the bolded header body wins, so a header naming another severity in prose before the parenthetical triages as that severity (F-CANOPY-037 / F-E2E-007).
 - `tests/test_markdown_structure_delta.py` -- Hermetic gate for `util/markdown_structure_delta.py`, the CI step that fails a PR which BREAKS markdown structure. Pins the three ways such a gate goes wrong: **red on arrival** (`main` measured **zero** structural problems from 2026-09-15, after the 2026-09-10 structure repair cleared the real damage and the 2026-09-15 rule narrowing cleared the last 17, which were SCREEN FALSE POSITIVES rather than debt: a ` ```text ` banner whose art lines begin `## `, and a ` ````jinja2 ` template sample whose H2s are the sample. Both are analysed in [Markdown Structure Screen — the Two False Positives That Narrowed the Rule](#markdown-structure-screen--the-two-false-positives-that-narrowed-the-rule), which is the evidence for the narrowing and not a waiver -- no file is allowlisted and the delta gate still fails a new problem in either file. The count is a moving floor rather than a backlog, having gone 104/23 -> 102/21 -> 63/14 -> 73/15 -> 63/14 -> 17/2 -> 0/0 in ten days, so re-measure rather than quote. **Zero on `main` does not make the delta scoping redundant**: an untouched file is still not the PR's problem, and the count can regress the moment damage lands -- so the comparison is per-file and per-PR -- an untouched file is not the PR's problem, a touched one must not come out worse, an ADDED one has no before and so starts at zero); **vacuous pass** (the underlying screen silently skips anything not ending `.md`, so examining zero of N touched files is an error rather than a success, and the temp materialisation keeps the original basename); and an unresolvable base ref exiting 2 rather than comparing nothing.
@@ -3230,7 +3237,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - `util/worktree_cleanup.bash` -- Automated worktree cleanup with CWD-safe session continuity (V2 procedure). `MAIN_REPO` derives from `${BASH_SOURCE[0]}` (one dir up) with a `JUNIPER_ML_MAIN_REPO` override for test fixtures. Flags: `--old-worktree`, `--old-branch`, `--parent-branch`, `--new-worktree`, `--new-branch`, `--skip-pr`, `--skip-remote-delete`, `--dry-run`. Phase 7 always restores the primary checkout to an up-to-date `main` (skips on a dirty tree or a checkout refusal; F-6 stale-checkout class).
   - Phase 1: non-empty `status --porcelain` in the old worktree → `exit 1` (`Commit or stash…`) before any push; `--dry-run` skips the check. Clean tree then pushes when ahead/`-u` when no upstream/skips when synced. Phase 2 refuses an existing `NEW_WORKTREE` path (`exit 1`, never clobbers).
 - `util/ad-hoc/2026-09-02_worktree_inuse_probe.py` -- Independent second opinion for a worktree sweep. STRONG hits (cwd or an open fd inside the tree) exit 1 `REFUSE`; WEAK hits (cmdline substring) print `CAUTION` and do not set the exit code; this process and its parent are excluded from weak by pid so the probe's own argv cannot report every tree in use. Empty argv exits 2. Read-only. Operator surface: [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost).
-- `util/ad-hoc/e2e_finding_triage.py` -- Mechanical P0/P1 open-count for the canopy E2E Phase 2 exit criterion. Reads only line-starting `**F-… — …**` headers; FIXED/HEALED/ACCEPTED from the last 170 chars of that header; ACCEPTED is a third disposition (not FIXED, not OPEN); `--open-only` hides closed rows but still prints full totals; always exits 0. Operator surface: [Canopy E2E Finding Triage](#canopy-e2e-finding-triage).
+- `util/ad-hoc/e2e_finding_triage.py` -- P0/P1 open-count for the canopy E2E Phase 2 exit. Reads only line-starting `**F-… — …**` headers; FIXED/HEALED, then ACCEPTED, then WITHDRAWN, from the last 170 chars. ACCEPTED is a third disposition (not FIXED, not OPEN). WITHDRAWN is a fourth (prints `WITHDR`). `--open-only` hides all three and still prints full totals; always exits 0. Operator surface: [Canopy E2E Finding Triage](#canopy-e2e-finding-triage).
 - `util/duplicati_scheduled_backup.bash` / `util/install_duplicati_timer.bash` / `util/duplicati_backup_failure.bash` -- Host `$HOME` Duplicati lane under `systemd --user` (#1292).
   - Installer **copies** (never symlinks) the runner, OnFailure reporter, and three user units; does **not** `enable --now` the timer.
   - Runner fail-closes on empty/short passphrase, unmounted dest, wrong-filesystem dest, and tmpfs `--tempdir`; `flock` / DB-open holders `skip_or_fail` (a skip overwrites `result=OK`, so the next skip always escalates).
@@ -3258,7 +3265,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - Documentation link validator now lives in [`juniper-doc-tools/`](juniper-doc-tools/) and is published to PyPI as `juniper-doc-tools` (Wave 4 of the doc-link migration plan; install with `pip install juniper-doc-tools` and invoke via `juniper-check-doc-links`).
 - X7 off-loop census (ad-hoc; lands with juniper-ml#1631) -- exploratory sibling of the canopy slice-1a gate. **Not the authority.** Operator surface: [§ X7 Off-Loop Census](#x7-off-loop-census). Do not quote v1 counts; do not reintroduce module-global expression exemptions.
 - `util/ad-hoc/e2e_seg17_topology_driver.py` -- `--step` is order-preserving on one browser page; `topostate` must run first or alone or M-TOPOLOGY-18 reports `INDETERMINATE`. The module docstring's `W4-01..17` / `W1-12..14` list is **correct** (matrix §4 steps); three of its step→row aliases are not. Operator surface: [§ Canopy E2E Topology Step Order and Blast-Radius IDs](#canopy-e2e-topology-step-order-and-blast-radius-ids). Scorer predicates remain in-flight docs #1675.
-- `util/ad-hoc/e2e_finding_triage.py` -- `pri_of` takes the first severity token anywhere in the bolded header body (not only the parenthetical). Do not name another severity in header prose. Dispositions remain in-flight docs #1646. Same section as the bullet above.
+- `util/ad-hoc/e2e_finding_triage.py` -- `pri_of` takes the first severity token anywhere in the bolded header body (not only the parenthetical). Do not name another severity in header prose. Dispositions, including WITHDRAWN, are [Canopy E2E Finding Triage](#canopy-e2e-finding-triage). Same section as the bullet above.
 - Canopy E2E matrix writes (ad-hoc) -- `e2e_matrix_fill.py` (dry-run default; `status` header per table; escaped-pipe split), `2026-09-02_matrix_set_verdicts.py` (**no dry-run**; `--from` + last-cell write; naive `line.split("|")`), `e2e_matrix_rescore.py` (named rows; missing ids warn and still write). Ledger reader: `e2e_unfilled_rows.py`. Do not plan from `e2e_row_coverage.py`. Operator surface: [§ Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes).
 - X7 off-loop census (`util/ad-hoc/2026-09-04_x7_offload_census_v2.py`) -- exploratory sibling of the canopy slice-1a gate. **Not the authority.** After canopy#567 the shipped count is **58**. Operator surface: [§ X7 Off-Loop Census](#x7-off-loop-census). Do not quote v1 counts; do not reintroduce module-global expression exemptions; a green `main.py` gate is not proof the adapter is clean.
 - `util/ad-hoc/e2e_unfilled_rows.py` -- Canopy E2E **ledger** reader. Prints which `C2.` / `M-` matrix status cells are still placeholders. Reuses `e2e_matrix_fill` pipe-splitting + placeholder set. Exit 0 always. **Not** `e2e_row_coverage.py` (that diffs TSVs and can list already-`PASS` rows as remaining). Operator surface: [§ Canopy E2E Unfilled-Rows Ledger](#canopy-e2e-unfilled-rows-ledger).
@@ -6070,7 +6077,9 @@ Ad-hoc inventory: [`util/ad-hoc/README.md`](../util/ad-hoc/README.md) § X7 off-
 
 ## Canopy E2E Topology Step Order and Blast-Radius IDs
 
-Operator contract for re-driving the canopy topology block without treating a harness artifact as a regression, and without re-deriving a claim about the walkthrough IDs that has already been refuted once. Triggered by [juniper-ml#1695](https://github.com/pcalnon/juniper-ml/pull/1695), which filed **F-E2E-007** and then **withdrew it the same day** after an independent-consensus review; F-CANOPY-037 remains **OPEN**. Distinct from the F-037 **render census** (in-flight docs #1652), the topology **scorer predicates** (in-flight docs #1675), and finding-triage **dispositions** (in-flight docs #1646).
+Operator contract for re-driving the canopy topology block without treating a harness artifact as a regression, and without re-deriving a claim about the walkthrough IDs that has already been refuted once. Triggered by [juniper-ml#1695](https://github.com/pcalnon/juniper-ml/pull/1695), which filed **F-E2E-007** and then **withdrew it the same day** after an independent-consensus review; F-CANOPY-037 remains **OPEN**.
+
+Distinct from the F-037 **render census** (in-flight docs #1652), the topology **scorer predicates** (in-flight docs #1675), and finding-triage **dispositions** ([Canopy E2E Finding Triage](#canopy-e2e-finding-triage), including `WITHDRAWN`).
 
 Verified against `origin/main` `d69c9a73`: `util/ad-hoc/e2e_seg17_topology_driver.py`, `util/ad-hoc/e2e_finding_triage.py`, `reports/e2e/*/statuses.tsv`, and [`notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md`](../notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md). F-CANOPY-037 is **OPEN** on main and stays open — #1695 no longer closes it. Do not copy that PR's earlier pass counts: the single combined drive scored 15 PASS / 1 INDETERMINATE, with the 16th PASS coming from a separate control run.
 
@@ -6152,7 +6161,9 @@ baseline, which is a reversible decision rather than an independent cause.
 
 ### Finding-header severity trap
 
-`util/ad-hoc/e2e_finding_triage.py` `pri_of` takes the **first** `\b(P0/P1|P0|P1|P2|CRITICAL|LEDGER)\b` anywhere in the bolded header body after the em-dash — not only the parenthetical. A header that says "holding the arc's only P0/P1 open" before `(LEDGER; …)` is triaged **P0/P1**. Disposition parsing (`FIXED` / `HEALED` / `ACCEPTED` in the last 170 characters) is the in-flight #1646 surface; this pitfall is only the first-token rule. Do not name another severity in a header's prose.
+`util/ad-hoc/e2e_finding_triage.py` `pri_of` takes the **first** `\b(P0/P1|P0|P1|P2|CRITICAL|LEDGER)\b` anywhere in the bolded header body after the em-dash — not only the parenthetical. A header that says "holding the arc's only P0/P1 open" before `(LEDGER; …)` is triaged **P0/P1**. Do not name another severity in a header's prose.
+
+Disposition parsing (`FIXED` / `HEALED`, then `ACCEPTED`, then `WITHDRAWN`, in the last 170 characters) is [Canopy E2E Finding Triage](#canopy-e2e-finding-triage). A withdrawn finding still prints its priority; it is not an open P0/P1.
 
 ```bash
 python3 util/ad-hoc/e2e_finding_triage.py
@@ -6164,6 +6175,7 @@ python3 util/ad-hoc/e2e_finding_triage.py --open-only   # still prints full tota
 | M-TOPOLOGY-18 `INDETERMINATE` after a combined `--step` | An earlier step visited Weight Matrix. Re-drive `--step topostate` alone. |
 | "The `W4-*` IDs don't exist" | They do — matrix §4, 17 numbered steps. F-E2E-007 made this claim and was withdrawn. Grep `### W4`, not `W4-09`. |
 | Triage invents a P0/P1 from a bookkeeping note | First severity token in the header won. Rewrite the prose; keep one priority in the parenthetical. |
+| Triage prints `WITHDR`, or a withdrawn finding still looks open | `WITHDRAWN` in the last 170 characters prints `WITHDR` and leaves the open counts. The same word earlier in a long header does nothing. `FIXED` / `HEALED` in that tail wins, then `ACCEPTED`. |
 | Driver docstring lists `W4-*` / `W1-12..14` as matrix rows | **Correct — leave it.** They are matrix §4 steps. `STEPS` is what is *implemented*; the docstring is what is *specified*. |
 ## F-CANOPY-037 Render Census
 
@@ -7002,6 +7014,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.73  | 2026-10-05 | Canopy E2E finding triage: `WITHDRAWN` is a fourth disposition (prints `WITHDR`; not open, not fixed, not accepted). `FIXED`/`HEALED` beats `ACCEPTED` beats `WITHDRAWN`, all from the last 170 characters. `--open-only` hides all three. Skipped 0.6.62–0.6.72 (in-flight sibling docs PRs) |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |

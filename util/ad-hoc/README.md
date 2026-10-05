@@ -116,7 +116,7 @@ Operator contract: [`docs/REFERENCE.md` § X7 Off-Loop Census](../../docs/REFERE
 The copied blast-radius sentence *W4-01..17 and W1-12..14 stay BLOCKED* names 20 IDs that **are all defined** — matrix §4's `### W4` is 17 numbered steps and `### W1` is 19. They are written as ordinals under a heading, so a grep for `W4-09` finds nothing; that is a fact about the spelling, not the definition. The plan's zero matches are by design (it delegates workflow ids to the matrix).
 **The module docstring is correct — leave it.** What is thin is coverage: only `W4-02` was ever driven. juniper-ml#1695 filed this as F-E2E-007 and **withdrew it the same day**.
 
-`e2e_finding_triage.py` `pri_of` takes the **first** severity token anywhere in the bolded header body. Do not name another severity in header prose. Dispositions stay with in-flight docs #1646.
+`e2e_finding_triage.py` `pri_of` takes the **first** severity token anywhere in the bolded header body. Do not name another severity in header prose. Dispositions, including `WITHDRAWN`, are [`docs/REFERENCE.md` § Canopy E2E Finding Triage](../../docs/REFERENCE.md#canopy-e2e-finding-triage).
 
 Operator contract: [`docs/REFERENCE.md` § Canopy E2E Topology Step Order and Blast-Radius IDs](../../docs/REFERENCE.md#canopy-e2e-topology-step-order-and-blast-radius-ids).
 
@@ -233,9 +233,10 @@ Operator contract: [`docs/REFERENCE.md` § Worktree Divergence](../../docs/REFER
 
 `e2e_finding_triage.py` is the mechanical P0/P1 open-count for Phase 2's exit criterion. It reads only line-starting `**F-<AREA>-<NNN> — …**` headers in the evidence ledger.
 
-- `FIXED` / `HEALED` in the last 170 characters of the header → closed.
-- `ACCEPTED` in that same tail, and not also FIXED → owner-deferred. Third disposition: not FIXED, not OPEN.
-- `--open-only` hides closed rows; the totals block still counts every finding.
+- `FIXED` / `HEALED` in the last 170 characters of the header → closed. Wins over `ACCEPTED` and `WITHDRAWN` in that same tail.
+- `ACCEPTED` in that tail, and not also FIXED → owner-deferred. Third disposition: not FIXED, not OPEN. Wins over `WITHDRAWN`.
+- `WITHDRAWN` in that tail, and neither of the above → the finding was wrong. Fourth disposition: prints `WITHDR`. Not open, not fixed, not accepted. The word only counts inside the tail (`F-CANOPY-050` repeats it there; the copy at the start of its 383-character header does not).
+- `--open-only` hides FIXED, ACCEPTED, and WITHDRAWN rows; the totals block still counts every finding, including `withdrawn`.
 - Always exits 0. A green shell is not "no open P0/P1".
 
 ```bash

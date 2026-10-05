@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.73
+**Date**: 2026-10-05
 **Project**: juniper-ml
 
 ---
@@ -122,8 +122,8 @@
 | `python3 util/ad-hoc/e2e_matrix_fill.py --verdicts TSV` | Dry-run fill of C2.*/M-* status cells (pass `--write` to apply) |
 | `LD_LIBRARY_PATH= python util/ad-hoc/e2e_f027_queues.py --tab 'Candidate Metrics'` | F-CANOPY-027 queued-vs-unwired probe (live isolated canopy; `JuniperCanopy1`; `JUNIPER_E2E_CANOPY_URL` default `http://127.0.0.1:8051`) |
 | `python3 util/ad-hoc/2026-09-02_worktree_inuse_probe.py WT [WT ...]` | Wider in-use check: STRONG cwd/open-fd exit 1; WEAK cmdline is CAUTION only |
-| `python3 util/ad-hoc/e2e_finding_triage.py`                | Canopy E2E ledger triage (header-only; ACCEPTED ≠ FIXED ≠ OPEN) |
-| `python3 util/ad-hoc/e2e_finding_triage.py --open-only`    | Same, hide FIXED/ACCEPTED rows (totals still include them) |
+| `python3 util/ad-hoc/e2e_finding_triage.py`                | Canopy E2E ledger triage (header-only; WITHDRAWN ≠ ACCEPTED ≠ FIXED ≠ OPEN) |
+| `python3 util/ad-hoc/e2e_finding_triage.py --open-only`    | Same, hide FIXED/ACCEPTED/WITHDRAWN rows (totals still include them) |
 | `python3 util/ad-hoc/e2e_f037_render_census.py`        | F-CANOPY-037 11-session topology-paint census (isolated stack; does not judge the rate) |
 | `python3 util/ad-hoc/register_open_set.py` | Re-derive defect-register open/fixed counts (`**FIXED` token; cwd = repo root) |
 | `python3 util/ad-hoc/register_status_crosscheck.py` | Third reading of §2 / §4 / §5.1 (`AGREE` / `DISAGREE`; any cwd) |
@@ -792,7 +792,9 @@ Tip: the canopy E2E matrix is a 298-row ledger. `e2e_matrix_fill.py` is dry-run 
 
 Tip: before removing a worktree you did not just leave, run the cwd-only liveness probe **and** `python3 util/ad-hoc/2026-09-02_worktree_inuse_probe.py WT`. An editor whose cwd is elsewhere while a file in the tree is open is invisible to cwd-only. STRONG (cwd/open-fd) exits 1; WEAK cmdline is CAUTION and must not fail the process (the probe's own argv used to report every tree in use). Empty argv exits 2. See [REFERENCE — Worktree Divergence](REFERENCE.md#worktree-divergence-is-a-memory-cost).
 
-Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `python3 util/ad-hoc/e2e_finding_triage.py` rather than a hand list. It reads only the finding **header**; ACCEPTED is a third disposition (not FIXED, not OPEN); `--open-only` still prints full totals; exit is always 0. See [REFERENCE — Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage).
+Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `python3 util/ad-hoc/e2e_finding_triage.py` rather than a hand list. It reads only the finding **header**. ACCEPTED is a third disposition (not FIXED, not OPEN). WITHDRAWN is a fourth (prints `WITHDR`: the finding was wrong).
+
+`FIXED`/`HEALED` in the last 170 characters wins, then `ACCEPTED`, then `WITHDRAWN`. `--open-only` still prints full totals; exit is always 0. See [REFERENCE — Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage).
 
 
 ### Host Stack Troubleshooting
@@ -1103,7 +1105,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- `e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
 - [Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) -- per-repo `.tbz2.gpg` (restore `-xjf`); not the Duplicati `$HOME` lane
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- required-context classifier; 2026-08-10 class; text-mode 0 can still carry `ERROR:`
-- [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition
+- [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition; WITHDRAWN (`WITHDR`) is a fourth
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; exit 2 = failed to measure; idle populated is VALID
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- shipped count is 58; v1 is the name-matching negative example; C5 remedy refuted
 - [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop; do not run n≈8–10; `--force` is an open owner decision; full slugs; `--class` on miss
@@ -1119,6 +1121,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-05
+**Version:** 1.0.73
 **Maintainer:** Paul Calnon
