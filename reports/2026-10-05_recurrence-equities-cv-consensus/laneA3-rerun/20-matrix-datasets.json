@@ -1,0 +1,321 @@
+{
+  "normalize=False": {
+    "dataset_id": "equities_seq-6.0.0-15505731cba5b86d",
+    "params": {
+      "symbols": [
+        "AAPL"
+      ],
+      "start_date": "2015-01-01",
+      "end_date": "2022-01-01",
+      "lookback": 64,
+      "regression_target": "log_return",
+      "seed": 20260807
+    },
+    "n_windows_full": 1698,
+    "n_train_partition": 1346,
+    "n_val_partition": 176,
+    "n_test_partition": 176,
+    "lookback": 64,
+    "n_features": 15,
+    "folds": [
+      {
+        "fold": 0,
+        "n_train": 281,
+        "n_eval": 283,
+        "train_last_idx": 280,
+        "eval_first_idx": 283
+      },
+      {
+        "fold": 1,
+        "n_train": 564,
+        "n_eval": 283,
+        "train_last_idx": 563,
+        "eval_first_idx": 566
+      },
+      {
+        "fold": 2,
+        "n_train": 847,
+        "n_eval": 283,
+        "train_last_idx": 846,
+        "eval_first_idx": 849
+      },
+      {
+        "fold": 3,
+        "n_train": 1130,
+        "n_eval": 283,
+        "train_last_idx": 1129,
+        "eval_first_idx": 1132
+      },
+      {
+        "fold": 4,
+        "n_train": 1413,
+        "n_eval": 283,
+        "train_last_idx": 1412,
+        "eval_first_idx": 1415
+      }
+    ],
+    "theta_configured_full_median_sum_dt": 91.0,
+    "sum_dt_full": {
+      "min": 88.0,
+      "max": 97.0,
+      "mean": 91.32155477031802,
+      "std": 1.6991702914285771
+    },
+    "target_full": {
+      "min": -0.13770805299282074,
+      "max": 0.1131574809551239,
+      "mean": 0.0010142883782012127,
+      "std": 0.018353158982195507
+    },
+    "X_last_step_full_per_feature_std": [
+      40.40418243408203,
+      40.898860931396484,
+      39.92420959472656,
+      40.44145584106445,
+      67049732.0,
+      43.10458755493164,
+      22.568744659423828,
+      4430789120.0,
+      793589972992.0,
+      0.0003814697265625,
+      0.022106409072875977,
+      0.09704295545816422,
+      81.76014709472656,
+      75.99872589111328,
+      26.64909553527832
+    ],
+    "X_last_step_full_per_feature_mean": [
+      62.36307144165039,
+      63.032169342041016,
+      61.72504806518555,
+      62.4116325378418,
+      134621456.0,
+      68.71869659423828,
+      39.863311767578125,
+      7040671744.0,
+      584011350016.0,
+      27.33211898803711,
+      0.0027679619379341602,
+      0.0023557126987725496,
+      71.44522857666016,
+      174.20848083496094,
+      45.055946350097656
+    ],
+    "load_seconds": 0.37,
+    "meta": {
+      "dataset_id": "equities_seq-6.0.0-15505731cba5b86d",
+      "generator": "equities_seq",
+      "generator_version": "6.0.0",
+      "params": {
+        "symbols": [
+          "AAPL"
+        ],
+        "start_date": "2015-01-01",
+        "end_date": "2022-01-01",
+        "purchase_date": "2000-01-03",
+        "basis_price_field": "close",
+        "fundamentals_fill": "nan",
+        "regression_target": "log_return",
+        "week52_window": 252,
+        "normalize_features": false,
+        "max_symbols": 14,
+        "incomplete_rows": null,
+        "allow_truncation": false,
+        "use_cache": true,
+        "train_ratio": 0.8,
+        "val_ratio": 0.1,
+        "test_ratio": 0.1,
+        "seed": 20260807,
+        "lookback": 64
+      },
+      "n_samples": 1698,
+      "n_features": 15,
+      "task_type": "regression",
+      "n_classes": null,
+      "n_train": 1346,
+      "n_val": 176,
+      "n_test": 176,
+      "class_distribution": null,
+      "sequence": true,
+      "lookback": 64,
+      "time_unit": "calendar_days",
+      "dt_scaling": null,
+      "target_scaling": null,
+      "truncation": null,
+      "data_quality": null,
+      "artifact_formats": [
+        "npz"
+      ],
+      "created_at": "2026-10-05T13:30:38.138400Z",
+      "checksum": "c02004e1708e489aea48aa0a985b2eb797ee190d340080ea547dcf363bfed261",
+      "dataset_name": null,
+      "dataset_version": null,
+      "parent_dataset_id": null,
+      "description": null,
+      "created_by": null,
+      "tags": [],
+      "ttl_seconds": null,
+      "expires_at": null
+    }
+  },
+  "normalize=True": {
+    "dataset_id": "equities_seq-6.0.0-fa3aae11ac374c94",
+    "params": {
+      "symbols": [
+        "AAPL"
+      ],
+      "start_date": "2015-01-01",
+      "end_date": "2022-01-01",
+      "lookback": 64,
+      "regression_target": "log_return",
+      "seed": 20260807,
+      "normalize_features": true
+    },
+    "n_windows_full": 1698,
+    "n_train_partition": 1346,
+    "n_val_partition": 176,
+    "n_test_partition": 176,
+    "lookback": 64,
+    "n_features": 15,
+    "folds": [
+      {
+        "fold": 0,
+        "n_train": 281,
+        "n_eval": 283,
+        "train_last_idx": 280,
+        "eval_first_idx": 283
+      },
+      {
+        "fold": 1,
+        "n_train": 564,
+        "n_eval": 283,
+        "train_last_idx": 563,
+        "eval_first_idx": 566
+      },
+      {
+        "fold": 2,
+        "n_train": 847,
+        "n_eval": 283,
+        "train_last_idx": 846,
+        "eval_first_idx": 849
+      },
+      {
+        "fold": 3,
+        "n_train": 1130,
+        "n_eval": 283,
+        "train_last_idx": 1129,
+        "eval_first_idx": 1132
+      },
+      {
+        "fold": 4,
+        "n_train": 1413,
+        "n_eval": 283,
+        "train_last_idx": 1412,
+        "eval_first_idx": 1415
+      }
+    ],
+    "theta_configured_full_median_sum_dt": 91.0,
+    "sum_dt_full": {
+      "min": 88.0,
+      "max": 97.0,
+      "mean": 91.32155477031802,
+      "std": 1.6991702914285771
+    },
+    "target_full": {
+      "min": -0.13770805299282074,
+      "max": 0.1131574809551239,
+      "mean": 0.0010142883782012127,
+      "std": 0.018353158982195507
+    },
+    "X_last_step_full_per_feature_std": [
+      0.44544610381126404,
+      0.4470066726207733,
+      0.4540709853172302,
+      0.44286632537841797,
+      0.11112403124570847,
+      0.49801740050315857,
+      0.8230773210525513,
+      2.788053512573242,
+      2.184406280517578,
+      0.0,
+      0.10783557593822479,
+      0.09704295545816422,
+      0.32573795318603516,
+      0.30278342962265015,
+      0.27473288774490356
+    ],
+    "X_last_step_full_per_feature_mean": [
+      0.43948113918304443,
+      0.43843570351600647,
+      0.4476263225078583,
+      0.4361341595649719,
+      0.14779062569141388,
+      0.47206994891166687,
+      0.6380689740180969,
+      1.739889144897461,
+      1.267014503479004,
+      0.0,
+      0.013502255082130432,
+      0.0023557126987725496,
+      0.28464269638061523,
+      0.6940574049949646,
+      0.4644944667816162
+    ],
+    "load_seconds": 0.86,
+    "meta": {
+      "dataset_id": "equities_seq-6.0.0-fa3aae11ac374c94",
+      "generator": "equities_seq",
+      "generator_version": "6.0.0",
+      "params": {
+        "symbols": [
+          "AAPL"
+        ],
+        "start_date": "2015-01-01",
+        "end_date": "2022-01-01",
+        "purchase_date": "2000-01-03",
+        "basis_price_field": "close",
+        "fundamentals_fill": "nan",
+        "regression_target": "log_return",
+        "week52_window": 252,
+        "normalize_features": true,
+        "max_symbols": 14,
+        "incomplete_rows": null,
+        "allow_truncation": false,
+        "use_cache": true,
+        "train_ratio": 0.8,
+        "val_ratio": 0.1,
+        "test_ratio": 0.1,
+        "seed": 20260807,
+        "lookback": 64
+      },
+      "n_samples": 1698,
+      "n_features": 15,
+      "task_type": "regression",
+      "n_classes": null,
+      "n_train": 1346,
+      "n_val": 176,
+      "n_test": 176,
+      "class_distribution": null,
+      "sequence": true,
+      "lookback": 64,
+      "time_unit": "calendar_days",
+      "dt_scaling": null,
+      "target_scaling": null,
+      "truncation": null,
+      "data_quality": null,
+      "artifact_formats": [
+        "npz"
+      ],
+      "created_at": "2026-10-05T13:40:03.475255Z",
+      "checksum": "97e778900093da01fdf8aa9cdbe8258843b34215df2223058ab758864463a8ae",
+      "dataset_name": null,
+      "dataset_version": null,
+      "parent_dataset_id": null,
+      "description": null,
+      "created_by": null,
+      "tags": [],
+      "ttl_seconds": null,
+      "expires_at": null
+    }
+  }
+}
