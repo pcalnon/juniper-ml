@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.72
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -3868,9 +3868,10 @@ Weekly schedule (Monday 06:00 UTC) and manual dispatch, permissions `contents: r
 ### Lockfile Update — workflow contract (`lockfile-update.yml`)
 
 Weekly schedule (Monday 08:00 UTC) and manual dispatch, permissions exactly `contents: write` + `pull-requests: write`. Installs `juniper-ci-tools` from PyPI, runs `juniper-generate-dep-docs` to regenerate `conf/requirements_ci.txt` +
-`conf/conda_environment_ci.yaml`, and opens a PR on `chore/lockfile-update` (labels `dependencies` + `automated`) via SHA-pinned `peter-evans/create-pull-request` when the tree changes. A clean tree opens no PR, and the PR is reviewed
-like any dependency change — never auto-merged. The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298; this workflow must keep the console-script path. Gates: `tests/test_lockfile_update_workflow.py` +
-`tests/test_ci_tools_drift.py`.
+`conf/conda_environment_ci.yaml`, and opens a PR on `chore/lockfile-update` (labels `dependencies` + `automated`) via SHA-pinned `peter-evans/create-pull-request` when the tree changes.
+A successful run always changes the tree: it copies the previous files to timestamped snapshots and re-stamps header dates, so a week whose pins did not move still opens a PR.
+Review the pin lines. The PR is never auto-merged. The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298; this workflow must keep the console-script path.
+Operator steps: [Scheduled Security Scan and Lockfile Update](#scheduled-security-scan-and-lockfile-update). Gates: `tests/test_lockfile_update_workflow.py` + `tests/test_ci_tools_drift.py`.
 
 ### Release Train (`release-train.yml`)
 
@@ -6478,14 +6479,38 @@ Operator contract for the two Monday-scheduled workflows that keep dependency hy
 | Permissions | exactly `contents: write` + `pull-requests: write` |
 | Tooling | `pip install "juniper-ci-tools>=0.9.0,<0.10.0"` then `juniper-generate-dep-docs` |
 | PR | SHA-pinned `peter-evans/create-pull-request` → branch `chore/lockfile-update`, labels `dependencies` + `automated`, commit/title `chore(deps): refresh CI lockfiles` |
+| Identity | When the repo variable `RELEASE_TRAIN_APP_ID` is set, the job mints an installation token (`actions/create-github-app-token`, current repo only) and opens the PR as that App with `sign-commits: true`. juniper-ml#2154 was opened by `juniper-release-train[bot]` on that path. An unset variable falls back to `GITHUB_TOKEN`. Those PRs do not run checks; see **Known limitation (degraded no-App path only)** under [Release Train](#release-train-release-trainyml). |
 
-Regenerates `conf/requirements_ci.txt` and `conf/conda_environment_ci.yaml` via the published console script. The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298 — do **not** resurrect it here. A no-diff week opens no PR, and the opened PR is reviewed like any dependency change (never auto-merged). Companion pin lint: `tests/test_ci_tools_drift.py`; structural gate: `tests/test_lockfile_update_workflow.py`.
+`juniper-generate-dep-docs` (`juniper_ci_tools/generate_dep_docs.py`) always does three things, in order:
+
+1. Copies the live files to `conf/requirements_ci_<YYYY-MM-DD_HH-MM-SS>.txt` and `conf/conda_environment_ci_<YYYY-MM-DD_HH-MM-SS>.yaml` **before** rewriting them. The snapshot is the previous week's bytes, including that week's header dates. The stamp includes the time of day, so every successful run adds a new pair.
+2. Re-renders the header from [`notes/JUNIPER_2026-03-11_JUNIPER-ML_PIP-DEPENDENCY-FILE-HEADER.md`](../notes/JUNIPER_2026-03-11_JUNIPER-ML_PIP-DEPENDENCY-FILE-HEADER.md) and [`notes/JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md`](../notes/JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md).
+   On a new calendar day the substituted fields are `Last Modified` (`YYYY-MM-DD`) and conda `created-by: conda YYYY.MM.DD`. The copyright year moves on 1 January.
+   `created-by: pip <version>`, `python:`, and the header `Version:` move only when those values change.
+3. Writes a fresh body: `python -m pip list --format=freeze` under the pip header, and the `dependencies:` block of `conda env export --no-builds` under the conda header.
+
+`peter-evans/create-pull-request` opens a PR when the working tree differs from the base. A successful generation differs, because of the new snapshot pair, even when every pin and the calendar day are unchanged. A Monday with no lockfile PR means the job did not produce a commit. Open Actions → Update Lockfiles and read the log.
+
+**How to review.** CI and local installs read the untimestamped files. Diff their non-comment lines against the new snapshot (that file is the pre-rewrite copy):
+
+```bash
+diff -u <(grep -v '^#' conf/requirements_ci_<stamp>.txt) <(grep -v '^#' conf/requirements_ci.txt)
+diff -u <(grep -v '^#' conf/conda_environment_ci_<stamp>.yaml) <(grep -v '^#' conf/conda_environment_ci.yaml)
+```
+
+An empty diff means the PR archived the previous lockfiles and refreshed header dates. Leave the timestamped snapshots alone; editing one to "update" a pin rewrites a historical copy.
+
+juniper-ml#2154 (2026-10-05) is that case. The only canonical-file hunks were `Last Modified: 2026-09-28` → `2026-10-05` and conda `created-by: conda 2026.09.28` → `conda 2026.10.05`. Non-comment lines matched (4 pip pins, 164 conda dependency entries). The `*_2026-10-05_08-32-20.*` files are the 2026-09-28 lockfiles.
+
+The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298. Keep the console-script path. The opened PR is reviewed like any dependency change and is never auto-merged. Companion pin lint: `tests/test_ci_tools_drift.py`. Structural gate: `tests/test_lockfile_update_workflow.py`.
 
 | Symptom | Fast check |
 |---------|------------|
 | Weekly scan green but a known CVE is open | Confirm the audit step is still `pip-audit --strict --desc on` |
-| Scheduled scan fails on every run | Do **not** add `--skip-editable` here — that belongs only to per-PR `ci.yml` |
-| No lockfile PR for several Mondays | A clean tree is expected when pins did not move; confirm the job still calls `juniper-generate-dep-docs` |
+| Scheduled scan fails on every run | `--skip-editable` belongs only to per-PR `ci.yml`. The scheduled scan stays `pip-audit --strict --desc on` |
+| No lockfile PR on a Monday | The Update Lockfiles job produced no commit. A stable pin set still opens a PR |
+| Monday PR is large, pins look familiar | The new `conf/*_<timestamp>.*` pair is last week's file, copied before the rewrite. Diff non-comment lines against it |
+| Header dates moved, pin lines did not | Expected. `Last Modified` and conda `created-by` are re-rendered every run |
 | `test_ci_tools_drift` red after a ci-tools bump | Widen the `<Y` ceiling in `lockfile-update.yml`, `ci.yml`, and `docs-full-check.yml` in the same PR |
 
 ---
@@ -7516,6 +7541,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.72
 **Maintainer:** Paul Calnon

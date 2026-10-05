@@ -90,6 +90,13 @@ If conda is not available the conda step is skipped with a warning (matches
 the legacy bash script). If the generated YAML fails to parse, the command
 exits non-zero.
 
+The backup filenames include the time of day, and the rendered headers include
+the current date, so a weekly `lockfile-update.yml` run opens a pull request
+even when the frozen pins are unchanged. The new snapshot is the pre-rewrite
+copy. Reviewers diff the untimestamped files' non-comment lines against it.
+Operator steps live in juniper-ml
+[REFERENCE — Scheduled Security Scan and Lockfile Update](../docs/REFERENCE.md#scheduled-security-scan-and-lockfile-update).
+
 ### CLI options
 
 | Flag | Default | Purpose |
