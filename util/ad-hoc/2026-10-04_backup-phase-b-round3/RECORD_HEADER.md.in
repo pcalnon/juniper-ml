@@ -1,0 +1,212 @@
+# Backup arc, Phase B — validation rounds 2 and 3, the ml#2115 fix-forward lanes and the handoff validations, verbatim reports
+
+**Project**: Juniper (workstation backup infrastructure, host `yamaguchi`)
+**Author**: Paul Calnon
+**Date**: 2026-10-04 (re-assembled 2026-10-05)
+**Procedure**: [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
+**Artifacts validated**: Phase B of [`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`](JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md) §6.2 (rows B1, B3, B4, B5, B7, B8 and B10), including the regenerated [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`](JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md)
+**Also validated**: the fix-forward of B2 (ml#2115), which landed as ml#2134, and the two handoffs that carried the work between sessions
+**Status**: landed on `main` on 2026-10-05, AHEAD of the Phase B change it validates, so that its reports cannot be lost with an uncommitted worktree. The change itself — the artifacts and the prose the reports judge — is pending: `HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md` carries it, and the fix-forward ml#2134 is the only part already on `main`
+**Earlier rounds**: round 1 is the assessment's own (its §8); the design's rounds 1–8 are in [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`](JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md), [`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`](JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md) and [`JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md`](JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md)
+
+---
+
+## Why this record exists
+
+Until it was archived here, every report below lived off `main`: in a session's scratch directory, an
+uncommitted worktree or a subagent transcript. A report that is not on `main` does not exist for the next
+session (the uncommitted-sibling-worktree trap). Session 652c1204, which ran round 2 on 2026-10-03, was cut
+off by a usage limit partway through folding the round in; round 3's lane B was stopped by the next one.
+
+Nothing below is retyped. Each section's first line says where its text came from:
+
+- **Round 2's reports and the 2026-10-03 handoff's validation** are the files each lane wrote itself, in
+  session 652c1204's scratch directory. Each was last modified while its lane was still running; the
+  session only copied them.
+- **The two briefs** are the files the coordinating session wrote for its lanes, unchanged since the first
+  lane started.
+- **Every later report** is its lane's final message, saved from the transcript.
+
+`util/ad-hoc/2026-10-05_match_reports_to_final_messages.py` confirms all but four sections by content: a
+final message, or a lane's Write and Edit calls replayed. It does not replay Bash, and four files were
+finished in place by a `sed -i` or a Python `.replace`:
+
+- round 2's lane B, ml#2114 and ml#2115 reports, by their own lanes;
+- round 3's brief, by the coordinating session before its first lane started.
+
+For those four the evidence is the file's last writer and its mtime. The 2026-10-04 handoff's re-validation
+confirmed the first 14 origins with its own instruments, and its third validation confirmed the 15th.
+
+Every report was screened for credential-shaped content before it was archived
+(`util/ad-hoc/2026-10-04_archive_phase_b_round_reports.py`). That archiver parses this record as its header
+followed by sections laid end to end. Each section's first line carries the first 16 hex digits of its
+body's sha256, and its declared length must end at its closing marker, so nothing quoted inside a report is
+read as structure. The record is re-assembled by `util/ad-hoc/2026-10-05_reassemble_phase_b_record.bash`. By
+default it takes every report the record already holds from the record itself, so `main` alone is enough to
+rebuild it.
+
+**Line numbers a report cites refer to the copy it judged, not to this one.** Round 3's "record:41 / :52 / :58"
+are in `c3d0e890`'s copy of this record. The 2026-10-04 handoff's validations cite the 2026-10-05 working
+copies of 08:14, 09:14 and 16:30, in turn.
+
+## What round 2 was for
+
+The assessment's §6.2 plan: one round, three lanes, on the PR that closes the STOP's five defects in code,
+plus one lane on each executor PR that landed separately (ml#2114 for B6, ml#2115 for B2). The frozen set was
+18 files, pinned by a `MANIFEST.sha256`; every lane checked it first. The common brief is archived below.
+
+| Lens | Brief |
+| --- | --- |
+| A — option names, product behaviour, unit directives | re-probe every option and directive in the 2.4.0.0 source, the installed assemblies and this host's systemd |
+| B — consequence | grant the facts; walk the §6.4 checklist with the artifacts in hand and find the step that damages the sole copy, re-locks the database, or leaves the server unreachable |
+| C — run the things | dry-run the installer, the re-key script and the password-init helper against scratch trees, with mutations, and re-run the design's reproduction |
+| PR lanes — ml#2114, ml#2115 | each executor PR against its own claims |
+
+## What round 2 found
+
+| Lane | BLOCKER | DEFECT | NIT | Verdict line |
+| --- | --- | --- | --- | --- |
+| A | 1 | 6 | 7 | `systemctl revert` deletes the installed unit; the 102 run does not encrypt; the wrapper admits `DUPLICATI__*` |
+| B | 2 | 5 | 3 | the same BLOCKER; the clearing block claims an unmerged B2 |
+| C | 1 | 7 | 6 | the same BLOCKER, found by reading (it could not be demonstrated without root) |
+| ml#2114 | 1 | 3 | 5 | refuted on claims, not code: a one-stick run is `FAILED` |
+| ml#2115 | 1 | 1 | 5 | refuted on one claim: `export` cannot succeed on 2.4.0.0 |
+
+**The BLOCKER all three main lanes found independently**, each by reading the product and `systemctl(1)` — no lane
+could reproduce it without root: `systemctl revert duplicati.service` would delete the
+installed `/etc/systemd/system/duplicati.service`. A dpkg vendor unit exists under `/usr/lib/systemd/system/`,
+and revert removes any unit that overrides a vendor one, so the re-key's encrypt start would have run the vendor
+unit, unconfined and without `LoadCredential=`, on a cleartext database with the keys already swapped.
+
+## Disposition of round 2
+
+The fold-in meant to apply every finding, and recorded none as dissent. The assessment's §8 "Round 2" entry
+lists where each one landed. Round 3 tested that list as a claim, and found it incomplete: of the 38 lane A/B/C
+findings, 30 are fixed, 7 only in part, and 1 fixed but wrong (see "What round 3 found").
+
+- **Code** (the 2026-10-03 session, before it was cut off): the re-key script and its new gate, the
+  password-init helper, the wrapper (2.2.0), the installer (1.2.0), the contract, the service unit's comment,
+  the snapshot timer, and the test suite (33 tests).
+- **Prose** (2026-10-04): the design, regenerated through the clearing script's 54 edits — 53 to prose and one
+  declared fence edit — and the assessment.
+- **ml#2114**: its own agent fixed it before it merged.
+- **ml#2115**: merged with its BLOCKER and DEFECT. Both are fixed by ml#2134 (next section).
+
+## The ml#2115 fix-forward lanes
+
+Two lanes ran on the fix-forward's first draft (local commit `663443e8`), launched together:
+
+- **F1 — product fidelity.** Re-derived the export flow from the 2.4.0.0 tag and drove the real CLI against a
+  model server. 0 BLOCKER, 2 DEFECT, 6 NIT; the client's wire behaviour was not refuted.
+- **F2 — consequences.** Callers, exit codes, host facts, its own mutations, and the concurrent fleet PRs.
+  0 BLOCKER, 3 DEFECT, 8 NIT; the code was not refuted.
+
+**Disposition**: everything is applied in ml#2134 — F1 D-1 included: the stub now answers 500, not 401, for a
+token it never signed — except two findings that belong elsewhere:
+
+- **F1 D-2** asks the guard dry-run to refuse an empty URL. That is design text, so it belongs to Phase B and is
+  done in P0 step 10's fence.
+- **F2 D-3** asks for fleet-PR actions — closing #2129, and the stale statements in #2128 and #2119. Those are
+  the owner's, and were put to the owner rather than taken.
+
+## What round 3 was for
+
+Round 2 refuted things, so the assessment's own rule applies ("round N+1 only if round N refutes something,
+scoped to the delta"). Round 3 validates the fold-in: every change made after round 2's frozen set, and whether
+each one fixes what round 2 found without breaking anything else. It read local commit `c3d0e890` (26 files,
+pinned by a manifest that every lane checked), with three lenses: **A** fold-in fidelity, **B** the consequences
+of the folded-in procedure, **C** running the things on copies. Lane B's brief asked for an end-to-end walk of
+procedures A0, A, A2 and B, not only the delta. It was stopped at the 2026-10-04 usage limit and resumed on
+2026-10-05, still reading `c3d0e890`.
+
+## What round 3 found
+
+| Lane | BLOCKER | DEFECT | NIT | Verdict line |
+| --- | --- | --- | --- | --- |
+| A — fold-in fidelity | 0 | 6 | 8 | the `revert` fix holds; 30 of round 2's 38 findings fixed, 7 in part, 1 fixed but wrong |
+| B — procedure consequences | 0 | 4 | 11 | the fold-in's own changes hold; the first backup after recovery deletes the fileset AC-4 drills |
+| C — run the things | 0 | 5 | 13 | the reproduction and every gate hold; 14 of 25 mutants of the new code survive the suites |
+
+Lanes A and C found the same three defects, independently. Lane B's resume message said it need not re-derive
+them:
+
+- `--parameters-file` gets past the env-file deny list. The server reads options from that file and merges them
+  over argv, so `--disable-db-encryption` could return through it.
+- The re-key's EXIT trap prints a fixed recovery block that is wrong in four failure states. Lane B's N-11
+  describes a timed-out decrypt start, which lane B says may duplicate them; it is lane A's D-4 case.
+- Round 2's request for a `ConnectionString` count in the re-key's pre-flight was not carried out.
+
+Lane A adds:
+
+- the residue list is not the round-4 record's open rows;
+- the job-2 residue still says "six";
+- the web credential's line format is missing from the design.
+
+Lane B adds four defects. All four are in the procedure on `main` as well, outside the fold-in's delta, where
+§8's STOP still holds them; the fold-in's P0.5b placement adds a dependence on the second:
+
+- **The first backup deletes the 2026-09-18 fileset.** Its retention pass keeps 1 to 3 of the 9 old filesets,
+  and the 09-18 one only for a first run between 2026-10-17 22:14Z and 2026-10-18 14:00Z. AC-4's first drill,
+  the gate for §10.2 step 1, is sequenced after that backup. From 2026-10-18 no surviving fileset holds a copy
+  of the server database, so Procedure A0 could not be re-run.
+- **An unread startup delay.** Between the unit's first start and step 10's `pause` there is a time limit that
+  no step states, reads or sets. Once it lapses the overdue job starts unguarded, and "`resume` fires the
+  overdue backup" becomes false.
+- **Procedure B's rebuild tool** creates a job that is already overdue, on a fresh index, while the scheduler
+  runs. The run deletes nothing, but it starts before any guard or verification.
+- **§7.3.6's recovery** for an unknown root-era UI password cannot work on a 2.1+ database: it leaves
+  `pbkdf-config`, so the hand start gets exit 103.
+
+Lane C adds:
+
+- the re-key's dry-run test is not hermetic on the owner's host;
+- the real code paths have too few tests (the mutant survivors).
+
+## The handoff validations
+
+Each handoff that carried this work to a new session was validated before it landed. All four reports are
+archived below.
+
+- **The 2026-10-03 handoff** (`HANDOFF_2026-10-03_backup-phase-b-fold-in-pending.md`), validated on
+  2026-10-04: REFUTED, two BLOCKERs. Session 652c1204 corrected the handoff before it landed (#2126).
+- **The 2026-10-04 handoff** (`HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md`), validated on
+  2026-10-05: REFUTED in part — 2 BLOCKER, 4 DEFECT, 10 NIT. Session c9277a65 applied them before this record
+  landed:
+  - B-1: the handoff's verify block names the pins that fail by design, and checks `git status` and that this
+    record reached `main`;
+  - B-2: lane B was resumed rather than lost, and its report is above;
+  - D-1 to D-4: the suite count is `main`'s plus one; the standing limits are restored; the re-assembly is a
+    saved script; and each report states its own origin. Until then the archiver wrote "a file the 2026-10-03
+    session saved verbatim" for every file source, which was false for five sections;
+  - the NITs, in the handoff and the Phase B PR's draft. This header carries the record parts of round 3's
+    R3A N-1 and R3C N-9.
+- **The same handoff, re-validated** on 2026-10-05 after that fold-in: REFUTED in part — 0 BLOCKER, 3 DEFECT,
+  11 NIT. Session c9277a65 applied them before this record landed:
+  - D-1: this header and the match script say it confirms 10 of the 14 sources by content, and why;
+  - D-2: one list of entries now drives both re-assembly modes, a missing file is refused, and the archiver
+    refuses to drop a report the record holds;
+  - D-3: the Phase B drafts' false sentences are fixed, and the handoff orders every count and file list
+    re-derived after the fold-in;
+  - the NITs, in the handoff, the drafts and the archiver. N-5 is why each section's line now carries a hash;
+    `util/ad-hoc/2026-10-05_attack_phase_b_archiver.py` runs A6, A7 and the D-2 sequence against copies;
+  - N-8: round 3's lane C harness is carried as `util/ad-hoc/2026-10-04_backup-phase-b-round3/r3c-harness/`.
+    It existed only in a tmpfs scratch directory and an untracked worktree copy.
+- **The same handoff, validated a third time** on 2026-10-05, on the re-validation's changes only: REFUTED in
+  part — 0 BLOCKER, 1 DEFECT, 9 NIT. Session c9277a65 applied them before this record landed, and ran no
+  fourth round: the one DEFECT was this report's own missing slot, and the attack script covers every code
+  change. The changes:
+  - D-1: this report is archived as the record's 16th section, and every count says so;
+  - N-1: the harness's six pyflakes findings are fixed before landing, because CodeQL review threads would
+    block the merge;
+  - N-2 to N-4: the archiver parses the record strictly. A report file or origin that disagrees with the
+    archived one is refused unless `--replace` names it. A header edit, or text outside every section, is
+    refused rather than discarded. `--check` compares bytes and exits 1 on a difference. The attack script
+    covers each case;
+  - N-5 to N-9: the harness README, the provenance wording, the drafts' CHANGELOG slot, the routing of
+    round 3 lane B's open questions, and the small errors.
+
+## Disposition of round 3
+
+*Pending* — round 3's fold-in, a round 4 on its delta and on the whole procedure, and the Phase B PR are the
+next session's work (`HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md`). This section is completed
+when that change lands.

@@ -32,6 +32,9 @@ Other aliases:
 > **Newer still (2026-10-04): Phase A is on `main` (ml#2113), the executor PRs ml#2114 and ml#2115 are merged, and Phase B's fold-in was cut mid-way by a usage limit.**
 > Resume from `HANDOFF_2026-10-03_backup-phase-b-fold-in-pending.md`, which supersedes this file's goal statement and step 1; this file still holds the traps and the carried-item inventory.
 >
+> **Newer again (2026-10-05): the ml#2115 fix-forward is merged (ml#2134), and Phase B is frozen with round 3's fold-in pending.**
+> Resume from `HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md`, which supersedes the file named above.
+>
 > **Read that file before acting on anything below.** This file keeps the session mechanics (step 1's sub-steps, the traps, the carried-item inventory); the assessment keeps the measured state, the issues register and the phase plan. Where the two conflict, the newer host measurement wins.
 
 ---
