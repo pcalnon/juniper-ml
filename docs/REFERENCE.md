@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.77
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -1218,7 +1218,39 @@ python util/env_floor_drift_check.py --repo-root .
 
 When an env (or repeated `--site-packages`) yields several `site-packages` dirs, `installed_juniper_versions` keeps the **highest** version across them. A later lower wheel must not clobber an earlier higher one (false `BELOW_FLOOR`). Underscore dist names normalize to kebab-case; malformed / unreadable `METADATA` and non-`juniper-*` dists are skipped.
 
-Coverage: open juniper-ml#796 (`ResolveSiteDirsTest` — precedence + exit-2 reasons) and #802 (`InstalledVersionsTest` — highest-across-dirs / malformed skip). Structural CI gate: `tests/test_env_floor_drift_check.py` (synthetic dist-info only; real-env scan is host-manual).
+Coverage: open juniper-ml#796 (`ResolveSiteDirsTest` — precedence + exit-2 reasons) and #802 (`InstalledVersionsTest` — highest-across-dirs / malformed skip). Structural CI gate: `tests/test_env_floor_drift_check.py` (synthetic dist-info only; real-env scan is host-manual). `MalformedOperatorInputGuardTest` in that file pins the degrade-to-exit-2 cases below.
+
+#### Malformed operator input
+
+Both inputs are typed by hand: the target repo's `pyproject.toml`, and
+`prompts/agent_templates/data/ecosystem.yaml` (that file lives in juniper-ml).
+`x.get(k) or {}` only covers a missing or empty value. A truthy non-mapping —
+`project = ["x"]`, `optional-dependencies = ["oops"]`, a YAML document that is a list,
+or `conda_envs` written as a sequence — used to reach `.get` / `.values` / `.items` and
+raise `AttributeError`. That exception left `main`, so the operator saw a traceback
+where this section promises exit 2. juniper-ml#2001 coerces those values with `_mapping`
+(keep a `dict`, otherwise `{}`). Background:
+[`notes/JUNIPER_2026-09-11_JUNIPER-ML_FALSY-GUARD-POPULATION-TRIAGE.md`](../notes/JUNIPER_2026-09-11_JUNIPER-ML_FALSY-GUARD-POPULATION-TRIAGE.md).
+
+`ecosystem.yaml` is the path that actually fires. `resolve_site_dirs` falls back to it
+for every sibling-repo check, nothing else in the repo reads `conda_envs`, and yamllint
+checks syntax rather than structure. A `conda_envs` sequence, a document that is itself
+a list, a non-UTF-8 file (`UnicodeDecodeError` is a `ValueError`, not an `OSError`),
+missing PyYAML, or a YAML syntax error all return an empty map. The CLI then exits 2
+with `no conda env maps to '<package>'` — the same sentence as a missing `used_by` row.
+Pass `--env` or `--site-packages` to move on, and quote the env name when you fix the file.
+
+A YAML key is not always a string. `NO:` parses as boolean false (the Norway problem) and `3:` as an int. Both are skipped: `conda_dir / "envs" / name` cannot take a non-string, and that used to be a `TypeError`. A sibling key that is a string is kept. If the only key was non-string, you get the same exit 2.
+
+The pyproject cases show up mid-edit or against a scratch `--repo-root`. A sibling
+file this malformed usually fails `pip install` and `python -m build` first.
+`project = ["x"]` or `project = "oops"` makes `_project_name` return `None`. `main`
+reads floors first, so when the table yields no juniper `>=` floors the message is
+`no juniper-* version floors declared` and the name check never runs. A non-list
+`dependencies` contributes nothing — a string is not walked character by character.
+A non-list extra is skipped. A bad `optional-dependencies` does **not** discard a
+well-formed `dependencies` list. Dropping those floors would exit 2 as "nothing
+declared" and hide a real `BELOW_FLOOR`.
 
 Troubleshooting:
 
@@ -1226,7 +1258,9 @@ Troubleshooting:
 |---------|-------------|
 | Exit `2`: `no --site-packages dir exists` | Path typo or stale CI fixture — pass a real directory, or drop `--site-packages` and use `--env`. |
 | Exit `2`: `no site-packages under … for env(s)` | Env missing under `--conda-dir`, or no `lib/python*/site-packages` yet — create/install into the env. |
-| Exit `2`: `no conda env maps to '…' in ecosystem.yaml` | Target `[project].name` has no `used_by` entry — pass `--env` / `--site-packages`, or add the mapping. |
+| Exit `2`: `no conda env maps to '…' in ecosystem.yaml` | No `used_by` for this `[project].name`, or the file degraded to an empty map: `conda_envs` is a list, the document is a list, the bytes are not UTF-8, or the only keys are `NO` / a number. See [Malformed operator input](#malformed-operator-input). |
+| Exit `2`: `no juniper-* version floors declared`, and `dependencies` looks set | `dependencies` is not a list of requirement strings, or `project` is not a table. A bad extra alone does not do this when `dependencies` is a real list. |
+| Extras missing from the report; `dependencies` floors still enforced | Expected when `optional-dependencies` is not a table of lists. Fix the extra; the dependencies floors are still the requirement. |
 | Unexpected `BELOW_FLOOR` after a partial upgrade | Multi-interpreter env may still have an older site-packages tree — the tool reports the **highest** installed version; upgrade every tree or remove the stale one. |
 | `MISSING` but `pip show` works | Checker reads `METADATA` on disk under the resolved dirs only — confirm `--env` / `--site-packages` matches the interpreter you inspected. |
 | Floor / editable green, `import torch` still fails | Those checkers never import torch. Classify the ABI/`_C` layout with [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5). |
@@ -3013,6 +3047,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
   - Ambiguous canonical SKIP (open #795): two non-worktree checkouts with the same `[project].name` → `discover_canonical` returns `(None, [..])`; `--fix --dry-run` emits `action=SKIP` with `ambiguous` in `reason` (never re-points to `candidates[0]`).
   - Live `run_fix` (open #802): mocked `subprocess.run` covers `FIXED` on success, `ERROR` on `CalledProcessError`, and `ERROR` then `FIXED` when the first item raises `OSError` (plan continues).
 - `tests/test_env_floor_drift_check.py` -- Tests for `util/env_floor_drift_check.py` (I-2): floor parsing (juniper-* `>=` bound; skips non-juniper/floorless/self-ref; dedup-highest), numeric version compare (`0.10.0 > 0.9.0`), OK/BELOW_FLOOR/MISSING classification, exit codes (0/1/2, `--strict`), `--json` -- via a synthetic site-packages fixture (no real pip/conda); also asserts no hardcoded env name. Sole gate (`util/` not lint-gated); real-env scan is manual-verify.
+  - `MalformedOperatorInputGuardTest` (juniper-ml#2001): a truthy non-mapping degrades to exit 2. A bad extra still keeps floors declared in `dependencies`.
   - Open #796 adds `ResolveSiteDirsTest` (`--site-packages` wins, `--env` expand, ecosystem `used_by`, exit-2 reasons). Open #802 adds `InstalledVersionsTest` (highest-across-dirs, malformed/unreadable skip, underscore normalize).
 - `tests/test_workflow_script_paths.py` -- Lint test: every `python <path.py>` / `bash <path.bash>` invocation in `.github/workflows/*.yml` must reference a path that exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18.
 - The sequence-safety screen unit tests (symbol + docs: `LOST`/`WEAKENED`/`DUPLICATED`, SF3 masking pin, relocation WARN, heading / `>=N`-run FAIL, both trailer escapes + wildcard, `--min-run`, the `--scope` glob engine, exit codes 0/1/2) moved to `juniper-ci-tools/tests/` with the package migration (rollout W3); they run under the dedicated `CI -- juniper-ci-tools` workflow. juniper-ml's `tests/test_ci_tools_drift.py` carries the anti-resurrection guard + the two new screen-pin drift checks.
@@ -3277,7 +3312,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Ambiguous canonical (juniper-ml#795 coverage): `discover_canonical` returns `(None, [.., ..])` when two+ non-worktree checkouts share a `[project].name`; `--fix` then `action=SKIP` with `reason` containing `ambiguous` (never picks `candidates[0]`). Operator surface: `docs/REFERENCE.md` Editable Install Drift Check + cheatsheet tip.
   - Live `--fix` actions (juniper-ml#802 coverage): `run_fix` marks `FIXED` on successful `pip install -e <canonical> --no-deps --force-reinstall`; `OSError` / `CalledProcessError` become `action=ERROR` (stderr truncated to 500 chars) without aborting later plan items; after a non-dry run, `main` re-scans so exit `1` still reflects remaining orphans. Operator surface: `docs/REFERENCE.md` Editable Install Drift Check + cheatsheet tip.
 - `util/env_floor_drift_check.py` -- Floor-drift checker (gap I-2): reads each installed `juniper-*` version from its `*.dist-info/METADATA` and compares to the target repo's `pyproject.toml` floors -> `OK` / `BELOW_FLOOR` / `MISSING` -- the below-floor plain-wheel case the pins/editable checkers miss. Env selection is data-driven (`--site-packages`/`--env`/`ecosystem.yaml`); exit 1 on `BELOW_FLOOR` (`--strict` also `MISSING`); `--json`; structural CI gate. Tests: `tests/test_env_floor_drift_check.py`.
-  - `resolve_site_dirs` precedence: `--site-packages` → `--env` → `ecosystem.yaml` `used_by` for `[project].name`; unresolved paths exit 2 with the reason string (never invent an env name). Operator surface: `docs/REFERENCE.md` Environment Floor Drift Check.
+  - `resolve_site_dirs` precedence: `--site-packages` → `--env` → `ecosystem.yaml` `used_by` for `[project].name`; unresolved paths exit 2 with the reason string (never invent an env name). A truthy non-mapping in either hand-authored file degrades the same way (`_mapping`); it does not traceback. Operator surface: [Environment Floor Drift Check](#environment-floor-drift-check) ([Malformed operator input](#malformed-operator-input)).
   - Multi-site / multi-interpreter: `installed_juniper_versions` keeps the **highest** version across site-packages dirs; malformed / unreadable `METADATA` and non-`juniper-*` are skipped. Coverage: open #796 / #802.
 - `util/check_conda_env_torch.bash` -- Classifies a conda env's `import torch` / `torch._C` layout (P-5). Exit 0 healthy / 1 missing env / 2 free-threaded shadow / 3 other import fail / 4 namespace-package `_C` (May-7 regular-3.14 wheel class, or imported `_C` has no `__file__`). Does **not** rebuild. `JUNIPER_CONDA_DIR` default `/opt/miniforge3`. Tests: `tests/test_check_conda_env_torch.py`. Operator surface: [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5).
 - `util/release_train/` -- PyPI release-train tooling (release-train plan §12). `registry.yaml`: the data-driven 18-package / 8-repo registry (§4.1). `detect.py`: the per-package "needs a PyPI deploy?" engine (§4.2/4.3, Phase 1, report-only) -- PyPI truth vs declared version, tag-matched diff base, `gh compare` (`--local-git` fallback past the 300-file cap), and a substantive-hunk SHIP filter discounting the notes-rename comment/docstring/link class; report-only, exit 0/1/2.
@@ -7002,6 +7037,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.77  | 2026-10-05 | Environment floor drift: a truthy non-mapping in `pyproject.toml` or `ecosystem.yaml` exits 2 with a reason (juniper-ml#2001), not an `AttributeError` traceback. A bad extra does not drop `dependencies` floors. YAML key `NO` or a number is skipped. |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -7516,6 +7552,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.77
 **Maintainer:** Paul Calnon

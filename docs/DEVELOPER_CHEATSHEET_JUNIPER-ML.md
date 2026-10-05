@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.77
+**Date**: 2026-10-05
 **Project**: juniper-ml
 
 ---
@@ -690,7 +690,9 @@ Tip: orphaned cascor workers outside `JuniperProject.pid` need `KILL_WORKERS=1 u
 Tip: never set `HEALTH_CHECK_INTERVAL=0` to "poll faster" — that busy-loops forever (`sleep 0` never advances elapsed).
 Post-[#782](https://github.com/pcalnon/juniper-ml/pull/782), invalid/zero intervals log a WARNING and clamp to `1s`. Prefer the default `2`.
 
-Tip: `python util/env_floor_drift_check.py --repo-root PATH [--env NAME|--site-packages DIR]` — precedence is `--site-packages` then `--env` then `ecosystem.yaml` `used_by`; exit `2` means resolution failed (not a floor finding). Multi-site keeps the **highest** installed version. Coverage: [#796](https://github.com/pcalnon/juniper-ml/pull/796) / [#802](https://github.com/pcalnon/juniper-ml/pull/802). Full contract: [REFERENCE — Environment Floor Drift](REFERENCE.md#environment-floor-drift-check).
+Tip: `python util/env_floor_drift_check.py --repo-root PATH [--env NAME|--site-packages DIR]` — precedence is `--site-packages` then `--env` then `ecosystem.yaml` `used_by`; exit `2` means resolution failed (not a floor finding). Multi-site keeps the **highest** installed version. Full contract: [REFERENCE — Environment Floor Drift](REFERENCE.md#environment-floor-drift-check).
+
+Tip: a truthy non-mapping in that YAML or in `pyproject.toml` (`conda_envs` as a list, non-UTF-8, a `NO:` key, `project` as an array) is the same exit 2, not a traceback. A bad extra does not drop floors declared in `dependencies`. See [Malformed operator input](REFERENCE.md#malformed-operator-input).
 
 Tip: `util/check_conda_env_torch.bash ENV` classifies `import torch` / `torch._C` — it does not rebuild. Exit **2** is P-5 free-threaded (`cp*t` + regular wheel); exit **4** is the May-7 regular-3.14 wheel-layout class. A free-threaded **warning** with exit 0 is not a failure. Floor/editable can stay green because they never import torch. See [REFERENCE — Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5).
 
@@ -908,7 +910,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Fleet `DAMAGED` on intentional docs rewrite | Add `Allow-Docs-Rewrite: <path>` or `*` in BASE..RESULT (#926); wrong-path trailers do not waive. |
 | Mixed `--systemd` / pidfile modes | Match plant and chop modes; systemd never writes `JuniperProject.pid`. |
 | Plant WARNING `invalid health-check interval` / stuck health wait | Unset `HEALTH_CHECK_INTERVAL` or set a positive integer (default `2`); `0` was a busy-loop. |
-| `env_floor_drift_check` exits `2` | Resolution failed (`resolve_site_dirs`) — fix `--site-packages` / `--env` / `ecosystem.yaml` `used_by`; not a `BELOW_FLOOR`. |
+| `env_floor_drift_check` exits `2` | Resolution failed — missing site-packages / env, or a truthy non-mapping (`conda_envs` list, non-UTF-8, `NO:` key, `project` not a table). Not a `BELOW_FLOOR`. A bad extra still enforces `dependencies` floors. |
 | `check_conda_env_torch` exit `2` | P-5 free-threaded shadow — use `*1` or rebuild regular CPython; do not treat as May-7. |
 | `check_conda_env_torch` exit `4` | May-7 `torch/_C/` namespace package on regular 3.14 — keep `JuniperCascor1`; do not run the P-5 FT rebuild. |
 | `check_conda_env_torch` exit `3` on `JuniperData` | Expected — that env has no torch. |
@@ -1099,6 +1101,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default `equities` is 422 at 14 symbols; unit is symbols because cost is per request
 - [F-039 Store Probe](REFERENCE.md#f-039-store-probe) -- apply / soak / report / revert; read the whole series; `--target topology` refuses
 - [Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- exit **2** is P-5 free-threaded; exit **4** is May-7 wheel layout
+- [Environment Floor Drift Check](REFERENCE.md#malformed-operator-input) -- a truthy non-mapping exits 2 with a reason; a bad extra does not drop `dependencies` floors
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local `MEMORY.md` gate; hook-not-line; CI cannot see `~/.claude`
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- `e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
 - [Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) -- per-repo `.tbz2.gpg` (restore `-xjf`); not the Duplicati `$HOME` lane
@@ -1119,6 +1122,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-05
+**Version:** 1.0.77
 **Maintainer:** Paul Calnon
