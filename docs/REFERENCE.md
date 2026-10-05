@@ -2845,6 +2845,7 @@ python3 -m unittest -v tests/test_publish_subpackage_workflows.py
 python3 -m unittest -v tests/test_subpackage_py_typed.py
 python3 -m unittest -v tests/test_ci_sequence_safety_hatch.py
 python3 -m unittest -v tests/test_main_verify_catchup_base.py
+python3 -m unittest -v tests/test_main_verify_screen_verdicts.py
 python3 -m unittest -v tests/test_main_verify_notify_dedup.py
 python3 -m unittest -v tests/test_ci_fleet_pr_lint.py
 python3 -m unittest -v tests/test_doc_tools_drift.py

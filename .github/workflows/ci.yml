@@ -459,6 +459,11 @@ jobs:
           # tip / non-ancestor fallback / zero BEFORE → HEAD^1 / last_ok==HEAD /
           # jq null — hermetic git fixture + stub gh. PyYAML (installed above).
           python3 -m unittest -v tests/test_main_verify_catchup_base.py
+          # tests/test_main_verify_screen_verdicts.py: executes the three main-verify
+          # symbol-screen shells the catch-up test only names. A finding (exit 1) stays
+          # screened and still fails clean; exit >=2 or a missing code does not advance
+          # the base; the screens step records the codes and exits 0.
+          python3 -m unittest -v tests/test_main_verify_screen_verdicts.py
           # tests/test_main_verify_notify_dedup.py: YAML-extraction rehearsal for
           # main-verify.yml notify stable-title issue dedup (ml#928 / 0.3.0). Extracts
           # the upsert shell and drives first-failure create / subsequent-SHA comment /
