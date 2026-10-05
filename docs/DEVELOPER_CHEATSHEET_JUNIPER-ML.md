@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.81
+**Date**: 2026-10-05
 **Project**: juniper-ml
 
 ---
@@ -722,6 +722,13 @@ Linger must be `yes`; `~/.config/duplicati-backup/env` must be mode `600` with `
 A skip overwrites `result=OK`, so the next skip always escalates. Distinct from `util/juniper-backup.bash`.
 Full contract: [REFERENCE — Scheduled Duplicati Backup Lane](REFERENCE.md#scheduled-duplicati-backup-lane).
 
+Tip: the Yamaguchi Duplicati **server** (`127.0.0.1:8300`) is a third surface.
+`python3 util/ad-hoc/yamaguchi_server_api.py` reads one `0600` web-credential file (the web-UI password, not `PASSPHRASE=`).
+`export` must obtain a single-operation token; a failure leaves stdout empty. `pause` is indefinite and survives reboot until `resume`.
+The watchdog has no default job id — an absent `--backup-id` records `JOB_MISSING` (exit 1), and exit 2 is undetermined.
+Deploy with `bash util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>` after the primary checkout is synced; do not copy the unit alone.
+Full contract: [REFERENCE — Yamaguchi Duplicati Server Client](REFERENCE.md#yamaguchi-duplicati-server-client).
+
 Tip: `util/juniper-backup.bash` writes per-repo `.tbz2.gpg` (bzip2). Restore with `gpg -d FILE | tar -xjf -`, not `-xzf`. `--dry-run` must exit without writing. Exit 4 is PARTIAL (already-verified copies stay). Unattended verify is `--list-packets` only — it does not prove the tar is intact. Distinct from the Duplicati `$HOME` lane.
 Full contract: [REFERENCE — Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup).
 
@@ -1102,6 +1109,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local `MEMORY.md` gate; hook-not-line; CI cannot see `~/.claude`
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- `e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
 - [Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) -- per-repo `.tbz2.gpg` (restore `-xjf`); not the Duplicati `$HOME` lane
+- [Yamaguchi Duplicati Server Client](REFERENCE.md#yamaguchi-duplicati-server-client) -- `127.0.0.1:8300`; export token; watchdog `--backup-id` has no default
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- required-context classifier; 2026-08-10 class; text-mode 0 can still carry `ERROR:`
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; exit 2 = failed to measure; idle populated is VALID
@@ -1119,6 +1127,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-05
+**Version:** 1.0.81
 **Maintainer:** Paul Calnon

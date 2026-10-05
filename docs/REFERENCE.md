@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.81
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -17,6 +17,7 @@
 - [HTTP Client Base-URL Contract](#http-client-base-url-contract)
 - [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
+- [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client)
 - [Juniper Project-Tree Backup](#juniper-project-tree-backup)
 - [Editable Install Drift Check](#editable-install-drift-check)
 - [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell)
@@ -615,6 +616,7 @@ Do **not** read `DUPLICATI_STALE_DAYS` as "N consecutive skips are allowed." The
 - GPGFlushError investigation (open; not a reason to drop `--no-auto-compact`): [`notes/JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md`](../notes/JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md)
 - `notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_DUPLICATI-DB-RESTORE-RUNBOOK.md` is **withdrawn** — restoring the archived job DB reproduces the wedge. Do not execute it.
 - Project-tree / external-media archives: [Juniper Project-Tree Backup](#juniper-project-tree-backup) (`util/juniper-backup.bash`).
+- The Duplicati **server** on `127.0.0.1:8300` is a third surface: [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client). It is not this lane's `duplicati-cli` timer.
 
 Troubleshooting:
 
@@ -629,6 +631,129 @@ Troubleshooting:
 | Two runners / web UI plus timer | Guard 4/5: wait, or stop the other holder of `DBPATH`; do not `pgrep -f` to decide |
 | Failed run, no desktop popup | Reporter still wrote `failures.log`; `notify-send` is best-effort under linger with no session bus |
 | Partial fileset / killed run | The unit sets `TimeoutStartSec=infinity` so systemd will not SIGTERM a long healthy run. An abrupt `kill -9` mid-WAL is the class the [archive-damage findings](../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) warn against — TERM, then wait. |
+
+---
+
+## Yamaguchi Duplicati Server Client
+
+The Duplicati **server** on `http://127.0.0.1:8300` (2.4.0.0) is a third backup surface. It is not the scheduled `$HOME` lane ([Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)) and not the project-tree archives ([Juniper Project-Tree Backup](#juniper-project-tree-backup)). These clients talk only to that loopback address. Landed in [juniper-ml#2115](https://github.com/pcalnon/juniper-ml/pull/2115) and [juniper-ml#2134](https://github.com/pcalnon/juniper-ml/pull/2134).
+
+| Tool | Role |
+|------|------|
+| `util/ad-hoc/yamaguchi_server_api.py` | Authenticated REST client |
+| `util/ad-hoc/yamaguchi_watchdog.py` | Outside poller. A job-level `--run-script-after` stays silent when the scheduler never fires, the job is gone, the server is down, or a run hangs |
+| `util/ad-hoc/yamaguchi_watchdog_deploy.bash` | Installs the user timer. `--backup-id` is required. Copying the unit file alone does not pass a job id |
+
+Tests: `tests/test_duplicati_web_credential.py`, `tests/test_yamaguchi_server_api.py`, `tests/test_yamaguchi_watchdog.py`.
+
+### Web credential
+
+Both clients read one file, in-process, through `read_credential`. The password is not an argument, not this process's environment, and not a child's.
+
+| Setting | Contract |
+|---------|----------|
+| Path | `~/.config/duplicati-backup/web-credential`. `DUPLICATI_WEB_CREDENTIAL_FILE` overrides it |
+| Mode | `0600`, a regular file, at most 64 KiB. Any group or other permission bit is refused |
+| Line | Exactly one `DUPLICATI_WEB_CREDENTIAL=<web-UI password>`. An `export ` prefix is tolerated. Blank lines, `#` comments, and other keys are ignored |
+| Value | Literal. Surrounding whitespace is dropped, and one matching pair of surrounding quotes is removed. No shell expansion |
+| Not this file | The archive passphrase is `PASSPHRASE=` in `~/.config/duplicati-backup/env`. Using that here fails login (401) |
+
+A refusal names the path, the mode, and the owner, and never the file's contents. A missing file, a non-regular file (a FIFO is opened `O_NONBLOCK`, so it cannot hang the caller), zero or two key lines, and an empty value all refuse before any request. The job verbs `export`, `delete`, `run`, and `log` also require a job id before the credential is read.
+
+### Server API
+
+```bash
+python3 util/ad-hoc/yamaguchi_server_api.py status
+python3 util/ad-hoc/yamaguchi_server_api.py serverstate
+python3 util/ad-hoc/yamaguchi_server_api.py pause
+python3 util/ad-hoc/yamaguchi_server_api.py resume
+python3 util/ad-hoc/yamaguchi_server_api.py export 7
+python3 util/ad-hoc/yamaguchi_server_api.py log --backup-id 7
+```
+
+| Exit | Meaning |
+|------|---------|
+| `0` | The verb finished. `serverstate` is 0 only for `ProgramState=Running`. `pause` is 0 only when the read-back is `Paused`. `resume` is 0 only when the read-back is `Running` |
+| `2` | `serverstate` saw `Paused`. Usage is 64, so 2 is not a bad argument |
+| `1` | Login failed, the host is unreachable, the request was refused, `delete` lacked `--yes`, or `pause` / `resume` read back a state other than the one asked for |
+| `64` | Usage: a job verb with no id, an id that is not a positive integer, or a positional id that disagrees with `--backup-id` |
+
+There is no default job id. A rebuilt job is not id 2. Pass the id positionally (`export 7`) or as `--backup-id 7`. If both are set they must be the same value matching `[1-9][0-9]*`.
+
+`pause` posts an indefinite pause. 2.4.0.0 stores it as `paused-until` and restores it on restart until `resume`. `resume` that returns 0 leaves the server `Running`; a queued overdue run starts at once.
+
+`export` does not send the login JWT as `Authorization`. `GET /api/v1/backup/{id}/export` on 2.4.0.0 ignores that header.
+The client first `POST /api/v1/auth/issuetoken/export` with the Bearer token, then passes the returned single-operation token as the `token` query parameter, with `export-passwords=false`.
+The operation token stays in memory and is never printed. Any failure, at the token step or the export step, writes nothing on stdout and exits 1.
+Success also requires a non-empty `Backup.TargetURL`; that JSON is the only stdout. `delete` requires `--yes`. `--remote-files` adds `delete-remote-files=true`.
+
+### Watchdog
+
+`util/systemd/yamaguchi-watchdog.timer` is `OnCalendar=*-*-* 12:00:00` and `Persistent=true`. The service is a oneshot whose `ExecStart` is the primary checkout's script. A non-zero exit is the alert. The durable record is written first.
+
+```bash
+python3 util/ad-hoc/yamaguchi_watchdog.py --backup-id 7
+python3 util/ad-hoc/yamaguchi_watchdog.py --backup-id 7 --state-dir /tmp/wd --no-notify
+```
+
+A run with no `--backup-id` is still a real check: it records `ALERT JOB_MISSING` in the default state directory and notifies. Pass `--state-dir` and `--no-notify` to look without touching `~/.local/state/duplicati`.
+
+| Exit | Verdict |
+|------|---------|
+| `0` | `OK`, including `RUNNING` when this job's task is active and under `--max-run-hours` (default 6) |
+| `1` | `ALERT` |
+| `2` | `UNDETERMINED` (`STATE_UNKNOWN`, `LOG_UNAVAILABLE`, `EXCEPTION`). That also alerts: an undetermined backup is not a verified one |
+| `64` | Usage from argparse. An absent or empty `--backup-id` is not this. It is exit 1 `JOB_MISSING`, because a usage error would write no record |
+
+| Code | When |
+|------|------|
+| `UNREACHABLE` | Login or `serverstate` failed: server down, credential missing or unsafe, or login refused |
+| `JOB_MISSING` | `--backup-id` is empty or not a positive integer, or that id is not in the server's backup list |
+| `PAUSED_WITH_QUEUE` | `ProgramState=Paused` and `SchedulerQueueIds` is a non-empty list. Resume with `yamaguchi_server_api.py resume` |
+| `STATE_UNKNOWN` | `ProgramState` is neither `Running` nor `Paused`, or a pause arrived with a queue that is not a list |
+| `NO_RUNS` | The job's log is empty |
+| `NOT_SUCCESS` | The newest log entry, or the newest Backup, is not `ParsedResult=Success`. A later successful Test or Compact does not hide a failed backup |
+| `STALE` | The newest Backup began more than `--max-age-hours` ago (default 26), or no Backup appears in the pages read (at most 10 pages of 20) |
+| `STUCK` | An active task has been running longer than `--max-run-hours` |
+| `LOG_UNAVAILABLE` | The log could not be read, or its newest entry is not a JSON run result |
+
+A pause with an empty queue is not an alert. The OK line names `ProgramState=Paused`. An indefinite pause becomes `PAUSED_WITH_QUEUE` at the next check after a run is queued. Freshness is the newest Backup, not a Compact or a Test. While this job's task is `RUNNING`, the previous run's age is not judged.
+
+Records, under `--state-dir` (default `~/.local/state/duplicati`):
+
+| File | Write |
+|------|-------|
+| `server-watchdog.log` | Append every check |
+| `server-watchdog.status` | Overwrite with the latest line |
+| `server-failures.log` | Append when the verdict is not `OK` |
+
+The line is `<when> <verdict> <code> backup=<id> <details>`, one line. An id that is not a positive integer is recorded as `backup=INVALID`. `notify-send` runs after those files are written, and its command line is the code, the details, and the path — not the credential file.
+
+### Deploy
+
+```bash
+bash util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>
+```
+
+`--backup-id` is required and has no default. The script exits 2 before it changes the host when the id is missing or not a positive integer, when `/home/pcalnon/Development/python/Juniper/juniper-ml` lacks the watchdog script, when that checkout's `util/systemd/yamaguchi-watchdog.service` does not contain the literal `--backup-id ${YAMAGUCHI_BACKUP_ID}`, or when `Linger` is not `yes`.
+
+Otherwise it copies the service and the timer into `~/.config/systemd/user/`, writes `yamaguchi-watchdog.service.d/backup-id.conf` (`Environment=YAMAGUCHI_BACKUP_ID=<id>`), reloads, runs `enable --now` on the timer, and starts one check. `ExecStart` is that primary checkout's script, so deploy only after that tree is the one you intend to run.
+
+Read the id from `yamaguchi_server_api.py status` (`backup id=…`) once the web credential exists. Until that file exists, every check records `ALERT UNREACHABLE`. The deploy does not need the credential to install the drop-in; that alert is the signal it is written to produce. A unit with no drop-in expands `${YAMAGUCHI_BACKUP_ID}` to one empty argument, records `JOB_MISSING`, and checks no job.
+
+### Operator pitfalls
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| `FATAL: web credential file … does not exist` | Write one `DUPLICATI_WEB_CREDENTIAL=` line, mode `0600`. That is the web-UI password, not `PASSPHRASE=` |
+| `FATAL: … is mode …` | `chmod 0600`. Rotate the password if anyone else could have read the file |
+| `export` exits 1 and stdout is empty | Expected on failure. A Bearer-only export is HTTP 400 on 2.4.0.0; the client has to obtain `issuetoken/export` first. Do not treat empty stdout as configuration JSON |
+| `serverstate` exits 2 | The server is `Paused` |
+| Every 12:00 check is `JOB_MISSING` | The unit has no `backup-id.conf` drop-in, or the id is not on the server. Re-run the deploy script with the id `status` prints |
+| Every check is `UNREACHABLE` just after deploy | The web credential file is not there yet. The drop-in can still be correct |
+| `PAUSED_WITH_QUEUE` | `pause` is indefinite and survives reboot. `python3 util/ad-hoc/yamaguchi_server_api.py resume` |
+| The desktop never pops, and the log has the alert | `notify-send` is best-effort. Read `server-failures.log` |
+| A bare watchdog run notified the desktop | It writes the live state directory unless you pass `--state-dir` and `--no-notify` |
 
 ---
 
@@ -3212,6 +3337,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_duplicati_web_credential.py` -- B2 of the 2026-10-03 backup recovery plan: the ONE web-UI credential file both Duplicati API clients read, `~/.config/duplicati-backup/web-credential` (0600), through `yamaguchi_server_api.read_credential`. It replaces the primary checkout's world-readable `.env` (exposure S-5). Pins the one-line `DUPLICATI_WEB_CREDENTIAL=` format; refusal of any group or other bit, of a non-regular file (a FIFO without hanging), and of zero or two key lines, each message naming path, mode and owner but never content. Also pins that the retired `DUPLICATI_PW_FILE` / `DUPLICATI_PW_KEY` are ignored, that the bare-secret fallback is gone, and that the password leaves only as the login body. `tests/duplicati_api_stub.py` replaces `urlopen`, so no socket opens.
 - `tests/test_yamaguchi_server_api.py` -- The `serverstate` / `pause` / `resume` verbs P0 step 10 needs (the 2026-09-24 STOP's item 3). Pins: exit 0 Running / 2 Paused / 64 usage; `pause` indefinite and read back; a job id required before any credential read or request; `export` issuing the single-operation token 2.4.0.0 requires (`POST /api/v1/auth/issuetoken/export`, then `token=` on the export route) and printing it nowhere; a failed `export`, at either step, leaving stdout empty, since it feeds the guard dry-run's `TargetURL`; and the `status` / `log` strings the bash callers grep. `tests/duplicati_api_stub.py` answers the export flow as 2.4.0.0 does, before any canned route -- 400 token-less, 500 for a token it never signed, 401 for another operation's; its earlier 200 is how ml#2115 merged an export that failed on every call.
 - `tests/test_yamaguchi_watchdog.py` -- Design §7.6 for `util/ad-hoc/yamaguchi_watchdog.py`: `Paused` with a non-empty `SchedulerQueueIds` alerts `PAUSED_WITH_QUEUE` (YAM §8.22); freshness is anchored on the newest **Backup**, keyset-paged and bounded; the job id has no default, and an absent or empty `--backup-id` is recorded durably as `JOB_MISSING` while a usage error exits 64 (the watchdog's 2 means UNDETERMINED). Also pins the record line format, a `notify-send` child that never sees the password, and the unit / deploy-script contract, checked statically because the deploy script changes systemd user units. `util/ad-hoc/2026-10-03_b2_mutation_check.py` puts 38 defects back across the three B2 suites, one at a time, and requires the suite assigned to each to fail.
+- Operator surface for the Yamaguchi credential, API, and watchdog suites: [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client).
 - `tests/test_register_open_set.py` -- The defect register's open-set counter, which had zero tests: which rows count as open, that a dagger or letter suffix is part of the id, and that the count and the enumerated list cannot disagree.
 - `tests/test_register_status_crosscheck.py` -- The register's third reading: §4 **FIXED rows, the §2 prose enumeration and the §5.1 verification table must agree three ways. `**FIXED` counts only in the STATUS cell -- a §5.1 row that merely mentions it is not a close -- and a missing §4 heading is an error rather than an empty-and-AGREE.
 - `tests/test_soak_next_probe_split.py` -- `pick_next` least-coverage-first selection, lifted to module scope so it can be tested: pre-intervention rows must not enter the run counter, or a probe the intervention never touched looks already-sampled and billed sessions keep landing on the covered ones.
@@ -3242,6 +3368,8 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - `--no-auto-compact=true` is load-bearing. Distinct from `util/juniper-backup.bash` (project-tree `tar | gpg -e`). Operator surface: [`docs/REFERENCE.md` § Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane).
 - `util/juniper-backup.bash` -- Per-repo project-tree archive to attached external media: `tar -cjf` (bzip2) piped into `gpg -e` (asymmetric, two `ENCRYPT_KEYS`). Build once, copy ciphertext. `--dry-run` writes nothing. Restore is `gpg -d FILE | tar -xjf -` (not `-xzf`). Exit 0/1/2/4. Unattended verify is `--list-packets` only. Drives are found under `JUNIPER_BACKUP_MEDIA_ROOT` (default `/run/media/$USER`), read under the same name and default as the scheduler. An absolute device entry is its own mount root. Every mount root must lie under `/mnt`, `/media` or `/run/media` (exit 2 otherwise), and exit 0 needs every configured device mounted. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
 - `util/install_juniper_backup_timer.bash` / `util/juniper-backup-scheduled.bash` / `util/systemd/juniper-backup{,-failure}.service` / `util/systemd/juniper-backup.{timer,path}` -- Tier-2 lane under `systemd --user` (recovery plan B6). The installer copies the runner, the scheduler and the shared OnFailure reporter into `~/.local/bin/` and the four units into `~/.config/systemd/user/`, then `daemon-reload` and `enable --now` the timer and the path unit. `--dry-run` writes nothing; it refuses root and a missing `Linger` before any write. Both modes print the acceptance order: the OK run first, with both sticks mounted. Run it with `bash`. `juniper-backup-failure.service` points the reporter at `~/.local/state/juniper-backup`, and the reporter (1.1.0) titles the notification with the failed unit. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
+- `util/ad-hoc/yamaguchi_server_api.py` / `util/ad-hoc/yamaguchi_watchdog.py` / `util/ad-hoc/yamaguchi_watchdog_deploy.bash` -- Duplicati 2.4.0.0 server on `127.0.0.1:8300` (not the `$HOME` `duplicati-cli` timer, not `juniper-backup.bash`). One `0600` web-credential file; `export` issues a single-operation token and prints nothing on failure; the watchdog has no default job id.
+  Operator surface: [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client).
 - `util/soak_next_probe.py` -- Emits the next pointer-follow soak probe's **task only** (unprimed). Default pick is least-covered then registry order; `--probe-id` needs the **full slug** (`P19-port-check-fail-opens`, not `P19`); `--reveal` is scoring-only; `--status` is post-intervention run counts with no task text. Tests: `tests/test_soak_next_probe.py`.
 - `util/soak_run_probe.py` -- Headless `claude -p` wrapper: dispatch, capture, mechanical retrieval channel (`tool_use` **inputs only** — not the answer text, #1644; not a sibling repo's same-named file, #1855; still no `tool_result`), scoring packet. `--dry-run` does not require the `claude` binary and must not print the task. A **real** run refuses (exit **3**) a terminal `BET-FAILING` / `HOLDS-AT-*` **and** an unreadable `DEGRADED` / `NO-DATA` / `NO-SEEDED-DATA` / crashed ledger unless `--force`; a **dry run is exempt** and previews with a NOTE on stderr (#1690, second arm 2026-09-10) — the rule rations billed sessions and a dry run spends none. `--force` is an open owner decision, not sanctioned. Reaper P1 pidfile is `$JUNIPER_EXP_RUN_ROOT/soak-probes/soak-probe-<pid>.pid`, not `reports/soak/runs/`. Tests: `tests/test_soak_run_probe.py`. Operator surface: [Pointer-Follow Soak](#pointer-follow-soak).
 - `util/soak_ledger.py` -- Append-only soak ledger (`probe-run` / `report` / `status` / `verify-probes` / `resolve` / `rescore`). Seeded arm decides; organic describes. `source-recovered` stays in the follow-rate denominator. `--outcome miss` requires `--class`. `rescore` is one-way to `source-recovered`. `analyse()` has no era filter (ledger §15.4 is not applied). `status` exits `1` on `BET-FAILING` or an open escalation (by design). Tests: `tests/test_soak_ledger.py`.
@@ -7049,6 +7177,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.81  | 2026-10-05 | Yamaguchi Duplicati server client: `127.0.0.1:8300` API, `0600` web credential, export's single-operation token (empty stdout on failure), watchdog codes, deploy `--backup-id` with no default. Distinct from the `$HOME` timer and from `juniper-backup.bash`. Skipped 0.6.62–0.6.80 (in-flight docs PRs) |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -7563,6 +7692,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.81
 **Maintainer:** Paul Calnon
