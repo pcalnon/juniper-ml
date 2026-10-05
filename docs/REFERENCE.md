@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.78
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -64,6 +64,7 @@
 - [Defect Register Close Protocol](#defect-register-close-protocol)
 - [Scheduled Security Scan and Lockfile Update](#scheduled-security-scan-and-lockfile-update)
 - [Equities Symbol Cap](#equities-symbol-cap)
+- [Equities Dataset Id Does Not Pin Array Content](#equities-dataset-id-does-not-pin-array-content)
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
@@ -6532,9 +6533,9 @@ The previous default — `EQUITIES_DEFAULT_MAX_SYMBOLS = None`, meaning all **50
 | Cache | `JUNIPER_DATA_EQUITIES_CACHE_DIR` | `experiment_stack.bash` `data_up` sets this to `$RUN_DIR/equities-cache`. It does **not** set the two cap env vars — they inherit. |
 | Default universe | bundled `sp500_constituents.csv` (**503** tickers) when `symbols` is omitted | `_resolve_symbols` sorts the CSV keys. Index *titles* over-claim (Russell 3000 published 2,923; Wilshire 5000 published 3,414 as of the 2026-09-04 count). |
 | Boundary | `ordered = ordered[: params.max_symbols]` at `generators/equities/generator.py:286` | Bare slice. **No 422**, no `DatasetMeta.truncation`, no record of dropped tickers. Register `APD-DATA-018` still cites `:264` — that line is now CIK parsing in `_load_constituents`. |
-| Features | 10 `float32` columns in `EQUITIES_FEATURE_COLUMNS` | `open, high, low, close, volume, week52_high, week52_low, total_shares, market_cap, cost_basis`. `Adj Close` is downloaded (`auto_adjust=False`) and kept as `adj_close` for optional `basis_price_field`, then **dropped** from `X`. |
+| Features | 15 `float32` columns in `EQUITIES_FEATURE_COLUMNS` | Indices 0–9 are `open` through `cost_basis`. Then `dividend` (10), `split_ratio` (11), `days_since_week52_high`, `days_since_week52_low`, `days_since_report`. `adj_close` is downloaded and kept off `X`. See [Equities Dataset Id Does Not Pin Array Content](#equities-dataset-id-does-not-pin-array-content). |
 | `seed` | defaulted (`DEFAULT_GENERATOR_SEED`) | Unused for the temporal split. Real non-reproducibility: `end_date` defaults to the wall clock. |
-| Shares fill | `fundamentals_fill` default `"zero"` | Missing SEC facts → `total_shares` / `market_cap` become **0.0**. The rows stay. |
+| Shares fill | `fundamentals_fill` default `"nan"` (`EQUITIES_DEFAULT_FUNDAMENTALS_FILL`) | Missing SEC facts stay NaN. `"zero"` writes `total_shares` / `market_cap` as 0.0 and keeps the rows. This knob does not fill `dividend` / `split_ratio`. |
 
 Failed Yahoo downloads still skip. Missing SEC facts + `fundamentals_fill="zero"` still write `0.0`. The generator never calls `Ticker.info`.
 
@@ -6577,9 +6578,77 @@ To raise the **deployment** ceiling (not the request), set `JUNIPER_DATA_EQUITIE
 | `501` / `equities` unavailable | Install `juniper-data[equities]` into the **serving** env (`JuniperData` for the experiment stack; `JuniperCascor1` for in-process bench). |
 | Assumed Yahoo `.info` fields (`trailingPE`, `floatShares`, …) | The generator never calls `Ticker.info`. It uses `yf.download` (chart) + SEC XBRL. |
 | Expected a byte cap to bound wall time | Anti-correlated. One symbol × 26 y is 210 KB / ~2 s; Russell 3000 × 1 day is 92 KB / 1.7–3.2 h. |
-| Expected splits / dividends / 52-week **dates** / reporting date in `X` | Not in `EQUITIES_FEATURE_COLUMNS`. Splits/dividends need `actions=True` (not passed). 52-week **values** are already features; dates and SEC `filed` are computed/downloaded and discarded. |
+| All-zero `dividend` / `split_ratio`, or raw action dates expected in `X` | Columns 10 and 11 are those features, and `actions=True` is passed. A missing yfinance column is stored as 0.0 with no flag. Dates stay in the YYYYMMDD arrays. See [Equities Dataset Id Does Not Pin Array Content](#equities-dataset-id-does-not-pin-array-content). |
 
 Do **not** re-introduce a silent prefix slice. Do **not** treat a byte threshold as the binding bound.
+
+---
+
+## Equities Dataset Id Does Not Pin Array Content
+
+`equities_seq` `dataset_id` hashes the **request**, not the arrays. Two mints of `equities_seq-6.0.0-15505731cba5b86d` can differ in content. Compare `meta.checksum` before quoting a cross-validation number.
+
+Verified against juniper-data `main`:
+
+| Piece | Where | What it covers |
+|-------|--------|----------------|
+| `generate_dataset_id` | `juniper_data/core/dataset_id.py` | `"{generator}-{version}-{sha256(canonical JSON)[:DATASET_ID_HASH_PREFIX_LENGTH]}"`. The JSON is generator name, version, and params (`sort_keys=True`). A present `seed` makes the id deterministic. A seedless request adds a nonce. |
+| Artifact cache note | `juniper_data/api/http_cache.py` | The artifact is not content-addressed. The same id, after a delete or expiry, serves whatever the generator produces on the next mint. |
+| `compute_checksum` | `juniper_data/core/artifacts.py` | SHA-256 of uncompressed `np.savez` bytes with **sorted keys** (`arrays_to_bytes`). This is the content fingerprint stored as `meta.checksum`. It is not a hash of zip timestamps, and it is not `sha256` of the compressed bytes a store serves. |
+
+### Two numbers that share an id
+
+The 2026-10-04 captures under [`reports/2026-10-04_recurrence-equities-cv-matrix/`](../reports/2026-10-04_recurrence-equities-cv-matrix/) used one mint:
+
+| Capture | `dataset_id` | `meta.checksum` | `eval_aggregate.r2` |
+|---------|--------------|-----------------|---------------------|
+| [`00-dataset-create.json`](../reports/2026-10-04_recurrence-equities-cv-matrix/00-dataset-create.json) | `equities_seq-6.0.0-15505731cba5b86d` | `c02004e1708e489aea48aa0a985b2eb797ee190d340080ea547dcf363bfed261` (`created_at` 2026-10-04T21:06:08Z) | — |
+| [`10-crossval-service-defaults.json`](../reports/2026-10-04_recurrence-equities-cv-matrix/10-crossval-service-defaults.json) | same id | same mint | **−20344.637730773607** |
+| [`10-crossval-eh-rff.json`](../reports/2026-10-04_recurrence-equities-cv-matrix/10-crossval-eh-rff.json) | same id | same mint | **−0.11526096841533144** |
+
+−20344.64 and −0.115 are two `POST /v1/crossval` bodies on one artifact (service defaults versus the E-H RFF body with `ridge: 1.0`). They are not two datasets.
+
+[`notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`](../notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md) v1.0.0 also records checksum `037baab750acd80f22193664e16d24a99e21b80cd4cc02c111ce9280ca52187b` on 2026-10-03 for this same id, and explains the mismatch as NPZ zip timestamps (F-P8, Minor). That mechanism does not match `compute_checksum`. A different checksum is different arrays.
+
+The consensus re-derivation in [juniper-ml#2168](https://github.com/pcalnon/juniper-ml/pull/2168) (`reconciler-rederive-b1.json` key `F1`) opened both mints: 28 keys, same shapes.
+Column 10 `dividend` differs in `X_train` (1,367 cells) and `X_test` (178 cells).
+`X_val` differs in 244 cells across column 10 `dividend` and column 11 `split_ratio`.
+The `037baab7…` mint is 0.0 in every one of those cells.
+Re-solving linear readout at ridge 0 on that mint returns eval aggregate r² **−18081.54317403171**, the audited 2026-10-03 digit.
+−20344.64 is the later mint (`c02004e1…`), not a rounding of −18081.
+
+### Silent zero-fill of action columns
+
+`juniper_data/generators/equities/generator.py` treats a missing yfinance action column as "none happened":
+
+```python
+# yfinance omits the action columns entirely for a ticker with no
+# dividends or splits in range; absent means "none happened", which is
+# 0.0, not missing.
+for action_column in ("dividend", "split_ratio"):
+    if action_column not in frame.columns:
+        frame[action_column] = 0.0
+frame[["dividend", "split_ratio"]] = frame[["dividend", "split_ratio"]].fillna(0.0)
+```
+
+The download passes `actions=True`. If that response omits `Dividends` or `Stock Splits`, the generator writes 0.0 and continues. There is no log line and no response flag. An AAPL window `2015-01-01`..`2022-01-01` whose `dividend` column is all zeros is an incomplete upstream response, not a ticker that paid nothing. On the complete mint, `split_ratio` (index 11) carries the 2020-08-31 4:1 split as 4.0.
+
+Column order is `EQUITIES_FEATURE_COLUMNS` in `juniper_data/generators/equities/defaults.py` (15 `float32` columns). Index 10 is `dividend`. Index 11 is `split_ratio`. `adj_close` is downloaded (`auto_adjust=False`) and kept off `X`.
+
+`EQUITIES_DEFAULT_FUNDAMENTALS_FILL` is `"nan"`. That knob fills missing `total_shares` / `market_cap` (and pre-purchase `cost_basis`). It does not govern `dividend` or `split_ratio`.
+
+No producer guard for this is shipped. A proposed `actions_present` flag (plan item W5.7) is not in the generator. Until one exists, compare checksums.
+
+### Operator pitfalls
+
+| Symptom | Check / Fix |
+|---------|-------------|
+| Same `dataset_id`, service-default r² moved from about −18081 to about −20344 | Compare `meta.checksum`. `037baab7…` is the 2026-10-03 mint (−18081.54317403171). `c02004e1…` is the 2026-10-04/05 mint (−20344.637730773607). Do not call that rounding. |
+| Same id and same checksum, r² is −0.115 on one call and −20344 on another | Those are different crossval bodies. The E-H RFF request sets `ridge: 1.0`. A bare request takes the service default (`readout=linear`, `ridge=0.0`). |
+| AAPL `dividend` / `split_ratio` column is all zeros | The generator zero-filled an omitted action column. Re-mint and require checksum `c02004e1…` before comparing to the 2026-10-04 matrix. |
+| Investigation note says the checksum fingerprints the container | That is v1.0.0's F-P8 sentence. `compute_checksum` hashes the arrays. [juniper-ml#2168](https://github.com/pcalnon/juniper-ml/pull/2168) re-files F-P8 as a Major data finding. |
+
+Do **not** treat a matching `dataset_id` as a content pin. Do **not** quote −18081 and −20344 as one solve.
 
 ---
 
@@ -7516,6 +7585,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.78
 **Maintainer:** Paul Calnon
