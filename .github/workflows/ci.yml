@@ -1023,6 +1023,13 @@ jobs:
           # record line format; and the unit + deploy script contract, checked statically (the
           # deploy script changes systemd user units and is never executed by a test).
           python3 -m unittest -v tests/test_yamaguchi_watchdog.py
+          # tests/test_yamaguchi_edit_target.py: migration step 3, the passphrase-safe
+          # TargetURL repoint. A PUT of a new destination against a populated local job
+          # makes every remote volume look missing. Pins the refusals that must happen
+          # before that PUT (busy rc 3, destination/census rc 4, passphrase rc 5,
+          # non-durable rc 7) and the read-back that must happen after (rc 6 / rc 0).
+          # urllib is the Duplicati stub; mountpoint and findmnt are not executed.
+          python3 -m unittest -v tests/test_yamaguchi_edit_target.py
           # tests/test_matrix_set_verdicts.py: Hermetic gate for the E2E matrix verdict writer `util/ad-hoc/2026-09-02_matrix_set_verdicts.py` (`util/` is outside every pre-commit Python hook), which shipped with zero tests: verdict tokens, row identity, and the write-back path.
           python3 -m unittest -v tests/test_matrix_set_verdicts.py
           # tests/test_e2e_matrix_fill.py: Hermetic gate for the E2E matrix bulk-fill writer, which shipped with zero tests: which cells a fill may touch, and that an already-filled cell is not silently overwritten.
