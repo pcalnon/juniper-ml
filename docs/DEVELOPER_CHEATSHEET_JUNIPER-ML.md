@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.80
+**Date**: 2026-10-05
 **Project**: juniper-ml
 
 ---
@@ -766,6 +766,8 @@ Tip: on a failed `*_up` leg, isolated-stack `do_up` auto-calls `do_down` — exp
 
 Tip: `experiment_stack.bash` legs are OR-listed (`*_up || failed=1`), which disables `set -e` inside each body — critical steps need `|| return 1` or a health timeout with a live listener false-greens `--up` and skips teardown. A `--grafana-bridge` failure after healthy services tears the run down; a **staging** failure (missing `--config`) still exits between `allocate_port` and `ports.json`, so clear stale `*.lock` dirs under `JUNIPER_EXP_LOCK_ROOT` by hand (open #979).
 
+Tip: a recurrence service has one `train_lock` and one in-memory model. A busy `POST /v1/train` is a `409` object (`operation_id`, `busy_since`, `requested_by`). The experiment driver stringifies it, omits `expect_operation_id` on predict, and a wall-clock timeout leaves the fit holding the lock. The `200` id is in `train_response.json`. See [REFERENCE — One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service).
+
 Tip: the NPZ contract is SIX keys — `X_val` / `y_val`, never `X_eval`. Decision 11 shipped 2026-09-06, and reached PyPI 2026-09-10/11 (juniper-ml 0.8.0 floors seven of the eight; model-core is admitted, not floored); nothing emits `*_full` any more: never require it, and never assert it is absent either, because every stored artifact predating that date still carries it. Recurrence `dataset.split: val` works (juniper-ml#1761); the long form `validation` is exit 2 — `RECURRENCE_SPLITS` is `{train, val, test, full}`. See [REFERENCE — Partition Contract](REFERENCE.md#train--val--test-partition-contract).
 
 Tip: a renderer `ValueError` is a per-plot SKIP (exit `0`, no PNG); missing matplotlib, a failed payload fetch, or any other render exception is SKIP **and** acceptance failure (exit `1`). Inspect `jq '.driver.plots' $RUN_DIR/manifest.json`. See [REFERENCE — Plot SKIP vs acceptance](REFERENCE.md#plot-skip-vs-acceptance-valueerror-contract).
@@ -1119,6 +1121,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-05
+**Version:** 1.0.80
 **Maintainer:** Paul Calnon

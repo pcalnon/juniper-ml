@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.80
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -39,6 +39,7 @@
 - [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost)
 - [Post-Merge Main Verification](#post-merge-main-verification)
 - [Experiment Stack Utilities](#experiment-stack-utilities)
+- [One Caller per Recurrence Service](#one-caller-per-recurrence-service)
 - [PF Scenario Suites](#pf-scenario-suites)
 - [Perf-Lane Work Gate](#perf-lane-work-gate)
 - [Perf-lane metrics and baselines](#perf-lane-metrics-and-baselines)
@@ -3512,6 +3513,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
     - Root-cause note: [`notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md`](../notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md); cascor-side fidelity fix cascor#504; candidate-param plumbing gap cascor#505.
   - Each poll samples the loopback `/metrics` allowlist (`candidate_correlation` / `hidden_units_total` / `training_loss` / `training_accuracy_ratio` / step-duration sum+count) into `artifacts/results/metrics_series.csv` -- correlation exists ONLY there, never in `/v1/metrics/history` rows; a 404 (metrics disabled, G-3) degrades sampling, not the run.
   - Recurrence drive (Wave 2.3): health-gates `/v1/health/ready`, then the **synchronous** `POST /v1/train` (the response IS completion — no poll loop; the Q-2 budget is the request's socket timeout → `timed_out`), then optional `POST /v1/predict` (`predict.from_dataset_split`, default `test`) and `POST /v1/crossval` (same LMU hyperparams as `train:` for bench comparability); every phase refs the dataset by content-addressed `dataset_id` (H-8).
+  - A busy recurrence train is an object `409`, and the `200` carries `operation_id`. This driver stringifies the object and does not poll status after a timeout. [One caller per recurrence service](#one-caller-per-recurrence-service).
   - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) re-runs the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` as a manifest-recorded extra step (the CLI has no `--params` flag, so the dataset_id ref is the only faithful form).
     That CLI is `ports.json` `recurrence_launch.cli` when the launcher recorded one (W1.9, F-D4; `shutil.which` on the driver's PATH otherwise), and rerun parity — the served process's interpreter and `juniper-recurrence-model` version — must hold, or the phase fails without running it.
     Every phase leaves a record in the manifest's `phases` block (`ok` / `failed` + `error` / `skipped` when not enabled / `not_reached`). `degraded` = train succeeded but an ENABLED predict, crossval or save_model phase did not; it is derived from those records, never from `acceptance.ok`, so a plot-only acceptance failure stays `succeeded`.
@@ -4389,6 +4391,44 @@ The driver's `save_model` re-run executes `recurrence_launch.cli`. `shutil.which
 A mismatch fails the phase with both sides named, and the CLI is not run (`outcome: degraded`, exit 1, as W0.3 derives it). Evidence missing on either side is recorded as `unverified`, not guessed. When `--recurrence-url` points anywhere but the service `ports.json` recorded, the record is set aside and `save_model_rerun.launch_record` says why. `manifest.save_model_rerun` carries `cli_source` (`launcher` or `path`) and the `parity` block.
 
 `util/isolated_stack.bash` is not changed. It writes no `ports.json` and the driver never reads its run dir; it never created a per-run snapshots dir, so F-D9's defect is absent there; and it has no `--config` route, so inheritance is the only route for the log knobs, and it already works.
+
+#### One caller per recurrence service
+
+W1.5 service half, juniper-recurrence `d20a581b`. The plan item is in [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md).
+
+The service has one process-wide `train_lock` and one in-memory model. `POST /v1/train` and a snapshot restore each mint an `operation_id` — a `uuid4` as 32 lowercase hex characters — when they take that lock. The experiment driver in this repo does not send or check that id yet. `util/experiment_stack.bash` binds recurrence on **8260–8289**. Canopy's URL is outside that range (native **8210**; Compose publishes host **8211**). A suite pointed at that listener shares the lock and the model.
+
+| Call | Body |
+|------|------|
+| `POST /v1/train` 200 | `operation_id`, and `metrics_scope` is always `"in_sample"` (`final_metrics` are scored on the split the fit just trained on). |
+| `POST /v1/train` 409 | `detail` is an object: `message`, `operation_id`, `operation` (`train` or `restore`), `busy_since` (ISO-8601 UTC), `requested_by`, `dataset_id`. `message` is `a training run is already in progress`, or `a snapshot restore is in progress` when the holder is a restore. The holder fields are null only when the lock was taken outside this machinery. |
+| `GET /v1/training/status` | `idle`, `training`, `restoring`, `trained`, `restored`, or `failed`, plus the operation fields below. |
+| `POST /v1/predict`, `POST /v1/model/snapshots` | Optional `expect_operation_id`. Omitted, the route scores or saves the loaded model. A mismatch is `409` with `detail.message`, `expected_operation_id`, and `model_operation_id`. No model is still the string `no trained model; call POST /v1/train first`. |
+| Restore while the lock is held | `409` whose `detail` is the string `a training run is in progress; retry when it completes`. A completed restore returns its own `operation_id`; a later `expect_operation_id` has to name that id. |
+| `POST /v1/crossval` 409 | A different lock (`crossval_lock`). `detail` is the string `a cross-validation run is already in progress`. That body has no `operation_id`. |
+
+Status fields: `operation_id`, `operation`, `busy_since`, `dataset_id`, and `requested_by` describe the operation the `state` names. `model_operation_id` is the operation that produced the model `/v1/predict` would score. It differs from `operation_id` while another operation holds the lock, and after one fails.
+
+`failure` (`detail`, `status_code`) is present only under `failed`. An earlier model stays loaded. A success clears the failure record. `restored` means this process loaded a snapshot and never fitted it: no `final_metrics` and no events.
+
+`X-Request-ID` on train or restore is stored verbatim as `requested_by`. The fit is not cancelled when the client drops the socket: the handler runs to completion and holds `train_lock` until then. Read `GET /v1/training/status` for the outcome, and wait for `trained` or `failed` before posting another train.
+
+`JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS` (default **120**; the field has no unprefixed alias) is the timeout on the service's juniper-data client, including the create that runs a cold `equities_seq` fetch. Keep it under the caller's own budget. A fetch that exceeds it fails inside the service as `502` `juniper-data unreachable: …`.
+
+What `util/experiments/run_experiment.py` records against that service:
+
+- The train body is the dataset ref plus the YAML `train:` keys that are set. Headers are `Accept` and `Content-Type` only, so `requested_by` on that fit is null.
+- The socket timeout is `outputs.max_wall_seconds` (CLI `--max-wall-seconds` overrides; default **3600**). A timeout sets `outcome` to `timed_out` and writes the budget into `phases.train.error`. The driver does not call `GET /v1/training/status`, and the fit keeps the lock.
+- Any other non-200 train raises `RunFailed` (exit **4**). `_detail` turns `detail` into text and keeps 500 characters, so the 409 object appears in `phases.train.error` and `acceptance.reasons` as a Python dict repr. `artifacts/results/train_response.json` is written only for HTTP 200.
+- `manifest.train` keeps `final_metrics`, `n_epochs`, `stopped_reason`, and `dataset`. The operation id is in `train_response.json`.
+- Predict posts `{"dataset": {"dataset_id", "split"}}` and omits `expect_operation_id`, so it scores the model currently loaded, including one another caller trained or restored on the same listener.
+- A busy train is exit 4. The driver does not stop the holder and does not retry the post.
+
+```bash
+curl -sS http://127.0.0.1:8210/v1/training/status
+jq '.operation_id, .metrics_scope' "$RUN_DIR/artifacts/results/train_response.json"
+jq '.outcome, .phases.train, .train' "$RUN_DIR/manifest.json"
+```
 
 #### F-6 listener pid rule (binding)
 
@@ -7049,6 +7089,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.80  | 2026-10-05 | One caller per recurrence service: train/restore mint `operation_id`; a busy `POST /v1/train` `409` detail is an object; the experiment driver stringifies it, omits `expect_operation_id`, and leaves a timed-out fit holding the lock |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -7563,6 +7604,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.80
 **Maintainer:** Paul Calnon
