@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.40
+**Version:** 0.3.59
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -139,6 +139,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments (`--dry-run` first; PF-1 matched 4000/4000 epochs; `JUNIPER_SUITE_GRAFANA_BRIDGE`; PF-4/PF-8 are not driver suites)
 - [Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) -- `read_run_metrics` / `make_baseline` / `compare_baseline`; sound since ml#1743, but **never** wire the exact `step_count` gate to CI — P1 design §6 closed 2026-09-07; host identity blocks on hosted runners, so it would exit 2 REFUSED every time
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default `equities` / `equities_seq` is 422 at 14 symbols (cost is per request; silent slice deleted in data#354)
+- [Linear and RFF readouts](REFERENCE.md#linear-and-rff-readouts-do-not-share-a-feature-scale) -- linear fits raw memory; RFF standardizes the train rows of that fit; GCV stops at 1000; the selected RFF λ is `meta["readout"]["ridge"]`
 - [Canopy E2E Matrix Writes](REFERENCE.md#canopy-e2e-matrix-writes) -- fill / set-verdicts / rescore for the click-by-click ledger (fill is dry-run; set-verdicts is not)
 - [F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) -- 12-slot dash-renderer starvation (FIXED); do not add a new Interval; isolated stack only
 - [Worktree Divergence / in-use probe](REFERENCE.md#worktree-divergence-is-a-memory-cost) -- cwd-only liveness is not enough; STRONG cwd/open-fd vs WEAK cmdline
@@ -190,6 +191,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.3.39
+**Last Updated:** 2026-10-05
+**Version:** 0.3.59
 **Status:** Active

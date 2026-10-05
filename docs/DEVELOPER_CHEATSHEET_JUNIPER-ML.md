@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.80
+**Date**: 2026-10-05
 **Project**: juniper-ml
 
 ---
@@ -669,6 +669,10 @@ Full contract: [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-g
 
 Tip: default `equities` / `equities_seq` against the bundled 503 names is HTTP **422** at 14 symbols (data#354). Cost is per request, so the cap is in **symbols**, not bytes. Set `symbols: [AAPL, …]` (E-H already does) or `allow_truncation: true`. A request may only *lower* `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS`. `experiment_stack.bash` sets the cache dir, not the cap. Full contract: [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap).
 
+Tip: a linear LMU readout fits the raw memory block; `readout="rff"` always column-standardizes that block on the training rows of the fit (zero-variance std becomes 1) and then applies random Fourier features. No request flag turns the linear scale on.
+GCV searches `logspace(-6, 3, 60)` and stops at `1000`. On an RFF snapshot the selected λ is `meta["readout"]["ridge"]`; envelope `meta["ridge"]` stays `0.0`. `POST /v1/train` and `POST /v1/crossval` do not return λ, θ, or γ.
+Full contract: [REFERENCE — Linear and RFF readouts](REFERENCE.md#linear-and-rff-readouts-do-not-share-a-feature-scale).
+
 Tip: do **not** gate on `aggregate.csv` `wall_seconds` or `manifest.timings.drive` (poll-quantized).
 `python util/experiments/read_run_metrics.py SUITE_DIR` reads the last `metrics_series.csv` row.
 `step_count` is exact and fail-on-mismatch (#1613); speed is reported only.
@@ -1083,6 +1087,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Defect Register Close Protocol](REFERENCE.md#defect-register-close-protocol) -- `**FIXED` token, cwd pitfall, third reading vs the two §4 counters
 - [Train / Val / Test Partition Contract](REFERENCE.md#train--val--test-partition-contract) -- shipped `*_full` vs design-closed `X_val`
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default 503-name universe, per-request cost, silent `max_symbols` slice
+- [Linear and RFF readouts](REFERENCE.md#linear-and-rff-readouts-do-not-share-a-feature-scale) -- linear fits raw `M`; RFF standardizes the train rows of that fit; GCV stops at 1000; RFF λ is `meta["readout"]["ridge"]`
 - [Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) -- PF-5/6/7 report-only; `work_countable` third state; baseline/compare refuse
 - [Suite Report Gate Inputs](REFERENCE.md#suite-report-gate-inputs) -- `run_suite` P2 1.4: both gate inputs in `aggregate.csv` / `REPORT.md`; `--compare-baseline` reporting only
 - [Run lister / pruner](REFERENCE.md#run-lister--pruner-list_runspy) -- `list_runs.py` directory-truth scan; `--prune` ≠ `--down`
@@ -1119,6 +1124,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-05
+**Version:** 1.0.80
 **Maintainer:** Paul Calnon

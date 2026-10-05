@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.80
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -64,6 +64,7 @@
 - [Defect Register Close Protocol](#defect-register-close-protocol)
 - [Scheduled Security Scan and Lockfile Update](#scheduled-security-scan-and-lockfile-update)
 - [Equities Symbol Cap](#equities-symbol-cap)
+- [Linear and RFF readouts do not share a feature scale](#linear-and-rff-readouts-do-not-share-a-feature-scale)
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
@@ -6630,6 +6631,73 @@ Do **not** re-introduce a silent prefix slice. Do **not** treat a byte threshold
 
 ---
 
+## Linear and RFF readouts do not share a feature scale
+
+The two closed-form LMU readouts fit different matrices. `readout` omitted or `"linear"` solves on the raw memory block. `readout="rff"` always column-standardizes that block on the rows of **this** fit, then maps it through random Fourier features. `TrainRequest` and `CrossValRequest` have no field that turns linear standardization on or RFF standardization off. `readout="mlp"` is a third spec: it rejects `ridge`, and this section does not describe it.
+
+Verified against `juniper-recurrence` `main` (`d20a581`: `juniper_recurrence_model/readouts.py`, `juniper_recurrence_model/model.py`, `juniper_recurrence/_readout.py`, `juniper_recurrence/routers/crossval.py`, `juniper_recurrence/schemas.py`) and against `juniper_model_core.crossval.executor.cross_validate` in this repo.
+
+### What each fit sees
+
+`LMURegressor.fit` builds the memory block `M` (the readout-step LMU state) and a linear side-channel `extra` (the `target_dt` column, or an `(n, 0)` array). It materialises a fresh readout from the immutable spec and fits that pair. The readout appends a bias column of ones, and that column is never penalised.
+
+| | Linear | RFF |
+|---|---|---|
+| Memory block | Used raw. Design is `[ M \| extra \| 1 ]`. | Column mean and population std of the `M` passed to this `fit`. A zero-variance column gets std `1` (the scale stays finite). `extra` is not scaled. |
+| Feature map | Identity | `φ = √(2/D) · cos(M_z @ W + b)`, with `W ~ N(0, γ² I)` and `b ~ U[0, 2π)`. Design is `[ φ \| extra \| 1 ]`. |
+| Width `D` | Width of `M` (`F·d`) | `min(n_features_out, n_rows of this fit)`. Omitted `rff_features` is `256`. |
+| Bandwidth `γ` | — | Omitted `rff_gamma` is `"median"`: `1 / median pairwise distance` on the standardized train rows (subsample 256 when the fold is larger). The resolved float is written back onto the readout. |
+| Seed | Ignored | Drawn inside `fit` from `np.random.default_rng(random_seed)`. `LMURegressor.random_seed` defaults to `0`. The HTTP route does not pass a seed, so each fold starts from `0`. The median draw consumes the generator before `W` and `b`. |
+
+`ridge=0` (the linear spec default) is `np.linalg.lstsq(..., rcond=None)`. `ridge>0` is the normal equations with the bias diagonal zeroed. `ridge="gcv"` is the grid below, on `[ M \| extra ]` for linear and on `[ φ \| extra ]` for RFF.
+
+When the request omits `ridge`, linear uses the service `default_ridge` and RFF uses `"gcv"` (`_RFF_DEFAULT_RIDGE` in `juniper_recurrence/_readout.py`). `default_ridge` is not applied to an RFF spec. `rff_features` / `rff_gamma` on any other rung raise `ValueError` (HTTP 422 from the schema check that mirrors `build_lmu_regressor`).
+
+### GCV grid
+
+`_GCV_GRID` is `np.logspace(-6.0, 3.0, 60)`: 60 penalties from `1e-6` through `1000`. One thin SVD of the centred features scores every point (`GCV(λ) = n · RSS(λ) / (n − tr H(λ))²`, with the unpenalised intercept counted in the trace). The winner is written back as a float on the readout's `ridge`. The search stops at the endpoints. A selected `1000.0` is `10**3`, the last grid point. The fit does not replace an endpoint winner with a separate null model.
+
+As `λ` grows, the feature filter `s / (s² + λ)` shrinks and the unpenalised intercept remains. The HTTP response does not say whether the winner sat on an endpoint.
+
+### Per fold, train rows only
+
+`cross_validate` calls its factory once per fold and does not reuse the model. The recurrence route's factory is `lambda _fold: build_lmu_regressor(...)`, and each `LMURegressor.fit` calls `spec.make()`, so the readout is new. RFF mean, std, `γ`, `W`, and `b` belong to that fold's training rows.
+
+The route does not pass `pass_eval_as_val`. The executor default is `False`, so the eval slice is not handed to `fit` as `X_val`. The closed-form rungs ignore `X_val` when it is supplied. At `predict`, eval rows are scaled with the train-fold mean and std (`(M - mean) / std`).
+
+### Where the selected λ is
+
+| Surface | Linear `ridge="gcv"` | RFF `ridge="gcv"` |
+|---|---|---|
+| Readout after `fit` | `LinearReadout.ridge` (float) | `RFFReadout.ridge` (float). `gamma` is the resolved float. |
+| `LMURegressor.ridge` | Copied from the readout. `fit` assigns it only when `kind == "linear"`. | Stays `0.0`. An explicit readout spec is built with the envelope `ridge` left at `0.0` (constructor `ridge` configures the default linear spec only). |
+| Snapshot `meta["ridge"]` | The selected λ | `0.0`. `LMUSerializer.save` stores `model.ridge`. |
+| Snapshot `meta["readout"]` | `save_state` descriptor: `kind`, `ridge` (the selected λ) | `kind`, `ridge` (the selected λ), `gamma`, `n_features_out` (the capped `D`). This descriptor is the field that matches the fit. |
+| `POST /v1/train` | Not returned. Body is `final_metrics`, `metrics_scope` (`"in_sample"`), `n_epochs`, `stopped_reason`, `dataset`, `operation_id`. | Same. |
+| `POST /v1/crossval` | Not returned. Folds carry `fold`, `train_metrics`, `eval_metrics`, `n_epochs`, plus `eval_aggregate` / `eval_std` / `dataset`. | Same. `describe_topology` meta `readout` is `{"kind": ...}` only. |
+
+```python
+import json
+import numpy as np
+
+with np.load("model.npz", allow_pickle=False) as data:
+    meta = json.loads(str(data["meta"]))
+selected = meta["readout"]["ridge"]  # RFF GCV lives here; meta["ridge"] stays 0.0
+```
+
+### Operator pitfalls
+
+| Symptom | What is going on |
+|---|---|
+| Linear and RFF scores on the same `dataset_id` are read as one design with two penalties | RFF standardized `M` on the train rows and replaced it with cosines. Linear did neither. No request flag changes that. |
+| An RFF snapshot's `meta["ridge"]` is `0.0` after `ridge="gcv"` | The envelope is updated only for `kind == "linear"`. Read `meta["readout"]["ridge"]`. |
+| Crossval JSON has no selected λ, θ, or γ | Those stay on the in-process readout. The response model has no such fields. |
+| GCV "chose 1000", so a larger penalty would differ | `1000` is `logspace(-6, 3, 60)[-1]`. The selector cannot return a larger λ. |
+| Eval-fold scale looks included in the RFF stats | Mean and std are the training rows of that fit. Eval rows see those stats only at predict. |
+| `rff_features` set on a linear request | Rejected. Those knobs are valid only when `readout="rff"`. |
+
+---
+
 ## Release-Train Detect Summary and Slack
 
 Operator contract for the detect job's **Render step summary** and **Slack notification** heredocs in [`.github/workflows/release-train.yml`](../.github/workflows/release-train.yml). The full mode / Gate / HALT surface stays in the [release-train operator runbook](../notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md) §3.1. Hermetic YAML-extraction pins: `DetectSummaryRehearsalTest` / `DetectSlackPayloadRehearsalTest` in `tests/test_release_train_workflow_guard.py`.
@@ -7049,6 +7117,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.80  | 2026-10-05 | Linear vs RFF feature scale: linear fits raw `M`; RFF always column-standardizes the train rows of that fit (zero-variance std becomes 1) then applies cos features. GCV grid is `logspace(-6, 3, 60)` (ends at 1000) and writes the winner onto the readout. Envelope `meta["ridge"]` stays `0.0` for RFF; the selected λ is `meta["readout"]["ridge"]`. Train and crossval responses omit λ, θ, and γ. Skipped 0.6.62–0.6.79 (in-flight docs PRs). |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -7563,6 +7632,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.80
 **Maintainer:** Paul Calnon

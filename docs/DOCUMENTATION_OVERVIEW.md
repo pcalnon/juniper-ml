@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.54
+**Version:** 0.2.73
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -58,6 +58,7 @@
 | **Read a run's `stats.json` / `summary.md`** | [REFERENCE — Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) (de-ratified `wall_seconds`, per-poll step duration, `scrape_confirmed` tri-state, recurrence timings under `outcome.timings`) | docs/    |
 | **Check which generators an env can run** | [REFERENCE — Generator Availability Matrix](REFERENCE.md#generator-availability-matrix-on-host) (gates, mnist/equities install paths, probe one-liner) | docs/    |
 | **Run `equities` / `equities_seq` without a 422** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (14-symbol refuse; unit is symbols because cost is per request; silent slice deleted) | docs/    |
+| **Compare a linear LMU readout with RFF** | [REFERENCE — Linear and RFF readouts](REFERENCE.md#linear-and-rff-readouts-do-not-share-a-feature-scale) (RFF standardizes train-fold `M`; linear does not; GCV grid ends at 1000; RFF λ is `meta["readout"]["ridge"]`) | docs/    |
 | **Import a CSV/JSON dataset (byte cap)** | [REFERENCE — CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) (128 MiB, 422 until opt-in, `IMPORT_DIR` pitfall; equities `max_symbols` still silent) | docs/    |
 | **Bound an `equities` request (do not use a byte cap)** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (per-request cost, silent `max_symbols` slice, default 503 names ≈ 34 min) | docs/    |
 | **Index / classify / backfill the snapshot archive** | [REFERENCE — Snapshot Sidecar Chain](REFERENCE.md#snapshot-sidecar-chain) (`--scan`, two-axis classify, derivation levels, `--root` trap) | docs/    |
@@ -240,6 +241,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.2.54
+**Last Updated:** 2026-10-05
+**Version:** 0.2.73
 **Maintainer:** Paul Calnon
