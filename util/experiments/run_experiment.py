@@ -59,6 +59,10 @@ never ``succeeded`` (W0.3, F-D1). ``outputs.save_model: true`` (G-18: service mo
 model artifact) re-runs the ``juniper-recurrence train`` CLI with ``--dataset <dataset_id>`` + the
 identical hyperparameter flags + ``--out .../model.npz`` as an explicit, manifest-recorded extra step
 -- the CLI has no ``--params`` flag (``main.py``), so the ``dataset_id`` ref is the only faithful form.
+That CLI is the one the launcher recorded for the served process (``ports.json``
+``recurrence_launch.cli``, W1.9 / F-D4), with ``shutil.which`` on the driver's PATH only as the
+fallback for a run dir that records none; and the re-run must resolve the served process's
+interpreter and model version (rerun parity), or the phase fails without running it.
 
 Plots (Wave 2.4, SS8.1): when ``outputs.plots`` requests them, the cascor path renders the SS8.1 set
 client-side from the collected payloads via ``plots_cascor.py`` (lazily loaded -- the driver stays
@@ -103,6 +107,7 @@ import logging
 import math
 import os
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -236,6 +241,15 @@ RECURRENCE_AUX_PHASES: Tuple[str, ...] = ("predict", "crossval", "save_model")
 #: Written when a phase starts and overwritten when it finishes, so a phase cut short by an
 #: interrupt or an uncaught exception is recorded as begun-and-failed rather than ``not_reached``.
 PHASE_CUT_SHORT = "the phase started but did not finish (interrupted, or the run aborted mid-phase)"
+
+# W1.9 (F-D4): the launcher's record of the recurrence leg it served -- ports.json
+# ``recurrence_launch``, written by ``util/experiment_stack.bash`` ``recurrence_up``.
+RECURRENCE_LAUNCH_KEY = "recurrence_launch"
+#: The probe behind ``recurrence_launch.model_version``, byte-identical to the launcher's copy (a test
+#: pins that): run without ``-s`` and from ``/``, because that is how the console script imports.
+RECURRENCE_MODEL_VERSION_PROBE = 'from importlib.metadata import version; print(version("juniper-recurrence-model"))'
+#: What the launcher accepts as a probe answer: one version-shaped token (its bash ``=~`` pattern).
+_MODEL_VERSION_RE = re.compile(r"[A-Za-z0-9.+!_-]+")
 
 # SS13.4 git-provenance repos, probed relative to the ecosystem root (best-effort).
 MANIFEST_GIT_REPOS: Tuple[str, ...] = ("juniper-cascor", "juniper-recurrence", "juniper-data", "juniper-data-client", "juniper-deploy", "juniper-ml")
@@ -1883,25 +1897,158 @@ _SAVE_MODEL_FLAG_MAP = {
 }
 
 
-def _save_model_rerun(train_block: Dict[str, Any], dataset_id: str, split: str, data_url: str, out_path: Path) -> Dict[str, Any]:
+def console_script_python(script: str, fallback: str) -> str:
+    """The interpreter a console script runs under: the driver's copy of the launcher's helper.
+
+    Mirrors ``console_script_python`` in ``util/experiment_stack.bash`` (a test runs both on the same
+    inputs): the script's first line, less one trailing CR, when it is ``#!/`` followed by a path
+    whose basename starts with ``python``; otherwise ``fallback``. pip writes that plain absolute
+    shebang unless the path is too long or holds a space, when it writes a ``/bin/sh`` trampoline --
+    which, like an unreadable script, resolves to the fallback.
+    """
+    try:
+        with open(script, "rb") as handle:
+            first = handle.readline()
+    except OSError:
+        return fallback
+    line = first.decode("utf-8", "surrogateescape")
+    if line.endswith("\n"):
+        line = line[:-1]
+    if line.endswith("\r"):
+        line = line[:-1]
+    if line.startswith("#!/"):
+        interpreter = re.split(r"[ \t\n\v\f\r]", line[2:], maxsplit=1)[0]
+        if os.path.basename(interpreter).startswith("python"):
+            return interpreter
+    return fallback
+
+
+def _probe_model_version(python: str, env: Mapping[str, str]) -> Tuple[Optional[str], Optional[str]]:
+    """``(version, None)`` from :data:`RECURRENCE_MODEL_VERSION_PROBE` under ``python``, else ``(None, why)``.
+
+    Run as the launcher runs it -- no ``-s``, from ``/`` -- in the environment the re-run gets, and
+    held to the launcher's acceptance rule: the whole answer must be one version-shaped token.
+    """
+    try:
+        proc = subprocess.run([python, "-c", RECURRENCE_MODEL_VERSION_PROBE], capture_output=True, text=True, timeout=60, env=dict(env), cwd="/", check=False)  # nosec B603 - fixed argv
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return None, f"the probe could not run: {exc}"
+    answer = proc.stdout.rstrip("\n")
+    if proc.returncode != 0:
+        return None, f"the probe exited {proc.returncode}: {proc.stderr.strip()[-300:]}"
+    if not _MODEL_VERSION_RE.fullmatch(answer):
+        return None, f"the probe printed no version: {answer[-300:]!r}"
+    return answer, None
+
+
+def _recorded_text(record: Mapping[str, Any], key: str) -> Optional[str]:
+    """A non-empty string field of a launcher record, else None (absent, null, or not a string)."""
+    value = record.get(key)
+    return value if isinstance(value, str) and value else None
+
+
+def _rerun_parity(cli: str, launch: Mapping[str, Any], env: Mapping[str, str]) -> Dict[str, Any]:
+    """W1.9 (F-D4): does the save_model re-run resolve what the served process ran?
+
+    The interpreter ``cli`` resolves to (:func:`console_script_python`, exactly as the launcher
+    resolved the served one) must be the launcher's ``recurrence_launch.python``; compared as
+    resolved paths, so ``bin/python`` and the ``bin/python3.14`` it links to are one interpreter.
+    When they agree and the launcher read a model version, the juniper-recurrence-model version that
+    interpreter resolves NOW must be ``recurrence_launch.model_version`` -- an env reinstalled
+    between ``--up`` and the re-run keeps the interpreter and changes the model.
+
+    ``ok`` is False only on a definite mismatch, and then ``error`` names both sides. Evidence missing
+    on either side is reported as ``unverified`` with the ``reason``, never guessed.
+    """
+    rerun_python = console_script_python(cli, str(Path(cli).with_name("python")))
+    served_python = _recorded_text(launch, "python")
+    served_model = _recorded_text(launch, "model_version")
+    parity: Dict[str, Any] = {"ok": True, "interpreter": "unverified", "rerun_python": rerun_python, "served_python": served_python, "model_version": "unverified", "rerun_model_version": None, "served_model_version": served_model}
+    if served_python is None:
+        parity["reason"] = "ports.json records no recurrence_launch.python for the served process"
+        return parity
+    if os.path.realpath(rerun_python) != os.path.realpath(served_python):
+        parity.update(ok=False, interpreter="mismatch", error=f"save_model re-run parity: {cli} runs under {rerun_python}, but the served process ran under {served_python} (ports.json recurrence_launch.python); not re-running under a different interpreter")
+        return parity
+    parity["interpreter"] = "match"
+    if served_model is None:
+        parity["reason"] = "the launcher could not read the served model version (recurrence_launch.model_version is null)"
+        return parity
+    rerun_model, why = _probe_model_version(rerun_python, env)
+    parity["rerun_model_version"] = rerun_model
+    if rerun_model is None:
+        parity["reason"] = f"cannot read the re-run's model version under {rerun_python}: {why}"
+        return parity
+    if rerun_model != served_model:
+        parity.update(ok=False, model_version="mismatch", error=f"save_model re-run parity: {rerun_python} now resolves juniper-recurrence-model {rerun_model}, but the served process ran {served_model} under {served_python} (ports.json recurrence_launch.model_version); the env changed since --up")
+        return parity
+    parity["model_version"] = "match"
+    return parity
+
+
+def _recurrence_launch_record(ports: Mapping[str, Any], app_url: str) -> Tuple[Dict[str, Any], Optional[str]]:
+    """W1.9: ports.json's ``recurrence_launch`` when it describes the service this run drives.
+
+    ``--recurrence-url`` can aim the driver at a service ports.json did not launch. The record then
+    describes another process, and neither its CLI nor its interpreter may stand in for the served
+    one, so it is set aside -- with a note for the manifest -- and the re-run falls back to PATH.
+    Returns ``(record, note)``; ``record`` is empty when there is none to use.
+    """
+    record = _mapping(ports.get(RECURRENCE_LAUNCH_KEY))
+    if not record:
+        return {}, None
+    recorded_url = f"http://127.0.0.1:{ports['recurrence']}" if ports.get("recurrence") else None
+    if recorded_url is None or app_url.rstrip("/") != recorded_url:
+        return {}, f"ports.json recurrence_launch describes the service at {recorded_url or '(no recorded port)'}, not the one this run drives ({app_url}); set aside, so the re-run uses PATH and parity is unverified"
+    return record, None
+
+
+def _save_model_rerun(train_block: Dict[str, Any], dataset_id: str, split: str, data_url: str, out_path: Path, launch: Optional[Mapping[str, Any]] = None, launch_note: Optional[str] = None) -> Dict[str, Any]:
     """G-18: service mode leaves no model artifact, so ``outputs.save_model: true`` re-runs the
     ``juniper-recurrence train`` CLI with ``--dataset <dataset_id>`` (the exact content-addressed
     artifact -- the CLI has no ``--params`` flag, so a generator re-ref would silently use default
-    params), the identical hyperparameter flags, and ``--out`` into the run's results dir."""
-    cli = shutil.which("juniper-recurrence")
-    if cli is None:
-        return {"ok": False, "error": "juniper-recurrence CLI not found on PATH (outputs.save_model needs the app env active)"}
+    params), the identical hyperparameter flags, and ``--out`` into the run's results dir.
+
+    W1.9 (F-D4): the CLI is the one the launcher recorded for the served process (``launch["cli"]``,
+    ports.json ``recurrence_launch``). ``shutil.which`` on the DRIVER's PATH is the fallback only when
+    none is recorded; a recorded CLI that has gone missing fails the phase rather than falling back.
+    :func:`_rerun_parity` runs first, and a mismatch fails the phase with both sides named, without
+    running the CLI. ``launch_note`` says why a record was set aside, when one was.
+    """
+    record = _mapping(launch)
+    recorded_cli = _recorded_text(record, "cli")
+    result: Dict[str, Any] = {"ok": False, "cli_source": "launcher" if recorded_cli else "path"}
+    if launch_note:
+        result["launch_record"] = launch_note
+    if recorded_cli is not None:
+        if not (os.path.isfile(recorded_cli) and os.access(recorded_cli, os.X_OK)):
+            result["error"] = f"the launcher-recorded juniper-recurrence CLI {recorded_cli} (ports.json recurrence_launch.cli) is missing or not executable; the env changed since --up, and the re-run does not fall back to PATH"
+            return result
+        cli = recorded_cli
+    else:
+        found = shutil.which("juniper-recurrence")
+        if found is None:
+            result["error"] = "juniper-recurrence CLI not found on PATH (outputs.save_model needs the app env active)"
+            return result
+        cli = found
     cmd = [cli, "train", "--dataset", str(dataset_id), "--split", str(split), "--out", str(out_path)]
     for key, value in _lmu_hyperparams(train_block).items():
         cmd.extend([_SAVE_MODEL_FLAG_MAP[key], str(value)])
     env = dict(os.environ)
     env["JUNIPER_DATA_URL"] = data_url  # the run's data instance holds the artifact
     env["LD_LIBRARY_PATH"] = ""  # same hygiene the launcher applies to service launches
+    result["cmd"] = cmd
+    result["parity"] = parity = _rerun_parity(cli, record, env)
+    if not parity["ok"]:
+        result["error"] = parity["error"]
+        return result
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600, env=env, check=False)  # nosec B603 - cmd built from validated config
     except (OSError, subprocess.TimeoutExpired) as exc:
-        return {"ok": False, "cmd": cmd, "error": str(exc)}
-    result: Dict[str, Any] = {"ok": proc.returncode == 0, "cmd": cmd, "returncode": proc.returncode}
+        result["error"] = str(exc)
+        return result
+    result["ok"] = proc.returncode == 0
+    result["returncode"] = proc.returncode
     if proc.returncode != 0:
         result["stderr_tail"] = proc.stderr[-500:]
     return result
@@ -2081,7 +2228,13 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
                 t0 = time.monotonic()
                 _record_phase("save_model", "failed", PHASE_CUT_SHORT)
                 model_path = results_dir / "model.npz"
-                save_model_rerun = _save_model_rerun(config["train"], str(dataset_id), dataset_cfg["split"], data_url, model_path)
+                # W1.9 (F-D4): re-run the CLI the launcher served from, and only under its interpreter.
+                recurrence_launch, launch_note = _recurrence_launch_record(ports, app_url)
+                if launch_note:
+                    log.warning("save_model: %s", launch_note)
+                save_model_rerun = _save_model_rerun(config["train"], str(dataset_id), dataset_cfg["split"], data_url, model_path, launch=recurrence_launch, launch_note=launch_note)
+                parity = _mapping(save_model_rerun.get("parity"))
+                log.info("save_model: CLI %s (from %s); parity interpreter=%s model_version=%s", (save_model_rerun.get("cmd") or ["-"])[0], save_model_rerun.get("cli_source"), parity.get("interpreter", "not checked"), parity.get("model_version", "not checked"))
                 _phase("save_model", t0)
                 if save_model_rerun.get("ok"):
                     _record_phase("save_model", "ok")

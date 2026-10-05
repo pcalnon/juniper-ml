@@ -99,6 +99,28 @@
 # partial run is torn down like any other failed leg. The report goes to stdout AND to
 # $RUN_DIR/logs/launch.log. The console script existing and /v1/health/ready were the only gates
 # before, and on 2026-10-03 a stale JuniperCascor1 passed both (F-E1 / F-E2).
+#
+# RECURRENCE SERVICE ENV (W1.10 of the same plan): recurrence_up exports
+# JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots, the dir create_run_dir makes; unexported, the
+# service fell back to its CWD-relative default and wrote $RUN_DIR/recurrence-snapshots (F-D9). It
+# passes JUNIPER_RECURRENCE_LOG_LEVEL / JUNIPER_RECURRENCE_LOG_FORMAT through when they are set in
+# this launcher's environment, and leaves an unset one out rather than exporting it empty (F-L11).
+# Both log vars already reached `serve` by inheritance (the launch uses no `env -i`); naming them
+# puts them in the announce line, env/launch.env and ports.json. PRECEDENCE: juniper-recurrence
+# resolves its settings as init/CLI > the YAML `service:` block (via JUNIPER_RECURRENCE_CONFIG_FILE,
+# i.e. --config) > env > defaults (settings.py settings_customise_sources), so a `service:` key for
+# log_level, log_format or snapshots_dir in the staged config OUTRANKS the env value passed here.
+# The env route is for a run whose YAML sets no such key.
+#
+# RECURRENCE LAUNCH RECORD (W1.9 of the same plan, F-D4): once the env preflight has passed,
+# recurrence_up rewrites ports.json with a "recurrence_launch" object: conda_env, cli (the console
+# script `serve` runs), python (the interpreter its shebang names; see console_script_python),
+# model_version (juniper-recurrence-model as that interpreter resolves it, probed WITHOUT -s and
+# from /, as `serve` imports it; null when the probe fails), snapshots_dir, log_level and log_format
+# (null = not passed, so the service default or the YAML applies), and config_file.
+# util/experiments/run_experiment.py's save_model re-run executes that cli instead of whatever
+# `juniper-recurrence` is first on the driver's PATH, and refuses to run when the cli resolves a
+# different interpreter, or the interpreter a different model version, than the served process.
 ###########################################################################################################################################################################################################
 set -euo pipefail
 
@@ -189,6 +211,8 @@ CASCOR_PORT=""
 RECURRENCE_PORT=""
 DATA_URL=""
 GATEWAY_IP=""
+# W1.9: the "recurrence_launch" object, set by recurrence_up and rendered by write_ports_json.
+RECURRENCE_LAUNCH_JSON=""
 
 HELD_LOCK_PORTS=()
 SCRAPE_TARGETS=()
@@ -605,29 +629,74 @@ json_number_or_null() {
     if [[ -n "${value}" ]]; then printf '%s' "${value}"; else printf 'null'; fi
 }
 
+# A JSON string literal, or null for an empty value. Backslash, double quote, newline, CR and tab
+# are escaped: recurrence_launch records interpreter and script paths verbatim.
 json_string_or_null() {
     local value="$1"
-    if [[ -n "${value}" ]]; then printf '"%s"' "${value}"; else printf 'null'; fi
+    if [[ -z "${value}" ]]; then
+        printf 'null'
+        return 0
+    fi
+    value="${value//\\/\\\\}"
+    value="${value//\"/\\\"}"
+    value="${value//$'\n'/\\n}"
+    value="${value//$'\r'/\\r}"
+    value="${value//$'\t'/\\t}"
+    printf '"%s"' "${value}"
+}
+
+# W1.9: the "recurrence_launch" object ports.json records (RECURRENCE LAUNCH RECORD in the header).
+# An empty argument renders as null: a log var the launcher did not pass, or a probe that failed.
+recurrence_launch_json() {
+    local conda_env="$1" cli="$2" python="$3" model_version="$4" snapshots_dir="$5" log_level="$6" log_format="$7" config_file="$8"
+    printf '{\n'
+    printf '    "conda_env": %s,\n' "$(json_string_or_null "${conda_env}")"
+    printf '    "cli": %s,\n' "$(json_string_or_null "${cli}")"
+    printf '    "python": %s,\n' "$(json_string_or_null "${python}")"
+    printf '    "model_version": %s,\n' "$(json_string_or_null "${model_version}")"
+    printf '    "snapshots_dir": %s,\n' "$(json_string_or_null "${snapshots_dir}")"
+    printf '    "log_level": %s,\n' "$(json_string_or_null "${log_level}")"
+    printf '    "log_format": %s,\n' "$(json_string_or_null "${log_format}")"
+    printf '    "config_file": %s\n' "$(json_string_or_null "${config_file}")"
+    printf '  }'
 }
 
 # ports.json is written BEFORE the launches so a bring-up that dies mid-flight still leaves
-# teardown a record of exactly which ports this run may touch.
+# teardown a record of exactly which ports this run may touch. recurrence_up writes it once more
+# (W1.9), adding RECURRENCE_LAUNCH_JSON as "recurrence_launch" -- through this one writer, so the
+# rewrite cannot drift from the first write on any other key. Each write goes to a temp file that
+# is renamed over ports.json, so a concurrent reader (--status, list_runs.py) never sees it torn.
+# RUN_ID / EXPERIMENT / WANT_BRIDGE carry `:-` defaults for cascor_up's reason: the regression
+# harness extracts recurrence_up, which now calls this, without the file-scope globals.
 write_ports_json() {
-    local bridge="false"
-    (( WANT_BRIDGE == 1 )) && bridge="true"
-    announce "write ${RUN_DIR}/ports.json   # {\"data\":$(json_number_or_null "${DATA_PORT}"),\"cascor\":$(json_number_or_null "${CASCOR_PORT}"),\"recurrence\":$(json_number_or_null "${RECURRENCE_PORT}")}"
+    local bridge="false" launch_member="" launch_note=""
+    (( ${WANT_BRIDGE:-0} == 1 )) && bridge="true"
+    if [[ -n "${RECURRENCE_LAUNCH_JSON:-}" ]]; then
+        launch_member=$',\n  "recurrence_launch": '"${RECURRENCE_LAUNCH_JSON}"
+        launch_note=" + recurrence_launch (W1.9)"
+    fi
+    announce "write ${RUN_DIR}/ports.json   # {\"data\":$(json_number_or_null "${DATA_PORT}"),\"cascor\":$(json_number_or_null "${CASCOR_PORT}"),\"recurrence\":$(json_number_or_null "${RECURRENCE_PORT}")}${launch_note}"
     if is_dry; then return 0; fi
-    cat >"${RUN_DIR}/ports.json" <<PORTS
-{
-  "run_id": "${RUN_ID}",
-  "data": $(json_number_or_null "${DATA_PORT}"),
-  "cascor": $(json_number_or_null "${CASCOR_PORT}"),
-  "recurrence": $(json_number_or_null "${RECURRENCE_PORT}"),
-  "data_url": "${DATA_URL}",
-  "experiment": "${EXPERIMENT}",
-  "grafana_bridge": ${bridge}
+    # Explicit returns: do_up and recurrence_up both call this as ``write_ports_json || …``, which
+    # disables set -e in this body, and a failed write must not be renamed over the good file.
+    render_ports_json "${bridge}" "${launch_member}" >"${RUN_DIR}/ports.json.tmp" || return 1
+    mv -f "${RUN_DIR}/ports.json.tmp" "${RUN_DIR}/ports.json" || return 1
 }
-PORTS
+
+# The ports.json document, byte for byte what the earlier heredoc wrote. printf, not a heredoc: the
+# regression harness extracts a function up to its first line holding only `}`, which the JSON's
+# own closing brace inside a heredoc would be.
+render_ports_json() {
+    local bridge="$1" launch_member="$2"
+    printf '{\n'
+    printf '  "run_id": "%s",\n' "${RUN_ID:-}"
+    printf '  "data": %s,\n' "$(json_number_or_null "${DATA_PORT}")"
+    printf '  "cascor": %s,\n' "$(json_number_or_null "${CASCOR_PORT}")"
+    printf '  "recurrence": %s,\n' "$(json_number_or_null "${RECURRENCE_PORT}")"
+    printf '  "data_url": "%s",\n' "${DATA_URL}"
+    printf '  "experiment": "%s",\n' "${EXPERIMENT:-}"
+    printf '  "grafana_bridge": %s%s\n' "${bridge}" "${launch_member}"
+    printf '}\n'
 }
 
 # Read one numeric port from a run's ports.json without a jq dependency.
@@ -813,15 +882,32 @@ cascor_up() {
 # Bring-up: juniper-recurrence (console script, plan §6.1)
 ###########################################################################################################################################################################################################
 recurrence_up() {
-    local serve_bin python_bin config_env="" skip_flag=""
+    local serve_bin python_bin snapshots_dir config_env="" skip_flag="" log_announce="" model_version="" _lv
+    local -a log_env=()
+    # W1.9: what model_version records. util/experiments/run_experiment.py runs the same probe
+    # (RECURRENCE_MODEL_VERSION_PROBE) against the save_model re-run's interpreter.
+    local model_version_probe='from importlib.metadata import version; print(version("juniper-recurrence-model"))'
     serve_bin="$(env_bin "${RECURRENCE_CONDA}" juniper-recurrence)"
     # The preflight must judge the interpreter `serve` actually runs under (console_script_python).
     python_bin="$(console_script_python "${serve_bin}" "$(env_bin "${RECURRENCE_CONDA}" python)")"
+    # W1.10 (F-D9): the run's own snapshots dir, which create_run_dir makes for both apps (cascor
+    # lists only *.h5 there, recurrence only *.npz).
+    snapshots_dir="${RUN_DIR}/snapshots"
+    # W1.10 (F-L11): the two log knobs, named only when this launcher's environment sets them -- an
+    # array, not a `VAR=${VAR:-}` prefix, for the reason cascor_up gives for runtime_env: an EMPTY
+    # value is not an unset one. They reached serve by inheritance already; naming them records them
+    # (announce line, env/launch.env, ports.json). A `service:` key in the staged config still
+    # outranks both (header: RECURRENCE SERVICE ENV).
+    for _lv in JUNIPER_RECURRENCE_LOG_LEVEL JUNIPER_RECURRENCE_LOG_FORMAT; do
+        if [[ -n "${!_lv:-}" ]]; then log_env+=("${_lv}=${!_lv}"); fi
+    done
+    if [[ ${#log_env[@]} -gt 0 ]]; then log_announce="${log_env[*]} "; fi
     [[ -n "${CONFIG_PATH}" ]] && config_env="JUNIPER_RECURRENCE_CONFIG_FILE=${RUN_DIR}/config/experiment.yaml "
     [[ "${SKIP_ENV_PREFLIGHT}" == "1" ]] && skip_flag=" --skip"
     banner "juniper-recurrence  ->  http://127.0.0.1:${RECURRENCE_PORT}  (${RECURRENCE_CONDA})"
     announce "bash ${ENV_PREFLIGHT} --python ${python_bin}${skip_flag}   # W0.2 recurrence env preflight: a finding refuses the leg; report -> ${LOG_DIR}/launch.log"
-    announce "cd ${RUN_DIR} && JUNIPER_RECURRENCE_METRICS_ENABLED=true JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false JUNIPER_DATA_URL=${DATA_URL} ${config_env}${serve_bin} serve --host 127.0.0.1 --port ${RECURRENCE_PORT}   # nohup -> ${LOG_DIR}/juniper-recurrence.log"
+    announce "cd / && ${python_bin} -c '${model_version_probe}'   # W1.9 model_version (no -s: serve imports without it); then ports.json gains recurrence_launch (cli=${serve_bin})"
+    announce "cd ${RUN_DIR} && JUNIPER_RECURRENCE_METRICS_ENABLED=true JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${snapshots_dir} JUNIPER_DATA_URL=${DATA_URL} ${log_announce}${config_env}${serve_bin} serve --host 127.0.0.1 --port ${RECURRENCE_PORT}   # nohup -> ${LOG_DIR}/juniper-recurrence.log"
     if is_dry; then return 0; fi
 
     # See data_up: ``recurrence_up || failed=1`` disables set -e inside this body.
@@ -830,19 +916,36 @@ recurrence_up() {
     # W0.2 (F-E2): refuse a stale env HERE, before serve. Readiness cannot: a stale model passes
     # /v1/health/ready and then fails every split="full" request (F-E1).
     run_env_preflight "${python_bin}" || return 1
+    # W1.9: the model version serve will import -- without -s and from /, as a console script runs
+    # (the preflight's -s is right for judging the env; serve does not pass it). Best-effort: output
+    # that is not one version-shaped token records null, and the driver then reports model-version
+    # parity as unverified instead of guessing.
+    model_version="$(cd / && "${python_bin}" -c "${model_version_probe}" 2>/dev/null)" || model_version=""
+    [[ "${model_version}" =~ ^[A-Za-z0-9.+!_-]+$ ]] || model_version=""
     record_launch_env "juniper-recurrence" \
         "JUNIPER_RECURRENCE_METRICS_ENABLED=true" \
         "JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false" \
+        "JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${snapshots_dir}" \
         "JUNIPER_DATA_URL=${DATA_URL}" \
-        "JUNIPER_RECURRENCE_CONFIG_FILE=${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}"
+        "JUNIPER_RECURRENCE_CONFIG_FILE=${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}" \
+        "${log_env[@]}"
+    # W1.9 (F-D4): record the resolved leg for run_experiment.py's save_model re-run. Fail closed: a
+    # run that cannot record its launch would silently fall back to the driver's PATH.
+    RECURRENCE_LAUNCH_JSON="$(recurrence_launch_json "${RECURRENCE_CONDA}" "${serve_bin}" "${python_bin}" "${model_version}" "${snapshots_dir}" "${JUNIPER_RECURRENCE_LOG_LEVEL:-}" "${JUNIPER_RECURRENCE_LOG_FORMAT:-}" "${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}")"
+    write_ports_json || {
+        log_launch "ERROR: could not record the recurrence launch in ${RUN_DIR}/ports.json; serve NOT started."
+        return 1
+    }
     if [[ "${CONDA_ACTIVATE}" == "1" ]]; then activate_conda "${RECURRENCE_CONDA}" || return 1; fi
     (
         cd "${RUN_DIR}" || exit 1
+        # `env` adds only the log vars that are set (log_env); it execs nohup, which execs serve.
         JUNIPER_RECURRENCE_METRICS_ENABLED=true \
             JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false \
+            JUNIPER_RECURRENCE_SNAPSHOTS_DIR="${snapshots_dir}" \
             JUNIPER_DATA_URL="${DATA_URL}" \
             JUNIPER_RECURRENCE_CONFIG_FILE="${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}" \
-            nohup "${serve_bin}" serve --host 127.0.0.1 --port "${RECURRENCE_PORT}" >"${LOG_DIR}/juniper-recurrence.log" 2>&1 &
+            env "${log_env[@]}" nohup "${serve_bin}" serve --host 127.0.0.1 --port "${RECURRENCE_PORT}" >"${LOG_DIR}/juniper-recurrence.log" 2>&1 &
     )
     # No `$!` here on purpose — F-6.
     wait_for_health "juniper-recurrence" "http://127.0.0.1:${RECURRENCE_PORT}/v1/health/ready" "${HEALTH_TIMEOUT}" "juniper-recurrence serve .*--port ${RECURRENCE_PORT}" || return 1

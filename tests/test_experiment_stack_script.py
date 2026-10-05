@@ -38,6 +38,15 @@ pins:
   leg with the findings in stdout and ``$RUN_DIR/logs/launch.log``, and ``--skip-env-preflight``
   / ``JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1`` turn them into WARNINGs and serve anyway. The script's
   own branch matrix lives in ``tests/test_recurrence_env_preflight.py``.
+- W1.10 (F-D9 / F-L11): ``recurrence_up`` hands serve ``JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots``
+  and ``JUNIPER_RECURRENCE_LOG_LEVEL`` / ``_LOG_FORMAT`` when -- and only when -- the launcher's
+  environment sets them (absent, never empty, when unset), recording all three in
+  ``env/launch.env``, ``ports.json`` and the announce line.
+- W1.9 (F-D4): after the preflight passes, ``recurrence_up`` rewrites ``ports.json`` with a
+  ``recurrence_launch`` record (env, CLI, interpreter, model version probed without ``-s`` from
+  ``/``, snapshots dir, log settings, config file) through the one ``write_ports_json`` writer, so no
+  other key changes; a refused env, or a record that cannot be written, never reaches serve.
+  ``ports.json`` keeps the exact text its sed/grep consumers read.
 - OR-list fail-closed: ``*_up || failed=1`` disables ``set -e`` inside each
   ``*_up``, so critical steps must ``|| return 1`` (health-timeout + live listener
   must not false-green; activate_conda must not mask conda failure; bridge failure
@@ -56,6 +65,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shlex
 import signal
 import subprocess
 import tempfile
@@ -1072,6 +1082,21 @@ class TestDryRunUp(_DryRunHarness):
             self.assertEqual(by_env.returncode, 0, msg=by_env.stderr + by_env.stdout)
             self.assertIn(want, by_env.stdout)
 
+    def test_dry_up_recurrence_prints_the_w1_10_env_and_the_w1_9_probe_and_runs_neither(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stub_bin = _stage_stub_bin(root)
+            conda_dir = _stage_conda_fixture(root)
+            env = {**self._env(root, stub_bin, conda_dir), "JUNIPER_RECURRENCE_LOG_LEVEL": "DEBUG"}
+            result = _run("--dry-run", "--up", "--recurrence", env_extra=env)
+            self.assertEqual(result.returncode, 0, msg=result.stderr + result.stdout)
+            out = result.stdout
+            self.assertRegex(out, r"JUNIPER_RECURRENCE_SNAPSHOTS_DIR=\S+/runs/\d{8}T\d{6}Z-[0-9a-f]{4}/snapshots JUNIPER_DATA_URL=http://127\.0\.0\.1:8110 JUNIPER_RECURRENCE_LOG_LEVEL=DEBUG ")
+            python = conda_dir / "envs" / "JuniperCascor1" / "bin" / "python"
+            self.assertIn(f"""$ cd / && {python} -c 'from importlib.metadata import version; print(version("juniper-recurrence-model"))'   # W1.9""", out)
+            self.assertNotIn("ENV PREFLIGHT", out, "a dry run must not execute the preflight")
+            self.assertFalse((root / "runs").exists(), "dry-run --up must not create the run root")
+
 
 class TestAllocatePort(unittest.TestCase):
     """Lockdir + ``ss`` probe allocation (§6.2), driven against the live function body."""
@@ -1937,6 +1962,8 @@ class _LiveUpHarness(unittest.TestCase):
             + _extract_experiment_fn("wait_for_health")
             + _extract_experiment_fn("record_listener_pid")
             + _extract_experiment_fn("record_launch_env")
+            # W1.9: recurrence_up rewrites ports.json with its recurrence_launch record.
+            + _extract_experiment_fn("json_number_or_null") + _extract_experiment_fn("json_string_or_null") + _extract_experiment_fn("recurrence_launch_json") + _extract_experiment_fn("render_ports_json") + _extract_experiment_fn("write_ports_json")
         )
 
     def _run_harness(self, harness: str, *, stub_bin: Path) -> subprocess.CompletedProcess[str]:
@@ -2189,8 +2216,17 @@ class TestRecurrenceUpLive(_LiveUpHarness):
                 args = (marker_dir / "recurrence.args").read_text()
                 self.assertIn("serve", args)
                 self.assertIn("68260", args)
-                # W0.2: the preflight ran (all three calls), passed, and left its report in launch.log.
-                self.assertEqual(len(read_calls(calls_log)), 3)
+                # W0.2: the preflight ran (all three calls, each passing -s first), passed, and left its
+                # report in launch.log. W1.9: exactly one call follows -- the launch record's model-version
+                # probe, WITHOUT -s and from / (as serve imports). This fake refuses any call lacking -s,
+                # so the record carries model_version null.
+                calls = read_calls(calls_log)
+                self.assertEqual(len(calls), 4, calls)
+                for call in calls[:3]:
+                    self.assertTrue(call.startswith("call: [-s] "), call)
+                self.assertTrue(calls[3].startswith("call: [-c] [from importlib.metadata import version;"), calls[3])
+                self.assertIn(" cwd=/ ", calls[3])
+                self.assertIsNone(json.loads((run_dir / "ports.json").read_text())["recurrence_launch"]["model_version"])
                 self.assertIn("[experiment_stack.bash] ENV PREFLIGHT OK: no findings\n", result.stdout)
                 self.assertIn("ENV PREFLIGHT OK: no findings", (run_dir / "logs" / "launch.log").read_text())
             finally:
@@ -2252,6 +2288,229 @@ class TestRecurrenceUpLive(_LiveUpHarness):
                     force_kill(int(pid_path.read_text().strip()))
                 if listener.exists():
                     force_kill(int(listener.read_text().strip()))
+
+
+class TestRecurrenceUpLaunchRecord(_LiveUpHarness):
+    """W1.9 + W1.10 of the recurrence x equities plan, live through ``recurrence_up``.
+
+    W1.10 (F-D9, F-L11): serve gets ``JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots`` -- it used
+    to fall back to its CWD-relative ``recurrence-snapshots`` -- and the two log knobs when, and only
+    when, the launcher's environment sets them. A SET log var reached serve by inheritance before
+    W1.10 too, so beyond delivery these pin the record (env/launch.env, ports.json, the announce line)
+    and the absent-not-empty rule for an unset one.
+
+    W1.9 (F-D4): once the preflight passes, ports.json carries ``recurrence_launch`` -- the record
+    ``run_experiment.py``'s save_model re-run reads -- written through ``write_ports_json``, so no other
+    key moves. A refused env records nothing; a record that cannot be written never reaches serve.
+    """
+
+    RUN_ID = "20261005T000000Z-w119"
+
+    def setUp(self) -> None:
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name)
+
+    def _stage(self, *, probe_answer: "str | None" = "0.3.2", **python_kwargs) -> "dict[str, Path]":
+        """A listening console-script stub, the W0.2 preflight fake, and an env ``python`` in front of it.
+
+        The env ``python`` is what both the preflight and the model-version probe resolve (the stub's
+        shebang is not a python one). It answers the probe itself -- ``probe_answer``, or exit 1 when
+        None -- logging that call's first argument and working directory to ``probe.log``, and hands
+        every other call to the W0.2 fake (``tests/recurrence_env_fakes.py``) unchanged.
+        """
+        paths = {name: self.root / name for name in ("run", "markers", "listeners", "project", "conda")}
+        paths["probe_log"] = self.root / "probe.log"
+        (paths["project"] / "juniper-cascor" / "src").mkdir(parents=True)
+        paths["stub_bin"] = _stage_live_path_stubs(self.root, paths["listeners"])
+        paths["env_bin"] = paths["conda"] / "envs" / "JuniperCascor1" / "bin"
+        _write_listening_env_bin(paths["env_bin"] / "juniper-recurrence", listeners_dir=paths["listeners"], marker_dir=paths["markers"], label="recurrence")
+        python_kwargs.setdefault("pins", PINS_OK)
+        python_kwargs.setdefault("calls_log", self.root / "python-calls.log")
+        preflight_fake = write_fake_python(self.root / "preflight-fake" / "python", **python_kwargs)
+        probe_arm = "exit 1" if probe_answer is None else f"printf '%s\\n' {shlex.quote(probe_answer)}; exit 0"
+        _write_stub(
+            paths["env_bin"] / "python",
+            "#!/usr/bin/env bash\n" 'if [[ "${1-}" == "-c" && "${2-}" == *\'version("juniper-recurrence-model")\'* ]]; then\n' f"    printf 'argv1=%s cwd=%s\\n' \"$1\" \"$PWD\" >>'{paths['probe_log']}'\n" f"    {probe_arm}\n" "fi\n" f"exec '{preflight_fake}' \"$@\"\n",
+        )
+        self.addCleanup(self._reap, paths)
+        return paths
+
+    def _reap(self, paths: "dict[str, Path]") -> None:
+        for pidfile in (paths["run"] / "juniper-recurrence.pid", paths["listeners"] / "68260.pid"):
+            if pidfile.is_file():
+                force_kill(int(pidfile.read_text().strip()))
+
+    def _up(self, paths: "dict[str, Path]", *, before: str = "", after_first_write: str = "") -> subprocess.CompletedProcess:
+        """Run ``recurrence_up`` the way ``do_up`` does: after its own first ``write_ports_json``.
+
+        ``before`` runs ahead of that first write (exports, unsets, a CONFIG_PATH), ``after_first_write``
+        just after it. The first write is kept as ``ports.first.json``, so a test can prove the rewrite
+        changed nothing but ``recurrence_launch``.
+        """
+        harness = self._common_prelude(run_dir=paths["run"], conda_dir=paths["conda"], project_dir=paths["project"]) + f'RUN_ID="{self.RUN_ID}"\nEXPERIMENT="w1-9-cell"\nWANT_BRIDGE=0\n' + before + 'mkdir -p "${RUN_DIR}"\nwrite_ports_json\ncp "${RUN_DIR}/ports.json" "${RUN_DIR}/ports.first.json"\n' + after_first_write + _extract_experiment_fn("recurrence_up") + "set +e\nrecurrence_up\necho STATUS=$?\n"
+        return self._run_harness(harness, stub_bin=paths["stub_bin"])
+
+    def test_set_log_vars_reach_serve_and_every_record(self) -> None:
+        paths = self._stage()
+        result = self._up(paths, before="export JUNIPER_RECURRENCE_LOG_LEVEL=DEBUG\nexport JUNIPER_RECURRENCE_LOG_FORMAT=json\n")
+        out = result.stdout
+        self.assertIn("STATUS=0", out, msg=result.stderr + out)
+        run_dir = paths["run"]
+        snapshots = f"{run_dir}/snapshots"
+        served_env = (paths["markers"] / "recurrence.env").read_text()
+        launch_env = (run_dir / "env" / "launch.env").read_text()
+        # F-E2E-005: compare per-key line lists, never the whole captured blob.
+        for key, value in (("JUNIPER_RECURRENCE_SNAPSHOTS_DIR", snapshots), ("JUNIPER_RECURRENCE_LOG_LEVEL", "DEBUG"), ("JUNIPER_RECURRENCE_LOG_FORMAT", "json")):
+            self.assertEqual(_env_lines_for_key(served_env, key), [f"{key}={value}"])
+            self.assertEqual(_env_lines_for_key(launch_env, key), [f"{key}={value}"])
+        self.assertIn(f"JUNIPER_RECURRENCE_SNAPSHOTS_DIR={snapshots} JUNIPER_DATA_URL=http://127.0.0.1:68110 JUNIPER_RECURRENCE_LOG_LEVEL=DEBUG JUNIPER_RECURRENCE_LOG_FORMAT=json ", out)
+        ports = json.loads((run_dir / "ports.json").read_text())
+        self.assertEqual(
+            ports["recurrence_launch"],
+            {"conda_env": "JuniperCascor1", "cli": str(paths["env_bin"] / "juniper-recurrence"), "python": str(paths["env_bin"] / "python"), "model_version": "0.3.2", "snapshots_dir": snapshots, "log_level": "DEBUG", "log_format": "json", "config_file": None},
+        )
+        first = json.loads((run_dir / "ports.first.json").read_text())
+        self.assertNotIn("recurrence_launch", first)
+        self.assertEqual(first["run_id"], self.RUN_ID)
+        self.assertEqual({key: value for key, value in ports.items() if key != "recurrence_launch"}, first, "the rewrite may add the record and nothing else")
+        self.assertFalse((run_dir / "ports.json.tmp").exists())
+        # The model-version probe ran once, WITHOUT -s and from /, as serve imports.
+        self.assertEqual(paths["probe_log"].read_text(), "argv1=-c cwd=/\n")
+
+    def test_unset_log_vars_stay_absent_and_the_config_file_is_recorded(self) -> None:
+        paths = self._stage()
+        result = self._up(paths, before='unset JUNIPER_RECURRENCE_LOG_LEVEL JUNIPER_RECURRENCE_LOG_FORMAT\nCONFIG_PATH="/fixture/cell.yaml"\n')
+        self.assertIn("STATUS=0", result.stdout, msg=result.stderr + result.stdout)
+        run_dir = paths["run"]
+        served_env = (paths["markers"] / "recurrence.env").read_text()
+        launch_env = (run_dir / "env" / "launch.env").read_text()
+        for key in ("JUNIPER_RECURRENCE_LOG_LEVEL", "JUNIPER_RECURRENCE_LOG_FORMAT"):
+            # Absent, not exported empty: an empty value is still a value to the service's settings.
+            self.assertEqual(_env_lines_for_key(served_env, key), [])
+            self.assertEqual(_env_lines_for_key(launch_env, key), [])
+            self.assertNotIn(key, result.stdout)
+        self.assertEqual(_env_lines_for_key(served_env, "JUNIPER_RECURRENCE_SNAPSHOTS_DIR"), [f"JUNIPER_RECURRENCE_SNAPSHOTS_DIR={run_dir}/snapshots"])
+        self.assertEqual(_env_lines_for_key(served_env, "JUNIPER_RECURRENCE_CONFIG_FILE"), [f"JUNIPER_RECURRENCE_CONFIG_FILE={run_dir}/config/experiment.yaml"])
+        record = json.loads((run_dir / "ports.json").read_text())["recurrence_launch"]
+        self.assertEqual((record["log_level"], record["log_format"]), (None, None))
+        self.assertEqual(record["config_file"], f"{run_dir}/config/experiment.yaml")
+
+    def test_a_refused_env_records_no_launch(self) -> None:
+        paths = self._stage(pip_check=(MODEL_PIN_LINE, SERVICE_CORE_PIN_LINE), pins=PINS_STALE, import_error=IMPORT_ERROR_LINE)
+        result = self._up(paths)
+        self.assertIn("STATUS=1", result.stdout, msg=result.stderr + result.stdout)
+        run_dir = paths["run"]
+        self.assertEqual((run_dir / "ports.json").read_text(), (run_dir / "ports.first.json").read_text())
+        self.assertFalse(paths["probe_log"].exists(), "the model-version probe runs only after the preflight passes")
+        self.assertFalse((paths["markers"] / "recurrence.args").exists(), "a refused env must never reach serve")
+
+    def test_a_probe_answer_that_is_not_one_version_records_null(self) -> None:
+        paths = self._stage(probe_answer="WARNING: shadowed by ~/.local\n0.3.2")
+        result = self._up(paths)
+        self.assertIn("STATUS=0", result.stdout, msg=result.stderr + result.stdout)
+        record = json.loads((paths["run"] / "ports.json").read_text())["recurrence_launch"]
+        self.assertIsNone(record["model_version"])
+        self.assertEqual(record["cli"], str(paths["env_bin"] / "juniper-recurrence"), "the rest of the record still lands")
+
+    @unittest.skipIf(os.geteuid() == 0, "root writes through the read-only run dir this test relies on")
+    def test_a_record_that_cannot_be_written_never_reaches_serve(self) -> None:
+        paths = self._stage()
+        run_dir = paths["run"]
+
+        def _writable_again() -> None:
+            if run_dir.is_dir():
+                run_dir.chmod(0o755)
+
+        self.addCleanup(_writable_again)
+        result = self._up(paths, after_first_write='mkdir -p "${RUN_DIR}/logs" "${RUN_DIR}/env"\nchmod 555 "${RUN_DIR}"\n')
+        out = result.stdout
+        self.assertIn("STATUS=1", out, msg=result.stderr + out)
+        self.assertIn("could not record the recurrence launch", out)
+        self.assertIn("could not record the recurrence launch", (run_dir / "logs" / "launch.log").read_text())
+        self.assertFalse((paths["markers"] / "recurrence.args").exists(), "an unrecorded launch must never reach serve")
+        self.assertEqual((run_dir / "ports.json").read_text(), (run_dir / "ports.first.json").read_text())
+
+
+class TestRecurrenceLaunchRecordWiring(unittest.TestCase):
+    """W1.9 / W1.10 wiring by text: where the record is written, and that every site carries the env."""
+
+    def test_the_record_follows_the_preflight_and_precedes_serve(self) -> None:
+        body = _strip_comment_lines(_extract_experiment_fn("recurrence_up"))
+        preflight = body.index('run_env_preflight "${python_bin}" || return 1')
+        probe = body.index('model_version="$(cd / && "${python_bin}" -c "${model_version_probe}" 2>/dev/null)"')
+        launch_env = body.index('record_launch_env "juniper-recurrence"')
+        record = body.index("write_ports_json || {")
+        serve = body.index('nohup "${serve_bin}" serve')
+        self.assertLess(preflight, probe)
+        self.assertLess(probe, launch_env)
+        self.assertLess(launch_env, record)
+        self.assertLess(record, serve)
+
+    def test_snapshots_dir_and_log_vars_reach_all_three_sites(self) -> None:
+        body = _strip_comment_lines(_extract_experiment_fn("recurrence_up"))
+        self.assertIn('snapshots_dir="${RUN_DIR}/snapshots"', body)
+        self.assertEqual(body.count("JUNIPER_RECURRENCE_SNAPSHOTS_DIR"), 3, "announce / record_launch_env / launch")
+        self.assertIn("${log_announce}${config_env}${serve_bin} serve", body)
+        self.assertEqual(body.count('"${log_env[@]}"'), 2, "record_launch_env / launch")
+        self.assertIn('env "${log_env[@]}" nohup "${serve_bin}" serve', body)
+
+    def test_the_writer_renders_the_record_only_when_one_is_set(self) -> None:
+        self.assertIn('RECURRENCE_LAUNCH_JSON=""', SCRIPT_CODE)
+        writer = _extract_experiment_fn("write_ports_json")
+        self.assertIn('if [[ -n "${RECURRENCE_LAUNCH_JSON:-}" ]]; then', writer)
+        self.assertIn('mv -f "${RUN_DIR}/ports.json.tmp" "${RUN_DIR}/ports.json" || return 1', writer)
+
+
+class TestPortsJsonRender(unittest.TestCase):
+    """ports.json as its consumers read it -- with and without the W1.9 ``recurrence_launch`` record.
+
+    Several readers match TEXT, not JSON: ``read_run_port`` / ``read_run_flag`` and ``status_run``'s
+    ``data_url`` are sed line matches, and an ad-hoc campaign greps ``"data_url": "<url>"``. The record
+    is nested, so none of its keys may shadow a top-level one for those line matches.
+    """
+
+    def _write(self, run_dir: Path, *, launch_args: "tuple[str, ...] | None" = None, bridge: int = 0) -> str:
+        launch = ""
+        if launch_args is not None:
+            launch = 'RECURRENCE_LAUNCH_JSON="$(recurrence_launch_json ' + " ".join(shlex.quote(arg) for arg in launch_args) + ')"\n'
+        harness = (
+            "set -euo pipefail\n"
+            f'RUN_DIR="{run_dir}"\nRUN_ID="20261005T000000Z-ab12"\nDATA_PORT="8110"\nCASCOR_PORT=""\nRECURRENCE_PORT="8260"\n'
+            'DATA_URL="http://127.0.0.1:8110"\nEXPERIMENT="cell-01"\n'
+            f"WANT_BRIDGE={bridge}\n"
+            "announce() { :; }\nis_dry() { false; }\n" + _extract_experiment_fn("json_number_or_null") + _extract_experiment_fn("json_string_or_null") + _extract_experiment_fn("recurrence_launch_json") + _extract_experiment_fn("render_ports_json") + _extract_experiment_fn("write_ports_json") + launch + "write_ports_json\n"
+        )
+        result = subprocess.run(["/bin/bash", "-c", harness], capture_output=True, text=True, env=RedactedEnv(os.environ), timeout=SCRIPT_TIMEOUT_SECONDS)
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        return (run_dir / "ports.json").read_text()
+
+    def _read(self, fn: str, ports_file: Path, key: str) -> str:
+        harness = "set -euo pipefail\n" + _extract_experiment_fn(fn) + f'{fn} "{ports_file}" "{key}"\n'
+        return subprocess.run(["/bin/bash", "-c", harness], capture_output=True, text=True, check=True, env=RedactedEnv(os.environ), timeout=SCRIPT_TIMEOUT_SECONDS).stdout
+
+    def test_without_a_record_the_text_is_exactly_the_pre_w1_9_document(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            text = self._write(Path(tmp))
+        self.assertEqual(text, '{\n  "run_id": "20261005T000000Z-ab12",\n  "data": 8110,\n  "cascor": null,\n  "recurrence": 8260,\n  "data_url": "http://127.0.0.1:8110",\n  "experiment": "cell-01",\n  "grafana_bridge": false\n}\n')
+
+    def test_with_a_record_every_text_reader_still_reads_the_top_level(self) -> None:
+        odd = '/opt/my envs/a"b\\c/bin/python3'  # a space, a double quote and a backslash, all escaped
+        args = ("JuniperCascor1", "/opt/env/bin/juniper-recurrence", odd, "", "/runs/x/snapshots", "DEBUG", "", "/runs/x/config/experiment.yaml")
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = Path(tmp)
+            text = self._write(run_dir, launch_args=args, bridge=1)
+            ports_file = run_dir / "ports.json"
+            self.assertEqual(self._read("read_run_port", ports_file, "data"), "8110")
+            self.assertEqual(self._read("read_run_port", ports_file, "cascor"), "")
+            self.assertEqual(self._read("read_run_port", ports_file, "recurrence"), "8260")
+            self.assertEqual(self._read("read_run_flag", ports_file, "grafana_bridge"), "true")
+        self.assertEqual(
+            json.loads(text)["recurrence_launch"],
+            {"conda_env": "JuniperCascor1", "cli": "/opt/env/bin/juniper-recurrence", "python": odd, "model_version": None, "snapshots_dir": "/runs/x/snapshots", "log_level": "DEBUG", "log_format": None, "config_file": "/runs/x/config/experiment.yaml"},
+        )
+        self.assertIn('\n  "data_url": "http://127.0.0.1:8110",\n', text)
+        self.assertTrue(text.startswith('{\n  "run_id": "20261005T000000Z-ab12",\n'))
 
 
 class TestConsoleScriptPython(unittest.TestCase):
