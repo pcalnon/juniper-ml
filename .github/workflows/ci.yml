@@ -1023,6 +1023,15 @@ jobs:
           # record line format; and the unit + deploy script contract, checked statically (the
           # deploy script changes systemd user units and is never executed by a test).
           python3 -m unittest -v tests/test_yamaguchi_watchdog.py
+          # tests/test_archive_consensus_screen.py: the 2026-09-22 consensus archiver's
+          # credential screen (util/ad-hoc is outside every pre-commit Python hook). A
+          # free-standing 30-40 character token containing * @ $ % is a hit; 29, 41, a
+          # mark-free compound, a path and a URL are not. enc-v1 needs 8 payload
+          # characters; a JWT needs both segments and the trailing dot. The problem line
+          # names a count and never the value. The last assistant message is the report.
+          # A hit refuses the whole archive (exit 2, nothing written) unless --allow-shaped;
+          # --check writes nothing and does not bypass the screen.
+          python3 -m unittest -v tests/test_archive_consensus_screen.py
           # tests/test_matrix_set_verdicts.py: Hermetic gate for the E2E matrix verdict writer `util/ad-hoc/2026-09-02_matrix_set_verdicts.py` (`util/` is outside every pre-commit Python hook), which shipped with zero tests: verdict tokens, row identity, and the write-back path.
           python3 -m unittest -v tests/test_matrix_set_verdicts.py
           # tests/test_e2e_matrix_fill.py: Hermetic gate for the E2E matrix bulk-fill writer, which shipped with zero tests: which cells a fill may touch, and that an already-filled cell is not silently overwritten.
