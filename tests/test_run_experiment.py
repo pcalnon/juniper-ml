@@ -28,6 +28,11 @@ for BOTH the run's juniper-data and cascor (their endpoint sets are disjoint). C
   --dataset/--split/--out + JUNIPER_DATA_URL env; missing CLI -> acceptance failure;
   nonzero CLI / TimeoutExpired -> acceptance failure with recorded error;
   ``LD_LIBRARY_PATH=''`` hygiene);
+* W1.9 (F-D4): the re-run executes the CLI the launcher recorded (ports.json ``recurrence_launch``)
+  rather than the driver's PATH, falls back to ``shutil.which`` only when none is recorded, refuses
+  -- without running the CLI -- when the CLI resolves another interpreter or the interpreter another
+  model version than the served process, and sets aside a record for a service the run does not
+  drive; the driver's ``console_script_python`` and model-version probe are pinned to the launcher's;
 * W0.3 (F-D1): the manifest's per-phase ``phases`` record and the ``degraded`` outcome derived
   from it -- driven by real stub-service failures (a crossval 422 on the missing ``X_full`` key),
   never from ``acceptance.ok`` (a plot-only acceptance failure stays ``succeeded``), plus the
@@ -50,6 +55,8 @@ import hashlib
 import io
 import json
 import os
+import re
+import shlex
 import shutil
 import socket
 import subprocess
@@ -1880,6 +1887,300 @@ class DeriveRecurrenceOutcomeTest(unittest.TestCase):
     def test_the_status_vocabulary_is_closed(self) -> None:
         self.assertEqual(rx.PHASE_STATUSES, frozenset({"ok", "failed", "skipped", "not_reached"}))
         self.assertEqual(rx.RECURRENCE_AUX_PHASES, ("predict", "crossval", "save_model"))
+
+
+# --------------------------------------------------------------------------- #
+# W1.9 (F-D4): the save_model re-run runs the launcher-recorded CLI, with rerun parity
+# --------------------------------------------------------------------------- #
+
+LAUNCHER_PATH = REPO_ROOT / "util" / "experiment_stack.bash"
+
+
+def _launcher_fn(name: str) -> str:
+    """A live ``<name>() { ... }`` body from util/experiment_stack.bash, for the W1.9 mirror pins.
+
+    Named apart from the launcher suite's extractor, which this file does not import.
+    """
+    match = re.search(rf"^{re.escape(name)}\(\) \{{.*?\n\}}\n", LAUNCHER_PATH.read_text(), flags=re.MULTILINE | re.DOTALL)
+    if match is None:
+        raise AssertionError(f"{name} not found in {LAUNCHER_PATH}")
+    return match.group(0)
+
+
+def _record_recurrence_launch(run_dir: Path, **fields: object) -> None:
+    """Add a ``recurrence_launch`` record to the run's ports.json, shaped as ``recurrence_up`` writes it."""
+    ports_file = run_dir / "ports.json"
+    ports = json.loads(ports_file.read_text(encoding="utf-8"))
+    ports["recurrence_launch"] = {"conda_env": "JuniperCascor1", "cli": None, "python": None, "model_version": None, "snapshots_dir": str(run_dir / "snapshots"), "log_level": None, "log_format": None, "config_file": None, **fields}
+    ports_file.write_text(json.dumps(ports), encoding="utf-8")
+
+
+def _fake_env(root: Path, name: str, *, model_version: "str | None" = "0.3.2", interpreter: "Path | None" = None) -> "tuple[Path, Path]":
+    """A fake env: ``<name>/bin/python3`` plus a ``juniper-recurrence`` console script whose shebang names it.
+
+    ``python3`` is bash. It answers the model-version probe (``-c ...``) with ``model_version`` --
+    exiting 1 when that is None -- and otherwise runs the script it is handed with bash, so the
+    console script really executes THROUGH its shebang, as pip's does. ``interpreter`` overrides the
+    shebang. The script writes its argv to ``<name>/argv.txt`` and creates its ``--out`` file.
+    Returns ``(cli, python3)``.
+    """
+    bindir = root / name / "bin"
+    bindir.mkdir(parents=True)
+    python = bindir / "python3"
+    probe_arm = "exit 1" if model_version is None else f"printf '%s\\n' {shlex.quote(model_version)}; exit 0"
+    python.write_text("#!/bin/bash\n" f'if [[ "${{1-}}" == "-c" ]]; then {probe_arm}; fi\n' 'exec /bin/bash "$@"\n', encoding="utf-8")
+    python.chmod(0o755)
+    cli = bindir / "juniper-recurrence"
+    argv_file = root / name / "argv.txt"
+    cli.write_text(f"#!{interpreter or python}\n" f"printf '%s\\n' \"$*\" > '{argv_file}'\n" "prev=''\nout=''\n" 'for a in "$@"; do [ "$prev" = "--out" ] && out="$a"; prev="$a"; done\n' '[ -n "$out" ] && : > "$out"\n' "exit 0\n", encoding="utf-8")
+    cli.chmod(0o755)
+    return cli, python
+
+
+class SaveModelLaunchRecordTest(_StubTestCase):
+    """W1.9 (F-D4): the save_model re-run executes the CLI the launcher served from, under its interpreter.
+
+    The record is ports.json ``recurrence_launch``, written by ``util/experiment_stack.bash``
+    ``recurrence_up``. Before W1.9 the re-run took ``shutil.which("juniper-recurrence")`` on the
+    DRIVER's PATH, which need not be the env the launcher served from. Two fake envs stand in: A, the
+    served one, and B, first on the driver's PATH -- each CLI leaves ``argv.txt`` if it ever runs.
+    """
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.cli_a, self.python_a = _fake_env(self.tmp, "env-a")
+        self.cli_b, self.python_b = _fake_env(self.tmp, "env-b")
+        path_patch = mock.patch.dict(os.environ, {"PATH": f"{self.cli_b.parent}:{os.environ['PATH']}"})
+        path_patch.start()
+        self.addCleanup(path_patch.stop)
+
+    def _run_save_model(self, *extra: str) -> "tuple[int, dict]":
+        cfg = _recurrence_config()
+        cfg["outputs"]["save_model"] = True
+        code, _ = _invoke(_write_config(self.tmp, cfg), self.run_dir, *extra)
+        return code, _manifest(self.run_dir)
+
+    def _ran(self, env_name: str) -> bool:
+        return (self.tmp / env_name / "argv.txt").exists()
+
+    def test_the_recorded_cli_runs_although_another_is_first_on_path(self) -> None:
+        self.assertEqual(shutil.which("juniper-recurrence"), str(self.cli_b), "fixture: env B's CLI must be first on PATH")
+        _record_recurrence_launch(self.run_dir, cli=str(self.cli_a), python=str(self.python_a), model_version="0.3.2")
+        code, manifest = self._run_save_model()
+        rerun = manifest["save_model_rerun"]
+        self.assertEqual(rerun["cmd"][0], str(self.cli_a))
+        self.assertEqual(rerun["cli_source"], "launcher")
+        self.assertEqual(rerun["parity"]["interpreter"], "match")
+        self.assertEqual(rerun["parity"]["rerun_python"], str(self.python_a))
+        self.assertEqual(rerun["parity"]["model_version"], "match")
+        self.assertEqual(rerun["parity"]["rerun_model_version"], "0.3.2")
+        self.assertTrue(self._ran("env-a"))
+        self.assertFalse(self._ran("env-b"), "the driver's PATH CLI must not run when a CLI is recorded")
+        self.assertIn("--dataset ds-stub123", (self.tmp / "env-a" / "argv.txt").read_text())
+        self.assertEqual(manifest["phases"]["save_model"], {"status": "ok"})
+        self.assertEqual(manifest["outcome"], "succeeded")
+        self.assertEqual(code, rx.EXIT_SUCCESS)
+        # The record travels with the run's evidence: the manifest carries ports.json whole.
+        self.assertEqual(manifest["ports"]["recurrence_launch"]["cli"], str(self.cli_a))
+
+    def test_which_is_the_fallback_only_when_nothing_is_recorded(self) -> None:
+        code, manifest = self._run_save_model()
+        rerun = manifest["save_model_rerun"]
+        self.assertEqual(rerun["cli_source"], "path")
+        self.assertEqual(rerun["cmd"][0], str(self.cli_b))
+        self.assertEqual(rerun["parity"]["interpreter"], "unverified")
+        self.assertIn("records no recurrence_launch.python", rerun["parity"]["reason"])
+        self.assertTrue(self._ran("env-b"))
+        self.assertEqual(manifest["phases"]["save_model"], {"status": "ok"})
+        self.assertEqual(code, rx.EXIT_SUCCESS)
+
+    def test_a_path_cli_from_another_env_fails_parity_when_only_the_interpreter_is_recorded(self) -> None:
+        """F-D4 itself: no CLI recorded, so PATH supplies one -- from env B, not the served env A."""
+        _record_recurrence_launch(self.run_dir, python=str(self.python_a), model_version="0.3.2")
+        code, manifest = self._run_save_model()
+        rerun = manifest["save_model_rerun"]
+        self.assertEqual(rerun["cli_source"], "path")
+        self.assertEqual(rerun["cmd"][0], str(self.cli_b))
+        self.assertEqual(rerun["parity"]["interpreter"], "mismatch")
+        self.assertIn(str(self.python_a), rerun["error"])
+        self.assertIn(str(self.python_b), rerun["error"])
+        self.assertFalse(self._ran("env-b"), "a parity failure must not run the CLI")
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+
+    def test_parity_refuses_a_cli_whose_interpreter_is_not_the_served_one(self) -> None:
+        """The 2026-09-12 shape: the env was upgraded under a live service, so the recorded CLI's
+        shebang now names an interpreter other than the one the served process runs on."""
+        served = self.python_a.with_name("python3.13")
+        _record_recurrence_launch(self.run_dir, cli=str(self.cli_a), python=str(served), model_version="0.3.2")
+        code, manifest = self._run_save_model()
+        rerun = manifest["save_model_rerun"]
+        self.assertFalse(rerun["ok"])
+        self.assertEqual(rerun["cmd"][0], str(self.cli_a))
+        self.assertEqual(rerun["parity"]["interpreter"], "mismatch")
+        error = manifest["phases"]["save_model"]["error"]
+        self.assertEqual(manifest["phases"]["save_model"]["status"], "failed")
+        for path in (served, self.python_a, self.cli_a):
+            self.assertIn(str(path), error)
+        self.assertTrue(any(str(served) in reason and str(self.python_a) in reason for reason in manifest["acceptance"]["reasons"]))
+        self.assertFalse(self._ran("env-a"), "a parity failure must not run the CLI")
+        self.assertFalse(self._ran("env-b"))
+        # W0.3 semantics untouched: a failed enabled phase is `degraded`, exit 1.
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+
+    def test_parity_refuses_when_the_interpreter_now_resolves_another_model_version(self) -> None:
+        """Same interpreter, reinstalled model: what interpreter parity alone cannot see."""
+        cli, python = _fake_env(self.tmp, "env-d", model_version="0.1.5")
+        _record_recurrence_launch(self.run_dir, cli=str(cli), python=str(python), model_version="0.3.2")
+        code, manifest = self._run_save_model()
+        parity = manifest["save_model_rerun"]["parity"]
+        self.assertEqual(parity["interpreter"], "match")
+        self.assertEqual(parity["model_version"], "mismatch")
+        self.assertEqual((parity["served_model_version"], parity["rerun_model_version"]), ("0.3.2", "0.1.5"))
+        error = manifest["phases"]["save_model"]["error"]
+        for text in ("0.1.5", "0.3.2", str(python)):
+            self.assertIn(text, error)
+        self.assertFalse(self._ran("env-d"))
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+
+    def test_a_recorded_cli_that_is_gone_fails_rather_than_falling_back(self) -> None:
+        gone = self.tmp / "env-gone" / "bin" / "juniper-recurrence"
+        _record_recurrence_launch(self.run_dir, cli=str(gone), python=str(self.python_a), model_version="0.3.2")
+        code, manifest = self._run_save_model()
+        rerun = manifest["save_model_rerun"]
+        self.assertEqual(rerun["cli_source"], "launcher")
+        self.assertNotIn("cmd", rerun)
+        error = manifest["phases"]["save_model"]["error"]
+        self.assertIn(str(gone), error)
+        self.assertIn("does not fall back to PATH", error)
+        self.assertFalse(self._ran("env-b"))
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+
+    def test_a_symlinked_interpreter_is_the_same_interpreter(self) -> None:
+        link = self.python_a.with_name("python")
+        link.symlink_to(self.python_a.name)
+        _record_recurrence_launch(self.run_dir, cli=str(self.cli_a), python=str(link), model_version="0.3.2")
+        code, manifest = self._run_save_model()
+        self.assertEqual(manifest["save_model_rerun"]["parity"]["interpreter"], "match")
+        self.assertTrue(self._ran("env-a"))
+        self.assertEqual(code, rx.EXIT_SUCCESS)
+
+    def test_an_unread_served_model_version_is_unverified_not_a_failure(self) -> None:
+        _record_recurrence_launch(self.run_dir, cli=str(self.cli_a), python=str(self.python_a))
+        code, manifest = self._run_save_model()
+        parity = manifest["save_model_rerun"]["parity"]
+        self.assertEqual((parity["interpreter"], parity["model_version"]), ("match", "unverified"))
+        self.assertIn("recurrence_launch.model_version is null", parity["reason"])
+        self.assertEqual(code, rx.EXIT_SUCCESS)
+
+    def test_an_unreadable_rerun_model_version_is_unverified_not_a_failure(self) -> None:
+        cli, python = _fake_env(self.tmp, "env-e", model_version=None)
+        _record_recurrence_launch(self.run_dir, cli=str(cli), python=str(python), model_version="0.3.2")
+        code, manifest = self._run_save_model()
+        parity = manifest["save_model_rerun"]["parity"]
+        self.assertEqual((parity["interpreter"], parity["model_version"]), ("match", "unverified"))
+        self.assertIn("cannot read the re-run's model version", parity["reason"])
+        self.assertTrue(self._ran("env-e"))
+        self.assertEqual(code, rx.EXIT_SUCCESS)
+
+    def test_a_record_for_a_service_this_run_does_not_drive_is_set_aside(self) -> None:
+        ports = json.loads((self.run_dir / "ports.json").read_text(encoding="utf-8"))
+        ports["recurrence"] = 1  # ports.json's recurrence leg is some other service...
+        (self.run_dir / "ports.json").write_text(json.dumps(ports), encoding="utf-8")
+        _record_recurrence_launch(self.run_dir, cli=str(self.cli_a), python=str(self.python_a), model_version="0.3.2")
+        code, manifest = self._run_save_model("--recurrence-url", self.server.base_url)  # ...this run drives the stub
+        rerun = manifest["save_model_rerun"]
+        self.assertEqual(rerun["cli_source"], "path")
+        self.assertIn("set aside", rerun["launch_record"])
+        self.assertEqual(rerun["cmd"][0], str(self.cli_b))
+        self.assertEqual(rerun["parity"]["interpreter"], "unverified")
+        self.assertFalse(self._ran("env-a"))
+        self.assertEqual(code, rx.EXIT_SUCCESS)
+
+
+class LauncherMirrorTest(unittest.TestCase):
+    """W1.9: parity compares the launcher's view of the served CLI with the driver's view of the re-run's,
+    so the two must resolve interpreters, and read model versions, identically."""
+
+    FALLBACK = "/fallback/envs/JuniperCascor1/bin/python"
+    SHAPES = {
+        "plain": "#!/opt/miniforge3/envs/JuniperCascor1/bin/python3.14\nimport sys\n",
+        "arguments": "#!/usr/bin/python3 -E -s\n",
+        "crlf": "#!/opt/env/bin/python3.12\r\n",
+        "tab": "#!/opt/env/bin/python3\t-u\n",
+        "no-newline": "#!/opt/env/bin/python3",
+        "pythonw": "#!/opt/env/bin/pythonw\n",
+        "env": "#!/usr/bin/env python3\n",
+        "trampoline": "#!/bin/sh\n'''exec' /very/long/path/python3 \"$0\" \"$@\"\n' '''\n",
+        "space-after-bang": "#! /usr/bin/python3\n",
+        "relative": "#!python3\n",
+        "ipython": "#!/opt/env/bin/ipython\n",
+        "trailing-slash": "#!/usr/bin/\n",
+        "body-only": "import sys\n",
+        "empty": "",
+    }
+
+    def _bash(self, script: Path) -> str:
+        harness = "set -euo pipefail\n" + _launcher_fn("console_script_python") + f'console_script_python "{script}" "{self.FALLBACK}"\n'
+        return subprocess.run(["/bin/bash", "-c", harness], capture_output=True, text=True, check=True, timeout=30, env=RedactedEnv(os.environ)).stdout
+
+    def test_the_driver_resolves_every_shebang_shape_as_the_launcher_does(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            for label, text in self.SHAPES.items():
+                with self.subTest(shape=label):
+                    script = Path(tmp) / f"{label}.script"
+                    script.write_bytes(text.encode("utf-8"))
+                    self.assertEqual(rx.console_script_python(str(script), self.FALLBACK), self._bash(script))
+            missing = Path(tmp) / "missing"
+            self.assertEqual(rx.console_script_python(str(missing), self.FALLBACK), self._bash(missing))
+        # Not vacuous: the shapes span both answers.
+        with tempfile.TemporaryDirectory() as tmp:
+            plain = Path(tmp) / "plain"
+            plain.write_text(self.SHAPES["plain"])
+            self.assertEqual(rx.console_script_python(str(plain), self.FALLBACK), "/opt/miniforge3/envs/JuniperCascor1/bin/python3.14")
+            env = Path(tmp) / "env"
+            env.write_text(self.SHAPES["env"])
+            self.assertEqual(rx.console_script_python(str(env), self.FALLBACK), self.FALLBACK)
+
+    def test_the_driver_runs_the_launchers_model_version_probe_and_rule(self) -> None:
+        body = _launcher_fn("recurrence_up")
+        self.assertIn(f"local model_version_probe='{rx.RECURRENCE_MODEL_VERSION_PROBE}'", body)
+        self.assertIn(f'[[ "${{model_version}}" =~ ^{rx._MODEL_VERSION_RE.pattern}$ ]] || model_version=""', body)
+
+    def test_the_probe_reads_the_installed_distribution(self) -> None:
+        """The probe text itself works: a real interpreter, a planted dist-info, no fakes."""
+        with tempfile.TemporaryDirectory() as tmp:
+            dist = Path(tmp) / "juniper_recurrence_model-9.8.7.dist-info"
+            dist.mkdir()
+            (dist / "METADATA").write_text("Metadata-Version: 2.1\nName: juniper-recurrence-model\nVersion: 9.8.7\n")
+            env = RedactedEnv(os.environ, PYTHONPATH=tmp)
+            self.assertEqual(rx._probe_model_version(sys.executable, env), ("9.8.7", None))
+
+    def test_an_answer_that_is_not_one_version_token_is_no_version(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            for label, body, why in (("junk", "printf 'WARNING: shadowed\\n0.3.2\\n'", "printed no version"), ("exit", "echo boom >&2; exit 3", "exited 3")):
+                with self.subTest(case=label):
+                    fake = Path(tmp) / f"{label}-python"
+                    fake.write_text(f"#!/bin/bash\n{body}\n")
+                    fake.chmod(0o755)
+                    version, reason = rx._probe_model_version(str(fake), RedactedEnv(os.environ))
+                    self.assertIsNone(version)
+                    self.assertIn(why, reason)
+
+    def test_a_record_applies_only_to_the_service_it_describes(self) -> None:
+        record = {"cli": "/env/bin/juniper-recurrence"}
+        ports = {"recurrence": 8260, "recurrence_launch": record}
+        self.assertEqual(rx._recurrence_launch_record(ports, "http://127.0.0.1:8260"), (record, None))
+        self.assertEqual(rx._recurrence_launch_record(ports, "http://127.0.0.1:8260/"), (record, None))
+        kept, note = rx._recurrence_launch_record(ports, "http://127.0.0.1:8211")
+        self.assertEqual(kept, {})
+        self.assertIn("http://127.0.0.1:8260", note)
+        self.assertIn("http://127.0.0.1:8211", note)
+        self.assertEqual(rx._recurrence_launch_record({"recurrence": 8260}, "http://127.0.0.1:8260"), ({}, None))
+        self.assertEqual(rx._recurrence_launch_record({"recurrence": 8260, "recurrence_launch": "not-a-mapping"}, "http://127.0.0.1:8260"), ({}, None))
 
 
 @unittest.skipUnless(HAVE_NUMPY and HAVE_MPL, "numpy + matplotlib required for the SS8.1 plot set")

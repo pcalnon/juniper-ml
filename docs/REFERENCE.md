@@ -3112,6 +3112,10 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
     no listener, so kill-by-port cannot be what fired), removes the target file, releases the lockdirs, writes `teardown.json`, and preserves `artifacts/`.
   Live `cascor_up` / `canopy_up` compose pins (`TestCascorUp` / `TestCanopyUp` — fake `conda.sh` + PATH stubs; juniper-ml#813). Wired into `ci.yml` beside the `test_juniper_{plant,chop}_all.py` launcher tests.
   - Live compose coverage for `data_up` (`TestDataUpLive`: venv create/skip, pip extras, `PYTHON_GIL=0`, pidfile, missing-`python3.14` abort — juniper-ml#807).
+  - W1.10 / W1.9 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (`TestRecurrenceUpLaunchRecord`, `TestRecurrenceLaunchRecordWiring`, `TestPortsJsonRender`, and a `TestDryRunUp` arm): live `recurrence_up` hands serve
+    `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots` and the two log knobs only when set (absent, never empty, when unset), recorded in `env/launch.env`, `ports.json` and the announce line;
+    the `recurrence_launch` record lands after the preflight and before `serve` and adds only that key; a refused env records nothing; an unwritable record fails the leg; a probe answer that is not
+    one version token records `null`; and `ports.json` keeps the exact text its sed/grep readers match. The live happy path now counts four fake-interpreter calls: the preflight's three, each `-s` first, then the probe, without `-s`, from `/`.
 - `tests/test_recurrence_env_preflight.py` -- Hermetic tests for `util/recurrence_env_preflight.bash` (W0.2 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, F-E2). A fake `python` (`tests/recurrence_env_fakes.py`) drives the branch matrix: the F-E1 stale env exits 1 with both juniper `pip check` lines and the `derive_full_split` ImportError verbatim; CUDA-only `pip check` noise exits 0; `--skip` exits 0 with every finding as `WARNING: ENV PREFLIGHT SKIPPED —`; a violated pin alone refuses; every call passes `-s` first and runs from `/`. A real offline venv (`--without-pip`, the test interpreter's pip symlinked in) checks it against pip's own output. The `recurrence_up` call sites are pinned in the two launcher suites.
 - `tests/test_snapshot_index.py` -- Hermetic tests for `util/snapshot_index.py` (design §6.2). Pins bytes-attr decode, append-only rescan, `--limit` deferred-vs-present counting, D-C provenance filters, the query-time `dataset_id` join, and an AST read-only guard. Operator surface: [Snapshot Sidecar Chain](#snapshot-sidecar-chain).
 - `tests/test_snapshot_classify.py` -- Hermetic tests for `util/snapshot_classify.py` (handoff 2026-08-22 §2.4). Pins the two-axis category/health rule (attributed zero-node is category 5, not empty), `readable`-is-not-loadable, iterations-not-epochs, replace-not-append sidecar, `--write`/`--from-sidecar` refusals, and the train-stage scratch-root + unimplemented exits. Operator surface: [Snapshot Sidecar Chain](#snapshot-sidecar-chain).
@@ -3132,6 +3136,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
   record-and-continue on failure, the G-18 `save_model` CLI re-run via a PATH stub + missing-CLI acceptance failure), `ports.json` endpoint resolution, the §13.4 manifest
   written for every outcome, and the full 0/1/2/3/4 exit matrix incl. `RedactedEnv` subprocess arms.
   W0.3 (`DegradedOutcomeTest` / `DeriveRecurrenceOutcomeTest`): the manifest's per-phase `phases` record, driven by real stub-service failures — a crossval 422 on the missing `X_full` key is `outcome: degraded` with exit 1, every phase `ok` is `succeeded`, a plot-only acceptance failure stays `succeeded`, and a disabled phase is `skipped` and cannot degrade.
+  W1.9 (`SaveModelLaunchRecordTest` / `LauncherMirrorTest`, F-D4): `save_model_rerun.cmd[0]` is the launcher-recorded CLI even with another `juniper-recurrence` first on PATH, and `shutil.which` only when none is recorded; a recorded CLI that is gone fails without falling back; rerun parity refuses, naming both interpreters, a CLI whose shebang resolves another interpreter, and refuses a same-interpreter model-version change, without running the CLI; a symlinked interpreter is the same one; unreadable evidence is `unverified`; a record for a service the run does not drive is set aside. The fake envs run their console scripts through a real shebang. The driver's `console_script_python` matches the launcher's on 14 shebang shapes, and its model-version probe and acceptance pattern are the launcher's verbatim.
   csv_import operator surface (APD-DATA-018, the half that lives in this repo): `create_dataset` 422 is `ConfigError` / exit 2 on both the recurrence and cascor paths (create runs *before* staging; a 500 stays `RunFailed`); csv_import is registered-available on the stub but not in `STAGEABLE_GENERATOR_ALIASES`, so a successful create still cannot stage (the arc_agi-only unstageable arm is a false green if csv_import is added to the alias map).
 - `tests/test_read_run_metrics.py` -- Hermetic tests for `util/experiments/read_run_metrics.py` (P2 item 0.4): last-row `step_count`, scrape tri-state (`None` is not `False`), `work_invariant` negative control. juniper-ml#1613 adds `WorkloadFingerprintTest` (cosmetic `description`/`name` ignored, `seed` is not, missing YAML is `None` not a shared identity, `single_workload` false when identities are unknown). `util/` is outside pre-commit Python hooks, so this unittest is the gate.
   W0.3 pins `degraded` OUT of `TRUNCATING_TERMINATIONS`: a complete run that lost a post-train phase, not a driver-stopped one.
@@ -3461,6 +3466,10 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
     recorded port. `artifacts/` is never deleted.
   - Partial-failure teardown: `do_up` writes `ports.json` before any `*_up`; on `failed=1` it logs
     `bring-up failed — tearing the partial run back down` and calls `teardown_run` (live only; not `--dry-run`), keeping `logs/` + `artifacts/` and releasing lockdirs.
+  - **Recurrence service env + launch record** (W1.10 / W1.9 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`): `recurrence_up` exports
+    `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots` (F-D9) and passes `JUNIPER_RECURRENCE_LOG_LEVEL` / `_LOG_FORMAT` only when they are set (F-L11); a `service:` key in the `--config`
+    YAML outranks all three. After the env preflight it rewrites `ports.json` with a `recurrence_launch` record, whose CLI `run_experiment.py`'s `save_model` re-run executes under rerun
+    parity (F-D4). Operator surface: [Recurrence launch record and service env](#recurrence-launch-record-and-service-env).
   - Health: `wait_for_health` polls `/v1/health` (data, cascor) and `/v1/health/ready` (recurrence) every 2s until `JUNIPER_EXP_HEALTH_TIMEOUT` (default **90** — F-8 sizes it
     for a cold start; the 1.1 s warm number is not the design point).
   - **Dead-process fast-fail**: `wait_for_health` takes an optional 4th arg, a `pgrep -f` liveness pattern, and each leg passes a **port-scoped** one (`-m juniper_data .*--port
@@ -3504,6 +3513,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Each poll samples the loopback `/metrics` allowlist (`candidate_correlation` / `hidden_units_total` / `training_loss` / `training_accuracy_ratio` / step-duration sum+count) into `artifacts/results/metrics_series.csv` -- correlation exists ONLY there, never in `/v1/metrics/history` rows; a 404 (metrics disabled, G-3) degrades sampling, not the run.
   - Recurrence drive (Wave 2.3): health-gates `/v1/health/ready`, then the **synchronous** `POST /v1/train` (the response IS completion — no poll loop; the Q-2 budget is the request's socket timeout → `timed_out`), then optional `POST /v1/predict` (`predict.from_dataset_split`, default `test`) and `POST /v1/crossval` (same LMU hyperparams as `train:` for bench comparability); every phase refs the dataset by content-addressed `dataset_id` (H-8).
   - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) re-runs the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` as a manifest-recorded extra step (the CLI has no `--params` flag, so the dataset_id ref is the only faithful form).
+    That CLI is `ports.json` `recurrence_launch.cli` when the launcher recorded one (W1.9, F-D4; `shutil.which` on the driver's PATH otherwise), and rerun parity — the served process's interpreter and `juniper-recurrence-model` version — must hold, or the phase fails without running it.
     Every phase leaves a record in the manifest's `phases` block (`ok` / `failed` + `error` / `skipped` when not enabled / `not_reached`). `degraded` = train succeeded but an ENABLED predict, crossval or save_model phase did not; it is derived from those records, never from `acceptance.ok`, so a plot-only acceptance failure stays `succeeded`.
   - Collects `metrics_final.json` / `metrics_history.json` / `topology.json` / `decision_boundary.npz` (2-D input only) + optional `POST /v1/snapshots` (cascor), `train_response.json` / `predict_response.json` / `crossval_response.json` (recurrence); ALWAYS writes the §13.4 `manifest.json` (also for stalled / timed-out / failed runs) and prints a one-screen summary.
   - **409 preempt (§3.4)**: `start_fresh: true` does NOT stop a live run — the lifecycle lock is held, so the 409 is raised before `start_fresh` is consulted, and after a driver-side stall/budget abort the naive re-run dies on `Training already in progress`. A 409 now gets ONE preemption attempt: `POST /v1/training/stop`; wait for the lifecycle to leave the active set; retry starting once.
@@ -4343,6 +4353,43 @@ Why this mattered more than ordinary log interleaving: **cascor's parent logger 
 
 Data and recurrence instances never had a per-checkout constraint.
 
+#### Recurrence launch record and service env
+
+W1.10 and W1.9 of [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) (findings F-D9, F-L11, F-D4).
+
+`recurrence_up` hands `serve` three settings beyond the §6.1 recipe, and names each one in the announce line and in `env/launch.env`:
+
+| Variable | Value | When |
+|----------|-------|------|
+| `JUNIPER_RECURRENCE_SNAPSHOTS_DIR` | `$RUN_DIR/snapshots` | Always. Unexported, the service used its CWD-relative default and wrote `$RUN_DIR/recurrence-snapshots` (F-D9). The dir is shared with cascor, which lists only `*.h5`; recurrence lists only `*.npz`. |
+| `JUNIPER_RECURRENCE_LOG_LEVEL` | the launcher's own value | Only when set in the launcher's environment. An unset one is left out, never exported empty (F-L11). |
+| `JUNIPER_RECURRENCE_LOG_FORMAT` | the launcher's own value | Same rule. |
+
+A set log variable already reached `serve` by inheritance (the launch uses no `env -i`, and `run_suite.py` passes its whole environment), so for the log knobs the change is that they are now recorded. **Precedence**: juniper-recurrence resolves init/CLI > the YAML `service:` block (the `--config` file, through `JUNIPER_RECURRENCE_CONFIG_FILE`) > env > defaults (`settings.py` `settings_customise_sources`). A `service:` key for `log_level`, `log_format` or `snapshots_dir` therefore outranks every value in the table.
+
+After the env preflight passes, `recurrence_up` rewrites `ports.json`, the file the driver already reads, adding one key, `recurrence_launch`:
+
+| Key | Meaning |
+|-----|---------|
+| `conda_env` | `JUNIPER_EXP_RECURRENCE_CONDA` as resolved |
+| `cli` | The console script `serve` runs |
+| `python` | The interpreter its shebang names (`console_script_python`; a non-python shebang falls back to the env's `bin/python`) |
+| `model_version` | `juniper-recurrence-model` as that interpreter resolves it, probed without `-s` and from `/`, as `serve` imports it; `null` when the probe fails or prints anything but one version token |
+| `snapshots_dir` | As exported |
+| `log_level` / `log_format` | As passed; `null` means not passed, so the YAML or the service default applies |
+| `config_file` | `$RUN_DIR/config/experiment.yaml` under `--config`, else `null` |
+
+The rewrite goes through the same `write_ports_json` that wrote the file before the launches (to a temp file, renamed into place), so no other key changes and `ports.json` keeps the exact text that `read_run_port`, `read_run_flag` and `--status` match. A refused env records nothing, and a record that cannot be written fails the leg before `serve`. The driver copies `ports.json` whole into `manifest.json` under `ports`.
+
+The driver's `save_model` re-run executes `recurrence_launch.cli`. `shutil.which` on the driver's `PATH` is the fallback only when no CLI is recorded, and a recorded CLI that has gone missing fails the phase rather than falling back. Before the CLI runs, **rerun parity** must hold:
+
+- the CLI's interpreter, resolved exactly as the launcher resolves it, is `recurrence_launch.python` (compared as resolved paths, so `bin/python` and the `bin/python3.14` it links to are one interpreter);
+- that interpreter's `juniper-recurrence-model` version is still `recurrence_launch.model_version`.
+
+A mismatch fails the phase with both sides named, and the CLI is not run (`outcome: degraded`, exit 1, as W0.3 derives it). Evidence missing on either side is recorded as `unverified`, not guessed. When `--recurrence-url` points anywhere but the service `ports.json` recorded, the record is set aside and `save_model_rerun.launch_record` says why. `manifest.save_model_rerun` carries `cli_source` (`launcher` or `path`) and the `parity` block.
+
+`util/isolated_stack.bash` is not changed. It writes no `ports.json` and the driver never reads its run dir; it never created a per-run snapshots dir, so F-D9's defect is absent there; and it has no `--config` route, so inheritance is the only route for the log knobs, and it already works.
+
 #### F-6 listener pid rule (binding)
 
 `$!` after `( cd … && nohup <server> … & )` is the backgrounded **subshell**, not the server. No `*_up` records `$!`. After the health gate, `record_listener_pid` writes the listener from `ss -tlnpH "sport = :<port>"` plus the process cmdline. Teardown kills pidfile-first only after proving the pid is alive, owned by the current uid, and still running the recorded cmdline (sending SIGTERM, then a bounded SIGKILL).
@@ -4420,7 +4467,7 @@ Kind selection from YAML shape: `training:` → cascor path; `train:` / `crossva
 
 Always writes §13.4 `manifest.json` (including stalled / timed-out / failed runs). Also writes `artifacts/results/stats.json` + `summary.md` (Wave 2.6; stats failure → `stats_error` on the manifest, never fatal). Plots (Wave 2.4/2.5) render client-side when `outputs.plots` requests them — structurally unavailable data is a per-plot SKIP; render errors / missing matplotlib on a requested plot fail acceptance.
 
-Cascor path polls `GET /v1/training/status` and samples loopback `/metrics` (redirect-following — bare `/metrics` 307s) into `metrics_series.csv`; candidate correlation exists **only** there. Recurrence path uses synchronous `POST /v1/train` (response IS completion; Q-2 budget = socket timeout → `timed_out`). `outputs.save_model: true` re-runs `juniper-recurrence train --dataset <dataset_id> … --out …/model.npz` (G-18).
+Cascor path polls `GET /v1/training/status` and samples loopback `/metrics` (redirect-following — bare `/metrics` 307s) into `metrics_series.csv`; candidate correlation exists **only** there. Recurrence path uses synchronous `POST /v1/train` (response IS completion; Q-2 budget = socket timeout → `timed_out`). `outputs.save_model: true` re-runs `juniper-recurrence train --dataset <dataset_id> … --out …/model.npz` (G-18), using the launcher-recorded CLI under rerun parity (W1.9; [Recurrence launch record and service env](#recurrence-launch-record-and-service-env)).
 
 Coverage: `tests/test_run_experiment.py`.
 
