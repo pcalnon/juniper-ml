@@ -53,6 +53,25 @@ set -euo pipefail
 - Date-prefix optional but useful: `YYYY-MM-DD_<short-purpose>.{py,bash}`.
 - Use kebab-case or snake_case consistently — match existing siblings.
 
+### CodeQL scans this directory
+
+[`.github/workflows/codeql.yml`](../../.github/workflows/codeql.yml) has no path filter (`queries: +security-and-quality`), so a script kept here as provenance is analyzed on the pull request that adds it. The quality finding **File is not always closed** is a bare `open()` whose handle is not closed on every path. These forms all match:
+
+```python
+payload = json.load(open(path))
+text = open(path).read()
+open(path, "w").write(text)
+```
+
+Close the handle with `with`, including writes:
+
+```python
+with open(path) as fh:
+    payload = json.load(fh)
+```
+
+An unresolved CodeQL review thread blocks the merge even when the `Analyze (python)` check is green. Edit the `open`; do not dismiss the thread. The same review can post **Unused import** — delete the import. Contract: [REFERENCE — CodeQL Analysis](../../docs/REFERENCE.md#codeql-analysis).
+
 ---
 
 ## Lifecycle

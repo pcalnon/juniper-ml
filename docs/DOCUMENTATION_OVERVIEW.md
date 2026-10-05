@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.54
+**Version:** 0.2.67
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -90,7 +90,7 @@
 | **Debug shared-package subdirectory CI**| [REFERENCE — Shared-Package CI Workflows](REFERENCE.md#shared-package-ci-workflows)                                              | docs/    |
 | **Operate weekly docs-full-check**      | [REFERENCE — Docs Full Check](REFERENCE.md#docs-full-check)                                                                     | docs/    |
 | **Understand weekly security / lockfile hygiene** | [REFERENCE — Scheduled Security Scan and Lockfile Update](REFERENCE.md#scheduled-security-scan-and-lockfile-update)     | docs/    |
-| **Triage CodeQL / `Analyze (python)`** | [REFERENCE — CodeQL Analysis](REFERENCE.md#codeql-analysis) (SHA group, `merge_group` divergence, review-thread stall) | docs/    |
+| **Triage CodeQL / `Analyze (python)`** | [REFERENCE — CodeQL Analysis](REFERENCE.md#codeql-analysis) (SHA group, `merge_group` divergence, review-thread stall, bare `open()` → `with`) | docs/    |
 | **Add or re-pin a required status-check context** | [REFERENCE — Required-Context Ruleset Writer](REFERENCE.md#required-context-ruleset-writer) (`--amend-integration-id`; do not hand-roll a ruleset PUT) | docs/    |
 | **Read the release-train detect summary / Slack** | [REFERENCE — Detect Summary and Slack](REFERENCE.md#release-train-detect-summary-and-slack)                             | docs/    |
 | **Understand the AGENTS.md date check** | [REFERENCE — AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check)                                                             | docs/    |
@@ -240,6 +240,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.2.54
+**Last Updated:** 2026-10-05
+**Version:** 0.2.67
 **Maintainer:** Paul Calnon

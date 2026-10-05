@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.61
-**Date**: 2026-09-04
+**Version**: 1.0.74
+**Date**: 2026-10-05
 **Project**: juniper-ml
 
 ---
@@ -544,7 +544,11 @@ main-verify tip when it is an ancestor of HEAD (sweeps `[skip ci]` gaps), else `
 Dependabot group `codeql-action` (`github/codeql-action*` in `.github/dependabot.yml`) is what keeps
 a bump atomic (one PR, three updates). `merge_group:` is an accepted juniper-ml-only divergence so
 the context re-posts on a queued merge; do not overwrite the file with the `notes/templates/ci/`
-snapshot. Full contract: [REFERENCE — CodeQL Analysis](REFERENCE.md#codeql-analysis).
+snapshot. A green `Analyze (python)` check can still leave the PR `BLOCKED`: the quality finding
+**File is not always closed** is a bare `open()` (`json.load(open(...))`, `open(...).read()`,
+`open(..., "w").write(...)`). Put it in a `with` block. **Unused import** means delete the import.
+Do not dismiss the thread. `util/ad-hoc/` is not excluded. Full contract:
+[REFERENCE — CodeQL Analysis](REFERENCE.md#codeql-analysis).
 
 **YubiKey ed448 `keytocard` (ml#904 / #914):** YubiKey 5 OpenPGP cannot hold Ed448/X448 — `KEYTOCARD failed:
 Invalid value` is a hardware limit, not a bad PIN. Keep ed448 certify offline; put ed25519/cv25519
@@ -919,7 +923,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Label greens Sequence Safety; `main-verify` fails | Put `Allow-Symbol-Loss:` / `Allow-Docs-Rewrite:` on a landed commit; labels are PR-only |
 | Merge queue stalled (no required check) | Confirm `ci.yml` **and** `codeql.yml` `on.merge_group` still present; `Analyze (python)` must re-post |
 | `Analyze (python)` red: version mismatch | `init`/`autobuild`/`analyze` SHAs split — align to one SHA; keep Dependabot group `codeql-action` |
-| Checks green, merge `BLOCKED` (CodeQL) | Unresolved CodeQL review thread (not in the check rollup) — fix the finding in code |
+| Checks green, merge `BLOCKED` (CodeQL) | Unresolved review thread (not in the check rollup). `File is not always closed` is a bare `open()` — use `with`. `Unused import` — delete it. Do not dismiss the thread |
 | `ruleset_scope_guard` exit 1 (`~ALL`) | Re-scope to `~DEFAULT_BRANCH` or restore dependabot/Copilot bypass rows deliberately. `~ALL` re-arms `creation` on every branch. |
 | `ruleset_scope_guard` exit 2 | Not clean — probe failed or no rulesets found. Re-run; do not assume the rulesets are fine. |
 | Waiting for results from CodeQL | Ruleset `code_scanning` has no SARIF yet — wait for `Analyze (python)`; restore `merge_group` if a queued merge never gets a context |
@@ -1089,7 +1093,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Suite Driver](REFERENCE.md#suite-driver) -- `run_suite.py` expansion, resume, cascor parallel floor, Grafana env toggle
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
-- [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence
+- [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence, bare `open()` blocks merge
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy gate is authority for `main.py` (count 58); v1 is the name-matching negative example
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments; PF-1 matched epoch pair + matrix-axis repeats; PF-4/PF-8 are not driver suites
 - [Topology Step Order and Blast-Radius IDs](REFERENCE.md#canopy-e2e-topology-step-order-and-blast-radius-ids) -- `topostate` first or alone; the W4/W1 blast-radius IDs are real matrix §4 steps (F-E2E-007 claimed otherwise and was withdrawn)
@@ -1119,6 +1123,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-09-05
-**Version:** 1.0.61
+**Last Updated:** 2026-10-05
+**Version:** 1.0.74
 **Maintainer:** Paul Calnon

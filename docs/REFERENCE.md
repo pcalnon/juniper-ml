@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.74
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-05
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -6766,12 +6766,34 @@ A User-owned repo cannot currently add the merge-queue **rule** ([enablement run
 |---------|---------------------|------------|
 | `Analyze (python)` red: version mismatch | `init` / `autobuild` / `analyze` SHAs diverged | Align all three to one SHA; confirm `groups.codeql-action` still exists |
 | Dependabot opened 3 CodeQL PRs instead of 1 | Group missing or pattern not matching | Restore `groups.codeql-action` with pattern `github/codeql-action*` |
-| Checks green, merge `BLOCKED` | CodeQL left a PR review comment; unresolved threads do **not** appear in the check rollup | Read Conversation (or `gh pr view N --json mergeStateStatus`); **fix the finding in code** (export or delete an unused module global; add a new public name to `__all__`). Do not dismiss the bot thread by hand |
+| Checks green, merge `BLOCKED` | CodeQL left a PR review comment; unresolved threads do **not** appear in the check rollup | Read Conversation (or `gh pr view N --json mergeStateStatus`); **fix the finding in code** (export or delete an unused module global; add a new public name to `__all__`; see [File is not always closed](#file-is-not-always-closed)). Do not dismiss the bot thread by hand |
+| Checks green, review title `File is not always closed` | Quality finding from `queries: +security-and-quality`. A bare `open()` is not closed on every path | Put the `open` in a `with` block. `util/ad-hoc/` is not excluded. Do not dismiss the thread |
 | Merge stalled: "waiting for results from CodeQL" | Ruleset `code_scanning` has no SARIF for that SHA yet | Wait for `Analyze (python)` to finish; if a queued merge never gets a context, restore `on.merge_group` |
 | Quality Gate green, CodeQL red | Expected — CodeQL is not in `required-checks.needs` | Fix the CodeQL job or the finding; **never** add this job to Quality Gate `needs:` (a skip on `push:main` would fail the gate the same way sequence-safety would) |
 | Copying `notes/templates/ci/codeql.yml` "to sync the fleet" | Template has no `merge_group` and a stale SHA | Edit `.github/workflows/codeql.yml` |
 
 `code_scanning` wait strings observed in ruleset suites: [`notes/JUNIPER_2026-08-18_JUNIPER-ECOSYSTEM_CODE-QUALITY-RULE-AUDIT.md`](../notes/JUNIPER_2026-08-18_JUNIPER-ECOSYSTEM_CODE-QUALITY-RULE-AUDIT.md) §4.3.
+
+### File is not always closed
+
+`queries: +security-and-quality` includes the quality finding whose review title is **File is not always closed** (`File is opened but is not closed.`). It matches a file object that is never closed on some path. These three shapes all did, on the pull request that archived the Phase 10 lane probes ([juniper-ml#2157](https://github.com/pcalnon/juniper-ml/pull/2157), 19 threads):
+
+```python
+s = json.load(open(path))
+text = open(path).read()
+open(path, "w").write(text)
+```
+
+Close the handle on every path with a `with` block (the edit #2157 applied), for both read and write:
+
+```python
+with open(path) as fh:
+    s = json.load(fh)
+```
+
+`Analyze (python)` can stay green while the pull request stays `BLOCKED`. The thread is not in the check rollup. Edit the `open`; do not dismiss the thread by hand. The same review batch can also post **Unused import** (one thread on #2157) — delete the import.
+
+`.github/workflows/codeql.yml` has no path filter, so a script under `util/ad-hoc/` is in scope on the pull request that adds it. Retention as provenance does not exempt it. Author note: [`util/ad-hoc/README.md`](../util/ad-hoc/README.md#codeql-scans-this-directory).
 
 ---
 
@@ -7516,6 +7538,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-05
+**Version:** 0.6.74
 **Maintainer:** Paul Calnon
