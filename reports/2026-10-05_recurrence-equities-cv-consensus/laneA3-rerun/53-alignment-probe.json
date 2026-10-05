@@ -1,0 +1,50 @@
+{
+  "baseline-1": {
+    "fold0_eval_r2": -93606.2310410387,
+    "addr_mod64": [
+      16,
+      16,
+      32
+    ]
+  },
+  "baseline-2": {
+    "fold0_eval_r2": -93606.2310410387,
+    "addr_mod64": [
+      16,
+      16,
+      32
+    ]
+  },
+  "after-odd-allocs": {
+    "fold0_eval_r2": -93606.2310410387,
+    "addr_mod64": [
+      16,
+      16,
+      32
+    ]
+  },
+  "misaligned-inputs-off1": {
+    "fold0_eval_r2": -93606.2310410387,
+    "addr_mod64": [
+      36,
+      52,
+      56
+    ]
+  },
+  "misaligned-inputs-off3": {
+    "fold0_eval_r2": -93606.2310410387,
+    "addr_mod64": [
+      12,
+      12,
+      24
+    ]
+  },
+  "fresh-contiguous-copies": {
+    "fold0_eval_r2": -93606.2310410387,
+    "addr_mod64": [
+      32,
+      48,
+      32
+    ]
+  }
+}

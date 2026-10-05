@@ -1,0 +1,63 @@
+threadpoolctl: ModuleNotFoundError No module named 'threadpoolctl'
+numpy 2.5.3
+Build Dependencies:
+  blas:
+    detection method: pkgconfig
+    found: true
+    include directory: /opt/miniforge3/envs/JuniperCascor1/include
+    lib directory: /opt/miniforge3/envs/JuniperCascor1/lib
+    name: blas
+    openblas configuration: unknown
+    pc file directory: /opt/miniforge3/envs/JuniperCascor1/lib/pkgconfig
+    version: 3.9.0
+  lapack:
+    detection method: pkgconfig
+    found: true
+    include directory: /opt/miniforge3/envs/JuniperCascor1/include
+    lib directory: /opt/miniforge3/envs/JuniperCascor1/lib
+    name: lapack
+    openblas configuration: unknown
+    pc file directory: /opt/miniforge3/envs/JuniperCascor1/lib/pkgconfig
+    version: 3.9.0
+Compilers:
+  c:
+    args: -march=nocona, -mtune=haswell, -ftree-vectorize, -fPIC, -fstack-protector-strong,
+      -fno-plt, -O2, -ffunction-sections, -pipe, -fno-merge-constants, -isystem, /opt/miniforge3/envs/JuniperCascor1/include,
+      -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_numpy_1788731986/work=/usr/local/src/conda/numpy-2.5.3,
+      -fdebug-prefix-map=/opt/miniforge3/envs/JuniperCascor1=/usr/local/src/conda-prefix,
+      -DNDEBUG, -D_FORTIFY_SOURCE=2, -O2, -isystem, /opt/miniforge3/envs/JuniperCascor1/include
+    commands: x86_64-conda-linux-gnu-cc
+    linker: ld.bfd
+    linker args: -Wl,-O2, -Wl,--sort-common, -Wl,--as-needed, -Wl,-z,relro, -Wl,-z,now,
+      -Wl,--disable-new-dtags, -Wl,--gc-sections, -Wl,--allow-shlib-undefined, -Wl,-rpath,/opt/miniforge3/envs/JuniperCascor1/lib,
+      -Wl,-rpath-link,/opt/miniforge3/envs/JuniperCascor1/lib, -L/opt/miniforge3/envs/JuniperCascor1/lib,
+      -march=nocona, -mtune=haswell, -ftree-vectorize, -fPIC, -fstack-protector-strong,
+      -fno-plt, -O2, -ffunction-sections, -pipe, -fno-merge-constants, -isystem, /opt/miniforge3/envs/JuniperCascor1/include,
+      -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_numpy_1788731986/work=/usr/local/src/conda/numpy-2.5.3,
+      -fdebug-prefix-map=/opt/miniforge3/envs/JuniperCascor1=/usr/local/src/conda-prefix,
+      -DNDEBUG, -D_FORTIFY_SOURCE=2, -O2, -isystem, /opt/miniforge3/envs/JuniperCascor1/include
+    name: gcc
+    version: 15.3.0
+  c++:
+    args: -fvisibility-inlines-hidden, -fmessage-length=0, -march=nocona, -mtune=haswell,
+      -ftree-vectorize, -fPIC, -fstack-protector-strong, -fno-plt, -O2, -ffunction-sections,
+      -pipe, -fno-merge-constants, -isystem, /opt/miniforge3/envs/JuniperCascor1/include,
+      -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_numpy_1788731986/work=/usr/local/src/conda/numpy-2.5.3,
+      -fdebug-prefix-map=/opt/miniforge3/envs/JuniperCascor1=/usr/local/src/conda-prefix,
+      -DNDEBUG, -D_FORTIFY_SOURCE=2, -O2, -isystem, /opt/miniforge3/envs/JuniperCascor1/include
+    commands: x86_64-conda-linux-gnu-c++
+    linker: ld.bfd
+    linker args: -Wl,-O2, -Wl,--sort-common, -Wl,--as-needed, -Wl,-z,relro, -Wl,-z,now,
+      -Wl,--disable-new-dtags, -Wl,--gc-sections, -Wl,--allow-shlib-undefined, -Wl,-rpath,/opt/miniforge3/envs/JuniperCascor1/lib,
+      -Wl,-rpath-link,/opt/miniforge3/envs/JuniperCascor1/lib, -L/opt/miniforge3/envs/JuniperCascor1/lib,
+      -fvisibility-inlines-hidden, -fmessage-length=0, -march=nocona, -mtune=haswell,
+      -ftree-vectorize, -fPIC, -fstack-protector-strong, -fno-plt, -O2, -ffunction-sections,
+      -pipe, -fno-merge-constants, -isystem, /opt/miniforge3/envs/JuniperCascor1/include,
+      -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/bld/rattler-build_numpy_1788731986/work=/usr/local/src/conda/numpy-2.5.3,
+      -fdebug-prefix-map=/opt/miniforge3/envs/JuniperCascor1=/usr/local/src/conda-prefix,
+      -DNDEBUG, -D_FORTIFY_SOURCE=2, -O2, -isystem, /opt/miniforge3/envs/JuniperCascor1/include
+    name: gcc
+    version: 15.3.0
+/opt/miniforge3/envs/JuniperCascor1/lib/libopenblasp-r0.3.34.so
+/opt/miniforge3/envs/JuniperCascor1/lib/libopenblasp-r0.3.34.so
+/opt/miniforge3/envs/JuniperCascor1/lib/libopenblasp-r0.3.34.so

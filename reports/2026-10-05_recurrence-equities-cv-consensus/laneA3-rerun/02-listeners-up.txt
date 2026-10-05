@@ -1,0 +1,5 @@
+LISTEN 0      2048        127.0.0.1:8110       0.0.0.0:*    users:(("python",pid=3870498,fd=13))         
+LISTEN 0      2048        127.0.0.1:8101       0.0.0.0:*    users:(("python",pid=2856834,fd=12))         
+LISTEN 0      2048        127.0.0.1:8051       0.0.0.0:*    users:(("python",pid=2858037,fd=16))         
+LISTEN 0      2048        127.0.0.1:8260       0.0.0.0:*    users:(("juniper-recurre",pid=3870903,fd=13))
+LISTEN 0      2048        127.0.0.1:8202       0.0.0.0:*    users:(("uvicorn",pid=2857489,fd=13))        
