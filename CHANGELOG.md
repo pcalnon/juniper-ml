@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **25 regression suites harvested from the Cursor flood-3 test PRs** (ml#2121, #2124, #2127, #2133,
+  #2136, #2138, #2140, #2143, #2144, #2147, #2149, #2150, #2153, #2156, #2159, #2163, #2166, #2169,
+  #2171, #2173, #2174, #2178, #2180), each re-run on `main`, mutation-checked against the code it
+  pins, and wired into `ci.yml` and both `docs/REFERENCE.md` lists. They cover the Yamaguchi Duplicati
+  API clients, watchdog and pre-backup guard; the recurrence env preflight, degraded outcome, launch
+  record and crossval diagnostics; the CAN-015 replay re-drive; worktree cleanup's refusal to delete
+  unmerged work; the consensus archiver's credential screen; the main-verify screen verdicts; and the
+  Actions-outage rerun helper. Corrections over the PR heads include a sandboxed deploy-script run
+  replaced by a static check (no test may execute it), a `requests` stand-in that crashed on
+  Python < 3.14, CodeQL-flagged fixture modes, and an untested `--accept-degraded` flag now pinned.
+
 - **Both launchers refuse a stale recurrence env before `serve` (W0.2)**
   (`util/recurrence_env_preflight.bash`, new; `util/experiment_stack.bash`;
   `util/isolated_stack.bash`; `tests/test_recurrence_env_preflight.py`, new, wired into `ci.yml`

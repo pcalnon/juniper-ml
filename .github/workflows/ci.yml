@@ -1119,6 +1119,153 @@ jobs:
           python3 -m unittest -v tests/test_pf8_icv_checkpoint_probe.py
           # tests/test_thread_width.py: util/thread_width.py, the perf lane's shared thread-width helper -- the guard the 2026-09-16 width sweep said "belongs inside a shared helper that instruments cannot bypass" after a prose warning failed twice. Pins that the maps parser finds GNU / Intel / LLVM OpenMP runtimes INCLUDING a manylinux-renamed libgomp-<hash>.so.1 (where CDLL("libgomp.so.1") would load a SECOND, independent runtime) and rejects libompd, offload plugins and a directory merely named libgomp; that the runtime handle raises before dlopen when zero, two or an unmapped runtime is in play and otherwise opens RTLD_NOLOAD, so it can never load a library; that the torch.get_num_threads() guard raises off the main thread WITHOUT calling through (a guard that ran the getter first would already have re-pinned the thread), passes main-thread and torch-internal calls, installs once and never clobbers a later replacement; and that NO instrument under util/ad-hoc/ or util/experiments/ opens an OpenMP runtime by soname or references the getter without installing the guard -- the six instruments that predate the helper are grandfathered BY NAME and must each still offend, so the list can only shrink. The scanner's negative controls pin that docstring/comment prose is not a call and that an aliased `raw = torch.get_num_threads` is.
           python3 -m unittest -v tests/test_thread_width.py
+          # tests/test_yamaguchi_watchdog_active_task_scope.py: the B2 scan and
+          # ActiveTask branches the sibling suite's same-job fixtures cannot see.
+          # A later log page that fails is LOG_UNAVAILABLE (the first page already
+          # set newest). An entry with no ID ends the scan. A short task for another
+          # job leaves a stale backup stale; a stuck one alerts before the log. A
+          # non-200 task read falls through. A bare task id that has run too long is
+          # STUCK. main() still writes the record when parse_iso raises.
+          python3 -m unittest -v tests/test_yamaguchi_watchdog_active_task_scope.py
+          # tests/test_duplicati_api_call_retry.py: duplicati_api.call re-authenticates once on 401
+          # and returns every other HTTP error as data. The credential suite only drives call() on
+          # HTTP 200, so a retry that reuses the rejected token, loops, or raises on a 503 would
+          # stay green. No socket is opened.
+          python3 -m unittest -v tests/test_duplicati_api_call_retry.py
+          # tests/test_yamaguchi_server_api_fail_closed.py: delete without --remote-files sends no
+          # remote-delete query; a failed pause/resume read-back exits 1; a login 200 with no
+          # AccessToken never calls the verb; log/progress/status/task shape edges the B2 suite misses.
+          python3 -m unittest -v tests/test_yamaguchi_server_api_fail_closed.py
+          # tests/test_yamaguchi_watchdog_pause_freshness.py: an empty pause queue does not hide a
+          # stale backup; a Success with no BeginTime is STALE; a naive stamp is judged; serverstate
+          # non-200 is UNREACHABLE and does not read the log.
+          python3 -m unittest -v tests/test_yamaguchi_watchdog_pause_freshness.py
+          # tests/test_recurrence_equities_cv_diagnostics.py: the W0.8/W0.9 measurement helpers
+          # (util/ad-hoc/2026-10-04_recurrence_equities_cv_matrix.py). A constant memory column must not become inf,
+          # z of exactly 5 or 10 is not an exceedance, an error cell is not a numeric eval r2, a gamma of 0 is still
+          # printed, and a dataset create with no id exits instead of being replayed. No live stack.
+          python3 -m unittest -v tests/test_recurrence_equities_cv_diagnostics.py
+          # tests/test_recurrence_degraded_phase_edges.py: edges of the W0.3/W0.4 outcome and headline readers that
+          # tests/test_run_experiment.py and tests/test_run_suite.py do not reach -- a missing or non-mapping phase
+          # record fails closed, a top-level decoy r2 is not a headline, a blank phase error is not the word None,
+          # and a dropped connection on predict stays degraded (exit 1, crossval still runs) while one on train is
+          # unreachable (exit 3). Loopback stub server; no live stack.
+          python3 -m unittest -v tests/test_recurrence_degraded_phase_edges.py
+          # tests/test_yamaguchi_export_token_edges.py: the export-token edges the happy-path marker
+          # cannot see. A token containing + & = must be percent-encoded so it cannot flip
+          # export-passwords; an unusable PascalCase Token falls through to lowercase; PascalCase
+          # wins when both are usable; HTTP 201/204 with a TargetURL is not success.
+          python3 -m unittest -v tests/test_yamaguchi_export_token_edges.py
+          # tests/test_yamaguchi_watchdog_id_and_deploy_refusal.py: an illegal --backup-id through
+          # main() is one durable backup=INVALID line and sends nothing. The deploy script is
+          # read, never run (static only, as in test_yamaguchi_watchdog.py): every refusal in its
+          # argument gate ends in exit 2 before the first host-touching line, and the gate still
+          # accepts the interim id 2.
+          python3 -m unittest -v tests/test_yamaguchi_watchdog_id_and_deploy_refusal.py
+          # tests/test_yamaguchi_export_token_transport.py: a dropped export GET must not log the
+          # operation token that now sits in the request URL; an issuetoken 3xx body is not echoed
+          # while a 400 body still is; a whitespace-only TargetURL is still exported, because the
+          # guard's -n test treats it as present and empty stdout skips the comparison.
+          python3 -m unittest -v tests/test_yamaguchi_export_token_transport.py
+          # tests/test_replay_redrive_control_accounting.py: the CAN-015 re-drive counts a
+          # control only from a quoted POST /replay/control line, and a missing log must not
+          # look like an idle player. poll treats a failed read as a reading and stops at
+          # its deadline. Hermetic: no browser, no cascor.
+          python3 -m unittest -v tests/test_replay_redrive_control_accounting.py
+          # tests/test_recurrence_aux_timeout_and_exit.py: W0.3/W0.4 edges tests/test_run_experiment.py and
+          # tests/test_run_suite.py do not reach -- a crossval wall-clock timeout stays degraded (exit 1) and
+          # save_model still runs; an HTTP 200 list or JSON null stays succeeded; a save_model CLI that exits 1
+          # with empty stderr records the return code; headline columns are independent; a forced degraded with
+          # no acceptance reason still exits 1. Loopback stub server; no live stack.
+          python3 -m unittest -v tests/test_recurrence_aux_timeout_and_exit.py
+          # tests/test_recurrence_phase_error_body.py: the W0.3 phase record copies `_detail` into the manifest,
+          # the acceptance reasons and the suite line. Pins body-key selection, the 500-character cut, a falsy
+          # detail, a non-JSON 422 and a validation-list 422 staying degraded (exit 1), and the four-way suite
+          # count. No live stack. util/ is not pre-commit-lint-gated, so this unittest is the gate.
+          python3 -m unittest -v tests/test_recurrence_phase_error_body.py
+          # tests/test_recurrence_env_preflight_fail_closed.py: the W0.2 preflight's fail-closed edges the branch
+          # matrix in tests/test_recurrence_env_preflight.py does not reach. An OK pin line followed by a non-zero
+          # probe exit still refuses; an unrecognised pin line with exit 0 still refuses; a mode-0644 interpreter
+          # and a directory are never executed; a symlink is not realpath'd; both launchers pass --skip only when
+          # SKIP_ENV_PREFLIGHT is exactly 1. No network.
+          python3 -m unittest -v tests/test_recurrence_env_preflight_fail_closed.py
+          # tests/test_recurrence_env_pin_probe.py: the W0.2 pin probe's real evaluation (prereleases, PEP 503
+          # requirement names, environment markers, a malformed requirement, a non-PEP-440 version, a bare
+          # requirement). The canned protocol in tests/test_recurrence_env_preflight.py emits OK/BAD itself and
+          # cannot see these. packaging >= 26 accepts an in-range prerelease by default, so prereleases=True is
+          # also pinned by text. Same offline venv; no network.
+          python3 -m unittest -v tests/test_recurrence_env_pin_probe.py
+          # tests/test_recurrence_env_preflight_script_silence.py: a probe that exits without printing still
+          # refuses (empty pip check, empty pin probe at exit 0, empty import), and both launchers'
+          # run_env_preflight refuses a missing or crashing script under the OR-list that disables set -e. An
+          # unwritable launch.log warns and does not flip the verdict.
+          python3 -m unittest -v tests/test_recurrence_env_preflight_script_silence.py
+          # tests/test_replay_redrive_stack_refusal.py: the CAN-015 re-drive wrapper
+          # (util/ad-hoc/2026-10-04_replay_redrive_stack.bash) refuses --up on a port that already has a listener
+          # and --down for a pid this run did not record; a miss would kill another process's listener. The ss
+          # table is a stub; the one --down that is allowed through execs isolated_stack.bash against a temp eco and
+          # a pid that cannot be alive.
+          python3 -m unittest -v tests/test_replay_redrive_stack_refusal.py
+          # tests/test_yamaguchi_pre_backup_guard.py: Duplicati's
+          # --run-script-before-required hook. Exit 5 aborts the backup; stdout
+          # stays empty (Duplicati reads it as option overrides); DUPLICATI__*
+          # and SETTINGS_ENCRYPTION_KEY are dropped before any child runs; a
+          # credential-bearing TargetURL is refused without being printed; a
+          # failed destination scan is exit 5, not a pass. PATH-stubbed
+          # mountpoint; real find except the scan-failure arm.
+          python3 -m unittest -v tests/test_yamaguchi_pre_backup_guard.py
+          # tests/test_worktree_cleanup_destructive_refusal.py: phase 4 must
+          # refuse a dirty worktree and an unmerged branch instead of escalating
+          # to --force / -D, and must keep a gitignored cascor-snapshots .h5
+          # unless WORKTREE_CLEANUP_DISCARD_SNAPSHOTS=1. Fixture repos only.
+          python3 -m unittest -v tests/test_worktree_cleanup_destructive_refusal.py
+          # tests/test_recurrence_launch_record_edges.py: the W1.9 / W1.10 edges tests/test_experiment_stack_script.py
+          # and tests/test_run_experiment.py do not pin. An empty log knob stays off the serve announce; a newline,
+          # CR, or tab in a recorded path stays inside ports.json; unset WANT_BRIDGE / RUN_ID / EXPERIMENT still
+          # write it; a non-executable recorded CLI does not fall back to PATH; a launch record with no port, or the
+          # same port on another host, is set aside; the model probe is `python -c` from / with no -s. No live
+          # services.
+          python3 -m unittest -v tests/test_recurrence_launch_record_edges.py
+          # tests/test_save_model_recorded_cli_contract.py: the W1.9 recorded save_model re-run (the path a real
+          # --up takes, not the PATH fallback). Pins that the probe and the train process both see the run's
+          # JUNIPER_DATA_URL and an empty LD_LIBRARY_PATH, that numeric zero hyperparameters are forwarded and None
+          # is omitted, that a non-string launch field is not coerced, and that a long failure keeps its tail. No
+          # live services.
+          python3 -m unittest -v tests/test_save_model_recorded_cli_contract.py
+          # tests/test_yamaguchi_edit_target.py: migration step 3, the passphrase-safe
+          # TargetURL repoint. A PUT of a new destination against a populated local job
+          # makes every remote volume look missing. Pins the refusals that must happen
+          # before that PUT (busy rc 3, destination/census rc 4, passphrase rc 5,
+          # non-durable rc 7) and the read-back that must happen after (rc 6 / rc 0).
+          # urllib is the Duplicati stub; mountpoint and findmnt are not executed.
+          python3 -m unittest -v tests/test_yamaguchi_edit_target.py
+          # tests/test_rerun_after_actions_outage.py: the 2026-10-05 Actions-outage recovery helper. It re-runs
+          # completed failure/cancelled/timed_out/startup_failure runs and can hand the PR to safe_merge --execute.
+          # Pins that only those conclusions are re-run; that any Actions status other than exactly operational
+          # (or exactly degraded_performance under --accept-degraded) -- including a status-page error, a trailing
+          # space, or a case change -- never calls gh; that giving up exits 2; and that --no-merge does not invoke
+          # safe_merge. gh, the status page and the clock are stubbed.
+          python3 -m unittest -v tests/test_rerun_after_actions_outage.py
+          # tests/test_equities_lane_a3_report.py: the Lane A3 `checks` report
+          # (util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py). A negative dt, a backwards
+          # window_end_date, a missing archive, a zero access_count, y_reg over y, and a NaN in X are flags the
+          # consensus note treats as facts. Numpy only; no model, no network. The compare and fold-threads
+          # subcommands are not covered.
+          python3 -m unittest -v tests/test_equities_lane_a3_report.py
+          # tests/test_archive_consensus_screen.py: the 2026-09-22 consensus archiver's
+          # credential screen (util/ad-hoc is outside every pre-commit Python hook). A
+          # free-standing 30-40 character token containing * @ $ % is a hit; 29, 41, a
+          # mark-free compound, a path and a URL are not. enc-v1 needs 8 payload
+          # characters; a JWT needs both segments and the trailing dot. The problem line
+          # names a count and never the value. The last assistant message is the report.
+          # A hit refuses the whole archive (exit 2, nothing written) unless --allow-shaped;
+          # --check writes nothing and does not bypass the screen.
+          python3 -m unittest -v tests/test_archive_consensus_screen.py
+          # tests/test_main_verify_screen_verdicts.py: executes the three main-verify
+          # symbol-screen shells the catch-up test only names. A finding (exit 1) stays
+          # screened and still fails clean; exit >=2 or a missing code does not advance
+          # the base; the screens step records the codes and exits 0.
+          python3 -m unittest -v tests/test_main_verify_screen_verdicts.py
 
       - name: Run bash regression tests
         run: |
