@@ -1,6 +1,6 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.62
+**Version**: 1.0.63
 **Date**: 2026-10-08
 **Project**: juniper-ml
 
@@ -762,7 +762,7 @@ feat PRs); never treat script exit `0` as “all clean” — read each `verdict
 count) but honors `Allow-Docs-Rewrite` trailers (#926). Docs-only PRs skip the pre-commit battery.
 See [REFERENCE.md § Fleet Triage](REFERENCE.md#fleet-triage-and-sequence-safety).
 
-Tip: flood CI gates (#869/#880) — per-PR `Sequence Safety` is a **required** `juniper-ml-rules` context, even though it is absent from Quality Gate `needs:` and the job banner still says advisory.
+Tip: flood CI gates (#869/#880) — per-PR `Sequence Safety` is a **required** `juniper-ml-rules` context, even though it is absent from Quality Gate `needs:`. The `ci.yml` banner said advisory until 2026-10-08.
 `Fleet PR Lint` is the one that is still truly advisory (never fails). Labels `allow-symbol-loss` / `docs-rewrite` green the PR job via `--advisory`; post-merge `main-verify` needs commit trailers.
 G4 uses `--from-ref` on PR/merge_group and `--all-files` on push. Full contract: [REFERENCE.md § Flood-Remediation CI Gates](REFERENCE.md#flood-remediation-ci-gates).
 
@@ -1172,5 +1172,5 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 ---
 
 **Last Updated:** 2026-10-08
-**Version:** 1.0.62
+**Version:** 1.0.63
 **Maintainer:** Paul Calnon
