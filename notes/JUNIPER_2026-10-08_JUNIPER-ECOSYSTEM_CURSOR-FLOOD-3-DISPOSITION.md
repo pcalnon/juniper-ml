@@ -289,4 +289,5 @@ All under `util/ad-hoc/` (script-placement rule; retained as provenance of recor
 
 **Merged as themselves (re-cut where corrected):** see §5 (`route = merged`).
 **Carrier PRs opened and merged:** juniper-ml #2182 and #2184; juniper-data #475; juniper-canopy #729; juniper-cascor #709; juniper-data-client #230.
-**Created (this PR):** this file, `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, and the `util/ad-hoc/` tooling in §7.
+**Created (this PR, ml#2185):** this file, `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, and the `util/ad-hoc/` tooling in §7.
+**Modified (this PR, ml#2185):** `CHANGELOG.md` (one `[Unreleased]` / `Added` entry).
