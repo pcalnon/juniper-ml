@@ -8980,6 +8980,10 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
       - CI runs the node test. Settled 2026-09-24 for `main`'s node-gated test, #614's metrics-store watchdog
         (the F-055 fix's own node tests were never on `main`): none of the six skips in CI's Python 3.13 unit job
         on `e9053227` is node-gated. GitHub's ubuntu image ships node, although `ci.yml` has no setup-node step.
+        **Correction (Phase 11, round 1, Lane 11-B1; re-derived by the orchestrator):** canopy#614 (`5c87f983`)
+        added no node-gated test. It changed `canopy_constants.py`, `dashboard_manager.py` and
+        `test_poll_gating.py`, which runs no JavaScript. The node-gated tests on `main` are F-042's, F-054's,
+        the idle cuts', Y4's and the phase-B bridge's, and the CI observation holds for those.
     - **Why the census still passed** (the orchestrator's reading, not Lane B's): its windows had no tab switch
       (Training Metrics is the default tab, so `open_tab` wrote nothing) and no Apply. Two trigger sources were
       live: the watchdog was armed throughout, and the gate's mount write fired on each page before its window.
@@ -9124,8 +9128,22 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   - it keys on the page's own session while the WS broadcast reaches every page;
   - weights that arrive while it is closed are drained into the next session.
 
-**F-CANOPY-058 — a `running=` guard is released by an evicted request's completion too, so a mid-request re-request, or a re-enable more than one period before the in-flight response lands, starts an eviction cascade, and the lane's responses can stop applying for minutes (P1, canopy repo; found 2026-09-23 by F-CANOPY-055's round-1 adversarial lane; OPEN).**
+**F-CANOPY-058 — a `running=` guard is released by an evicted request's completion too, so a mid-request re-request, or a re-enable that lets the next request be made before the in-flight response lands, can start an eviction cascade, and the lane's responses can stop applying for minutes (P1, canopy repo; found 2026-09-23 by F-CANOPY-055's round-1 adversarial lane; mechanism observed live on canopy `main` 2026-10-05, Phase 11, in runs of up to 11 evictions and 34.8 s, the minutes only in synthetic repros; OPEN).**
 
+- **Status 2026-10-05: OBSERVED LIVE on canopy `main`, at `60ae1870` and `c7876f5a` (Phase 11).** Two census
+  runs found 29 of 611 responses evicted, in eight runs of up to 11 evictions; the longest left the lane 34.8 s
+  without an applied answer, and the minutes below were reached only in synthetic repros (Lanes B and B1). Read one
+  request at a time, every evicted request's late completion released the lane under its successor. Of 32
+  mid-request re-enables, 8 evicted: a re-enable evicts only if the in-flight response has not landed by the time
+  the renderer makes the next request. The 8 evicted 1.2–2.4 s after the re-enable; after the other 24 the
+  answer had landed first, 0.1–2.2 s after it. So "more than one period before the in-flight response lands"
+  (the header until Phase 11's round 1) was too wide. The re-enables were the strand watchdog's false fires
+  (28, of which 7 evicted; filed as F-CANOPY-068), the gate's write at page
+  load (1, evicting), and, incidentally, a tab switch (2) and an Apply's end (1, the census's redundant
+  release), none of which evicted; none was a scored test. The second-Input change and the clamp defeat did not
+  occur in mid-request, and Phase 9's synthetic mount cascade did not reproduce. On #613's lane the census
+  measured the lane enabled for about 2 s of each ~4.9 s cycle, not "about 1 s per cycle" as the watchdog bullet
+  below has it. This supersedes the "NOT yet observed on canopy itself" bullet below.
 - **The class.** canopy#613's guard on `metrics-store-interval` (F-CANOPY-035) holds a lane's `disabled`
   true while its request is in flight. dash-renderer releases the guard from `completeJob()` on every HTTP
   outcome that reaches it (OK, PREVENT_UPDATE and non-OK), with no check that the request is still the
@@ -9133,8 +9151,11 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   canopy's `requirements.lock` ships 4.4.1, where `completeJob` is defined at `:979-991` and called at `:1020`,
   `:1024`, `:1033` and `:1037`. A 200 whose body fails to parse never reaches `completeJob()`.
 - **The trigger.** Anything that re-requests or re-enables the lane mid-request. A re-enable restarts the
-  Interval's timer, so it ticks one period later and evicts the in-flight request if its response has not
-  landed by then; a re-request evicts it directly. The evicted request's late completion then re-enables the
+  Interval's timer, so it ticks one period later and the renderer then makes the next request, which evicts the
+  in-flight request if its response has not landed by then (in Phase 11's runs, the 8 evictions a fire or gate
+  write started came 1.2–2.4 s after it, and the 21 that followed a late release came 1.4–2.6 s after that
+  release).
+  (Until Phase 11's round 1 this bullet said the tick itself evicts.) A re-request evicts it directly. The evicted request's late completion then re-enables the
   lane under its successor, and the two chains can keep evicting each other. Not every trigger cascades, and
   not every cascade lasts (Lane R2-F; re-derived from the archived run): in Lane B's run at R = 3–5 s
   (`phase9-scratch/f055_r1_laneB/run_watchdog_r3.json`), the fires at 57.8 s and 152.8 s evicted nothing. Of
@@ -10063,7 +10084,7 @@ either: round 1 of this phase's validation found it (Consensus record, below).
   first, on unfixed `main` (Still owed, item 18). Whether cascor should label rows by the work that
   produced them is cascor's question; canopy's fix should not depend on the answer.
 
-**F-CANOPY-065 — `/api/set_params`'s `applied` list omits every key sent over `/ws/control`, so the apply toast canopy 0.6.0 promised never reports a key cascor declines there: canopy's partition extractor never looks where cascor's WS ack carries the partition (P1 if a shipped CHANGELOG promise counts as documented, else P2, the owner's question; canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**
+**F-CANOPY-065 — `/api/set_params`'s `applied` list omits every key sent over `/ws/control`, so the apply toast canopy 0.6.0 promised never reports a key cascor declines there: canopy's partition extractor never looks where cascor's WS ack carries the partition (P1 if a shipped CHANGELOG or design-plan promise counts as documented, else P2, the first limb of the owner's question; canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**
 
 - **Observed** (A-N2, `02_gaussian/03_set_params_caps.json`, 2026-09-23T19:38:06.747Z). The request set five
   params, and the answer was `{"applied": ["cn_training_iterations"]}`.
@@ -10527,3 +10548,683 @@ New items:
 22. **Owner: O9's design question** (the consolidated handoff's C4).
 23. **Tell the defect-register arc** that its unreserved "Nothing was loaded" item is F-CANOPY-063, and that
     F-CANOPY-060 to -062 are filed.
+
+## Phase 11 — 2026-10-05: the F-CANOPY-058 census run live, twice — F-CANOPY-058 observed on canopy `main`, its mechanism read request by request; its trigger, the strand watchdog's false fires, filed as F-CANOPY-068
+
+**Summary.**
+
+- **Two live runs.** The repaired census (v2) ran twice, about 25 minutes each on one headless page, against a
+  verify leg that read the trio's data and cascor and wrote neither, with cascor idle: on canopy `main`
+  `60ae1870`, and again on current `main` `c7876f5a`. The census had first passed its synthetic known-answer
+  check, 6 of 6. The evidence is in `reports/e2e-canopy-2026-09-02/f058-census-v2/`, indexed by its README.
+- **F-CANOPY-058 is observed live, with its mechanism.** 29 of 611 feeder requests were evicted, in eight runs:
+  1, 2, 11 and 4 in the first run, and 1, 2, 4 and 4 in the second. Read request by request, every one of the 29
+  evicted requests' discarded responses released the lane's `running=` guard while its successor was in flight,
+  and 21 of those 29 successors were evicted in turn. The longest run, of 11, left the lane 34.8 s without an
+  applied answer, where the median gap between applied answers was 4.9 s. F-CANOPY-058 stays P1 and OPEN; its
+  entry's "NOT yet observed on canopy itself" is superseded (its Status bullet).
+- **The trigger was canopy's own strand watchdog.** It fired 13 and 15 times, about 31 and 36 an hour, and every
+  fire was false: a feeder request was in flight at each, and the lane had been enabled for 11.0–14.9 s of the
+  30 s before it. Seven fires evicted a response, and six of those started cascades; together they hold 28 of
+  the 29 evictions. The remaining eviction, a run of 1, followed the gate's write at page load in the first run.
+- **Filed: F-CANOPY-068 (P1 if a CHANGELOG's description of an internal mechanism counts as documented, else
+  P2; OPEN)**, the watchdog's false fires. canopy's CHANGELOG for 0.8.0 says that it re-enables the lane only
+  once the lane "has been continuously disabled" for 30 s. New findings, below, also says why it is a finding of
+  its own rather than part of F-CANOPY-058.
+- **The census's scripted triggers did not test F-CANOPY-058.** In both runs the gate and tab triggers took effect
+  1.3–4.2 s after they fired, after the request each was aimed at had been answered; T-mode's effect is not
+  recorded, and its targeted request was answered 0.6 s and 1.1 s after it fired (Instruments).
+- **Counts** (`e2e_finding_triage.py`): 79 findings, 53 fixed, 1 accepted, 2 withdrawn, **23 open**; no open P0,
+  7 open P1 and 16 open P2.
+
+### The runs
+
+- **Who.** The first run was written and run by the P2 Lane A session in juniper-ml worktree
+  `clever-juggling-spring`, which kept it outside the repo. This phase was written in worktree
+  `dreamy-fluttering-kite`. It copied the six scripts and the first run's files into the repo byte for byte,
+  made the second run with the same scripts unchanged, and re-derived every number below from the two
+  transcripts. The first run's own note, `2026-10-05_RESULTS.md`, is archived verbatim; the evidence README
+  lists the four places where this phase corrects it.
+- **The legs.** Both were `util/ad-hoc/2026-09-04_canopy_verify_instance.bash` on `:8052`, each serving a
+  tarball tree of canopy `main`: `60ae1870` (canopy#702, one commit past Phase 10's pin `1b2dd438`) for the first
+  run, and `c7876f5a` (canopy#705 and #722 on top, fetched through the GitHub API) for the second. Each leg's
+  served commit was read back off its `/v1/health`. Each read the trio's cascor `:8202` and data `:8101` and wrote
+  neither. cascor's origin allowlist refused the legs' control streams, 62 and 55 times, as the leg script
+  documents. `:8051` was never touched, and the trio's three processes, started 2026-09-22, were still the same
+  after the second run, by their pids and start times, read then.
+  - canopy#705 and #722 change none of the code this phase cites: #722's one `dashboard_manager.py` hunk raises a
+    tooltip's length bound.
+- **The pages.** One headless Chromium page per run, served dash 4.2.0's renderer: the legs run in the
+  `JuniperCanopy1` environment, while canopy's `requirements.lock` ships 4.4.1 (F-CANOPY-058's entry cites
+  both). Each leg's log shows one page connection, 05:56:14 to 06:21:29 and 16:11:19 to 16:36:31 CDT, and no
+  canopy restart. In each, the only metrics frame the leg received was cascor's `initial_metrics` burst, at the
+  leg's own connection to cascor, before the page connected, so no metrics frame reached the page and the feeder
+  fetched `/api/metrics/history` on every cycle. Every answer after the first was `no_update`, because an idle
+  cascor's fetch equals the store (`dashboard_manager.py:7984-7985` at `60ae1870`); the first applied answer, at
+  page load, filled the empty store.
+- **The windows** were fixed in the instrument before the first run: settle 45 s, baseline 240 s, each trigger
+  180 s and idle 600 s. The first run ran from 10:56Z to 11:21Z and the second from 21:11Z to 21:36Z. The host
+  had 16 cores, at a load average of 1.9–2.3 at the first run's start and 3.0–3.8 at its end, and 3.8–4.3 and
+  4.1–4.6 for the second.
+
+The instrument's verdicts, by its fixed rules, in the first run (`60ae1870`):
+
+| window | verdict | resolved | evicted | what happened |
+|---|---|---|---|---|
+| baseline | DIRTY | 52 | 2 | the run of 2, after a watchdog fire at 81.7 s |
+| T-gate | NO-EFFECT | 36 | 0 | the targeted request was answered 0.5 s after the trigger; the gate's write landed at 1.3 s, on an enabled lane |
+| T-tab | NO-EFFECT | 36 | 0 | the targeted request was answered 0.8 s after the trigger; the second click's gate write landed at 3.4 s, 0.6 s into the next request, which was answered 1.1 s later |
+| T-apply | MISSED | — | — | nothing was in flight under the clamp (Instruments) |
+| T-mode | NO-EFFECT | 38 | 4 | the targeted request was answered 0.6 s after the trigger, and the next request entered at 2.1 s (the transcript does not record what made it); the 4 evictions follow a watchdog fire at 1,452.6 s |
+| idle | not scored | 127 | 11 | 4 watchdog fires; the run of 11 follows the one at 893.0 s |
+
+And in the second run (`c7876f5a`):
+
+| window | verdict | resolved | evicted | what happened |
+|---|---|---|---|---|
+| baseline | CLEAN | 44 | 1 | the run of 1, after a watchdog fire at 223.0 s |
+| T-gate | NO-EFFECT | 37 | 6 | the targeted request was answered 0.1 s after the trigger; the gate's write landed at 1.4 s, on an enabled lane; the 6 evictions follow watchdog fires at 402.7 s and 437.7 s |
+| T-tab | NO-EFFECT | 38 | 0 | the targeted request was answered 0.8 s after the trigger; the second click's gate write landed at 4.2 s, 1.1 s into the next request, which was answered 1.8 s later |
+| T-apply | MISSED | — | — | nothing was in flight under the clamp (Instruments) |
+| T-mode | NO-EFFECT | 41 | 4 | the targeted request was answered 1.1 s after the trigger, and the next request entered at 2.5 s; the 4 evictions follow a watchdog fire at 1,358.3 s |
+| idle | not scored | 131 | 0 | 8 watchdog fires, none of them evicting |
+
+### What the events show
+
+Read with `util/ad-hoc/2026-10-04_f058_census_v2_analyze.py` and `util/ad-hoc/2026-10-05_f058_census_v2_release_trace.py`
+on each transcript; where two figures are given, they are the first run's and the second's:
+
+- **611 feeder requests** (307 and 304): 581 answered, 29 evicted, and one still in flight when the second run's
+  page closed. In flight, from entering `watched` to its end: medians 2,817 and 2,814 ms, p90s 3,633 and
+  3,680 ms, maxima 4,203 and 5,345 ms. Every request but one (888 ms, in the second run) was in flight longer
+  than the lane's 1 s period, so every other request had a stretch in which a re-enable would tick before its
+  response landed.
+- **The lane's cycle** was about 4.9 s in both runs, the median gaps between applied answers being 4,887 and
+  4,875 ms. The lane was disabled for about 2.7 s of it and enabled for the rest: the 1 s until a re-enabled
+  Interval ticks, plus the time the renderer took to start the next request. The median disabled episodes were
+  2,710 and 2,743 ms, read from each change's innermost record. `…_analyze.py` prints 2,746 and 2,803 ms: it
+  dates a nested change by its enclosing dispatch, which the shim stamps earlier (Instruments).
+- **28 watchdog fires**: 13 in 1,514 s (30.9 an hour) and 15 in 1,511 s (35.7 an hour). At each, a feeder request
+  was in flight, the lane's current disabled episode was 0.3–3.6 s old, and the lane had been enabled for
+  11.0–14.9 s of the 30 s before. The watchdog fires only when every one of its samples over 30 s has found the
+  lane disabled, so none of its samples fell in those enabled stretches (F-CANOPY-068).
+- **Every eviction released the lane under its successor.** The guard was released 291 and 287 times. 549 of
+  those releases were each request's own, 13–89 ms before its answer was taken. The other 29 were late, one for
+  each evicted request: its discarded response landed 2.4–5.4 s after it entered `watched` and released the lane
+  while its successor was in flight. Where that successor was then answered, the late release sat 0.4–2.0 s
+  before the answer, well clear of the own releases' 89 ms. The successors were evicted in turn 21 times, each
+  1.4–2.6 s after the late release, and answered 8 times, which ended the eight runs. This is F-CANOPY-058's mechanism read directly, not inferred from
+  the runs. One of the trace's five self-tests removes the late releases from a copy of each transcript, and
+  then reads every eviction as "late release: none" (Instruments).
+- **Whether a re-enable evicts is a race, with no fixed horizon.** After each of the seven evicting fires, the
+  request in flight was evicted when its successor was made, 1.4–2.4 s after the fire, and its response landed
+  later, 1.8–5.0 s after it. After the 21 fires that evicted nothing, the answer in flight landed 0.1–2.2 s after
+  the fire, before any successor was made. So a successor was made anywhere from 1.4 s to more than 2.2 s after
+  a fire. Across all 32 mid-request re-enables, the 28 fires and 4 gate writes, 8 evicted, 1.2–2.4 s after the
+  re-enable, when the next request was made. The next request entered `watched` 1.3–3.7 s after a re-enable;
+  the three longest waits came at the census's own T-tab activity, and without them the range is 1.3–2.6 s.
+- **The gate's writes.** In the first run the gate's write at page load (7.25 s) re-enabled the lane with the
+  first request in flight and evicted it. That request's late response released the lane under the second,
+  which was answered before the next tick: the run of 1. In the second run the gate's writes at page load landed
+  on an enabled lane and evicted nothing. Phase 9's synthetic mount cascade, where every request was evicted, did
+  not reproduce on canopy; that app's requests took a constant 3 s. The gate also wrote `false` in mid-request
+  three times without evicting: T-tab's second click in each run, and the redundant release after T-apply in the
+  first.
+
+### F-CANOPY-058 — observed live on canopy `main`
+
+- **What is now observed** is the class as filed, with its horizon corrected. A re-enable while a request is in
+  flight evicts that request if its response has not landed by the time the next request is made, and 8 of the
+  32 mid-request re-enables did. The evicted request's late completion then re-enables the lane under its
+  successor, and the successor can be evicted in turn. Each of the eight runs ended by itself, after at most 11
+  evictions, when a successor's answer landed before the next request was made. The entry's header and trigger
+  bullet said that a re-enable "more than one period before the in-flight response lands" evicts; 13 of 21
+  such re-enables here did not, and both now name the next request.
+- **What is not.** Four kinds of trigger occurred in mid-request: the watchdog's false fires (28, of which 7
+  evicted), the gate's write at page load (1, evicting), a tab switch (2, T-tab's second clicks) and an Apply's
+  end (1, the census's redundant release after T-apply), and the last two kinds evicted nothing. None was a
+  scored test, because the targeted triggers landed late (Instruments). The second-Input change and the clamp
+  defeat did not occur in mid-request. The entry's "can stop applying for minutes" is not reached here: the
+  longest run left the lane 34.8 s without an applied answer. Lane B's synthetic runs, which reached minutes,
+  stand as recorded.
+- **What a user would see** is as the entry says, and nothing here, since every answer after the first was
+  `no_update`. The feeder replaces the store with the whole window or history it fetched
+  (`_update_metrics_store_handler`, `dashboard_manager.py:7879-7990` at `60ae1870`), so an evicted answer loses
+  no row that the next applied answer carries. During a run, with the stream stale or a full view open, a run of
+  evictions holds the chart still for its length.
+- **The rating stays P1.** These runs confirm the mechanism on canopy. The minutes stay synthetic, and the P1
+  rests, as before, on slow pages and on F-CANOPY-055's repair, neither of which an idle page with requests of
+  about 2.8 s could test.
+- **The canopy text it contradicts**, at `60ae1870` (Phase 9's item 0 cites the same text at earlier lines):
+  - `dashboard_manager.py:467-472`: the lane has "still exactly one registered writer of this prop, and the two
+    never conflict except in the harmless window of a tab/apply change landing mid-fetch". The watchdog is a
+    second registered writer (`Output(_METRICS_STORE_INTERVAL, "disabled", allow_duplicate=True)`, `:2548`),
+    and the window is not harmless.
+  - `:4734-4737`: the gate's write in mid-fetch "re-enables the clock and reopens the eviction window for that
+    cycle. Self-healing, bounded to one cycle, and UNMEASURED." It is now measured, and not bounded to one
+    cycle. The runs measured followed the watchdog's writes rather than the gate's, except the run of 1, but a
+    write of `false` re-enables the Interval whichever callback makes it: dcc `Interval` clears its timer while
+    `disabled` is true and starts a fresh one when the prop turns false, reading only the prop (`handleTimer`,
+    called from `UNSAFE_componentWillReceiveProps`, in dash 4.2.0's `dash/dcc/dash_core_components.js`). The run
+    then follows from the late release, not from the writer.
+  - `test_poll_gating.py:313`: "#613's metrics-store guard shares `disabled` with the apply clamp alone". It
+    shares it with the gate's tab Input and with the watchdog too.
+
+### New findings
+
+**F-CANOPY-068 — canopy's metrics-store strand watchdog re-enables a lane that has not stranded: it samples the lane's `disabled` on the 5 s slow lane and restarts its 30 s clock only on a sample that finds the lane enabled, so when the feeder's cycle is close to 5 s its samples keep landing on requests in flight; on canopy `main` it fired 13 and 15 times in two 25-minute runs, each time during a fetch, which its own comment says it must never do, and 7 of the 28 fires evicted a response, 6 of them starting F-CANOPY-058 cascades (P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2, the second limb of the owner's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census; re-rated P1 in round 1 of this phase's validation; OPEN).**
+
+- **The watchdog** is the repair for a lane stranded by a request that never gets a response
+  (`dashboard_manager.py:2497-2555` at canopy `60ae1870`). It is a clientside callback on `slow-update-interval`
+  (5 s, `canopy_constants.py:371`) that reads the lane's `disabled` and `apply-in-flight` as State and writes the
+  lane's `disabled` as a duplicate Output. A sample that finds the lane enabled, or the Apply clamp held, clears
+  its clock. The first sample that finds it disabled starts the clock, and the first sample 30 s after that
+  (`METRICS_STORE_STRAND_TIMEOUT_MS`, `canopy_constants.py:425`) writes `false`.
+- **Its own contract.** Its comment says it "must not re-enable DURING a legitimate fetch, which would re-open
+  the very eviction window #613 closed", and sets the threshold "an order of magnitude above the measured worst
+  case" for that reason (`:2519-2522`; `canopy_constants.py:421-424` says the same). canopy's CHANGELOG describes it
+  to its readers: its `[0.8.0]` entry says the watchdog "re-enables the interval once it has been
+  continuously disabled for `METRICS_STORE_STRAND_TIMEOUT_MS`", because "fast recovery would reopen the
+  eviction window" (`CHANGELOG.md:1222-1225` at `60ae1870`, added by canopy#624, `06d8607e`). The watchdog
+  cannot keep to what that entry describes. The predicate measures how long every 5 s sample has found the lane disabled, not
+  how long the lane has been disabled.
+- **Why its tests pass.** `test_poll_gating.py:194-197` says the watchdog writes "only after the prop has been
+  continuously ``True`` for ``METRICS_STORE_STRAND_TIMEOUT_MS``", and that the tests below pin it. The tests of
+  `TestStrandWatchdog` (`:213-297`) check the callback's registration, its source text and the threshold's size;
+  none runs the predicate. No node-gated test at `60ae1870` runs it either: those cover F-042, F-054, the idle
+  cuts, Y4 and the phase-B bridge.
+- **Measured** (this phase): 28 fires in two runs on canopy `main`, 13 in 1,514 s at `60ae1870` and 15 in 1,511 s
+  at `c7876f5a`, 30.9 and 35.7 an hour. At every fire a feeder request was in flight, the lane's current disabled
+  episode was 0.3–3.6 s old, and the lane had been enabled for 11.0–14.9 s of the 30 s before. The longest
+  request took 5.4 s from entering `watched` to its response landing, so none came near stranding.
+- **Why its samples miss the enabled stretches** is inferred, because the census logged the watchdog's fires and
+  not its other samples. The feeder's cycle was about 4.9 s and the watchdog samples every 5 s, so each sample
+  falls at nearly the same point in the cycle as the one before, drifting slowly one way or the other as the
+  cycle runs longer or shorter than 5 s. Once on the disabled part, about 2.7 s of each cycle, it can stay there
+  for many samples in a row. Replaying the watchdog's logic over each run's measured lane, sampling every
+  5,000 ms in phase, gives 5–16 and 3–18 fires per run (medians 9 and 7) at every one of 500 starting phases,
+  against 13 and 15 observed. Sampling at the same rate with each sample's phase randomized gives a median of 1
+  in both runs, and no fire at all in about one replay in five. So the fires come from the samples keeping phase
+  with the cycle. Further from the cycle, at 6,000 and 7,500 ms, sampling in phase and sampling at random give
+  about the same, medians 1 to 3.5 (`util/ad-hoc/2026-10-05_f058_watchdog_alias_replay.py`). The gaps between
+  fires sit close to whole multiples of 5 s, 20 of 26 within 0.3 s and all within 0.75 s except the one spanning
+  the first run's Apply clamp (1.3 s), so the watchdog's samples mostly kept to their own grid. Still, the replay
+  does not exclude some locking of its samples to the feeder's cycle through the renderer's queue, which delays
+  both, and its one phase per replay is a model: the Apply clamp stops the slow lane too
+  (`dashboard_manager.py:466`), which then restarts at a new phase.
+- **Effect.** A false fire re-enables the lane in mid-request. The lane ticks one period later, and if the
+  response in flight has not landed when the next request is made, that response is evicted. 7 of the 28 fires
+  evicted a response, each 1.4–2.4 s after the fire. Through F-CANOPY-058, 6 of those became cascades of
+  2 to 11 evictions; the seventh stopped at one, its late release falling under a request that was answered in
+  time. 28 of the 29 evicted responses followed a false fire. Without F-CANOPY-058, an evicting false fire would
+  cost one answer, a cycle's delay; the longer stalls are F-CANOPY-058's.
+- **Rating: P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2**, the
+  second limb of the owner's question: whether its first, Phase 10's question, which decides F-CANOPY-065, extends
+  to such a description.
+  Plan §6.3's P1 is "breaks a documented behaviour", and canopy's shipped CHANGELOG describes the behaviour
+  these fires break (Its own contract, above). If such a description does not count, it is P2: on its own it
+  delays the chart by a cycle at a time, which §6.3 puts under drift, and the harm a user would see comes
+  through F-CANOPY-058, which is P1 already. The limbs differ: F-CANOPY-065's promise is of something a user
+  sees, the toast, and rests on a CHANGELOG and a design plan; this one is a CHANGELOG's description of an
+  internal mechanism, so a ruling for F-CANOPY-065 does not by itself settle it (round 2, Lane 11-R2B; carried
+  into this rating's lead, the header and the Summary in round 3, Lanes 11-R3A and 11-R3B). This phase first rated it P2 on
+  its code comment alone; round 1 found the CHANGELOG entry (Lane 11-B2), and Lane 11-B1, which had not been
+  shown it, rated it P2 as drift.
+- **A finding of its own, not part of F-CANOPY-058.** F-CANOPY-058 is the renderer releasing the guard for an
+  evicted request; this is canopy's watchdog breaking its own contract. Each has a fix that leaves the other in
+  place. A guard that ignored the completion of a request no longer current would end the runs, and every false
+  fire that evicts would still cost a response. A watchdog that counted progress would end the false fires, and the gate's
+  writes and the second Input would still start runs. F-CANOPY-058's own fix direction already separates the two
+  ("A progress-based watchdog predicate … addresses the false fires alone"). Lane B's pacer would fix both by
+  taking the watchdog off the lane; two findings may share a fix.
+- **Provenance.** Phase 9 found this predicate's flaw on F-CANOPY-055's first fix, which never merged (its
+  BLOCKER 2, with Lane B's model of 37–44 false fires an hour at a 7 s request time). It noted that the
+  metrics-store watchdog has the same predicate, and F-CANOPY-058 lists the false fires among its triggers. It
+  was neither filed nor measured on `main` until this phase.
+- **Not measured.** The rate in any other regime. These were idle pages whose REST poll fetched on every cycle.
+  With a live stream in the window view the feeder answers without fetching, so its requests are short and the
+  lane is disabled for less of each cycle; in the full views it fetches on every fifth tick. Either should change
+  the rate. The replay varies only the sampling period over the measured lane, so it says nothing about a longer
+  request, which would also lengthen the lane's disabled part; Phase 9 modelled 37–44 an hour at a 7 s request
+  time and judged that model probably too high there.
+- **Fix direction.** Item 0's design (Still owed). If a watchdog stays, base its predicate on progress, for
+  example a reset on any change of the lane's `n_intervals` or of a request count, and test it on a healthy lane
+  whose cycle is near its sampling period as well as on a stranded one.
+
+### Instruments
+
+- **The census v2** is now in `util/ad-hoc/` under the names it ran under,
+  `2026-10-04_f058_census_v2_{shim,synth_app,synth_check,live,debug_probe,analyze}.py`. It repairs the four
+  defects that refuted v1, `2026-09-24_f058_trigger_census.py` (Phase 9, Instruments):
+  - the shim wraps the store's `dispatch` from page init and reads each request's end at the dispatch, so a
+    `no_update` answer reads as answered;
+  - a fire is read at the watchdog's own write, with the lane's value before it;
+  - a trigger fires only on a request in flight for at least 1.5 s, and counts only if it takes effect while
+    that request is still open;
+  - the windows are sized to a multi-second cycle.
+  - The synthetic check (`…_synth_check.py` on `…_synth_app.py`, canopy's wiring at small scale) passed 6 of 6
+    known answers before the first run, under the same file names: data and `no_update` controls with no
+    eviction, a second-Input change evicting in both modes, the gate's mount write cascading, and a forced
+    strand caught at each of its five fires, though the check's rule asks only for one. Its output is the
+    evidence directory's `2026-10-05_synth_check.jsonl`. Round 1's Lane 11-A3 re-ran it: 6 of 6.
+  - `…_debug_probe.py` is the probe that showed the first synthetic controls cascading from the gate's mount
+    write rather than from a fault in the shim; the check now holds that as its `mount-cascade` case.
+- **New in this phase:**
+  - `2026-10-05_f058_census_v2_release_trace.py` reads F-CANOPY-058's mechanism one request at a time and checks
+    every fire against the lane's own timeline. It pairs each late release with the evicted request whose
+    successor is the request in flight; until round 1 it took the oldest pending one, and a dropped or shifted
+    release then silently re-paired every later eviction (Lane 11-A3). The successor rule can still guess: an
+    evicted request whose response lands after its successor was itself evicted would read "none" while its
+    release went to the successor. So since round 2 a release is flagged AMBIGUOUS when another evicted request
+    of the same run was still awaiting a release (Lane 11-R2B); there are none in either run. Its `--self-test`
+    builds five known answers from the transcript itself: with the late releases removed, every eviction reads
+    "none"; with a fire placed 31 s into the run's longest disabled episode (each run's Apply clamp, 62 s and
+    63 s), that fire reads 0 ms enabled; with one late release dropped, only its eviction changes; with every
+    late release whose successor was answered shifted into that successor's own window, exactly those
+    evictions change; and with one release moved into the flight after the next eviction, it is flagged
+    AMBIGUOUS. All five pass on both transcripts. An alternation break in the innermost records makes its report
+    exit 2, and makes the replay refuse; `--self-test` does not check for one. A disable and the enable after it,
+    both logged only by non-thunk records, would leave no break, and neither reader would see them. In these runs
+    a walk of the records in push order finds the same changes as the type selection (Lanes 11-R2A and 11-R3A),
+    and item 24 asks the readers to make that comparison themselves (round 3, Lanes 11-R3A and 11-R3B). Its first version took a release followed within 1 s by the successor's answer
+    for the successor's own, and so misread two late releases. It now uses 100 ms, and prints the margin on
+    both sides: own releases 13–89 ms before their answers, late releases 0.4–2.0 s before the successor's.
+  - `2026-10-05_f058_watchdog_alias_replay.py` replays the watchdog's logic over the measured lane, in phase and
+    with each sample's phase randomized (F-CANOPY-068).
+  - **Both read the lane from each change's innermost record** since round 1. The shim stamps a record with its
+    dispatch's ENTRY time, and an enclosing dispatch logs a nested change again at its own, earlier time; read
+    from the enclosing records, a change is dated early, by a median of about 22 ms and up to 327 ms here (Lanes
+    11-A2 and 11-A3, independently). The innermost records alternate with no break in either run.
+    `…_analyze.py` is kept as it ran, and still dates changes by their enclosing records.
+  - **The shim's docstring is wrong in two places**, kept as it ran (Lane 11-A1): it logs the `running=` writes
+    as thunks with empty action types, not as `ON_PROP_CHANGE`; and actions dispatched inside a thunk, such as
+    `AddRequested`, bypass its wrapper, though the `AddWatched`, `RemoveWatched` and `AddExecuted` it scores do
+    not. Its third disputed claim holds: in dash 4.2.0 an all-`no_update` answer from a callback with an Output
+    is an HTTP 200 with empty data, not a 204 (`dash/_callback.py:602`, `:640-645`; re-derived by the
+    orchestrator).
+- **What the census could not do, found by these runs:**
+  - **The gate and tab triggers took effect 1.3–4.2 s after they fired; T-mode's effect is not recorded.** T-gate's
+    write landed 1.3–1.4 s after it fired, and the transcript does not separate the driver's round trip from the renderer's queue (round 2, Lane
+    11-R2A). After T-mode fired, the next request entered 2.1–2.5 s later, and the transcript does not record
+    what made it. T-tab's clicks had returned in the page 0.7–1.0 s and 2.3–2.9 s after it fired, each stamped
+    after the click's own handling (its 1 s wait between them took 1.6–1.9 s), and each gate write followed its
+    click's return by 0.3–1.9 s (Lanes 11-A2, 11-A3 and 11-B2; where the stamp is taken, round 2, Lane 11-R2A, and round 3, Lane 11-R3B).
+    Each trigger fired on a request already 1.6–2.9 s into a flight whose median was 2.8 s, so the gate and tab
+    triggers each landed after the targeted request had been answered, T-mode's targeted requests were answered
+    0.6 s and 1.1 s after it fired, and TOOK's horizons (1.0 s and 2.5 s) were too short to see a later effect. To test the claim, a trigger has to be fired from the page itself as a
+    request enters `watched`, scheduled as its own task rather than run inside the renderer's dispatch, which
+    could reorder what it measures (round 2, Lane 11-R2B). Sent from Python instead, it would land later by the
+    driver's round trip, at most the 0.7–1.0 s before T-tab's first click had returned (round 3, Lane 11-R3B).
+    It must be scored as "a re-enable while a request
+    is in flight, whose response lands after the next request is made", not within a fixed horizon.
+  - **T-apply** found nothing in flight, in both runs. The clamp's gate write landed 316 ms and 561 ms after the
+    request in flight was answered, and the clamp holds the lane, so no request started under it. In the first
+    run, by timing, canopy's own clamp watchdog (E-3, `APPLY_IN_FLIGHT_MAX_MS` 60 s, `canopy_constants.py:572`)
+    released the clamp after 62.3 s, before the census's own release: the console log's whole-second times put
+    the census's release call at least 1.1 s after that write. The census's release landed 2.1 s later as a
+    redundant `false`, and the gate wrote it to the lane 0.7 s into a request that was answered 1.1 s later. In
+    the second run the log's times cannot tell the two releases apart. The clamp defeat stays untested.
+  - **T-tab**'s two clicks were 1.9 s and 1.6 s apart in page time, not the 1.0 s it asked for.
+  - **The fire record's third field**, the watchdog's clock before the fire, is always null: the watchdog's own
+    function clears it before the renderer dispatches the write.
+  - **It does not log the watchdog's non-firing samples**, so F-CANOPY-068's aliasing is inferred, not
+    observed.
+
+### Consensus record (§7 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`)
+
+- **Round 1**: five lanes on the frozen `1b7cf44b`, briefed separately with different entry points. Briefs are in
+  `reports/e2e-canopy-2026-09-02/drafts/lane11{A1,A2,A3,B1,B2}_phase11_ledger_brief.md`, and the reports,
+  verbatim, in `reports/e2e-canopy-2026-09-02/consensus/2026-10-05_validator_reports_phase11_round1.md`.
+  - Lane 11-A1 re-derived every source claim at canopy `60ae1870` and `c7876f5a`, and in dash 4.2.0's renderer
+    and dcc bundle.
+  - Lane 11-A2 wrote its own reader of the raw transcripts, from the shim's JavaScript, before running the
+    repo's readers.
+  - Lane 11-A3 tested the instruments: the byte provenance of all 16 copied files, a re-run of the synthetic
+    check (6 of 6), and mutations of both new readers.
+  - Lane 11-B1 argued for folding F-CANOPY-068 into F-CANOPY-058 and for lower ratings.
+  - Lane 11-B2 attacked every universal claim and argued for higher ratings.
+  - The lanes' own probes are archived as `util/ad-hoc/2026-10-05_phase11_r1_{a1,a2,a3,b1,b2}_*.py` (41 files) by
+    `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py`, without the lanes' copies of repo and canopy files
+    or Lanes 11-B1's and 11-B2's shell helpers.
+- **Verdicts.** Lane 11-A1 returned SOUND and the other four SOUND-WITH-FIXES. Lane 11-B2's MAJOR changes a
+  rating, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires
+  round 2.
+- **What round 1 changed:**
+  - one rating: F-CANOPY-068, from P2 to P1 if a shipped CHANGELOG promise counts as documented, else P2 (Lane
+    11-B2), the owner's question F-CANOPY-065 already carries; round 2 split that question, and F-CANOPY-068's
+    rating now rests on its second limb. The counts move to 7 open P1 and 16 open P2.
+    Lane 11-B1, on the opposite brief, kept F-CANOPY-068 a finding of its own: the gate and the second Input
+    stay inside F-CANOPY-058 because they do what they are specified to do, and the watchdog does not;
+  - the lane timings, now read from each change's innermost record (Lanes 11-A2 and 11-A3, independently):
+    11.0–14.9 s enabled before each fire (was 10.4–14.7), episodes 0.3–3.6 s old at a fire (was 0.3–3.8),
+    about 2.7 s disabled per cycle (was 2.8), and the replay's medians: 9 and 7 in phase and 1 at random, with no
+    fire in about one random replay in five (were 9 and 8, 2, and one in six), and 1 to 3.5 at 6,000 and
+    7,500 ms (were 2 to 4; added in round 2, Lane 11-R2B);
+  - F-CANOPY-058's horizon. A re-enable evicts when the in-flight response has not landed by the time the next
+    request is made, not whenever it comes "more than one period" before the response lands: 13 of 21 such
+    re-enables here did not evict (Lanes 11-B1 and 11-B2). Its header, trigger bullet and Status changed, and
+    the minutes are now stated as synthetic;
+  - the triggers that occurred in mid-request: four kinds, not two (Lanes 11-B1 and 11-B2);
+  - F-CANOPY-068's header and Effect: 7 evicting fires, 6 of them cascades (Lane 11-B1);
+  - item 25's method: triggers fired inside the page (Lanes 11-A3 and 11-B2), with the trigger lag attributed
+    per action (Lanes 11-A2, 11-A3 and 11-B2);
+  - the release trace, which now pairs each late release with the evicted request whose successor is in flight,
+    and self-tests four mutations (Lane 11-A3);
+  - wording: the longest request, 5.4 s (Lane 11-A3); the sampling drift, which has no fixed direction (Lane
+    11-B2); the synthetic check's "each fire" (Lane 11-A3); what made the request after T-mode (Lanes 11-A2
+    and 11-A3); the trio's processes (Lane 11-B2); Phase 9's node-test claim and item 0's correction list (Lane
+    11-B1); and the shim's docstring (Lane 11-A1).
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-05_phase11_ledger_round1_corrections.py`,
+    30 substitutions in the ledger and 2 in the evidence README.
+- **Re-derived by the orchestrator before applying:**
+  - the innermost-record timeline, with no alternation break in either run, and every corrected figure;
+  - canopy's CHANGELOG `[0.8.0]` promise (called a description since round 4), at `60ae1870`, and canopy#624
+    (`06d8607e`), which put it there;
+  - the 32 mid-request re-enables, 8 of them evicting, and the next request 1.3–3.7 s after each;
+  - canopy#614's three files, none of them a node-gated test;
+  - the slow lane's place in the gated set, so the clamp stops it (`dashboard_manager.py:466`);
+  - the release trace's successor pairing, which gives the same 29 late releases, and its four self-tests on
+    both transcripts;
+  - the fires' spacing, close to whole multiples of 5 s (Lane 11-B2's reading).
+- **Refuted:** Lane 11-A1's reading that an all-`no_update` answer is an HTTP 204 in dash 4.2.0. `_callback.py:602`
+  sets `has_update` from `has_output`, which is true for any callback with an Output (`:640-645`), so the answer
+  is a 200 with empty data, as F-CANOPY-058's entry says. Lane 11-A1's other two points on the shim's docstring
+  stand.
+- **Unresolved, for the owner:** Phase 10's question, whether a CHANGELOG or design-plan promise counts as
+  documented under plan §6.3, which decides F-CANOPY-065's rating; and, since round 2 (Lane 11-R2B), a second
+  limb: if it does, whether that extends to a CHANGELOG's description of an internal mechanism, which decides
+  F-CANOPY-068's. Since rounds 3 and 4, the first limb is known to reach further than F-CANOPY-065 (Matrix effect
+  and counts; item 26).
+- **Slips.** Lanes 11-A2, 11-A3 and 11-B2 each printed a commit's author line, which carries the owner's e-mail
+  address, into their own local tool output (`git show --stat`). None repeated or sent it.
+- **What the evidence cannot support.** Two idle pages on one host, about 25 minutes each: no rate for a page
+  during training, with a live stream or in a full view; nothing live on dash 4.4.1; no stall of minutes on
+  canopy. The watchdog's other samples were not logged, so its aliasing is inferred, though the replay and the
+  fires' spacing support it. And every timing here comes from a page running the shim, which wraps the
+  store's `dispatch` (165,942 calls in the first run), with no uninstrumented control (round 2, Lane 11-R2B).
+
+- **Round 2**: two lanes on the frozen `b3c54692`, briefed on round 1's corrections only. Briefs are in
+  `reports/e2e-canopy-2026-09-02/drafts/lane11R2A_phase11_ledger_brief.md` and
+  `…/lane11R2B_phase11_ledger_corrections_brief.md`, and the reports, verbatim, in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-05_validator_reports_phase11_round2.md`.
+  - Lane 11-R2A replayed round 1's pass on `1b7cf44b` and got `b3c54692` byte for byte, with no hand edit, and
+    re-derived every claim the pass introduced, most of them from its own reader.
+  - Lane 11-R2B was adversarial on the pass, and replayed it too.
+  - Their own probes are archived as `util/ad-hoc/2026-10-05_phase11_r2_{a,b}_*.py` (16 files) by
+    `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 2`.
+- **Verdicts.** Both returned SOUND-WITH-FIXES. Lane 11-R2A's two NITs change nothing; Lane 11-R2B's findings
+  change numbers (the counts for each ruling, and the horizon) and actions (the owner's question, and item 25's
+  method), so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires
+  round 3.
+- **What round 2 changed:**
+  - the owner's question. F-CANOPY-065's P1 rests on a shipped CHANGELOG or design-plan promise of something a
+    user sees, the toast; F-CANOPY-068's on a CHANGELOG's description of an internal mechanism. So the question
+    gains a second limb, and the counts are given for each ruling: 7 open P1 and 16 open P2 if both are P1, 6 and
+    17 if F-CANOPY-065 alone, 5 and 18 if neither (Lane 11-R2B);
+  - recorded as dissent: Lane 11-B1 rated F-CANOPY-068 P2, reading its contract, then cited from code comments
+    only, as drift; its brief did not show it the CHANGELOG entry (Lane 11-R2B);
+  - F-CANOPY-058's horizon. The 8 evicting re-enables evicted 1.2–2.4 s after the re-enable, when the next
+    request was made; 1.3–3.7 s is when the next request entered `watched`, the three longest at the census's
+    own T-tab activity. Round 1's pass had labelled the second range as the first (Lane 11-R2B);
+  - item 25's method: a trigger scheduled as its own task, not run inside the renderer's dispatch, timed in the
+    page and validated on the synthetic check first; and the T-gate and T-mode lag no longer attributed to the
+    renderer's queue (Lanes 11-R2A and 11-R2B);
+  - the release trace: an AMBIGUOUS flag for a release that more than one evicted request of a run could own, a
+    fifth self-test that makes one, and an exit status of 2 on any alternation break; the replay now refuses such
+    a timeline (Lane 11-R2B). Neither run has an ambiguous pairing or a break;
+  - wording: the minutes' source (Lane 11-R2B); the README's self-test count and its sentence on the trio, and the
+    replay's docstring (Lanes 11-R2A and 11-R2B); round 1's record, which left out the medians at 6,000 and
+    7,500 ms (Lane 11-R2B); and "What the evidence cannot support", which now names the instrument's presence
+    (Lane 11-R2B).
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-05_phase11_ledger_round2_corrections.py`,
+    14 substitutions in the ledger and 2 in the evidence README.
+- **Re-derived by the orchestrator before applying:** F-CANOPY-065's Severity bullet and Phase 10's question,
+  both naming CHANGELOG or design-plan promises; the 8 evictions, 1.2–2.4 s after their re-enables, and the three
+  longest waits for the next request, each at the census's T-tab activity; Lane 11-R2B's pairing mutation, now the
+  trace's fifth self-test, and the new flag's count, 0, in both runs.
+- **Slips.** Lane 11-R2B's `git log --format=%B` of canopy `06d8607e` printed a co-author trailer holding a
+  generic bot no-reply address, not the owner's, into its own local output. Lane 11-R2A reported none.
+
+- **Round 3**: two lanes on the frozen `7af6a381`, briefed on round 2's corrections only, from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane11R3_phase11_ledger_brief.md`. The reports, verbatim, are in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_phase11_round3.md`.
+  - Lane 11-R3A re-created the measurements from the artifacts, with its own reader, and replayed round 2's pass
+    on `b3c54692`: `7af6a381` byte for byte, with no hand edit.
+  - Lane 11-R3B was adversarial on the pass, and replayed it too.
+  - Both lanes started on 2026-10-05 and stopped part-way when the API's weekly usage limit was reached, as their
+    transcripts record. Each was resumed on 2026-10-08 with its context, and each report is the lane's final
+    message.
+  - Their own probes are archived as `util/ad-hoc/2026-10-08_phase11_r3_{a,b}_*.py` (19 files) by
+    `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 3`.
+- **Verdicts.** Both returned SOUND-WITH-FIXES. Their findings change a disposition (the condition F-CANOPY-068's
+  rating is stated to rest on), numbers (the counts each ruling gives, and F-CANOPY-058's horizon as worded) and
+  actions (the owner's question's reach, and items 24 and 26), so §4 of
+  `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 4.
+- **What round 3 changed:**
+  - the two limbs, carried further. F-CANOPY-068's header, the Summary and the Rating's lead gave the first
+    limb's condition, so under a ruling for the first limb alone the header read P1 where the counts read P2.
+    They now give the second limb. The first limb was put as a promise of something a user sees (round 4 restored Phase 10's question in F-CANOPY-065's wording, "shipped" included; round 5 Phase 10's own
+    words, in the Unresolved bullet), and
+    F-CANOPY-065's header now names the design plan its Severity bullet already did (Lanes 11-R3A and 11-R3B);
+  - the counts each ruling gives now say that they move F-CANOPY-065 and F-CANOPY-068 alone. The first limb
+    also reaches F-CANOPY-057, through the CAN-015g/h design note (Lane 11-R3A), and F-CANOPY-018, through
+    canopy's 0.6.0 toast entry (named by Lane 11-R3B among what it could not check), and no other open finding
+    has been checked. New item 26 is the sweep. This record left out Lane 11-R3A's own pointer, F-CANOPY-012 and
+    F-CANOPY-013 against the note's CAN-015h half, until round 4;
+  - F-CANOPY-058's trigger bullet. The 8 evictions a fire or gate write started came 1.2–2.4 s after it, and the
+    21 that followed a late release 1.4–2.6 s after that release; the bullet had given the first range for all
+    29 (Lane 11-R3B);
+  - the trigger lag, attributed nowhere now. T-mode's next request is not shown to be its effect, and T-tab's
+    click times are stamped after each click's own handling, so a trigger sent from Python adds at most
+    0.7–1.0 s (Lane 11-R3B; Lane 11-R2A had found where the stamp is taken, in round 2). The README's sentence now says the same (Lanes 11-R3A and 11-R3B);
+  - the readers. Of the trace's two modes, only the report exits 2 on an alternation break, and a disable and enable both logged
+    only by non-thunk records leave no break; item 24 now asks for a push-order comparison first (Lanes 11-R3A
+    and 11-R3B). The trace's self-test docstring now says five, and the trace's docstring and the replay's
+    comment state the limit;
+  - wording: F-CANOPY-068's Effect gives 1.4–2.4 s for the 7 evicting fires only (Lanes 11-R3A and 11-R3B); the
+    shim wraps the store's `dispatch`, not every dispatch (Lane 11-R3B); round 2's record now says the three
+    longest waits came at T-tab's activity, not after it (Lane 11-R3B); and round 1's record notes the split.
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-08_phase11_ledger_round3_corrections.py`,
+    18 substitutions in the ledger, 1 in the evidence README and 3 in the readers.
+- **Re-derived by the orchestrator before applying:**
+  - the CAN-015g/h note's status line, its promise and its record of g-3 and g-7 as merged;
+  - canopy#533, merged on 2026-08-28;
+  - plan §6.3's P1, which does not define "documented";
+  - all 29 evictions, each from the last re-enable before it (`util/ad-hoc/2026-10-08_phase11_round3_rederive.py`):
+    8 started by a fire or gate write, 1,214–2,391 ms after it, and 21 by a late release, 1,422–2,553 ms after it,
+    four of them above 2.4 s;
+  - `CLICK_TAB` in `…_live.py`, which stamps the page's time after `t.click()` returns;
+  - round 2's report of Lane 11-R2A's push-order walk, identical to the type selection.
+- **Slips.** Neither lane reported one.
+- **Before round 4, the archived probes of all three rounds were edited for CodeQL**, whose unresolved review
+  threads block a merge while every check reads green. `util/ad-hoc/2026-10-05_phase11_probes_codeql_fixes.py`
+  made 51 edits in 44 probes, each closing a file the probe opens or dropping an import or a binding nothing
+  reads, and amended each touched probe's header to say so. `util/ad-hoc/2026-10-05_codeql_python_prescreen.py`
+  predicted the alerts. It reproduces the 20 CodeQL threads on Phase 10's PR, juniper-ml#2157, and reports
+  nothing on Phase 10's 33 merged scripts, nor now on any of this phase's.
+
+- **Round 4**: two lanes on the frozen `adcba49f`, briefed on round 3's corrections only, from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane11R4_phase11_ledger_brief.md`. The reports, verbatim, are in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_phase11_round4.md`.
+  - Lane 11-R4A re-created the measurements with its own reader, replayed round 3's pass on `7af6a381` (all four
+    files byte for byte at `adcba49f`, no hand edit), and replayed the CodeQL pass.
+  - Lane 11-R4B was adversarial on the pass, and replayed it too.
+  - Both found the readers' outputs unchanged, and that the CodeQL edits change nothing a probe computes.
+  - Their own probes are archived as `util/ad-hoc/2026-10-08_phase11_r4_{a,b}_*.py` (18 files) by
+    `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 4`. A second run of the CodeQL pass,
+    `--round r4`, fixed the 7 alerts the prescreen predicted on them.
+- **Verdicts.** Both returned SOUND-WITH-FIXES. Both found that the reach left out F-CANOPY-012, which changes an
+  action (the reach put to the owner, and item 26). Lane 11-R4B's MINOR on the first limb also changed an action,
+  the question put to the owner, and under one ruling F-CANOPY-068's rating and a count. So §4 of
+  `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 5.
+- **What round 4 changed:**
+  - the reach. F-CANOPY-012 is within reach of the first limb through the CAN-015g/h note, which records h-5, the
+    Network Editor, as merged and specifies its output-layer "Patch weights" card, and canopy's own manual may make
+    it P1 without any ruling; item 26 now checks that first. F-CANOPY-013 is recorded as unsettled. Round 3's
+    record now notes the pointer it left out (Lanes 11-R4A and 11-R4B, from Lane 11-R3A's report);
+  - the first limb is Phase 10's question again, worded as F-CANOPY-065's header and its Severity bullet word it,
+    "shipped" included (both entries in play shipped; round 5 quotes Phase 10's own wording in the Unresolved
+    bullet), and the second limb is stated as a condition on it: whether it extends to a CHANGELOG's description
+    of an internal mechanism. F-CANOPY-068's contract bullet and item 0 now call the `[0.8.0]` text a description (Lane
+    11-R4B; Lane 11-R4A as a NIT);
+  - the trigger lag. The gate and tab triggers took effect 1.3–4.2 s after they fired, and T-mode's effect is not
+    recorded, now in the Summary, the Instruments and the README (T-mode's, Lane 11-R4B; the README's split, Lanes
+    11-R4A and 11-R4B);
+  - attributions. Where T-tab's stamp is taken was Lane 11-R2A's finding first (Lane 11-R4B). Of the trace's two
+    modes only the report exits 2, while the replay refuses too (Lanes 11-R4A and 11-R4B). Round 3's record also
+    now says that its "weekly" comes from the lanes' transcripts (Lane 11-R4B's "could not check"; Lane 11-R4A
+    read it there);
+  - the rederive script's docstring: the round-3 reports' file, and "was made" (Lanes 11-R4A and 11-R4B).
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-08_phase11_ledger_round4_corrections.py`,
+    20 substitutions in the ledger, 1 in the evidence README and 2 in the rederive script.
+- **Re-derived by the orchestrator before applying:**
+  - the CAN-015g/h note's h-5 row and its output-layer "Patch weights" card (`:627`);
+  - canopy's manual at canopy#535's parent (`docs/USER_MANUAL.md:407-415` at `28da69f8^`), which lists
+    `output_weights` under Patch Weights, with values entered as separated floats, and says canopy "lets CasCor
+    validate the exact target shape";
+  - F-CANOPY-012's entry, which rates it P2 because the failure is "loud, precise, and non-mutating" and does not
+    weigh the manual;
+  - canopy#535's merge, `28da69f8`, on 2026-08-28.
+- **Slips.** Lane 11-R4B ran its Python without `-B`, and two of its runs wrote three git-ignored bytecode files
+  into the worktree: the release trace's cache, by its run of the rederive script at 10:51:23Z, and two by one
+  probe at 10:59:24Z. Lane 11-R4A also ran Python without `-B` but wrote none: its report took the release trace's
+  cache for its own, and round 5 copied that without re-deriving it (round 6, Lanes 11-R6A and 11-R6B). No tracked
+  file changed. Lane 11-R4B also ran one canopy `git log` whose format printed author dates, with no name or
+  e-mail. Neither printed a secret or an address.
+
+- **Round 5**: two lanes on the frozen `684d70bc`, briefed on round 4's corrections only, from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane11R5_phase11_ledger_brief.md`. It also told them that another open
+  finding within reach is a finding only where the ledger says something false about it. The reports, verbatim,
+  are in `reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_phase11_round5.md`.
+  - Lane 11-R5A re-derived the pass's claims with its own reader, and replayed the pass on `adcba49f`: `684d70bc`
+    byte for byte, with no hand edit. Lane 11-R5B was adversarial on the pass, and replayed it too.
+  - Both found that every statement gives one rating for F-CANOPY-065 and one for F-CANOPY-068 under each ruling,
+    that every trigger-lag figure re-derives, and that the CodeQL pass's second run changes nothing a probe
+    computes.
+  - Their own probes are archived as `util/ad-hoc/2026-10-08_phase11_r5_{a,b}_*.py` (7 files) by
+    `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 5`. A third run of the CodeQL pass,
+    `--round r5`, fixed the 5 alerts the prescreen predicted on them.
+- **Verdicts.** Both returned SOUND-WITH-FIXES, with the same MINOR. The manual check covered F-CANOPY-012 alone,
+  though the manual section it cites also documents what F-CANOPY-013 breaks, and the Matrix called item 26 a sweep
+  of the manual that it did not owe. That changes an action, item 26's first step, so §4 of
+  `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 6.
+- **What round 5 changed:**
+  - item 26's first step now checks every open finding against canopy's manual, F-CANOPY-012 and F-CANOPY-013
+    first, and the Matrix's F-CANOPY-013 bullet names the manual's step 6 and canopy#532, and credits the note's
+    reason to Lane 11-R4A (Lanes 11-R5A and 11-R5B);
+  - item 26's ruling step names a description of an internal mechanism beside a promise (Lane 11-R5B);
+  - wording: the Unresolved bullet quotes Phase 10's question as Phase 10 words it, without "shipped" (Lanes
+    11-R5A and 11-R5B); "cannot keep to what that entry describes" (Lane 11-R5B); round 1's re-derived list notes
+    that the `[0.8.0]` text is a description (Lane 11-R5B);
+  - round 4's record: its first-limb bullet no longer calls the shipped wording Phase 10's (Lanes 11-R5A and
+    11-R5B), and calls the second limb a condition, not an exception (Lane 11-R5B); its Verdicts give Lane 11-R4B's
+    first-limb claim; its credit for T-mode's unrecorded effect names the lane that raised it; and its Slips record
+    Lane 11-R4B's bytecode files (Lane 11-R5A; round 6 corrected the count and the attribution);
+  - by hand, with the CodeQL pass's third run: its docstring now states the `fh` guard as the code applies it
+    (Lane 11-R5B).
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-08_phase11_ledger_round5_corrections.py`,
+    9 substitutions in the ledger.
+- **Re-derived by the orchestrator before applying:**
+  - step 6 of the manual's Network Editor workflow, "Use the API response shown in the status alert to confirm
+    the edit", at `3411673c` (`:387`), `28da69f8^` (`:424`) and `60ae1870` (`:465`);
+  - F-CANOPY-013's entry, which calls the alert "the one surface an operator has for confirming a blind mutation"
+    and rates it P2 as cosmetic;
+  - canopy#532, merged on 2026-08-28 as `359e1bf7`.
+- **Slips.** Neither lane reported one.
+
+- **Round 6**: two lanes on the frozen `da08f639`, briefed on round 5's corrections only, from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane11R6_phase11_ledger_brief.md`. It also kept them from assessing any
+  rating against canopy's manual, which is item 26's work. The reports, verbatim, are in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_phase11_round6.md`.
+  - Lane 11-R6A re-derived the pass's claims and replayed it on `684d70bc`: `da08f639` byte for byte, with no hand
+    edit. Lane 11-R6B was adversarial on the pass, and replayed it too.
+  - Both found item 26 and the Matrix in agreement, one rating each for F-CANOPY-065 and F-CANOPY-068 under every
+    ruling, the counts and the triage unchanged, and the CodeQL pass's third run changing nothing a probe computes.
+  - Their own probes are archived as `util/ad-hoc/2026-10-08_phase11_r6_{a,b}_*.py` (17 files) by
+    `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 6`. The prescreen predicts no alert on them.
+- **Verdicts.** Both returned SOUND-WITH-FIXES, with the same three NITs, each a misstatement in these records.
+  Neither found anything that changes a number, a disposition or an action, so under §4 of
+  `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` **the review ends at round 6.**
+- **What round 6 changed**, in the records only:
+  - round 3's record no longer says that round 4 restored Phase 10's own wording;
+  - round 5's record credits F-CANOPY-013's reason, changed in the Matrix, to Lanes 11-R5A and 11-R5B, and the
+    "condition" wording to Lane 11-R5B alone;
+  - round 4's Slips: Lane 11-R4B's runs wrote all three bytecode files, the release trace's cache included, and
+    Lane 11-R4A's wrote none. Round 5 had taken Lane 11-R4A's own attribution without re-deriving it.
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-08_phase11_ledger_round6_corrections.py`,
+    5 substitutions in the ledger.
+- **Re-derived by the orchestrator before applying:** the only bytecode files written in the worktree during round
+  4, their modification times (10:51:23.39Z, and 10:59:24.05Z for two), against the round-4 lanes' command times,
+  Lane 11-R4B's run of the rederive script at 10:51:23.28Z and its probe run at 10:59:23.95Z.
+- **Slips.** Neither lane reported one.
+
+### Matrix effect and counts
+
+- No matrix row changes: this phase drove no matrix row.
+- **Counts**, from `e2e_finding_triage.py`: **79 findings**, 53 fixed, 1 accepted, 2 withdrawn, **23 open**.
+  - **No open P0.**
+  - **7 open P1:** F-CANOPY-055, F-CANOPY-058, F-CANOPY-064, F-CANOPY-065, F-CANOPY-068, F-CASCOR-001 and
+    F-CASCOR-002. F-CANOPY-065 is P1 only if a shipped CHANGELOG or design-plan promise counts as documented, and
+    F-CANOPY-068 only if that extends to a CHANGELOG's description of an internal mechanism. Moving those two
+    alone, by ruling: both P1, 7 open P1 and 16 open P2, as the triage counts them; F-CANOPY-065 alone, 6 and 17;
+    neither, 5 and 18.
+  - **A ruling may move more than those two** (rounds 3 and 4, Lanes 11-R3A, 11-R3B, 11-R4A and 11-R4B). No open
+    finding has been swept against canopy's CHANGELOG, the design plans or canopy's manual, and three open P2s
+    are already known to be within reach of the first limb:
+    - F-CANOPY-057, through the CAN-015g/h design note
+      (`JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`). Marked "Implemented", it
+      promises "decision-boundary animation with per-unit weight evolution" and records every CAN-015g item as
+      merged to `main`, g-3 included, which never reached it (F-CANOPY-057's History). canopy's manual and FAQ
+      have said since canopy#684 that no weight reaches the page;
+    - F-CANOPY-018, through the apply toast that canopy's 0.6.0 CHANGELOG promises, the entry F-CANOPY-065 rests
+      on. Its fix, canopy#533, merged on 2026-08-28 and awaits a live re-drive;
+    - F-CANOPY-012, through the same design note, which records h-5, the Network Editor, as merged and specifies
+      an output-layer "Patch weights" card (`:627`). F-CANOPY-012 found `output_weights`, the editor's default
+      patch target, impossible to patch from the UI. canopy's own manual may reach it without any ruling: before
+      canopy#535 it listed `output_weights` under Patch Weights, with values "entered as comma-, semicolon-, or
+      newline-separated floats", though it also said that canopy "lets CasCor validate the exact target shape"
+      (`docs/USER_MANUAL.md:407-415` at `28da69f8^`, canopy#535's parent). Its fix, canopy#535, merged on
+      2026-08-28 and awaits a live re-drive.
+    - F-CANOPY-013, the editor's success messages, is unsettled against the note, which promises no message text
+      (Lane 11-R4A; Lane 11-R3A had named it). canopy's manual may reach it without any ruling: its Network
+      Editor workflow says "Use the API response shown in the status alert to confirm the edit" (step 6,
+      `docs/USER_MANUAL.md:424` at `28da69f8^`), and F-CANOPY-013's alert misreports a successful append (Lanes
+      11-R5A and 11-R5B). Its fix, canopy#532, merged on 2026-08-28 and awaits a live re-drive.
+    - Item 26 is the sweep: every open finding against canopy's manual first, which needs no ruling, then, with
+      the ruling, against the CHANGELOG and the design plans.
+  - **16 open P2.**
+
+### Still owed after this phase
+
+Phase 10's list, items 0 to 23, stands, with these changes:
+
+- **Item 0**'s first half is DONE: F-CANOPY-058 is confirmed live on legs serving `main`. Its second half, one
+  design for F-CANOPY-055 and F-CANOPY-058, now has to answer F-CANOPY-068 as well. Lane B's request/ack pacer
+  would take the watchdog off the guarded lane; a design that keeps a watchdog must base it on progress, not on
+  samples of `disabled`. The canopy text to correct is now at `60ae1870`'s lines (F-CANOPY-058's section,
+  above), plus, for F-CANOPY-068, `test_poll_gating.py:194-197`'s "continuously ``True``", the watchdog's own
+  comment (`dashboard_manager.py:2514-2522`) and `canopy_constants.py:412-424`; the shipped CHANGELOG's
+  `[0.8.0]` description needs a correcting entry in the release that fixes it. The item's real-renderer tests gain
+  one: 10 idle minutes on a healthy lane whose cycle is near the watchdog's 5 s sampling period.
+
+New items:
+
+24. **F-CANOPY-068**, with item 0's design. Then the live check on the fix's leg: the census and the release
+    trace for at least two 25-minute runs, expecting no false fire and no eviction run. If the fix keeps a
+    watchdog, measure its rate during a run as well, with a live stream in the window view and in a full view.
+    Before those runs, make the release trace and the replay compare a walk of the lane records in push order
+    with their type selection, and exit 2 on any difference, and make `--self-test` refuse a transcript with an
+    alternation break (round 3, Lane 11-R3B).
+25. **The census's triggers.** Fire each from the page itself when the shim sees a request enter `watched`,
+    scheduled as its own task (for example `setTimeout(…, 0)`), never synchronously inside the renderer's
+    dispatch, which could reorder what it measures; timestamp every action's execution in the page; validate the
+    method on the synthetic check before a live run; and score each as described under Instruments. Then run, on
+    `main` or on item 0's fix, the four triggers these runs could not test as scored triggers: the gate, a tab
+    switch, the end of an Apply (with the clamp defeat) and a second-Input change in mid-request.
+26. **The reach of the owner's §6.3 ruling, and canopy's manual.** First, without waiting for the ruling, check
+    every open finding against canopy's manual, which §6.3 already counts, starting with F-CANOPY-012 and
+    F-CANOPY-013 (Matrix effect and counts). Once the owner rules, check each open finding not yet rated on a
+    CHANGELOG or a design plan for a promise, or, if the ruling counts it, a description of an internal
+    mechanism, of the behaviour it breaks. Start with F-CANOPY-057, F-CANOPY-018, F-CANOPY-012 and F-CANOPY-013, and re-rate what the ruling
+    reaches. Whatever the ruling, the CAN-015g/h design note's "every CAN-015g item has merged to `main`" needs a
+    dated correction: g-3 never reached cascor `main` (F-CANOPY-057's History).
