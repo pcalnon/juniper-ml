@@ -23,6 +23,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 REPO = Path(__file__).resolve().parents[1]
 GUARD = REPO / "util" / "yamaguchi-pre-backup-guard.bash"
 # Stand-in for the job passphrase Duplicati exports as DUPLICATI__PASSPHRASE: a fixture value,
@@ -86,7 +88,7 @@ class PreBackupGuardTest(unittest.TestCase):
         mount = dest.parent
         if mounted:
             self._mark_mounted(mount)
-        env = os.environ.copy()
+        env = RedactedEnv(os.environ)
         env.update(
             {
                 "PATH": f"{extra_path}:{self.stub_bin}:{env.get('PATH', '')}" if extra_path else f"{self.stub_bin}:{env.get('PATH', '')}",
@@ -163,7 +165,7 @@ class PreBackupGuardTest(unittest.TestCase):
         finder.chmod(0o755)
         dest = self.root / "missing-dest"
         self._mark_mounted(dest.parent)
-        env = os.environ.copy()
+        env = RedactedEnv(os.environ)
         env.update(
             {
                 "PATH": f"{find_bin}:{self.stub_bin}:{env.get('PATH', '')}",
