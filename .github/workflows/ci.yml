@@ -18,9 +18,10 @@
 #      G4 changed-files split (flood §4 item 8 phase 2): pull_request / merge_group scope to
 #      the event's changed files (--from-ref/--to-ref); push keeps --all-files.
 #    - Regression tests (Python unittest + bash scripts)
-#    - Sequence Safety (ADVISORY, standalone): per-PR symbol-loss + docs-deletion screens
-#      (flood §4 item 8 phase 3); NOT in the Quality Gate needs -- soak-advisory per the
-#      codeql convention, with a WARN-only allow-symbol-loss / docs-rewrite label hatch.
+#    - Sequence Safety (REQUIRED, standalone): per-PR symbol-loss + docs-deletion screens
+#      (flood §4 item 8 phase 3); a REQUIRED ruleset context but NOT in the Quality Gate needs,
+#      so a green Quality Gate does not mean mergeable. The allow-symbol-loss / docs-rewrite
+#      label hatch demotes it to WARN-only (which greens the required context).
 #    - Fleet PR Lint (ADVISORY, warnings-only): cursor/* best-practices surface to the step
 #      summary (flood §4 item 8 phase 4); never fails, never comments.
 #    - Build and validate (twine check)
@@ -424,8 +425,8 @@ jobs:
           # fail-open. YAML-extraction rehearsal IS the gate.
           python3 -m unittest -v tests/test_main_verify_battery_paths.py
           # tests/test_ci_quality_gate.py: Quality Gate needs: must exclude
-          # advisory/PR-only jobs (sequence-safety / fleet-pr-lint /
-          # release-train-archive-guard); security soft-fails on == failure
+          # the standalone PR-only jobs (sequence-safety, required by the ruleset /
+          # fleet-pr-lint, advisory / release-train-archive-guard); security soft-fails on == failure
           # (skipped OK). Structural + shell rehearsal IS the gate.
           python3 -m unittest -v tests/test_ci_quality_gate.py
           # tests/test_publish_subpackage_workflows.py: structural + hermetic
@@ -1449,7 +1450,7 @@ jobs:
             --advisory
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
-  # Sequence Safety (ADVISORY, standalone): the per-PR compositional-loss screen (Proposal P2 gates
+  # Sequence Safety (REQUIRED, standalone): the per-PR compositional-loss screen (Proposal P2 gates
   # G1 + G2; flood-remediation §4 item 8 phase 3). Runs the AST symbol-loss screen + the docs
   # deletion-magnitude screen over the PR's base..HEAD (the merge ref on pull_request; the queued
   # composition on merge_group), so the silent-deletion / net-docs-deletion classes the flood shipped
