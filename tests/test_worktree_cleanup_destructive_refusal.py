@@ -188,6 +188,10 @@ class TestBranchDeleteRefusal(unittest.TestCase):
             self.assertEqual(result.returncode, 1, msg=result.stderr)
             self.assertIn("holds commits merged nowhere", result.stderr)
             self.assertIn("Nothing has been deleted", result.stderr)
+            # The refusal must NAME the commits it is protecting. `--not --branches` also
+            # excluded the refused branch itself, so this list printed empty by construction.
+            # (Any abbreviation length: `--oneline` honours the user's core.abbrev.)
+            self.assertRegex(result.stderr, rf"\b{tip[:7]}[0-9a-f]* unique commit that must survive")
             # git's own hint quotes `branch -D`. The script must not have run it.
             self.assertNotRegex(result.stderr, r"Running: .*branch -D")
             # The checkout was clean, so removing the worktree is allowed.

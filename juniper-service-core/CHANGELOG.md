@@ -58,6 +58,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   handshake closes 4001. Reverting to the `str` compare fails 63 of them: the HTTP tests with
   `assert 500 == 401`, the rest with the `TypeError`. `surrogateescape` fails 15 and strict UTF-8
   fails 33 (juniper-ml's `util/ad-hoc/2026-09-24_bytes_compare_sentry_locals_verify.py`).
+- **`FailedAuthThrottle.check()` no longer grows its table by one entry per client address.**
+  `check()` runs on every request, before authentication, and is documented as a read-only probe.
+  But `_failures` was a `defaultdict`, so reading an unseen source IP inserted it. Pruning,
+  including the 10,000-entry `_MAX_ENTRIES` cap, runs only from `record_failure()`. Under open auth
+  or valid-key traffic nothing ever calls that, so the table grew without bound: one entry per
+  distinct client, never removed. That is the memory denial of service the class's own cleanup
+  exists to prevent. `_failures` is now a plain `dict`, and both reads use `.get(client_ip, (0, 0.0))`;
+  behaviour is otherwise unchanged. Found by the 2026-10-08 Cursor flood-3 evaluation
+  (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §4). The juniper-data
+  and juniper-cascor forks carry the same fix in their own repos, each pinned by its own test.
+  Pinned here by `test_failed_auth_throttle_check_does_not_track_unseen_ips`: 1,000 unseen
+  addresses leave the table empty. Against the previous code it fails at
+  `assert len(throttle._failures) == 0`.
 
 ## [0.7.0] - 2026-08-30
 

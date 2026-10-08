@@ -430,6 +430,23 @@ def test_failed_auth_throttle_check_does_not_consume_budget():
     assert retry_after >= 1
 
 
+def test_failed_auth_throttle_check_does_not_track_unseen_ips():
+    """check() runs on EVERY request, before auth, so it must not insert an entry per new source IP.
+
+    Pruning (including the ``_MAX_ENTRIES`` cap) runs only from record_failure(). An inserting
+    check() grew the table by one entry per distinct client under open auth or valid-key traffic,
+    and nothing ever removed them.
+    """
+    throttle = FailedAuthThrottle(max_failures=1, window_seconds=60)
+    for i in range(1000):
+        assert throttle.check(f"10.1.{i // 256}.{i % 256}") == (False, 0)
+    assert len(throttle._failures) == 0
+    # The counting path still records, and only the address that failed.
+    throttle.record_failure("10.1.0.7")
+    assert len(throttle._failures) == 1
+    assert throttle.check("10.1.0.7")[0] is True
+
+
 def test_failed_auth_throttle_is_keyed_per_source_ip():
     throttle = FailedAuthThrottle(max_failures=1, window_seconds=60)
     throttle.record_failure("1.2.3.4")
