@@ -39,7 +39,7 @@ RSA = "src/backend/recurrence_service_adapter.py"
 DS = "src/dataset_schema.py"
 MAIN = "src/main.py"
 SERVES = "util/check_image_serves.py"
-SECRETS = "util/check_image_no_secrets.py"
+IMAGE_SCAN = "util/check_image_no_secrets.py"
 BUDGET = ".github/workflows/pr-budget-alarm.yml"
 SEQ = ".github/workflows/sequence-safety.yml"
 MV = ".github/workflows/main-verify.yml"
@@ -82,8 +82,8 @@ MUTATIONS = [
     ("715a", 715, SERVES, 'if running != "true":', 'if running.lower() != "true":', T715, "inspect accepts True"),
     ("715b", 715, SERVES, "cid = out.splitlines()[-1].strip()", "cid = out.splitlines()[0].strip()", T715, "container id read from the first line"),
     ("715c", 715, SERVES, "versions = json.loads(out.splitlines()[-1])", "versions = json.loads(out.splitlines()[0])", T715, "version probe parses the first line"),
-    ("718a", 718, SECRETS, "    if files_seen == 0:", "    if files_seen < 0:", T718S, "empty scan passes"),
-    ("718b", 718, SECRETS, "dirnames[:] = [d for d in dirnames if d not in PRUNE_DIRS]", "dirnames[:] = list(dirnames)", T718S, "cache dirs not pruned"),
+    ("718a", 718, IMAGE_SCAN, "    if files_seen == 0:", "    if files_seen < 0:", T718S, "empty scan passes"),
+    ("718b", 718, IMAGE_SCAN, "dirnames[:] = [d for d in dirnames if d not in PRUNE_DIRS]", "dirnames[:] = list(dirnames)", T718S, "cache dirs not pruned"),
     ("718c", 718, BUDGET, 'select(.headRefName | startswith("cursor/"))', 'select(.headRefName | startswith("cursor"))', T718B, "cursor prefix loosened"),
     ("718d", 718, BUDGET, 'warn="${PR_BUDGET_WARN:-15}"', 'warn="${PR_BUDGET_WARN-15}"', T718B, "empty warn variable not defaulted"),
     ("719a", 719, RP, "if isinstance(cur, (int, float)) and not isinstance(cur, bool):", "if isinstance(cur, (int, float)):", T719, "bool accepted as an index"),

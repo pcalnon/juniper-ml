@@ -63,7 +63,6 @@ def run(spec_path: Path) -> int:
             print(f"[{m['id']}] INVALID: anchor found {found}x, expected {want}x in {path}")
             continue
         mutated = text.replace(m["old"], m["new"])
-        verdict = "?"
         tail = ""
         try:
             path.write_bytes(mutated.encode("utf-8"))
