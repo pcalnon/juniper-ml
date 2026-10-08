@@ -1,5 +1,12 @@
 # HANDOFF 2026-10-05 — P2 canopy Lane A: Phase 10 landed through five consensus rounds (PR opened from `docs/canopy-e2e-phase10`); the F-058 census v2 ran live; recording it as Phase 11 is owed
 
+> **SUPERSEDED 2026-10-08** by `HANDOFF_2026-10-08_canopy-phase11-landed-f058-live-f068-filed-redesign-next.md`, which the
+> session in worktree `dreamy-fluttering-kite` wrote after finishing this file's item 2 (Phase 11, six consensus rounds).
+> Phase 11 corrected three of this file's figures for the first census run, so trust the ledger, not this file:
+> - the lane "disabled 0.3–2.0 s" at a fire;
+> - "3" fires cascading;
+> - the triggers "1.3–3.4 s late through the renderer queue".
+
 **Written**: 2026-10-05 by the session in juniper-ml worktree `.claude/worktrees/clever-juggling-spring`, at a phase
 boundary, before its PR was opened. **Not consensus-validated.**
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md` (authoritative for P2;
