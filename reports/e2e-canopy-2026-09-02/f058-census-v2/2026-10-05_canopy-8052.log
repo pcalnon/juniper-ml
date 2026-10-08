@@ -1,0 +1,161 @@
+2026-10-05 05:55:58 | system | INFO | WebSocketManager initialized: max_connections=50, heartbeat_interval=30s, reconnect_attempts=5, reconnect_delay=2s
+2026-10-05 05:55:58 | system | INFO | Starting server on 127.0.0.1:8052
+2026-10-05 05:55:58 | system | INFO | Debug mode: False
+2026-10-05 05:55:58 | system | INFO | Dashboard available at: http://127.0.0.1:8052/dashboard/
+2026-10-05 05:55:58 | system | INFO | WebSocket endpoint: ws://127.0.0.1:8052/ws
+2026-10-05 05:55:58 | system | INFO | API documentation: http://127.0.0.1:8052/docs
+2026-10-05 05:55:58 | system | INFO | Dependency floor check passed (3 juniper-* floor(s) satisfied).
+2026-10-05 05:55:58,940 [INFO] system: Dependency floor check passed (3 juniper-* floor(s) satisfied).
+2026-10-05 05:55:58 | system | WARNING | juniper-canopy is running OPEN — no API-key authentication is configured and require_auth is False, so protected routes will serve UNAUTHENTICATED. Set require_auth=True and populate the API-key secret to fail closed in a secured deployment.
+2026-10-05 05:55:58,941 [WARNING] system: juniper-canopy is running OPEN — no API-key authentication is configured and require_auth is False, so protected routes will serve UNAUTHENTICATED. Set require_auth=True and populate the API-key secret to fail closed in a secured deployment.
+2026-10-05 05:55:58 | system | INFO | Starting Juniper Canopy application
+2026-10-05 05:55:58,941 [INFO] system: Starting Juniper Canopy application
+2026-10-05 05:55:58 | system | INFO | Settings: server=127.0.0.1:8052, demo=False
+2026-10-05 05:55:58,941 [INFO] system: Settings: server=127.0.0.1:8052, demo=False
+2026-10-05 05:55:58 | system | INFO | Event loop captured for thread-safe broadcasting
+2026-10-05 05:55:58,941 [INFO] system: Event loop captured for thread-safe broadcasting
+2026-10-05 05:56:00,042 [INFO] juniper_canopy.backend: Service mode: connecting to CasCor at http://127.0.0.1:8202
+2026-10-05 05:56:00,188 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8101/v1/health/live "HTTP/1.1 200 OK"
+2026-10-05 05:56:00 | system | INFO | JuniperData reachable at http://127.0.0.1:8101 (146.7ms)
+2026-10-05 05:56:00,189 [INFO] system: JuniperData reachable at http://127.0.0.1:8101 (146.7ms)
+2026-10-05 05:56:00,203 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8202/v1/health/live "HTTP/1.1 200 OK"
+2026-10-05 05:56:00 | system | INFO | JuniperCascor reachable at http://127.0.0.1:8202 (14.8ms)
+2026-10-05 05:56:00,204 [INFO] system: JuniperCascor reachable at http://127.0.0.1:8202 (14.8ms)
+2026-10-05 05:56:00,217 [INFO] juniper_canopy.backend.cascor_service_adapter: Attached to existing cascor network (non-destructive)
+2026-10-05 05:56:00,218 [INFO] juniper_canopy.backend.service_backend: ServiceBackend: attached to existing cascor network
+2026-10-05 05:56:00,309 [INFO] juniper_canopy.backend.state_sync: State sync complete: status=Completed, epoch=76, metrics=116 entries
+2026-10-05 05:56:00,310 [INFO] juniper_canopy.backend.service_backend: ServiceBackend: state synced — status=Completed, epoch=76, params=23 keys
+2026-10-05 05:56:00,310 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay started
+2026-10-05 05:56:00,310 [INFO] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor started (use_websocket_set_params=True)
+2026-10-05 05:56:00,310 [INFO] juniper_canopy.backend.service_backend: ServiceBackend connected to http://127.0.0.1:8202
+2026-10-05 05:56:00 | system | INFO | Global training_state synced with cascor: status=Completed, epoch=76, params=23 keys
+2026-10-05 05:56:00,310 [INFO] system: Global training_state synced with cascor: status=Completed, epoch=76, params=23 keys
+2026-10-05 05:56:00,310 [INFO] juniper_canopy.backend.status_cache: Status cache refresher started (interval=1.00s)
+2026-10-05 05:56:00 | system | INFO | Backend initialized: service
+2026-10-05 05:56:00,310 [INFO] system: Backend initialized: service
+2026-10-05 05:56:00 | system | INFO | WebSocket keepalive heartbeat started (interval=30s, channel=training)
+2026-10-05 05:56:00,310 [INFO] system: WebSocket keepalive heartbeat started (interval=30s, channel=training)
+2026-10-05 05:56:00 | system | INFO | Application startup complete
+2026-10-05 05:56:00,310 [INFO] system: Application startup complete
+2026-10-05 05:56:00,341 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 1s
+2026-10-05 05:56:00,345 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor metrics stream connected to ws://127.0.0.1:8202
+2026-10-05 05:56:01,344 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 2s
+2026-10-05 05:56:03,347 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 5s
+2026-10-05 05:56:05,358 [WARNING] juniper_cascor_client.observability: juniper_cascor_client_unrecognized_ws_frame type=initial_status endpoint=training
+2026-10-05 05:56:05,358 [WARNING] juniper_canopy.observability: juniper_canopy_unrecognized_ws_frame
+2026-10-05 05:56:08,350 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 10s
+2026-10-05 05:56:14 | system | INFO | Client connected: training-client-137523875144528 (Total: 1)
+2026-10-05 05:56:14,846 [INFO] system: Client connected: training-client-137523875144528 (Total: 1)
+2026-10-05 05:56:14 | system | INFO | Client connected: control-client-137523874962944 (Total: 2)
+2026-10-05 05:56:14,883 [INFO] system: Client connected: control-client-137523874962944 (Total: 2)
+2026-10-05 05:56:17,485 [INFO] config_manager: Configuration loaded from /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/8e5d77a0-a8a3-4dc3-bd37-7d6bc3afebdc/scratchpad/canopy-60ae1870/conf/app_config.yaml
+2026-10-05 05:56:17,486 [INFO] backend.redis_client: Redis library not installed - Redis integration disabled
+2026-10-05 05:56:18,354 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 05:56:19,092 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8101/v1/generators "HTTP/1.1 200 OK"
+2026-10-05 05:56:19,285 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-10-05 05:56:20,738 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8101/v1/generators "HTTP/1.1 200 OK"
+2026-10-05 05:56:48,358 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 05:57:00,311 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 4 frame(s) in last 60s (metrics=0, state=1, topology=0, connection_established=1, initial_metrics=1, initial_status=1); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 05:57:18,361 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 05:57:48,365 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 05:58:00,312 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 05:58:18,368 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 05:58:48,372 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 05:59:00,312 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 05:59:18,376 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 05:59:48,381 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:00:00,312 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:00:18,385 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:00:48,389 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:01:00,312 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:01:18,393 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:01:48,397 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:02:00,313 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:02:18,401 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:02:48,405 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:03:00,313 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:03:18,410 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:03:48,414 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:04:00,313 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:04:18,417 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:04:48,421 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:05:00,314 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:05:18,425 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:05:48,429 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:06:00,313 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:06:18,434 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:06:48,437 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:07:00,314 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:07:18,440 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:07:48,443 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:08:00,314 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:08:18,446 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:08:48,450 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:09:00,315 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:09:18,454 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:09:48,456 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:10:00,315 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:10:18,460 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:10:48,462 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:11:00,315 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:11:18,468 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:11:48,471 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:12:00,316 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:12:18,475 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:12:48,480 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:13:00,317 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:13:18,483 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:13:48,486 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:14:00,316 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:14:18,490 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:14:48,494 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:15:00,317 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:15:18,497 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:15:48,500 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:16:00,317 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=24.9s; reconnects=0
+2026-10-05 06:16:18,504 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:16:48,507 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:17:00,317 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:17:18,511 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:17:48,515 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:18:00,317 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:18:18,518 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:18:48,522 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:19:00,318 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:19:18,525 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:19:48,530 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:20:00,319 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:20:18,534 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:20:48,539 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:21:00,320 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:21:18,543 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:21:29 | system | INFO | Control client disconnected: control-client-137523874962944
+2026-10-05 06:21:29,192 [INFO] system: Control client disconnected: control-client-137523874962944
+2026-10-05 06:21:29 | system | INFO | Client disconnected: control-client-137523874962944 (Remaining: 1)
+2026-10-05 06:21:29,192 [INFO] system: Client disconnected: control-client-137523874962944 (Remaining: 1)
+2026-10-05 06:21:29 | system | INFO | Client disconnected: training-client-137523875144528
+2026-10-05 06:21:29,193 [INFO] system: Client disconnected: training-client-137523875144528
+2026-10-05 06:21:29 | system | INFO | Client disconnected: training-client-137523875144528 (Remaining: 0)
+2026-10-05 06:21:29,193 [INFO] system: Client disconnected: training-client-137523875144528 (Remaining: 0)
+2026-10-05 06:21:48,560 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:22:00,320 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:22:18,564 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:22:48,600 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:23:00,321 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:23:18,604 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:23:48,609 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:24:00,321 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-10-05 06:24:18,613 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:24:48,616 [WARNING] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor disconnected (Failed to connect to ws://127.0.0.1:8202/ws/control: server rejected WebSocket connection: HTTP 403), reconnecting in 30s
+2026-10-05 06:24:54 | system | INFO | Shutting down Juniper Canopy application
+2026-10-05 06:24:54,891 [INFO] system: Shutting down Juniper Canopy application
+2026-10-05 06:24:54,892 [INFO] juniper_canopy.backend.status_cache: Status cache refresher stopped
+2026-10-05 06:24:54,892 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay stopped
+2026-10-05 06:24:54,892 [INFO] juniper_canopy.backend.cascor_service_adapter: CascorServiceAdapter shutting down — cascor continues running
+2026-10-05 06:24:54,892 [INFO] juniper_canopy.backend.service_backend: ServiceBackend disconnected — cascor continues running independently
+2026-10-05 06:24:54 | system | INFO | Shutting down WebSocket manager
+2026-10-05 06:24:54,892 [INFO] system: Shutting down WebSocket manager
+2026-10-05 06:24:54 | system | INFO | WebSocket manager shutdown complete
+2026-10-05 06:24:54,893 [INFO] system: WebSocket manager shutdown complete
+2026-10-05 06:24:54 | system | INFO | Application shutdown complete
+2026-10-05 06:24:54,893 [INFO] system: Application shutdown complete

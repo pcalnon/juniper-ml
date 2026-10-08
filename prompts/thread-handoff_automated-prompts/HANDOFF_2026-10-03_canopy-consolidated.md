@@ -56,7 +56,7 @@ data#437); juniper-data 0.16.0 is on PyPI; the round-1 handoff, its `r1/` record
 2026-09-25** except dependabot merges; the primaries were pulled (C6).
 
 **Before anything else:** pick lanes per § Session layout (the verification block is split by checkout); then run § Verification commands
-for your lane; then put ONE owner message containing every owner-gated item below (O1–O16). **No merge approval is carried** — ask before the first merge.
+for your lane; then put ONE owner message containing every owner-gated item below (O1–O17). **No merge approval is carried** — ask before the first merge.
 
 **Remaining work, ordered.** (OG = owner-gated; AG = agent-doable.)
 
@@ -95,14 +95,33 @@ Lane A (E2E):
    items 3 and 4]; the "Nothing was loaded…" copies are now a real divergence [VERIFIED 2026-10-03: absent from cascor main `manager.py`,
    present at canopy main `dashboard_manager.py:8381` and `test_start_fresh_refusal_and_modal_text.py:42`]; O2–O5 and O9 from the selection
    arc. Archive predecessor A in this PR (its branch `dd4413e5` still has no PR).
-3. **AG — F-CANOPY-058 census instrument repair, then the census** (ledger item 0, first half). Blocker: none. [NOT RE-PROBED — from ledger Phase 9]
+3. **DONE 2026-10-08 — this item is closed.** The ledger's Phase 11
+   (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`) records the F-058 census v2, run live twice
+   (canopy `main` `60ae1870` and `c7876f5a`), after six consensus rounds (2026-10-05 to 10-08; the last changed no
+   number, disposition or action). It landed by the PR from branch `docs/canopy-e2e-phase11`
+   (`gh pr list --repo pcalnon/juniper-ml --head docs/canopy-e2e-phase11 --state all`).
+   - F-CANOPY-058 is observed live: 29 of 611 requests evicted, in runs of up to 11 and 34.8 s.
+   - Its trigger, the strand watchdog's false fires, is filed as F-CANOPY-068: P1 if a CHANGELOG's description of an
+     internal mechanism counts as documented, else P2 (owner batch O17).
+   - Counts 79/53/1/2/23, 7 P1, 16 P2. New items 24–26: F-CANOPY-068 with item 4's design, census triggers fired from
+     the page, and the reach of the §6.3 ruling plus a sweep of canopy's manual.
+   - The evidence is in `reports/e2e-canopy-2026-09-02/f058-census-v2/`, and the census in `util/ad-hoc/2026-10-04_f058_census_v2_*`.
+   - The original item follows, for context.
+
+   **AG — F-CANOPY-058 census instrument repair, then the census** (ledger item 0, first half). Blocker: none. [NOT RE-PROBED — from ledger Phase 9]
    **Status 2026-10-05: run, not yet recorded.** The repaired census v2 passed its synthetic check (6 of 6) and ran live on
    canopy `main` `60ae1870`. The strand watchdog fired falsely 13 times in ~25 min, each mid-request, and 3 of those fires
    started eviction cascades (2, 11 and 4 lost responses); the scripted triggers landed too late to test the claim. The
    files and a results note are outside the repo, in `/home/pcalnon/Development/python/Juniper/backups/2026-10-05_f058_census_v2_final/`.
    Owed: move them under `util/ad-hoc/2026-10-04_f058_census_v2_*` and record the run as the ledger's Phase 11, with
    its own consensus rounds.
-4. **AG — one redesign for F-CANOPY-055 + F-CANOPY-058** (ledger item 0, second half): request/ack handshake pacer. Blocked by item 3.
+4. **AG — one redesign for F-CANOPY-055 + F-CANOPY-058 + F-CANOPY-068** (ledger item 0, second half, and Phase 11's item
+   24): request/ack handshake pacer. **Unblocked 2026-10-08** (item 3 is done).
+   - It must answer F-CANOPY-068 too. Lane B's pacer takes the watchdog off the guarded lane. A design that keeps a
+     watchdog must base it on progress, not on samples of `disabled`.
+   - Phase 11's "Still owed" lists the canopy text to correct, and the CHANGELOG `[0.8.0]` description that needs a
+     correcting entry.
+   - Phase 11's item 25, census triggers fired from the page, belongs with its tests.
 5. **AG — ledger items 1, 2, 6, 7, 8, 9 (test gap / M-TOPOLOGY-16), 11, 12, 13, 14** (§ Context A7).
 6. **AG — MEMORY.md compaction** (24,929 chars by `wc -m` against a ~25,000-character load limit [VERIFIED 2026-10-03]) `[ALSO all paths]`.
 7. **AG after O2 — worktree cleanup** (canopy and juniper-ml; § Context A9). Never `util/remove_stale_worktrees.bash`.
@@ -136,6 +155,8 @@ sessions' PRs. Name every referenced or changed document by filename.
   (`pyproject.toml:105`, `juniper-recurrence>=0.5.0,<0.6.0` [VERIFIED 2026-10-03]) for a recurrence 0.6.0.
 - **P3 (defect register round 42)**: F-CANOPY-060–062 ids were RESERVED and given to that arc to cite; the "Nothing was loaded" item came from
   its session (`defect reg [042116]`, `bc31e993`). When the Phase 10 PR assigns an id to it, send the id to whichever session now runs P3.
+  **Done 2026-10-08:** Phase 10 assigned F-CANOPY-063. No P3 session was running, so the id is recorded under item 11 of
+  `HANDOFF_2026-10-03_defect-register-round-42-consolidated.md` and in the INDEX's P2 ↔ P3 row.
   canopy#685 (P3's PR) is merged, so the old "get the PR number" step is closed.
 - **P6 (perf lane), possibly**: the trio holds the cascor primary (`util/ad-hoc/cascor_freeze_tell.py` reported FREEZE IN FORCE on 09-24);
   stopping the trio is an explicit owner decision (O13). [UNVERIFIED — freeze tell not re-run; it is a host probe]
@@ -400,7 +421,7 @@ a waiver trailer must be in a COMMIT body.
 - Trap: an ignored path can still be committed (the A-N2 report's 92 `**/logs/` files were force-added) — compare with main before calling
   anything "ignored".
 
-### Owner batch (one message) — O1–O16
+### Owner batch (one message) — O1–O17
 
 O1 merge approval for this session (none carried). O2 A6 provenance refs (urgent before any cleanup). O3 ledger item 17. O4 the account's
 later actions (A6). O5 the ratings (A6). O6 ledger items 3, 4, 9 (M-DATASET), 10. O7 Y2: continue after the lapsed claim? who runs it? sweeper
@@ -410,7 +431,11 @@ branch (item 4 of `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-re
 juniper-ml#2036; `…queue-drained.md:36`). O12 make recurrence's `Settings` case-sensitive (`S/main/handoff_v4.md:54`). O13 who may stop the
 trio and who pulls primaries under the freeze. O14 X8 release (C3). O15 C1 removals. O16 whether this consolidated handoff gets its own
 consensus round (the 09-24 request "the combined handoff should be validated by consensus" was never completed) and whether to open a PR
-archiving it with predecessors A and B.
+archiving it with predecessors A and B. O17 (added 2026-10-08, ledger Phase 11's Matrix effect and counts) asks the §6.3 question in two
+limbs. First: does a CHANGELOG or design-plan promise count as "documented"? That decides F-CANOPY-065, and may also reach F-CANOPY-057,
+-018 and -012. Second: if it does, does that extend to a CHANGELOG's description of an internal mechanism? That decides F-CANOPY-068.
+Moving 065 and 068 alone, the counts are 7/16, 6/17 or 5/18 open P1/P2. Phase 11's item 26 checks every open finding against canopy's
+manual without waiting for the ruling, then sweeps the rest once the owner rules.
 
 ---
 

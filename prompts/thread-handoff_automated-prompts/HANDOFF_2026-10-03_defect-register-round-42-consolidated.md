@@ -50,6 +50,15 @@ There are two lanes. One successor should own both. If two sessions split them, 
 10. **[R/F] Owner decisions: surface them, decide none.** **[F]:** the observability and service-core releases (ask only after item 4's juniper-ml PR validates) and who opens the cap/lock/floor PRs; canopy#685 calls (a)-(c); the stray canopy branches `pr-63`/`pr-683` (both still at `4caf9389` [VERIFIED 2026-10-03]); whether to purge test events from live Sentry. **[R]:** #437's breaking marker; APD-DATA-055's `If-Match` half;
     APD-ML-008's silent-path remedy; the register's nine parked rows; whether the CodeQL `paths-ignore` question still matters now that the highs are dismissed; the next juniper-data release; when to start the later arc items; worktree and branch cleanup.
 11. **[R] Canopy-ledger hand-over** (`[ALSO P2]`). F-CANOPY-060…062 are still not in `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` (it stops at 059) [VERIFIED 2026-10-03: grep]. Send #685's validation outcome and the stale "Nothing was loaded" copies to the P2 (canopy) session. If there is none, record them yourself.
+    **Update 2026-10-08, from P2** (no P3 session was running to tell): P2's side of this item is done. The canopy ledger's Phase 10
+    (ml#2157, `200c1393`) filed:
+    - F-CANOPY-060 (P2, OPEN, no owner);
+    - F-CANOPY-061 and -062, FIXED by canopy#685 without a live re-drive. Neither is observable through the page, and each is
+      verified by #685's diff and tests;
+    - the stale "Nothing was loaded" copies as **F-CANOPY-063** (P2, test only, OPEN). canopy's own alert sentence at `:8381` was
+      declined.
+
+    Item 3's validation of #685 stays P3's. If it finds #685 wrong, tell P2, so that F-CANOPY-061/-062 can be reopened.
 
 **Key context:**
 - The PR sweeper belongs to the owner ("Mine: fix forward"). It un-drafts, arms and update-branches PRs as `pcalnon`, and its merges are intended. Do not draft or disarm to hold a PR.
