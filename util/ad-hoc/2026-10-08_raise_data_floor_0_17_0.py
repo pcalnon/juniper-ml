@@ -34,6 +34,11 @@ duplicated site is a loud error rather than a silent no-op. The CHANGELOG insert
 to the ``[Unreleased]`` section: the 0.9.0 entry went wrong by matching a ``### Changed``
 heading inside an already-released section.
 
+``AGENTS.md``'s ``**Last Updated**:`` header is set to the run's UTC date. The ``Verify AGENTS.md
+Last Updated`` job fails any PR that edits AGENTS.md without changing that line, and it is
+matched by pattern rather than by exact old text, so a rebase replay works whatever date ``main``
+carries by then.
+
 Usage
 -----
     python3 util/ad-hoc/2026-10-08_raise_data_floor_0_17_0.py [--check]
@@ -45,6 +50,8 @@ Then regenerate README's compatibility table:
 from __future__ import annotations
 
 import argparse
+import re
+from datetime import datetime, timezone
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
@@ -103,6 +110,26 @@ def _apply(text: str, old: str, new: str, expected: int, where: str, check: bool
     return text.replace(old, new, expected), True
 
 
+_LAST_UPDATED_RE = re.compile(r"^\*\*Last Updated\*\*: \d{4}-\d{2}-\d{2}$", re.MULTILINE)
+
+
+def _bump_last_updated(text: str, check: bool) -> tuple[str, bool]:
+    """Set AGENTS.md's single ``**Last Updated**: YYYY-MM-DD`` header line to today's UTC date."""
+    today = datetime.now(timezone.utc).date().isoformat()
+    found = _LAST_UPDATED_RE.findall(text)
+    if len(found) != 1:
+        raise SystemExit(f"ERROR: AGENTS.md: expected exactly one '**Last Updated**: YYYY-MM-DD' line, found {len(found)}")
+    target = f"**Last Updated**: {today}"
+    if found[0] == target:
+        print("  = AGENTS.md [Last Updated]: already today's UTC date")
+        return text, False
+    if check:
+        print(f"  ~ AGENTS.md [Last Updated]: WOULD set {today}")
+        return text, True
+    print(f"  + AGENTS.md [Last Updated]: set {today}")
+    return _LAST_UPDATED_RE.sub(target, text, count=1), True
+
+
 def _insert_changelog_entry(text: str, check: bool) -> tuple[str, bool]:
     """Put the entry first under [Unreleased]'s ``### Changed``, creating that heading if absent."""
     start = text.find("## [Unreleased]\n")
@@ -154,6 +181,10 @@ def main() -> int:
 
     by_file["CHANGELOG.md"] = (_REPO / "CHANGELOG.md").read_text(encoding="utf-8")
     by_file["CHANGELOG.md"], did = _insert_changelog_entry(by_file["CHANGELOG.md"], args.check)
+    changed_any |= did
+
+    # AGENTS.md was loaded by the pin edits above; the header bump rides on the same text.
+    by_file["AGENTS.md"], did = _bump_last_updated(by_file["AGENTS.md"], args.check)
     changed_any |= did
 
     if args.check:
