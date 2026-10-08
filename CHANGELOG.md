@@ -176,6 +176,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Four defects from the Cursor flood-3 evaluation**
+  (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §4):
+  - **`juniper-service-core`: `FailedAuthThrottle.check()` no longer grows its table by one entry per
+    client.** It ran on every request before authentication, and its `defaultdict` read inserted every
+    unseen source IP, while pruning ran only from `record_failure()`. `_failures` is now a plain
+    `dict` read with `.get()`. The juniper-data and juniper-cascor forks get the same fix in their
+    own repos. Details are in `juniper-service-core/CHANGELOG.md`.
+  - **`util/worktree_cleanup.bash` (1.1.1): the "These commits would be lost" list is no longer
+    always empty.** It ran `git log <branch> --not --branches …`, and `--branches` excluded the
+    refused branch itself. It now passes `--exclude=<branch>` before `--branches`.
+    `tests/test_worktree_cleanup_destructive_refusal.py` pins that the unmerged commit is named.
+  - **`juniper-ci-tools`: the docs deletion screen no longer reads a `#` comment inside a fenced
+    code block as a heading.** Five of juniper-cascor#704's six findings were this. It now takes
+    CommonMark fences into account. Details are in `juniper-ci-tools/CHANGELOG.md`; consumers pick
+    it up only after a juniper-ci-tools release.
+  - **`Sequence Safety` is documented as required.** `.github/workflows/ci.yml`'s file header and
+    job banner said ADVISORY, although the check has been a required ruleset context since
+    2026-08-18. Updated with them: `docs/REFERENCE.md` 0.6.63, `docs/QUICK_START.md` 0.3.42,
+    `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` 1.0.63. The same wording is being corrected in the
+    seven sibling repos that still carried it; juniper-data-client was already correct.
+
 - **The Duplicati API client's `export` works against 2.4.0.0, and the watchdog records an absent
   job id instead of exiting silently** (the ml#2115 fix-forward, B2 of
   `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`;

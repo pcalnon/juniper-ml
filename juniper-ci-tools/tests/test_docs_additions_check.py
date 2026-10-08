@@ -159,6 +159,48 @@ class DocsDeletionBehaviourTest(unittest.TestCase):
             self.assertEqual(rc, 0, msg=err)
             self.assertEqual(_reasons(report)["docs/REFERENCE.md"]["severity"], "WARN")
 
+    def _screen(self, before: str, after: str) -> tuple[int, dict, str]:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _init_repo(root)
+            _write(root, "docs/REFERENCE.md", before)
+            _commit(root, "base")
+            _write(root, "docs/REFERENCE.md", after)
+            _commit(root, "edit")
+            return _run_json(root)
+
+    def test_hash_comment_in_a_code_fence_is_not_a_heading(self) -> None:
+        """A ``# comment`` in a fenced block renders as code (five of juniper-cascor#704's six findings)."""
+        doc = "# Title\n\n```bash\n# install the extras\npip install -e .\n# then run the suite\npytest\n```\n\n## Section\n\nbody\n"
+        rc, report, err = self._screen(doc, doc.replace("# then run the suite\n", ""))
+        self.assertEqual(rc, 0, msg=err)
+        f = _reasons(report)["docs/REFERENCE.md"]
+        self.assertEqual((f["reason"], f["severity"]), ("small-deletion", "WARN"))
+
+    def test_fence_length_and_character_decide_where_a_block_ends(self) -> None:
+        """A shorter inner ``` cannot close a ```` fence, and a tilde fence is a fence too."""
+        doc = "# Title\n\n````markdown\n```bash\n# quoted comment\n```\n# still inside the outer fence\n````\n\n~~~text\n# tilde comment\n~~~\n\n## Section\n\nbody\n"
+        after = doc.replace("# still inside the outer fence\n", "").replace("# tilde comment\n", "")
+        rc, report, err = self._screen(doc, after)
+        self.assertEqual(rc, 0, msg=err)
+        self.assertEqual(report["stats"]["by_reason"], {"small-deletion": 2})
+
+    def test_a_real_heading_after_a_closed_fence_still_fails(self) -> None:
+        doc = "# Title\n\n```bash\n# a comment\n```\n\n## Section One\n\nbody\n\n## Section Two\n\nkeep\n"
+        rc, report, err = self._screen(doc, doc.replace("## Section One\n\nbody\n\n", ""))
+        self.assertEqual(rc, 1, msg=err)
+        f = _reasons(report)["docs/REFERENCE.md"]
+        self.assertEqual((f["reason"], f["severity"]), ("heading-deletion", "FAIL"))
+        self.assertEqual(f["detail"]["headings"], ["## Section One"])
+
+    def test_a_fenced_hash_line_is_not_a_retitle(self) -> None:
+        """Replacing a heading with a code block whose first line is ``# ...`` deletes the heading."""
+        doc = "# Title\n\n## Old Section\n\nbody\n"
+        rc, report, err = self._screen(doc, doc.replace("## Old Section\n", "```\n# not a heading\n```\n"))
+        self.assertEqual(rc, 1, msg=err)
+        f = _reasons(report)["docs/REFERENCE.md"]
+        self.assertEqual((f["reason"], f["severity"]), ("heading-deletion", "FAIL"))
+
     def test_agents_md_and_notes_are_in_scope(self) -> None:
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -477,6 +519,26 @@ class DocsDeletionHelperUnitTest(unittest.TestCase):
         self.assertEqual(hunks[0].deleted, ["gone one", "gone two"])
         self.assertEqual(hunks[0].added, [])
         self.assertEqual(hunks[1].added, ["added"])
+        self.assertEqual((hunks[0].old_start, hunks[0].new_start), (1, 1))
+        self.assertEqual((hunks[1].old_start, hunks[1].new_start), (5, 4))
+
+    def test_fenced_lines(self) -> None:
+        self.assertEqual(dac.fenced_lines("a\n```\nb\n```\nc"), {2, 3, 4})
+        self.assertEqual(dac.fenced_lines("```py\nb\n```"), {1, 2, 3})
+        self.assertEqual(dac.fenced_lines("``` x`y\nb\n"), set(), "a backtick in a backtick fence's info string is not a fence")
+        self.assertEqual(dac.fenced_lines("    ```\nb\n    ```"), set(), "4-space indent is an indented code block, not a fence")
+        self.assertEqual(dac.fenced_lines("```\nb\nc"), {1, 2, 3}, "an unclosed fence runs to the end")
+        self.assertEqual(dac.fenced_lines("```\nb\n``` x\nc\n```\nd"), {1, 2, 3, 4, 5}, "a closer carries no info string")
+        self.assertEqual(dac.fenced_lines("~~~\n```\nb\n~~~\nc"), {1, 2, 3, 4}, "only the same character closes")
+        self.assertEqual(dac.fenced_lines("a\fb\n```\nc\n```"), {2, 3, 4}, "numbering follows git's newline-only lines")
+
+    def test_classify_judges_each_side_against_its_own_fence_map(self) -> None:
+        hunk = dac.Hunk(deleted=["# a comment"], added=[], old_start=4)
+        self.assertEqual(dac.classify_file("docs/x.md", [hunk], 5, base_fenced={3, 4, 5})[0].reason, "small-deletion")
+        self.assertEqual(dac.classify_file("docs/x.md", [hunk], 5, base_fenced={9})[0].reason, "heading-deletion")
+        # A hand-built hunk with no position keeps the pattern-only behaviour.
+        unknown = dac.Hunk(deleted=["# a comment"], added=[])
+        self.assertEqual(dac.classify_file("docs/x.md", [unknown], 5, base_fenced={1})[0].reason, "heading-deletion")
 
     def test_classify_heading_and_run(self) -> None:
         heading = dac.classify_file("docs/x.md", [dac.Hunk(deleted=["## Section"], added=[])], 5)

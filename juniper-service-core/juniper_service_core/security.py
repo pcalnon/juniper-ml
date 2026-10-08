@@ -399,7 +399,10 @@ class FailedAuthThrottle:
         self._max_failures = max_failures
         self._window = window_seconds
         self._enabled = enabled
-        self._failures: dict[str, tuple[int, float]] = defaultdict(lambda: (0, 0.0))
+        # A plain dict, never a defaultdict: check() runs on every request, before
+        # authentication, and a defaultdict read would insert an entry for every unseen
+        # source IP -- see check().
+        self._failures: dict[str, tuple[int, float]] = {}
         self._lock = Lock()
         self._records_since_cleanup = 0
 
@@ -434,8 +437,14 @@ class FailedAuthThrottle:
     def check(self, client_ip: str) -> tuple[bool, int]:
         """Report whether a source IP is currently over its failed-attempt budget.
 
-        This is a read-only probe -- it does not consume budget. Budget is consumed only by
-        :meth:`record_failure`, so a caller presenting valid credentials is never counted.
+        This is a read-only probe -- it does not consume budget, and it never allocates: an
+        unseen ``client_ip`` reads as ``(0, 0.0)`` without being inserted. It has to be both,
+        because it runs on every request before authentication while pruning
+        (:meth:`_maybe_cleanup`, including the ``_MAX_ENTRIES`` cap) runs only from
+        :meth:`record_failure`. An inserting lookup therefore grew the table by one entry per
+        distinct source address under open auth or valid-key traffic, with nothing ever
+        removing them. Budget is consumed only by :meth:`record_failure`, so a caller presenting
+        valid credentials is never counted.
 
         Note this never fails open on error, because it is a security control rather than a
         fairness quota: a throttle that disables itself under stress hands an attacker a
@@ -452,7 +461,7 @@ class FailedAuthThrottle:
 
         now = time.time()
         with self._lock:
-            count, window_start = self._failures[client_ip]
+            count, window_start = self._failures.get(client_ip, (0, 0.0))
             if now - window_start >= self._window:
                 return (False, 0)  # Window rolled over; the old count no longer applies.
             if count >= self._max_failures:
@@ -475,7 +484,7 @@ class FailedAuthThrottle:
                 self._maybe_cleanup()
                 self._records_since_cleanup = 0
 
-            count, window_start = self._failures[client_ip]
+            count, window_start = self._failures.get(client_ip, (0, 0.0))
             if now - window_start >= self._window:
                 self._failures[client_ip] = (1, now)
             else:

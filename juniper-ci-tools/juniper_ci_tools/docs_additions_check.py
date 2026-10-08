@@ -20,6 +20,10 @@ nearly every edit, so it would paint honest docs PRs red or train a reflex
 
   * FAIL on a deleted Markdown **heading** line (a ``-`` hunk whose content matches
     ``^\\s{0,3}#{1,6}\\s``) UNLESS the same hunk also adds a heading (a retitle -> WARN).
+    A line inside a fenced code block is never a heading, on either side: a ``# comment``
+    in a ```` ```bash ```` block matches the pattern, but CommonMark renders it as code,
+    and before this was fence-aware five of juniper-cascor#704's six findings were such
+    comments (:func:`fenced_lines` builds the map from the BASE / HEAD file contents).
   * FAIL on a run of **>= N consecutive deleted lines with no adjacent addition**
     (``added == 0 and deleted >= min_run``; default N = 5) -- the net-section-removal
     signature.
@@ -57,6 +61,10 @@ DEFAULT_MIN_RUN = 5  # >= this many consecutive deleted lines (no adjacent add) 
 
 _HEADING_RE = re.compile(r"^\s{0,3}#{1,6}\s")
 _HUNK_RE = re.compile(r"^@@ ")
+# ``@@ -<old_start>[,<old_len>] +<new_start>[,<new_len>] @@`` -- only the starts are needed.
+_HUNK_HEADER_RE = re.compile(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@")
+# A CommonMark fence: >= 3 backticks or tildes, indented at most 3 spaces, then the info string.
+_FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 
 
 def in_docs_scope(path: str) -> bool:
@@ -138,6 +146,39 @@ def range_messages(root: str, base: str, head: str) -> str:
     return _git(root, "log", "--format=%B", f"{base}..{head}").stdout
 
 
+def file_text(root: str, ref: str, path: str) -> Optional[str]:
+    """The file's content at ``ref``, or None when it does not exist there (added / deleted)."""
+    cp = _git(root, "show", f"{ref}:{path}")
+    return cp.stdout if cp.returncode == 0 else None
+
+
+def fenced_lines(text: str) -> set[int]:
+    """1-based line numbers inside fenced code blocks, the fence lines themselves included.
+
+    CommonMark's rules, which is what decides whether a ``#`` line renders as a heading:
+    an opening fence is a run of >= 3 backticks or tildes indented at most 3 spaces (a
+    backtick fence's info string may not itself contain a backtick); the block closes on a
+    line of the SAME character, at least as long as the opening run, indented at most 3
+    spaces, with nothing after it but whitespace; an unclosed fence runs to the end of the
+    document, as it renders. A longer outer fence can therefore quote a shorter inner one.
+    """
+    inside: set[int] = set()
+    opening: Optional[str] = None
+    # split("\n"), not splitlines(): git numbers lines by "\n" alone, and splitlines() also
+    # breaks on \f, \v, \x1c-\x1e, \x85,   and  , which would shift every later line.
+    for number, line in enumerate(text.split("\n"), start=1):
+        match = _FENCE_RE.match(line)
+        if opening is None:
+            if match and not (match.group(1)[0] == "`" and "`" in match.group(2)):
+                opening = match.group(1)
+                inside.add(number)
+            continue
+        inside.add(number)
+        if match and match.group(1)[0] == opening[0] and len(match.group(1)) >= len(opening) and not match.group(2).strip():
+            opening = None
+    return inside
+
+
 # ---- hunk parsing ----------------------------------------------------------
 
 
@@ -145,6 +186,10 @@ def range_messages(root: str, base: str, head: str) -> str:
 class Hunk:
     deleted: list[str] = field(default_factory=list)  # content of '-' lines
     added: list[str] = field(default_factory=list)  # content of '+' lines
+    # 1-based line of the first '-' line in the BASE file / first '+' line in the HEAD file,
+    # from the hunk header; 0 = unknown (a hand-built Hunk), which disables the fence check.
+    old_start: int = 0
+    new_start: int = 0
 
 
 def parse_hunks(diff_text: str) -> list[Hunk]:
@@ -158,7 +203,8 @@ def parse_hunks(diff_text: str) -> list[Hunk]:
     cur: Optional[Hunk] = None
     for line in diff_text.splitlines():
         if _HUNK_RE.match(line):
-            cur = Hunk()
+            header = _HUNK_HEADER_RE.match(line)
+            cur = Hunk(old_start=int(header.group(1)), new_start=int(header.group(2))) if header else Hunk()
             hunks.append(cur)
             continue
         if cur is None:
@@ -183,14 +229,28 @@ class Finding:
     detail: dict = field(default_factory=dict)
 
 
-def classify_file(path: str, hunks: list[Hunk], min_run: int) -> list[Finding]:
+def _headings(lines: list[str], start: int, fenced: Optional[set[int]]) -> list[str]:
+    """The lines that render as headings: they match the pattern AND sit outside a code fence.
+
+    ``start`` is the file line of ``lines[0]``; with ``--unified=0`` a hunk's '-' (and '+')
+    lines are contiguous, so ``lines[i]`` is file line ``start + i``. Without a fence map or
+    a known start, every pattern match counts (the pre-fence behaviour).
+    """
+    if not fenced or start <= 0:
+        return [ln for ln in lines if _HEADING_RE.match(ln)]
+    return [ln for i, ln in enumerate(lines) if _HEADING_RE.match(ln) and (start + i) not in fenced]
+
+
+def classify_file(path: str, hunks: list[Hunk], min_run: int, base_fenced: Optional[set[int]] = None, head_fenced: Optional[set[int]] = None) -> list[Finding]:
+    """Classify one file's hunks. ``base_fenced`` / ``head_fenced`` are :func:`fenced_lines` maps
+    of the BASE and HEAD contents: a '-' line is judged against BASE, a '+' line against HEAD."""
     findings: list[Finding] = []
     for h in hunks:
         deleted, added = len(h.deleted), len(h.added)
         if deleted == 0:
             continue  # pure addition -- the additions-only happy path
-        del_headings = [ln for ln in h.deleted if _HEADING_RE.match(ln)]
-        add_headings = [ln for ln in h.added if _HEADING_RE.match(ln)]
+        del_headings = _headings(h.deleted, h.old_start, base_fenced)
+        add_headings = _headings(h.added, h.new_start, head_fenced)
         if del_headings and not add_headings:
             findings.append(Finding(path, "heading-deletion", "FAIL", {"headings": [ln.strip()[:120] for ln in del_headings], "deleted": deleted, "added": added}))
         elif added == 0 and deleted >= min_run:
@@ -267,7 +327,12 @@ def run(root: str, base: str, head: str, files: Optional[list[str]], min_run: in
     findings: list[Finding] = []
     for path in sorted(set(scoped)):
         hunks = parse_hunks(file_diff(root, base_sha, head_sha, path))
-        findings.extend(classify_file(path, hunks, min_run))
+        # Fence maps are read only for the side a hunk actually needs.
+        base_text = file_text(root, base_sha, path) if any(h.deleted for h in hunks) else None
+        head_text = file_text(root, head_sha, path) if any(h.added for h in hunks) else None
+        base_fenced = fenced_lines(base_text) if base_text is not None else None
+        head_fenced = fenced_lines(head_text) if head_text is not None else None
+        findings.extend(classify_file(path, hunks, min_run, base_fenced, head_fenced))
 
     allowed, wildcard = parse_allow_trailers(range_messages(root, base_sha, head_sha))
     apply_waivers(findings, allowed, wildcard)

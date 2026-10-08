@@ -2,7 +2,7 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.62
+**Version:** 0.6.63
 **Status:** Active
 **Last Updated:** 2026-10-08
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -4471,7 +4471,7 @@ Related: both rulesets are `~DEFAULT_BRANCH`-scoped on purpose. The companion th
 Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it is read on demand rather than loaded into every session.
 
 - `.github/workflows/ci.yml` -- Main CI pipeline: pre-commit (G4 changed-files split — `pull_request` / `merge_group` use `--from-ref <BASE> --to-ref HEAD`; `push` keeps `--all-files`), unit tests, release-train archive-guard (PR-only), the `Sequence Safety` and advisory `Fleet PR Lint` (`cursor/*`) standalone jobs, build, docs, security, dependency docs.
-  - **`Sequence Safety` is a REQUIRED ruleset context**, despite the job banner still saying advisory and despite being absent from Quality Gate `needs:`. Labels `allow-symbol-loss` / `docs-rewrite` add `--advisory` (WARN, exit 0) and **do** green the PR check; they do **not** cover post-merge `main-verify`. Only an `Allow-Symbol-Loss:` / `Allow-Docs-Rewrite: <path>` **commit trailer** waives the finding inside the screens and travels in history.
+  - **`Sequence Safety` is a REQUIRED ruleset context**, despite being absent from Quality Gate `needs:`. Labels `allow-symbol-loss` / `docs-rewrite` add `--advisory` (WARN, exit 0) and **do** green the PR check; they do **not** cover post-merge `main-verify`. Only an `Allow-Symbol-Loss:` / `Allow-Docs-Rewrite: <path>` **commit trailer** waives the finding inside the screens and travels in history.
 - `.github/workflows/main-verify.yml` -- Post-merge main-verification (P2 gate G3): on `push:main` (per-SHA, no-cancel) it installs `juniper-ci-tools` (>=0.8.0) and runs the `juniper-symbol-loss-check` (explicit ml `--scope`) + `juniper-docs-additions-check` screens over `BASE..<merge>` (`sequence-safety-report`), a path-gated battery mirror + failure-only `notify`. G3.1 CATCH-UP BASE = last successful main-verify tip that is an ancestor of HEAD, else `github.event.before`, else `HEAD^1`.
 - `.github/workflows/publish.yml` -- Meta PyPI publish: TestPyPI **Gate 1** two-phase verify (TestPyPI-only download, then local-wheel bare -> `[clients]` -> `[tools]` against PyPI only; never `--no-deps` on the installs, never `--extra-index-url`, never the heavy extras; provenance fetch is a 10×6s poll, not `sleep 30`), then PyPI (`needs: testpypi`, OIDC).
   The `build` job is tag-guarded to `v*` Releases so a `juniper-<pkg>-v*` Release cannot fire the meta publisher.
@@ -8082,6 +8082,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.60  | 2026-09-05 | Canopy E2E unfilled-rows ledger: plan re-drives from `e2e_unfilled_rows.py` (matrix status cells only; `C2.` / `M-`; exit 0). `e2e_row_coverage.py` is an estimator and can list already-`PASS` rows as remaining |
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
+| 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8279,7 +8280,7 @@ Runs `juniper-symbol-loss-check` then `juniper-docs-additions-check` (juniper-ci
 
 **Required in the branch ruleset; absent from Quality Gate `needs:`.** Live `juniper-ml-rules` `required_status_checks` (GET 2026-09-04) includes the context `Sequence Safety`. A red Sequence Safety check **blocks merge** even when Quality Gate is green. The job stays out of `required-checks.needs` because it skips on `push:main` while that gate is `if: always()` — folding it in would fail every push. Promotion already landed (2026-08-18); do not add it to Quality Gate `needs:`.
 
-The `ci.yml` job banner still says "ADVISORY" (soak-convention wording from before the ruleset promotion). Believe the ruleset, not the banner. `Fleet PR Lint` is the one that is still truly advisory (always `exit 0`, not a ruleset context).
+The `ci.yml` job banner and file header said "ADVISORY" (soak-convention wording from before the ruleset promotion) until 2026-10-08, when both were corrected to "REQUIRED". If a comment and the ruleset ever disagree again, believe the ruleset. `Fleet PR Lint` is the one that is still truly advisory (always `exit 0`, not a ruleset context).
 
 | Lever | Effect |
 |-------|--------|

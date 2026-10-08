@@ -4,7 +4,7 @@
 # Sub-Project:  juniper-ml
 # Application:  Worktree Cleanup Script
 # Author:       Paul Calnon
-# Version:      1.1.0
+# Version:      1.1.1
 # License:      MIT
 ############################################################################################################################################################
 #
@@ -458,7 +458,11 @@ phase_4_cleanup() {
         else
             log_error "git REFUSED to delete ${OLD_BRANCH} -- it holds commits merged nowhere."
             log_error "These commits would be lost. Nothing has been deleted:"
-            git -C "${MAIN_REPO}" log --oneline --no-merges "${OLD_BRANCH}" --not --branches --remotes --tags >&2 || true
+            # --exclude must precede --branches: a bare `--not --branches` also excludes
+            # OLD_BRANCH itself, which made this list empty by construction. --exclude is
+            # consumed by the next --branches only, so origin/<branch> still counts as
+            # "reachable elsewhere" (a pushed commit is not lost).
+            git -C "${MAIN_REPO}" log --oneline --no-merges "${OLD_BRANCH}" --not --exclude="${OLD_BRANCH}" --branches --remotes --tags >&2 || true
             log_error "Merge or push them; then re-run. To drop them anyway, pass --force-destructive."
             return 1
         fi

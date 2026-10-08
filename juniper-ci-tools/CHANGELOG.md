@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`juniper-docs-additions-check` no longer reads a `#` comment inside a fenced code block as a
+  heading.** The heading rule matched `^\s{0,3}#{1,6}\s` on every deleted and added line, so deleting
+  `# then run the suite` from a ```` ```bash ```` block was reported as a `heading-deletion` FAIL on
+  the required `Sequence Safety` check. Five of juniper-cascor#704's six findings were exactly this.
+  The rule is now fence-aware, following CommonMark: `fenced_lines()` maps each side's file
+  (BASE for deleted lines, HEAD for added ones) to the lines inside ```` ``` ```` / `~~~` fences. A
+  fence closes only on the same character, at least as long and with no info string, so a longer
+  outer fence can quote a shorter one; an unclosed fence runs to the end of the file. `Hunk` gains
+  `old_start` / `new_start` from the hunk header, and `classify_file()` gains optional
+  `base_fenced` / `head_fenced` maps. A hand-built `Hunk` without positions keeps the old
+  pattern-only behaviour. Two consequences:
+  - A fenced `# ...` line added in the same hunk no longer passes for a retitle, so replacing a
+    heading with a code block still FAILs.
+  - The deletion-run rule is unchanged: a removed code block of five or more lines still FAILs.
+
+  Pinned by six new tests and one extended test (`test_parse_hunks_splits_and_counts` now checks
+  the positions). Six of those seven fail against 0.9.0. The seventh, a real heading after a closed
+  fence, is the over-suppression guard and passes on both. Found by the 2026-10-08 Cursor
+  flood-3 evaluation (juniper-ml
+  `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §4).
+
 ## [0.9.0] - 2026-09-09
 
 ### Fixed
