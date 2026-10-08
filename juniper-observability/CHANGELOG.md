@@ -8,6 +8,8 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-10-09
+
 ### Fixed
 
 - **Inbound `X-Request-ID` is validated before propagation** (defect-register `APD-OBS-001`,
