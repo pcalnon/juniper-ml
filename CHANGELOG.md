@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Operator documentation consolidated from the Cursor flood-3 docs PRs** (ml#2125, #2132, #2135,
+  #2142, #2148, #2152, #2155, #2158, #2160, #2162, #2165, #2167, #2170, #2172, #2175, #2177, with
+  the verified unique content of the superseded #2119, #2122, #2128, #2137, #2141 and #2146), every
+  claim re-derived from `main` and corrected where the branch had gone stale: `docs/REFERENCE.md`
+  0.6.62, the developer cheatsheet, the documentation overview, the quick start, `util/ad-hoc/README.md`,
+  and the `juniper-ci-tools`, `juniper-observability` and `juniper-service-core` READMEs. Fixes four
+  places on `main` that said a pin-stable lockfile week opens no PR (all 12 scheduled runs opened
+  one) and three false Equities Symbol Cap rows.
+
 - **25 regression suites harvested from the Cursor flood-3 test PRs** (ml#2121, #2124, #2127, #2133,
   #2136, #2138, #2140, #2143, #2144, #2147, #2149, #2150, #2153, #2156, #2159, #2163, #2166, #2169,
   #2171, #2173, #2174, #2178, #2180), each re-run on `main`, mutation-checked against the code it
