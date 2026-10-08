@@ -171,13 +171,91 @@ def _prescreen():
     return mod
 
 
+#: The two CodeQL threads on juniper-ml#2183 that the prescreen's first version missed: names bound inside a
+#: module-level loop and never read (``py/unused-global-variable``). In the first, ``nxt_c`` was read only on the way
+#: to the dead ``gw``, so both go; the loop index stays, because the print below reads it (the first draft of this
+#: edit dropped it too, which compiles and would have raised NameError: the pyflakes check below now catches that).
+EDITS_PR2183: dict[str, list[tuple[str, str, str]]] = {
+    "r5_a_triglag.py": [
+        (
+            "            for i, ci in enumerate(c):\n"
+            "                nxt_c = c[i + 1] if i + 1 < len(c) else ci + 10000\n"
+            "                gw = [g for g in gate if ci <= g[0] < nxt_c]\n",
+            "            for i, ci in enumerate(c):\n",
+            "global",
+        )
+    ],
+    # anchored on the line before it, so that --known-answer in the prescreen can reverse the deletion exactly
+    "r5_b_trig.py": [
+        (
+            '        fires = [(f[0] - t) for f in raw["fires"] if t - 1000 < f[0] <= t + 6000]\n'
+            '        lane = [(l[0] - t, l[1], l[2], l[3][:40]) for l in raw["lane"] if t - 200 < l[0] <= t + 5000]\n',
+            '        fires = [(f[0] - t) for f in raw["fires"] if t - 1000 < f[0] <= t + 6000]\n',
+            "global",
+        )
+    ],
+}
+EDITS_LINE = "# The edits: util/ad-hoc/2026-10-05_phase11_probes_codeql_fixes.py."
+PR2183_VERBATIM = (
+    "# Everything below this block is the lane's file, modified 2026-10-08 only for CodeQL ({what}),\n"
+    "# found by CodeQL on juniper-ml#2183, which the prescreen's first version missed; what it computes is unchanged.\n"
+    "# The edits: util/ad-hoc/2026-10-05_phase11_probes_codeql_fixes.py --pr2183."
+)
+PR2183_AMENDED = (
+    "# The edits: util/ad-hoc/2026-10-05_phase11_probes_codeql_fixes.py; and, after CodeQL on juniper-ml#2183 found\n"
+    "# what the prescreen's first version missed ({what}), its --pr2183 run; what it computes is unchanged."
+)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--check", action="store_true", help="apply in memory only; write nothing")
     ap.add_argument("--round", action="append", choices=sorted(PREFIX), help="only these rounds' probes (repeatable; default: all)")
+    ap.add_argument("--pr2183", action="store_true", help="apply only the fixes for CodeQL's threads on juniper-ml#2183")
     args = ap.parse_args()
     pre = _prescreen()
     out, n_edits = {}, 0
+    if args.pr2183:
+        for suffix, edits in EDITS_PR2183.items():
+            path = ADHOC / f"{PREFIX[suffix[:2]]}{suffix}"
+            text = path.read_text(encoding="utf-8")
+            for old, new, _kind in edits:
+                if text.count(old) != 1:
+                    raise SystemExit(f"{path.name}: anchor found {text.count(old)} times; nothing written: {old[:80]!r}")
+                text = text.replace(old, new)
+            what = "; ".join(WHAT[k] for k in dict.fromkeys(kind for _o, _n, kind in edits))
+            if text.count(VERBATIM) == 1:
+                text = text.replace(VERBATIM, PR2183_VERBATIM.format(what=what))
+            elif text.count(EDITS_LINE) == 1:
+                text = text.replace(EDITS_LINE, PR2183_AMENDED.format(what=what))
+            else:
+                raise SystemExit(f"{path.name}: neither header form is there exactly once; nothing written")
+            compile(text, path.name, "exec")
+            # A dropped binding must not leave a name undefined: compile() cannot see that, pyflakes can.
+            from pyflakes.api import check as pyflakes_check
+            from pyflakes.reporter import Reporter
+            import io as _io
+
+            warn = _io.StringIO()
+            pyflakes_check(text, path.name, Reporter(warn, warn))
+            undefined = [ln for ln in warn.getvalue().splitlines() if "undefined name" in ln]
+            if undefined:
+                raise SystemExit(f"{path.name}: the edit leaves an undefined name {undefined}; nothing written")
+            with tempfile.TemporaryDirectory() as td:
+                probe = Path(td) / path.name
+                probe.write_text(text, encoding="utf-8")
+                left = pre._scan(probe)
+            if left:
+                raise SystemExit(f"{path.name}: the prescreen still reports {left}; nothing written")
+            out[path] = text
+            n_edits += len(edits)
+            print(f"{path.name}: {len(edits)} edit(s)")
+        print(f"{n_edits} edits in {len(out)} files; every file compiles and the prescreen reports nothing on it")
+        if not args.check:
+            for path, text in out.items():
+                path.write_text(text, encoding="utf-8")
+            print(f"written: {len(out)} files")
+        return 0
     for suffix, edits in EDITS.items():
         if args.round and suffix[:2] not in args.round:
             continue

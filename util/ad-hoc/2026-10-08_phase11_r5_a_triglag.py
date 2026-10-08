@@ -9,7 +9,8 @@
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_phase11_round5.md
 # Everything below this block is the lane's file, modified 2026-10-08 only for CodeQL (py/file-not-always-closed: it closes the files it opens),
 # predicted before its PR by util/ad-hoc/2026-10-05_codeql_python_prescreen.py; what it computes is unchanged.
-# The edits: util/ad-hoc/2026-10-05_phase11_probes_codeql_fixes.py.
+# The edits: util/ad-hoc/2026-10-05_phase11_probes_codeql_fixes.py; and, after CodeQL on juniper-ml#2183 found
+# what the prescreen's first version missed (py/unused-global-variable: a binding nothing reads is gone), its --pr2183 run; what it computes is unchanged.
 # ---------------------------------------------------------------------------
 """Lane 11-R5A's own reader of the trigger lag, written from the shim's JavaScript and the live driver only.
 
@@ -72,8 +73,6 @@ for p in PATHS:
             c = trg["clicks_ms"]
             print(f"      clicks returned at +{c[0] - t}, +{c[1] - t} ms; between clicks {c[1] - c[0]} ms")
             for i, ci in enumerate(c):
-                nxt_c = c[i + 1] if i + 1 < len(c) else ci + 10000
-                gw = [g for g in gate if ci <= g[0] < nxt_c]
                 gw2 = [g for g in gate if g[0] >= ci]
                 print(f"      click {i + 1}: first gate write after its return +{(gw2[0][0] - ci) if gw2 else None} ms (abs +{(gw2[0][0] - t) if gw2 else None} ms)")
             # where is each gate write relative to requests in flight

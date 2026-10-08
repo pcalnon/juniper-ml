@@ -6,7 +6,9 @@
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 11;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_phase11_round5.md
-# Everything below this block is the lane's file, unmodified.
+# Everything below this block is the lane's file, modified 2026-10-08 only for CodeQL (py/unused-global-variable: a binding nothing reads is gone),
+# found by CodeQL on juniper-ml#2183, which the prescreen's first version missed; what it computes is unchanged.
+# The edits: util/ad-hoc/2026-10-05_phase11_probes_codeql_fixes.py --pr2183.
 # ---------------------------------------------------------------------------
 """Lane 11-R5B: re-derive the trigger lag from the two transcripts, own reader (no repo code)."""
 import json
@@ -50,7 +52,6 @@ for path in PATHS:
         nxtW = nxt[0][0] - t if nxt else None
         gates = [(g[0] - t, g[1], g[2]) for g in raw["gate"] if t < g[0] <= t + 6000]
         fires = [(f[0] - t) for f in raw["fires"] if t - 1000 < f[0] <= t + 6000]
-        lane = [(l[0] - t, l[1], l[2], l[3][:40]) for l in raw["lane"] if t - 200 < l[0] <= t + 5000]
         print(f"  {name}: t={t} req={rid} W={r['tW']} age={age} end={r['end']} ans_after={ans} next_W_after={nxtW} took={tr.get('took')} verdict={tr.get('stats', {}).get('verdict')}")
         if "clicks_ms" in tr:
             c = tr["clicks_ms"]

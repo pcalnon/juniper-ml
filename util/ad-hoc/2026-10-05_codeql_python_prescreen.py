@@ -31,7 +31,10 @@ output as the list to look at, then fix the code, never suppress it.
 
 ``--known-answer`` checks the screen against juniper-ml#2157's 20 threads: it rebuilds the ten Phase 10 probes
 as they were before ``2026-10-05_phase10_r1_probes_close_files.py`` fixed them (that script's edits, reversed),
-and requires every one of the 20 alerts, by file and rule, and none of them on the fixed files.
+and requires every one of the 20 alerts, by file and rule, and none of them on the fixed files. It also checks
+juniper-ml#2183's two threads, which this screen's first version missed because it read only top-level
+assignments: a name bound inside a module-level loop and never read is a global too. A tuple target is reported
+only when none of its names is read, as CodeQL does; reporting each unread name over-reported 20 times.
 
 Usage:
     python3 util/ad-hoc/2026-10-05_codeql_python_prescreen.py FILE [FILE ...]
@@ -178,17 +181,34 @@ def _scan(path: Path):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             fn_scope(node)
 
-    for node in tree.body:
-        targets = []
-        if isinstance(node, ast.Assign):
-            targets = node.targets
-        elif isinstance(node, ast.AnnAssign) and node.value is not None:
-            targets = [node.target]
-        for t in targets:
-            for nm in _names_in_target(t):
-                if nm.id.startswith("_") or nm.id in all_reads or nm.id in dunder_all or nm.id.isupper():
-                    continue
-                out.append((nm.lineno, "unused-global", f"module-level {nm.id} never read"))
+    # Module scope includes the bodies of module-level for/while/if/with/try blocks: a name bound there is a global
+    # too. The first version looked only at ``tree.body`` and missed two such bindings that CodeQL flagged on
+    # juniper-ml#2183 (a list built inside a module-level loop and never read).
+    def _module_scope_assigns(stmts):
+        for st in stmts:
+            if isinstance(st, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                continue
+            if isinstance(st, ast.Assign):
+                yield from st.targets
+            elif isinstance(st, ast.AnnAssign) and st.value is not None:
+                yield st.target
+            for field in ("body", "orelse", "finalbody"):
+                sub = getattr(st, field, None)
+                if isinstance(sub, list) and sub and isinstance(sub[0], ast.stmt):
+                    yield from _module_scope_assigns(sub)
+            for h in getattr(st, "handlers", []) or []:
+                yield from _module_scope_assigns(h.body)
+
+    # A tuple target is reported only when none of its names is read: CodeQL flags ``r, wrote = f()`` when neither is
+    # read (ml#2176) but not a tuple with one name read, which the widened rule over-reported 20 times in calibration.
+    for t in _module_scope_assigns(tree.body):
+        names = list(_names_in_target(t))
+        if isinstance(t, (ast.Tuple, ast.List)) and any(nm.id in all_reads for nm in names):
+            continue
+        for nm in names:
+            if nm.id.startswith("_") or nm.id in all_reads or nm.id in dunder_all or nm.id.isupper():
+                continue
+            out.append((nm.lineno, "unused-global", f"module-level {nm.id} never read"))
     # an UPPER-case module constant never read is not reported: CodeQL did not flag one on #2157
 
     # empty except without a comment
@@ -280,6 +300,28 @@ def known_answer() -> int:
             ok = got["before"]["open-not-closed"] == want_open and got["before"]["unused-import"] == want_imp and got["fixed"]["open-not-closed"] == 0 and got["fixed"]["unused-import"] == 0
             bad += not ok
             print(f"{'ok  ' if ok else 'FAIL'} {suffix}: before open={got['before']['open-not-closed']}/{want_open} import={got['before']['unused-import']}/{want_imp}; fixed open={got['fixed']['open-not-closed']} import={got['fixed']['unused-import']}; other rules before/fixed: {sum(v for k, v in got['before'].items() if k not in ('open-not-closed', 'unused-import'))}/{sum(v for k, v in got['fixed'].items() if k not in ('open-not-closed', 'unused-import'))}")
+    # juniper-ml#2183's two threads, which this screen's first version missed: rebuild the two probes as they were
+    # before ``2026-10-05_phase11_probes_codeql_fixes.py --pr2183`` and require exactly one unused-global each.
+    spec2 = importlib.util.spec_from_file_location("phase11_fixes", ADHOC / "2026-10-05_phase11_probes_codeql_fixes.py")
+    fx = importlib.util.module_from_spec(spec2)
+    spec2.loader.exec_module(fx)
+    with tempfile.TemporaryDirectory() as td:
+        for suffix, edits in fx.EDITS_PR2183.items():
+            fixed = (ADHOC / f"{fx.PREFIX[suffix[:2]]}{suffix}").read_text(encoding="utf-8")
+            before = fixed
+            for old, new, _kind in edits:
+                if before.count(new) != 1:
+                    print(f"KNOWN-ANSWER: {suffix}: a fixed form is not there exactly once (run --pr2183 first)")
+                    return 1
+                before = before.replace(new, old)
+            got = {}
+            for label, text in (("before", before), ("fixed", fixed)):
+                p = Path(td) / f"{label}_{suffix}"
+                p.write_text(text, encoding="utf-8")
+                got[label] = Counter(rule for _ln, rule, _m in _scan(p))
+            ok = got["before"] == Counter({"unused-global": 1}) and not got["fixed"]
+            bad += not ok
+            print(f"{'ok  ' if ok else 'FAIL'} #2183 {suffix}: before {dict(got['before'])}; fixed {dict(got['fixed'])}")
     print("KNOWN-ANSWER " + ("PASS" if not bad else f"FAIL ({bad} file(s))"))
     return 1 if bad else 0
 
