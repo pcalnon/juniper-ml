@@ -1,24 +1,24 @@
-# juniper-data v0.17.0 – :lock: SECURITY PATCH RELEASE
+# juniper-data v0.17.0 – :lock: SECURITY RELEASE (MINOR)
 
 **Release Date:** 2026-10-08
-**Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Release Type:** MINOR (security-bearing)
+**Priority:** High: upgrade every juniper-data deployment
 **Package Affected:** juniper-data
 
 ---
 
-This is a security-bearing release of `juniper-data` v0.17.0. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a minor release of `juniper-data` that carries two security fixes. First, a non-ASCII `X-API-Key` is answered 401 instead of a 500, whose error event could carry the real configured key to Sentry. Second, `FailedAuthThrottle.check()` no longer adds a table entry for every client address, which had let the table grow without bound. It also moves `equities_seq` to generator 6.0.0 (`regression`), refuses a later `purchase_date` under `fundamentals_fill="drop"`, closes a race in conditional tag edits, and opts out of FastAPI's native telemetry. The image's dependency lock moved: FastAPI 0.142.2, Starlette 1.7.0, Uvicorn 0.54.0, sentry-sdk 2.71.0. The vectors need, respectively, Sentry to be configured and sustained traffic from many distinct addresses, so this is rated Medium.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-data` |
 | **Fixed in** | 0.17.0 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | Improper handling of an exceptional condition that exposed a secret ([CWE-755](https://cwe.mitre.org/data/definitions/755.html)); allocation of resources without limits ([CWE-770](https://cwe.mitre.org/data/definitions/770.html)) |
+| **Advisory** | None. Internal findings from the juniper-canopy#683 validation (2026-09-24) and the Cursor flood-3 evaluation (2026-10-08); there is no CVE or Dependabot alert |
 
 ---
 
