@@ -40,9 +40,9 @@ import io
 import json
 import math
 import unittest
+import unittest.mock as mock
 import urllib.error
 from pathlib import Path
-from unittest import mock
 
 import numpy as np
 

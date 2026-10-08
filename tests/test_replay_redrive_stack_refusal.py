@@ -216,7 +216,7 @@ class ReplayRedriveStackRefusalTest(unittest.TestCase):
             set(exports),
             {"JUNIPER_E2E_DATA_PORT", "JUNIPER_E2E_CASCOR_PORT", "JUNIPER_E2E_CANOPY_PORT", "JUNIPER_E2E_RECURRENCE_PORT"},
         )
-        self.assertTrue({"8101", "8202", "8051"} <= forbidden)
+        self.assertLessEqual({"8101", "8202", "8051"}, forbidden)
         self.assertTrue(set(exports.values()).isdisjoint(forbidden))
 
     def test_with_recurrence_is_refused_and_the_stack_is_not_started(self) -> None:
