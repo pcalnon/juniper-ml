@@ -1,0 +1,13 @@
+[05:56:14] leg http://127.0.0.1:8052 serves 60ae18702519725c09248c88111c09c0182c7ed8
+[t=   8167ms]   modal cleared after 1 attempt(s)
+[06:04:08]   T-gate: fired at 292589 ms on request 63
+[06:07:14]   T-tab: fired at 477300 ms on request 101
+[06:08:22]   T-apply: MISSED
+[06:21:28]   T-mode: fired at 1331695 ms on request 268
+[06:21:29] BASELINE {"resolved": 52, "answered": 50, "answered_with_props": 0, "evicted": 2, "evicted_fraction": 0.038, "longest_evicted_run": 2, "cadence_ms_median": 4674, "verdict": "DIRTY"}
+[06:21:29] T-gate took=False {"resolved": 36, "answered": 36, "answered_with_props": 0, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4884, "verdict": "NO-EFFECT", "late": {"resolved": 17, "answered": 17, "answered_with_props": 0, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4897}}
+[06:21:29] T-tab took=False {"resolved": 36, "answered": 36, "answered_with_props": 0, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4823, "verdict": "NO-EFFECT", "late": {"resolved": 17, "answered": 17, "answered_with_props": 0, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4823}}
+[06:21:29] T-mode took=False {"resolved": 38, "answered": 34, "answered_with_props": 0, "evicted": 4, "evicted_fraction": 0.105, "longest_evicted_run": 4, "cadence_ms_median": 5059, "verdict": "NO-EFFECT", "late": {"resolved": 19, "answered": 15, "answered_with_props": 0, "evicted": 4, "evicted_fraction": 0.211, "longest_evicted_run": 4, "cadence_ms_median": 5136}}
+[06:21:29] IDLE {"resolved": 127, "answered": 116, "answered_with_props": 0, "evicted": 11, "evicted_fraction": 0.087, "longest_evicted_run": 11, "cadence_ms_median": 4906, "fires": [[893044, true, null], [962549, true, null], [997675, true, null], [1322644, true, null]]}
+[06:21:29] -> run/2026-10-05_census_live.json
+exit=0
