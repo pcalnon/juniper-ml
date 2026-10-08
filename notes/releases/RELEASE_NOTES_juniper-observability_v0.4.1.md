@@ -2,23 +2,23 @@
 
 **Release Date:** 2026-10-09
 **Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Priority:** High: upgrade every service that calls `configure_sentry`
 **Package Affected:** juniper-observability
 
 ---
 
-This is a security-bearing release of `juniper-observability` v0.4.1. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a security-bearing release of `juniper-observability` v0.4.1. `configure_sentry` no longer sends frame-local variables to Sentry. Under the SDK default, an error event carried the local variables of every frame, and in the juniper-canopy#683 validation that included the real configured API key. The vector needs Sentry to be configured and an exception raised in a frame that holds a secret; the data goes to the operator's own Sentry project, so this is rated Medium. Fixes for the X-Request-ID, `py.typed`, typing and `__all__` issues ship in the same release.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-observability` |
 | **Fixed in** | 0.4.1 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | Sensitive information sent to an external service ([CWE-201](https://cwe.mitre.org/data/definitions/201.html)) |
+| **Advisory** | None. Internal finding from the validation of juniper-canopy#683 (2026-09-24); there is no CVE or Dependabot alert |
 
 ---
 
