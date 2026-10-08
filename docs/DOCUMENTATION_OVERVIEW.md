@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.54
+**Version:** 0.2.55
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-08
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -29,24 +29,28 @@
 | **Configure HTTP client `base_url`**    | [REFERENCE.md](REFERENCE.md#http-client-base-url-contract)                                                                       | docs/    |
 | **Run the local host stack**            | [REFERENCE.md](REFERENCE.md#host-orchestration-utilities)                                                                        | docs/    |
 | **Operate the scheduled Duplicati backup lane** | [REFERENCE — Scheduled Duplicati Backup Lane](REFERENCE.md#scheduled-duplicati-backup-lane)                                | docs/    |
+| **Talk to the Yamaguchi Duplicati server** | [REFERENCE — Yamaguchi Duplicati Server Client](REFERENCE.md#yamaguchi-duplicati-server-client) (`127.0.0.1:8300`; export token; watchdog `--backup-id` has no default) | docs/    |
 | **Archive the Juniper project tree to external media** | [REFERENCE — Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) (per-repo `.tbz2.gpg`; restore `-xjf`; not Duplicati) | docs/    |
 | **Reap orphaned Juniper pytest children** | [REFERENCE.md](REFERENCE.md#pytest-orphan-reaper)                                                                              | docs/    |
 | **Run / score a pointer-follow soak probe** | [REFERENCE — Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) (least-covered vs characterisation; `source-recovered` denominator) | docs/    |
 | **Decide whether the cascor primary is frozen** | [REFERENCE — Cascor Primary Freeze Tell](REFERENCE.md#cascor-primary-freeze-tell) (exit 1 = in force; 0 ≠ no importer) | docs/    |
-| **Check installed juniper-* floor drift** | [REFERENCE.md](REFERENCE.md#environment-floor-drift-check)                                                                     | docs/    |
+| **Check installed juniper-* floor drift** | [REFERENCE — Environment Floor Drift](REFERENCE.md#environment-floor-drift-check) (exit 2 includes a truthy non-mapping; a bad extra keeps `dependencies` floors) | docs/    |
 | **Diagnose a broken conda `import torch`** | [REFERENCE — Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) (exit **2** = P-5 free-threaded; exit **4** = May-7 wheel layout; does not rebuild) | docs/    |
 | **Check custom-agent suite health**     | [REFERENCE.md](REFERENCE.md#agent-suite-doctor)                                                                                  | docs/    |
 | **Triage fleet PRs / sequence-safety**  | [REFERENCE.md § Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety)                                 | docs/    |
 | **Triage resident-hazard gaps after an AGENTS.md cut** | [REFERENCE — Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage) (count grows after a cut; health is score ≥ 3) + [fleet record](../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_RESIDENT-HAZARD-GAP-TRIAGE.md) | docs/ + notes/ |
 | **Run the isolated E2E trio**           | [Isolated-stack E2E checklist](../notes/JUNIPER_2026-07-21_JUNIPER-ECOSYSTEM_ISOLATED-STACK-E2E-CHECKLIST.md) + [REFERENCE — Isolated Stack](REFERENCE.md#isolated-stack-e2e-utilities) | notes/ + docs/ |
+| **Re-drive the CAN-015 replay player**  | [REFERENCE — CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) (throwaway wrapper `8113`/`8214`/`8063`; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start) | docs/ |
 | **Write canopy E2E matrix verdicts**    | [REFERENCE — Canopy E2E Matrix Writes](REFERENCE.md#canopy-e2e-matrix-writes) (fill is dry-run; set-verdicts is not; do not plan from `e2e_row_coverage.py`) | docs/    |
 | **Diagnose F-CANOPY-027 poller starvation (12-slot pool)** | [REFERENCE — F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) + [cheatsheet](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/ |
-| **Triage canopy E2E findings (P0/P1 exit)** | [REFERENCE — Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) (`e2e_finding_triage.py`; ACCEPTED ≠ FIXED ≠ OPEN) | docs/ |
+| **Triage canopy E2E findings (P0/P1 exit)** | [REFERENCE — Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) (`e2e_finding_triage.py`; WITHDRAWN ≠ ACCEPTED ≠ FIXED ≠ OPEN) | docs/ |
 | **Score canopy Topology-tab rows**      | [REFERENCE — Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) (`e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half) | docs/ |
 | **Drive canopy dataset-tab / W6 rows**  | [REFERENCE — Canopy E2E Dataset Drivers](REFERENCE.md#canopy-e2e-dataset-drivers) (W6 `--steps` vs §3.6 `--step`; never confirm restart) | docs/ |
 | **Triage Cursor-fleet / predicted-merge PRs** | [REFERENCE — Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety)                            | docs/    |
 | **Audit required-status-check contexts / why `main` is BLOCKED** | [REFERENCE — Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) (read-only; 2026-08-10 class; do not quote the note's §1 counts) | docs/    |
 | **Run a per-run experiment stack**      | [REFERENCE — Experiment Stack](REFERENCE.md#experiment-stack-utilities) (incl. partial-`--up` → `teardown_run`) + [CLI experimentation plan](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) | docs/ + notes/ |
+| **Refuse a stale recurrence env before serve** | [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) (W0.2, juniper-ml#2139: scoped `pip check`, installed pins, `derive_full_split`; CUDA `pip check` noise does not refuse; `/v1/health/ready` alone misses F-E1) | docs/ |
+| **Read a recurrence `save_model` re-run** | [REFERENCE — Recurrence launch record and service env](REFERENCE.md#recurrence-launch-record-and-service-env) (launcher-recorded CLI under interpreter + model-version parity; a mismatch is `degraded`) | docs/ |
 | **Run a PF scenario suite (PF-1…PF-7)** | [REFERENCE — PF Scenario Suites](REFERENCE.md#pf-scenario-suites) (`--dry-run` first; PF-1 matched 4000/4000 epochs; `JUNIPER_SUITE_GRAFANA_BRIDGE`; PF-4/PF-8 are not driver suites) + [P1 design](../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md) | docs/ + notes/ |
 | **Bless / compare a perf-lane baseline** | [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) (`read_run_metrics` / `make_baseline` / `compare_baseline`; sound since ml#1743, but **never** wire the exact work gate to CI — P1 design §6 closed 2026-09-07; host identity blocks on hosted runners) | docs/ |
 | **Read ratified perf metrics / bless a baseline** | [REFERENCE — Perf-lane metrics and baselines](REFERENCE.md#perf-lane-metrics-and-baselines) (`read_run_metrics.py` / `make_baseline.py`; `step_count` FAIL behind workload fingerprint, not `config_sha256`) | docs/ |
@@ -54,10 +58,16 @@
 | **Read a suite report's gate inputs**   | [REFERENCE — Suite Report Gate Inputs](REFERENCE.md#suite-report-gate-inputs) (`step_count` / mean step beside de-ratified `wall_seconds`; `--compare-baseline` is reporting only) + [P2 plan](../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md) item 1.4 | docs/ + notes/ |
 | **List or prune experiment RUN_DIRs**   | [REFERENCE — Run lister / pruner](REFERENCE.md#run-lister--pruner-list_runspy) (directory-truth; `--prune` deletes the `RUN_DIR`, `--down` keeps `artifacts/`) | docs/ |
 | **Run a multi-cell experiment suite**   | [REFERENCE — Suite Driver](REFERENCE.md#suite-driver) (`run_suite.py`: expansion, resume, cascor parallel floor, Grafana env toggle) + [CLI experimentation plan](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) Wave 7 | docs/ + notes/ |
+| **Read a recurrence `degraded` cell / suite r²** | [REFERENCE — Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) (`phases` → `degraded`, suite exit 1; `train_r2` / `cv_r2` from nested `stats.recurrence`) | docs/ |
 | **Report (not gate) a recurrence perf run** | [REFERENCE — Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) (`work_countable` third state; `make_baseline` / `compare_baseline` refuse; PF-5/6/7 report-only) + [P2 plan](../notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md) | docs/ + notes/ |
+| **Read a recurrence crossval that ignored the YAML readout** | [REFERENCE — Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters) (driver drops null `train:` keys; omitted readout is linear at `default_ridge`, which the E-H YAML pins to 0.0; crossval fits a fresh model per fold) | docs/ |
+| **See whose recurrence fit holds the listener** | [REFERENCE — One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service) (busy `409`, `GET /v1/training/status`; a timed-out driver fit keeps the lock) | docs/ |
+| **Handle a recurrence error that quotes a header value** | [REFERENCE — Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text) (a 502 `detail` can contain the rejected data API key; the driver copies it into the run record) | docs/ |
 | **Read a run's `stats.json` / `summary.md`** | [REFERENCE — Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) (de-ratified `wall_seconds`, per-poll step duration, `scrape_confirmed` tri-state, recurrence timings under `outcome.timings`) | docs/    |
 | **Check which generators an env can run** | [REFERENCE — Generator Availability Matrix](REFERENCE.md#generator-availability-matrix-on-host) (gates, mnist/equities install paths, probe one-liner) | docs/    |
 | **Run `equities` / `equities_seq` without a 422** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (14-symbol refuse; unit is symbols because cost is per request; silent slice deleted) | docs/    |
+| **Tell two `equities_seq` mints apart** | [REFERENCE — Equities Dataset Id Does Not Pin Array Content](REFERENCE.md#equities-dataset-id-does-not-pin-array-content) (`dataset_id` hashes the request; compare `meta.checksum`; an all-zero `dividend` is a silent fill) | docs/    |
+| **Re-run or read the E-H equities crossval measurement** | [REFERENCE — Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) (`replay` / `matrix`; exit 0 is not HTTP 200) + [investigation note](../notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md) | docs/ + notes/ |
 | **Import a CSV/JSON dataset (byte cap)** | [REFERENCE — CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) (128 MiB, 422 until opt-in, `IMPORT_DIR` pitfall; equities `max_symbols` still silent) | docs/    |
 | **Bound an `equities` request (do not use a byte cap)** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (per-request cost, silent `max_symbols` slice, default 503 names ≈ 34 min) | docs/    |
 | **Index / classify / backfill the snapshot archive** | [REFERENCE — Snapshot Sidecar Chain](REFERENCE.md#snapshot-sidecar-chain) (`--scan`, two-axis classify, derivation levels, `--root` trap) | docs/    |
@@ -89,14 +99,14 @@
 | **Understand why a bare tag push publishes nothing** | [REFERENCE — Independent Sibling Package Publish Pipelines](REFERENCE.md#independent-sibling-package-publish-pipelines) (trigger is the gate; #555 / #1310) | docs/    |
 | **Debug shared-package subdirectory CI**| [REFERENCE — Shared-Package CI Workflows](REFERENCE.md#shared-package-ci-workflows)                                              | docs/    |
 | **Operate weekly docs-full-check**      | [REFERENCE — Docs Full Check](REFERENCE.md#docs-full-check)                                                                     | docs/    |
-| **Understand weekly security / lockfile hygiene** | [REFERENCE — Scheduled Security Scan and Lockfile Update](REFERENCE.md#scheduled-security-scan-and-lockfile-update)     | docs/    |
-| **Triage CodeQL / `Analyze (python)`** | [REFERENCE — CodeQL Analysis](REFERENCE.md#codeql-analysis) (SHA group, `merge_group` divergence, review-thread stall) | docs/    |
+| **Understand weekly security / lockfile hygiene** | [REFERENCE — Scheduled Security Scan and Lockfile Update](REFERENCE.md#scheduled-security-scan-and-lockfile-update) (a Monday PR still opens when pins are unchanged; diff non-comment lines against the new snapshot) | docs/    |
+| **Triage CodeQL / `Analyze (python)`** | [REFERENCE — CodeQL Analysis](REFERENCE.md#codeql-analysis) (SHA group, `merge_group` divergence, review-thread stall, bare `open()` → `with`) | docs/    |
 | **Add or re-pin a required status-check context** | [REFERENCE — Required-Context Ruleset Writer](REFERENCE.md#required-context-ruleset-writer) (`--amend-integration-id`; do not hand-roll a ruleset PUT) | docs/    |
 | **Read the release-train detect summary / Slack** | [REFERENCE — Detect Summary and Slack](REFERENCE.md#release-train-detect-summary-and-slack)                             | docs/    |
 | **Understand the AGENTS.md date check** | [REFERENCE — AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check)                                                             | docs/    |
 | **Audit `claude.yml` access safeguards**| [REFERENCE — Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) + [ANTHROPIC API key walkthrough](../notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md) | docs/ + notes/ |
 | **Operate the GitHub `@claude` assistant** | [REFERENCE — Claude Code Action](REFERENCE.md#claude-code-action) (live pin, `@claude` `if:`, template-snapshot drift) | docs/ |
-| **Debug service-core middleware / control-WS / workers** | [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core)                                           | docs/    |
+| **Debug service-core middleware / control-WS / workers** | [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core); a non-ASCII `X-API-Key` is a 401 on `main` (published 0.7.0 still 500s), and Sentry does not capture frame locals: [Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) | docs/    |
 | **Create or clean a worktree**          | [Worktree setup](../notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md) / [cleanup V2](../notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md) + [REFERENCE — in-use probe](REFERENCE.md#wider-second-opinion-open-files-and-argv) | notes/ + docs/ |
 | **Check a worktree is idle before removing it** | [REFERENCE — Worktree Divergence](REFERENCE.md#worktree-divergence-is-a-memory-cost) (cwd-only liveness, then STRONG cwd/fd vs WEAK cmdline) | docs/ |
 | **Understand the project**              | [README.md](../README.md)                                                                                                        | Root     |
@@ -174,6 +184,7 @@ Each subpackage has its own `README.md`, `CHANGELOG.md`, and `pyproject.toml`.
 | **JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_SNAPSHOT-CLASSIFICATION-STAGE-1-FINDINGS.md**           | Findings    | Load-failure root-cause cohorts; backfill maps A/C FIXED, B truncated; operator surface in [REFERENCE](REFERENCE.md#snapshot-sidecar-chain) |
 | **JUNIPER_2026-08-24_JUNIPER-CASCOR_ATTRIBUTION-NULL-MODEL-FINDINGS.md**                       | Findings    | Attribution floors + why the dataset instance must be pinned; operator surface in [REFERENCE](REFERENCE.md#snapshot-attribution-dataset-pin) |
 | **JUNIPER_2026-09-04_JUNIPER-DATA_EQUITIES-INGEST-SIZING-AND-FIELD-AVAILABILITY.md**            | Analysis    | Why equities bounds **symbols** (14), not bytes; operator surface in [REFERENCE](REFERENCE.md#equities-symbol-cap) |
+| **JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md** | Investigation | W0.8/W0.9 measurement and the P5 verdict (GO), consensus-reviewed at v1.1.2 (record: `JUNIPER_2026-10-05_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-CONSENSUS-VALIDATION.md`). Re-running the instruments: [REFERENCE](REFERENCE.md#recurrence-equities-crossval-instruments); two mints under one id: [REFERENCE](REFERENCE.md#equities-dataset-id-does-not-pin-array-content) |
 | **JUNIPER_2026-09-03_JUNIPER-CANOPY_X7-EVENT-LOOP-BLOCKING-REMEDIATION-DESIGN.md**              | Design      | X7 event-loop blocking; slice 1a closes it. Operator surface in [REFERENCE](REFERENCE.md#x7-off-loop-census) (gate is authority for `main.py`; the count is 58 — canopy#567) |
 | **JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md**                                | Ledger      | Canopy E2E findings. Operator traps (step order, W-id definitions, header severity) in [REFERENCE](REFERENCE.md#canopy-e2e-topology-step-order-and-blast-radius-ids); F-CANOPY-037 is OPEN |
 | **JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md**                         | Matrix      | Click-by-click rows **and** §4's canonical workflow scripts — `### W4` is 17 numbered steps, `### W1` is 19 |
@@ -240,6 +251,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.2.54
+**Last Updated:** 2026-10-08
+**Version:** 0.2.55
 **Maintainer:** Paul Calnon

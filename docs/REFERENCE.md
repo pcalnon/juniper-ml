@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.59
+**Version:** 0.6.62
 **Status:** Active
-**Last Updated:** 2026-09-05
+**Last Updated:** 2026-10-08
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -17,6 +17,7 @@
 - [HTTP Client Base-URL Contract](#http-client-base-url-contract)
 - [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
+- [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client)
 - [Juniper Project-Tree Backup](#juniper-project-tree-backup)
 - [Editable Install Drift Check](#editable-install-drift-check)
 - [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell)
@@ -26,6 +27,7 @@
 - [Conda Env Torch Shadow Diagnostic (P-5)](#conda-env-torch-shadow-diagnostic-p-5)
 - [Agent Suite Doctor](#agent-suite-doctor)
 - [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities)
+- [CAN-015 Replay Re-drive](#can-015-replay-re-drive)
 - [F-039 Store Probe](#f-039-store-probe)
 - [Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes)
 - [F-CANOPY-027 Poller Starvation Probes](#f-canopy-027-poller-starvation-probes)
@@ -39,6 +41,7 @@
 - [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost)
 - [Post-Merge Main Verification](#post-merge-main-verification)
 - [Experiment Stack Utilities](#experiment-stack-utilities)
+- [Recurrence Env Preflight](#recurrence-env-preflight)
 - [PF Scenario Suites](#pf-scenario-suites)
 - [Perf-Lane Work Gate](#perf-lane-work-gate)
 - [Perf-lane metrics and baselines](#perf-lane-metrics-and-baselines)
@@ -47,7 +50,10 @@
 - [CSV Import Byte Cap](#csv-import-byte-cap)
 - [Snapshot Sidecar Chain](#snapshot-sidecar-chain)
 - [Suite Driver](#suite-driver)
+- [Recurrence Degraded Outcome and Headline Metrics](#recurrence-degraded-outcome-and-headline-metrics)
 - [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable)
+- [Recurrence Crossval Hyperparameters](#recurrence-crossval-hyperparameters)
+- [Recurrence Upstream Error Text](#recurrence-upstream-error-text)
 - [Experiment Stats Summary (SS8.3)](#experiment-stats-summary-ss83)
 - [Run lister / pruner (`list_runs.py`)](#run-lister--pruner-list_runspy)
 - [Snapshot Attribution Dataset Pin](#snapshot-attribution-dataset-pin)
@@ -64,6 +70,8 @@
 - [Defect Register Close Protocol](#defect-register-close-protocol)
 - [Scheduled Security Scan and Lockfile Update](#scheduled-security-scan-and-lockfile-update)
 - [Equities Symbol Cap](#equities-symbol-cap)
+- [Equities Dataset Id Does Not Pin Array Content](#equities-dataset-id-does-not-pin-array-content)
+- [Recurrence Equities Crossval Instruments](#recurrence-equities-crossval-instruments)
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
@@ -615,6 +623,7 @@ Do **not** read `DUPLICATI_STALE_DAYS` as "N consecutive skips are allowed." The
 - GPGFlushError investigation (open; not a reason to drop `--no-auto-compact`): [`notes/JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md`](../notes/JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md)
 - `notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_DUPLICATI-DB-RESTORE-RUNBOOK.md` is **withdrawn** — restoring the archived job DB reproduces the wedge. Do not execute it.
 - Project-tree / external-media archives: [Juniper Project-Tree Backup](#juniper-project-tree-backup) (`util/juniper-backup.bash`).
+- The Duplicati **server** on `127.0.0.1:8300` is a third surface: [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client). It is not this lane's `duplicati-cli` timer.
 
 Troubleshooting:
 
@@ -629,6 +638,147 @@ Troubleshooting:
 | Two runners / web UI plus timer | Guard 4/5: wait, or stop the other holder of `DBPATH`; do not `pgrep -f` to decide |
 | Failed run, no desktop popup | Reporter still wrote `failures.log`; `notify-send` is best-effort under linger with no session bus |
 | Partial fileset / killed run | The unit sets `TimeoutStartSec=infinity` so systemd will not SIGTERM a long healthy run. An abrupt `kill -9` mid-WAL is the class the [archive-damage findings](../notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) warn against — TERM, then wait. |
+
+---
+
+## Yamaguchi Duplicati Server Client
+
+The Duplicati **server** on `http://127.0.0.1:8300` (2.4.0.0) is a third backup surface. It is not the scheduled `$HOME` lane ([Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)) and not the project-tree archives ([Juniper Project-Tree Backup](#juniper-project-tree-backup)). `yamaguchi_server_api.py` talks only to that loopback address (its base URL is a constant); the watchdog's `--base` and `duplicati_api.py`'s `DUPLICATI_URL` override it, and both default to it. Landed in [juniper-ml#2115](https://github.com/pcalnon/juniper-ml/pull/2115) and [juniper-ml#2134](https://github.com/pcalnon/juniper-ml/pull/2134).
+
+| Tool | Role |
+|------|------|
+| `util/ad-hoc/yamaguchi_server_api.py` | Authenticated REST client |
+| `util/ad-hoc/duplicati_api.py` | Raw `METHOD endpoint` client over the same credential. Re-authenticates once on a 401. `DUPLICATI_PW_FILE` / `DUPLICATI_PW_KEY` are no longer read: a set one gets one stderr note and is ignored |
+| `util/ad-hoc/yamaguchi_watchdog.py` | Outside poller. A job-level `--run-script-after` stays silent when the scheduler never fires, the job is gone, the server is down, or a run hangs |
+| `util/ad-hoc/yamaguchi_watchdog_deploy.bash` | Installs the user timer. `--backup-id` is required. Copying the unit file alone does not pass a job id |
+
+Tests: `tests/test_duplicati_web_credential.py`, `tests/test_yamaguchi_server_api.py`, `tests/test_yamaguchi_watchdog.py`.
+
+### Web credential
+
+Both clients read one file, in-process, through `read_credential`. The password is not an argument, not this process's environment, and not a child's.
+
+| Setting | Contract |
+|---------|----------|
+| Path | `~/.config/duplicati-backup/web-credential`. `DUPLICATI_WEB_CREDENTIAL_FILE` overrides it |
+| Mode | `0600`, a regular file, at most 64 KiB. Any group or other permission bit is refused |
+| Line | Exactly one `DUPLICATI_WEB_CREDENTIAL=<web-UI password>`. An `export ` prefix is tolerated. Blank lines, `#` comments, and other keys are ignored |
+| Value | Literal. Surrounding whitespace is dropped, and one matching pair of surrounding quotes is removed. No shell expansion |
+| Not this file | The archive passphrase is `PASSPHRASE=` in `~/.config/duplicati-backup/env`. Using that here fails login (401) |
+
+A refusal names the path, the mode, and the owner, and never the file's contents. A missing file, a non-regular file (a FIFO is opened `O_NONBLOCK`, so it cannot hang the caller), zero or two key lines, and an empty value all refuse before any request. The job verbs `export`, `delete`, `run`, and `log` also require a job id before the credential is read.
+
+### Server API
+
+```bash
+python3 util/ad-hoc/yamaguchi_server_api.py status
+python3 util/ad-hoc/yamaguchi_server_api.py serverstate
+python3 util/ad-hoc/yamaguchi_server_api.py pause
+python3 util/ad-hoc/yamaguchi_server_api.py resume
+python3 util/ad-hoc/yamaguchi_server_api.py export 7
+python3 util/ad-hoc/yamaguchi_server_api.py log --backup-id 7
+```
+
+| Exit | Meaning |
+|------|---------|
+| `0` | The verb finished. `serverstate` is 0 only for `ProgramState=Running`. `pause` is 0 only when the read-back is `Paused`. `resume` is 0 only when the read-back is `Running` |
+| `2` | `serverstate` saw `Paused`. Usage is 64, so 2 is not a bad argument |
+| `1` | Login failed, the host is unreachable, the request was refused, `delete` lacked `--yes`, or `pause` / `resume` read back a state other than the one asked for |
+| `64` | Usage: a job verb with no id, an id that is not a positive integer, or a positional id that disagrees with `--backup-id` |
+
+There is no default job id. A rebuilt job is not id 2. Pass the id positionally (`export 7`) or as `--backup-id 7`. If both are set they must be the same value matching `[1-9][0-9]*`.
+
+`pause` posts an indefinite pause. 2.4.0.0 stores it as `paused-until` and restores it on restart until `resume`. `resume` that returns 0 leaves the server `Running`; a queued overdue run starts at once.
+
+`export` cannot authenticate with the login JWT: `GET /api/v1/backup/{id}/export` on 2.4.0.0 ignores the `Authorization` header (which `req()` still attaches) and checks a `token` query parameter instead.
+The client first `POST /api/v1/auth/issuetoken/export` with the Bearer token, then passes the returned single-operation token as the `token` query parameter, with `export-passwords=false`.
+The operation token stays in memory and is never printed. Any failure, at the token step or the export step, writes nothing on stdout and exits 1.
+Success also requires a non-empty `Backup.TargetURL`; that JSON is the only stdout. `delete` requires `--yes`. `--remote-files` adds `delete-remote-files=true`.
+
+### Watchdog
+
+`util/systemd/yamaguchi-watchdog.timer` is `OnCalendar=*-*-* 12:00:00` and `Persistent=true`. The service is a oneshot whose `ExecStart` is the primary checkout's script. A non-zero exit is the alert. The durable record is written first.
+
+```bash
+python3 util/ad-hoc/yamaguchi_watchdog.py --backup-id 7
+python3 util/ad-hoc/yamaguchi_watchdog.py --backup-id 7 --state-dir /tmp/wd --no-notify
+```
+
+A run with no `--backup-id` is still a real check: it records `ALERT JOB_MISSING` in the default state directory and notifies. Pass `--state-dir` and `--no-notify` to look without touching `~/.local/state/duplicati`.
+
+| Exit | Verdict |
+|------|---------|
+| `0` | `OK`, including `RUNNING` when this job's task is active and under `--max-run-hours` (default 6) |
+| `1` | `ALERT` |
+| `2` | `UNDETERMINED` (`STATE_UNKNOWN`, `LOG_UNAVAILABLE`, `EXCEPTION`). That also alerts: an undetermined backup is not a verified one |
+| `64` | Usage from argparse. An absent or empty `--backup-id` is not this. It is exit 1 `JOB_MISSING`, because a usage error would write no record |
+
+| Code | When |
+|------|------|
+| `UNREACHABLE` | Login or `serverstate` failed: server down, credential missing or unsafe, or login refused |
+| `JOB_MISSING` | `--backup-id` is empty or not a positive integer, or that id is not in the server's backup list |
+| `PAUSED_WITH_QUEUE` | `ProgramState=Paused` and `SchedulerQueueIds` is a non-empty list. Resume with `yamaguchi_server_api.py resume` |
+| `STATE_UNKNOWN` | `ProgramState` is neither `Running` nor `Paused`, or a pause arrived with a queue that is not a list |
+| `NO_RUNS` | The job's log is empty |
+| `NOT_SUCCESS` | The newest log entry, or the newest Backup, is not `ParsedResult=Success`. A later successful Test or Compact does not hide a failed backup |
+| `STALE` | The newest Backup began more than `--max-age-hours` ago (default 26), or no Backup appears in the pages read (at most 10 pages of 20) |
+| `STUCK` | An active task has been running longer than `--max-run-hours` |
+| `LOG_UNAVAILABLE` | The log could not be read, or its newest entry is not a JSON run result |
+
+A pause with an empty queue is not an alert. The OK line names `ProgramState=Paused`. An indefinite pause becomes `PAUSED_WITH_QUEUE` at the next check after a run is queued. Freshness is the newest Backup, not a Compact or a Test. While this job's task is `RUNNING`, the previous run's age is not judged.
+
+Records, under `--state-dir` (default `~/.local/state/duplicati`):
+
+| File | Write |
+|------|-------|
+| `server-watchdog.log` | Append every check |
+| `server-watchdog.status` | Overwrite with the latest line |
+| `server-failures.log` | Append when the verdict is not `OK` |
+
+The line is `<when> <verdict> <code> backup=<id> <details>`, one line. An id that is not a positive integer is recorded as `backup=INVALID`. `notify-send` runs after those files are written, and its command line is the code, the details, and the path — not the credential file.
+
+### Deploy
+
+```bash
+bash util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>
+```
+
+`--backup-id` is required and has no default. The script exits 2 before it changes the host when the id is missing or not a positive integer, when `/home/pcalnon/Development/python/Juniper/juniper-ml` lacks the watchdog script, when that checkout's `util/systemd/yamaguchi-watchdog.service` does not contain the literal `--backup-id ${YAMAGUCHI_BACKUP_ID}`, or when `Linger` is not `yes`.
+
+Otherwise it copies the service and the timer into `~/.config/systemd/user/`, writes `yamaguchi-watchdog.service.d/backup-id.conf` (`Environment=YAMAGUCHI_BACKUP_ID=<id>`), reloads, runs `enable --now` on the timer, and starts one check. `ExecStart` is that primary checkout's script, so deploy only after that tree is the one you intend to run.
+
+Read the id from `yamaguchi_server_api.py status` (`backup id=…`) once the web credential exists. Until then `status` cannot log in: deploy with `--backup-id 2`, the id every earlier status record names and the one Procedures A0, A and A2 keep, and re-run with the new id only after Procedure B (the deploy script's header). Do not wait for the credential: until that file exists every check records `ALERT UNREACHABLE` durably, which is the intended signal. Run the deploy immediately after every sync of the primary checkout that changes the watchdog. A unit with no drop-in expands `${YAMAGUCHI_BACKUP_ID}` to one empty argument, records `JOB_MISSING`, and checks no job.
+
+### Helpers that still assume job 2
+
+`yamaguchi_server_api.py`, the watchdog and the deploy script have no default id. These helpers still do, so a bare invocation reads or edits job 2 (the residue list in [juniper-ml#2134](https://github.com/pcalnon/juniper-ml/pull/2134)). Pass the id from `status`:
+
+| Script | Flag | Default |
+|--------|------|---------|
+| `util/ad-hoc/yamaguchi_census.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_config_record.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_edit_setting.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_edit_sources.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/yamaguchi_edit_target.py` | `--backup-id` | `"2"` |
+| `util/ad-hoc/duplicati_build_fresh_job.py` | `--source-job` | `2` (the job whose sources and filters are copied) |
+| `util/ad-hoc/duplicati_source_measure.py` | `--backup-id` | `2` (reads the server database read-only) |
+| `util/ad-hoc/duplicati_size_histogram.py` | `--backup-id` | `2` (reads the server database read-only) |
+
+Job 2 is hard-coded, with no flag, in `util/ad-hoc/yamaguchi_switch_aes.py` (a `GET` and a `PUT` of `/api/v1/backup/2`), `util/ad-hoc/yamaguchi_retire_tier3.py`, `util/ad-hoc/old_archive_purge.py` and `util/ad-hoc/yamaguchi_retire_tier2.bash` (`log 2`). After a rebuild that assigns another id they refuse or act on the wrong job.
+
+### Operator pitfalls
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| `FATAL: web credential file … does not exist` | Write one `DUPLICATI_WEB_CREDENTIAL=` line, mode `0600`. That is the web-UI password, not `PASSPHRASE=` |
+| `FATAL: … is mode …` | `chmod 0600`. Rotate the password if anyone else could have read the file |
+| `export` exits 1 and stdout is empty | Expected on failure. A Bearer-only export is HTTP 400 on 2.4.0.0; the client has to obtain `issuetoken/export` first. Do not treat empty stdout as configuration JSON |
+| `serverstate` exits 2 | The server is `Paused` |
+| Every 12:00 check is `JOB_MISSING` | The unit has no `backup-id.conf` drop-in, or the id is not on the server. Re-run the deploy script with the id `status` prints |
+| Every check is `UNREACHABLE` just after deploy | The web credential file is not there yet. The drop-in can still be correct |
+| `PAUSED_WITH_QUEUE` | `pause` is indefinite and survives reboot. `python3 util/ad-hoc/yamaguchi_server_api.py resume` |
+| The desktop never pops, and the log has the alert | `notify-send` is best-effort. Read `server-failures.log` |
+| A bare watchdog run notified the desktop | It writes the live state directory unless you pass `--state-dir` and `--no-notify` |
 
 ---
 
@@ -1218,7 +1368,41 @@ python util/env_floor_drift_check.py --repo-root .
 
 When an env (or repeated `--site-packages`) yields several `site-packages` dirs, `installed_juniper_versions` keeps the **highest** version across them. A later lower wheel must not clobber an earlier higher one (false `BELOW_FLOOR`). Underscore dist names normalize to kebab-case; malformed / unreadable `METADATA` and non-`juniper-*` dists are skipped.
 
-Coverage: open juniper-ml#796 (`ResolveSiteDirsTest` — precedence + exit-2 reasons) and #802 (`InstalledVersionsTest` — highest-across-dirs / malformed skip). Structural CI gate: `tests/test_env_floor_drift_check.py` (synthetic dist-info only; real-env scan is host-manual).
+Coverage: juniper-ml#796 (`ResolveSiteDirsTest` — precedence + exit-2 reasons) and #802 (`InstalledVersionsTest` — highest-across-dirs / malformed skip), both merged 2026-07-27. Structural CI gate: `tests/test_env_floor_drift_check.py` (synthetic dist-info only; real-env scan is host-manual). `MalformedOperatorInputGuardTest` in that file pins the degrade-to-exit-2 cases below.
+
+#### Malformed operator input
+
+Both inputs are typed by hand: the target repo's `pyproject.toml`, and
+`prompts/agent_templates/data/ecosystem.yaml` (the target repo's copy if it has one, else juniper-ml's).
+`x.get(k) or {}` only covers a missing or empty value. A truthy non-mapping —
+`project = ["x"]`, `optional-dependencies = ["oops"]`, a YAML document that is a list,
+or `conda_envs` written as a sequence — used to reach `.get` / `.values` / `.items` and
+raise `AttributeError`. That exception left `main`, so the operator saw a traceback
+where this section promises exit 2. juniper-ml#2001 coerces those values with `_mapping`
+(keep a `dict`, otherwise `{}`). Background:
+[`notes/JUNIPER_2026-09-11_JUNIPER-ML_FALSY-GUARD-POPULATION-TRIAGE.md`](../notes/JUNIPER_2026-09-11_JUNIPER-ML_FALSY-GUARD-POPULATION-TRIAGE.md).
+
+`ecosystem.yaml` is the path that actually fires. `resolve_site_dirs` falls back to it
+whenever neither `--site-packages` nor `--env` is passed, nothing else in the repo reads
+`conda_envs`, and yamllint checks syntax rather than structure. A `conda_envs` sequence,
+a document that is itself a list, a non-UTF-8 file (`UnicodeDecodeError` is a `ValueError`,
+not an `OSError`), missing PyYAML, or a YAML syntax error all return an empty map. The CLI
+then exits 2 with `no conda env maps to '<package>'` — the same sentence as a missing
+`used_by` row. Pass `--env` or `--site-packages` to move on, and quote the env name when
+you fix the file.
+
+A YAML key is not always a string. `NO:` parses as boolean false (the Norway problem) and `3:` as an int. Both are skipped: `conda_dir / "envs" / name` cannot take a non-string, and that used to be a `TypeError`. A sibling key that is a string is kept. If the env for this package was under such a key, you get the same exit 2.
+
+The pyproject cases show up mid-edit or against a scratch `--repo-root`. A sibling
+file this malformed usually fails `pip install` and `python -m build` first.
+`project = ["x"]` or `project = "oops"` leaves no `[project]` table to read, and a
+`pyproject.toml` that does not parse (non-UTF-8 bytes included) reads as empty. `main`
+reads floors first, so when the file yields no juniper `>=` floors the message is
+`no juniper-* version floors declared` and the name check never runs. A non-list
+`dependencies` contributes nothing — a string is not walked character by character.
+A non-list extra is skipped. A bad `optional-dependencies` does **not** discard a
+well-formed `dependencies` list. Dropping those floors would exit 2 as "nothing
+declared" and hide a real `BELOW_FLOOR`.
 
 Troubleshooting:
 
@@ -1226,7 +1410,9 @@ Troubleshooting:
 |---------|-------------|
 | Exit `2`: `no --site-packages dir exists` | Path typo or stale CI fixture — pass a real directory, or drop `--site-packages` and use `--env`. |
 | Exit `2`: `no site-packages under … for env(s)` | Env missing under `--conda-dir`, or no `lib/python*/site-packages` yet — create/install into the env. |
-| Exit `2`: `no conda env maps to '…' in ecosystem.yaml` | Target `[project].name` has no `used_by` entry — pass `--env` / `--site-packages`, or add the mapping. |
+| Exit `2`: `no conda env maps to '…' in ecosystem.yaml` | Target `[project].name` has no `used_by` entry — pass `--env` / `--site-packages`, or add the mapping. Or the file degraded to an empty map: `conda_envs` is a list, the document is a list, the bytes are not UTF-8, PyYAML is missing, the YAML does not parse, or the env's key is an unquoted `NO` / a number. See [Malformed operator input](#malformed-operator-input). |
+| Exit `2`: `no juniper-* version floors declared`, and `dependencies` looks set | `dependencies` is not a list of requirement strings, `project` is not a table, or `pyproject.toml` does not parse. A bad extra alone does not do this when `dependencies` itself declares a juniper `>=` floor. |
+| Extras missing from the report; `dependencies` floors still enforced | Expected when `optional-dependencies` is not a table of lists. Fix the extra; the `dependencies` floors are still the requirement. |
 | Unexpected `BELOW_FLOOR` after a partial upgrade | Multi-interpreter env may still have an older site-packages tree — the tool reports the **highest** installed version; upgrade every tree or remove the stale one. |
 | `MISSING` but `pip show` works | Checker reads `METADATA` on disk under the resolved dirs only — confirm `--env` / `--site-packages` matches the interpreter you inspected. |
 | Floor / editable green, `import torch` still fails | Those checkers never import torch. Classify the ABI/`_C` layout with [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5). |
@@ -1352,6 +1538,8 @@ Troubleshooting:
 Recording click-by-click verdicts into the 298-row matrix is a **separate write path**: [Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes).
 
 Defaults: data `8101` (dedicated `python3.14` venv), cascor `8202` (`JuniperCascor1`), canopy `8051` (`JuniperCanopy1` service mode). Scratch under `${TMPDIR:-/tmp}/juniper-e2e`. Exactly one of `--up` / `--down` / `--status` is required (misuse exits `2`).
+
+`--with-recurrence` adds a fourth leg between cascor and canopy: the `juniper-recurrence` console script from `JUNIPER_E2E_RECURRENCE_CONDA` (default `JuniperCascor1`) on `8211` (`JUNIPER_E2E_RECURRENCE_PORT`), health-gated on `/v1/health/ready`. Before `serve` the leg runs the [Recurrence Env Preflight](#recurrence-env-preflight); `--skip-env-preflight` or `JUNIPER_E2E_SKIP_ENV_PREFLIGHT=1` turns a refusal into a warning.
 
 ```bash
 util/isolated_stack.bash --dry-run --up   # preview only
@@ -1485,10 +1673,126 @@ Troubleshooting:
 | Control-WS `403` / reconnect churn | Cascor allowlist + canopy Origin must both be canopy's origin (`http://127.0.0.1:<CANOPY_PORT>`). See checklist §4. |
 | Topology / metrics store looks empty while the wire is correct | Do not trust a browser `_store()` read or the first TOPOPROBE lines. Run the apply / soak / report / revert loop in [F-039 Store Probe](#f-039-store-probe). |
 | One green topology paint "proves" F-CANOPY-037 | 2 of 11 was the finding — a single session is ~18% likely while still broken. Run [F-CANOPY-037 Render Census](#f-canopy-037-render-census). |
+| Replay scrubber stuck at 0, or the shared trio's network changed after a replay | `start_replay` loads the snapshot into that cascor. Use the throwaway wrapper and an explicit `POST /v1/snapshots`. See [CAN-015 Replay Re-drive](#can-015-replay-re-drive). |
 
 Do **not** point isolated ports at the host stack or run `--up` on ports `plant_all` already owns.
 
 Store-apply contradictions (correct `/api/topology` body, empty DOM) are a different class from bring-up failures — see [F-039 Store Probe](#f-039-store-probe).
+
+---
+
+## CAN-015 Replay Re-drive
+
+A live check of canopy's replay player replaces that cascor process's network (`LifecycleManager.start_replay` calls `_load_snapshot_to_network`). Drive it with [`util/ad-hoc/2026-10-04_replay_redrive_stack.bash`](../util/ad-hoc/2026-10-04_replay_redrive_stack.bash) (juniper-ml#2120), which hard-sets throwaway ports and then `exec`s [`util/isolated_stack.bash`](../util/isolated_stack.bash). The shared trio is that helper's defaults: data `8101`, cascor `8202`, canopy `8051`.
+
+The player and snapshot contracts below were read from cascor `95cdc562`
+(`src/api/lifecycle/manager.py`, `src/cascade_correlation/cascade_correlation.py`)
+and canopy `1b2dd438` (`src/frontend/components/replay_player_panel.py`),
+the two repos' `main` when the recorded drive ran (2026-10-04). All three files were
+unchanged on cascor `95aa8ec3` and canopy `3029d07d` (`main` on 2026-10-08).
+One recorded drive is in
+[`JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`](../notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md)
+and [`reports/2026-10-04_canopy-replay-redrive/verdicts.json`](../reports/2026-10-04_canopy-replay-redrive/verdicts.json):
+11 rows, all `PASS`, on snapshot `snapshot_20261004T112734Z`.
+
+### Throwaway wrapper
+
+`JUNIPER_REDRIVE_ECO` is required. It must already hold `juniper-data/`, `juniper-cascor/`, and `juniper-canopy/`. The wrapper resolves it with `realpath -e` and refuses (exit 2) when the path is `/home/pcalnon/Development/python/Juniper` or anything under that directory.
+
+```bash
+export JUNIPER_REDRIVE_ECO=/path/to/scratch/eco
+export JUNIPER_REDRIVE_DATA_SHA=<data sha>
+export JUNIPER_REDRIVE_CASCOR_SHA=<cascor sha>
+export JUNIPER_REDRIVE_CANOPY_SHA=<canopy sha>
+bash util/ad-hoc/2026-10-04_replay_redrive_stack.bash --up
+bash util/ad-hoc/2026-10-04_replay_redrive_stack.bash --status
+bash util/ad-hoc/2026-10-04_replay_redrive_stack.bash --down
+bash util/ad-hoc/2026-10-04_replay_redrive_stack.bash --dry-run --up
+```
+
+The ports are hard-set after the eco check, so an exported port cannot move a leg: data `8113`, cascor `8214`, canopy `8063`, recurrence `8223`. `--with-recurrence` is refused. Port `8223` is still in the wrapper's listener set, because `isolated_stack.bash --down` stops the recurrence port unconditionally: `--up` refuses any listener on it, and `--down` refuses one this run did not record, even though recurrence is never started.
+
+| Refuse (exit 2) | When |
+|-----------------|------|
+| `JUNIPER_REDRIVE_ECO` empty, missing, or inside the primary ecosystem root | Before any port check |
+| A leg directory is missing | `juniper-data`, `juniper-cascor`, or `juniper-canopy` |
+| `--with-recurrence`, or no `--up` / `--status` / `--down` | The wrapper does not start recurrence |
+| A hard-set port is on the forbidden list | `8101` `8202` `8051` `8211` `8100` `8201` `8050` `8111` `8212` `8061` `8221` `8055` `8056`. A self-check: the hard-set ports are disjoint from it |
+| `--up` and `8113`, `8214`, `8063`, or `8223` already has a listener | A failed bring-up would kill that listener by port |
+| `--down` and the listener's pid is absent from `${ECO}/run/*.pid` | Includes a listener whose pid `ss` cannot see |
+
+Also exported before `exec`: `JUNIPER_E2E_PROJECT_DIR` (the eco path), `JUNIPER_E2E_RUN_DIR` (`${ECO}/run`), `JUNIPER_E2E_DATA_EXTRAS=api`, and both snapshot directories (`JUNIPER_CASCOR_SNAPSHOTS_DIR`, `JUNIPER_E2E_CANOPY_SNAPSHOT_DIR`) set to `${ECO}/run/cascor-snapshots`. `JUNIPER_DATA_GIT_SHA` is `JUNIPER_REDRIVE_DATA_SHA` and may be empty. The cascor and canopy sha variables are written only into the wrapper's log line.
+
+Cascor reads `JUNIPER_CASCOR_SNAPSHOTS_DIR` in two places. The service's `_get_snapshots_dir` (behind `POST /v1/snapshots`) reads it at call time; `cascor_constants` resolves it at import time for the automatic `create_snapshot` writer. It has to be in cascor's environment at launch, which the wrapper guarantees. `isolated_stack.bash` forwards `JUNIPER_E2E_CANOPY_SNAPSHOT_DIR` as canopy's `JUNIPER_CANOPY_SNAPSHOT_DIR`. Canopy lists snapshots from that local directory, so the two paths have to match or the Snapshots tab is empty while the `.h5` is on cascor (the helper's snapshot-directory comment).
+
+`--down` remains kill-by-port. It does not delete `JUNIPER_CASCOR_SNAPSHOTS_DIR`, and it does not sweep `<project>/juniper-cascor/cascor-snapshots`. `--dry-run` skips the wrapper's listener checks and lets the stack print its commands. When a leg is a tarball rather than a git checkout, `isolated_stack.bash` cannot `rev-parse` it, and cascor and canopy report `git_sha: null` on `/v1/health`. The recorded drive was that shape.
+
+### A replayable snapshot
+
+`_ReplaySession.length` (`manager.py`) is the longest of `train_loss`, `value_loss`, `train_accuracy`, and `value_accuracy`. Empty arrays yield `length=0`. Playable indexes are `[0, length - 1]`. `range_end` starts at `length`, and `set_range` documents `[start, end)`.
+
+| Writer | Training history |
+|--------|------------------|
+| `CascadeCorrelationNetwork.create_snapshot`, called at the end of every `train_output_layer` | Calls `_save_to_hdf5` without `include_training_state`. That argument defaults to `False`. The same call passes `include_training_data=False`, which drops the dataset, not the history. |
+| `LifecycleManager.save_snapshot` (`POST /v1/snapshots`) | `serializer.save_network(..., include_training_state=True)` |
+
+With `JUNIPER_CASCOR_SNAPSHOTS_DIR` set at launch, both writers use that directory. After a fit, the newest listed file can be the automatic one. Replay the id from the explicit POST.
+
+The evidence ledger records one explicit save, taken after two immediate Start/Stop cycles, that also held no loss arrays; it is not explained. The driver therefore waits (up to 600 s) for a fit that has reported `is_running` or `is_training` and then gone idle before it saves; `--skip-train` skips that wait. Cascor logs `Snapshot replay started: <id> (length=N)`. Require `N > 0`.
+
+`start_training` raises `Cannot start training while replaying a snapshot` while the FSM is `REPLAYING`. Stop (`POST /v1/snapshots/<id>/replay/control` with `action=stop`) or `reset()` (it stops the replay thread) before the next Start.
+
+The driver's short spirals fit posts these canopy keys in one `POST /api/set_params` (`CASCOR_CAPS`). Canopy maps each to a cascor key in `src/backend/cascor_service_adapter.py`:
+
+| Canopy key | Cascor key | Value |
+|------------|------------|-------|
+| `nn_output_epochs` | `output_epochs` | `40` |
+| `nn_max_total_epochs` | `epochs_max` | `40` |
+| `nn_max_iterations` | `max_iterations` (growth rounds; not `max_epochs`) | `12` |
+| `cn_training_iterations` | `candidate_epochs` | `20` |
+| `nn_max_hidden_units` | `max_hidden_units` | `32` |
+
+`nn_output_epochs` (`output_epochs`) bounds each growth round's output pass. `max_epochs` governs only the initial output pass, and when it is unset that pass uses `output_epochs` too (`CascadeCorrelationNetwork.fit`).
+
+```bash
+curl -s -X POST http://127.0.0.1:8214/v1/snapshots \
+  -H 'Content-Type: application/json' \
+  -d '{"description":"replay re-drive"}'
+```
+
+### What the player must show
+
+[`util/ad-hoc/2026-10-04_replay_redrive.py`](../util/ad-hoc/2026-10-04_replay_redrive.py) drives one browser session against `8113` / `8214` / `8063` and exits 0 only when every row is `PASS`.
+
+```bash
+LIBTORCH= LD_LIBRARY_PATH= /opt/miniforge3/envs/JuniperCanopy1/bin/python \
+  util/ad-hoc/2026-10-04_replay_redrive.py \
+  --run-dir /path/to/scratch/eco/run \
+  --out reports/replay-redrive-out
+```
+
+`--snapshot ID` skips the explicit save and replays that id. `--skip-train` skips the spirals fit. The cascor access log is `--run-dir/logs/juniper-cascor.log`. Control requests are counted there (`POST /v1/snapshots/<id>/replay/control`), not in the browser.
+
+On canopy `1b2dd438`:
+
+- `range`, `speed`, and `weights_available` are on `data.session`. A V2 badge reads `V2 ✓ weights`. Reading the top-level block leaves the badge at `V1 (metrics only)` (F-CANOPY-015).
+- Cascor's `range` is `{"start", "end"}` with an exclusive `end`. The slider is inclusive, so the displayed high is `end - 1` and `queue_control` sends `hi + 1`. `time_index.snapshot_window.end_epoch` is a length; the last index is `end_epoch - 1`, and `end_epoch == 0` stays `(0, 0)` because the helper returns `max(start, end)`. The legacy `window.end_epoch` is already the last index (canopy#697).
+- `render_session` writes the scrubber, speed, and range, which are Inputs of `queue_control`. A value that already matches the session returns `dash.no_update`. The graph-cycle exemption `can015-replay-player-control-loop` does not stop the POST. An idle player sends none. The scrubber compares `time_index.current`, speed compares the nested summary (default `SPEED_DEFAULT` `1.0`), and range compares inclusive to inclusive.
+- `_merge_session` unwraps cascor's `{status, data, meta}` envelope and maps `result` onto the stored session. A successful Stop stores `snapshot_id: None` and the panel returns to idle (F-CANOPY-056).
+
+The driver opens the snapshot's `Load` menu (the replay item is a dropdown item; it scrolls the toggle into view and uses `click(force=True)`), reads Radix thumbs from `aria-valuenow` / `aria-valuemax`, and polls readout text to a deadline. One sample after a sleep is not a settled reading. Playwright is the `JuniperCanopy1` interpreter above, run with `LIBTORCH` and `LD_LIBRARY_PATH` empty as the driver's usage line shows.
+
+### Operator pitfalls
+
+| Symptom | What it means |
+|---------|----------------|
+| Scrubber max is 0 and seek does nothing | The file is a `create_snapshot` (no history), or the explicit save ran before `train_loss` was written. POST `/v1/snapshots` after the fit reaches a terminal status and replay that id. Require `length=N` with `N > 0` in the cascor log. |
+| Snapshots tab is empty while cascor has the `.h5` | Canopy's snapshot dir and `JUNIPER_CASCOR_SNAPSHOTS_DIR` differ. The wrapper sets both before `--up`. |
+| The next Start fails with "while replaying" | The FSM is still `REPLAYING`. Stop the player, or call `reset()`, then Start. |
+| An idle player keeps POSTing `/replay/control` | `render_session` echoed into `queue_control`. The guard is the three comparisons above. |
+| The range readout is one past the last frame | `range.end` or `snapshot_window.end_epoch` was used as an inclusive index. |
+| `--down` stopped the shared trio | The ports were `8101` / `8202` / `8051`. Use the wrapper: it refuses those ports and refuses a pid it did not record. |
+| `--up` refuses port `8223` | That port is in the wrapper's listener set. Recurrence is not started, and the port still has to be free. |
 
 ---
 
@@ -1756,17 +2060,24 @@ The first heading for an id wins. A later restatement of the same id is skipped.
 
 ### Dispositions
 
-Tokens are taken from the **last 170 characters** of the header body (the text between the em-dash and the closing `**`), case-insensitive whole words:
+Tokens are taken from the **last 170 characters** of the header body (the text between the em-dash and the closing `**`), case-insensitive whole words. The script checks them in this order; the first match wins:
 
 | Token in that tail | Printed | Counts as |
 |--------------------|---------|-----------|
-| `FIXED` or `HEALED` | `FIXED` | closed, shipped |
-| `ACCEPTED` and not also FIXED | `ACCEPT` | owner-deferred — **not** open, **not** fixed |
-| neither | `OPEN` | still on the Phase 2 exit criterion |
+| `FIXED` or `HEALED` | `FIXED` | closed, shipped. Wins even if the same tail also says `ACCEPTED` or `WITHDRAWN` |
+| `ACCEPTED`, and not already fixed | `ACCEPT` | owner-deferred — **not** open, **not** fixed. Wins over `WITHDRAWN` |
+| `WITHDRAWN`, and neither of the above | `WITHDR` | the finding was **wrong**. Not open, not fixed, not accepted |
+| none of these | `OPEN` | still on the Phase 2 exit criterion |
 
 **ACCEPTED is a third disposition.** The defect is real and unrepaired, but the owner signed off (plan §6.3 "explicitly deferred"). Counting it as FIXED overstates what shipped; counting it as OPEN keeps an already-settled exit criterion red.
 
-`--open-only` hides FIXED and ACCEPTED rows from the table. The totals block underneath still counts every finding.
+**WITHDRAWN is a fourth disposition.** Nothing was repaired and nothing was accepted: the finding itself was wrong, so there is no defect to leave on the exit criterion. Counting it as OPEN keeps a phantom red; counting it as FIXED claims a repair that never happened.
+
+The printed token is `WITHDR` (six characters, same width as `FIXED` / `ACCEPT` / `OPEN`). The totals block has its own `withdrawn` line. Priority is independent: a withdrawn row still prints the first severity token in the header (`P2`, `LEDGER`, …). It is excluded from the `open P1` / `open P2` lines.
+
+The word has to sit in that 170-character tail. `F-CANOPY-050`'s header is 383 characters and opens with `WITHDRAWN`; it counts as withdrawn only because the tail repeats it (`WITHDRAWN 2026-09-09`). A `WITHDRAWN` that appears only before the tail leaves the row `OPEN`. `F-E2E-007` is the short case: its whole 128-character header is inside the window, so both its opening `WITHDRAWN` and the parenthetical's lowercase `withdrawn` (matched under `re.I`) fall in the tail.
+
+`--open-only` hides FIXED, ACCEPTED, and WITHDRAWN rows from the table. The totals block underneath still counts every finding, including `withdrawn`.
 
 ### Priority
 
@@ -1775,12 +2086,12 @@ First match of `P0/P1`, `P0`, `P1`, `P2`, `CRITICAL`, or `LEDGER` in the **full*
 ### Constraints
 
 - Always exits **0**. A green shell is not "no open P0/P1".
-- A `FIXED` token more than 170 characters before the end of the header body does **not** close an OPEN tail. Put the disposition in the header, near the end.
-- Putting `FIXED` / `HEALED` / `ACCEPTED` only in the finding's body paragraphs does nothing.
+- A `FIXED` / `HEALED` / `ACCEPTED` / `WITHDRAWN` token more than 170 characters before the end of the header body does **not** change the disposition. Put the disposition in the header, near the end.
+- Putting `FIXED` / `HEALED` / `ACCEPTED` / `WITHDRAWN` only in the finding's body paragraphs does nothing.
 - The printed summary is `header.split(":")[0]` truncated to 78 characters — a colon in the title cuts the line short; the id and disposition are unaffected.
 - A missing `--note` path is an uncaught `FileNotFoundError` (exit 1), not a triage table.
 
-Re-run; the counts drift. On 2026-09-04 against `origin/main` this printed **54** findings, **34** fixed, **1** accepted (`F-CANOPY-004`), **19** open (1 `P0/P1` + 3 `P1` + 15 `P2`).
+Re-run; the counts drift. On 2026-10-08 against `origin/main` `959748c5` this printed **79** findings, **53** fixed, **1** accepted (`F-CANOPY-004`), **2** withdrawn (`F-E2E-007`, `F-CANOPY-050`), **23** open (7 `P1` + 16 `P2`). Do not quote that block after the ledger changes.
 Scoring the Topology tab against this trio is a **separate driver**: [Canopy E2E Topology Driver](#canopy-e2e-topology-driver).
 
 ---
@@ -3038,7 +3349,8 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
   - Ambiguous canonical SKIP (open #795): two non-worktree checkouts with the same `[project].name` → `discover_canonical` returns `(None, [..])`; `--fix --dry-run` emits `action=SKIP` with `ambiguous` in `reason` (never re-points to `candidates[0]`).
   - Live `run_fix` (open #802): mocked `subprocess.run` covers `FIXED` on success, `ERROR` on `CalledProcessError`, and `ERROR` then `FIXED` when the first item raises `OSError` (plan continues).
 - `tests/test_env_floor_drift_check.py` -- Tests for `util/env_floor_drift_check.py` (I-2): floor parsing (juniper-* `>=` bound; skips non-juniper/floorless/self-ref; dedup-highest), numeric version compare (`0.10.0 > 0.9.0`), OK/BELOW_FLOOR/MISSING classification, exit codes (0/1/2, `--strict`), `--json` -- via a synthetic site-packages fixture (no real pip/conda); also asserts no hardcoded env name. Sole gate (`util/` not lint-gated); real-env scan is manual-verify.
-  - Open #796 adds `ResolveSiteDirsTest` (`--site-packages` wins, `--env` expand, ecosystem `used_by`, exit-2 reasons). Open #802 adds `InstalledVersionsTest` (highest-across-dirs, malformed/unreadable skip, underscore normalize).
+  - `MalformedOperatorInputGuardTest` (juniper-ml#2001): a truthy non-mapping, non-UTF-8 bytes, or a non-string env key degrades instead of raising (one case end-to-end at exit 2), and a bad extra still keeps floors declared in `dependencies`.
+  - #796 added `ResolveSiteDirsTest` (`--site-packages` wins, `--env` expand, ecosystem `used_by`, exit-2 reasons). #802 added `InstalledVersionsTest` (highest-across-dirs, malformed/unreadable skip, underscore normalize). Both merged 2026-07-27.
 - `tests/test_workflow_script_paths.py` -- Lint test: every `python <path.py>` / `bash <path.bash>` invocation in `.github/workflows/*.yml` must reference a path that exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18.
 - The sequence-safety screen unit tests (symbol + docs: `LOST`/`WEAKENED`/`DUPLICATED`, SF3 masking pin, relocation WARN, heading / `>=N`-run FAIL, both trailer escapes + wildcard, `--min-run`, the `--scope` glob engine, exit codes 0/1/2) moved to `juniper-ci-tools/tests/` with the package migration (rollout W3); they run under the dedicated `CI -- juniper-ci-tools` workflow. juniper-ml's `tests/test_ci_tools_drift.py` carries the anti-resurrection guard + the two new screen-pin drift checks.
 - `tests/test_doc_tools_drift.py` -- Lint test (plan §5.1) for `juniper-doc-tools` pins. Extracts the `juniper-doc-tools>=X,<Y` pin from juniper-ml's own workflows and each cloned consumer repo's `ci.yml`, then asserts the range still admits the current version (read from `juniper-doc-tools/pyproject.toml`). Soft-warns on pins more than 2 minors behind; hard-fails when the upper bound excludes current.
@@ -3227,7 +3539,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_termination_branch_precondition.py` -- The termination-branch precondition: `step_count` is deterministic only WITHIN a branch (29 of 79 repeated configs diverge across branches, zero within one), a driver-truncated `outcome` measures the budget rather than the code, and an unannotated cell is its own branch rather than being filtered into unanimity.
 - `tests/test_run_suite_uncountable_report.py` -- REPORT.md's third state: `not countable` must stay distinct from HOLDS and BROKEN, an empty gate must remain the cascor-unmeasured case, and the report must ask `summarise` rather than re-deriving `len(counts) == 1` -- which reads HOLDS on a half-measured suite.
 - `tests/test_worktree_inuse_probe.py` -- Hermetic coverage for `util/ad-hoc/2026-09-02_worktree_inuse_probe.py`, the guard that REFUSES a destructive worktree cleanup: cwd and open-fd hits are STRONG, a cmdline mention alone is only a caution, and a process owned by another user is reported unreadable rather than counted as absent.
-- `tests/test_e2e_finding_triage.py` -- The E2E finding-triage dispositions, which shipped with zero tests: `accepted` is a THIRD state and not a synonym for fixed or open, the first heading wins so a later `fixed` cannot close an earlier `open`, and `--open-only` hides rows without changing the totals.
+- `tests/test_e2e_finding_triage.py` -- The E2E finding-triage dispositions, which shipped with zero tests: `accepted` is a THIRD state and not a synonym for fixed or open, the first heading wins so a later `fixed` cannot close an earlier `open`, and `--open-only` hides rows without changing the totals. The totals regex requires a `withdrawn` line but does not score which rows are withdrawn; that fourth disposition is documented in [Canopy E2E Finding Triage](#canopy-e2e-finding-triage).
 - `tests/test_e2e_finding_triage_nested_bold.py` -- Header truncation in `util/ad-hoc/e2e_finding_triage.py`: a nested-bold heading must not be cut at the inner marker, which would split one finding's identity into two and double-count it.
 - `tests/test_e2e_finding_triage_priority.py` -- `pri_of` first-token severity, lifted out of a nested function so it can be imported: the FIRST severity token anywhere in the bolded header body wins, so a header naming another severity in prose before the parenthetical triages as that severity (F-CANOPY-037 / F-E2E-007).
 - `tests/test_markdown_structure_delta.py` -- Hermetic gate for `util/markdown_structure_delta.py`, the CI step that fails a PR which BREAKS markdown structure. Pins the three ways such a gate goes wrong: **red on arrival** (`main` measured **zero** structural problems from 2026-09-15, after the 2026-09-10 structure repair cleared the real damage and the 2026-09-15 rule narrowing cleared the last 17, which were SCREEN FALSE POSITIVES rather than debt: a ` ```text ` banner whose art lines begin `## `, and a ` ````jinja2 ` template sample whose H2s are the sample. Both are analysed in [Markdown Structure Screen — the Two False Positives That Narrowed the Rule](#markdown-structure-screen--the-two-false-positives-that-narrowed-the-rule), which is the evidence for the narrowing and not a waiver -- no file is allowlisted and the delta gate still fails a new problem in either file. The count is a moving floor rather than a backlog, having gone 104/23 -> 102/21 -> 63/14 -> 73/15 -> 63/14 -> 17/2 -> 0/0 in ten days, so re-measure rather than quote. **Zero on `main` does not make the delta scoping redundant**: an untouched file is still not the PR's problem, and the count can regress the moment damage lands -- so the comparison is per-file and per-PR -- an untouched file is not the PR's problem, a touched one must not come out worse, an ADDED one has no before and so starts at zero); **vacuous pass** (the underlying screen silently skips anything not ending `.md`, so examining zero of N touched files is an error rather than a success, and the temp materialisation keeps the original basename); and an unresolvable base ref exiting 2 rather than comparing nothing.
@@ -3237,6 +3549,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_duplicati_web_credential.py` -- B2 of the 2026-10-03 backup recovery plan: the ONE web-UI credential file both Duplicati API clients read, `~/.config/duplicati-backup/web-credential` (0600), through `yamaguchi_server_api.read_credential`. It replaces the primary checkout's world-readable `.env` (exposure S-5). Pins the one-line `DUPLICATI_WEB_CREDENTIAL=` format; refusal of any group or other bit, of a non-regular file (a FIFO without hanging), and of zero or two key lines, each message naming path, mode and owner but never content. Also pins that the retired `DUPLICATI_PW_FILE` / `DUPLICATI_PW_KEY` are ignored, that the bare-secret fallback is gone, and that the password leaves only as the login body. `tests/duplicati_api_stub.py` replaces `urlopen`, so no socket opens.
 - `tests/test_yamaguchi_server_api.py` -- The `serverstate` / `pause` / `resume` verbs P0 step 10 needs (the 2026-09-24 STOP's item 3). Pins: exit 0 Running / 2 Paused / 64 usage; `pause` indefinite and read back; a job id required before any credential read or request; `export` issuing the single-operation token 2.4.0.0 requires (`POST /api/v1/auth/issuetoken/export`, then `token=` on the export route) and printing it nowhere; a failed `export`, at either step, leaving stdout empty, since it feeds the guard dry-run's `TargetURL`; and the `status` / `log` strings the bash callers grep. `tests/duplicati_api_stub.py` answers the export flow as 2.4.0.0 does, before any canned route -- 400 token-less, 500 for a token it never signed, 401 for another operation's; its earlier 200 is how ml#2115 merged an export that failed on every call.
 - `tests/test_yamaguchi_watchdog.py` -- Design §7.6 for `util/ad-hoc/yamaguchi_watchdog.py`: `Paused` with a non-empty `SchedulerQueueIds` alerts `PAUSED_WITH_QUEUE` (YAM §8.22); freshness is anchored on the newest **Backup**, keyset-paged and bounded; the job id has no default, and an absent or empty `--backup-id` is recorded durably as `JOB_MISSING` while a usage error exits 64 (the watchdog's 2 means UNDETERMINED). Also pins the record line format, a `notify-send` child that never sees the password, and the unit / deploy-script contract, checked statically because the deploy script changes systemd user units. `util/ad-hoc/2026-10-03_b2_mutation_check.py` puts 38 defects back across the three B2 suites, one at a time, and requires the suite assigned to each to fail.
+- Operator surface for the Yamaguchi credential, API, and watchdog suites: [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client).
 - `tests/test_register_open_set.py` -- The defect register's open-set counter, which had zero tests: which rows count as open, that a dagger or letter suffix is part of the id, and that the count and the enumerated list cannot disagree.
 - `tests/test_register_status_crosscheck.py` -- The register's third reading: §4 **FIXED rows, the §2 prose enumeration and the §5.1 verification table must agree three ways. `**FIXED` counts only in the STATUS cell -- a §5.1 row that merely mentions it is not a close -- and a missing §4 heading is an error rather than an empty-and-AGREE.
 - `tests/test_soak_next_probe_split.py` -- `pick_next` least-coverage-first selection, lifted to module scope so it can be tested: pre-intervention rows must not enter the run counter, or a probe the intervention never touched looks already-sampled and billed sessions keep landing on the covered ones.
@@ -3285,13 +3598,15 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - `util/worktree_cleanup.bash` -- Automated worktree cleanup with CWD-safe session continuity (V2 procedure). `MAIN_REPO` derives from `${BASH_SOURCE[0]}` (one dir up) with a `JUNIPER_ML_MAIN_REPO` override for test fixtures. Flags: `--old-worktree`, `--old-branch`, `--parent-branch`, `--new-worktree`, `--new-branch`, `--skip-pr`, `--skip-remote-delete`, `--dry-run`. Phase 7 always restores the primary checkout to an up-to-date `main` (skips on a dirty tree or a checkout refusal; F-6 stale-checkout class).
   - Phase 1: non-empty `status --porcelain` in the old worktree → `exit 1` (`Commit or stash…`) before any push; `--dry-run` skips the check. Clean tree then pushes when ahead/`-u` when no upstream/skips when synced. Phase 2 refuses an existing `NEW_WORKTREE` path (`exit 1`, never clobbers).
 - `util/ad-hoc/2026-09-02_worktree_inuse_probe.py` -- Independent second opinion for a worktree sweep. STRONG hits (cwd or an open fd inside the tree) exit 1 `REFUSE`; WEAK hits (cmdline substring) print `CAUTION` and do not set the exit code; this process and its parent are excluded from weak by pid so the probe's own argv cannot report every tree in use. Empty argv exits 2. Read-only. Operator surface: [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost).
-- `util/ad-hoc/e2e_finding_triage.py` -- Mechanical P0/P1 open-count for the canopy E2E Phase 2 exit criterion. Reads only line-starting `**F-… — …**` headers; FIXED/HEALED/ACCEPTED from the last 170 chars of that header; ACCEPTED is a third disposition (not FIXED, not OPEN); `--open-only` hides closed rows but still prints full totals; always exits 0. Operator surface: [Canopy E2E Finding Triage](#canopy-e2e-finding-triage).
+- `util/ad-hoc/e2e_finding_triage.py` -- Mechanical P0/P1 open-count for the canopy E2E Phase 2 exit criterion. Reads only line-starting `**F-… — …**` headers; FIXED/HEALED, then ACCEPTED, then WITHDRAWN, from the last 170 chars of that header; ACCEPTED is a third disposition (not FIXED, not OPEN); WITHDRAWN is a fourth (prints `WITHDR`); `--open-only` hides all three but still prints full totals; always exits 0. Operator surface: [Canopy E2E Finding Triage](#canopy-e2e-finding-triage).
 - `util/duplicati_scheduled_backup.bash` / `util/install_duplicati_timer.bash` / `util/duplicati_backup_failure.bash` -- Host `$HOME` Duplicati lane under `systemd --user` (#1292).
   - Installer **copies** (never symlinks) the runner, OnFailure reporter, and three user units; does **not** `enable --now` the timer.
   - Runner fail-closes on empty/short passphrase, unmounted dest, wrong-filesystem dest, and tmpfs `--tempdir`; `flock` / DB-open holders `skip_or_fail` (a skip overwrites `result=OK`, so the next skip always escalates).
   - `--no-auto-compact=true` is load-bearing. Distinct from `util/juniper-backup.bash` (project-tree `tar | gpg -e`). Operator surface: [`docs/REFERENCE.md` § Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane).
 - `util/juniper-backup.bash` -- Per-repo project-tree archive to attached external media: `tar -cjf` (bzip2) piped into `gpg -e` (asymmetric, two `ENCRYPT_KEYS`). Build once, copy ciphertext. `--dry-run` writes nothing. Restore is `gpg -d FILE | tar -xjf -` (not `-xzf`). Exit 0/1/2/4. Unattended verify is `--list-packets` only. Drives are found under `JUNIPER_BACKUP_MEDIA_ROOT` (default `/run/media/$USER`), read under the same name and default as the scheduler. An absolute device entry is its own mount root. Every mount root must lie under `/mnt`, `/media` or `/run/media` (exit 2 otherwise), and exit 0 needs every configured device mounted. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
 - `util/install_juniper_backup_timer.bash` / `util/juniper-backup-scheduled.bash` / `util/systemd/juniper-backup{,-failure}.service` / `util/systemd/juniper-backup.{timer,path}` -- Tier-2 lane under `systemd --user` (recovery plan B6). The installer copies the runner, the scheduler and the shared OnFailure reporter into `~/.local/bin/` and the four units into `~/.config/systemd/user/`, then `daemon-reload` and `enable --now` the timer and the path unit. `--dry-run` writes nothing; it refuses root and a missing `Linger` before any write. Both modes print the acceptance order: the OK run first, with both sticks mounted. Run it with `bash`. `juniper-backup-failure.service` points the reporter at `~/.local/state/juniper-backup`, and the reporter (1.1.0) titles the notification with the failed unit. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
+- `util/ad-hoc/yamaguchi_server_api.py` / `util/ad-hoc/yamaguchi_watchdog.py` / `util/ad-hoc/yamaguchi_watchdog_deploy.bash` -- Duplicati 2.4.0.0 server on `127.0.0.1:8300` (not the `$HOME` `duplicati-cli` timer, not `juniper-backup.bash`). One `0600` web-credential file; `export` issues a single-operation token and prints nothing on failure; the watchdog has no default job id.
+  Operator surface: [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client).
 - `util/soak_next_probe.py` -- Emits the next pointer-follow soak probe's **task only** (unprimed). Default pick is least-covered then registry order; `--probe-id` needs the **full slug** (`P19-port-check-fail-opens`, not `P19`); `--reveal` is scoring-only; `--status` is post-intervention run counts with no task text. Tests: `tests/test_soak_next_probe.py`.
 - `util/soak_run_probe.py` -- Headless `claude -p` wrapper: dispatch, capture, mechanical retrieval channel (`tool_use` **inputs only** — not the answer text, #1644; not a sibling repo's same-named file, #1855; still no `tool_result`), scoring packet. `--dry-run` does not require the `claude` binary and must not print the task. A **real** run refuses (exit **3**) a terminal `BET-FAILING` / `HOLDS-AT-*` **and** an unreadable `DEGRADED` / `NO-DATA` / `NO-SEEDED-DATA` / crashed ledger unless `--force`; a **dry run is exempt** and previews with a NOTE on stderr (#1690, second arm 2026-09-10) — the rule rations billed sessions and a dry run spends none. `--force` is an open owner decision, not sanctioned. Reaper P1 pidfile is `$JUNIPER_EXP_RUN_ROOT/soak-probes/soak-probe-<pid>.pid`, not `reports/soak/runs/`. Tests: `tests/test_soak_run_probe.py`. Operator surface: [Pointer-Follow Soak](#pointer-follow-soak).
 - `util/soak_ledger.py` -- Append-only soak ledger (`probe-run` / `report` / `status` / `verify-probes` / `resolve` / `rescore`). Seeded arm decides; organic describes. `source-recovered` stays in the follow-rate denominator. `--outcome miss` requires `--class`. `rescore` is one-way to `source-recovered`. `analyse()` has no era filter (ledger §15.4 is not applied). `status` exits `1` on `BET-FAILING` or an open escalation (by design). Tests: `tests/test_soak_ledger.py`.
@@ -3313,7 +3628,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - Documentation link validator now lives in [`juniper-doc-tools/`](juniper-doc-tools/) and is published to PyPI as `juniper-doc-tools` (Wave 4 of the doc-link migration plan; install with `pip install juniper-doc-tools` and invoke via `juniper-check-doc-links`).
 - X7 off-loop census (ad-hoc; lands with juniper-ml#1631) -- exploratory sibling of the canopy slice-1a gate. **Not the authority.** Operator surface: [§ X7 Off-Loop Census](#x7-off-loop-census). Do not quote v1 counts; do not reintroduce module-global expression exemptions.
 - `util/ad-hoc/e2e_seg17_topology_driver.py` -- `--step` is order-preserving on one browser page; `topostate` must run first or alone or M-TOPOLOGY-18 reports `INDETERMINATE`. The module docstring's `W4-01..17` / `W1-12..14` list is **correct** (matrix §4 steps); three of its step→row aliases are not. Operator surface: [§ Canopy E2E Topology Step Order and Blast-Radius IDs](#canopy-e2e-topology-step-order-and-blast-radius-ids). Scorer predicates remain in-flight docs #1675.
-- `util/ad-hoc/e2e_finding_triage.py` -- `pri_of` takes the first severity token anywhere in the bolded header body (not only the parenthetical). Do not name another severity in header prose. Dispositions remain in-flight docs #1646. Same section as the bullet above.
+- `util/ad-hoc/e2e_finding_triage.py` -- `pri_of` takes the first severity token anywhere in the bolded header body (not only the parenthetical). Do not name another severity in header prose. Dispositions, including WITHDRAWN, are [Canopy E2E Finding Triage](#canopy-e2e-finding-triage). Same section as the bullet above.
 - Canopy E2E matrix writes (ad-hoc) -- `e2e_matrix_fill.py` (dry-run default; `status` header per table; escaped-pipe split), `2026-09-02_matrix_set_verdicts.py` (**no dry-run**; `--from` + last-cell write; naive `line.split("|")`), `e2e_matrix_rescore.py` (named rows; missing ids warn and still write). Ledger reader: `e2e_unfilled_rows.py`. Do not plan from `e2e_row_coverage.py`. Operator surface: [§ Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes).
 - X7 off-loop census (`util/ad-hoc/2026-09-04_x7_offload_census_v2.py`) -- exploratory sibling of the canopy slice-1a gate. **Not the authority.** After canopy#567 the shipped count is **58**. Operator surface: [§ X7 Off-Loop Census](#x7-off-loop-census). Do not quote v1 counts; do not reintroduce module-global expression exemptions; a green `main.py` gate is not proof the adapter is clean.
 - `util/ad-hoc/e2e_unfilled_rows.py` -- Canopy E2E **ledger** reader. Prints which `C2.` / `M-` matrix status cells are still placeholders. Reuses `e2e_matrix_fill` pipe-splitting + placeholder set. Exit 0 always. **Not** `e2e_row_coverage.py` (that diffs TSVs and can list already-`PASS` rows as remaining). Operator surface: [§ Canopy E2E Unfilled-Rows Ledger](#canopy-e2e-unfilled-rows-ledger).
@@ -3332,7 +3647,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Ambiguous canonical (juniper-ml#795 coverage): `discover_canonical` returns `(None, [.., ..])` when two+ non-worktree checkouts share a `[project].name`; `--fix` then `action=SKIP` with `reason` containing `ambiguous` (never picks `candidates[0]`). Operator surface: `docs/REFERENCE.md` Editable Install Drift Check + cheatsheet tip.
   - Live `--fix` actions (juniper-ml#802 coverage): `run_fix` marks `FIXED` on successful `pip install -e <canonical> --no-deps --force-reinstall`; `OSError` / `CalledProcessError` become `action=ERROR` (stderr truncated to 500 chars) without aborting later plan items; after a non-dry run, `main` re-scans so exit `1` still reflects remaining orphans. Operator surface: `docs/REFERENCE.md` Editable Install Drift Check + cheatsheet tip.
 - `util/env_floor_drift_check.py` -- Floor-drift checker (gap I-2): reads each installed `juniper-*` version from its `*.dist-info/METADATA` and compares to the target repo's `pyproject.toml` floors -> `OK` / `BELOW_FLOOR` / `MISSING` -- the below-floor plain-wheel case the pins/editable checkers miss. Env selection is data-driven (`--site-packages`/`--env`/`ecosystem.yaml`); exit 1 on `BELOW_FLOOR` (`--strict` also `MISSING`); `--json`; structural CI gate. Tests: `tests/test_env_floor_drift_check.py`.
-  - `resolve_site_dirs` precedence: `--site-packages` → `--env` → `ecosystem.yaml` `used_by` for `[project].name`; unresolved paths exit 2 with the reason string (never invent an env name). Operator surface: `docs/REFERENCE.md` Environment Floor Drift Check.
+  - `resolve_site_dirs` precedence: `--site-packages` → `--env` → `ecosystem.yaml` `used_by` for `[project].name`; unresolved paths exit 2 with the reason string (never invent an env name). A truthy non-mapping in either hand-authored file degrades the same way (`_mapping`); it does not traceback. Operator surface: [Environment Floor Drift Check](#environment-floor-drift-check) ([Malformed operator input](#malformed-operator-input)).
   - Multi-site / multi-interpreter: `installed_juniper_versions` keeps the **highest** version across site-packages dirs; malformed / unreadable `METADATA` and non-`juniper-*` are skipped. Coverage: open #796 / #802.
 - `util/check_conda_env_torch.bash` -- Classifies a conda env's `import torch` / `torch._C` layout (P-5). Exit 0 healthy / 1 missing env / 2 free-threaded shadow / 3 other import fail / 4 namespace-package `_C` (May-7 regular-3.14 wheel class, or imported `_C` has no `__file__`). Does **not** rebuild. `JUNIPER_CONDA_DIR` default `/opt/miniforge3`. Tests: `tests/test_check_conda_env_torch.py`. Operator surface: [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5).
 - `util/release_train/` -- PyPI release-train tooling (release-train plan §12). `registry.yaml`: the data-driven 18-package / 8-repo registry (§4.1). `detect.py`: the per-package "needs a PyPI deploy?" engine (§4.2/4.3, Phase 1, report-only) -- PyPI truth vs declared version, tag-matched diff base, `gh compare` (`--local-git` fallback past the 300-file cap), and a substantive-hunk SHIP filter discounting the notes-rename comment/docstring/link class; report-only, exit 0/1/2.
@@ -3539,6 +3854,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
     `socat "TCP-LISTEN:<port>,bind=<gateway>,fork,reuseaddr" "TCP:127.0.0.1:<port>"` relay per scraped service (pids under `RUN_DIR/relays/`), and write the §7.2 target file
     to `<JUNIPER_EXP_DEPLOY_DIR>/prometheus/targets/<RUN_ID>.json` (labels `service` / `environment=host-experiment` / `run_id` / `experiment`; removed at teardown).
     Without it, `--status` reports the run as UNSCRAPED.
+- `util/ad-hoc/2026-10-04_recurrence_equities_cv_matrix.py` / `util/ad-hoc/2026-10-04_recurrence_equities_linear_conditioning.py` -- W0.8 HTTP replay and W0.9 in-process matrix for the E-H equities artifact, plus the linear-design conditioning companion. Dataset selector and fold geometry are hard-coded. `replay` returns 0 on a non-200 crossval. A matrix cell error is recorded and the grid continues. Operator surface: [Recurrence Equities Crossval Instruments](#recurrence-equities-crossval-instruments).
 - `util/experiments/run_experiment.py` -- Single-run experiment driver (plan §6.3; Wave 2.2 = the cascor **service** path, Wave 2.3 = the recurrence **service** path, Waves 2.4/2.5 = the §8.1/§8.2 plot sets via `plots_cascor.py` / `plots_recurrence.py` (2.5 closes G-5), Wave 2.6 = the §8.3 stats/summary via `stats_summary.py`).
   - Stats (§8.3): every run also writes `artifacts/results/stats.json` + human-readable `summary.md` (stdlib-only renderer, every outcome incl. stalled/failed): identity / dataset-shape (tabular vs sequence from meta) / outcome-timing blocks from the manifest, cascor candidate-correlation-per-round + step-duration p50/p95 from the driver's own `metrics_series.csv` (honestly labeled per-poll means -- true per-step quantiles are not recoverable from a sum/count exposition), the recurrence train/CV/θ/readout block.
     Operator read-path: [Experiment Stats Summary (SS8.3)](#experiment-stats-summary-ss83).
@@ -3562,6 +3878,8 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
     - Root-cause note: [`notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md`](../notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md); cascor-side fidelity fix cascor#504; candidate-param plumbing gap cascor#505.
   - Each poll samples the loopback `/metrics` allowlist (`candidate_correlation` / `hidden_units_total` / `training_loss` / `training_accuracy_ratio` / step-duration sum+count) into `artifacts/results/metrics_series.csv` -- correlation exists ONLY there, never in `/v1/metrics/history` rows; a 404 (metrics disabled, G-3) degrades sampling, not the run.
   - Recurrence drive (Wave 2.3): health-gates `/v1/health/ready`, then the **synchronous** `POST /v1/train` (the response IS completion — no poll loop; the Q-2 budget is the request's socket timeout → `timed_out`), then optional `POST /v1/predict` (`predict.from_dataset_split`, default `test`) and `POST /v1/crossval` (same LMU hyperparams as `train:` for bench comparability); every phase refs the dataset by content-addressed `dataset_id` (H-8).
+  - Null `train:` values are dropped before those recurrence POSTs, and the service fills every omitted field from its own defaults (an omitted `readout` is linear at `default_ridge`): [Recurrence Crossval Hyperparameters](#recurrence-crossval-hyperparameters). An error `detail` from the service is copied into the run record (its first 500 characters): [Recurrence Upstream Error Text](#recurrence-upstream-error-text).
+  - A busy recurrence `POST /v1/train` is a `409` and exit 4; the driver neither stops the holder nor retries, and after a wall-clock timeout its own fit keeps the service's lock: [One caller per recurrence service](#one-caller-per-recurrence-service).
   - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) re-runs the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` as a manifest-recorded extra step (the CLI has no `--params` flag, so the dataset_id ref is the only faithful form).
     That CLI is `ports.json` `recurrence_launch.cli` when the launcher recorded one (W1.9, F-D4; `shutil.which` on the driver's PATH otherwise), and rerun parity — the served process's interpreter and `juniper-recurrence-model` version — must hold, or the phase fails without running it.
     Every phase leaves a record in the manifest's `phases` block (`ok` / `failed` + `error` / `skipped` when not enabled / `not_reached`). `degraded` = train succeeded but an ENABLED predict, crossval or save_model phase did not; it is derived from those records, never from `acceptance.ok`, so a plot-only acceptance failure stays `succeeded`.
@@ -3928,7 +4246,7 @@ Weekly schedule (Monday 06:00 UTC) and manual dispatch, permissions `contents: r
 ### Lockfile Update — workflow contract (`lockfile-update.yml`)
 
 Weekly schedule (Monday 08:00 UTC) and manual dispatch, permissions exactly `contents: write` + `pull-requests: write`. Installs `juniper-ci-tools` from PyPI, runs `juniper-generate-dep-docs` to regenerate `conf/requirements_ci.txt` +
-`conf/conda_environment_ci.yaml`, and opens a PR on `chore/lockfile-update` (labels `dependencies` + `automated`) via SHA-pinned `peter-evans/create-pull-request` when the tree changes. A clean tree opens no PR, and the PR is reviewed
+`conf/conda_environment_ci.yaml`, and opens a PR on `chore/lockfile-update` (labels `dependencies` + `automated`) via SHA-pinned `peter-evans/create-pull-request` when the tree changes. A successful run always changes it — a new timestamped snapshot pair plus re-stamped header dates — so a week whose pins did not move still opens a PR; review the pin lines ([Scheduled Security Scan and Lockfile Update](#scheduled-security-scan-and-lockfile-update)). The PR is reviewed
 like any dependency change — never auto-merged. The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298; this workflow must keep the console-script path. Gates: `tests/test_lockfile_update_workflow.py` +
 `tests/test_ci_tools_drift.py`.
 
@@ -4213,6 +4531,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 
 - **CR-024 body limit** — `RequestBodyLimitMiddleware` treats `Content-Length` as an early-reject hint only and **always** stream-caps `POST` / `PUT` / `PATCH` against the cumulative limit (default 10 MiB), so an under-declared header or a chunked body with none still 413s. Skipping the stream when the declared length is present-and-small is the classic bypass.
 - **Auth before rate limit** — with API keys configured, `APIKeyAuth` runs first, so a 401 never consumes a rate-limit token. Blank / whitespace-only configured keys are filtered out (the `auth_posture.real_keys` rule) so an empty secret file cannot enable auth that then accepts an empty `X-API-Key`.
+- **Non-ASCII API keys are a 401, not a 500** — `APIKeyAuth.validate` compares UTF-8 bytes (`surrogatepass`). Comparing `str` with `hmac.compare_digest` raises `TypeError` on any non-ASCII character, which escaped as a 500, skipped `FailedAuthThrottle`, and (under Sentry's default local-variable capture) could ship the configured key. Published `juniper-service-core` 0.7.0 still has the `str` compare. Operator surface: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
 - **429 header passthrough** — `RateLimiter` raises `HTTPException` carrying `Retry-After` + `X-RateLimit-*`; `SecurityMiddleware.dispatch` must rebuild `JSONResponse(..., headers=exc.headers)`. RateLimiter unit tests alone do not exercise that catch path.
 - **Control-WS log sanitizing** — reject logs that interpolate untrusted Origin/command text; go through the module-local `_sanitize_for_log` helpers (`control_security` strips `\r`/`\n`; `control_stream` also drops other C0 controls, keeping tabs) so CRLF cannot forge multi-line control-plane records. Sanitizing changes log records only, never handshake outcomes or ack JSON.
 - **Zero rate limit** — `ws_control_rate_limit_per_sec=0` builds a `LeakyBucket` with no refill; `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop.
@@ -4345,6 +4664,8 @@ Primary design: [`notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-C
 
 This is **not** the isolated E2E trio (`util/isolated_stack.bash` on `8101`/`8202`/`8051`) and **not** the host stack (`plant_all` / `8100`/`8201`/`8050`). Recurrence **timings** already land on the manifest; the split gate still has **no recurrence work counter** — see [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable) (lands with juniper-ml#1683).
 
+Before `serve`, the recurrence leg runs the scoped env check in [Recurrence Env Preflight](#recurrence-env-preflight) (W0.2, juniper-ml#2139): a green `/v1/health/ready` does not prove a `split="full"` request can run.
+
 Recurrence YAML still allow-lists `dataset.split` / `predict.from_dataset_split` as `{train, test, full}` — `"validation"` is exit 2. That is the shipped NPZ contract, not the closed design. Operator surface: [Train / Val / Test Partition Contract](#train--val--test-partition-contract).
 
 ### Launcher (`util/experiment_stack.bash`)
@@ -4440,6 +4761,31 @@ A mismatch fails the phase with both sides named, and the CLI is not run (`outco
 
 `util/isolated_stack.bash` is not changed. It writes no `ports.json` and the driver never reads its run dir; it never created a per-run snapshots dir, so F-D9's defect is absent there; and it has no `--config` route, so inheritance is the only route for the log knobs, and it already works.
 
+Operator details beyond that contract (`recurrence_up` in `util/experiment_stack.bash`; `_save_model_rerun` / `_rerun_parity` in `util/experiments/run_experiment.py`):
+
+- `--dry-run` announces the preflight, the model-version probe and the `serve` line (with `JUNIPER_RECURRENCE_SNAPSHOTS_DIR`) and writes no record. Under `--skip-env-preflight` (or `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1`) the preflight only warns, so the leg continues and the record **is** written. A rewrite that fails logs `could not record the recurrence launch` to `$RUN_DIR/logs/launch.log`, and `serve` is not started.
+- `model_version` is `null` unless the probe's whole answer is one token matching `[A-Za-z0-9.+!_-]+`. The driver's own probe runs in the re-run's environment, from `/`, without `-s`, with a 60-second timeout.
+- `unverified` is not a match, but it does not block: no recorded `python`, a `null` `model_version`, or a probe that cannot be read leaves parity `unverified` with a `reason`, and the CLI **runs**. Only a definite `mismatch` fails the phase.
+- `--recurrence-url` is compared with `http://127.0.0.1:<ports.json recurrence>` after any trailing slash is stripped.
+- The re-run is `<cli> train --dataset <dataset_id> --split <split> --out …/model.npz` plus one flag per `train:` key that is set (`--d`, `--theta`, `--ridge`, `--readout`, `--rff-features`, `--rff-gamma`, `--mlp-hidden`, `--mlp-weight-decay`, `--mlp-lr`, `--mlp-max-epochs`, `--mlp-patience`),
+  with `JUNIPER_DATA_URL` set to the run's data instance, `LD_LIBRARY_PATH` emptied, and a 600-second limit. `manifest.save_model_rerun` also carries that `cmd` and the `returncode`, plus `stderr_tail` (the last 500 characters) when it exits non-zero.
+- The CLI's `--params` / `--params-file` (juniper-recurrence#190, W0.6) only feed `--generator`; the re-run names the artifact with `--dataset`.
+
+```bash
+jq '{outcome, phase: .phases.save_model, rerun: .save_model_rerun, launch: .ports.recurrence_launch}' "$RUN_DIR/manifest.json"
+```
+
+| What you see | What it means |
+|--------------|---------------|
+| `cli_source` is `path`, and another `juniper-recurrence` is earlier on `PATH` | No usable record: the run dir has no `recurrence_launch` (brought up before W1.9, or not by `recurrence_up`), or `--recurrence-url` set it aside (`save_model_rerun.launch_record` says so). |
+| `parity.interpreter` is `mismatch` | The recorded CLI's shebang resolves to a different interpreter than `serve` used. The train CLI was not started. |
+| `parity.model_version` is `mismatch` | Same interpreter, a different `juniper-recurrence-model` than at `--up` (the env changed). The train CLI was not started. |
+| `parity.model_version` is `unverified` and `recurrence_launch.model_version` is `null` | The launch probe did not print one version token. The CLI still ran. |
+| The error says the recorded CLI is missing or not executable | The env's console script changed after `--up`. There is no `PATH` fallback. |
+| `.npz` files under `$RUN_DIR/recurrence-snapshots` | `JUNIPER_RECURRENCE_SNAPSHOTS_DIR` did not reach the service's settings: a run brought up before W1.10, a service not started by `recurrence_up`, or a staged YAML `service.snapshots_dir` (which outranks the env var). |
+| `--up` stops before `serve` and `launch.log` says the launch could not be recorded | `ports.json` could not be rewritten. Repair the run dir and bring the stack up again. |
+| Preflight refused, and `ports.json` has no `recurrence_launch` | Expected: a refused env records nothing. |
+
 #### F-6 listener pid rule (binding)
 
 `$!` after `( cd … && nohup <server> … & )` is the backgrounded **subshell**, not the server. No `*_up` records `$!`. After the health gate, `record_listener_pid` writes the listener from `ss -tlnpH "sport = :<port>"` plus the process cmdline. Teardown kills pidfile-first only after proving the pid is alive, owned by the current uid, and still running the recorded cmdline (sending SIGTERM, then a bounded SIGKILL).
@@ -4520,6 +4866,47 @@ Always writes §13.4 `manifest.json` (including stalled / timed-out / failed run
 Cascor path polls `GET /v1/training/status` and samples loopback `/metrics` (redirect-following — bare `/metrics` 307s) into `metrics_series.csv`; candidate correlation exists **only** there. Recurrence path uses synchronous `POST /v1/train` (response IS completion; Q-2 budget = socket timeout → `timed_out`). `outputs.save_model: true` re-runs `juniper-recurrence train --dataset <dataset_id> … --out …/model.npz` (G-18), using the launcher-recorded CLI under rerun parity (W1.9; [Recurrence launch record and service env](#recurrence-launch-record-and-service-env)).
 
 Coverage: `tests/test_run_experiment.py`.
+
+#### One caller per recurrence service
+
+W1.5 of [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) (F-S6, F-S9, F-C4, F-D5, F-CON1, F-CON2).
+The service half is juniper-recurrence#192 (`d20a581b`) and is **unreleased**: PyPI `juniper-recurrence` 0.5.0 answers a busy train with the bare string `a training run is already in progress`, and has no `operation_id`, no `failed` state and no data-client timeout setting.
+The driver half (`expect_operation_id`) is not built: `run_experiment.py` sends and checks no operation id.
+
+The service has one process-wide `train_lock` and one in-memory model. `POST /v1/train` and a snapshot restore each mint an `operation_id` (a `uuid4` as 32 lowercase hex characters) when they take that lock.
+`util/experiment_stack.bash` binds recurrence on **8260–8289**, one service per run. The service's own default port is **8210**; Compose publishes it on host **8211**, and `util/isolated_stack.bash --with-recurrence` also defaults to **8211**.
+A driver pointed at such a shared listener with `--recurrence-url` shares its lock and its model with every other caller, canopy included.
+
+| Call | Body (juniper-recurrence `main`) |
+|------|----------------------------------|
+| `POST /v1/train` 200 | `operation_id`, and `metrics_scope` is always `"in_sample"` (`final_metrics` are scored on the split the fit just trained on). |
+| `POST /v1/train` 409 | `detail` is an object: `message`, `operation_id`, `operation` (`train` or `restore`), `busy_since` (ISO-8601 UTC), `requested_by`, `dataset_id`. `message` is `a training run is already in progress`, or `a snapshot restore is in progress` when the holder is a restore. The holder fields are null only when the lock was taken outside this machinery. |
+| `GET /v1/training/status` | `state` is `idle`, `training`, `restoring`, `trained`, `restored` or `failed`, plus the operation fields below. |
+| `POST /v1/predict`, `POST /v1/model/snapshots` | Optional `expect_operation_id`. Omitted, the route scores or saves the loaded model. A mismatch is `409` with `detail.message`, `expected_operation_id` and `model_operation_id`. No model is still the string `no trained model; call POST /v1/train first`. |
+| `POST /v1/model/snapshots/{id}/restore` while the lock is held | `409` whose `detail` is the string `a training run is in progress; retry when it completes`. A completed restore returns its own `operation_id`; a later `expect_operation_id` has to name that id. |
+| `POST /v1/crossval` 409 | A different lock (`crossval_lock`). `detail` is the string `a cross-validation run is already in progress`, with no `operation_id`. Crossval never touches the in-memory model. |
+
+Status fields: `operation_id`, `operation`, `busy_since`, `dataset_id` and `requested_by` describe the operation `state` names (`busy_since` only while it holds the lock). `model_operation_id` is the operation that produced the model `/v1/predict` would score; it differs from `operation_id` while another operation holds the lock, and after one fails.
+`failure` (`detail`, `status_code`) is present only under `failed`; an earlier model stays loaded, and a success clears the record. `restored` means this process loaded a snapshot and never fitted it: no `final_metrics` and no events.
+
+`X-Request-ID` on a train or restore is stored verbatim as `requested_by`. The fit is not cancelled when the client gives up: the handler runs to completion and holds `train_lock` until then. Read `GET /v1/training/status`, and wait for `trained` or `failed` before posting another train.
+
+`JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS` (default **120**; no unprefixed alias) is the service's juniper-data client timeout, including the dataset create that runs a cold `equities_seq` fetch. Keep it under the caller's own budget. A fetch that exceeds it fails inside the service as `502` `juniper-data unreachable: …`.
+
+What `run_experiment.py` records against that service:
+
+- The train body is the dataset ref plus the YAML `train:` keys that are set. Its headers are `Accept` and `Content-Type` only, so `requested_by` on that fit is null.
+- The socket timeout is the wall budget (`--max-wall-seconds` > YAML `outputs.max_wall_seconds` > **3600**). A timeout sets `outcome: timed_out` and writes the budget into `phases.train.error`. The driver does not call `GET /v1/training/status`, and the fit keeps the lock.
+- A train `422` is `ConfigError` (exit **2**); any other non-200 raises `RunFailed` (exit **4**). `_detail` stringifies `detail` and keeps 500 characters, so a `409` object appears in `phases.train.error` and `acceptance.reasons` as a Python dict repr. `artifacts/results/train_response.json` is written only for HTTP 200.
+- `manifest.train` keeps `final_metrics`, `n_epochs`, `stopped_reason` and `dataset`. The operation id is only in `train_response.json`.
+- Predict posts `{"dataset": {"dataset_id", "split"}}` without `expect_operation_id`, so it scores whatever model is loaded, including one another caller trained or restored on the same listener.
+- A busy train is exit 4. The driver does not stop the holder and does not retry.
+
+```bash
+curl -sS "http://127.0.0.1:$(jq -r .recurrence "$RUN_DIR/ports.json")/v1/training/status"
+jq '.operation_id, .metrics_scope' "$RUN_DIR/artifacts/results/train_response.json"
+jq '.outcome, .phases.train, .train' "$RUN_DIR/manifest.json"
+```
 
 #### Plot SKIP vs acceptance (`ValueError` contract)
 
@@ -4825,10 +5212,100 @@ Test seams (operator-visible): `JUNIPER_SUITE_LAUNCHER`, `JUNIPER_SUITE_DRIVER`,
 | Repeats are not repeats | `include` cells do not inherit `matrix`. Put the repeat axis on `matrix` (PF-1's `experiment.description` list). |
 | `make_baseline` / `compare_baseline` names "no countable work" on a recurrence suite | Expected — recurrence has no work-done counter. Report the run (`read_run_metrics.py --run RUN_DIR --json`); do not cut a speed-only baseline. See [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable). |
 | Recurrence `work_invariant` is false even when every cell looks the same | Third state: `work_countable` is false, so the invariant is false because the question does not apply — not because the counts differed. Use `--json`; the human table is cascor-shaped. |
+| A hand-written `POST /v1/crossval` blows up while the suite cell is sane | The body omitted the `train:` keys. Crossval fits a fresh model per fold from the body — linear at `default_ridge`, 0.0 on an E-H stack — and never reuses the trained weights. See [Recurrence Crossval Hyperparameters](#recurrence-crossval-hyperparameters). |
+| Recurrence train exit `4` on `HTTP 409` | Another caller's fit or restore holds the service (a timed-out driver fit keeps running too). See [One caller per recurrence service](#one-caller-per-recurrence-service). |
+| A recurrence phase error quotes a header value | The HTTP `detail` is upstream exception text, and the driver copies it into the manifest, `stats.json` and the suite registry. Do not paste those files. See [Recurrence Upstream Error Text](#recurrence-upstream-error-text). |
 
 Do **not** point experiment ports at `plant_all` / isolated-stack ports, and do not use this launcher when you need canopy (use `isolated_stack.bash` or the host stack instead).
 
 Q-8 baselines and the split comparator are a **separate** operator surface: [Perf-Lane Work Gate](#perf-lane-work-gate). A `compare_baseline.py` FAIL is now interpretable — it means the workload, host, termination branch and measurement all matched and `step_count` still moved. **Never wire that tool to CI**: P1 design §6 closed that 2026-09-07 on structural grounds — host identity blocks, CI is `ubuntu-latest`, no self-hosted runner exists, so it exits 2 REFUSED on every CI run.
+
+---
+
+## Recurrence Env Preflight
+
+Operator runbook for the check that refuses to serve `juniper-recurrence` from an env whose recurrence dependency closure is stale. The script is `util/recurrence_env_preflight.bash`. Both host launchers run it from `recurrence_up`, after the console-script check and before `serve`. Cascor legs are not checked.
+
+Design: [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) W0.2 (F-E2, and the launcher half of F-E5). Consensus record: [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-PLAN-CONSENSUS-VALIDATION.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-PLAN-CONSENSUS-VALIDATION.md).
+Shipped in [juniper-ml#2139](https://github.com/pcalnon/juniper-ml/pull/2139), which also added the `util/` and test-suite entries and, under [Experiment Stack Utilities](#experiment-stack-utilities), the `JUNIPER_EXP_SKIP_ENV_PREFLIGHT` row and the `ENV PREFLIGHT REFUSED` troubleshooting row.
+
+Why readiness is not enough: before W0.2 both launchers accepted the env on two signals, the console script existing and `GET /v1/health/ready` answering. On 2026-10-03 `JuniperCascor1` passed both while serving `juniper-recurrence-model` 0.1.5 (no `derive_full_split`) and `juniper-service-core` 0.5.0 under an installed app pinned `>=0.3.0,<0.4.0` and `>=0.6.0,<0.8.0`, and every `POST /v1/crossval` then failed 422 with missing NPZ key `X_full` (F-E1).
+Readiness still does not import `derive_full_split` (plan W3.0b would add that check), so on the launcher path this preflight is the gate. Repairing the env is W0.1 (recipe: juniper-recurrence#189); plan v1.4.1 records its model half applied and its service-core half deferred, because a live cascor on `:8202` imports from the same env.
+
+### When it runs
+
+| Launcher | Recurrence leg | Interpreter it judges | Skip hatch |
+|----------|----------------|-----------------------|------------|
+| `util/experiment_stack.bash --up --recurrence` | After data (and cascor, if asked), once the console script in `JUNIPER_EXP_RECURRENCE_CONDA` (default `JuniperCascor1`) is executable. A finding fails the leg; `do_up` then runs `teardown_run`, which keeps the run dir and logs. | The console script's shebang: a plain absolute `python*` path as written; a `/bin/sh` trampoline or anything else (no shebang) falls back to the env's `bin/python`. | `--skip-env-preflight` or `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` |
+| `util/isolated_stack.bash --up --with-recurrence` | After data and cascor, before canopy, once `RECURRENCE_BIN` is executable. A finding fails the leg; `do_up` then runs `do_down`, which does not delete `logs/`. | `RECURRENCE_BIN`'s shebang, same fallback. The preflight runs with `LD_LIBRARY_PATH=''`, the value the serve leg uses. | `--skip-env-preflight` or `JUNIPER_E2E_SKIP_ENV_PREFLIGHT=1` |
+
+The two env vars are not aliases: the experiment-stack one does nothing for `isolated_stack.bash`, and the reverse. The script's own flag is `--skip`; each launcher translates `--skip-env-preflight` into it.
+
+Neither launcher resolves symlinks, so a venv `bin/python` that points at a base interpreter is judged as the venv. A shebang that names a deleted interpreter (the 2026-09-12 `JuniperCascor1` 3.13 → 3.14 upgrade deleted the one older console scripts still name) is passed through as written, and the preflight reports it as not executable.
+
+`--dry-run` prints the preflight command and does not run it; neither launcher creates a run dir or a `launch.log` under `--dry-run`.
+
+`util/experiments/run_suite.py` calls `--up` with a fixed argv (`--up --<app> --config … --experiment <cell_id>`, plus `--grafana-bridge` when `JUNIPER_SUITE_GRAFANA_BRIDGE` is `1` / `true` / `yes` / `on`) and has no skip flag. It passes its whole environment to the launcher, so export `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` before the suite.
+
+The script is committed mode `0644`. The launchers, and a manual run, invoke it with `bash`:
+
+```bash
+util/experiment_stack.bash --dry-run --up --recurrence
+util/isolated_stack.bash --dry-run --up --with-recurrence
+bash util/recurrence_env_preflight.bash --python /opt/miniforge3/envs/JuniperCascor1/bin/python
+bash util/recurrence_env_preflight.bash --python /opt/miniforge3/envs/JuniperCascor1/bin/python --skip
+bash util/recurrence_env_preflight.bash --help
+```
+
+### The three checks
+
+Every check is `<python> -s …` run from `/`: `-s` keeps a `~/.local` package from masking a hole in the env, and the `cd /` keeps the caller's checkout off `sys.path`. A relative `--python` is prefixed with the caller's `$PWD` before that `cd`. An interpreter that is missing, not executable, or a directory is one finding, and no other check runs.
+
+1. **`pip check`, scoped.** `PIP_DISABLE_PIP_VERSION_CHECK=1 <python> -s -m pip check`. A line is a finding when the distribution that has the requirement, or the one named after `but you have`, is in the recurrence closure: `juniper-recurrence`, `juniper-recurrence-model`, `juniper-recurrence-client`, `juniper-service-core`, `juniper-observability`, `juniper-data-client`, `juniper-model-core` (PEP 503 names: case-insensitive; `-`, `_` and `.` are the same).
+   Other recognised lines print as `ENV PREFLIGHT: unrelated to recurrence (not a finding)`. That is where `JuniperCascor1`'s CUDA conflicts (`cuda-python` / `cuda-bindings` / `cuda-core`) land, so a non-zero `pip check` made only of them does not refuse.
+   A line outside pip's grammar is a finding when its first token is a closure name, so a reworded closure conflict cannot read as clean; otherwise it prints as `pip check also said (not a finding)`. A non-zero `pip check` that yields neither a recognised line nor a closure line is itself a finding (`pip check could not run`).
+2. **Pins the installed app declares.** Only `juniper-recurrence-model` and `juniper-service-core`, read from `importlib.metadata.requires("juniper-recurrence")` in the judged interpreter — for an editable install, its `pyproject.toml` as of the last `pip install -e`, not the checkout's current file. Evaluated with `packaging`, else `pip._vendor.packaging`, with `prereleases=True`.
+   A violated pin, a missing dependency, an installed version that is not PEP 440, and missing `juniper-recurrence` metadata (`is this the env serve runs from?`) are findings. A requirement whose marker is false with `extra=""` (`extra == "torch"`) is not a pin. With neither `packaging` copy importable, the probe says so and does not refuse.
+3. **Import.** `from juniper_recurrence_model.data import derive_full_split`. A failure records the last non-empty line of the interpreter's output.
+
+### Exit codes, and where the report goes
+
+| Exit | Meaning | Last line |
+|------|---------|-----------|
+| `0` | No findings | `ENV PREFLIGHT OK: no findings` |
+| `0` | `--skip` with findings, each printed as `WARNING: ENV PREFLIGHT SKIPPED — <finding>` | `WARNING: ENV PREFLIGHT SKIPPED — <n> finding(s) ignored; juniper-recurrence will serve from an env that FAILED its preflight` |
+| `0` | `--skip` with none | `ENV PREFLIGHT OK: no findings (--skip had nothing to override)` |
+| `1` | Refused; each finding printed as `FINDING:` (pip's own line, or the probe's prose) | `ENV PREFLIGHT REFUSED: <n> finding(s); fix the env or pass --skip-env-preflight` |
+| `2` | Misuse (`--python` absent or without a value, unknown argument); usage goes to stderr | — |
+
+The launchers treat any non-zero exit as a refusal: `serve` is not started.
+Every report line goes to stdout through the launcher's `log()` (an `echo` with its `[script]` prefix) and, timestamped, to `logs/launch.log`: per run under `JUNIPER_EXP_RUN_ROOT` (default `~/.local/state/juniper-experiments`) for `experiment_stack.bash`, and in the reused `${JUNIPER_E2E_RUN_DIR:-${TMPDIR:-/tmp}/juniper-e2e}` for `isolated_stack.bash`, where the file accumulates. A failed append prints `WARNING: could not append to …/launch.log`; the stdout copy remains.
+
+A failed suite `--up` keeps only `(up.stderr or up.stdout)[-500:]` in the row's `error`. That is the end of the launcher's output — the refusal's `ERROR` line and the teardown printed after it — or its stderr, so read `launch.log` for the `FINDING:` lines. On success the suite stores none of the launcher output.
+
+```bash
+JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1 python util/experiments/run_suite.py …   # emergency hatch; the suite has no flag
+tail -n 80 "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/<RUN_ID>/logs/launch.log"
+```
+
+### Pitfalls
+
+| Symptom | What it is |
+|---------|------------|
+| `/v1/health/ready` is 200, then `POST /v1/crossval` is 422 missing `X_full` | F-E1's shape; readiness does not import `derive_full_split`. The launch passed `--skip-env-preflight`, or `serve` was started outside these two launchers (Compose has no launcher preflight; plan W3.0b would add the check to readiness). |
+| `ENV PREFLIGHT REFUSED` with `FINDING:` lines naming the model pin, the service-core pin, or `derive_full_split` | The interpreter `serve` would use failed the closure check. The repair is W0.1. Lines marked `unrelated to recurrence` are not the refusal. |
+| CUDA `pip check` lines on stdout, exit 0 | Unrelated; printed as `unrelated to recurrence (not a finding)`. |
+| `WARNING: ENV PREFLIGHT SKIPPED —` and the service still reaches ready | The emergency override, recorded in `launch.log`. A skipped `derive_full_split` finding still 422s every `split="full"` request. |
+| `FINDING: interpreter not found or not executable` naming a `python3.13` under `JuniperCascor1` | The console-script shebang names the interpreter the 3.14 upgrade deleted, and no other check ran. Reinstall the console script into the env `serve` should use. |
+| The pin result ignores an edit to the checkout's `pyproject.toml` | The probe reads installed metadata; an editable install refreshes it only on reinstall. |
+| `packaging is importable neither…` and the launch continues | Not a finding. `pip check` and the import probe can still refuse. |
+| Suite row `error` is 500 characters with no `FINDING:` | It is the tail of the launcher's output (or its stderr). Open `logs/launch.log`. |
+| `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` and isolated `--up` still refuses | Wrong variable: `isolated_stack.bash` reads `JUNIPER_E2E_SKIP_ENV_PREFLIGHT`. |
+| Import ok under one launcher, refused under the other, on the same env | The isolated leg empties `LD_LIBRARY_PATH` for the preflight and for `serve`; the experiment leg empties it for neither. |
+| `./util/recurrence_env_preflight.bash`: permission denied | Mode `0644`. Run it with `bash`. |
+| `--dry-run --up` printed the preflight line and the env is stale | Dry-run does not execute the script, and writes no `launch.log`. |
+
+Coverage: `tests/test_recurrence_env_preflight.py` (the script, including a real offline venv) and the `recurrence_up` call sites in `tests/test_experiment_stack_script.py` and `tests/test_isolated_stack_script.py`.
 
 ---
 
@@ -5340,6 +5817,8 @@ The suite is the only layer that knows both identities. Every `--up` gets `--exp
 
 After the last cell, `aggregate` writes `aggregate.csv` + `REPORT.md`. Those files also carry perf-lane gate-input columns (`step_count` / `mean_step_seconds` beside de-ratified `wall_seconds`) and an optional `--compare-baseline TAG` block. That contract is a **separate** operator surface (in-flight docs #1649) and is reporting-only: a FAIL verdict does **not** change this driver's exit code.
 
+Recurrence `degraded` cells and the `train_r2` / `cv_r2` columns: [Recurrence Degraded Outcome and Headline Metrics](#recurrence-degraded-outcome-and-headline-metrics).
+
 Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor parallel floor, grafana toggle, resume, `--only`, both Q-2 budget flags, H-11 budget, provenance env).
 
 ### Environment overrides
@@ -5369,6 +5848,97 @@ Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor par
 | Snapshots have a cell id but no suite name | Pre-provenance run. Current `--up` exports `JUNIPER_CASCOR_EXPERIMENT`. |
 | `list_runs.py` does not show the suite | It ignores `index.jsonl` and `suites/`. Look under `$JUNIPER_EXP_RUN_ROOT/suites/<SUITE_ID>/`. |
 | `--compare-baseline` FAIL but suite exit `0` | Reporting-only — see docs #1649. |
+
+---
+
+## Recurrence Degraded Outcome and Headline Metrics
+
+Operator runbook for a recurrence run that **trained** and then lost a phase its config enabled (W0.3, F-D1), and for the r² columns `run_suite.py` copies onto `aggregate.csv` / `REPORT.md` (W0.4, F-D2).
+Both shipped in [juniper-ml#2145](https://github.com/pcalnon/juniper-ml/pull/2145), the re-land of the closed #2131 (its code and test files are byte-identical to #2131's head).
+The one-line contract sits in the `run_experiment.py` / `run_suite.py` entries of [Utility Script Reference](#utility-script-reference) and in [Suite Report Gate Inputs](#suite-report-gate-inputs).
+
+Code: `util/experiments/run_experiment.py` (`derive_recurrence_outcome`, the manifest `phases` block) and `util/experiments/run_suite.py` (`_headline_metrics`, `TERMINAL_OUTCOMES`). Design: [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) W0.3 and W0.4.
+
+A manifest or registry row written by a driver from before W0.3 reads differently: the outcome came from the train phase alone, so the audited Scenario-A cell (crossval HTTP 422, missing NPZ key `X_full`) was recorded `outcome: succeeded`, `exit_code: 1`, `acceptance.ok: false`, and the suite counted a success and exited 0. Cascor runs gain neither `phases` nor `degraded`; the cascor path has no predict / crossval / `save_model` phase.
+
+### What `degraded` means
+
+`degraded` is recurrence-only: train ended `ok`, and a post-train phase the config **enabled** — `predict`, `crossval` or `save_model` (`RECURRENCE_AUX_PHASES`) — did not.
+The outcome is derived from the manifest `phases` records and from nothing else, in particular not from `acceptance.ok`, which also collects plot-render errors (and, once W5.4 lands, metric-band failures).
+A requested plot that cannot render (matplotlib missing) leaves `outcome: succeeded` with exit 1. `MANIFEST_SCHEMA` stays `juniper-experiment-manifest/1`; the block is additive.
+
+| Phase status | Meaning |
+|--------------|---------|
+| `ok` | The phase finished. |
+| `failed` | Attempted and did not finish; the record carries `error`. A phase cut short (interrupt, or the run aborted mid-phase) is `failed` with that text, not `not_reached`. |
+| `skipped` | The config did not enable it, so the driver never asked (a disabled `crossval` never POSTs `/v1/crossval`). A skipped phase cannot degrade the run. |
+| `not_reached` | Enabled, but the run ended before it was asked. After a successful train this fails closed (`degraded`); a run whose train did not succeed keeps its own outcome (`timed_out`, `failed`, …). |
+
+Success needs positive evidence for every enabled phase. A crossval HTTP 422 is `degraded` with exit `1` (`EXIT_ACCEPTANCE`), not exit `2`; a train HTTP 422 is still `ConfigError` / exit `2`, and a train wall-clock timeout is `timed_out`, not `degraded`. Exit `1` for `degraded` is the plan's recommended ruling R6, applied pending the owner's (the driver comment says so). W5.4's metric-band outcomes (`failed` under `gate`, `flagged` under `report`) are a separate mechanism that is not built.
+
+The one-screen summary prints `outcome    : degraded   exit=1` and a `phases     :` line such as `train=ok predict=ok crossval=failed save_model=skipped` (always in that order). `stats.json` `outcome.outcome` and the `**Outcome**:` line of `summary.md` carry the same string. Train evidence (`train_response.json`, the manifest's `train.final_metrics`) is kept.
+
+### What the suite does with it
+
+`degraded` is in `TERMINAL_OUTCOMES` and is never a success: `continue_on_failure: false` stops submitting after it (the test is `outcome != "succeeded"`), `--resume` re-runs it (only a `registry.jsonl` row whose `outcome` is `succeeded` is skipped), and the suite exits `1`. The `REPORT.md` summary line counts it on its own:
+
+```text
+Cells: N total, X succeeded, Y degraded, Z failed/other, W not run.
+```
+
+Each degraded cell is listed under `## Degraded cells` with the phase it lost. The console prints `degraded (crossval failed: HTTP 422: …)`; an enabled phase left `not_reached` prints `degraded (predict not_reached)`. A registry row without `phases` falls back to the row's suite-level `error`, else the bare word `degraded`, and `## Degraded cells` then says `no phase record in the registry row`. Every other outcome prints the suite-level `error`, not the phase record.
+
+`registry.jsonl` rows carry `outcome` and, from a W0.3 driver, `phases`; the global `$JUNIPER_EXP_RUN_ROOT/index.jsonl` rows carry `outcome` but no `phases`.
+
+```bash
+jq '{outcome, phases, acceptance}' "$RUN_DIR/manifest.json"
+jq -c '{cell_id, outcome, phases}' "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/suites/<SUITE_ID>/registry.jsonl"
+```
+
+A crossval `422` whose error names `X_full` is F-E1 of the plan: the env serves a model without `derive_full_split`, which readiness does not exercise. W0.1 repairs the env, and the [Recurrence Env Preflight](#recurrence-env-preflight) refuses to serve such an env unless skipped; this outcome only stops the suite from calling that cell a success.
+
+### Headline metrics (W0.4)
+
+`_headline_metrics` reads `artifacts/results/stats.json` and puts numeric columns on the registry row (`metrics`), from which both `aggregate.csv` and the `REPORT.md` cell table are written. The paths are inside `stats["recurrence"]`, the block `stats_summary.build_stats` writes from the train response and the crossval payload:
+
+| Column | Path under `stats.recurrence` |
+|--------|-------------------------------|
+| `train_r2` | `final_metrics.r2` (the train phase's in-sample r²) |
+| `cv_r2` | `crossval.eval_aggregate.r2` |
+| `cv_r2_std` | `crossval.eval_std.r2` |
+| `n_windows` | `dataset_descriptor.n_windows` |
+
+`dataset_descriptor` is the **train** response's `dataset` object — the same `n_windows` that `read_run_metrics._recurrence_fields` puts on the gate row and that `REPORT.md` prints on the recurrence **reported instead** line. It is not `stats.dataset.shapes.n_windows`, which is `meta.n_samples` over every partition: on the audited `equities_seq` AAPL cell the two were 1,346 (the train partition) and 1,698 (the `full` view the crossval ran on).
+
+A null or missing `crossval` writes **no** `cv_*` key, so the CSV cell is empty, not `0`. The test is `isinstance(value, (int, float))` with `bool` excluded, so `0.0` and `-18081.0` both reach the report; `None` and strings are dropped, and a missing, unreadable or non-object `stats.json` yields no columns at all.
+
+The cascor columns stay empty. The reader asks for `final_accuracy` / `test_accuracy` / `val_accuracy` at the top of `stats.cascor` (without the `bool` exclusion), but `build_stats` nests `train_accuracy` / `val_accuracy` under `cascor.final` and `f1` / `precision` / `recall` / `roc_auc` under `cascor.eval_scalars`.
+W0.4 fixed only the recurrence half of register row `APD-ML-002` in [`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`](../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md).
+
+```bash
+jq '{train_r2: .recurrence.final_metrics.r2, cv_r2: .recurrence.crossval.eval_aggregate.r2, cv_r2_std: .recurrence.crossval.eval_std.r2, n_windows: .recurrence.dataset_descriptor.n_windows, shapes_n_windows: .dataset.shapes.n_windows}' \
+  "$RUN_DIR/artifacts/results/stats.json"
+```
+
+### Work-gate interaction
+
+`degraded` is **not** in `read_run_metrics.TRUNCATING_TERMINATIONS` (`timed_out`, `torn_down_early`, `stalled` — the outcomes that stop the driver rather than the workload), so `summarise` does not list it under `truncated_terminations`. `make_baseline` / `compare_baseline` still refuse it, because they require `outcome == "succeeded"`, and recurrence work is not countable anyway — see [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable). Do not gate on `n_windows` or `train_r2`.
+
+### Pitfalls
+
+| Symptom | What it is |
+|---------|------------|
+| Cell `succeeded`, `exit_code: 1`, `acceptance.ok: false`, suite exit 0 | A row from a driver before W0.3. The phase failed and the outcome was copied from train. Re-run it. |
+| Console `degraded (crossval failed: HTTP 422: … missing required key 'X_full')`, suite exit 1 | Train succeeded; the enabled crossval did not. The env serves a model without `derive_full_split` (F-E1). |
+| `## Degraded cells` says `no phase record in the registry row` | The registry row predates `phases`. Open the cell's `manifest.json`. |
+| `cv_r2` column missing, or the CSV cell is blank | Crossval was null, disabled, or failed. Blank is not a score of 0. |
+| `cv_r2` is `0` or a large negative (`-18081.0`) | A real aggregate. It is not clamped and not dropped. |
+| Headline `n_windows` disagrees with `dataset.shapes.n_windows` | Expected: the headline is the train descriptor; `shapes` is `meta.n_samples`. |
+| Plot skipped / matplotlib missing, outcome still `succeeded`, exit 1 | An acceptance failure that is not a phase. Not `degraded`. |
+| `make_baseline` refuses a degraded recurrence cell | Expected (`outcome != succeeded`); recurrence is not countable anyway. |
+| Cascor cell, headline accuracy columns empty | Expected: the cascor half of `APD-ML-002` is open (see above). |
+
+Coverage: `tests/test_run_experiment.py` (`DegradedOutcomeTest`, `DeriveRecurrenceOutcomeTest`), `tests/test_run_suite.py` (`DegradedSuiteTest`, `OutcomeLineTest`, `HeadlineMetricsTest`), `tests/test_read_run_metrics.py` (`DegradedOutcomeTest`).
 
 ---
 
@@ -5467,6 +6037,170 @@ python util/experiments/compare_baseline.py --baseline SOME-TAG --suite SUITE_DI
 Coverage: `tests/test_read_run_metrics.py` (`RecurrenceKindTest`) and `tests/test_make_baseline.py` (`RecurrenceRefusalTest`) land with #1683.
 
 In-flight [#1689](https://github.com/pcalnon/juniper-ml/pull/1689) adds `tests/test_work_countable_contract.py` for the leftover those cannot see: `compare()` REFUSED (exit 2) with the honest reason (not FAIL / not "not a set of repeats"), waiver cannot override, planted cascor histogram counts do not make an uncountable suite `work_invariant`, and `drive` wins when both timing keys are present.
+
+---
+
+## Recurrence Crossval Hyperparameters
+
+How `util/experiments/run_experiment.py` builds `POST /v1/crossval`, and how juniper-recurrence fills a field the body left out. The fold-geometry block (`crossval:`) and the model block (`train:`) are different objects: a request that carries only the first one is a different fit from the E-H suite.
+
+Driver side: `_lmu_hyperparams` and `_run_recurrence` in `util/experiments/run_experiment.py`. Service side (the resolution below is the same in PyPI `juniper-recurrence` 0.5.0 and on `main`):
+
+- [`schemas.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/schemas.py) — `TrainRequest` / `CrossValRequest`
+- [`routers/crossval.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/routers/crossval.py) and [`routers/training.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/routers/training.py)
+- [`_readout.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/_readout.py) `build_lmu_regressor`
+- [`settings.py`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence/juniper_recurrence/settings.py) `default_d` / `default_theta` / `default_ridge`
+
+### What each call fits
+
+| Call | Model it scores |
+|------|-----------------|
+| `POST /v1/train` | One fit. Hyperparameters are the body; omitted fields use the table below. `final_metrics` are **in-sample** — scored on the split the fit trained on (juniper-recurrence `main` labels them `metrics_scope: "in_sample"`). |
+| `POST /v1/predict` | Whatever model the process holds: the last train or snapshot restore, by any caller. The driver sends only `dataset.dataset_id` and `split`; it does not re-send ridge or readout. |
+| `POST /v1/crossval` | A **new** `LMURegressor` per fold, built by `build_lmu_regressor` from the crossval body. It never loads the weights train just stored. Held-out numbers are `folds[].eval_metrics`, `eval_aggregate` and `eval_std`. |
+
+The driver keeps train and crossval aligned by spreading one dict onto both bodies. A hand-written crossval that omits that dict gets the service defaults, even when the process already holds an RFF model from an earlier train.
+
+### What the driver puts on the wire
+
+`_lmu_hyperparams` keeps the `train:` entries whose value is not `None`. YAML `theta: null`, and any other null train key, is removed before `POST /v1/train`, `POST /v1/crossval` and the G-18 `juniper-recurrence train` re-run (`outputs.save_model`).
+
+`config/experiment.resolved.yaml` still shows the null, because `driver_resolved.train` is the parsed block. On a recurrence run `service_training_params.available` is false (the recurrence service exposes no training-parameters endpoint), so that file does not record the ridge or θ the service used.
+
+A `crossval:` block turns CV on unless it sets `enabled: false`; with no block, CV is off. The body is:
+
+- `dataset.dataset_id`
+- `n_folds` (required integer ≥ 2 when enabled), `scheme` (default `expanding`), `embargo` (default `0`), `min_train` only when set
+- the filtered train keys
+
+The service has the same `scheme` / `embargo` defaults. `n_folds` has no service default; the schema requires it (`ge=2`).
+
+### What an omitted model field becomes
+
+`build_lmu_regressor` is the single translation for train, crossval and the train CLI.
+
+| Omitted field | Resolved value |
+|---------------|----------------|
+| `readout` | `linear` |
+| `d` | `settings.default_d` (code default **16**) |
+| `theta` | `settings.default_theta` (code default **null**). Null means each fold resolves θ from that fold's elapsed time. |
+| `ridge` on the linear rung | `settings.default_ridge` (code default **0.0**; the type also allows the string `gcv`) |
+| `ridge` on the RFF rung | **`gcv`**. `default_ridge` is not consulted. |
+| `rff_features` / `rff_gamma` when `readout` is `rff` | **256** / **`median`** |
+| `ridge` when `readout` is `mlp` | Rejected (schema **422**). The MLP regularises with `mlp_weight_decay`. RFF knobs on a linear or omitted readout are also a schema **422**. |
+
+`service.default_ridge` in an experiment YAML is that Setting; it applies when the request omits `ridge` and the rung is linear. An explicit `ridge: 0.0` on an RFF body is an unregularised solve; omitting `ridge` on an RFF body selects GCV.
+
+The train and crossval start logs print `d`, the configured θ (`None` when θ will be data-driven) and `readout` (`req.readout or "linear"`). They do not print ridge, and `CrossValResponse` does not echo the resolved ridge, gamma or per-fold θ. The router sets `theta = req.theta if req.theta is not None else settings.default_theta` before the model sees it, so a JSON null never overrides a configured `default_theta`.
+
+`util/experiments/stats_summary.py` labels the readout from the YAML `train:` block (`readout or "linear"`), not from anything the service reports.
+
+A second `POST /v1/crossval` while `crossval_lock` is held returns **409** (`a cross-validation run is already in progress`). `GET /v1/crossval/status` reports only the last completed result (`done`) or `idle`, never the run in flight.
+
+### E-H suite
+
+[`util/experiments/suites/p4/e-h-recurrence-real-data.yaml`](../util/experiments/suites/p4/e-h-recurrence-real-data.yaml) sets `base_config` to juniper-recurrence's [`conf/experiments/irregular-sine-rff.yaml`](https://github.com/pcalnon/juniper-recurrence/blob/main/conf/experiments/irregular-sine-rff.yaml). Its one include overrides only `dataset.generator` (`equities_seq`) and `dataset.params` (AAPL, `2015-01-01` → `2022-01-01`, `lookback: 64`, `regression_target: log_return`, seed `20260807`).
+`materialise_cell` (`run_suite.py`) replaces those two keys and leaves `service:` and `train:` as the base file has them; the launch is `--config` of the generated `cells/<cell_id>/experiment.yaml`. The suite comment expects r² near 0, not a negative blow-up.
+
+The body the driver builds from that `train:` / `crossval:` (θ is dropped because the YAML value is null; the YAML's `service.default_theta` is null too, so θ stays data-driven):
+
+```json
+{"dataset": {"dataset_id": "<id>"}, "n_folds": 5, "scheme": "expanding", "embargo": 2,
+ "d": 16, "ridge": 1.0, "readout": "rff", "rff_features": 256, "rff_gamma": "median"}
+```
+
+The same fold geometry with no model keys is the service default: linear, `d` 16, data-driven θ, ridge 0.0.
+
+```json
+{"dataset": {"dataset_id": "<id>"}, "n_folds": 5, "scheme": "expanding", "embargo": 2}
+```
+
+That ridge 0.0 is the copied YAML's, not only the class default. The base file's `service:` block sets `default_ridge: 0.0`; `experiment_stack.bash` copies the YAML to `$RUN_DIR/config/experiment.yaml` and exports `JUNIPER_RECURRENCE_CONFIG_FILE` at the copy; and `Settings.settings_customise_sources` ranks init/CLI, then that `service:` block, then the environment, then the class default.
+Raising `Settings.default_ridge` or setting `JUNIPER_RECURRENCE_DEFAULT_RIDGE` therefore leaves a stack launched from this file on ridge 0.0. Change the YAML.
+
+Both bodies were captured in one replay against one `dataset_id` (`equities_seq-6.0.0-15505731cba5b86d`, HTTP 200 each):
+
+- [`10-crossval-eh-rff.json`](../reports/2026-10-04_recurrence-equities-cv-matrix/10-crossval-eh-rff.json): `eval_aggregate.r2` **−0.11526096841533144**. The suite's own cell recorded the same digits (`cv_r2` of `equities-seq-aapl` in [`scenario-a-rerun/registry.jsonl`](../reports/2026-10-04_recurrence-equities-cv-matrix/scenario-a-rerun/registry.jsonl)).
+- [`10-crossval-service-defaults.json`](../reports/2026-10-04_recurrence-equities-cv-matrix/10-crossval-service-defaults.json): **−20344.637730773607**.
+
+Quote the class (about −0.1 against about −2×10^4), not the digits: a re-mint under the same `dataset_id` need not reproduce them (F-P8, re-filed Major in [`notes/JUNIPER_2026-10-05_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-CONSENSUS-VALIDATION.md`](../notes/JUNIPER_2026-10-05_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-CONSENSUS-VALIDATION.md); see [Equities Dataset Id Does Not Pin Array Content](#equities-dataset-id-does-not-pin-array-content)).
+
+Canopy and the CLI resolve the same way. A canopy recurrence fit is always linear: `backend.recurrence_backend._HYPERPARAM_KEYS` (canopy `src/backend/recurrence_backend.py`) is `("d", "theta", "ridge")`, `start_training` forwards only keys that were set, and the adapter's `train()` has no `readout` parameter; an omitted `ridge` uses the listener's `default_ridge`.
+`juniper-recurrence train` defaults `--readout` and `--ridge` to `None`, so a hand-run CLI without them is linear at `default_ridge`. The driver's `save_model` re-run passes every set `train:` key, `--readout` and `--ridge` included.
+
+### Operator pitfalls
+
+| What you see | What the service did |
+|--------------|----------------------|
+| A hand-written `POST /v1/crossval` on an E-H listener returns eval r² around −2×10^4 while the suite cell is about −0.1 | The body omitted the `train:` keys, so every fold fitted a new linear model at the listener's `default_ridge` (0.0). The start log prints `readout=linear` when the field is absent. Send the `train:` block. |
+| Raised `Settings.default_ridge` (or `JUNIPER_RECURRENCE_DEFAULT_RIDGE`) and the stack still solves ridge 0 | The copied YAML `service.default_ridge: 0.0` ranks above both. Change the YAML. |
+| `service.default_ridge: 1.0` and an RFF request that omits `ridge` | RFF's omitted ridge is `gcv`. `default_ridge` is the linear fallback only. |
+| `train.theta: null` together with `service.default_theta: 91` | The null is dropped on the wire, and a JSON null would fall back to `default_theta` anyway, so every fold uses 91. `stats.json` still labels θ data-driven (it reads the YAML θ). Data-driven θ needs `default_theta: null`. |
+| Train r² quoted as the held-out result | `final_metrics` are in-sample. Held-out numbers are the crossval eval fields. |
+| `POST /v1/crossval` returns 409 | One crossval at a time per service. Wait and retry; `GET /v1/crossval/status` shows only the last completed run. |
+| `rff_features` set while `readout` is omitted | Schema 422. RFF knobs require `readout: rff`. |
+| A canopy recurrence fit ignores an RFF choice | Canopy forwards `d` / `theta` / `ridge` only. The service resolves linear. |
+
+---
+
+## Recurrence Upstream Error Text
+
+A recurrence HTTP error's `detail` can carry upstream exception text, and `util/experiments/run_experiment.py` copies it into the run record verbatim. Canopy shows a 4xx detail only (juniper-canopy#702); this driver keeps 5xx details too, and nothing in juniper-ml's experiment tooling redacts them.
+
+Sources: juniper-recurrence `juniper_recurrence/routers/_common.py` `map_data_error` (the same text in PyPI 0.5.0 and on `main`), juniper-data-client `client.py` / `exceptions.py`, and `requests` 2.33.1 (`JuniperCascor1`).
+
+### What the service puts in `detail`
+
+`map_data_error` interpolates `{exc}` into every status it returns:
+
+| Exception | Status | Detail |
+|-----------|--------|--------|
+| `JuniperDataNotFoundError` | 404 | `dataset not found: {exc}` |
+| `JuniperDataConnectionError`, `JuniperDataTimeoutError` | 502 | `juniper-data unreachable: {exc}` |
+| `JuniperDataValidationError` or a bare `ValueError` | 422 | `invalid dataset: {exc}` |
+| `JuniperDataConfigurationError` | 500 | `data-client misconfigured: {exc}` |
+| anything else | 502 | `data fetch failed: {exc}` |
+
+The data client wraps every other `requests.RequestException` as the base `JuniperDataClientError("Request failed: …")`, which is none of those branches. `requests` refuses a header value with leading whitespace or a CR/LF (value pattern `^\S[^\r\n]*\Z|^\Z`) by raising `InvalidHeader`, a `RequestException` whose message carries the value:
+
+`Invalid leading whitespace, reserved character(s), or return character(s) in header value: {header_part!r}`
+
+So a data API key with a leading space, tab, CR or LF takes the generic 502 (`data fetch failed: Request failed: …`), not the 422 branch, and the rejected value — the key — rides in the body. A trailing space is accepted.
+A plain env value (`JUNIPER_DATA_API_KEY`, or the prefixed `JUNIPER_RECURRENCE_JUNIPER_DATA_API_KEY`) is sent as-is; a key read from `JUNIPER_DATA_API_KEY_FILE` is stripped of surrounding whitespace first (`get_secret`), so only an embedded CR/LF survives that route.
+
+The same text reaches the recurrence service log (`training aborted: dataset fetch failed …` / `cross-validation aborted: …`, WARNING) and, on juniper-recurrence `main` (W1.5, unreleased), `GET /v1/training/status` `failure.detail` after a failed train, until the next success.
+
+F-S10 in [`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) records the relay (Major, security). Proposed W1.14 would stop relaying 5xx text and refuse a whitespace key at settings load; it needs owner acceptance and is not in juniper-recurrence `main`.
+
+### Where the driver stores it
+
+`_detail` reads `detail`, then `message`, then `error`, and keeps 500 characters; a non-JSON body is stored as `{"detail": raw[:500]}`. That string, after an `HTTP {code}: ` prefix, lands in:
+
+- `manifest.json` `phases.<name>.error` for a failed train, predict or crossval phase (the `finally` block writes the manifest even when train raises `RunFailed`);
+- `manifest.json` `acceptance.reasons` (`POST /v1/train -> HTTP {code}: …` for a train `RunFailed`; `predict failed: HTTP {code}: …` / `crossval failed: …` for the post-train phases) and, for predict / crossval, `collect_errors`;
+- `artifacts/results/stats.json` (`outcome.acceptance`, `provenance.degraded_notes`) and `summary.md` (its degraded-mode notes repeat `collect_errors`);
+- the driver log and the stdout `reasons` line.
+
+`util/experiments/run_suite.py` copies `phases` onto the cell's row in `registry.jsonl`. A degraded cell prints the phase error on the console (`degraded (crossval failed: HTTP 502: …)`) and under `REPORT.md` `## Degraded cells`. A failed train is outcome `failed`: the `REPORT.md` table does not repeat the text, but `registry.jsonl` `phases` and the manifest still hold it.
+With no manifest, the row's `error` keeps the last 300 characters of the driver's stderr (its stdout when stderr is empty); a launcher `--up` failure keeps the last 500 characters of stderr (or stdout).
+
+The 500-character cap does not remove the key: about 127 characters of `detail` precede it (up to the opening quote), so any realistic key survives.
+
+### Operator rule
+
+Treat these as secret-bearing when train, predict or crossval failed while the service was calling juniper-data:
+
+- `$RUN_DIR/manifest.json` (`phases.*.error`, `acceptance.reasons`, `collect_errors`), `artifacts/results/stats.json` and `artifacts/results/summary.md`
+- the suite's `registry.jsonl` (`phases`, and `error` when the no-manifest tail was stored), `REPORT.md` `## Degraded cells`, and the console `[suite]` line for a degraded cell
+- the driver log and its stdout `reasons` line; the recurrence service log; on juniper-recurrence `main`, `GET /v1/training/status`
+
+Do not paste them into a ticket, a PR or chat. If the text contains a header value, rotate that key and remove the leading whitespace or CR/LF before the next launch.
+
+```text
+HTTP 502: data fetch failed: Request failed: Invalid leading whitespace, reserved character(s), or return character(s) in header value: '<rejected header value>'
+```
+
+The quoted part is the rejected header value. Do not copy a real one out of a manifest.
 
 ---
 
@@ -6167,7 +6901,9 @@ Ad-hoc inventory: [`util/ad-hoc/README.md`](../util/ad-hoc/README.md) § X7 off-
 
 ## Canopy E2E Topology Step Order and Blast-Radius IDs
 
-Operator contract for re-driving the canopy topology block without treating a harness artifact as a regression, and without re-deriving a claim about the walkthrough IDs that has already been refuted once. Triggered by [juniper-ml#1695](https://github.com/pcalnon/juniper-ml/pull/1695), which filed **F-E2E-007** and then **withdrew it the same day** after an independent-consensus review; F-CANOPY-037 remains **OPEN**. Distinct from the F-037 **render census** (in-flight docs #1652), the topology **scorer predicates** (in-flight docs #1675), and finding-triage **dispositions** (in-flight docs #1646).
+Operator contract for re-driving the canopy topology block without treating a harness artifact as a regression, and without re-deriving a claim about the walkthrough IDs that has already been refuted once. Triggered by [juniper-ml#1695](https://github.com/pcalnon/juniper-ml/pull/1695), which filed **F-E2E-007** and then **withdrew it the same day** after an independent-consensus review; F-CANOPY-037 remains **OPEN**.
+
+Distinct from the F-037 **render census** ([F-CANOPY-037 Render Census](#f-canopy-037-render-census)), the topology **scorer predicates** ([Canopy E2E Topology Driver](#canopy-e2e-topology-driver)), and finding-triage **dispositions** ([Canopy E2E Finding Triage](#canopy-e2e-finding-triage), including `WITHDRAWN`).
 
 Verified against `origin/main` `d69c9a73`: `util/ad-hoc/e2e_seg17_topology_driver.py`, `util/ad-hoc/e2e_finding_triage.py`, `reports/e2e/*/statuses.tsv`, and [`notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md`](../notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md). F-CANOPY-037 is **OPEN** on main and stays open — #1695 no longer closes it. Do not copy that PR's earlier pass counts: the single combined drive scored 15 PASS / 1 INDETERMINATE, with the 16th PASS coming from a separate control run.
 
@@ -6249,7 +6985,9 @@ baseline, which is a reversible decision rather than an independent cause.
 
 ### Finding-header severity trap
 
-`util/ad-hoc/e2e_finding_triage.py` `pri_of` takes the **first** `\b(P0/P1|P0|P1|P2|CRITICAL|LEDGER)\b` anywhere in the bolded header body after the em-dash — not only the parenthetical. A header that says "holding the arc's only P0/P1 open" before `(LEDGER; …)` is triaged **P0/P1**. Disposition parsing (`FIXED` / `HEALED` / `ACCEPTED` in the last 170 characters) is the in-flight #1646 surface; this pitfall is only the first-token rule. Do not name another severity in a header's prose.
+`util/ad-hoc/e2e_finding_triage.py` `pri_of` takes the **first** `\b(P0/P1|P0|P1|P2|CRITICAL|LEDGER)\b` anywhere in the bolded header body after the em-dash — not only the parenthetical. A header that says "holding the arc's only P0/P1 open" before `(LEDGER; …)` is triaged **P0/P1**. Do not name another severity in a header's prose.
+
+Disposition parsing (`FIXED` / `HEALED`, then `ACCEPTED`, then `WITHDRAWN`, in the last 170 characters) is [Canopy E2E Finding Triage](#canopy-e2e-finding-triage); this pitfall is only the first-token rule. A withdrawn finding still prints its priority; it is not an open P0/P1.
 
 ```bash
 python3 util/ad-hoc/e2e_finding_triage.py
@@ -6261,6 +6999,7 @@ python3 util/ad-hoc/e2e_finding_triage.py --open-only   # still prints full tota
 | M-TOPOLOGY-18 `INDETERMINATE` after a combined `--step` | An earlier step visited Weight Matrix. Re-drive `--step topostate` alone. |
 | "The `W4-*` IDs don't exist" | They do — matrix §4, 17 numbered steps. F-E2E-007 made this claim and was withdrawn. Grep `### W4`, not `W4-09`. |
 | Triage invents a P0/P1 from a bookkeeping note | First severity token in the header won. Rewrite the prose; keep one priority in the parenthetical. |
+| Triage prints `WITHDR`, or a withdrawn finding still looks open | `WITHDRAWN` in the last 170 characters prints `WITHDR` and leaves the open counts. The same word earlier in a long header does nothing. `FIXED` / `HEALED` in that tail wins, then `ACCEPTED`. |
 | Driver docstring lists `W4-*` / `W1-12..14` as matrix rows | **Correct — leave it.** They are matrix §4 steps. `STEPS` is what is *implemented*; the docstring is what is *specified*. |
 ## F-CANOPY-037 Render Census
 
@@ -6575,14 +7314,37 @@ Operator contract for the two Monday-scheduled workflows that keep dependency hy
 | Permissions | exactly `contents: write` + `pull-requests: write` |
 | Tooling | `pip install "juniper-ci-tools>=0.9.0,<0.10.0"` then `juniper-generate-dep-docs` |
 | PR | SHA-pinned `peter-evans/create-pull-request` → branch `chore/lockfile-update`, labels `dependencies` + `automated`, commit/title `chore(deps): refresh CI lockfiles` |
+| Identity | When the repo variable `RELEASE_TRAIN_APP_ID` is set, the job mints an installation token (`actions/create-github-app-token`, current repository only) and opens the PR as that App; `sign-commits: true` on either path. Since juniper-ml#1970 (2026-09-21) the weekly PR is opened by `juniper-release-train[bot]`. An unset variable falls back to `GITHUB_TOKEN`, whose PRs run no checks — see **Known limitation (degraded no-App path only)** under [Release Train](#release-train-release-trainyml). |
 
-Regenerates `conf/requirements_ci.txt` and `conf/conda_environment_ci.yaml` via the published console script. The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298 — do **not** resurrect it here. A no-diff week opens no PR, and the opened PR is reviewed like any dependency change (never auto-merged). Companion pin lint: `tests/test_ci_tools_drift.py`; structural gate: `tests/test_lockfile_update_workflow.py`.
+`juniper-generate-dep-docs` (`juniper_ci_tools/generate_dep_docs.py`) does three things on every run, in order:
+
+1. Copies each live file to `conf/requirements_ci_<YYYY-MM-DD_HH-MM-SS>.txt` / `conf/conda_environment_ci_<YYYY-MM-DD_HH-MM-SS>.yaml` **before** rewriting it. The snapshot is a byte copy of the file as it stood on `main` when the job ran (normally last week's refresh, header dates included). The stamp carries the time of day, so every successful run adds a new pair.
+2. Re-renders each header from [`notes/JUNIPER_2026-03-11_JUNIPER-ML_PIP-DEPENDENCY-FILE-HEADER.md`](../notes/JUNIPER_2026-03-11_JUNIPER-ML_PIP-DEPENDENCY-FILE-HEADER.md) / [`notes/JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md`](../notes/JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md).
+   On a new calendar day `Last Modified` and the conda `created-by: conda YYYY.MM.DD` line move; the copyright year moves on 1 January; the header `Version:`, `created-by: pip <version>` and `python:` move only when those values change.
+3. Writes a fresh body: `python -m pip list --format=freeze` under the pip header, and the `dependencies:` block of `conda env export --no-builds` under the conda header (the conda file is skipped when `conda` is not on `PATH`).
+
+The new snapshot pair alone makes the tree differ from `main`, so every successful run commits and `peter-evans/create-pull-request` opens the PR (or updates one still open on `chore/lockfile-update`). Every scheduled run from 2026-07-20 through 2026-10-05 succeeded and opened a PR. A Monday with neither a new PR nor an updated one means the job produced no commit — open Actions → Update Lockfiles and read the log.
+
+**How to review.** CI and local installs read the untimestamped files. Diff their non-comment lines against the new snapshot (the pre-rewrite copy):
+
+```bash
+diff -u <(grep -v '^#' conf/requirements_ci_<stamp>.txt) <(grep -v '^#' conf/requirements_ci.txt)
+diff -u <(grep -v '^#' conf/conda_environment_ci_<stamp>.yaml) <(grep -v '^#' conf/conda_environment_ci.yaml)
+```
+
+An empty diff means the PR only archived the previous lockfiles and re-stamped header dates. Leave the timestamped snapshots alone; editing one to "update" a pin rewrites a historical copy.
+
+juniper-ml#2154 (2026-10-05) is that case. Its only canonical-file hunks were `Last Modified: 2026-09-28` → `2026-10-05` (both files) and conda `created-by: conda 2026.09.28` → `conda 2026.10.05`. Non-comment lines matched (4 pip pins; 155 conda dependency entries plus 9 channel entries), and the `*_2026-10-05_08-32-20.*` pair is byte-identical to the 2026-09-28 lockfiles from juniper-ml#2106.
+
+The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298 — do **not** resurrect it here. The opened PR is reviewed like any dependency change (never auto-merged). Companion pin lint: `tests/test_ci_tools_drift.py`; structural gate: `tests/test_lockfile_update_workflow.py`.
 
 | Symptom | Fast check |
 |---------|------------|
 | Weekly scan green but a known CVE is open | Confirm the audit step is still `pip-audit --strict --desc on` |
 | Scheduled scan fails on every run | Do **not** add `--skip-editable` here — that belongs only to per-PR `ci.yml` |
-| No lockfile PR for several Mondays | A clean tree is expected when pins did not move; confirm the job still calls `juniper-generate-dep-docs` |
+| No lockfile PR (new or updated) on a Monday | The job produced no commit — a stable pin set still opens a PR. Read the Actions → Update Lockfiles log |
+| Monday PR is large but the pins look familiar | The new `conf/*_<timestamp>.*` pair is the pre-rewrite copy of the old files. Diff non-comment lines against it |
+| Header dates moved, pin lines did not | Expected — `Last Modified` and conda `created-by` are re-rendered on every run |
 | `test_ci_tools_drift` red after a ci-tools bump | Widen the `<Y` ceiling in `lockfile-update.yml`, `ci.yml`, and `docs-full-check.yml` in the same PR |
 
 ---
@@ -6629,9 +7391,9 @@ The previous default — `EQUITIES_DEFAULT_MAX_SYMBOLS = None`, meaning all **50
 | Cache | `JUNIPER_DATA_EQUITIES_CACHE_DIR` | `experiment_stack.bash` `data_up` sets this to `$RUN_DIR/equities-cache`. It does **not** set the two cap env vars — they inherit. |
 | Default universe | bundled `sp500_constituents.csv` (**503** tickers) when `symbols` is omitted | `_resolve_symbols` sorts the CSV keys. Index *titles* over-claim (Russell 3000 published 2,923; Wilshire 5000 published 3,414 as of the 2026-09-04 count). |
 | Boundary | `ordered = ordered[: params.max_symbols]` at `generators/equities/generator.py:286` | Bare slice. **No 422**, no `DatasetMeta.truncation`, no record of dropped tickers. Register `APD-DATA-018` still cites `:264` — that line is now CIK parsing in `_load_constituents`. |
-| Features | 10 `float32` columns in `EQUITIES_FEATURE_COLUMNS` | `open, high, low, close, volume, week52_high, week52_low, total_shares, market_cap, cost_basis`. `Adj Close` is downloaded (`auto_adjust=False`) and kept as `adj_close` for optional `basis_price_field`, then **dropped** from `X`. |
+| Features | 15 `float32` columns in `EQUITIES_FEATURE_COLUMNS` (`defaults.py`) | Indices 0–9 are `open, high, low, close, volume, week52_high, week52_low, total_shares, market_cap, cost_basis`; then `dividend` (10), `split_ratio` (11), `days_since_week52_high` (12), `days_since_week52_low` (13), `days_since_report` (14). `Adj Close` is downloaded (`auto_adjust=False`) and kept as `adj_close` for optional `basis_price_field`; it is not a column of `X` (APD-DATA-041). |
 | `seed` | defaulted (`DEFAULT_GENERATOR_SEED`) | Unused for the temporal split. Real non-reproducibility: `end_date` defaults to the wall clock. |
-| Shares fill | `fundamentals_fill` default `"zero"` | Missing SEC facts → `total_shares` / `market_cap` become **0.0**. The rows stay. |
+| Shares fill | `fundamentals_fill` default `"nan"` (`EQUITIES_DEFAULT_FUNDAMENTALS_FILL`) | Missing SEC facts stay NaN. `"zero"` writes `total_shares` / `market_cap` (and `days_since_report`) as 0.0 and keeps the rows; `"drop"` removes them. This knob does not fill `dividend` / `split_ratio`. |
 
 Failed Yahoo downloads still skip. Missing SEC facts + `fundamentals_fill="zero"` still write `0.0`. The generator never calls `Ticker.info`.
 
@@ -6674,9 +7436,157 @@ To raise the **deployment** ceiling (not the request), set `JUNIPER_DATA_EQUITIE
 | `501` / `equities` unavailable | Install `juniper-data[equities]` into the **serving** env (`JuniperData` for the experiment stack; `JuniperCascor1` for in-process bench). |
 | Assumed Yahoo `.info` fields (`trailingPE`, `floatShares`, …) | The generator never calls `Ticker.info`. It uses `yf.download` (chart) + SEC XBRL. |
 | Expected a byte cap to bound wall time | Anti-correlated. One symbol × 26 y is 210 KB / ~2 s; Russell 3000 × 1 day is 92 KB / 1.7–3.2 h. |
-| Expected splits / dividends / 52-week **dates** / reporting date in `X` | Not in `EQUITIES_FEATURE_COLUMNS`. Splits/dividends need `actions=True` (not passed). 52-week **values** are already features; dates and SEC `filed` are computed/downloaded and discarded. |
+| Expected splits / dividends / 52-week **dates** / reporting date in `X` | Splits and dividends **are** features: `dividend` (10) and `split_ratio` (11), fetched with `actions=True`; an absent action column is stored as 0.0 with no flag. 52-week extremes and the SEC filing enter `X` as `days_since_*` (12–14); flat `equities` also ships those dates as YYYYMMDD arrays (`week52_high_date_*`, `week52_low_date_*`, `report_date_*`). See [Equities Dataset Id](#equities-dataset-id-does-not-pin-array-content). |
 
 Do **not** re-introduce a silent prefix slice. Do **not** treat a byte threshold as the binding bound.
+
+---
+
+## Equities Dataset Id Does Not Pin Array Content
+
+An `equities_seq` `dataset_id` hashes the **request**, not the arrays. Two mints of `equities_seq-6.0.0-15505731cba5b86d`, made 85 s apart on 2026-10-03, differ in content. Compare `meta.checksum` before quoting a cross-validation number.
+
+Record: §1.1 of [`notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`](../notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md) (v1.1.2) and §4.1 item 1 of [`notes/JUNIPER_2026-10-05_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-CONSENSUS-VALIDATION.md`](../notes/JUNIPER_2026-10-05_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-CONSENSUS-VALIDATION.md). The plan files it as **F-P8** (Major, DATA). Verified against juniper-data `main`:
+
+| Piece | Where | What it covers |
+|-------|--------|----------------|
+| `generate_dataset_id` | `juniper_data/core/dataset_id.py` | `"{generator}-{version}-{sha256(canonical JSON)[:DATASET_ID_HASH_PREFIX_LENGTH]}"` (16 hex characters). The JSON is the generator name, version and params (`sort_keys=True`). A present `seed` makes the id deterministic; a seedless request adds a nonce. |
+| Artifact cache note | `juniper_data/api/http_cache.py` | The artifact is not content-addressed. The same id, after a delete or expiry, serves whatever the generator produces on the next mint. |
+| `compute_checksum` | `juniper_data/core/artifacts.py` | SHA-256 of the uncompressed `np.savez` bytes with **sorted keys** (`arrays_to_bytes`). numpy writes fixed zip timestamps, so the digest depends on the arrays alone. This is `meta.checksum`; it is not the `sha256` of the compressed bytes a store serves. |
+
+### Two mints, three numbers
+
+The 2026-10-04 captures are under [`reports/2026-10-04_recurrence-equities-cv-matrix/`](../reports/2026-10-04_recurrence-equities-cv-matrix/) (`00-dataset-create.json`, `10-crossval-service-defaults.json`, `10-crossval-eh-rff.json`). The Scenario-B re-solves are keys `F1` of `reconciler-rederive-b1.json` and `F13_mintB` of `reconciler-rederive-b1r2.json` under [`reports/2026-10-05_recurrence-equities-cv-consensus/`](../reports/2026-10-05_recurrence-equities-cv-consensus/).
+
+| Mint | `meta.checksum` | Bare crossval body (linear, ridge 0.0) | E-H body (`rff`, `ridge: 1.0`) |
+|------|-----------------|----------------------------------------|--------------------------------|
+| Complete: the audit's Scenario A (2026-10-03 09:14:24Z) and every later mint, including the 2026-10-04T21:06:08Z one | `c02004e1708e489aea48aa0a985b2eb797ee190d340080ea547dcf363bfed261` | **−20344.637730773607** (HTTP) | **−0.11526096841533144** (HTTP) |
+| Incomplete: the audit's Scenario B (2026-10-03 09:15:49Z) | `037baab750acd80f22193664e16d24a99e21b80cd4cc02c111ce9280ca52187b` | **−18081.54317403171**, the audited digit (re-solved in process) | −0.10132824545083711 (in process) |
+
+−20344.64 and −0.115 are two `POST /v1/crossval` bodies on one artifact. −18081 and −20344.64 are one body on two artifacts: re-solving the linear readout at ridge 0 on the Scenario-B arrays reproduces every audited digit, and within one env the solve is bit-identical across processes and days, so the move is not rounding.
+
+`F1` opened both mints: 28 keys, same shapes and dtypes. Column 10 `dividend` differs in `X_train` (1,367 cells) and `X_test` (178 cells). `X_val` differs in 244 cells: 180 in `dividend` and 64 in column 11 `split_ratio`. The Scenario-B mint is 0.0 in every one of those cells; the complete mint carries AAPL's dividends (up to 0.22) and the 2020-08-31 4:1 split as 4.0.
+
+The note's v1.0.0 read the checksum difference as zip timestamps (F-P8, Minor); the consensus review refuted that and re-filed F-P8 as Major.
+
+### Silent zero-fill of action columns
+
+`juniper_data/generators/equities/generator.py` treats a missing yfinance action column as "none happened":
+
+```python
+# yfinance omits the action columns entirely for a ticker with no
+# dividends or splits in range; absent means "none happened", which is
+# 0.0, not missing.
+for action_column in ("dividend", "split_ratio"):
+    if action_column not in frame.columns:
+        frame[action_column] = 0.0
+frame[["dividend", "split_ratio"]] = frame[["dividend", "split_ratio"]].fillna(0.0)
+```
+
+The download passes `actions=True`. If that response lacks the action columns, the generator writes 0.0 and continues, with no log line and no meta flag. An AAPL `2015-01-01`..`2022-01-01` window whose `dividend` column is all zeros is an incomplete upstream response, not a ticker that paid nothing. Why the Scenario-B fetch lacked the columns 85 s after a complete one is not known.
+
+Column order is `EQUITIES_FEATURE_COLUMNS` in `juniper_data/generators/equities/defaults.py` (15 `float32` columns): index 10 is `dividend`, index 11 is `split_ratio`.
+
+`EQUITIES_DEFAULT_FUNDAMENTALS_FILL` is `"nan"`. That knob governs missing `total_shares` / `market_cap` / `days_since_report` (`"zero"` writes 0.0; `"drop"` removes those rows and any row before the purchase session). It does not govern `dividend` or `split_ratio`.
+
+No producer guard is shipped. Plan item W5.7 proposes an `actions_present` meta flag and a WARNING on the zero-fill; neither is in the generator. Until one exists, compare checksums.
+
+### Operator pitfalls
+
+| Symptom | Check / Fix |
+|---------|-------------|
+| Same `dataset_id`, service-default r² −18081 in the audit and −20344.64 later | Compare `meta.checksum`. `037baab7…` is the Scenario-B mint (−18081.54317403171); `c02004e1…` is the complete mint (−20344.637730773607). Do not call that rounding. |
+| Same id and same checksum, r² −0.115 on one call and −20344.64 on another | Two crossval bodies. The E-H body sets `readout: rff` and `ridge: 1.0`; a bare body takes the listener's default (linear, ridge 0.0 on an E-H-launched stack). |
+| AAPL `dividend` / `split_ratio` column is all zeros | The generator zero-filled an omitted action column. A create for an id the store already holds returns the stored copy, so re-mint on a fresh store (a new per-run stack) and require `c02004e1…` before comparing to the 2026-10-04 captures. |
+| A text says the checksum fingerprints the NPZ container, or that the 2026-10-03 and 2026-10-04 arrays were byte-identical | Superseded. `compute_checksum` hashes the arrays, and the two days measured two mints. The docstring of `util/ad-hoc/2026-10-04_recurrence_equities_linear_conditioning.py` still carries that v1.0.0 premise. |
+
+Do **not** treat a matching `dataset_id` as a content pin. Do **not** quote −18081 and −20344.64 as one solve.
+
+---
+
+## Recurrence Equities Crossval Instruments
+
+Two ad-hoc scripts re-run the W0.8 / W0.9 measurement that [`notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`](../notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md) writes up. They are instruments, not `run_experiment.py`. The note owns the measured table and the P5 verdict (GO, upheld by the consensus review); this page is how to run them, how to read a run, and which exits are not results.
+
+Both scripts hard-code the E-H dataset selector from [`util/experiments/suites/p4/e-h-recurrence-real-data.yaml`](../util/experiments/suites/p4/e-h-recurrence-real-data.yaml). There is no flag for symbols, dates, lookback, seed, or fold geometry.
+
+| Knob | Value the script sends |
+| --- | --- |
+| generator | `equities_seq`, `persist=True` |
+| `symbols` / window / `lookback` / `regression_target` / `seed` | `AAPL`, `2015-01-01` → `2022-01-01`, `64`, `log_return`, `20260807` |
+| folds | `n_folds` 5, `scheme` `expanding`, `embargo` 2 |
+| E-H model body (`replay` label `eh-rff` only) | `d` 16, `ridge` 1.0, `readout` `rff`, `rff_features` 256, `rff_gamma` `median`. No `theta` key |
+| `service-defaults` body | dataset id plus the three fold keys. No readout, ridge, `d`, theta, or RFF keys |
+| matrix model | `d` 16. RFF features 256 and gamma `median` only when that cell's readout is `rff`. `default_ridge` passed to the builder is `0.0`; the RFF seed is the model default `0` |
+
+`replay` creates the dataset on juniper-data first (HTTP timeout 900 s), then POSTs `/v1/crossval` twice on that `dataset_id`. The script header states why: a cold fetch inside the recurrence request can trip the service's data-client timeout. The recurrence URL only receives an id.
+
+`matrix` does not call the recurrence service. It downloads the artifact through `juniper_data_client` (timeout 900 s), builds the `full` view with `sequence_data_from_arrays(arrays, "full")`, and fits one fresh model per fold per cell through `juniper_recurrence._readout.build_lmu_regressor`, the builder the service uses.
+
+The grid is `{normalize off, on} × {linear, rff} × {ridge 0.0, 1.0, gcv} × {theta fold-resolved, configured}` — 24 cells. Fold-resolved passes `theta=None`; configured passes the median of `sum(dt)` over the full sequence. On the E-H artifact that median is 91.0 and every fold resolves the same value, so the theta axis is degenerate and the grid has 12 distinct cells. A cell that raises is stored with an `error` key and the grid continues. The note records about 32 s per cell, about 13 min in all.
+
+[`util/ad-hoc/2026-10-04_recurrence_equities_linear_conditioning.py`](../util/ad-hoc/2026-10-04_recurrence_equities_linear_conditioning.py) loads the matrix module from the same directory. For the same two artifacts (raw, and `normalize_features: true`) it fits linear / ridge 0.0 / `d` 16 / data-driven theta.
+
+It records the 2-norm condition number of the design `[memory block | target_dt | 1]`, a numerical rank, and how far eval rows sit along the train design's weakest 10 right-singular directions.
+Read that last column as a drift indicator, not the gain the solve applies: every rank it reports is at most 226 of 242 columns, so those ten directions fall below `lstsq`'s cutoff (note §2.4).
+It reads `_memory_block`, `_side_channel`, and `_readout`; a rename of those attributes breaks the script.
+Its docstring still states the refuted v1.0.0 premise that the 2026-10-03 and 2026-10-04 arrays were byte-identical ([Equities Dataset Id Does Not Pin Array Content](#equities-dataset-id-does-not-pin-array-content)).
+
+### How to run
+
+Bring up a per-run stack (`util/experiment_stack.bash --up --recurrence`). Read `data` and `recurrence` from that run's `ports.json`. The ranges are data `8110`–`8139` and recurrence `8260`–`8289`; `8110` and `8260` in the script header are the range floors, not a reservation.
+
+Use the recurrence env's interpreter (stack default `JuniperCascor1`). `replay` imports numpy at module load. `matrix` and the companion also import `juniper_data_client`, `juniper_recurrence_model`, `juniper_model_core`, and `juniper_recurrence`.
+
+```bash
+PY=/opt/miniforge3/envs/JuniperCascor1/bin/python   # example path from the script header
+DATA_PORT=$(jq -r .data "$RUN_DIR/ports.json"); REC_PORT=$(jq -r .recurrence "$RUN_DIR/ports.json")
+"$PY" util/ad-hoc/2026-10-04_recurrence_equities_cv_matrix.py \
+    replay --data-url "http://127.0.0.1:${DATA_PORT}" \
+    --recurrence-url "http://127.0.0.1:${REC_PORT}" --out-dir reports/<dir>
+"$PY" util/ad-hoc/2026-10-04_recurrence_equities_cv_matrix.py \
+    matrix --data-url "http://127.0.0.1:${DATA_PORT}" --out-dir reports/<dir>
+"$PY" util/ad-hoc/2026-10-04_recurrence_equities_linear_conditioning.py \
+    --data-url "http://127.0.0.1:${DATA_PORT}" --out-dir reports/<dir>
+```
+
+`persist=True` stores the artifact on whichever data service `--data-url` names. Point it at the per-run stack.
+
+### Files
+
+| Command | Writes under `--out-dir` |
+| --- | --- |
+| `replay` | `00-dataset-create.json`, `01-recurrence-health.json`, `10-crossval-eh-rff.json`, `10-crossval-service-defaults.json` |
+| `matrix` | `20-matrix-datasets.json`, `21-matrix-cells.json`, `22-matrix-table.md` |
+| conditioning | `23-linear-conditioning.json` |
+
+Two recorded runs use these names: `reports/2026-10-04_recurrence-equities-cv-matrix/` and `reports/2026-10-05_recurrence-equities-cv-consensus/laneA3-rerun/`. Re-running writes only the directory you pass.
+
+### What exit 0 does not mean
+
+| Observation | What the script actually did |
+| --- | --- |
+| Printed `DIFFERENT` next to `equities_seq-6.0.0-15505731cba5b86d` | Comparison only. `replay` continues on the id it just created and still returns 0. |
+| Crossval HTTP status is not 200 | The body is printed and the JSON is written. `replay` still returns 0. A failed dataset create (HTTP outside 200/201, a non-dict body, or an empty `dataset_id`) is `SystemExit` before any crossval POST. |
+| `GET /v1/health` was not 200 | Recorded in `01-recurrence-health.json`. It does not gate the two POSTs. The stack's own ready check is `/v1/health/ready`. |
+| A matrix row says `ERROR` | That cell was caught. The process returns 0. A failed dataset create inside `_load_full` is not caught and aborts the grid. |
+| `memory_z_*` stays finite on a constant column | `_z_against` replaces a non-positive column std with `1.0` before dividing. Keys: `max_abs_z`, `p99_abs_z`, `frac_rows_any_gt5`, `frac_rows_any_gt10`. |
+| Conditioning `cond_2norm` is `inf` | `sigma_min` was 0. The script still returns 0 when it finishes the folds. |
+| You wanted resolved ridge, gamma, or per-fold theta from the HTTP body | `replay` saves that body as the service returned it. Those resolved values are what `matrix` reads off the in-process model (`theta_resolved`, `ridge_resolved`, `gamma_resolved`). |
+| A required flag was omitted | argparse usage (exit 2). Nothing is written. |
+
+### Reading a run
+
+| Observation | What it means |
+| --- | --- |
+| `10-crossval-eh-rff.json` aggregate near −0.1 and `10-crossval-service-defaults.json` in the tens of thousands | The expected pair on the E-H artifact (recorded −0.115 and −20344.64): one artifact, two bodies. The bare body takes the listener's linear / ridge 0.0 default. |
+| A digit differs from a recorded run under the same `dataset_id` | Compare `meta.checksum` in `00-dataset-create.json` first. Within one env the solve is bit-identical across processes and days; BLAS thread count alone moves a fold by at most 4e-4 relative. A different checksum is a different mint. |
+| E-H aggregate −0.12 read as the suite comment failing | The comment expects r² near 0, not a blow-up. −0.12 is bounded and finite: no demonstrated next-day skill with these features. The E-H suite has no acceptance band; R5 is not ruled (note §3.4 recommends `cv_r2` in [−1.0, +0.5] and `cv_r2_std` ≤ 0.5, both `gate`). |
+| `normalize_features` turned on to fix the blow-up | It does not: the normalised linear ridge-0 aggregate is −4289388869437.35. The sane RFF cell moves −0.12 → −0.14, inside the RFF seed spread, so that supports no direction. |
+| GCV aggregate near 0 read as a tuned penalty | 15 of 20 fold-resolved GCV folds select 1000, the last point of `_GCV_GRID` (`np.logspace(-6, 3, 60)`), and the fit abstains toward the fold mean (train r² ≈ 0.002). Plan item W5.9 reports that selection; it does not widen the grid. |
+| A configured-theta row equals its fold-resolved twin | Expected on this artifact (91.0 everywhere). The matrix does not test theta as a lever. |
+
+The note's §2.5 records the instrument's limits: one ticker, one window, one dataset seed, `d` 16, five expanding folds, one RFF seed (seeds 0–5 span −0.115 … −0.252 on the E-H cell), a CV population whose fold 4 holds the whole `test` partition, and the private attributes above.
 
 ---
 
@@ -6863,12 +7773,35 @@ A User-owned repo cannot currently add the merge-queue **rule** ([enablement run
 |---------|---------------------|------------|
 | `Analyze (python)` red: version mismatch | `init` / `autobuild` / `analyze` SHAs diverged | Align all three to one SHA; confirm `groups.codeql-action` still exists |
 | Dependabot opened 3 CodeQL PRs instead of 1 | Group missing or pattern not matching | Restore `groups.codeql-action` with pattern `github/codeql-action*` |
-| Checks green, merge `BLOCKED` | CodeQL left a PR review comment; unresolved threads do **not** appear in the check rollup | Read Conversation (or `gh pr view N --json mergeStateStatus`); **fix the finding in code** (export or delete an unused module global; add a new public name to `__all__`). Do not dismiss the bot thread by hand |
+| Checks green, merge `BLOCKED` | CodeQL left a PR review comment; unresolved threads do **not** appear in the check rollup | Read Conversation (or `gh pr view N --json mergeStateStatus`); **fix the finding in code** (export or delete an unused module global; add a new public name to `__all__`; put a bare `open()` in a `with` block — see [File is not always closed](#file-is-not-always-closed)). Do not dismiss the bot thread by hand |
+| Checks green, review title `File is not always closed` | Quality query from `queries: +security-and-quality`: a file handle that is not closed on every path | Put the `open` in a `with` block. `util/ad-hoc/` is not excluded. Do not dismiss the thread |
 | Merge stalled: "waiting for results from CodeQL" | Ruleset `code_scanning` has no SARIF for that SHA yet | Wait for `Analyze (python)` to finish; if a queued merge never gets a context, restore `on.merge_group` |
 | Quality Gate green, CodeQL red | Expected — CodeQL is not in `required-checks.needs` | Fix the CodeQL job or the finding; **never** add this job to Quality Gate `needs:` (a skip on `push:main` would fail the gate the same way sequence-safety would) |
 | Copying `notes/templates/ci/codeql.yml` "to sync the fleet" | Template has no `merge_group` and a stale SHA | Edit `.github/workflows/codeql.yml` |
 
 `code_scanning` wait strings observed in ruleset suites: [`notes/JUNIPER_2026-08-18_JUNIPER-ECOSYSTEM_CODE-QUALITY-RULE-AUDIT.md`](../notes/JUNIPER_2026-08-18_JUNIPER-ECOSYSTEM_CODE-QUALITY-RULE-AUDIT.md) §4.3.
+
+### File is not always closed
+
+`queries: +security-and-quality` includes the quality query whose review title is **File is not always closed** (message `File is opened but is not closed.`). It fires on a file object that is not closed on every path. On the pull request that archived the Phase 10 lane probes ([juniper-ml#2157](https://github.com/pcalnon/juniper-ml/pull/2157)) it posted 19 threads on `util/ad-hoc/` scripts, in these shapes:
+
+```python
+s = json.load(open(path))
+text = open(path).read()
+open(path, "w").write(text)
+json.dump(obj, open(path, "w"))
+```
+
+Close the handle on every path with a `with` block, for reads and writes alike (the edit #2157 applied):
+
+```python
+with open(path) as fh:
+    s = json.load(fh)
+```
+
+`Analyze (python)` can stay green while the pull request stays `BLOCKED`: the `juniper-ml-rules` ruleset sets `required_review_thread_resolution: true`, and a review thread is not in the check rollup. Fix the `open`; do not dismiss the thread by hand. The same review batch can also post **Unused import** (one thread on #2157) — delete the import. All 20 #2157 threads were resolved by `github-advanced-security[bot]` itself; re-query the PR's review threads before resolving anything by hand.
+
+`.github/workflows/codeql.yml` has no path filter, so a script under `util/ad-hoc/` is in scope on the pull request that adds it; retention as provenance does not exempt it. Predict the threads before opening: `python3 util/ad-hoc/2026-10-05_codeql_python_prescreen.py FILE [FILE ...]` exits 1 when it reports anything, and `--known-answer` re-checks it against #2157's 20 threads. Author note: [`util/ad-hoc/README.md`](../util/ad-hoc/README.md#codeql-scans-this-directory).
 
 ---
 
@@ -6990,6 +7923,8 @@ Available extras:
 | `sentry`     | `sentry-sdk[fastapi]>=2.0.0` |
 | `all`        | Both optional groups         |
 
+`configure_sentry` never sends frame-local variables (`include_local_variables=False`; there is no parameter to turn them back on), and its `before_send` hook also deletes frame `vars`. Published **0.4.0** still uses the SDK default (`True`). Why, and what a non-ASCII `X-API-Key` does to that path: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
+
 Publish and CI constraints:
 
 1. `ci-observability.yml` runs package tests on Python 3.12 and 3.13, then builds and validates the distribution.
@@ -7018,6 +7953,35 @@ Publish and CI constraints:
 - **Blank API keys.** `APIKeyAuth` filters blank / whitespace-only configured keys (the `auth_posture.real_keys` rule), so an empty secret file cannot enable auth that would then accept an empty `X-API-Key`.
 - **Rate-limit keying.** `RateLimiter._get_key` buckets by `key:<api_key>` when the request is authenticated, otherwise by `ip:<client.host>` — falling back to `ip:unknown` when Starlette reports no client. Authenticated callers therefore get their own budget rather than sharing one per source IP (and a shared NAT egress cannot exhaust an authenticated client's budget).
 - **Worker mTLS half-config.** `TLSConfig` (`juniper_service_core.workers.security`) fails closed: with TLS enabled and only one of `cert_file` / `key_file` set, it raises `ValueError` naming both paths, rather than returning a bare `SSLContext` with neither chain nor key. A silent half-config is the dangerous shape — it looks "TLS enabled" to callers while presenting nothing.
+
+#### Non-ASCII API keys and Sentry frame locals
+
+`APIKeyAuth.validate` (`juniper_service_core/security.py`) compares the presented `X-API-Key` with each configured key as UTF-8 bytes, error handler `surrogatepass`. Equality is exact: a configured key that itself contains non-ASCII still matches that same string. A mismatch is an ordinary authentication failure, never an exception.
+
+| Surface | On mismatch | Path |
+|---------|-------------|------|
+| HTTP | **401** `Invalid API key.` | `SecurityMiddleware` catches `HTTPException` and, for 401 only, records the source IP on `FailedAuthThrottle` |
+| WebSocket | close **4001** `Authentication required`, before `accept()` | `ws_authenticate` calls the same `validate`. `BaseHTTPMiddleware` does not see the upgrade, so the HTTP throttle does not cover `/ws/*` |
+
+`FailedAuthThrottle` defaults to **10** failed attempts per source IP per **60** seconds. Once that many 401s are recorded, a further request from that IP inside the window is **429** with `Retry-After`, and the comparison is not run. Only an HTTP 401 is recorded. A 500 is not.
+
+**Why the compare is bytes.** `hmac.compare_digest` raises `TypeError` when either `str` argument holds a non-ASCII character. Starlette decodes header bytes as latin-1, so any byte above `0x7f` arrives at `validate` as a non-ASCII `str`. An anonymous `X-API-Key: \xa0` raised inside the comparison (found by the validation of juniper-canopy#683, 2026-09-24, per the comment in `security.py`).
+
+The exception is not an `HTTPException`, so it left `SecurityMiddleware` as a **500**. Because only a 401 is recorded, a flood of such keys was never throttled. `ws_authenticate` calls the same `validate`, so the handshake raised out of the stream handler instead of closing **4001**.
+
+**Why `surrogatepass`.** It is the built-in UTF-8 error handler that is both total and injective. A lone surrogate (for example `"\ud800"` from a JSON-decoded config value) encodes instead of raising, and no two distinct strings share an encoding. `surrogateescape` fails both tests: it raises on `"\ud800"`, and it maps `"\xe9"` and `"\udcc3\udca9"` onto the same bytes. Strict UTF-8 raises on a lone surrogate. Either of those would turn a config value into an exception again.
+
+**What Sentry received.** The SDK default is `include_local_variables=True`, which snapshots every frame's locals into the error event. `EventScrubber` redacts locals by **name**. `api_key` (the presented key) is on its default denylist; the local holding the **configured** key is not — `k` in published 0.7.0's generator expression, `candidate` in the loop that replaced it (juniper-ml#1974, unreleased) and in juniper-data's copy. No name list covers the next local.
+
+`juniper_observability.sentry.configure_sentry` therefore passes `include_local_variables=False`, and there is deliberately no parameter to turn capture back on. The `before_send` hook `_strip_sensitive_headers` also deletes `vars` from each `exception.values[*].stacktrace`, each `threads.values[*].stacktrace`, and a top-level `stacktrace`.
+
+The option does not cover the opt-in `PureEvalIntegration` (sentry-sdk 2.58.0): its event processor writes frame `vars` without consulting the flag, and processors run before `before_send`. The hook keeps the name `_strip_sensitive_headers` because juniper-data and juniper-cascor import it by that name.
+
+**Published wheels do not have this yet** (PyPI, checked 2026-10-08). `juniper-service-core` is still **0.7.0** and `juniper-observability` is still **0.4.0**; both notes live under `[Unreleased]` (juniper-ml#2086). A service installed from those wheels still 500s on a non-ASCII key, still fails to throttle that flood, and can still send the configured key to Sentry. The fix is on `main` only. Do not catch the `TypeError`, and do not re-enable frame locals to see why the 500 happened — that is the leak.
+
+juniper-data carries its own `APIKeyAuth` (`juniper_data/api/security.py`). The same byte compare landed there in juniper-data#440 (merged 2026-09-25), after juniper-data 0.16.0 was published, so no juniper-data release carries it yet; juniper-data's `configure_sentry` is juniper-observability's.
+
+Gate: `juniper-service-core/tests/test_security.py`, `tests/test_middleware.py` (`test_security_middleware_401_not_500_on_a_non_ascii_key`, `test_non_ascii_key_failures_are_counted_by_the_throttle`), `tests/test_t2_websocket.py` (`test_ws_authenticate_closes_4001_on_a_non_ascii_key`); `juniper-observability/tests/test_sentry.py`.
 
 #### Control WS log sanitizer
 
@@ -7077,6 +8041,9 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Worker TLS "enabled" but presents no chain | Half-config — `TLSConfig` raises `ValueError` when only one of `cert_file` / `key_file` is set; supply both. |
 | One noisy IP throttles authenticated clients | Expected only for unauthenticated traffic — `RateLimiter` keys authenticated requests as `key:<api_key>`, so confirm the caller is actually sending `X-API-Key`. |
 | Two `task_assign` frames while the first task runs | A mid-task heartbeat must ack without dispatching — confirm the idle guard. |
+| Non-ASCII `X-API-Key` returns 500 | Published `juniper-service-core` 0.7.0 compares keys as `str`; `hmac.compare_digest` raises `TypeError`, which is not an `HTTPException`. Fixed on `main` (UTF-8 bytes, `surrogatepass`; juniper-ml#2086, unreleased). Do not catch the `TypeError`. |
+| Non-ASCII key flood never 429s | `FailedAuthThrottle` records only HTTP 401s, so the 500 was never counted (default 10 failures / 60 s / source IP, then 429 with `Retry-After`). WebSocket closes are not on this throttle. Same fix. |
+| Sentry event contains the configured API key | Frame locals were captured: the scrubber redacts `api_key` by name, not the local holding the configured key. `configure_sentry` on `main` passes `include_local_variables=False` with no switch to re-enable; published `juniper-observability` 0.4.0 still uses the SDK default. |
 
 ---
 
@@ -7114,6 +8081,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.48  | 2026-09-04 | Pointer-follow soak operator surface: `--dry-run` is exempt from the terminal-verdict stop (juniper-ml#1690); do not drive n≈8–10; era split required; `source-recovered` stays in the denominator; soak-probes reaper pidfile |
 | 0.6.60  | 2026-09-05 | Canopy E2E unfilled-rows ledger: plan re-drives from `e2e_unfilled_rows.py` (matrix status cells only; `C2.` / `M-`; exit 0). `e2e_row_coverage.py` is an estimator and can list already-`PASS` rows as remaining |
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
+| 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -7613,6 +8581,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-09-04
-**Version:** 0.6.59
+**Last Updated:** 2026-10-08
+**Version:** 0.6.62
 **Maintainer:** Paul Calnon
