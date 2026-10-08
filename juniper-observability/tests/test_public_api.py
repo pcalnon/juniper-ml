@@ -98,7 +98,15 @@ def test_middleware_reexports_are_the_same_objects():
 
 
 def test_version_is_stable_string():
-    """0.4.0 — additive minor: build provenance. ``set_build_info`` gains
+    """0.4.1 — patch: fixes plus one security fix, no public-symbol change vs ``0.4.0``. Inbound
+    ``X-Request-ID`` is validated on ingress (``APD-OBS-001``); ``py.typed`` ships in the wheel
+    (``APD-OBS-002``); ``register_info_or_update`` declares its real return type and ``__all__``
+    is pinned against the public surface (``APD-OBS-003`` / ``APD-OBS-004``); and
+    ``configure_sentry`` no longer sends frame-local variables (``include_local_variables=False``
+    plus a ``before_send`` scrub), so a local such as a compared API key cannot reach Sentry.
+    Consumers should pin ``juniper-observability>=0.4.1``.
+
+    0.4.0 — additive minor: build provenance. ``set_build_info`` gains
     keyword-only ``git_sha`` / ``build_date`` passthrough labels, and
     ``ReadinessResponse`` gains optional ``git_sha`` / ``build_date`` fields
     (juniper-ml ``notes/JUNIPER_2026-06-14_JUNIPER-ECOSYSTEM_BUILD-PROVENANCE-DESIGN.md``). Both are
@@ -122,7 +130,7 @@ def test_version_is_stable_string():
     ``juniper_observability.testing.reset_prometheus_registry``; 0.1.1
     was the pre-helpers baseline.
     """
-    assert juniper_observability.__version__ == "0.4.0"
+    assert juniper_observability.__version__ == "0.4.1"
 
 
 def test_constants_match_documented_values():
