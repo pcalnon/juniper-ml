@@ -1,0 +1,1183 @@
+{
+ "_about": "Per-PR disposition of the 116 draft PRs of Cursor-fleet flood #3 (2026-10-04..06), evaluated 2026-10-08. Source of truth for 2026-10-08_fleet_flood3_disposition_render.py. route: merged (the PR itself merged, as-authored or re-cut on main with the listed corrections) | carried (content landed in `carrier`; PR closed) | superseded (a sibling or merged PR made it redundant; any unique content is in `carrier`) | wrong (closed: incorrect on main). quality/priority are the evaluators' verdicts (SOLID/WEAK/BROKEN; P1 defect/security/gate, P2 risky untested behaviour or live operator contract, P3 low-risk).",
+ "carriers": {
+  "juniper-ml": {
+   "tests": 2182,
+   "docs": 2184
+  },
+  "juniper-data": {
+   "docs": 475
+  },
+  "juniper-canopy": {
+   "consolidation": 729
+  },
+  "juniper-cascor": {
+   "consolidation": 709
+  },
+  "juniper-data-client": {
+   "docs": 230
+  }
+ },
+ "prs": [
+  {
+   "repo": "juniper-ml",
+   "pr": 2119,
+   "kind": "docs",
+   "route": "superseded",
+   "carrier": "docs",
+   "quality": "WEAK",
+   "priority": "P2",
+   "note": "Duplicati web API clients runbook, cut before ml#2134 merged: '--backup-id is required' (main defaults it to '' and records a durable ALERT JOB_MISSING), export without the operation-token step, and 'empty stdout is load-bearing' (main's docstring: hygiene, not protection) are false on main. Superseded by #2177's section; its duplicati_api.py row is carried."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2122,
+   "kind": "docs",
+   "route": "superseded",
+   "carrier": "docs",
+   "quality": "WEAK",
+   "priority": "P2",
+   "note": "Same CAN-015 replay re-drive section as #2125, branched before #2120 landed (it calls the wrapper and driver 'not on main yet'). Superseded by #2125; its verified unique content (the canopy-to-cascor parameter-name table, when cascor reads the snapshot directory, the max_epochs/output_epochs fallback, the player's response unwrapping and scrubber comparison, the F-CANOPY-015/-056 tags) is carried in #2125's section."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2125,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "On-main CAN-015 replay re-drive wrapper. One false claim: cascor reads the snapshot directory per call in manager.py and once at import for the auto-writer (constants_hdf5.py), not 'at process start'. The port 8223 / --down wording, the 600 s fit wait and --skip-train are made precise; two unsupported lines dropped; a cheatsheet row moved."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2128,
+   "kind": "docs",
+   "route": "wrong",
+   "carrier": "docs",
+   "quality": "BROKEN",
+   "priority": "P2",
+   "note": "Its core claims are false since ml#2134 ('the client never calls issuetoken and never sets token='; 'the stub answers export with 200, so the suite stays green') -- it documents the bug #2134 fixed. Its job-2 helper list is carried into #2177's section, corrected to eight defaults plus four hard-coded sites."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2137,
+   "kind": "docs",
+   "route": "superseded",
+   "carrier": "docs",
+   "quality": "WEAK",
+   "priority": "P2",
+   "note": "Written while ml#2134 was open, so every 'on main ... until #2134' sentence is false now. Its interim --backup-id 2 guidance and job-2 helper table are carried (corrected) into #2177's section."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2155,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "A pin-stable lockfile week still opens a PR -- true, and main's docs said otherwise in four places (all 12 scheduled runs 07-20..10-05 opened one; the generator writes timestamped backups and dated headers). '164 conda entries' is 155 deps + 9 channels; a quiet Monday can mean last week's PR was updated; an unrelated security-row rewording dropped."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2158,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "WITHDRAWN is a fourth finding-triage disposition (verified on a synthetic ledger: FIXED > ACCEPTED > WITHDRAWN; --open-only hides all three; exit always 0). Counts refreshed to main 959748c5 (79 findings: 53 fixed, 1 accepted, 2 withdrawn, 23 open); stale 'in-flight #1652/#1675' pointers relinked."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2160,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "CodeQL's 'file is not always closed' threads block merges (codeql.yml runs +security-and-quality with no path filter; the ruleset requires thread resolution; ml#2157 had 20 bot threads). Added a fourth pattern (json.dump(x, open(p, 'w'))), the ruleset mechanism, and a pointer to the prescreen."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2162,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "Non-ASCII API keys are a 401 and Sentry drops frame locals (security). Verified against code and the published wheels; published 0.7.0 holds the key in the genexpr local k, not 'candidate'; four 3-cell rows in 2-column tables fixed; an unverified uvicorn-parser claim dropped; juniper-data#440 added (in no release yet). WEAK as submitted, SOLID after fixes."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2167,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Malformed env-floor input exits 2, not a traceback (every path run live; 41 suite tests OK). The ecosystem.yaml fallback applies only without --site-packages/--env; a bad extra DOES exit 2 for juniper-ml itself (its floors all live in extras); three missing cases added; stale 'open #796/#802' fixed."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2177,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Yamaguchi Duplicati server client and watchdog. Two false statements corrected: the watchdog's --base and duplicati_api.py's DUPLICATI_URL can leave loopback; export does still send the login JWT (the export route ignores it). Carries #2119's duplicati_api.py row and #2128/#2137's corrected job-2 helper list."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2181,
+   "kind": "docs",
+   "route": "wrong",
+   "carrier": null,
+   "quality": "WEAK",
+   "priority": "P3",
+   "note": "Documents the Yamaguchi server installer, wrapper, unit and defaults that the unmerged backup Phase B rewrites, behind the design's section 8 STOP. Three statements are false on main (a first install exits 1 silently without .blessed.sha256; an empty DUPLICATI_REQUIRE_MOUNT does not skip the mount check; a hand edit in /etc/default/duplicati is overwritten by the --update-backup-behavior re-run it recommends), and it presents install + restart as operator steps despite the owner's 'stop, never restart' Tier 1 ruling. Not carried: the server's operator docs belong with Phase B; the diff stays available on this closed PR."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2132,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Recurrence crossval hyperparameters (base of the merged section with #2172). `GET /v1/crossval/status` never shows a run in flight; `enabled: false` disables CV; the driver always sends `train:` keys (pitfall reframed as a hand-written POST)."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2135,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Degraded outcome and headline r2. Three stale 'main does not contain #2145' statements corrected (it does); not_reached becomes degraded only after a successful train."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2141,
+   "kind": "docs",
+   "route": "wrong",
+   "carrier": null,
+   "quality": "BROKEN",
+   "priority": "P3",
+   "note": "Its core claims (checksum not the content pin; dataset_id is; the digit is unstable; F-P8 = zip timestamps) are reversed by merged ml#2168's consensus record (CV-BLOWUP investigation v1.1.2, consensus validation §4.1, reconciler F1). Four still-true rows were moved, corrected, into #2142's section."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2142,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "Re-running the E-H equities crossval instruments. 'Digits not stable' corrected (they reproduce bit-for-bit); added the theta-axis, single-RFF-seed and fold-4 caveats."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2146,
+   "kind": "docs",
+   "route": "superseded",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Same W0.2 env-preflight section as #2148, worse placement and a stale 'tip f01a438c' framing. Its unique verified content (exit table, --skip vs --skip-env-preflight, prereleases=True, --help, W0.1 status, W3.0b) is folded into #2148's section."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2148,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "W0.2 recurrence env preflight. Twelve stale 'main does not run it' statements removed (ml#2139 is on main); --grafana-bridge only for truthy values; one unverifiable claim dropped."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2152,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "F-S10: a whitespace-padded data API key leaks into a recurrence 502 detail (map_data_error -> data-client -> InvalidHeader). Completed the list of files that carry it: stats.json, summary.md, the service log, /v1/training/status failure.detail."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2165,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "WEAK",
+   "priority": "P3",
+   "note": "Harvest only: written against pre-#2164 main (re-adds a heading #2164 landed; 'the CLI has no --params', false since juniper-recurrence#190). Its dry-run, --skip, version-probe/unverified behaviour, re-run flags/env/600 s and a pitfalls table are merged into main's existing section."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2170,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "equities_seq dataset_id does not pin array content. Mint labels fixed; also corrects three false rows already on main's Equities Symbol Cap (15 feature columns, fill default 'nan', actions=True)."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2172,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Merged into #2132's section: the E-H base YAML's service.default_ridge 0.0 overrides both the env var and the class default. Canopy module path fixed."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2175,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "A busy recurrence train 409 names the holder. Added that none of it is released (PyPI 0.5.0 answers a busy train with a plain string); the curl example reads ports.json."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2121,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Watchdog active-task scope. Carried verbatim."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2124,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Duplicati call() 401 retry and error bodies. mypy annotation; bandit literals moved to named constants (the cause of its failed pre-commit)."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2127,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "Fail-closed delete, pause read-back, stale-while-paused; pins that delete without --remote-files never sends the remote-delete query. black, bandit B105."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2129,
+   "kind": "fix",
+   "route": "superseded",
+   "carrier": null,
+   "quality": "WEAK",
+   "priority": "-",
+   "note": "The Duplicati 2.4 export-token fix landed as ml#2134, which names this PR as superseded; main's version is a safer superset (this one would print a non-error token response and accept an export with no target URL). Its test file fails 2 of 33 against main. Nothing unique to carry."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2138,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "Export-token encoding and illegal watchdog ids. Its three tests that EXECUTED util/ad-hoc/yamaguchi_watchdog_deploy.bash are replaced by a static check (tests/test_yamaguchi_watchdog.py forbids executing it); the static check catches three refusal-gate mutations main's suite misses. bandit, mypy."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2140,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Export-token transport leaks and a whitespace TargetURL. bandit B105."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2143,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "Replay re-drive control-request accounting. BROKEN as submitted: its requests stand-in lacked Session, so the suite crashed at import on Python 3.12/3.13 (CI installs no requests). Fixed; mypy."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2159,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "Yamaguchi pre-backup guard abort and secret contract. Four CodeQL alerts in fixtures (file modes; a hash over a PASSPHRASE-named value) fixed in code; black, bandit."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2163,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "Worktree cleanup phase 4 refuses to delete dirty work or unmerged commits (hermetic temp repos). Carried verbatim. Led to a defect: worktree_cleanup.bash:461's 'commits would be lost' list is always empty."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2171,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "TargetURL repoint refusals. CodeQL alert 1035 + bandit (fixture constant renamed)."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2178,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "Consensus archiver credential screen. Carried verbatim."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2180,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "main-verify screen verdicts (+ its main-verify.yml battery line). black had collapsed two stub scripts into one-liners; rewritten."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2133,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "W0.9 z-score guard and a create with no dataset id. Branch conflicts with main (carries ml#2130); only its own test commit carried. mypy; stale suite count dropped."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2136,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Degraded-phase and headline edges. Cut from closed ml#2131's branch (v1 and v2 code are byte-identical); never ran in CI. mypy."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2144,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Aux-phase timeout, non-object 200, degraded exit without a reason. Same base as #2136; never ran in CI."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2147,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Phase-error body selection and the degraded four-way count. bandit B105 (SECRET_* -> *_ECHO_MARKER)."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2149,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Fail-closed pin-probe, interpreter and skip edges. Branch conflicts with main (carries ml#2139; ml#2164 edited the same files since). black, flake8 F541."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2150,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "The W0.2 version-pin probe's real evaluation. Its prereleases=True claim is false under packaging >= 26; comment fixed and the flag pinned by text (WEAK -> SOLID)."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2153,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Silent probes and a preflight that never finishes. Carried verbatim (its wiring collides with #2149/#2150)."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2156,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Re-drive stack refuses to touch a foreign listener. black (its tests never ran in CI); docstring cited a suite not on main; CI comment corrected."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2166,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "W1.9/W1.10 launch-record edges. black; missing description written."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2169,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Recorded save_model re-run env and zero hyperparameters. black; missing description written."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2173,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Actions-outage rerun helper. Carried an older helper (0.1.0); taking its side would revert 0.2.0's --accept-degraded. Retargeted, with two tests added for that untested flag; flake8 B903, mypy."
+  },
+  {
+   "repo": "juniper-ml",
+   "pr": 2174,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "tests",
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "Equities Lane A3 checks-report flags. False 'separate suite' claim corrected; description written."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 454,
+   "kind": "fix",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Copilot. Opts create_app out of FastAPI 0.142's native telemetry (main pins 0.142.2). Hardening, not a live leak (sentry-sdk installs no OTel provider). Re-cut without the carried #446 commit; test skips on FastAPI < 0.142. Retitled fix(api): ...; merged directly (GitHub refuses auto-merge for it as a 'stacked' PR)."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 447,
+   "kind": "docs",
+   "route": "superseded",
+   "carrier": "docs",
+   "quality": "WEAK",
+   "priority": "P3",
+   "note": "~75% duplicates #448; its telemetry half describes main without #454; false claim about the Dependabot table. Unique rows (four-extras lock rows, 'Grouped minor bumps', one overview line) carried."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 448,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Conf-only bumps still upgrade the lockfile. conda env export YAML, not explicit-spec (3 places); token/commit semantics made precise (5 places); restored a dropped troubleshooting cause."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 452,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Recurrence-ready equities_seq bundle. The 400 detail example replaced with pydantic's real rendering; on main after v0.16.0, not in the release."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 456,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "FastAPI telemetry opt-out (lands with #454). FastAPI pin 0.142.2 not 0.141.1 (4 places); telemetry= on 0.141 is stored in app.extra, not a TypeError."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 457,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Image serve-and-version gate. Verified as written."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 460,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Consumer release notification. 'No unit test parses them' dropped (#458 adds one)."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 464,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "WEAK",
+   "priority": "P3",
+   "note": "Claude Code workflow contract. 'contains is case-sensitive' is false (4 places)."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 465,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Non-ASCII API key is a counted 401. Wording softened; the #440 fix is not in v0.16.0 (still a 500 there)."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 468,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "arc_agi loads without pickle. One phrase corrected."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 470,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "equities_seq is regression at 6.0.0. Added that v0.16.0 still serves 5.0.0 as classification."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 472,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "HF/Kaggle loads emit the decision-11 contract. #411 issue vs #422 fix made precise."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 474,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "Dependency-docs capture contract. Stale check_doc_links.py fixed; rows merged with #448's."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 449,
+   "kind": "test",
+   "route": "superseded",
+   "carrier": 450,
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "Same two files as #450, neither a superset. #450 is the base (9/10 mutations vs 6/10); this PR's unique cases (symlinks, all six forbidden and five pruned dirs, secrets not echoed, negative names, manifest re-check) are carried in #450, and the pair kills 10/10."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 450,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "In-image credential scan and CPU-only gate, plus #449's unique cases. Re-cut on main."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 453,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "W1.8 cost-basis drop edges. Re-cut without the carried data#451 commit; six mypy errors fixed; docstring corrected. Never ran in CI before."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 458,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "A dispatch 204 is not delivery. mypy (6); skip guard for hosts without GNU date -d; the failing-curl test now asserts the POST (it passed vacuously under BSD tools). Re-cut."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 459,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Sequence-safety label hatch. Merged as authored."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 461,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Image serve-check docker driver. Merged as authored."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 466,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Open-PR budget alarm and base-branch guard. Merged as authored."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 467,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Signed lockfile regen commit and freshness comparison. Its macOS failure was deterministic (BSD base64 has no -w); skip guard, per-test scratch dirs, exact-pin regex. Re-cut."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 469,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "main-verify verdict and tracker shells. 19 mypy errors (class-level annotations) and a hard-coded /usr/bin/python3 fixed. Re-cut."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 471,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Which job results fail the Quality Gate. Merged as authored."
+  },
+  {
+   "repo": "juniper-data",
+   "pr": 473,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "AGENTS.md Last Updated date check. Merged as authored."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 721,
+   "kind": "fix",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "Real defect: the wheel omitted outbound_errors, which main imports, so the next release would have stopped at publish.yml's import smoke. Re-cut on main without a stale lockfile-regen commit GitHub had not synced into the PR; CHANGELOG entry corrected; black."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 699,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Replay echo-shape guards. flake8 B903 (__slots__). Branch carries merged #697."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 701,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Replay window shapes the measured session never builds. Carried verbatim; branch carries merged #697."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 704,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Falsy 422 details and status-bar cut bounds. Two tests pinned the pre-#722 401/403 text; retargeted to main's wording (tooltip bound 480, not 400). Taking its branch side would revert #722."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 707,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Selection refuses juniper-data dataset spellings for the LMU. Carried verbatim."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 715,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Image-serve driver fail-closed paths. BROKEN as submitted: it overwrote time.monotonic/time.sleep globally and never restored them, failing 5 unrelated tests on every CI leg. Fixed with monkeypatch."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 718,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Image credential scan and open-PR budget alarm. Its macOS red was main's own flake (C2)."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 719,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Replay control-result guards. Carried verbatim."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 720,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Falsy values on the shared stage payload. Its macOS red was main's own flake (C2)."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 724,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "A failed health read is not a version; a zero wait is still a wait. Branch carries merged #722."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 727,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Sequence-safety hatch and post-merge verdict shells. Hermetic (tripwire gh/curl never called)."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 728,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Empty-string dataset commit and restage zeros. A 3-part implicit concatenation made one literal (the cause of its failed pre-commit)."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 698,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Replay exclusive range end, window length, render echoes. 16 stale 'not on main yet' lines (#697 merged 12 min after it opened); 2 false claims; also repairs two errors in main's REPLAY_V2_FAQ."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 700,
+   "kind": "docs",
+   "route": "superseded",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "Same title and subject as #698, less complete. Unique pieces (USER_MANUAL replay items, cheatsheet row, TESTING_REFERENCE table, QUICK_START check) carried; its AGENTS.md Hazards line is not (fails the admission test; would use 471 of 618 chars left)."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 703,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "WEAK",
+   "priority": "P2",
+   "note": "Recurrence 4xx detail and in-sample card. ~20 sentences said #702 was unmerged; hover limit 480 not 400; the 401/403 message names the env vars; detail also appended on 429."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 706,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "WEAK",
+   "priority": "P3",
+   "note": "Claude Code workflow contract. 'Case-sensitive @claude' is false (5 places); five smaller fixes; an over-length line."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 713,
+   "kind": "docs",
+   "route": "superseded",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "#717 is a lint-clean superset. Unique strings (alert text, banner, toggle label, Off/On table) carried; cascor's refusal credited to juniper-cascor#687, not canopy#681."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 714,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Image serve-and-version gate. ~40 claims, 0 false; one wording fix."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 716,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "WEAK",
+   "priority": "P2",
+   "note": "Dependabot floors vs lockfile --upgrade. ci.yml no longer installs conf/requirements_ci.txt (since canopy#650); [dependabot skip] semantics were inverted; stale example."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 717,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Wider-dataset Start refusal runbook. The restart body is {start_fresh: <toggle>, reset: true}; cascor-client 0.8.0; juniper-cascor#687 (3 places)."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 723,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Recurrence key variables, restored models, service version. 9 stale/false claims fixed (the 120-char cut ends inside the second variable name)."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 725,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Sidebar unknown-liveness sentence (X11). 'NOT ACTIVE' dates from canopy#592; Start AND Apply Dataset are disabled."
+  },
+  {
+   "repo": "juniper-canopy",
+   "pr": 726,
+   "kind": "docs",
+   "route": "superseded",
+   "carrier": "consolidation",
+   "quality": "WEAK",
+   "priority": "P3",
+   "note": "Central premise false (the header dot is a latency indicator, not 'Active = idle'). Corrected unique pieces carried into #725's section."
+  },
+  {
+   "repo": "juniper-cascor",
+   "pr": 699,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Image serve-check driver and optional version contract. flake8 B903 (__slots__) fixed; re-cut."
+  },
+  {
+   "repo": "juniper-cascor",
+   "pr": 703,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "In-image credential scan. Merged as authored."
+  },
+  {
+   "repo": "juniper-cascor",
+   "pr": 705,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "Open-PR budget alarm report-only contract. black + bandit annotations; re-cut."
+  },
+  {
+   "repo": "juniper-cascor",
+   "pr": 700,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "WEAK",
+   "priority": "P3",
+   "note": "Claude Code workflow contract. Central claims false at the pinned action (case-insensitive contains(); id-token used; checkout credential stripped; pushes only to this repo; write check before phrase check)."
+  },
+  {
+   "repo": "juniper-cascor",
+   "pr": 702,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Start-fresh width refusal and parameter carry. Main's 409 recovery steps restored."
+  },
+  {
+   "repo": "juniper-cascor",
+   "pr": 704,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Lock regen outruns conf freezes. Its Sequence Safety failure is a deliberate rewrite (5 screen false positives + 1 rename); waived with Allow-Docs-Rewrite. Lost sentence restored; missing mv steps added."
+  },
+  {
+   "repo": "juniper-cascor",
+   "pr": 706,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "In part: the throttle hard-cap and resume-ready stop tests (each catches a unique mutation); its API-key test is superseded by #708's."
+  },
+  {
+   "repo": "juniper-cascor",
+   "pr": 707,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Shared BLAS thread-width default. 'Only module' -> 'only production module'; test scope stated precisely; max_epochs/output_epochs hazard first."
+  },
+  {
+   "repo": "juniper-cascor",
+   "pr": 708,
+   "kind": "test",
+   "route": "carried",
+   "carrier": "consolidation",
+   "quality": "SOLID",
+   "priority": "P1",
+   "note": "API-key walk, resume-ready stop, nested snapshot exclusions. Carried in full."
+  },
+  {
+   "repo": "juniper-data-client",
+   "pr": 220,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "WEAK",
+   "priority": "P2",
+   "note": "Sequence Safety is a REQUIRED check (main said advisory). Catch-up base, renamed-step, cross-workflow needs: and squash-trailer claims corrected."
+  },
+  {
+   "repo": "juniper-data-client",
+   "pr": 225,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Memory Budget and the open-PR budget alarm. Three wrong claims about --limit, jq failure and the cheatsheet cause."
+  },
+  {
+   "repo": "juniper-data-client",
+   "pr": 228,
+   "kind": "docs",
+   "route": "carried",
+   "carrier": "docs",
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "W1.4 dtype scope and rejection messages (+ a stale contract.py docstring). The t/dt check is np.allclose with rtol=1e-5 as well as dt_atol."
+  },
+  {
+   "repo": "juniper-data-client",
+   "pr": 221,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Dispatch, signed lockfile commit, PR budget alarm. Its macOS failure was deterministic (BSD base64); skip guard + bash 5.3 wording. Re-cut."
+  },
+  {
+   "repo": "juniper-data-client",
+   "pr": 224,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Per-split W1.4 bounds (catches 3 mutations main's contract tests miss). Merged as authored."
+  },
+  {
+   "repo": "juniper-data-client",
+   "pr": 226,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Screen-verdict thresholds and label hatch. Bandit B404/B106 annotations (the cause of its failed pre-commit). Re-cut."
+  },
+  {
+   "repo": "juniper-data-client",
+   "pr": 229,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Notify dedup and base-branch guard. Merged as authored."
+  },
+  {
+   "repo": "juniper-deploy",
+   "pr": 240,
+   "kind": "docs",
+   "route": "merged",
+   "carrier": null,
+   "quality": "WEAK",
+   "priority": "P3",
+   "note": "@claude workflow contract. Same false case-sensitivity claim as cascor#700 plus write-check order, fork pushes, id-token, UTC; duplicated separator. Re-cut corrected."
+  },
+  {
+   "repo": "juniper-deploy",
+   "pr": 241,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Image-currency policy and open-PR budget alarm. Unclosed synthetic HTTPError broke an unrelated test on Python 3.14 (filterwarnings=error); closed. Re-cut."
+  },
+  {
+   "repo": "juniper-cascor-client",
+   "pr": 176,
+   "kind": "docs",
+   "route": "merged",
+   "carrier": null,
+   "quality": "WEAK",
+   "priority": "P3",
+   "note": "@claude workflow contract. 'contains is case-sensitive' headline false; Dependabot grouping scope; repository-secret note. Re-cut corrected."
+  },
+  {
+   "repo": "juniper-cascor-client",
+   "pr": 177,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Open-PR budget alarm and sequence-safety label hatch. Merged as authored."
+  },
+  {
+   "repo": "juniper-cascor-worker",
+   "pr": 205,
+   "kind": "docs",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P3",
+   "note": "Claude Code workflow contract (replaces a dead check_doc_links.py instruction). Case, assigned-issue, grouping and secret corrections. Re-cut."
+  },
+  {
+   "repo": "juniper-cascor-worker",
+   "pr": 206,
+   "kind": "test",
+   "route": "merged",
+   "carrier": null,
+   "quality": "SOLID",
+   "priority": "P2",
+   "note": "Image credential scan and open-PR budget alarm. Bandit B106 + bash 5.3 wording. Re-cut."
+  }
+ ]
+}

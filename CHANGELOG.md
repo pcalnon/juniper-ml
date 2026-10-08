@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Cursor flood-3 disposition record and its tooling**
+  (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, new; 46
+  `util/ad-hoc/2026-10-08_*` files and `util/ad-hoc/flood3_canopy_slowlog_plugin.py`, new). How the
+  116 Cursor-fleet draft PRs opened 2026-10-04..06 across eight repositories were evaluated and
+  disposed of on 2026-10-08: 25 merged as themselves, 78 carried into six consolidation PRs (ml#2182,
+  ml#2184, data#475, canopy#729, cascor#709, data-client#230), 10 superseded and 3 closed as
+  incorrect. The record holds a per-PR table rendered from the verdicts and each PR's live state, the
+  defects the evaluation found on `main` (three are owner decisions: an `ANTHROPIC_API_KEY` secret in
+  three client repos, the data-client `t` / `dt` tolerance, and releases that would ship the
+  non-ASCII-key and Sentry frame-locals fixes), and the process traps hit. The tooling: the census,
+  the signed one-commit re-cut, the gated close, the renderer, post-merge blob verification, and the
+  evaluators' mutation checks and repros.
+
 - **Operator documentation consolidated from the Cursor flood-3 docs PRs** (ml#2125, #2132, #2135,
   #2142, #2148, #2152, #2155, #2158, #2160, #2162, #2165, #2167, #2170, #2172, #2175, #2177, with
   the verified unique content of the superseded #2119, #2122, #2128, #2137, #2141 and #2146), every
