@@ -130,6 +130,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **BREAKING (resolution): `[servers]` now floors `juniper-data>=0.17.0`, so the meta-package stops admitting the
+  juniper-data releases that serve `equities_seq` as `classification`** (W1.11 and F-P4 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`). Every published juniper-data up to 0.16.0 serves `equities_seq` at generator `5.0.0`
+  with `task_type: classification` and `n_classes: 2`. juniper-data#437 (owner ruling X8)
+  relabelled it `regression` at `6.0.0` after v0.16.0 was cut, and 0.17.0 is the release that
+  carries it. The arrays did not change, and a recurrence fit reads `y_reg_*` under either
+  version. What changed is the producer's stored metadata, and with it the `dataset_id`, which
+  hashes the generator version. canopy already labels the pair `regression`, so a stack resolved
+  under the old floor disagrees with its own producer about the dataset. The floor reaches `[all]`.
+  The same release also carries juniper-data#451: under `fundamentals_fill="drop"`, an equities
+  request whose `purchase_date` is a weekday or more after `start_date` is refused with a 400
+  (W1.8). **Held for publication:** this was drafted on 2026-10-08, when PyPI's latest was
+  0.16.0, so the floor cannot be satisfied until 0.17.0 is published. No CI job installs
+  `[servers]`. The version that carries the floor (0.11.0 in the plan) is cut after publication,
+  and the `0.11.x` row of `docs/REFERENCE.md`'s compatibility matrix lands with that bump. Applied
+  by `util/ad-hoc/2026-10-08_raise_data_floor_0_17_0.py`, which asserts each site's exact text
+  and requires exactly one match apiece.
+
 - **PF-2 axis 2 is RUN, with no knee, so the owner's in-process follow-up does not fire**
   (`notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` §3 RESULT; the
   `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml` header;
