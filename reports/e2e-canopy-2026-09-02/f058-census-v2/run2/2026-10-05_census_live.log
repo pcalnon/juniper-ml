@@ -1,0 +1,13 @@
+[16:11:16] leg http://127.0.0.1:8052 serves c7876f5a8d4f15dde2713a167bed576b388d0187
+[t=  10499ms]   modal cleared after 1 attempt(s)
+[16:19:11]   T-gate: fired at 291610 ms on request 52
+[16:22:15]   T-tab: fired at 474273 ms on request 90
+[16:23:20]   T-apply: MISSED
+[16:36:30]   T-mode: fired at 1329294 ms on request 262
+[16:36:31] BASELINE {"resolved": 44, "answered": 43, "answered_with_props": 0, "evicted": 1, "evicted_fraction": 0.023, "longest_evicted_run": 1, "cadence_ms_median": 5367, "verdict": "CLEAN"}
+[16:36:31] T-gate took=False {"resolved": 37, "answered": 31, "answered_with_props": 0, "evicted": 6, "evicted_fraction": 0.162, "longest_evicted_run": 4, "cadence_ms_median": 5362, "verdict": "NO-EFFECT", "late": {"resolved": 20, "answered": 14, "answered_with_props": 0, "evicted": 6, "evicted_fraction": 0.3, "longest_evicted_run": 4, "cadence_ms_median": 5383}}
+[16:36:31] T-tab took=False {"resolved": 38, "answered": 38, "answered_with_props": 0, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4844, "verdict": "NO-EFFECT", "late": {"resolved": 19, "answered": 19, "answered_with_props": 0, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4775}}
+[16:36:31] T-mode took=False {"resolved": 41, "answered": 37, "answered_with_props": 0, "evicted": 4, "evicted_fraction": 0.098, "longest_evicted_run": 4, "cadence_ms_median": 4754, "verdict": "NO-EFFECT", "late": {"resolved": 20, "answered": 20, "answered_with_props": 0, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4754}}
+[16:36:31] IDLE {"resolved": 131, "answered": 131, "answered_with_props": 0, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4680, "fires": [[772698, true, null], [877916, true, null], [952733, true, null], [987685, true, null], [1038146, true, null], [1138066, true, null], [1198169, true, null], [1308031, true, null]]}
+[16:36:31] -> /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/06e8868d-0c1f-4457-b7cb-b35e525032ef/scratchpad/rerun/2026-10-05_census_live_rerun.json
+exit=0
