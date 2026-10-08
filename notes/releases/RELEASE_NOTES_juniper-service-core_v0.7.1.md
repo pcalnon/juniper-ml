@@ -2,23 +2,29 @@
 
 **Release Date:** 2026-10-09
 **Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Priority:** High: upgrade every service that imports `juniper_service_core` auth (juniper-recurrence today)
 **Package Affected:** juniper-service-core
 
 ---
 
-This is a security-bearing release of `juniper-service-core` v0.7.1. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a security-bearing patch release of `juniper-service-core` v0.7.1. It contains three fixes:
+
+- **A non-ASCII `X-API-Key` is answered 401.** `APIKeyAuth.validate` used to raise `TypeError` on such a key, which surfaced as a 500. That error event could carry the real configured key to Sentry, and the request was never counted by the throttle.
+- **`FailedAuthThrottle.check()` no longer grows without bound.** It had added a table entry for every client address, and the table only shrank when a failure was recorded.
+- **The key walk no longer short-circuits.** It now checks every configured key.
+
+The first fix needs Sentry to be configured, and the second needs sustained traffic from many distinct addresses, so the release is rated Medium. There is no public API change; consumers pinned `<0.8.0` (juniper-recurrence, juniper-ml's `[tools]`) receive it as-is.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-service-core` |
 | **Fixed in** | 0.7.1 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | Improper handling of an exceptional condition that exposed a secret ([CWE-755](https://cwe.mitre.org/data/definitions/755.html)); allocation of resources without limits ([CWE-770](https://cwe.mitre.org/data/definitions/770.html)) |
+| **Advisory** | None. Internal findings from the juniper-canopy#683 validation (2026-09-24) and the Cursor flood-3 evaluation (2026-10-08); there is no CVE or Dependabot alert |
 
 ---
 
