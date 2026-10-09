@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-A delaying reverse proxy in front of juniper-data, for W1.5's live "40 s data server" check.
+A delaying TCP relay in front of juniper-data, for W1.5's live "40 s data server" check.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
@@ -11,98 +11,105 @@ Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner
 Related: W1.5 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md;
          tests/test_recurrence_operation_identity_and_dataset_budget.py (the scaled, hermetic version)
 
-Forwards every request to ``--upstream`` unchanged, after sleeping ``--delay`` seconds when the path matches
-``--slow`` (a regex; by default the artifact download, which is the only juniper-data call a recurrence service
-makes for a ``dataset_id`` ref). Run it in front of a real juniper-data, bring a recurrence service up with
+Relays every connection, byte for byte, to one fixed upstream ``--upstream-host:--upstream-port``. When the
+connection's first request line matches ``--slow`` (a regex; by default the artifact download, which is the
+only juniper-data call a recurrence service makes for a ``dataset_id`` ref) it sleeps ``--delay`` seconds
+before connecting upstream. It is a relay rather than an HTTP proxy on purpose: no URL is ever built from what
+a client sent, and the upstream is only ever the address given on the command line.
+
+Run it in front of a real juniper-data, bring a recurrence service up with
 ``util/experiment_stack.bash --up --recurrence --shared-data http://127.0.0.1:<port>``, and drive a run: the
 service's inner client then waits ``--delay`` seconds for the artifact, under whatever
-``JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS`` that launch gave it. Each request is logged to stderr with
-its path, status and seconds.
+``JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS`` that launch gave it. A timed-out client opens a new
+connection for its retry, so every attempt is delayed. Each connection is logged to stderr with its first
+request line, whether it was delayed, and how long it lasted.
 
 Usage:
-    python3 util/ad-hoc/2026-10-08_w15_slow_data_proxy.py --upstream http://127.0.0.1:8110 --port 8139 --delay 40
+    python3 util/ad-hoc/2026-10-08_w15_slow_data_proxy.py --upstream-port 8110 --port 8297 --delay 40
 """
 
 from __future__ import annotations
 
 import argparse
 import re
+import socket
+import socketserver
 import sys
+import threading
 import time
-import urllib.error
-import urllib.request
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-#: Request headers passed upstream; everything else (Host, Connection, ...) is the proxy's own.
-FORWARDED_REQUEST_HEADERS = ("Accept", "Content-Type", "X-API-Key", "X-Request-ID")
-#: Response headers passed back to the caller.
-FORWARDED_RESPONSE_HEADERS = ("Content-Type", "Content-Disposition", "ETag", "Last-Modified")
+#: The most a request head may take before the relay gives up on finding its end.
+MAX_HEAD_BYTES = 65536
 
 
-class _Proxy(ThreadingHTTPServer):
+def _pump(source: socket.socket, sink: socket.socket) -> None:
+    """Copy bytes from ``source`` to ``sink`` until ``source`` closes, then half-close ``sink``."""
+    try:
+        while True:
+            chunk = source.recv(65536)
+            if not chunk:
+                break
+            sink.sendall(chunk)
+    except OSError as exc:  # either side went away mid-copy: the relay is done with this direction
+        print(f"  relay direction ended: {exc}", file=sys.stderr, flush=True)
+    try:
+        sink.shutdown(socket.SHUT_WR)
+    except OSError as exc:  # the peer is already gone
+        print(f"  relay half-close skipped: {exc}", file=sys.stderr, flush=True)
+
+
+class _Relay(socketserver.ThreadingTCPServer):
     daemon_threads = True
+    allow_reuse_address = True
 
-    def __init__(self, port: int, upstream: str, slow: "re.Pattern[str]", delay: float) -> None:
+    def __init__(self, port: int, upstream_host: str, upstream_port: int, slow: "re.Pattern[str]", delay: float) -> None:
         super().__init__(("127.0.0.1", port), _Handler)
-        self.upstream = upstream.rstrip("/")
+        self.upstream = (upstream_host, upstream_port)
         self.slow = slow
         self.delay = delay
 
 
-class _Handler(BaseHTTPRequestHandler):
-    server: _Proxy
+class _Handler(socketserver.BaseRequestHandler):
+    server: _Relay
 
-    def log_message(self, fmt: str, *args) -> None:  # noqa: A003 - http.server API; this script logs its own lines
-        return
-
-    def _forward(self) -> None:
+    def handle(self) -> None:
         started = time.monotonic()
-        path = self.path
-        delayed = bool(self.server.slow.search(path.split("?", 1)[0]))
+        client: socket.socket = self.request
+        head = b""
+        while b"\r\n\r\n" not in head and len(head) < MAX_HEAD_BYTES:
+            chunk = client.recv(4096)
+            if not chunk:
+                return
+            head += chunk
+        request_line = head.split(b"\r\n", 1)[0].decode("latin-1")
+        delayed = bool(self.server.slow.search(request_line))
         if delayed:
             time.sleep(self.server.delay)
-        length = int(self.headers.get("Content-Length") or 0)
-        body = self.rfile.read(length) if length else None
-        headers = {name: self.headers[name] for name in FORWARDED_REQUEST_HEADERS if self.headers.get(name) is not None}
-        request = urllib.request.Request(f"{self.server.upstream}{path}", data=body, headers=headers, method=self.command)
-        try:
-            with urllib.request.urlopen(request, timeout=600) as resp:  # nosec B310 - loopback upstream named on the command line
-                status, reply_headers, payload = resp.status, resp.headers, resp.read()
-        except urllib.error.HTTPError as exc:
-            status, reply_headers, payload = exc.code, exc.headers, exc.read()
-        try:
-            self.send_response(status)
-            for name in FORWARDED_RESPONSE_HEADERS:
-                if reply_headers.get(name) is not None:
-                    self.send_header(name, reply_headers[name])
-            self.send_header("Content-Length", str(len(payload)))
-            self.end_headers()
-            self.wfile.write(payload)
-            outcome = str(status)
-        except (BrokenPipeError, ConnectionResetError):
-            outcome = f"{status}, but the caller had already gone"
-        print(f"{self.command} {path} -> {outcome} in {time.monotonic() - started:.1f}s{' (delayed)' if delayed else ''}", file=sys.stderr, flush=True)
-
-    do_GET = _forward  # noqa: N815 - http.server dispatches on these names
-    do_POST = _forward  # noqa: N815
-    do_DELETE = _forward  # noqa: N815
+        with socket.create_connection(self.server.upstream, timeout=600) as upstream:
+            upstream.sendall(head)
+            outbound = threading.Thread(target=_pump, args=(client, upstream), daemon=True)
+            outbound.start()
+            _pump(upstream, client)
+            outbound.join(timeout=5)
+        print(f"{request_line} -> relayed in {time.monotonic() - started:.1f}s{' (delayed)' if delayed else ''}", file=sys.stderr, flush=True)
 
 
 def main(argv: "list[str] | None" = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
-    parser.add_argument("--upstream", required=True, help="the real juniper-data base URL")
+    parser.add_argument("--upstream-host", default="127.0.0.1", help="the real juniper-data host (default 127.0.0.1)")
+    parser.add_argument("--upstream-port", type=int, required=True, help="the real juniper-data port")
     parser.add_argument("--port", type=int, required=True, help="loopback port to listen on")
-    parser.add_argument("--delay", type=float, default=40.0, help="seconds to sleep before forwarding a matching request (default 40)")
-    parser.add_argument("--slow", default=r"^/v1/datasets/[^/]+/artifact$", help="regex over the request path selecting the delayed requests")
+    parser.add_argument("--delay", type=float, default=40.0, help="seconds to sleep before relaying a matching connection (default 40)")
+    parser.add_argument("--slow", default=r"^GET /v1/datasets/[^/ ]+/artifact ", help="regex over the first request line selecting the delayed connections")
     args = parser.parse_args(argv)
-    proxy = _Proxy(args.port, args.upstream, re.compile(args.slow), args.delay)
-    print(f"proxy 127.0.0.1:{args.port} -> {proxy.upstream}; delaying {args.slow!r} by {args.delay:g}s", file=sys.stderr, flush=True)
+    relay = _Relay(args.port, args.upstream_host, args.upstream_port, re.compile(args.slow), args.delay)
+    print(f"relay 127.0.0.1:{args.port} -> {args.upstream_host}:{args.upstream_port}; delaying {args.slow!r} by {args.delay:g}s", file=sys.stderr, flush=True)
     try:
-        proxy.serve_forever()
+        relay.serve_forever()
     except KeyboardInterrupt:
-        print("proxy stopped", file=sys.stderr)
+        print("relay stopped", file=sys.stderr)
     finally:
-        proxy.server_close()
+        relay.server_close()
     return 0
 
 
