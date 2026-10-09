@@ -4,6 +4,7 @@
 **Author**: Paul Calnon
 **Status**: Complete — each of the 116 draft PRs is merged, or closed with its content carried or the reason it was rejected recorded (§5)
 **Date**: 2026-10-08
+**Updated**: 2026-10-08 — the owner-requested follow-up: three `ANTHROPIC_API_KEY` secrets, five §4 defects fixed, and three releases cut (§4, §8, §9)
 **Applies to**: juniper-ml, juniper-data, juniper-canopy, juniper-cascor, juniper-data-client, juniper-deploy, juniper-cascor-client, juniper-cascor-worker
 
 ---
@@ -63,24 +64,30 @@ What the census showed before any evaluation:
 |---|---|---|
 | canopy | **The wheel omitted `outbound_errors`**, which `main`, `status_cache`, the cascor adapter and the recurrence backend import; `publish.yml`'s import smoke would have stopped the next release at the build job (`main`'s CI never runs the smoke) | **fixed** — canopy#721 |
 | canopy | Flaky required test `TestA422DetailReachesTheOperator::test_completion_reason_and_the_warning_carry_the_detail`: a failing fit logs its WARNING after the state flips, so a preceding test's record landed in the next test's `caplog` (failed `main`'s macOS leg at #702, #708, #711) | **fixed** — canopy consolidation (autouse join of `recurrence-fit` threads) |
-| cascor + service-core | `FailedAuthThrottle.check()` — documented read-only — inserts an entry per new client IP; the 10,000 cap is applied only in cleanup, which only `record_failure` runs, so the table grows without bound under open auth or valid keys (`src/api/security.py`; canonically `juniper-service-core/juniper_service_core/security.py:455`) | open — fix: `self._failures.get(client_ip, (0, 0.0))` in `check()` |
-| ml | `util/worktree_cleanup.bash:461`: the "These commits would be lost" list is always empty (`--not --branches` excludes the refused branch itself); the refusal itself works | open (P3) — fix: `--not --exclude="${OLD_BRANCH}" --branches --remotes --tags`; repro `util/ad-hoc/2026-10-08_phase4_refusal_log_repro.py` |
+| cascor + service-core | `FailedAuthThrottle.check()` — documented read-only — inserts an entry per new client IP; the 10,000 cap is applied only in cleanup, which only `record_failure` runs, so the table grows without bound under open auth or valid keys (`src/api/security.py`; canonically `juniper-service-core/juniper_service_core/security.py:455`) | **fixed** — `_failures` is a plain `dict` read with `.get()` in all three copies: ml#2187 (service-core), juniper-cascor#710, and juniper-data#476 (juniper-data holds a third copy this row did not name). Each repo pins it with its own regression test, and each test fails against the old code with `assert 1000 == 0` |
+| ml | `util/worktree_cleanup.bash:461`: the "These commits would be lost" list is always empty (`--not --branches` excludes the refused branch itself); the refusal itself works | **fixed** — ml#2187 (`worktree_cleanup.bash` 1.1.1, `--exclude` before `--branches`); `tests/test_worktree_cleanup_destructive_refusal.py` now asserts the commit is named |
 | ml | `util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py checks` exits 1 (`NoneType.__format__`) after writing its JSON when every last-step feature column is constant | open (low) |
 | ml | `util/ad-hoc/2026-10-05_rerun_after_actions_outage.py:55` — a dict-shaped `components` aborts the wait (fails closed; pinned by the harvested suite) | open (low) |
 | ml | cascor headline accuracy columns are always empty — the open cascor half of APD-ML-002 | already registered (defect register §4.9) |
-| data-client, cascor-client, cascor-worker | **`@claude` cannot run**: none has an `ANTHROPIC_API_KEY` secret and all three are user-owned, so no organization secret reaches them; the job has skipped on every recorded run | **owner decision** — add the repository secret or drop the workflow |
+| data-client, cascor-client, cascor-worker | **`@claude` cannot run**: none has an `ANTHROPIC_API_KEY` secret and all three are user-owned, so no organization secret reaches them; the job has skipped on every recorded run | **fixed** for these three: the owner added the secret on 2026-10-08. **The gap was wider than this row said.** juniper-data, juniper-cascor, juniper-canopy and juniper-deploy have no `ANTHROPIC_API_KEY` either; only juniper-ml does, so `@claude` cannot run in those four. The fleet `claude.yml` header says the key is "set at the org level", and no user-owned repo can have one. The four repos remain **open (owner decision)** |
 | data-client, cascor-client, cascor-worker | `lockfile-update.yml` builds the commit payload with `--arg contents "$(base64 -w0 …)"`; a failing `base64` would not trip `set -e` and would produce an empty signed lockfile commit (latent: cannot happen on `ubuntu-latest`) | open (latent) |
-| data-client | the `t` / `dt` agreement check is `np.allclose` with numpy's default `rtol=1e-5` as well as `dt_atol` (9e-6 accepted at a gap of 1.0; 0.5 at 86400) | owner decision — the docs now describe what the code does |
-| canopy | `lockfile-update.yml:173-175` inverts `[dependabot skip]`'s meaning; #709's signed lock-regen commit was erased by Dependabot's rebase | open |
+| data-client | the `t` / `dt` agreement check is `np.allclose` with numpy's default `rtol=1e-5` as well as `dt_atol` (9e-6 accepted at a gap of 1.0; 0.5 at 86400) | **accepted as written** — owner ruling 2026-10-08; the docs describe what the code does |
+| canopy | `lockfile-update.yml:173-175` inverts `[dependabot skip]`'s meaning; #709's signed lock-regen commit was erased by Dependabot's rebase | **fixed** — canopy#730. The comment now states the tag's real effect (Dependabot may force-push over the commit). The tag stays deliberately: each Dependabot rebase is a push to `dependabot/pip/**`, which re-runs the regen, since the PAT is in the Dependabot secret store. The other five repos tag their regen commits the same way |
 | data | `docs/DEVELOPER_CHEATSHEET.md` links `../AGENTS.md#adding-new-generators`, which moved; `juniper-check-doc-links` 0.1.2 checks only same-file anchors, which is how it survived | open |
-| cascor, cascor-client, cascor-worker, data | Docs still call Sequence Safety "advisory / never required" (cascor `AGENTS.md:594`, `:643`; cascor-client `docs/REFERENCE.md:711-716`, `:727`; cascor-worker `AGENTS.md:256-266`; one line in data `docs/REFERENCE.md`); every ruleset requires it. data-client's copy was corrected by its consolidation | open |
-| juniper-ci-tools | the docs deletion screen reads `#` comments inside fenced code as headings (`docs_additions_check.py:192-195`) — five of cascor#704's six Sequence Safety findings | open |
-| service-core, observability, data (**released packages**) | the non-ASCII-key 500 and Sentry frame-locals fixes (ml#2086, data#440) are in **no release**: juniper-service-core 0.7.0 still compares keys as `str`, juniper-observability 0.4.0 still captures frame locals, juniper-data 0.16.0 has the same `str` compare (cascor and canopy `main` already compare bytes) | **owner decision** — cut releases |
+| cascor, cascor-client, cascor-worker, data | Docs still call Sequence Safety "advisory / never required" (cascor `AGENTS.md:594`, `:643`; cascor-client `docs/REFERENCE.md:711-716`, `:727`; cascor-worker `AGENTS.md:256-266`; one line in data `docs/REFERENCE.md`); every ruleset requires it. data-client's copy was corrected by its consolidation | **fixed** in every repo — juniper-cascor#710, juniper-cascor-client#178, juniper-cascor-worker#207, juniper-data#476, juniper-canopy#730, juniper-deploy#244, juniper-recurrence#194, juniper-data-client#231 (two workflow comments its consolidation missed), and ml#2187 (`ci.yml`'s header and banner). cascor#710 also corrected CodeQL claims: cascor's ruleset requires `Analyze (python)` |
+| juniper-ci-tools | the docs deletion screen reads `#` comments inside fenced code as headings (`docs_additions_check.py:192-195`) — five of cascor#704's six Sequence Safety findings | **fixed** in source — ml#2187: CommonMark-fence-aware, on both sides of the diff. It reaches the eight consumer repos only with a juniper-ci-tools release, since they pin `>=0.9.0,<0.10.0` (**owner decision**) |
+| service-core, observability, data (**released packages**) | the non-ASCII-key 500 and Sentry frame-locals fixes (ml#2086, data#440) are in **no release**: juniper-service-core 0.7.0 still compares keys as `str`, juniper-observability 0.4.0 still captures frame locals, juniper-data 0.16.0 has the same `str` compare (cascor and canopy `main` already compare bytes) | **released** (owner instruction, 2026-10-08), each through the release train: <br>• juniper-observability **0.4.1**: bump ml#2186, notes ml#2188. <br>• juniper-service-core **0.7.1**: bump ml#2189, notes ml#2193. It also carries the `FailedAuthThrottle` fix (ml#2187). <br>• juniper-data **0.17.0**: bump data#477, notes ml#2191. It also carries data#476, X8 and the image lock moves. <br>All three Releases are cut, have published to TestPyPI, and wait at the `pypi` environment gate for the owner's approval. The security template's advisory placeholders were filled in each Release body and archive |
 | ml | four places in `docs/REFERENCE.md` / the cheatsheet said a pin-stable lockfile week opens no PR; all 12 scheduled runs opened one | **fixed** — ml#2184 (#2155) |
 | ml | stale on `main`, outside every PR: "in-flight docs #1675" (closed unmerged) in `docs/REFERENCE.md` and `util/ad-hoc/README.md:114`; "Live `run_fix` (open #802)" (#802 merged 2026-07-27); two isolated-stack paragraphs duplicated at the end of the Environment Floor Drift Check section; "the CLI has no `--params` flag" in `run_experiment.py:61`, `:2009` (false since juniper-recurrence#190); recurrence split lists `{train, test, full}` where the code has `{train, val, test, full}`; rows describing the deleted silent `max_symbols` slice; `stats_summary.py:251` labelling θ "data-driven" even when `service.default_theta` is set | open |
 | ml | `util/ad-hoc/2026-10-04_replay_redrive.py`: the `if not snap:` check can never trigger (dead BLOCKED row), and `--snapshot` help says "instead of the newest" though the default makes a new save | open (low) |
 | data, data-client | `pr-budget-alarm.yml` headers say a `jq` failure is downgraded to a warning; the script fails the step | open (low) |
 | data | the Quality Gate passes when an optional lane is `cancelled` (each such lane is also its own required check, so mitigated) | open (low) |
+| recurrence | `.github/workflows/memory-budget.yml:23-25` says Memory Budget is "not a required context"; ruleset `20634527` requires it (found by the 2026-10-08 Sequence Safety sweep) | open |
+| cascor-client, cascor-worker, deploy, recurrence | `main-verify.yml`'s header says the catch-up base is the "most recent SUCCESSFUL" run. Since cascor-client#153 it is the newest run whose "Assert screens reached a verdict" step passed. The cascor-client line is confirmed; the other three repos' resolvers are unchecked | open |
+| cascor | `docs/ci_cd/BRANCH_PROTECTION.md:28-55` lists 6 of the 24 live required checks. `:67` / `:69` say one approving review and a code-owner review are required; the ruleset requires 0 and `false` | open |
+| cascor | `ci.yml:988` and `conf/memory_budget.json:36` say cascor has no `docs/REFERENCE.md`; it does | open (low) |
+| cascor | `docs/DOCUMENTATION_OVERVIEW.md:811-812`: this arc's own consolidation (cascor#709) bumped the version and date inside a template example instead of the document header | open (low) |
+| data | `docs/ci_cd/CICD_MANUAL.md:456` says CodeQL findings "don't block the merge". The ruleset's `code_scanning` rule blocks on CodeQL / Bandit alerts at errors / security `high_or_higher`. `docs/DEVELOPER_CHEATSHEET.md:313`'s workflow list omits `sequence-safety.yml` and `main-verify.yml` | open (low) |
 
 ## §5 Per-PR disposition
 
@@ -282,8 +289,22 @@ All under `util/ad-hoc/` (script-placement rule; retained as provenance of recor
 
 ## §8 Open items
 
-- The open defects in §4, three of them owner decisions: the `ANTHROPIC_API_KEY` secret in three repos; the data-client `t` / `dt` tolerance; and releases of juniper-service-core, juniper-observability and juniper-data, without which the non-ASCII-key and Sentry frame-locals fixes reach no installed package.
-- The fleet keeps running by owner decision; the next flood will meet the same structure — every docs PR rewrites shared version stamps, so the docs class conflicts by construction and consolidation is the default disposition.
+**Follow-up, 2026-10-08 evening (owner instruction).** The owner asked for:
+- the `ANTHROPIC_API_KEY` secret in the three repos;
+- the `t` / `dt` check accepted as written;
+- five of the §4 defects fixed;
+- juniper-service-core, juniper-observability and juniper-data released.
+
+§4 records each outcome against its row. Still open after that pass:
+
+- **Owner decisions:**
+  - the `ANTHROPIC_API_KEY` secret for juniper-data, juniper-cascor, juniper-canopy and juniper-deploy, which lack it too (§4);
+  - a juniper-ci-tools release, so that the fence-aware docs screen (ml#2187) reaches the eight repos that pin `>=0.9.0,<0.10.0`;
+  - the `pypi` environment approvals for the three releases. Each one parks there by design, and the gate is the owner's alone.
+- **Sequenced after a release:** another session's draft ml#2190 raises juniper-ml's `[servers]` floor to `juniper-data>=0.17.0`. It should merge only once 0.17.0 is on PyPI; a floor at an unpublished version resolves nothing.
+- **Not done, deliberately:** a `tests/test_service_fork_drift.py` guard for the `FailedAuthThrottle` fix. The gate requires a defect-register `APD-` id, and filing one is the register's five-touch protocol. Each of the three copies is pinned by its own repo's regression test.
+- **The remaining open rows in §4**, including the six that the follow-up's Sequence Safety and throttle sweeps found.
+- The fleet keeps running by owner decision. The next flood will meet the same structure: every docs PR rewrites shared version stamps, so the docs class conflicts by construction and consolidation is the default disposition.
 
 ## §9 Files changed by this arc
 
@@ -291,3 +312,15 @@ All under `util/ad-hoc/` (script-placement rule; retained as provenance of recor
 **Carrier PRs opened and merged:** juniper-ml #2182 and #2184; juniper-data #475; juniper-canopy #729; juniper-cascor #709; juniper-data-client #230.
 **Created (this PR, ml#2185):** this file, `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, and the `util/ad-hoc/` tooling in §7.
 **Modified (this PR, ml#2185):** `CHANGELOG.md` (one `[Unreleased]` / `Added` entry).
+
+**Follow-up, 2026-10-08 (owner instruction):**
+
+- **Fix PRs, all merged:**
+  - ml#2187: `juniper-service-core` throttle, `util/worktree_cleanup.bash`, `juniper-ci-tools` docs screen, and the Sequence Safety wording in `ci.yml`, `docs/REFERENCE.md`, `docs/QUICK_START.md` and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`;
+  - juniper-cascor#710 (throttle fork, plus Sequence Safety and CodeQL docs);
+  - juniper-data#476 (throttle fork, plus Sequence Safety docs);
+  - juniper-canopy#730 (the `[dependabot skip]` comment, plus Sequence Safety);
+  - Sequence Safety docs: juniper-data-client#231, juniper-cascor-client#178, juniper-cascor-worker#207, juniper-deploy#244 and juniper-recurrence#194.
+- **Release bumps:** ml#2186 (observability 0.4.1), ml#2189 (service-core 0.7.1) and juniper-data#477 (0.17.0).
+- **Release-notes archives:** ml#2188, ml#2193 and ml#2191, which add `notes/releases/RELEASE_NOTES_juniper-observability_v0.4.1.md`, `RELEASE_NOTES_juniper-service-core_v0.7.1.md` and `RELEASE_NOTES_juniper-data_v0.17.0.md`.
+- **This record's update PR:** this file, `CHANGELOG.md`, and `util/ad-hoc/2026-10-08_run_ci_regression_suites.py` (it runs CI's regression list locally, one process per suite; 197/198 passed before ml#2187, and the one failure is host-only because `/tmp` is tmpfs here).

@@ -1,0 +1,186 @@
+{
+  "probe": "2026-09-23_status_bar_apply_census.py",
+  "canopy": "http://127.0.0.1:8052",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8052",
+    "git_sha": "2689a2074970f927f0246cb3e3a52a27b4a0491e",
+    "build_date": "2026-10-09T00:33:31Z",
+    "version": "0.6.0",
+    "read_at": "2026-10-09T00:33:48Z"
+  },
+  "tab": "Training Metrics",
+  "settle_s": 45.0,
+  "seconds": 60.0,
+  "period_ms": null,
+  "baseline": {
+    "install": {
+      "found": true,
+      "initial": {
+        "latency-display": "\"Latency: 6ms\"",
+        "top-status-display": "\"Completed \u2014 early stopped\"",
+        "top-epoch-display": "\"76\""
+      }
+    },
+    "elapsed_s": 62.0,
+    "wire": {
+      "requests": 12,
+      "responses": 11,
+      "latency_s_median": 0.743,
+      "latency_s_min": 0.434,
+      "latency_s_max": 3.022,
+      "latency_samples": 11
+    },
+    "renderer": {
+      "watched_entries": 12,
+      "executed_entries": 11,
+      "store_notifications": 6748
+    },
+    "store_changes": [
+      [
+        1791506096322,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ],
+      [
+        1791506102516,
+        "latency-display",
+        "\"Latency: 6ms\""
+      ],
+      [
+        1791506107451,
+        "latency-display",
+        "\"Latency: 4ms\""
+      ],
+      [
+        1791506112508,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ],
+      [
+        1791506117477,
+        "latency-display",
+        "\"Latency: 6ms\""
+      ],
+      [
+        1791506122326,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ],
+      [
+        1791506127233,
+        "latency-display",
+        "\"Latency: 6ms\""
+      ],
+      [
+        1791506132181,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ],
+      [
+        1791506138691,
+        "latency-display",
+        "\"Latency: 3ms\""
+      ],
+      [
+        1791506143931,
+        "latency-display",
+        "\"Latency: 4ms\""
+      ],
+      [
+        1791506149662,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ]
+    ],
+    "latency_display_changes": 11,
+    "dom_bar": {
+      "top-status-display": "Completed \u2014 early stopped",
+      "top-epoch-display": "76",
+      "latency-display": "Latency: 5ms"
+    },
+    "verdict": "APPLIES"
+  },
+  "server_status": {
+    "is_running": false,
+    "phase": "output",
+    "current_epoch": 76,
+    "hidden_units": 68
+  },
+  "wire": {
+    "requests": 12,
+    "responses": 11
+  },
+  "renderer": {
+    "watched_entries": 12,
+    "executed_entries": 11,
+    "store_notifications": 6748
+  },
+  "store_changes": [
+    [
+      1791506096322,
+      "latency-display",
+      "\"Latency: 5ms\""
+    ],
+    [
+      1791506102516,
+      "latency-display",
+      "\"Latency: 6ms\""
+    ],
+    [
+      1791506107451,
+      "latency-display",
+      "\"Latency: 4ms\""
+    ],
+    [
+      1791506112508,
+      "latency-display",
+      "\"Latency: 5ms\""
+    ],
+    [
+      1791506117477,
+      "latency-display",
+      "\"Latency: 6ms\""
+    ],
+    [
+      1791506122326,
+      "latency-display",
+      "\"Latency: 5ms\""
+    ],
+    [
+      1791506127233,
+      "latency-display",
+      "\"Latency: 6ms\""
+    ],
+    [
+      1791506132181,
+      "latency-display",
+      "\"Latency: 5ms\""
+    ],
+    [
+      1791506138691,
+      "latency-display",
+      "\"Latency: 3ms\""
+    ],
+    [
+      1791506143931,
+      "latency-display",
+      "\"Latency: 4ms\""
+    ],
+    [
+      1791506149662,
+      "latency-display",
+      "\"Latency: 5ms\""
+    ]
+  ],
+  "latency_display_changes": 11,
+  "verdict": "APPLIES",
+  "install": {
+    "found": true,
+    "initial": {
+      "latency-display": "\"Latency: 6ms\"",
+      "top-status-display": "\"Completed \u2014 early stopped\"",
+      "top-epoch-display": "\"76\""
+    }
+  }
+}

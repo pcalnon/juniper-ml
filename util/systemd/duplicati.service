@@ -44,8 +44,10 @@ ProtectHome=read-only
 # .dlist.zip.gpg archives -- and every one of those directories is drwxrwx---
 # pcalnon:duplicati with NO sticky bit, so a ReadWritePaths= on the parent would let this
 # service read AND UNLINK the only key custody T1 and T1c have, with the deletion
-# propagating to Dropbox. That would also contradict section 8's own "nothing under
-# /mnt/Backups/Ubuntu/ is deleted or moved" rule. Duplicati needs write on the
+# propagating to Dropbox. That would also contradict section 8's rule that nothing under
+# /mnt/Backups/Ubuntu/ is deleted or moved beyond its named exceptions (the job's own
+# retention, the signed-off escrow delete, and the remote files a Procedure B Repair
+# deletes, copied aside first). Duplicati needs write on the
 # destination directory only.
 ReadWritePaths=/home/duplicati /mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi
 PrivateTmp=yes
@@ -103,16 +105,22 @@ RestrictNamespaces=yes
 # hashes; /run/log/journal is the volatile journal, which -/var/log does not cover; and
 # /var/spool/cups is named by section 6's own sink checklist as a place the printed escrow
 # sheet may still sit, which makes it the one entry whose contents may be a live passphrase.
-InaccessiblePaths=-/etc/shadow -/etc/shadow- -/etc/gshadow -/etc/gshadow- -/etc/ssh -/etc/credstore -/etc/credstore.encrypted -/var/lib/docker -/var/log -/run/log/journal -/var/spool/cups -/root -/mnt/Backups/Ubuntu/Dropbox/Backups/_yamaguchi_keys
-# Disabled by the names the software ACTUALLY reads. DUPLICATI__DISABLE_UPDATE_CHECK and
-# DUPLICATI__USAGE_REPORTER_LEVEL do NOT exist: a utf-8 AND utf-16le scan of all 1,443
-# files under /usr/lib/duplicati finds neither in either encoding
-# (util/ad-hoc/2026-09-22_duplicati_literal_scan.py). The generic DUPLICATI__ mapping is
-# LOWER-case with '-' -> '_' (run-script-example.sh ll. 76-80); the upper-case forms in the
-# product are hand-written specials, e.g. DUPLICATI__ALLOW_INSECURE_DATAFOLDER, which the
-# same scan does find. An unread environment variable produces no "Unknown option supplied"
-# line, so AC-14 structurally CANNOT catch a wrong name here -- which is why the option form
-# below is also set, in /etc/default/duplicati, where AC-14 can see a typo.
+# Both escrow copies are masked: the in-tree one inside the Dropbox root and the sibling
+# that P0.5a item 5 copies out to /mnt/Backups/Ubuntu/_yamaguchi_keys (round 7, B12).
+InaccessiblePaths=-/etc/shadow -/etc/shadow- -/etc/gshadow -/etc/gshadow- -/etc/ssh -/etc/credstore -/etc/credstore.encrypted -/var/lib/docker -/var/log -/run/log/journal -/var/spool/cups -/root -/mnt/Backups/Ubuntu/Dropbox/Backups/_yamaguchi_keys -/mnt/Backups/Ubuntu/_yamaguchi_keys
+# Disabled by the names the software ACTUALLY reads -- corrected 2026-10-03 (Phase B
+# validation, Lane A). The server COMPOSES an environment name for every supported option at
+# runtime: DUPLICATI__ + the option name upper-cased with '-' -> '_' (Server/Program.cs
+# 971-983), honoured whenever that option is not on argv. So DUPLICATI__DISABLE_UPDATE_CHECK
+# IS read (the literal scan cannot see a composed name; its NOT-FOUND was the trap its own
+# docstring warns about), while DUPLICATI__USAGE_REPORTER_LEVEL is not an option name and is
+# not read. The lower-case '-' -> '_' mapping in run-script-example.sh ll. 76-80 is the
+# OPPOSITE direction: what the product exports to run-scripts. An unread environment variable
+# produces no "Unknown option supplied" line, so AC-14 structurally CANNOT catch a wrong name
+# here -- which is why the option form is also set, in /etc/default/duplicati, where AC-14
+# can see a typo. The same composed family is why the wrapper (since 2.2.0) no longer exports
+# DUPLICATI__* names from the env file: DUPLICATI__DISABLE_DB_ENCRYPTION there would have
+# decrypted the database at the next start with no trace.
 #
 # Note for anyone re-running that scan: the two names below are NOT literals either. The
 # assemblies carry the templates AUTOUPDATER_{0}_SKIP_UPDATE (Duplicati.Library.AutoUpdater.dll)

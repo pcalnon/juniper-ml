@@ -14,10 +14,12 @@ import importlib.util
 import io
 import json
 import os
+import re
 import stat
 import sys
 import tempfile
 import unittest
+import unittest.mock
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
@@ -1483,3 +1485,144 @@ outputs:
         self.assertEqual(rc, 2, msg=buf.getvalue())
         self.assertIn("positive integer", buf.getvalue())
         self.assertFalse(dump.exists(), "the launcher must never have been invoked")
+
+
+class TestDatasetBudgetReachesDriverAndService(unittest.TestCase):
+    """W1.5 (F-D5 / F-S9): the dataset-create budget reaches the driver and, for recurrence, the service.
+
+    ``execution.dataset_create_timeout_seconds`` is forwarded as ``--dataset-create-timeout-seconds`` on
+    the ``max_wall_seconds`` rule: omitted when unset, so the driver owns its default. A recurrence cell's
+    budget -- that key, else the cell's own ``outputs.dataset_create_timeout_seconds`` -- is exported to
+    ``--up`` as ``JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS``. It is read back from the stub
+    launcher's own environment, which tells "exported" apart from "computed and dropped", and by name
+    (``${VAR-<UNSET>}``), never as a dumped mapping (``tests/test_env_repr_safety.py``).
+    """
+
+    VAR = "JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS"
+
+    RECURRENCE_BASE = "schema_version: 1\nexperiment:\n  name: fixture\n  seed: 7\ndataset:\n  generator: irregular_sine\n  split: train\n  params:\n    n_steps: 200\n    lookback: 16\ntrain:\n  d: 4\n  ridge: 1.0\n  readout: linear\noutputs:\n  max_wall_seconds: 60\n"
+
+    SUITE = "schema_version: 1\nsuite:\n  name: w15-suite\n  description: test\n  app: {app}\n  base_config:\n    - {base}\n  seed_policy: fixed\nexecution:\n  mode: sequential\n  continue_on_failure: true\n  per_run_timeout_seconds: 60\n{execution_extra}matrix:\n  {matrix_key}: [{matrix_value}]\noutputs:\n  suite_dir: {suite_dir}\n"
+
+    def _run(self, *, app: str = "recurrence", suite_budget: "str | None" = None, cell_budget: "str | None" = None, ambient: "str | None" = None, dry_run: bool = False) -> "tuple[int, str, list, list, list]":
+        """One suite; returns ``(rc, output, launcher values, driver argvs, registry rows)``."""
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        base = root / "base.yaml"
+        if app == "recurrence":
+            base.write_text(self.RECURRENCE_BASE + (f"  dataset_create_timeout_seconds: {cell_budget}\n" if cell_budget is not None else ""))
+            matrix_key, matrix_value = "train.d", 4
+        else:
+            base.write_text(BASE_CONFIG)
+            matrix_key, matrix_value = "training.params.max_hidden_units", 2
+        suite_dir = root / "out"
+        execution_extra = f"  dataset_create_timeout_seconds: {suite_budget}\n" if suite_budget is not None else ""
+        (root / "suite.yaml").write_text(self.SUITE.format(app=app, base=base, execution_extra=execution_extra, matrix_key=matrix_key, matrix_value=matrix_value, suite_dir=suite_dir))
+        dump = root / "launcher-env.txt"
+        launcher = root / "stub_launcher.bash"
+        launcher.write_text("#!/usr/bin/env bash\n" 'if [[ "$1" == "--up" ]]; then\n' "  printf '%s\\n' \"${" + self.VAR + '-<UNSET>}" >> "' + str(dump) + '"\n' '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then exit 0; fi\n' "exit 2\n")
+        launcher.chmod(launcher.stat().st_mode | stat.S_IEXEC)
+        driver = root / "stub_driver.py"
+        _write_stub_driver(driver)
+        run_root = root / "runroot"
+        run_root.mkdir()
+        old_run_root = run_suite.DEFAULT_RUN_ROOT
+        run_suite.DEFAULT_RUN_ROOT = run_root  # type: ignore[attr-defined]
+        self.addCleanup(lambda: setattr(run_suite, "DEFAULT_RUN_ROOT", old_run_root))
+        argv = ["--suite", str(root / "suite.yaml")] + (["--dry-run"] if dry_run else [])
+        buf = io.StringIO()
+        with unittest.mock.patch.dict(os.environ, {"JUNIPER_SUITE_LAUNCHER": str(launcher), "JUNIPER_SUITE_DRIVER": str(driver), "JUNIPER_SUITE_PYTHON": sys.executable}):
+            os.environ.pop(self.VAR, None)
+            if ambient is not None:
+                os.environ[self.VAR] = ambient
+            with redirect_stdout(buf), redirect_stderr(buf):
+                rc = run_suite.main(argv)
+        launched = dump.read_text().splitlines() if dump.exists() else []
+        argvs = [json.loads(m.read_text())["argv"] for m in sorted(run_root.glob("*/manifest.json"))]
+        registry = suite_dir / "registry.jsonl"
+        rows = [json.loads(line) for line in registry.read_text().splitlines()] if registry.exists() else []
+        return rc, buf.getvalue(), launched, argvs, rows
+
+    def test_a_suite_budget_reaches_the_driver_flag_and_the_service_env(self) -> None:
+        rc, out, launched, argvs, rows = self._run(suite_budget="600")
+        self.assertEqual(rc, 0, msg=out)
+        self.assertEqual(launched, ["600"])
+        (argv,) = argvs
+        self.assertEqual(argv[argv.index("--dataset-create-timeout-seconds") + 1], "600.0")
+        self.assertEqual(rows[0]["service_env"], {self.VAR: "600"}, "the registry row records what --up was given")
+
+    def test_a_cell_budget_reaches_the_service_while_the_driver_reads_it_itself(self) -> None:
+        rc, out, launched, argvs, _rows = self._run(cell_budget="300.5")
+        self.assertEqual(rc, 0, msg=out)
+        self.assertEqual(launched, ["300.5"])
+        self.assertNotIn("--dataset-create-timeout-seconds", argvs[0], "the YAML key reaches the driver through the cell YAML")
+
+    def test_the_suite_budget_beats_the_cell_budget(self) -> None:
+        rc, out, launched, argvs, _rows = self._run(suite_budget="900", cell_budget="300")
+        self.assertEqual(rc, 0, msg=out)
+        self.assertEqual(launched, ["900"])
+        self.assertEqual(argvs[0][argvs[0].index("--dataset-create-timeout-seconds") + 1], "900.0")
+
+    def test_no_budget_exports_nothing_and_leaves_an_operator_export_alone(self) -> None:
+        rc, out, launched, argvs, rows = self._run()
+        self.assertEqual(rc, 0, msg=out)
+        self.assertEqual(launched, ["<UNSET>"], "the driver and service defaults are both 120 s")
+        self.assertNotIn("--dataset-create-timeout-seconds", argvs[0])
+        self.assertIsNone(rows[0]["service_env"])
+        rc, out, launched, _argvs, _rows = self._run(ambient="77")
+        self.assertEqual(rc, 0, msg=out)
+        self.assertEqual(launched, ["77"], "with nothing configured, the operator's own export passes through")
+
+    def test_a_cascor_suite_forwards_the_flag_but_exports_no_recurrence_env(self) -> None:
+        rc, out, launched, argvs, rows = self._run(app="cascor", suite_budget="600")
+        self.assertEqual(rc, 0, msg=out)
+        self.assertEqual(launched, ["<UNSET>"])
+        self.assertEqual(argvs[0][argvs[0].index("--dataset-create-timeout-seconds") + 1], "600.0")
+        self.assertIsNone(rows[0]["service_env"])
+
+    def test_dry_run_shows_the_flag_and_the_up_env(self) -> None:
+        rc, out, launched, _argvs, _rows = self._run(suite_budget="600", dry_run=True)
+        self.assertEqual(rc, 0, msg=out)
+        self.assertRegex(out, rf"\$ {self.VAR}=600 \S+ --up --recurrence ")
+        self.assertIn("--dataset-create-timeout-seconds 600.0", out)
+        self.assertEqual(launched, [], "a dry run launches nothing")
+
+    def test_a_bad_suite_budget_is_refused_before_any_cell_launches(self) -> None:
+        for bad in ("0", "-1", "true", "'600'", ".inf", ".nan"):
+            with self.subTest(bad=bad):
+                rc, out, launched, _argvs, _rows = self._run(suite_budget=bad)
+                self.assertEqual(rc, 2, msg=out)
+                self.assertIn("execution.dataset_create_timeout_seconds must be a positive, finite number", out)
+                self.assertEqual(launched, [])
+
+    def test_a_bad_cell_budget_is_refused_by_the_driver_validator(self) -> None:
+        rc, out, launched, _argvs, _rows = self._run(cell_budget="0")
+        self.assertEqual(rc, 2, msg=out)
+        self.assertIn("outputs.dataset_create_timeout_seconds must be a positive, finite number", out)
+        self.assertEqual(launched, [])
+
+    def test_the_mapping_itself(self) -> None:
+        env = run_suite.recurrence_data_timeout_env
+        self.assertEqual(env("cascor", {"outputs": {"dataset_create_timeout_seconds": 600}}, 900.0), {})
+        self.assertEqual(env("recurrence", {"outputs": {"dataset_create_timeout_seconds": 600}}, 900.0), {self.VAR: "900"})
+        self.assertEqual(env("recurrence", {"outputs": {"dataset_create_timeout_seconds": 600}}, None), {self.VAR: "600"})
+        malformed_docs: "list[object]" = [{}, None, [], {"outputs": None}, {"outputs": [600]}]
+        for doc in malformed_docs:
+            self.assertEqual(env("recurrence", doc, None), {}, doc)
+        bad_values: "list[object]" = [True, "600", 0, -5, float("inf"), float("nan")]
+        for value in bad_values:
+            self.assertEqual(env("recurrence", {"outputs": {"dataset_create_timeout_seconds": value}}, None), {}, value)
+
+    def test_the_exported_text_is_the_form_the_launcher_accepts(self) -> None:
+        """``_seconds_text`` mirrors ``experiment_stack.bash``'s ``data_timeout_re``, read from the script."""
+        script = (REPO_ROOT / "util" / "experiment_stack.bash").read_text(encoding="utf-8")
+        match = re.search(r"local data_timeout_re='([^']+)'", script)
+        self.assertIsNotNone(match, "the launcher's data_timeout_re moved; update this mirror")
+        pattern = match.group(1)
+        for value, text in ((600, "600"), (600.0, "600"), (0.5, "0.5"), (300.5, "300.5"), (1.2, "1.2"), (1e-7, "0.0000001"), (1e22, "10000000000000000000000")):
+            with self.subTest(value=value):
+                self.assertEqual(run_suite._seconds_text(value), text)
+                self.assertRegex(text, pattern)
+                self.assertRegex(text, "[1-9]", "the launcher's second test: not all zeros")
+                self.assertEqual(float(text), float(value))

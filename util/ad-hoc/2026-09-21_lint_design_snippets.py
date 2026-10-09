@@ -89,7 +89,7 @@ def lint(path: str, workdir: str, shellcheck: str | None):
     # A dot-file (".env") and a file under etc/default/ have NO extension for splitext,
     # so key the environment-file grammar on the name and location as well. Without this
     # both blocks were reported "no linter" -- a vacuous pass (caught by validation 2026-09-21).
-    is_env_file = name == ".env" or ext in (".env", ".default") or rel.startswith("etc/default/")
+    is_env_file = name == ".env" or ext in (".env", ".default") or rel.startswith("etc/default/") or rel.startswith("etc/duplicati/")
     results = []
     if ext in (".bash", ".sh"):
         results.append(("bash -n",) + run(["bash", "-n", path]))

@@ -1,12 +1,12 @@
-# Backup arc, Phase B — validation rounds 2 and 3, the ml#2115 fix-forward lanes and the handoff validations, verbatim reports
+# Backup arc, Phase B — validation rounds 2 to 7, the fold-in lanes, the ml#2115 fix-forward lanes and the handoff validations, verbatim reports
 
 **Project**: Juniper (workstation backup infrastructure, host `yamaguchi`)
 **Author**: Paul Calnon
-**Date**: 2026-10-04 (re-assembled 2026-10-05)
+**Date**: 2026-10-04 (re-assembled 2026-10-05; rounds 4 to 7 and the fold-in reports added 2026-10-08)
 **Procedure**: [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 **Artifacts validated**: Phase B of [`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`](JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md) §6.2 (rows B1, B3, B4, B5, B7, B8 and B10), including the regenerated [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`](JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md)
 **Also validated**: the fix-forward of B2 (ml#2115), which landed as ml#2134, and the two handoffs that carried the work between sessions
-**Status**: landed on `main` on 2026-10-05, AHEAD of the Phase B change it validates, so that its reports cannot be lost with an uncommitted worktree. The change itself — the artifacts and the prose the reports judge — is pending: `HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md` carries it, and the fix-forward ml#2134 is the only part already on `main`
+**Status**: rounds 2 to 7 complete; round 7 found no DEFECT. The first 16 reports landed on `main` on 2026-10-05, AHEAD of the Phase B change they validate, so that they could not be lost with an uncommitted worktree. The change itself (the artifacts and the prose these reports judge) lands with this record's 2026-10-08 additions, in the Phase B PR; the fix-forward ml#2134 landed separately
 **Earlier rounds**: round 1 is the assessment's own (its §8); the design's rounds 1–8 are in [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`](JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md), [`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`](JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md) and [`JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md`](JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md)
 
 ---
@@ -209,6 +209,79 @@ archived below.
 
 ## Disposition of round 3
 
-*Pending* — round 3's fold-in, a round 4 on its delta and on the whole procedure, and the Phase B PR are the
-next session's work (`HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md`). This section is completed
-when that change lands.
+Folded in on 2026-10-08 by session 097ae87b, in three lanes that owned disjoint files: C1 (the wrapper, the
+installer, the env contract and the units), C2 (the re-key, its gate and the password-init hand start) and P
+(the clearing script, the design and the assessment). Their briefs and reports are archived below. Every one of
+round 3's 15 DEFECTs and 32 NITs is fixed, or recorded in the assessment's §8 as residue with a reason. The
+assessment's §8 "Round 3" entry gives the disposition by finding id. The owner made one ruling (R3B DEFECT-1, 2026-10-08): retention is
+**suspended** through recovery, so step 10's edits remove `retention-policy`; after AC-4's first drill passes it is
+restored as `2W:1D,6M:1W,2Y:1M,5Y:2M`, replacing `1W:1D,1M:1W,1Y:1M,3Y:2M`.
+
+Two changes go beyond the findings as written:
+
+- C1 replaced the env file's deny list with an **allow-list** of tunables (R3A D-1's alternative). The deny list
+  had missed a channel in two consecutive rounds, first `DUPLICATI__*`, then `--parameters-file`.
+- C2 refuses an `enc-v1:` blob in `BackupTargetUrl` only on rows of no backup, because a live backup's rows are
+  rewritten (verified at the 2.4.0.0 tag).
+
+## What round 4 found
+
+Three lanes reviewed the frozen fold-in (local commit `a0ff619c`): A (fold-in fidelity), B (an end-to-end walk of
+A0, A, A2 and B for damage to the sole copy) and C (run and attack the code). Totals: 0 BLOCKER, 6 DEFECT, 28 NIT;
+A's D-1 and C's DEFECT-1 are the same defect.
+
+- **The suites depended on the host's mounts** (A D-1, C DEFECT-1). `${DUPLICATI_REQUIRE_MOUNT:-…}` cannot be
+  emptied, so every wrapper and installer test needed `/mnt/Backups` mounted and would have failed on CI.
+- **An allow-listed option did not exist** (A D-2). The server's option is `webservice-suppress-welcome-page`.
+- **The first `resume` ran a stale copy of the job** (B DEFECT-1). On A0 and A2 the job queued at the first start
+  is copied before step 10's edits, so it had the old retention, the old tempdir and no guard. Nothing was damaged,
+  but only by accident.
+- **B's Verify could not run while paused** (B DEFECT-2).
+- **The pre-flight missed orphaned `Option`/`Source` rows** (C DEFECT-2).
+
+## Disposition of round 4
+
+All folded in on 2026-10-08 by the same three lanes, resumed. The highlights:
+
+- wrapper 2.4.0 honours an empty mount override, and both of its lists are pinned against a vendored copy of the
+  product's option table;
+- step 10 ends with a restart, so the queue is rebuilt from the edited job (verified in the source), then an
+  `export` read-back;
+- B's Verify runs in a pause/resume cycle;
+- the pre-flight counts orphans in all three child tables.
+
+The assessment's §8 "Round 4" entry has the disposition by finding id.
+
+## Round 5 and its disposition
+
+A two-lane confirmation round on round 4's delta (local commit `9ce2f602`), code and procedure: 0 BLOCKER,
+4 DEFECT, 12 NIT. The code lane found the installer's hint still said "pause" where round 4 says stop, and an
+env-file mode check that settled the owner's open decision O-12. The installer now accepts either of O-12's two
+forms. The procedure lane found two gaps:
+
+- the server's default options (`BackupID` −1) are invisible to `export`, so step 8 now clears them with
+  `sqlite3`;
+- a Procedure B Repair deletes extra remote volumes, so it now runs `--dry-run` first, copies every named file
+  aside, and is named as a third, conditional exception to §8's "nothing is deleted" rule.
+
+All four DEFECTs and every NIT are fixed; the assessment's §8 "Round 5" entry has the disposition.
+
+## Rounds 6 and 7, and their disposition
+
+Round 6 was a single combined lane on round 5's delta (local commit `ee7fcee7`). It found 0 BLOCKER, 3 DEFECT and
+4 NIT:
+
+- **DEFECT-1, the Repair step.** As written, the dry-run / copy-aside step read one of the four message IDs a
+  Repair logs deletions under. It could not be queued with `--dry-run` at all, and its lines never reach the stored
+  job log. It is now done through three temporary job options and a `DryRun`-level log file under
+  `/home/duplicati`. Every `Would…Delete…File` line is copied aside, and the options are removed and checked with
+  `export` before the real Repair.
+- **DEFECT-2, the A0 restore guard.** The script's refusal to restore into the backup Source used `readlink -f`,
+  which a path two or more new levels deep got through. It now uses `realpath -m`, and its test no longer needs
+  `/home/pcalnon` to exist (it would have failed on CI).
+- **DEFECT-3, restoring defaults.** Restoring the server-default `keep-time` / `keep-versions` would combine with
+  the job's policy and void the keep/delete table. Those two are never restored.
+
+Round 7, on round 6's delta (local commit `19ae4aa9`), found 0 BLOCKER, **0 DEFECT** and 7 NIT. All seven are
+fixed, and the assessment's §8 "Round 6" and "Round 7" entries have the disposition. No eighth round ran: round 7
+found no DEFECT, and its NITs were wording, one test pin and the record's own counts.

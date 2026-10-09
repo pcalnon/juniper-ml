@@ -979,6 +979,8 @@ class _DryRunHarness(unittest.TestCase):
             "JUNIPER_EXP_CONDA_DIR": str(conda_dir),
             # Pinned off so an operator's exported skip cannot change what a dry run prints.
             "JUNIPER_EXP_SKIP_ENV_PREFLIGHT": "0",
+            # W1.5: likewise an exported data timeout -- recurrence_up treats empty as not passed.
+            "JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS": "",
             "PATH": str(stub_bin) + os.pathsep + "/usr/bin:/bin",
         }
         return env
@@ -1095,6 +1097,23 @@ class TestDryRunUp(_DryRunHarness):
             python = conda_dir / "envs" / "JuniperCascor1" / "bin" / "python"
             self.assertIn(f"""$ cd / && {python} -c 'from importlib.metadata import version; print(version("juniper-recurrence-model"))'   # W1.9""", out)
             self.assertNotIn("ENV PREFLIGHT", out, "a dry run must not execute the preflight")
+            self.assertFalse((root / "runs").exists(), "dry-run --up must not create the run root")
+
+    def test_dry_up_recurrence_announces_a_set_data_timeout_and_refuses_a_malformed_one(self) -> None:
+        """W1.5 (F-D5 / F-S9): a set JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS joins the serve
+        announce after the log knobs. A malformed one refuses the leg even in a dry run, before the
+        serve line is printed, so a preview cannot show a launch that would not start."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            base = self._env(root, _stage_stub_bin(root), _stage_conda_fixture(root))
+            good = _run("--dry-run", "--up", "--recurrence", env_extra={**base, "JUNIPER_RECURRENCE_LOG_LEVEL": "DEBUG", "JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS": "600"})
+            self.assertEqual(good.returncode, 0, msg=good.stderr + good.stdout)
+            self.assertIn(" JUNIPER_RECURRENCE_LOG_LEVEL=DEBUG JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS=600 ", good.stdout)
+            self.assertLess(good.stdout.index("JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS=600"), good.stdout.index("serve --host 127.0.0.1 --port 8260"))
+            bad = _run("--dry-run", "--up", "--recurrence", env_extra={**base, "JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS": "1e3"})
+            self.assertNotEqual(bad.returncode, 0, msg=bad.stdout)
+            self.assertIn("JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS='1e3' is not a positive decimal number of seconds", bad.stdout)
+            self.assertNotIn("serve --host 127.0.0.1", bad.stdout)
             self.assertFalse((root / "runs").exists(), "dry-run --up must not create the run root")
 
 
@@ -2353,7 +2372,8 @@ class TestRecurrenceUpLaunchRecord(_LiveUpHarness):
 
     def test_set_log_vars_reach_serve_and_every_record(self) -> None:
         paths = self._stage()
-        result = self._up(paths, before="export JUNIPER_RECURRENCE_LOG_LEVEL=DEBUG\nexport JUNIPER_RECURRENCE_LOG_FORMAT=json\n")
+        # W1.5: the data timeout is unset here (an ambient export would otherwise reach the record).
+        result = self._up(paths, before="export JUNIPER_RECURRENCE_LOG_LEVEL=DEBUG\nexport JUNIPER_RECURRENCE_LOG_FORMAT=json\nunset JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS\n")
         out = result.stdout
         self.assertIn("STATUS=0", out, msg=result.stderr + out)
         run_dir = paths["run"]
@@ -2368,7 +2388,7 @@ class TestRecurrenceUpLaunchRecord(_LiveUpHarness):
         ports = json.loads((run_dir / "ports.json").read_text())
         self.assertEqual(
             ports["recurrence_launch"],
-            {"conda_env": "JuniperCascor1", "cli": str(paths["env_bin"] / "juniper-recurrence"), "python": str(paths["env_bin"] / "python"), "model_version": "0.3.2", "snapshots_dir": snapshots, "log_level": "DEBUG", "log_format": "json", "config_file": None},
+            {"conda_env": "JuniperCascor1", "cli": str(paths["env_bin"] / "juniper-recurrence"), "python": str(paths["env_bin"] / "python"), "model_version": "0.3.2", "snapshots_dir": snapshots, "log_level": "DEBUG", "log_format": "json", "juniper_data_timeout_seconds": None, "config_file": None},
         )
         first = json.loads((run_dir / "ports.first.json").read_text())
         self.assertNotIn("recurrence_launch", first)
@@ -2380,12 +2400,13 @@ class TestRecurrenceUpLaunchRecord(_LiveUpHarness):
 
     def test_unset_log_vars_stay_absent_and_the_config_file_is_recorded(self) -> None:
         paths = self._stage()
-        result = self._up(paths, before='unset JUNIPER_RECURRENCE_LOG_LEVEL JUNIPER_RECURRENCE_LOG_FORMAT\nCONFIG_PATH="/fixture/cell.yaml"\n')
+        result = self._up(paths, before='unset JUNIPER_RECURRENCE_LOG_LEVEL JUNIPER_RECURRENCE_LOG_FORMAT JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS\nCONFIG_PATH="/fixture/cell.yaml"\n')
         self.assertIn("STATUS=0", result.stdout, msg=result.stderr + result.stdout)
         run_dir = paths["run"]
         served_env = (paths["markers"] / "recurrence.env").read_text()
         launch_env = (run_dir / "env" / "launch.env").read_text()
-        for key in ("JUNIPER_RECURRENCE_LOG_LEVEL", "JUNIPER_RECURRENCE_LOG_FORMAT"):
+        # W1.5 adds the data timeout to the knobs that stay absent when unset.
+        for key in ("JUNIPER_RECURRENCE_LOG_LEVEL", "JUNIPER_RECURRENCE_LOG_FORMAT", "JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS"):
             # Absent, not exported empty: an empty value is still a value to the service's settings.
             self.assertEqual(_env_lines_for_key(served_env, key), [])
             self.assertEqual(_env_lines_for_key(launch_env, key), [])
@@ -2393,8 +2414,44 @@ class TestRecurrenceUpLaunchRecord(_LiveUpHarness):
         self.assertEqual(_env_lines_for_key(served_env, "JUNIPER_RECURRENCE_SNAPSHOTS_DIR"), [f"JUNIPER_RECURRENCE_SNAPSHOTS_DIR={run_dir}/snapshots"])
         self.assertEqual(_env_lines_for_key(served_env, "JUNIPER_RECURRENCE_CONFIG_FILE"), [f"JUNIPER_RECURRENCE_CONFIG_FILE={run_dir}/config/experiment.yaml"])
         record = json.loads((run_dir / "ports.json").read_text())["recurrence_launch"]
-        self.assertEqual((record["log_level"], record["log_format"]), (None, None))
+        self.assertEqual((record["log_level"], record["log_format"], record["juniper_data_timeout_seconds"]), (None, None, None))
         self.assertEqual(record["config_file"], f"{run_dir}/config/experiment.yaml")
+
+    def test_a_set_data_timeout_reaches_serve_and_every_record_as_a_number(self) -> None:
+        """W1.5 (F-D5 / F-S9): run_suite.py exports a recurrence cell's dataset budget, and this is the
+        launcher half -- serve gets it, launch.env and the announce name it, and ports.json records it
+        as a JSON number (a decimal, so the fractional branch of the pattern is the one exercised).
+
+        Assigned, not exported: an exported value would reach serve by inheritance whatever the launch
+        line did, so only a shell variable proves serve gets the value the launcher validated."""
+        paths = self._stage()
+        result = self._up(paths, before="unset JUNIPER_RECURRENCE_LOG_LEVEL JUNIPER_RECURRENCE_LOG_FORMAT JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS\nJUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS=300.5\n")
+        out = result.stdout
+        self.assertIn("STATUS=0", out, msg=result.stderr + out)
+        run_dir = paths["run"]
+        key = "JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS"
+        self.assertEqual(_env_lines_for_key((paths["markers"] / "recurrence.env").read_text(), key), [f"{key}=300.5"])
+        self.assertEqual(_env_lines_for_key((run_dir / "env" / "launch.env").read_text(), key), [f"{key}=300.5"])
+        self.assertIn(f"JUNIPER_DATA_URL=http://127.0.0.1:68110 {key}=300.5 ", out)
+        text = (run_dir / "ports.json").read_text()
+        self.assertIn('"juniper_data_timeout_seconds": 300.5,', text, "a number, not a string")
+        self.assertEqual(json.loads(text)["recurrence_launch"]["juniper_data_timeout_seconds"], 300.5)
+
+    def test_a_malformed_data_timeout_refuses_the_leg_before_the_preflight(self) -> None:
+        """W1.5: anything but a plain positive decimal is refused before the preflight runs, so serve
+        never starts and ports.json is never rewritten -- the value would be unrecordable as a JSON
+        number (an exponent, a leading zero, a bare or trailing point) or meaningless as a timeout."""
+        paths = self._stage()
+        for value in ("abc", "0", "0.0", "00", "007", "-5", "+5", "1e3", "300.", ".5", " 300", "300 ", "inf", "nan"):
+            with self.subTest(value=value):
+                result = self._up(paths, before=f"export JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS={shlex.quote(value)}\n")
+                out = result.stdout
+                self.assertIn("STATUS=1", out, msg=result.stderr + out)
+                self.assertIn(f"JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS='{value}' is not a positive decimal number of seconds", out)
+                self.assertFalse((paths["markers"] / "recurrence.args").exists(), "a refused value must never reach serve")
+                self.assertEqual((paths["run"] / "ports.json").read_text(), (paths["run"] / "ports.first.json").read_text())
+                self.assertEqual(read_calls(self.root / "python-calls.log"), [], "refused before the env preflight ran")
+                self.assertFalse(paths["probe_log"].exists())
 
     def test_a_refused_env_records_no_launch(self) -> None:
         paths = self._stage(pip_check=(MODEL_PIN_LINE, SERVICE_CORE_PIN_LINE), pins=PINS_STALE, import_error=IMPORT_ERROR_LINE)
@@ -2451,9 +2508,20 @@ class TestRecurrenceLaunchRecordWiring(unittest.TestCase):
         body = _strip_comment_lines(_extract_experiment_fn("recurrence_up"))
         self.assertIn('snapshots_dir="${RUN_DIR}/snapshots"', body)
         self.assertEqual(body.count("JUNIPER_RECURRENCE_SNAPSHOTS_DIR"), 3, "announce / record_launch_env / launch")
-        self.assertIn("${log_announce}${config_env}${serve_bin} serve", body)
+        # W1.5 put the data timeout beside the log knobs at the announce and the launch.
+        self.assertIn("${log_announce}${data_timeout_announce}${config_env}${serve_bin} serve", body)
         self.assertEqual(body.count('"${log_env[@]}"'), 2, "record_launch_env / launch")
-        self.assertIn('env "${log_env[@]}" nohup "${serve_bin}" serve', body)
+        self.assertIn('env "${log_env[@]}" "${data_timeout_env[@]}" nohup "${serve_bin}" serve', body)
+
+    def test_the_data_timeout_reaches_all_three_sites_and_the_record(self) -> None:
+        """W1.5: like the log knobs, the data timeout is named at the announce, in launch.env and in
+        the serve env -- and it is the record's ninth argument, which a log knob is not."""
+        body = _strip_comment_lines(_extract_experiment_fn("recurrence_up"))
+        self.assertEqual(body.count('"${data_timeout_env[@]}"'), 2, "record_launch_env / launch")
+        self.assertIn('"${log_env[@]}" "${data_timeout_env[@]}"\n', body, "record_launch_env names it")
+        self.assertIn('"${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}" "${JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS:-}")"', body)
+        # Validated before the first announce, so a malformed value refuses even a --dry-run.
+        self.assertLess(body.index("not a positive decimal number of seconds"), body.index('announce "bash ${ENV_PREFLIGHT}'))
 
     def test_the_writer_renders_the_record_only_when_one_is_set(self) -> None:
         self.assertIn('RECURRENCE_LAUNCH_JSON=""', SCRIPT_CODE)
@@ -2505,9 +2573,10 @@ class TestPortsJsonRender(unittest.TestCase):
             self.assertEqual(self._read("read_run_port", ports_file, "cascor"), "")
             self.assertEqual(self._read("read_run_port", ports_file, "recurrence"), "8260")
             self.assertEqual(self._read("read_run_flag", ports_file, "grafana_bridge"), "true")
+        # W1.5: eight arguments, so the optional ninth (the data timeout) renders null.
         self.assertEqual(
             json.loads(text)["recurrence_launch"],
-            {"conda_env": "JuniperCascor1", "cli": "/opt/env/bin/juniper-recurrence", "python": odd, "model_version": None, "snapshots_dir": "/runs/x/snapshots", "log_level": "DEBUG", "log_format": None, "config_file": "/runs/x/config/experiment.yaml"},
+            {"conda_env": "JuniperCascor1", "cli": "/opt/env/bin/juniper-recurrence", "python": odd, "model_version": None, "snapshots_dir": "/runs/x/snapshots", "log_level": "DEBUG", "log_format": None, "juniper_data_timeout_seconds": None, "config_file": "/runs/x/config/experiment.yaml"},
         )
         self.assertIn('\n  "data_url": "http://127.0.0.1:8110",\n', text)
         self.assertTrue(text.startswith('{\n  "run_id": "20261005T000000Z-ab12",\n'))

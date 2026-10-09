@@ -1,5 +1,8 @@
 # HANDOFF 2026-10-08 — P2 canopy Lane A: Phase 11 recorded through six consensus rounds (F-CANOPY-058 observed live; F-CANOPY-068 filed); next is item 4, one redesign for F-CANOPY-055, -058 and -068
 
+> **SUPERSEDED 2026-10-08** by `HANDOFF_2026-10-08_canopy-pacer-731-landed-phase12-owed.md`. Its items 1 (#2183
+> merged) and 2 (canopy#731) are done; items 3–5 carry there.
+
 **Written**: 2026-10-08 by the session in juniper-ml worktree `.claude/worktrees/dreamy-fluttering-kite`, at a phase
 boundary, as its PR was opened. **Not consensus-validated.**
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md` (authoritative for P2;

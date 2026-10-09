@@ -1,24 +1,50 @@
 [Unit]
 Description=Snapshot the Duplicati server DB into a backed-up path (Yamaguchi)
-Documentation=file:///home/pcalnon/Development/python/Juniper/juniper-ml/util/ad-hoc/yamaguchi_server_db_snapshot.py
+Documentation=file:///usr/local/lib/duplicati/yamaguchi_server_db_snapshot.py
 # Note section 8.19. Duplicati-server.sqlite holds the job definition, 2 sources,
-# 44 filters, 10 settings, the schedule and the encrypted passphrase. "Recreate"
+# 44 filters, 10 settings, the schedule and the passphrase (encrypted under the
+# settings key since 2026-09-18; cleartext before -- design section 5.4). "Recreate"
 # rebuilds the per-job index (BMXWPAOGLP.sqlite) from the destination but does NOT
-# restore this one, and it lives on / (nvme0n1p5), which no backup covers.
+# restore this one.
 #
 # This is a ROOT SYSTEM unit, and it is NOT the disabled duplicati-backup.* user
 # lane. Do not confuse them: that lane RUNS BACKUPS via the CLI and is 0-for-3,
 # deliberately disabled, and must stay that way. This unit only COPIES A FILE.
+#
+# Since 2026-10-03 (design section 7.7, P0.5a item 2 as amended by the assessment's B3):
+# the script is the INSTALLED COPY under /usr/local/lib/duplicati/, root-owned and
+# checksum-blessed by util/install_duplicati_service.bash -- not the primary checkout,
+# whose sys.path[0] is pcalnon-writable and which every branch switch re-arms -- and
+# the source is the service user's data folder, not the abandoned root folder. Re-run
+# the installer to move a change into production; a repository edit plus daemon-reload
+# changes nothing here.
+# After P0: do not `enable --now` this timer until the recovered database has been
+# re-encrypted by the server's first start (STOP item 4 / the assessment's I-8, I-17):
+# Persistent=true fires a missed run at once, and under Procedure A0 the placed database
+# is cleartext until that start.
 
 [Service]
 Type=oneshot
-# Root is required: /usr/lib/duplicati/data is drwx------ root root.
-ExecStart=/usr/bin/python3 /home/pcalnon/Development/python/Juniper/juniper-ml/util/ad-hoc/yamaguchi_server_db_snapshot.py
+# Root is required: the data folder is drwx------ duplicati, and the snapshot is
+# chowned to pcalnon. The confinement below is the design's section 7.7 set, with the
+# one write path the unit needs punched through ProtectSystem=strict (STOP item 5:
+# strict without ReadWritePaths= broke the snapshot).
+ExecStart=/usr/bin/python3 /usr/local/lib/duplicati/yamaguchi_server_db_snapshot.py
 # Nothing secret reaches the command line or the journal -- the script prints only
 # sizes, table counts and the integrity_check verdict.
-#
-# The script path is the PRIMARY checkout, matching yamaguchi-watchdog.service.
-# Deploy only after the PR adding the script has merged AND that checkout is
-# synced, or every fire exits non-zero.
+ProtectSystem=strict
+ProtectHome=read-only
+# No `-` prefix, deliberately (round 3 lane C N-13): a missing destination fails the unit at
+# namespace setup (226/NAMESPACE), before the script runs -- fail closed and loud. With `-` the
+# script would run anyway and fail at its makedirs (the home is read-only here), or worse, a
+# future change could make it succeed while writing nowhere backed up. The directory must exist
+# (pcalnon, 0700); the installer prints a NOTE when it does not.
+ReadWritePaths=/home/pcalnon/.local/state/duplicati-server-db
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictRealtime=yes
 Nice=10
 IOSchedulingClass=idle
