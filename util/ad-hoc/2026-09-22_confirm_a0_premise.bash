@@ -23,6 +23,11 @@ JOBDB="${YAMAGUCHI_JOB_DB:-/home/duplicati/.cache/root-data-folder-2026-09-22/BM
 install -d -m 0700 "${WORKDIR}"
 TMPDB="$(mktemp -u "${WORKDIR}/a0-probe-XXXXXX.sqlite")"
 cp -p "${JOBDB}" "${TMPDB}"
+# A -wal or hot -journal beside the frozen index holds pages the main file lacks; SQLite applies it
+# at the first open only if it sits beside the copy under the copy's name (2026-10-08, round 4 R4B N-8).
+for sfx in -wal -journal; do
+    if [[ -e "${JOBDB}${sfx}" ]]; then cp -p "${JOBDB}${sfx}" "${TMPDB}${sfx}"; fi
+done
 
 # The credential file is PARSED, never SOURCED. The live PASSPHRASE is UNQUOTED and carries
 # '$', '&', '@', '#' and '^' (util/ad-hoc/2026-09-22_credential_file_shape.py reports

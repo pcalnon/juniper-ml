@@ -20,7 +20,10 @@
 #                 needed until a new report is added.
 #   --from-files  Every report is read from its file. Round 2's files and the 2026-10-03 handoff's validation
 #                 are untracked in the worktree cached-swinging-summit (byte-identical to the files the lanes
-#                 wrote; override with ROUND2_DIR); the rest are untracked in worktree sorted-stargazing-garden.
+#                 wrote; override with ROUND2_DIR); round 3's are untracked in worktree sorted-stargazing-garden,
+#                 and the 2026-10-08 fold-in and round 4-7 reports are untracked in worktree golden-floating-willow
+#                 (session 097ae87b). The record is their durable copy; the files were kept out of the commit
+#                 because verbatim reports do not pass markdownlint outside the record's disable block.
 #                 A missing file is refused, never skipped.
 #   --check       Passed to the archiver: nothing is written; exit 0 if the result equals the record byte for
 #                 byte, 1 if it differs, 2 if a guard refuses.
@@ -47,6 +50,9 @@ f=util/ad-hoc/2026-10-04_ml2115_fix_forward
 r=util/ad-hoc/2026-10-04_backup-phase-b-round3
 lane="the report file the lane wrote itself, in session 652c1204's scratch directory, on"
 saved="the lane's final message, saved from its transcript by session c9277a65 on"
+g=util/ad-hoc/2026-10-08_backup-phase-b-fold-in
+q=util/ad-hoc/2026-10-08_backup-phase-b-round4
+saved8="the lane's report, saved from its transcript by session 097ae87b on 2026-10-08"
 
 ENTRIES=(
     "Round 2 — the common brief|$v/BRIEF_COMMON.md|the brief session 652c1204 wrote for round 2's lanes on 2026-10-03"
@@ -65,6 +71,32 @@ ENTRIES=(
     "The 2026-10-04 handoff's validation|$r/HV.md|$saved 2026-10-05"
     "The 2026-10-04 handoff's re-validation|$r/HV2.md|$saved 2026-10-05"
     "The 2026-10-04 handoff's third validation|$r/HV3.md|$saved 2026-10-05"
+    "Round 3's fold-in — the common brief|$g/BRIEF_COMMON.md|the brief session 097ae87b wrote for the fold-in lanes on 2026-10-08"
+    "Round 3's fold-in, lane C1 — wrapper, installer, contract and units|$g/C1.md|$saved8"
+    "Round 3's fold-in, lane C2 — re-key, gate and hand start|$g/C2.md|$saved8"
+    "Round 3's fold-in, lane P — design and assessment prose|$g/P.md|$saved8"
+    "Round 3's fold-in, lane P (second pass, the code lanes' prose)|$g/P_pass2.md|$saved8"
+    "Round 4 — the common brief|$g/BRIEF_ROUND4.md|the brief session 097ae87b wrote for round 4's lanes on 2026-10-08 (round 5's lanes used it too)"
+    "Round 4, lane A — fold-in fidelity|$q/R4A.md|$saved8"
+    "Round 4, lane B — procedure consequences, the sole copy|$q/R4B.md|$saved8"
+    "Round 4, lane C — run the things|$q/R4C.md|$saved8"
+    "Round 4's fold-in, lane C1|$g/C1_round4.md|$saved8"
+    "Round 4's fold-in, lane C2|$g/C2_round4.md|$saved8"
+    "Round 4's fold-in, lane P|$g/P_round4.md|$saved8"
+    "Round 4's fold-in, lane P (second pass, the code lanes' prose)|$g/P_round4b.md|$saved8"
+    "Round 5, lane A — code confirmation|$q/R5A.md|$saved8"
+    "Round 5, lane B — procedure confirmation|$q/R5B.md|$saved8"
+    "Round 5's fold-in, lane C1|$g/C1_round5.md|$saved8"
+    "Round 5's fold-in, lane C2|$g/C2_round5.md|$saved8"
+    "Round 5's fold-in, lane P|$g/P_round5.md|$saved8"
+    "Round 5's fold-in, lane P (second pass, the code lanes' prose)|$g/P_round5b.md|$saved8"
+    "Round 6 — confirmation of round 5's fold-in|$q/R6.md|$saved8"
+    "Round 6's fold-in, lane C1|$g/C1_round6.md|$saved8"
+    "Round 6's fold-in, lane C2|$g/C2_round6.md|$saved8"
+    "Round 6's fold-in, lane P|$g/P_round6.md|$saved8"
+    "Round 7 — confirmation of round 6's fold-in|$q/R7.md|$saved8"
+    "Round 7's fold-in, lane C2|$g/C2_round7.md|$saved8"
+    "Round 7's fold-in, lane P|$g/P_round7.md|$saved8"
 )
 
 mode=record
