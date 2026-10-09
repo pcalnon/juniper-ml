@@ -27,7 +27,7 @@ What this module pins, against one loopback stub that plays both juniper-data an
 client's old 30 s default is 0.3 s and the driver's 120 s default budget is 1.2 s. Only ordering
 matters to the code under test -- each socket timeout either expires before the reply or not -- so
 the scaling preserves every outcome. The expiring arms cannot flake (a reply can only arrive later
-than its sleep, never earlier); the succeeding arms keep at least 0.8 s of slack.
+than its sleep, never earlier); every succeeding arm keeps at least 0.6 s of slack.
 
 No live services. ``util/`` is not pre-commit-lint-gated, so this unittest is the gate.
 """
@@ -314,13 +314,15 @@ class DatasetBudgetDriveTest(_Case):
     """Each budget bounds its own calls, and an expired dataset budget is ``timed_out``."""
 
     def test_creation_waits_out_a_slow_data_server_inside_its_budget_whatever_the_wall_budget(self) -> None:
-        self.state.create_delay = FORTY_SECOND_DATA_SERVER
-        code, manifest = self._run(_recurrence_config(budget=DRIVER_DEFAULT_BUDGET), "--max-wall-seconds", "0.3")
+        # 0.8 s create, 2.0 s dataset budget, 0.6 s wall budget: the wall budget would cut the create,
+        # and the three instant train / predict / crossval calls keep 0.6 s of slack under it.
+        self.state.create_delay = 2 * FORTY_SECOND_DATA_SERVER
+        code, manifest = self._run(_recurrence_config(budget=2.0), "--max-wall-seconds", "0.6")
         self.assertEqual(code, rx.EXIT_SUCCESS, manifest["acceptance"])
         self.assertEqual(manifest["outcome"], "succeeded")
-        self.assertGreaterEqual(manifest["timings"]["dataset_create"], FORTY_SECOND_DATA_SERVER)
-        self.assertEqual(manifest["driver"]["dataset_create_timeout_seconds"], DRIVER_DEFAULT_BUDGET)
-        self.assertEqual(manifest["driver"]["max_wall_seconds"], 0.3, "a 0.3 s wall budget would have cut a 0.4 s create")
+        self.assertGreaterEqual(manifest["timings"]["dataset_create"], 2 * FORTY_SECOND_DATA_SERVER)
+        self.assertEqual(manifest["driver"]["dataset_create_timeout_seconds"], 2.0)
+        self.assertEqual(manifest["driver"]["max_wall_seconds"], 0.6, "a 0.6 s wall budget would have cut a 0.8 s create")
 
     def test_an_expired_dataset_budget_is_timed_out_and_names_the_knob(self) -> None:
         self.state.create_delay = 3 * FORTY_SECOND_DATA_SERVER
@@ -338,10 +340,13 @@ class DatasetBudgetDriveTest(_Case):
         self.assertGreaterEqual(manifest["timings"]["dataset_create"], 0.2)
 
     def test_train_is_bounded_by_the_wall_budget_not_the_dataset_budget(self) -> None:
-        self.state.train_delay = FORTY_SECOND_DATA_SERVER
-        code, manifest = self._run(_recurrence_config(budget=0.2, max_wall=DRIVER_DEFAULT_BUDGET))
+        # A 0.8 s train under a 0.6 s dataset budget and a 2.0 s wall budget: only the wall budget
+        # bounds it. The instant create keeps 0.6 s of slack under its own budget.
+        self.state.train_delay = 2 * FORTY_SECOND_DATA_SERVER
+        code, manifest = self._run(_recurrence_config(budget=0.6, max_wall=2.0))
         self.assertEqual(code, rx.EXIT_SUCCESS, manifest["acceptance"])
         self.assertEqual(manifest["phases"]["train"], {"status": "ok"})
+        self.assertGreaterEqual(manifest["timings"]["train"], 2 * FORTY_SECOND_DATA_SERVER)
 
     def test_the_cascor_path_shares_the_budget_and_the_classification(self) -> None:
         self.state.create_delay = 3 * FORTY_SECOND_DATA_SERVER
