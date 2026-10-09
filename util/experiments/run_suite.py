@@ -42,6 +42,12 @@ interpreter used for the driver (defaults to this interpreter).
 run's metrics are scraped into Prometheus (socat relay + file_sd target). Off by default:
 without it a run is UNSCRAPED and ``metrics_scraped.scrape_confirmed`` is ``false``.
 It is an env toggle rather than a suite key on purpose — see ``execute_cell``.
+
+``execution.dataset_create_timeout_seconds`` (W1.5) forwards ``--dataset-create-timeout-seconds``
+to the driver. A recurrence cell's dataset budget -- that key, else the cell's own
+``outputs.dataset_create_timeout_seconds`` -- also reaches ``--up`` as
+``JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS``, so the service's own juniper-data timeout is
+the driver's budget rather than a different number. See ``recurrence_data_timeout_env``.
 """
 
 from __future__ import annotations
@@ -51,6 +57,7 @@ import csv
 import hashlib
 import itertools
 import json
+import math
 import os
 import re
 import subprocess
@@ -59,6 +66,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 
 import yaml
@@ -78,7 +86,10 @@ RUN_ID_BANNER = re.compile(r"Experiment run (\S+) is up")
 
 SUITE_KEYS = frozenset({"schema_version", "suite", "execution", "matrix", "include", "exclude", "outputs"})
 SUITE_SUITE_KEYS = frozenset({"name", "description", "app", "base_config", "seed_policy"})
-EXECUTION_KEYS = frozenset({"mode", "max_parallel", "continue_on_failure", "per_run_timeout_seconds", "stall_seconds", "max_wall_seconds"})
+EXECUTION_KEYS = frozenset({"mode", "max_parallel", "continue_on_failure", "per_run_timeout_seconds", "stall_seconds", "max_wall_seconds", "dataset_create_timeout_seconds"})
+#: W1.5 (F-D5 / F-S9): the recurrence service's own juniper-data client timeout, the setting
+#: juniper-recurrence#192 added (default 120 s; the published 0.5.0 has no such setting and ignores it).
+RECURRENCE_DATA_TIMEOUT_ENV = "JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS"
 # `degraded` (W0.3, F-D1): the driver's outcome for a recurrence run whose train succeeded but
 # whose ENABLED predict / crossval / save_model phase failed. Terminal -- the run is over -- but
 # NOT a success: the summary counts it on its own, `--resume` re-runs it, and it keeps the suite's
@@ -178,7 +189,50 @@ def load_suite(path: Path) -> dict:
     max_parallel = int(execution.get("max_parallel", 1))
     if max_parallel < 1:
         raise SuiteError("execution.max_parallel must be >= 1")
+    dataset_budget = execution.get("dataset_create_timeout_seconds")
+    if dataset_budget is not None and not _is_positive_seconds(dataset_budget):
+        raise SuiteError(f"execution.dataset_create_timeout_seconds must be a positive, finite number of seconds, got {dataset_budget!r}")
     return doc
+
+
+def _is_positive_seconds(value) -> bool:
+    """A usable timeout: an int or float (never a bool), finite and above zero -- the rule
+    ``run_experiment.py`` applies to ``outputs.dataset_create_timeout_seconds``."""
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value > 0
+
+
+def _seconds_text(value: float) -> str:
+    """``value`` as an exact plain decimal (``600``, ``0.5``, ``0.0000001``), never exponent notation:
+    the only form ``experiment_stack.bash`` accepts for ``JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS``,
+    because it records the value in ``ports.json`` as a JSON number."""
+    text = format(Decimal(repr(float(value))), "f")
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
+def recurrence_data_timeout_env(app: str, cell_doc, suite_budget: "float | None") -> "dict[str, str]":
+    """W1.5 (F-D5 / F-S9): the ``--up`` env that gives a recurrence service the driver's dataset budget.
+
+    The driver bounds its own ``POST /v1/datasets`` by the cell's dataset budget, and the service
+    bounds every juniper-data call it makes by its own setting (default 120 s since
+    juniper-recurrence#192; the client's 30 s before it). Exporting the budget makes the two the
+    same number, so a juniper-data slow enough to fit the driver's budget cannot fail inside the
+    service first. On the driver's path the service only downloads an artifact the driver already
+    created (``dataset_id`` refs), so this is alignment rather than a fix for a reproduced failure.
+
+    The budget is ``suite_budget`` (``execution.dataset_create_timeout_seconds``, which also reaches
+    the driver as ``--dataset-create-timeout-seconds``), else the cell's own
+    ``outputs.dataset_create_timeout_seconds``. With neither set nothing is exported: the driver's
+    default and the service's are both 120 s, and an operator's own export is left in charge.
+    Cascor cells get nothing, and the YAML ``service:`` block still outranks env in the service.
+    """
+    if app != "recurrence":
+        return {}
+    budget = suite_budget
+    if budget is None:
+        outputs = cell_doc.get("outputs") if isinstance(cell_doc, dict) else None
+        value = outputs.get("dataset_create_timeout_seconds") if isinstance(outputs, dict) else None
+        budget = float(value) if _is_positive_seconds(value) else None
+    return {} if budget is None else {RECURRENCE_DATA_TIMEOUT_ENV: _seconds_text(budget)}
 
 
 def check_cascor_parallel_floor(doc: dict) -> None:
@@ -679,7 +733,22 @@ def _outcome_line(row: dict) -> str:
     return f"{row.get('outcome')}" + (f" ({detail})" if detail else "")
 
 
-def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher: Path, driver: Path, python_bin: str, extra_env: "dict[str, str] | None" = None, stall_seconds: "float | None" = None, max_wall_seconds: "float | None" = None, suite_name: "str | None" = None, runtime_env: "dict[str, str] | None" = None) -> dict:
+def execute_cell(
+    cell: dict,
+    cell_yaml: Path,
+    app: str,
+    timeout: float,
+    launcher: Path,
+    driver: Path,
+    python_bin: str,
+    extra_env: "dict[str, str] | None" = None,
+    stall_seconds: "float | None" = None,
+    max_wall_seconds: "float | None" = None,
+    suite_name: "str | None" = None,
+    runtime_env: "dict[str, str] | None" = None,
+    dataset_create_timeout_seconds: "float | None" = None,
+    service_env: "dict[str, str] | None" = None,
+) -> dict:
     """--up → driver → --down for one cell; never raises for a cell-level failure.
 
     ``stall_seconds`` forwards ``execution.stall_seconds`` to the driver's Q-2 stall
@@ -716,6 +785,11 @@ def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher
     ``per_run_timeout_seconds``, which kills the driver from the OUTSIDE and records
     ``timed_out`` where the driver would otherwise write an honest ``timed_out``
     manifest of its own.
+
+    ``dataset_create_timeout_seconds`` forwards ``execution.dataset_create_timeout_seconds`` to the
+    driver's dataset-create budget (W1.5, F-D5), on the same omit-when-unset rule. ``service_env``
+    is ``recurrence_data_timeout_env``'s result: it joins the environment ``--up`` (and the driver)
+    get, and the row records it as ``service_env``.
     """
     started = time.time()
     # D-C: the suite is the only layer that knows the cell id, and the launcher passes
@@ -726,7 +800,7 @@ def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher
     provenance_env = {"JUNIPER_CASCOR_CELL_ID": cell["cell_id"]}
     if suite_name:
         provenance_env["JUNIPER_CASCOR_EXPERIMENT"] = suite_name
-    env = {**os.environ, **provenance_env, **(extra_env or {}), **(runtime_env or {})}
+    env = {**os.environ, **provenance_env, **(service_env or {}), **(extra_env or {}), **(runtime_env or {})}
 
     # Grafana bridge: OPT-IN via environment, deliberately NOT a suite key.
     #
@@ -742,7 +816,7 @@ def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher
     if bridge:
         up_args.append("--grafana-bridge")
 
-    row = {"cell_id": cell["cell_id"], "name": cell["name"], "overrides": cell["overrides"], "config_sha256": hashlib.sha256(cell_yaml.read_bytes()).hexdigest(), "run_id": None, "outcome": "failed", "exit_code": None, "error": None, "thread_budget": dict(extra_env) if extra_env else None, "runtime_env": dict(runtime_env) if runtime_env else None, "grafana_bridge": bridge}
+    row = {"cell_id": cell["cell_id"], "name": cell["name"], "overrides": cell["overrides"], "config_sha256": hashlib.sha256(cell_yaml.read_bytes()).hexdigest(), "run_id": None, "outcome": "failed", "exit_code": None, "error": None, "thread_budget": dict(extra_env) if extra_env else None, "runtime_env": dict(runtime_env) if runtime_env else None, "service_env": dict(service_env) if service_env else None, "grafana_bridge": bridge}
     up = subprocess.run(up_args, capture_output=True, text=True, timeout=max(timeout, 300), env=env)
     match = RUN_ID_BANNER.search(up.stdout + up.stderr)
     if up.returncode != 0 or not match:
@@ -759,6 +833,8 @@ def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher
                 drv_argv += ["--stall-seconds", str(stall_seconds)]
             if max_wall_seconds is not None:
                 drv_argv += ["--max-wall-seconds", str(max_wall_seconds)]
+            if dataset_create_timeout_seconds is not None:
+                drv_argv += ["--dataset-create-timeout-seconds", str(dataset_create_timeout_seconds)]
             drv = subprocess.run(drv_argv, capture_output=True, text=True, timeout=timeout, env=env)
             row["exit_code"] = drv.returncode
         except subprocess.TimeoutExpired:
@@ -990,6 +1066,8 @@ def main(argv: "list[str] | None" = None) -> int:
     # None => omit the flag entirely, so the driver keeps owning its own default.
     stall_seconds = float(execution["stall_seconds"]) if execution.get("stall_seconds") is not None else None
     max_wall_seconds = float(execution["max_wall_seconds"]) if execution.get("max_wall_seconds") is not None else None
+    # W1.5 (F-D5): the dataset-create budget, on the same omit-when-unset rule (load_suite validated it).
+    dataset_create_timeout_seconds = float(execution["dataset_create_timeout_seconds"]) if execution.get("dataset_create_timeout_seconds") is not None else None
     continue_on_failure = bool(execution.get("continue_on_failure", True))
     launcher = Path(os.environ.get("JUNIPER_SUITE_LAUNCHER", str(DEFAULT_LAUNCHER)))
     driver = Path(os.environ.get("JUNIPER_SUITE_DRIVER", str(DEFAULT_DRIVER)))
@@ -1003,12 +1081,16 @@ def main(argv: "list[str] | None" = None) -> int:
 
     if args.dry_run:
         print(f"suite {suite['name']} ({suite['app']}): {len(cells)} cells -> {suite_dir}")
+        # W1.5: only the suite-level budget is known here -- a cell's own outputs.dataset_create_timeout_seconds
+        # is read from its materialised YAML, which a dry run does not write.
+        up_env = "".join(f"{key}={value} " for key, value in recurrence_data_timeout_env(suite["app"], {}, dataset_create_timeout_seconds).items())
         for cell in cells:
             print(f"  {cell['cell_id']}  config={Path(cell['config_path']).name}  overrides={json.dumps(cell['overrides'], sort_keys=True)}" + (f"  name={cell['name']}" if cell["name"] else ""))
-            print(f"    $ {launcher} --up --{suite['app']} --config {suite_dir}/cells/{cell['cell_id']}/experiment.yaml --experiment {cell['cell_id']}")
+            print(f"    $ {up_env}{launcher} --up --{suite['app']} --config {suite_dir}/cells/{cell['cell_id']}/experiment.yaml --experiment {cell['cell_id']}")
             stall_flag = f" --stall-seconds {stall_seconds}" if stall_seconds is not None else ""
             wall_flag = f" --max-wall-seconds {max_wall_seconds}" if max_wall_seconds is not None else ""
-            print(f"    $ {python_bin} {driver} --config …/experiment.yaml --run-dir <RUN_DIR>{stall_flag}{wall_flag} && {launcher} --down <RUN_ID>")
+            dataset_flag = f" --dataset-create-timeout-seconds {dataset_create_timeout_seconds}" if dataset_create_timeout_seconds is not None else ""
+            print(f"    $ {python_bin} {driver} --config …/experiment.yaml --run-dir <RUN_DIR>{stall_flag}{wall_flag}{dataset_flag} && {launcher} --down <RUN_ID>")
         return 0
 
     if args.resume and not suite_dir.is_dir():
@@ -1048,6 +1130,8 @@ def main(argv: "list[str] | None" = None) -> int:
         # let N runs of unusable evidence onto disk. `execute_cell` deliberately never raises,
         # so this cannot live there.
         runtime_envs = {cell_id: runtime_block_env(yaml.safe_load(path.read_text()) or {}, suite["app"]) for cell_id, path in materialised.items()}
+        # W1.5 (F-D5 / F-S9): the dataset budget each recurrence cell's driver will use, for --up.
+        service_envs = {cell_id: recurrence_data_timeout_env(suite["app"], yaml.safe_load(path.read_text()) or {}, dataset_create_timeout_seconds) for cell_id, path in materialised.items()}
         # ...then, under a parallel budget, keep only the thread keys this SUITE actually asked
         # for. The override exists to make PF-3's per-cell width axis expressible, and that
         # argument reaches exactly as far as keys the suite names in its matrix/include. A value
@@ -1089,7 +1173,7 @@ def main(argv: "list[str] | None" = None) -> int:
                 if stop.is_set():
                     break
                 print(f"[suite] {cell['cell_id']}: submitted ({json.dumps(cell['overrides'], sort_keys=True)})", flush=True)
-                futures[pool.submit(execute_cell, cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]])] = cell
+                futures[pool.submit(execute_cell, cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]], dataset_create_timeout_seconds=dataset_create_timeout_seconds, service_env=service_envs[cell["cell_id"]])] = cell
             for future in as_completed(futures):
                 cell = futures[future]
                 row = future.result()
@@ -1101,7 +1185,7 @@ def main(argv: "list[str] | None" = None) -> int:
     else:
         for cell in runnable:
             print(f"[suite] {cell['cell_id']}: running ({json.dumps(cell['overrides'], sort_keys=True)})", flush=True)
-            row = execute_cell(cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]])
+            row = execute_cell(cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]], dataset_create_timeout_seconds=dataset_create_timeout_seconds, service_env=service_envs[cell["cell_id"]])
             _record(cell, row)
             if row["outcome"] != "succeeded":
                 any_failed = True

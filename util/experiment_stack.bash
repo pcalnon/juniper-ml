@@ -112,12 +112,23 @@
 # log_level, log_format or snapshots_dir in the staged config OUTRANKS the env value passed here.
 # The env route is for a run whose YAML sets no such key.
 #
+# RECURRENCE DATA TIMEOUT (W1.5 of the same plan, F-D5 / F-S9): recurrence_up passes
+# JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS -- the service's own juniper-data client timeout
+# (juniper-recurrence#192, default 120 s; 0.5.0 has no such setting and ignores it) -- when, and only
+# when, this launcher's environment sets it, and refuses the leg before `serve` unless it is a plain
+# positive decimal, because ports.json records it as a JSON number. util/experiments/run_suite.py
+# sets it to each recurrence cell's dataset-create budget, so the service does not give up on
+# juniper-data sooner than the driver would; a standalone --up takes it from the operator. It is
+# named like the log knobs (announce line, env/launch.env, ports.json), and a `service:`
+# juniper_data_timeout_seconds key in the staged config outranks it the same way.
+#
 # RECURRENCE LAUNCH RECORD (W1.9 of the same plan, F-D4): once the env preflight has passed,
 # recurrence_up rewrites ports.json with a "recurrence_launch" object: conda_env, cli (the console
 # script `serve` runs), python (the interpreter its shebang names; see console_script_python),
 # model_version (juniper-recurrence-model as that interpreter resolves it, probed WITHOUT -s and
-# from /, as `serve` imports it; null when the probe fails), snapshots_dir, log_level and log_format
-# (null = not passed, so the service default or the YAML applies), and config_file.
+# from /, as `serve` imports it; null when the probe fails), snapshots_dir, log_level, log_format and
+# juniper_data_timeout_seconds (null = not passed, so the service default or the YAML applies), and
+# config_file.
 # util/experiments/run_experiment.py's save_model re-run executes that cli instead of whatever
 # `juniper-recurrence` is first on the driver's PATH, and refuses to run when the cli resolves a
 # different interpreter, or the interpreter a different model version, than the served process.
@@ -647,8 +658,10 @@ json_string_or_null() {
 
 # W1.9: the "recurrence_launch" object ports.json records (RECURRENCE LAUNCH RECORD in the header).
 # An empty argument renders as null: a log var the launcher did not pass, or a probe that failed.
+# W1.5: the optional ninth argument is the data timeout recurrence_up passed, a validated decimal
+# rendered as a JSON number; absent or empty, null.
 recurrence_launch_json() {
-    local conda_env="$1" cli="$2" python="$3" model_version="$4" snapshots_dir="$5" log_level="$6" log_format="$7" config_file="$8"
+    local conda_env="$1" cli="$2" python="$3" model_version="$4" snapshots_dir="$5" log_level="$6" log_format="$7" config_file="$8" data_timeout="${9-}"
     printf '{\n'
     printf '    "conda_env": %s,\n' "$(json_string_or_null "${conda_env}")"
     printf '    "cli": %s,\n' "$(json_string_or_null "${cli}")"
@@ -657,6 +670,7 @@ recurrence_launch_json() {
     printf '    "snapshots_dir": %s,\n' "$(json_string_or_null "${snapshots_dir}")"
     printf '    "log_level": %s,\n' "$(json_string_or_null "${log_level}")"
     printf '    "log_format": %s,\n' "$(json_string_or_null "${log_format}")"
+    printf '    "juniper_data_timeout_seconds": %s,\n' "$(json_number_or_null "${data_timeout}")"
     printf '    "config_file": %s\n' "$(json_string_or_null "${config_file}")"
     printf '  }'
 }
@@ -882,8 +896,11 @@ cascor_up() {
 # Bring-up: juniper-recurrence (console script, plan §6.1)
 ###########################################################################################################################################################################################################
 recurrence_up() {
-    local serve_bin python_bin snapshots_dir config_env="" skip_flag="" log_announce="" model_version="" _lv
-    local -a log_env=()
+    local serve_bin python_bin snapshots_dir config_env="" skip_flag="" log_announce="" data_timeout_announce="" model_version="" _lv
+    local -a log_env=() data_timeout_env=()
+    # W1.5: a plain positive decimal -- what ports.json can carry as a JSON number (no exponent, no
+    # leading zero before the integer part); the second test below rules out an all-zero value.
+    local data_timeout_re='^(0|[1-9][0-9]*)([.][0-9]+)?$'
     # W1.9: what model_version records. util/experiments/run_experiment.py runs the same probe
     # (RECURRENCE_MODEL_VERSION_PROBE) against the save_model re-run's interpreter.
     local model_version_probe='from importlib.metadata import version; print(version("juniper-recurrence-model"))'
@@ -905,9 +922,20 @@ recurrence_up() {
     [[ -n "${CONFIG_PATH}" ]] && config_env="JUNIPER_RECURRENCE_CONFIG_FILE=${RUN_DIR}/config/experiment.yaml "
     [[ "${SKIP_ENV_PREFLIGHT}" == "1" ]] && skip_flag=" --skip"
     banner "juniper-recurrence  ->  http://127.0.0.1:${RECURRENCE_PORT}  (${RECURRENCE_CONDA})"
+    # W1.5 (F-D5 / F-S9): the service's own juniper-data timeout, named only when this launcher's
+    # environment sets it (run_suite.py sets the cell's dataset budget); header: RECURRENCE DATA
+    # TIMEOUT. Refused here, before anything runs, rather than by serve at settings load.
+    if [[ -n "${JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS:-}" ]]; then
+        if [[ ! "${JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS}" =~ ${data_timeout_re} || ! "${JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS}" =~ [1-9] ]]; then
+            log "ERROR: JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS='${JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS}' is not a positive decimal number of seconds (e.g. 300 or 300.5); juniper-recurrence NOT started"
+            return 1
+        fi
+        data_timeout_env=("JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS=${JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS}")
+        data_timeout_announce="${data_timeout_env[0]} "
+    fi
     announce "bash ${ENV_PREFLIGHT} --python ${python_bin}${skip_flag}   # W0.2 recurrence env preflight: a finding refuses the leg; report -> ${LOG_DIR}/launch.log"
     announce "cd / && ${python_bin} -c '${model_version_probe}'   # W1.9 model_version (no -s: serve imports without it); then ports.json gains recurrence_launch (cli=${serve_bin})"
-    announce "cd ${RUN_DIR} && JUNIPER_RECURRENCE_METRICS_ENABLED=true JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${snapshots_dir} JUNIPER_DATA_URL=${DATA_URL} ${log_announce}${config_env}${serve_bin} serve --host 127.0.0.1 --port ${RECURRENCE_PORT}   # nohup -> ${LOG_DIR}/juniper-recurrence.log"
+    announce "cd ${RUN_DIR} && JUNIPER_RECURRENCE_METRICS_ENABLED=true JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${snapshots_dir} JUNIPER_DATA_URL=${DATA_URL} ${log_announce}${data_timeout_announce}${config_env}${serve_bin} serve --host 127.0.0.1 --port ${RECURRENCE_PORT}   # nohup -> ${LOG_DIR}/juniper-recurrence.log"
     if is_dry; then return 0; fi
 
     # See data_up: ``recurrence_up || failed=1`` disables set -e inside this body.
@@ -928,10 +956,10 @@ recurrence_up() {
         "JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${snapshots_dir}" \
         "JUNIPER_DATA_URL=${DATA_URL}" \
         "JUNIPER_RECURRENCE_CONFIG_FILE=${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}" \
-        "${log_env[@]}"
+        "${log_env[@]}" "${data_timeout_env[@]}"
     # W1.9 (F-D4): record the resolved leg for run_experiment.py's save_model re-run. Fail closed: a
     # run that cannot record its launch would silently fall back to the driver's PATH.
-    RECURRENCE_LAUNCH_JSON="$(recurrence_launch_json "${RECURRENCE_CONDA}" "${serve_bin}" "${python_bin}" "${model_version}" "${snapshots_dir}" "${JUNIPER_RECURRENCE_LOG_LEVEL:-}" "${JUNIPER_RECURRENCE_LOG_FORMAT:-}" "${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}")"
+    RECURRENCE_LAUNCH_JSON="$(recurrence_launch_json "${RECURRENCE_CONDA}" "${serve_bin}" "${python_bin}" "${model_version}" "${snapshots_dir}" "${JUNIPER_RECURRENCE_LOG_LEVEL:-}" "${JUNIPER_RECURRENCE_LOG_FORMAT:-}" "${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}" "${JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS:-}")"
     write_ports_json || {
         log_launch "ERROR: could not record the recurrence launch in ${RUN_DIR}/ports.json; serve NOT started."
         return 1
@@ -939,13 +967,14 @@ recurrence_up() {
     if [[ "${CONDA_ACTIVATE}" == "1" ]]; then activate_conda "${RECURRENCE_CONDA}" || return 1; fi
     (
         cd "${RUN_DIR}" || exit 1
-        # `env` adds only the log vars that are set (log_env); it execs nohup, which execs serve.
+        # `env` adds only the log vars and the data timeout that are set (log_env, data_timeout_env);
+        # it execs nohup, which execs serve.
         JUNIPER_RECURRENCE_METRICS_ENABLED=true \
             JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false \
             JUNIPER_RECURRENCE_SNAPSHOTS_DIR="${snapshots_dir}" \
             JUNIPER_DATA_URL="${DATA_URL}" \
             JUNIPER_RECURRENCE_CONFIG_FILE="${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}" \
-            env "${log_env[@]}" nohup "${serve_bin}" serve --host 127.0.0.1 --port "${RECURRENCE_PORT}" >"${LOG_DIR}/juniper-recurrence.log" 2>&1 &
+            env "${log_env[@]}" "${data_timeout_env[@]}" nohup "${serve_bin}" serve --host 127.0.0.1 --port "${RECURRENCE_PORT}" >"${LOG_DIR}/juniper-recurrence.log" 2>&1 &
     )
     # No `$!` here on purpose — F-6.
     wait_for_health "juniper-recurrence" "http://127.0.0.1:${RECURRENCE_PORT}/v1/health/ready" "${HEALTH_TIMEOUT}" "juniper-recurrence serve .*--port ${RECURRENCE_PORT}" || return 1

@@ -1233,6 +1233,14 @@ jobs:
           # is omitted, that a non-string launch field is not coerced, and that a long failure keeps its tail. No
           # live services.
           python3 -m unittest -v tests/test_save_model_recorded_cli_contract.py
+          # tests/test_recurrence_operation_identity_and_dataset_budget.py: W1.5's driver half. POST /v1/datasets is
+          # bounded by dataset_create_timeout_seconds (CLI > YAML outputs > 120 s) and train / predict / crossval by the
+          # wall budget, each independent; an expired dataset budget is timed_out (exit 1) naming the knob, on both
+          # paths. A juniper-data that sleeps 40 s (time scaled 1:100) fails inside a modelled service at the client's
+          # old 30 s default and succeeds at the budget run_suite exports. X-Request-ID goes out on train; operation_id
+          # comes back as expect_operation_id on predict only; a replaced model is refused (degraded); a service with
+          # no usable operation_id is never sent the key. Loopback stub; no live services.
+          python3 -m unittest -v tests/test_recurrence_operation_identity_and_dataset_budget.py
           # tests/test_yamaguchi_edit_target.py: migration step 3, the passphrase-safe
           # TargetURL repoint. A PUT of a new destination against a populated local job
           # makes every remote volume look missing. Pins the refusals that must happen
