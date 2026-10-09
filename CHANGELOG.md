@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`util/ad-hoc/2026-10-08_run_ci_regression_suites.py`, and the flood-3 record's follow-up
+  statuses.**
+  - The script runs exactly CI's hand-maintained regression list locally, one process per suite as
+    CI does. A repo-wide lint suite judges files a change never touched, so "the suites I edited
+    pass" is not the question CI asks.
+  - `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` now records the
+    owner-requested follow-up:
+    - three `ANTHROPIC_API_KEY` secrets added;
+    - the five §4 defects fixed, across nine repos;
+    - the data-client `t` / `dt` check accepted as written;
+    - juniper-service-core 0.7.1, juniper-observability 0.4.1 and juniper-data 0.17.0 cut and parked
+      at the `pypi` gate;
+    - six new open findings.
+
 - **Cursor flood-3 disposition record and its tooling**
   (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, new; 46
   `util/ad-hoc/2026-10-08_*` files and `util/ad-hoc/flood3_canopy_slowlog_plugin.py`, new). How the
