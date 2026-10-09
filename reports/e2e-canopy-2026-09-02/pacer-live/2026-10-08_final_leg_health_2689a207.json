@@ -1,0 +1,1 @@
+{"status":"ok","service":"juniper-canopy","timestamp":1791506022.8774338,"version":"0.6.0","active_connections":0,"training_active":false,"demo_mode":false,"juniper_data_available":true,"backend_status":"ok","backend_status_stale":false,"backend_status_age_seconds":0.225,"git_sha":"2689a2074970f927f0246cb3e3a52a27b4a0491e","build_date":"2026-10-09T00:33:31Z"}

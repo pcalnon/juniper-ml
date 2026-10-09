@@ -1,0 +1,10 @@
+[t=    101ms] canopy http://127.0.0.1:8052 serving {"ok": true, "canopy": "http://127.0.0.1:8052", "git_sha": "2689a2074970f927f0246cb3e3a52a27b4a0491e", "build_date": "2026-10-09T00:33:31Z", "version": "0.6.0", "read_at": "2026-10-09T00:33:48Z"}
+[t=    646ms] navigating to http://127.0.0.1:8052
+[t=    648ms]   serving: {"ok": true, "canopy": "http://127.0.0.1:8052", "git_sha": "2689a2074970f927f0246cb3e3a52a27b4a0491e", "build_date": "2026-10-09T00:33:31Z", "version": "0.6.0", "read_at": "2026-10-09T00:33:49Z"}
+[t=   5998ms]   welcome modal not present/visible
+[t=  12195ms]   modal cleared after 1 attempt(s)
+[t= 126434ms]   initial bar: {"latency-display": "\"Latency: 6ms\"", "top-status-display": "\"Completed \u2014 early stopped\"", "top-epoch-display": "\"76\""}
+[t= 126434ms]   BASELINE wire: {'requests': 12, 'responses': 11, 'latency_s_median': 0.743, 'latency_s_min': 0.434, 'latency_s_max': 3.022, 'latency_samples': 11}  renderer: {'watched_entries': 12, 'executed_entries': 11, 'store_notifications': 6748}  latency-display changes: 11  DOM: {'top-status-display': 'Completed — early stopped', 'top-epoch-display': '76', 'latency-display': 'Latency: 5ms'}
+[t= 126434ms] => BASELINE VERDICT: APPLIES
+[t= 126434ms]   server /api/status: {"is_running": false, "phase": "output", "current_epoch": 76, "hidden_units": 68}
+[t= 126434ms] results -> reports/e2e-canopy-2026-09-02/pacer-live/2026-10-08_status_bar_apply_census_8052_final_2689a207.json
