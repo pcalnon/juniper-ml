@@ -4,21 +4,26 @@ Project     : Juniper
 Sub-Project : juniper-ml
 Application : Yamaguchi backup -- server DB snapshot
 Author      : Paul Calnon
-Version     : 1.0.0
+Version     : 1.2.0 (2026-10-08: no -wal/-shm residue in the destination; see HISTORY)
 License     : MIT License
 
 Capture a consistent copy of the Duplicati *server* database into a path the
 Yamaguchi job actually backs up.
 
-Two databases live in root-only /usr/lib/duplicati/data/, and they have opposite
+Two databases live in the server's data folder -- /home/duplicati/.config/Duplicati/
+since the service-user migration (0700 duplicati; /usr/lib/duplicati/data/ was the
+root server's, abandoned 2026-09-18 and frozen by P0 step 1) -- and they have opposite
 loss profiles (note section 8.19):
 
   BMXWPAOGLP.sqlite       the per-job LOCAL INDEX. "Recreate" rebuilds it from
                           the destination. Slow, not fatal. NOT copied here.
 
   Duplicati-server.sqlite the BRAIN: job definition, 2 sources, 44 filters, 10
-                          settings, the schedule, and the encrypted passphrase.
-                          "Recreate" does NOT restore it. This is what we copy.
+                          settings, the schedule, and the passphrase -- encrypted
+                          under the settings key since 2026-09-18, cleartext before
+                          (design section 5.4; the 09-17/09-18 filesets carry the
+                          cleartext copy that Procedure A0 restores). "Recreate" does
+                          NOT restore it. This is what we copy.
 
 Why sqlite3.backup() and not cp: the server is running and writing. A byte copy
 of a live SQLite file can land mid-transaction and restore as a corrupt DB that
@@ -33,11 +38,25 @@ Destination default: /home/pcalnon/.local/state/duplicati-server-db/
   - so the snapshot rides along in the next backup
 
 NOTE this does NOT solve key escrow, and must not be mistaken for it. The
-passphrase inside this DB is encrypted, and the archive this DB is copied into
-is encrypted with the very key you would be trying to recover -- a circle. Key
-escrow is yamaguchi_key_escrow.py, and it is a separate, independent control.
+passphrase inside this DB is encrypted under the settings key, and the archive this
+DB is copied into is encrypted with the very passphrase you would be trying to
+recover -- a circle. Key escrow is yamaguchi_key_escrow.py, and it is a separate,
+independent control.
 
-Runs as root (the source directory is drwx------ root root).
+Runs as root (the data folder is drwx------ duplicati). Installed by
+util/install_duplicati_service.bash as /usr/local/lib/duplicati/yamaguchi_server_db_snapshot.py
+and executed from there by yamaguchi-server-db-snapshot.service under ProtectSystem=strict
+with ReadWritePaths= on the destination directory (design section 7.7).
+
+HISTORY
+  1.1.0  2026-10-03  the installed copy reads the service user's data folder (P0.5a item 2).
+  1.2.0  2026-10-08  Phase B round-3 fold-in (R3C N-8): the online backup copies a WAL-mode
+                     source's header, so the snapshot was itself WAL-mode, and the read-only
+                     integrity check left two root-owned files (<name>.tmp-wal, <name>.tmp-shm)
+                     in the destination on every run, riding along in the backup. The snapshot is
+                     now switched to journal_mode=DELETE before it is closed -- a self-contained
+                     single file -- and residue of earlier runs is removed. A restored copy in
+                     DELETE mode is an ordinary SQLite database; the server sets its own mode.
 """
 
 from __future__ import annotations
@@ -49,7 +68,7 @@ import sqlite3
 import sys
 from datetime import datetime, timezone
 
-SRC = "/usr/lib/duplicati/data/Duplicati-server.sqlite"
+SRC = "/home/duplicati/.config/Duplicati/Duplicati-server.sqlite"
 DEST_DIR = "/home/pcalnon/.local/state/duplicati-server-db"
 OWNER = "pcalnon"
 
@@ -73,10 +92,10 @@ def main():
     stamp = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%dT%H:%M:%S%z")
     print(f"== Duplicati server-DB snapshot at {stamp}")
 
-    # Distinguish "absent" from "not root". /usr/lib/duplicati/data is
-    # drwx------ root root, so an unprivileged os.path.isfile() on a DB that is
-    # perfectly present returns False -- reporting that as "missing" would send
-    # an operator hunting for a deleted file instead of prefixing sudo.
+    # Distinguish "absent" from "not root". The data folder is drwx------
+    # duplicati, so an unprivileged os.path.isfile() on a DB that is perfectly
+    # present returns False -- reporting that as "missing" would send an
+    # operator hunting for a deleted file instead of prefixing sudo.
     try:
         src_size = os.stat(args.src).st_size
     except PermissionError:
@@ -107,8 +126,11 @@ def main():
     os.chmod(args.dest_dir, 0o700)
 
     tmp = dest + ".tmp"
-    if os.path.exists(tmp):
-        os.unlink(tmp)
+    # The snapshot and its side files, including the -wal/-shm residue 1.1.0 left behind.
+    stale = [tmp, tmp + "-wal", tmp + "-shm", tmp + "-journal", dest + "-wal", dest + "-shm"]
+    for path in stale:
+        if os.path.exists(path):
+            os.unlink(path)
 
     # Online backup API: consistent snapshot of a live, actively-written DB.
     src_conn = sqlite3.connect(f"file:{args.src}?mode=ro", uri=True)
@@ -116,6 +138,9 @@ def main():
         dst_conn = sqlite3.connect(tmp)
         try:
             src_conn.backup(dst_conn)
+            # The backup copies the source's header, WAL flag included; a WAL-mode snapshot needs
+            # -wal/-shm beside it whenever it is opened. DELETE mode makes it one file (R3C N-8).
+            dst_conn.execute("PRAGMA journal_mode=DELETE")
         finally:
             dst_conn.close()
     finally:
@@ -130,6 +155,10 @@ def main():
             "SELECT count(*) FROM sqlite_master WHERE type='table'").fetchone()[0]
     finally:
         check.close()
+
+    for path in stale[1:4]:
+        if os.path.exists(path):
+            os.unlink(path)
 
     if result != "ok":
         os.unlink(tmp)

@@ -636,6 +636,34 @@ jobs:
           # (#1281). util/ad-hoc is not pre-commit-lint-gated, so this unittest is
           # the gate. Distinct from the scheduled-backup lane suite.
           python3 -m unittest -v tests/test_duplicati_recovery_guards.py
+          # tests/test_duplicati_wrapper_contract.py: hermetic gate for the service
+          # lane's contract files (2026-10-03 assessment, B5): the wrapper refuses a
+          # name off its allow-list with exit 78 (the live host's SETTINGS_ENCRYPTION_KEY_OLD
+          # line), the shipped env contract passes the wrapper and carries no commented
+          # assignment, the installer's never-blessed first install runs to the end
+          # (I-36) and its drift gate refuses/allows as ruled (D-6), and the two P0
+          # recovery helpers' --dry-run gates refuse a group-readable secret file or a
+          # non-0700 data folder. Runs no Duplicati binary (DUPLICATI_SERVER=/bin/true).
+          python3 -m unittest -v tests/test_duplicati_wrapper_contract.py
+          # tests/test_duplicati_installer_real_path.py: the installer's REAL path
+          # (no --dry-run) as non-root against a scratch prefix with PATH stubs --
+          # drift copy-aside keeps the bytes, never-blessed files are copied aside,
+          # an env file the wrapper refuses stops the install -- and the server-DB
+          # snapshot leaves no -wal/-shm (Phase B round 3, R3C D-5/N-7/N-8).
+          python3 -m unittest -v tests/test_duplicati_installer_real_path.py
+          # tests/test_backup_rekey_real_path.py: the re-key's NON-dry-run path and every
+          # EXIT-trap state (round 3, R3C D-5), against PATH stubs and a fake server on a
+          # scratch database; the real exit gate judges the copy. Touches no /etc, /run or unit.
+          python3 -m unittest -v tests/test_backup_rekey_real_path.py
+          # tests/test_a0_restore_scripts.py: Procedure A0's two scripts hand duplicati-cli
+          # a COPY of the frozen job index with its -wal/-journal beside it under the copy's
+          # name (round 5, R5A F22/F23); passphrase by environment only. duplicati-cli is a
+          # PATH stub; no Duplicati binary, /usr/lib/duplicati or /mnt/Backups is touched.
+          python3 -m unittest -v tests/test_a0_restore_scripts.py
+          # tests/test_clear_stop_backup_design.py: hermetic gate for the backup design's
+          # clearing script: committed design is current, write path idempotent, stray-fence /
+          # over-width / FIXFWD_PR / reworded-marker / changed-STOP refusals (round 3, R3C D-5).
+          python3 -m unittest -v tests/test_clear_stop_backup_design.py
           # tests/test_lockfile_update_workflow.py: structural gate for the weekly
           # lockfile-update.yml refresh — juniper-generate-dep-docs (not the deleted
           # inline dep-docs shell script), SHA-pinned create-pull-request, branch/labels/

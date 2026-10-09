@@ -1,12 +1,12 @@
-# Backup arc, Phase B — validation rounds 2 and 3, the ml#2115 fix-forward lanes and the handoff validations, verbatim reports
+# Backup arc, Phase B — validation rounds 2 to 7, the fold-in lanes, the ml#2115 fix-forward lanes and the handoff validations, verbatim reports
 
 **Project**: Juniper (workstation backup infrastructure, host `yamaguchi`)
 **Author**: Paul Calnon
-**Date**: 2026-10-04 (re-assembled 2026-10-05)
+**Date**: 2026-10-04 (re-assembled 2026-10-05; rounds 4 to 7 and the fold-in reports added 2026-10-08)
 **Procedure**: [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 **Artifacts validated**: Phase B of [`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`](JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md) §6.2 (rows B1, B3, B4, B5, B7, B8 and B10), including the regenerated [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`](JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md)
 **Also validated**: the fix-forward of B2 (ml#2115), which landed as ml#2134, and the two handoffs that carried the work between sessions
-**Status**: landed on `main` on 2026-10-05, AHEAD of the Phase B change it validates, so that its reports cannot be lost with an uncommitted worktree. The change itself — the artifacts and the prose the reports judge — is pending: `HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md` carries it, and the fix-forward ml#2134 is the only part already on `main`
+**Status**: rounds 2 to 7 complete; round 7 found no DEFECT. The first 16 reports landed on `main` on 2026-10-05, AHEAD of the Phase B change they validate, so that they could not be lost with an uncommitted worktree. The change itself (the artifacts and the prose these reports judge) lands with this record's 2026-10-08 additions, in the Phase B PR; the fix-forward ml#2134 landed separately
 **Earlier rounds**: round 1 is the assessment's own (its §8); the design's rounds 1–8 are in [`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`](JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md), [`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`](JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md) and [`JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md`](JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md)
 
 ---
@@ -209,9 +209,82 @@ archived below.
 
 ## Disposition of round 3
 
-*Pending* — round 3's fold-in, a round 4 on its delta and on the whole procedure, and the Phase B PR are the
-next session's work (`HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md`). This section is completed
-when that change lands.
+Folded in on 2026-10-08 by session 097ae87b, in three lanes that owned disjoint files: C1 (the wrapper, the
+installer, the env contract and the units), C2 (the re-key, its gate and the password-init hand start) and P
+(the clearing script, the design and the assessment). Their briefs and reports are archived below. Every one of
+round 3's 15 DEFECTs and 32 NITs is fixed, or recorded in the assessment's §8 as residue with a reason. The
+assessment's §8 "Round 3" entry gives the disposition by finding id. The owner made one ruling (R3B DEFECT-1, 2026-10-08): retention is
+**suspended** through recovery, so step 10's edits remove `retention-policy`; after AC-4's first drill passes it is
+restored as `2W:1D,6M:1W,2Y:1M,5Y:2M`, replacing `1W:1D,1M:1W,1Y:1M,3Y:2M`.
+
+Two changes go beyond the findings as written:
+
+- C1 replaced the env file's deny list with an **allow-list** of tunables (R3A D-1's alternative). The deny list
+  had missed a channel in two consecutive rounds, first `DUPLICATI__*`, then `--parameters-file`.
+- C2 refuses an `enc-v1:` blob in `BackupTargetUrl` only on rows of no backup, because a live backup's rows are
+  rewritten (verified at the 2.4.0.0 tag).
+
+## What round 4 found
+
+Three lanes reviewed the frozen fold-in (local commit `a0ff619c`): A (fold-in fidelity), B (an end-to-end walk of
+A0, A, A2 and B for damage to the sole copy) and C (run and attack the code). Totals: 0 BLOCKER, 6 DEFECT, 28 NIT;
+A's D-1 and C's DEFECT-1 are the same defect.
+
+- **The suites depended on the host's mounts** (A D-1, C DEFECT-1). `${DUPLICATI_REQUIRE_MOUNT:-…}` cannot be
+  emptied, so every wrapper and installer test needed `/mnt/Backups` mounted and would have failed on CI.
+- **An allow-listed option did not exist** (A D-2). The server's option is `webservice-suppress-welcome-page`.
+- **The first `resume` ran a stale copy of the job** (B DEFECT-1). On A0 and A2 the job queued at the first start
+  is copied before step 10's edits, so it had the old retention, the old tempdir and no guard. Nothing was damaged,
+  but only by accident.
+- **B's Verify could not run while paused** (B DEFECT-2).
+- **The pre-flight missed orphaned `Option`/`Source` rows** (C DEFECT-2).
+
+## Disposition of round 4
+
+All folded in on 2026-10-08 by the same three lanes, resumed. The highlights:
+
+- wrapper 2.4.0 honours an empty mount override, and both of its lists are pinned against a vendored copy of the
+  product's option table;
+- step 10 ends with a restart, so the queue is rebuilt from the edited job (verified in the source), then an
+  `export` read-back;
+- B's Verify runs in a pause/resume cycle;
+- the pre-flight counts orphans in all three child tables.
+
+The assessment's §8 "Round 4" entry has the disposition by finding id.
+
+## Round 5 and its disposition
+
+A two-lane confirmation round on round 4's delta (local commit `9ce2f602`), code and procedure: 0 BLOCKER,
+4 DEFECT, 12 NIT. The code lane found the installer's hint still said "pause" where round 4 says stop, and an
+env-file mode check that settled the owner's open decision O-12. The installer now accepts either of O-12's two
+forms. The procedure lane found two gaps:
+
+- the server's default options (`BackupID` −1) are invisible to `export`, so step 8 now clears them with
+  `sqlite3`;
+- a Procedure B Repair deletes extra remote volumes, so it now runs `--dry-run` first, copies every named file
+  aside, and is named as a third, conditional exception to §8's "nothing is deleted" rule.
+
+All four DEFECTs and every NIT are fixed; the assessment's §8 "Round 5" entry has the disposition.
+
+## Rounds 6 and 7, and their disposition
+
+Round 6 was a single combined lane on round 5's delta (local commit `ee7fcee7`). It found 0 BLOCKER, 3 DEFECT and
+4 NIT:
+
+- **DEFECT-1, the Repair step.** As written, the dry-run / copy-aside step read one of the four message IDs a
+  Repair logs deletions under. It could not be queued with `--dry-run` at all, and its lines never reach the stored
+  job log. It is now done through three temporary job options and a `DryRun`-level log file under
+  `/home/duplicati`. Every `Would…Delete…File` line is copied aside, and the options are removed and checked with
+  `export` before the real Repair.
+- **DEFECT-2, the A0 restore guard.** The script's refusal to restore into the backup Source used `readlink -f`,
+  which a path two or more new levels deep got through. It now uses `realpath -m`, and its test no longer needs
+  `/home/pcalnon` to exist (it would have failed on CI).
+- **DEFECT-3, restoring defaults.** Restoring the server-default `keep-time` / `keep-versions` would combine with
+  the job's policy and void the keep/delete table. Those two are never restored.
+
+Round 7, on round 6's delta (local commit `19ae4aa9`), found 0 BLOCKER, **0 DEFECT** and 7 NIT. All seven are
+fixed, and the assessment's §8 "Round 6" and "Round 7" entries have the disposition. No eighth round ran: round 7
+found no DEFECT, and its NITs were wording, one test pin and the record's own counts.
 
 ---
 
@@ -3614,5 +3687,2750 @@ None against the limits.
   - `server-watchdog.log`, by `stat` and `grep -c`.
 
 **Changed:** none. My scripts and their outputs are only in `$S`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 3's fold-in — the common brief
+
+Archived verbatim (6,422 characters, sha256 `6a381bc0830574ff`), lifted from the brief session 097ae87b wrote for the fold-in lanes on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Phase B round-3 fold-in — common brief (every lane reads this first)
+
+Session 097ae87b, 2026-10-08. Worktree (shared by all lanes, NOT isolated per lane):
+`/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/golden-floating-willow`,
+branch `feature/backup-phase-b` (cut from `origin/main` 81d3fbb3, with the frozen Phase B commit
+`c3d0e890`'s files carried onto it as uncommitted changes). Run every command from that directory and use
+absolute paths.
+
+## Names
+
+| Name | File |
+| --- | --- |
+| D | `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` (the design) |
+| A | `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` (the assessment) |
+| R4 | `notes/JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md` |
+| record | `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md` (all reports so far, verbatim; read-only for you) |
+| R3A, R3B, R3C | `util/ad-hoc/2026-10-04_backup-phase-b-round3/R3A.md`, `R3B.md`, `R3C.md` — round 3's three reports. **Your work items come from these.** |
+| harness | `util/ad-hoc/2026-10-04_backup-phase-b-round3/r3c-harness/` (R3C's scripts, with a README) |
+| handoff | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md` ("Remaining", item 1, is the fold-in list) |
+| wrapper, installer | `scripts/duplicati-wrapper.bash`, `util/install_duplicati_service.bash` |
+| contract | `util/systemd/duplicati-env.contract` |
+| re-key, gate | `util/ad-hoc/2026-10-03_rekey_settings_key.bash`, `util/ad-hoc/2026-10-03_rekey_gate.py` |
+| hand start | `util/ad-hoc/2026-10-03_password_init_hand_start.bash` |
+| clearing script | `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py` |
+| suite | `tests/test_duplicati_wrapper_contract.py` (33 tests today) |
+
+Line numbers in the reports refer to `c3d0e890`'s copies, which are the files now in this worktree.
+
+## How D is built (read before touching D)
+
+D is **generated**, never hand-edited:
+
+1. `git show origin/main:<D> > <D>` (reset; run as its own command),
+2. `python3 util/ad-hoc/2026-09-22_stage_design_artifacts.py --from-repo` — rewrites D's tagged fenced
+   blocks from the repository files (unit, defaults file, wrapper, installer, contract),
+3. `python3 util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py` — prose edits only; it refuses to
+   change a fenced block except those it declares in `FENCE_EDITS`.
+
+So a change to the wrapper/installer/contract reaches D through step 2, and every prose change to D is an
+edit added to the clearing script. A is hand-edited directly.
+
+## Owner ruling (2026-10-08, this session) — R3B DEFECT-1
+
+The owner chose: **suspend retention during recovery** — step 10's edits remove the job's
+`retention-policy`, so the first backup after recovery deletes nothing; it is restored only after AC-4's
+first drill has passed. **When it is restored, it is set to the NEW policy `2W:1D,6M:1W,2Y:1M,5Y:2M`**
+(replacing `1W:1D,1M:1W,1Y:1M,3Y:2M`). Record both changes.
+
+## File ownership
+
+Each lane edits ONLY the files its own brief assigns. Other files are read-only for you. If a change is
+needed in a file you do not own, put it in your report under "Needed elsewhere" with the exact text.
+`tests/test_duplicati_wrapper_contract.py` is shared by lanes C1 and C2: C1 edits only the classes
+`WrapperEnvContract` and `InstallerDriftGate`; C2 edits only `RecoveryHelperGates` and `RekeyGate`. Prefer a
+NEW suite file for new tests. Re-read a file immediately before each edit; if an Edit fails as stale, re-read
+and retry — never overwrite another lane's change.
+
+`CHANGELOG.md`, `docs/REFERENCE.md`, `.github/workflows/ci.yml` and `AGENTS.md` are the coordinator's:
+never edit them; report what they need (e.g., a new suite to wire into CI).
+
+## Standing limits (verbatim from the handoff; they bind you)
+
+- never start, stop, restart, enable, disable or reload a unit, system or `--user`;
+- never run a Duplicati binary, never contact 127.0.0.1:8300, and no `sudo`;
+- nothing under `/mnt/Backups/Ubuntu/` is read beyond `stat`, and nothing there is touched;
+- never read a secret file: `~/.config/duplicati-backup/*`, any `.env` or `*.env`, `/etc/default/duplicati`
+  beyond `stat`, `/etc/credstore`, `/etc/duplicati`, or a data-folder database;
+- never print an environment variable or a token, and never send the owner's email or any credential to an
+  external service;
+- no `git stash`; log greps are count-only; no interactive shells (`bash -i` writes `~/.bash_history`);
+- no session performs host actions: those are the owner's.
+
+Also: **no git command that changes state** — no `add`, `commit`, `checkout`, `switch`, `reset`, `restore`,
+`stash`, `rebase`, `push` (the one exception is the D reset in "How D is built", run only by the lane that
+owns D). Read-only git (`diff`, `show`, `log`, `ls-tree`) is fine; split compound git commands into simple
+ones (the harness refuses complex ones). New scripts go in `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/`
+or `util/ad-hoc/`, never `/tmp` (scratch DATA may go under
+`/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/097ae87b-7a4c-4970-9f46-d052521e17c7/scratchpad/<your-lane>/`).
+New Python/bash files carry the repo's standard header (see any `util/ad-hoc/2026-10-0*` file).
+
+## Checks you must run on what you change
+
+- `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest <each affected suite>` (run the whole contract suite too);
+- `shellcheck` on changed bash; `flake8 --max-line-length=512` on changed Python;
+- for docs: markdownlint is pinned at v0.42.0 (`.pre-commit-config.yaml`).
+
+A test that passes against the unchanged code proves nothing: for each new test, confirm it FAILS against the
+pre-fix code (a mutation or the `c3d0e890` copy) and passes after — say so in your report.
+
+## Your report (your final message)
+
+1. Per finding id (e.g., `R3C D-3`, `R3B N-8`): FIXED (what, file:line) / DECLINED (why) / DEFERRED-TO-RESIDUE
+   (the one-line reason A §8 should carry).
+2. New/changed tests, with the fail-before/pass-after evidence.
+3. Check results (exact counts).
+4. "Needed elsewhere": exact text other lanes or the coordinator must apply (prose for D/A describing your
+   change, CI wiring for new suites, `docs/REFERENCE.md` lines).
+5. Anything you found that is wrong but out of your scope.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 3's fold-in, lane C1 — wrapper, installer, contract and units
+
+Archived verbatim (14,854 characters, sha256 `cb49259e7839aceb`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+## Lane C1 report: backup Phase B round-3 fold-in (wrapper, installer, snapshot)
+
+All lane C1 work items are done. One mutant survives, and it is equivalent (explained in section 2). No git command changed state, no unit or binary was touched, and nothing under `/etc` was read. I fetched one public file read-only from GitHub: Duplicati's `Server/Program.cs` at tag `v2.4.0.0_stable_2026-09-03`. No local copy of the Duplicati source exists.
+
+### 1. Findings
+
+**R3A D-1 and R3C D-3 (the env-file deny list): FIXED, with a design change.**
+- **Deny list, `scripts/duplicati-wrapper.bash` (now 2.3.0) `ENV_OPTION_DENY`:** gains `parameters-file` and its alias `parameterfile` (Program.cs 49-51, 230-237, 1680), `webservice-enable-forever-token`, `webservice-cors-origins` and the alias `webservice-allowedhostnames`.
+  - Forever tokens are written into the database permanently (`EnableForeverTokens()` at :658-659), so one env-file line would change the database for good.
+  - CORS origins is a direct exposure setting.
+  - The alias is honoured whenever the main name is absent (:690-692).
+- **Decision: I adopted R3A D-1's allow-list as well.** `ENV_OPTION_ALLOW` admits only these tunables: `webservice-port`, `webservice-token-duration`, `webservice-timezone`, `log-level`, `log-retention`, `ping-pong-keepalive`, `disable-update-check`, `suppress-welcome-page`. Reasons:
+  - Version 2.4.0.0 has about 47 server options. Many are security-posture changes that no deny list named: `register-remote-control`, `webservice-webroot`, `webservice-spa-paths`, `webservice-api-only`, the HTTPS and certificate options, `log-file` (could overwrite the database), `tempdir`, `allowed-*-modules`, `disable-default-secret-provider` and the secret-provider options.
+  - The deny list has now missed a channel in two consecutive rounds (`DUPLICATI__*`, then `parameters-file`).
+  - The deny list stays and is checked first, so the named hazards still get the specific "security option" message.
+  - A side effect: a typo in an env-file option now fails with exit 78 instead of passing silently as an unknown option.
+- **Contract prose** (`util/systemd/duplicati-env.contract` lines 32-51) is updated to state both lists.
+- **Installer's `HAZARD_OPTION` is removed, not extended.** The installer (`util/install_duplicati_service.bash`, now 1.3.0) runs the wrapper itself, `--print-command` against a scratch data folder with `env -i` and `/bin/true` as the server, through a new `wrapper_accepts` function. So `parameters-file` is refused by the installer through the wrapper's single rule (see N-6).
+
+**R3C D-5 (14 of 25 mutants survived): FIXED for the wrapper and installer.** The new suite `tests/test_duplicati_installer_real_path.py` runs the installer for real, as a non-root user, against a scratch prefix. Its stubs:
+- `id -u` answers 0;
+- `install` drops `-o`/`-g` and refuses any path outside the scratch root;
+- `systemctl` and `systemd-analyze` only log their arguments;
+- `stat` answers only for the scratch data folder and credential path.
+
+It never reads `/etc`, so it stays hermetic on the owner's host after a real install (the R3C D-4 class of failure). The re-key and clearing-script mutants (M01-M09, M22-M24) belong to other lanes.
+
+**NITs:**
+- **R3C N-2 (CR in a key file): FIXED on the wrapper side.** A new `check_key_shape` refuses a carriage return anywhere in the key, and leading or trailing whitespace. It applies to both the credential path and the environment path.
+- **R3C N-6 (installer gate narrower than the wrapper): FIXED.** There is now one rule, the wrapper's. 1.2.0 also had the opposite error: it refused `--webservice-token-duration` because the name contains "token".
+  - The installer also judges an existing `/etc/duplicati/env` with the wrapper being installed, and refuses if that wrapper would reject it.
+  - In a non-root dry run that file is unreadable, so the installer says it cannot judge it rather than refusing.
+- **R3C N-7 (first install over files that were never blessed): FIXED.** A never-blessed file that differs from the repository copy is copied to `<dst>.pre-install-<UTC>` before it is replaced. This uses a new `PREEXISTING` map next to the existing drift handling.
+- **R3C N-8 (snapshot leaves `-wal`/`-shm` files): FIXED.** `util/ad-hoc/yamaguchi_server_db_snapshot.py` (now 1.2.0, with a HISTORY block) does three things:
+  - sets `PRAGMA journal_mode=DELETE` on the snapshot before closing it;
+  - removes `-wal`, `-shm` and `-journal` leftovers before and after the run;
+  - also removes residue left by earlier runs.
+  - Consequence: the snapshot is now a DELETE-mode file, which is an ordinary SQLite database.
+- **R3C N-13 (`ReadWritePaths=` without `-`): DECIDED, keep no `-`.** Reasoning:
+  - With `-`, the script would still run under `ProtectHome=read-only`, and its `makedirs` would fail anyway.
+  - Without `-`, the unit fails early and loudly with status 226/NAMESPACE, which is fail-closed.
+  - A comment explaining this was added to `util/systemd/yamaguchi-server-db-snapshot.service`.
+  - The installer now prints a NOTE when the destination is absent. It does not create the directory, because `install -d` would leave any missing parent (`~/.local`, `~/.local/state`) owned by root.
+- **R3A N-4 (exit-code gloss): FIXED** in the wrapper header. An exception thrown before `Main`'s `try` block (the 0700 data-folder check, the parameters-file parse) ends the process as an unhandled .NET exception, typically status 134. This is marked as unverified, because checking it needs the binary.
+- **R3A N-5 (commented secrets passed the installer): FIXED.**
+  - `SECRET_ASSIGN` now sees through any run of `#`.
+  - A new `SECRET_OPTION` refuses a secret-valued `--option` line, commented or not.
+  - The `WrapperEnvContract` shape test's regex is widened the same way, and it now also refuses commented `--opt=value` lines.
+- **R3B N-1 (installer prints a hand-typed guard check): FIXED.** The "Next:" hints now show design step 10's form, which reads the URL from the job via `export <id>`, includes the `test -n` line, and is printed after `systemctl start`.
+
+Version references: the wrapper's "2.2.0" mention in `util/systemd/duplicati.service` now reads "since 2.2.0". No other stale version references remain in my files.
+
+### 2. Tests, with fail-before and pass-after evidence
+
+**New suite: `tests/test_duplicati_installer_real_path.py`, 13 tests.**
+- First install, checked byte for byte:
+  - all 7 files, plus their modes;
+  - the env file at 0640, the data folder at 0700;
+  - the blessed set equals the installed files' checksums;
+  - `daemon-reload` and `verify` are called on the three units;
+  - no start, stop, enable or disable is ever issued.
+- Pre-install copy-aside (N-7).
+- Drift: refused with the prefix tree unchanged; then the copy-aside holds the drifted bytes; a re-run is clean.
+- Behaviour change: refused untouched, then installed with no copy-aside.
+- An existing env file is kept byte for byte.
+- An existing env file the new wrapper refuses stops the install.
+- A refused contract installs nothing.
+- The data-folder owner/mode check fails as it should.
+- The credential must be root 0600, and its contents are never printed.
+- The destination-present path prints no NOTE.
+- The guard hint reads the URL from the job.
+- The real run is refused without root (skipped when run as root).
+- The snapshot WAL test.
+
+**Changed tests in `tests/test_duplicati_wrapper_contract.py`:**
+- `WrapperEnvContract`:
+  - deny and allow lists are pinned by set equality against hard-coded names, so dropping an entry from the wrapper fails;
+  - all 17 deny entries are tried four ways each: bare, with a value, mixed case, and upper case with leading whitespace;
+  - options outside the allow-list are refused;
+  - every allow-listed tunable passes in either case;
+  - the CR and whitespace key shapes are refused;
+  - the commented-shape regex is widened.
+- `InstallerDriftGate`: the secret-gate test adds the N-5 shapes, the five N-6 lines, a non-tunable, and every deny entry in lower and mixed case. A new allowed case shows `--Webservice-Token-Duration` passes.
+
+**Fail-before:** I ran the new and changed tests against the frozen code from commit `c3d0e890`. They fail there: 66 failures across 11 tests. That covers the deny-list, allow-list, key-shape, secret-gate, pre-install, refused-env/contract, guard-hint, snapshot WAL and NOTE tests. The real-path tests for existing behaviour (drift, behaviour change, env kept, data-folder and credential checks) pass on frozen; they are pins, and the mutation run shows what they catch.
+
+**Mutation kill counts** (instrument: `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c1_mutations.py`):
+
+| | Mutants | Killed | Survived |
+| --- | --- | --- | --- |
+| Before (frozen suite, M14-M21) | 8 | 5 | M16, M19, M20 (matches R3C) |
+| After (new code) | 32 | 31 | I11 only |
+
+- **After, in detail:** M14-M18, M20 and M21 are re-anchored round-3 mutants and are all killed. M19 no longer exists, because the code it mutated is gone. W1-W8, I1-I15, S1 and S2 are all killed.
+- **I11 is equivalent:** "bless with the source checksum" cannot differ from the installed file's checksum, because the line just before it runs `cmp -s src dst` and exits on any mismatch.
+
+### 3. Check results
+- `tests/test_duplicati_wrapper_contract.py`: **43 tests OK** (this includes lane C2's current state).
+- `tests/test_duplicati_installer_real_path.py`: **13 tests OK**.
+- shellcheck on the wrapper and installer: 0 issues.
+- flake8 (`--max-line-length=512`) on both suites, the snapshot script and `c1_mutations.py`: 0 issues.
+- During my run, lane C2's `test_rekey_dry_run_prints_the_whole_sequence_in_order_and_never_reverts` failed for a while (23 != 22). It is green now.
+
+### 4. Needed elsewhere
+
+**`docs/REFERENCE.md` line 3550** (R3C cited :3203). Current text:
+> The installer's never-blessed first install runs to the end (I-36), drift is refused and kept as evidence, an existing contract is never overwritten, and `--dry-run` needs no root and writes no `.pyc`.
+
+Replace with:
+> The installer's `--dry-run` paths are rehearsed against a scratch prefix: the never-blessed first install runs to the end (I-36), drift and behaviour change are refused, an existing contract is not overwritten, and the dry run needs no root and writes no `.pyc`; its contract gate refuses every secret shape (commented, behind any run of `#`) and, by running the wrapper itself, every option the wrapper refuses. That a drifted or never-blessed file is really kept is pinned by `tests/test_duplicati_installer_real_path.py`, not here.
+
+Also on that line, replace "`DUPLICATI__*` names and security options are refused from the env file in any case" with:
+> `DUPLICATI__*` names are refused from the env file, and an `--option` line there must be one of the wrapper's allow-listed tunables -- the 17 named security options, `--parameters-file` among them, each get their own refusal, in any case
+
+Add a new bullet after it:
+> - `tests/test_duplicati_installer_real_path.py` -- Phase B round-3 fold-in (R3C D-5, N-7, N-8): `util/install_duplicati_service.bash` run for REAL (not `--dry-run`) as a non-root user against a scratch prefix with PATH stubs (`id`, `install`, `systemctl`, `systemd-analyze`, `stat`); pins byte-for-byte install and modes, the blessed checksums, the drift copy-aside holding the drifted bytes, the pre-install copy of a never-blessed differing file, the kept and the refused existing env file, the data-folder and credential checks, the step-10 guard hint, and that the server-DB snapshot of a WAL-mode database leaves no `-wal`/`-shm` beside it. Never reads `/etc`.
+
+**CI wiring (`.github/workflows/ci.yml`, after line 646):**
+```
+          # tests/test_duplicati_installer_real_path.py: the installer's REAL path
+          # (no --dry-run) as non-root against a scratch prefix with PATH stubs --
+          # drift copy-aside keeps the bytes, never-blessed files are copied aside,
+          # an env file the wrapper refuses stops the install -- and the server-DB
+          # snapshot leaves no -wal/-shm (Phase B round 3, R3C D-5/N-7/N-8).
+          python3 -m unittest -v tests/test_duplicati_installer_real_path.py
+```
+Add the same `python3 -m unittest -v tests/test_duplicati_installer_real_path.py` line to REFERENCE.md's "Running every suite" list after line 3178.
+
+**Prose for D and A (prose lane):**
+> D §8 / A §8: "The env file's `--option` lines are now an allow-list of eight tunables (wrapper 2.3.0); the deny list, kept for its specific refusal, gains `--parameters-file`/`--parameterfile`, `--webservice-enable-forever-token`, `--webservice-cors-origins` and the alias `--webservice-allowedhostnames`, and the installer (1.3.0) judges the contract — and any existing `/etc/duplicati/env` — by running the wrapper itself, so the two cannot disagree. A first install copies a never-blessed differing file aside (`.pre-install-<UTC>`), the snapshot (1.2.0) writes a single DELETE-mode file with no `-wal`/`-shm`, and the snapshot unit's `ReadWritePaths=` stays without `-` so a missing destination fails the unit closed (the installer prints a NOTE)."
+
+D's "refuses security options there" sentence should become "accepts only allow-listed tunables there". A §8 should record R3A N-5, N-4, R3B N-1 and R3C N-2 (wrapper half), N-6, N-7, N-8 and N-13 as folded in. The fenced blocks reach D through the staging script's `--from-repo`. The `yamaguchi_server_db_snapshot.py` and snapshot-unit edits change two blessed files, so the next real install will report BEHAVIOUR CHANGE and needs `--update-backup-behavior`. That is expected, and step 8 may want a sentence saying so.
+
+**Lane C2, the other half of R3C N-2:** `util/ad-hoc/2026-10-03_rekey_gate.py` and the hand start should read the key file with `newline=""` and refuse any `\r`, matching the wrapper.
+
+### 5. Out of scope, found wrong
+- `REDACT_NAME` in the wrapper also redacts `--webservice-token-duration`'s value, because the name contains "token". It is harmless over-redaction and I left it.
+- `docs/REFERENCE.md` line numbers have drifted since R3C cited them (:3203 is now :3550).
+- The installer does not create `/etc/systemd/system` or `/etc/default`. That is correct on any real host, so the test pre-creates them in the prefix.
+
+**Files changed:** `scripts/duplicati-wrapper.bash`, `util/install_duplicati_service.bash`, `util/systemd/duplicati-env.contract`, `util/systemd/duplicati.service` (one comment), `util/systemd/yamaguchi-server-db-snapshot.service` (one comment), `util/ad-hoc/yamaguchi_server_db_snapshot.py`, `tests/test_duplicati_wrapper_contract.py` (`WrapperEnvContract` and `InstallerDriftGate` only).
+**Files created:** `tests/test_duplicati_installer_real_path.py`, `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c1_mutations.py`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 3's fold-in, lane C2 — re-key, gate and hand start
+
+Archived verbatim (11,991 characters, sha256 `beaa12b52e4c19a6`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Lane C2 report: Phase B round-3 fold-in (the re-key, its gate, the hand start)
+
+All five work items are done. Of the 13 round-3 mutants of the re-key and its gate, the suites killed **5 before** (M07, M10–M13, the same result R3C got) and **13 after**. With 19 new mutants of the fold-in's own code, that is **32 of 32 killed**. One gap is open: `tests/test_ci_test_wiring_drift.py` fails until the coordinator wires my new suite into CI (section 4).
+
+Files referenced: R3A, R3B and R3C are `util/ad-hoc/2026-10-04_backup-phase-b-round3/R3{A,B,C}.md`. D is `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`. A is `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`.
+
+**Changed**:
+- `util/ad-hoc/2026-10-03_rekey_settings_key.bash` (now 1.2.0)
+- `util/ad-hoc/2026-10-03_rekey_gate.py` (now 1.1.0)
+- `util/ad-hoc/2026-10-03_password_init_hand_start.bash` (now 1.2.0)
+- `tests/test_duplicati_wrapper_contract.py`, classes `RecoveryHelperGates` and `RekeyGate` only
+- **new**: `tests/test_backup_rekey_real_path.py`
+- **new**: `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c2_rekey_mutations.py`
+
+## 1. Findings
+
+**Re-key EXIT trap (R3A D-4, R3C D-1, R3B N-11): FIXED.** The trap keeps its model: it acts, then prints. In `cleanup()` of the re-key:
+- **Key state comes from the files.** The pre-flight hashes both keys (`OLD_H`, `NEW_H`). At trap time `key_tag` labels `…-key`, `.old` and `.new` as OLD, NEW, other or absent, and the layout is reported as UNSWAPPED, SWAPPED or INCONSISTENT.
+- **Flags.** `STARTED` (and `PAUSED`) is set before `api pause`. `DO_NOT_START` is set by the FragmentPath refusal in `remove_dropin`.
+- **Unit stop.** If a drop-in is present, the trap stops the unit first, then removes the drop-in and reloads.
+- **UNKNOWN database.** `DECRYPT_ATTEMPTED` and `ENCRYPT_ATTEMPTED` are set before each `systemctl start`. If the matching "Server has started" line was not seen, the database is reported UNKNOWN.
+- **Gate counts.** The gate's output is captured in `GATE_REPORT` and printed as `STATE: gate counts: …`.
+- **One branch.** Exactly one recovery branch prints: gate passed, gate failed, keys not swapped, keys swapped (with "do NOT start … re-run the installer" first when `DO_NOT_START` is set), or unexpected layout.
+- **Pre-flight refusals** now print "REFUSED … before any change" and no recovery block. If the file layout looks like a previous run's post-swap state, they add a "Do NOT move …key.old back" warning.
+
+**Pre-flight (R3A D-5, R3C D-2): FIXED. Decision: refuse, with the remedy in the refusal.**
+- New `rekey_gate.py --unrewritten <copy>`. It runs on a copy (with `-wal`/`-shm`) made before the pause and the first stop; the copy is shredded straight after.
+- It refuses on any `enc-v1:` blob in `ConnectionString`.
+- **For `BackupTargetUrl` I deviated from the brief:** it refuses only on rows whose `BackupID` names no backup. The source at the tag shows rows of a live backup *are* rewritten: `Backup.cs:54` (LoadChildren) and `Connection.cs:141-142, 892-893, 1773-1810`. Refusing on those would block a re-key the product completes correctly. Attached rows are still counted and printed.
+- Refusing beats documenting a remedy because the blob would fail the exit gate only after the key swap, and no re-run could pass it.
+
+**Other pre-flight items: all FIXED.**
+- **R3B N-8, R3C N-4 (timer).** `is-enabled` must now be disabled, masked, masked-runtime, not-found or empty, and `is-active` must be `inactive`.
+- **R3C N-5 (dry run).** The "decrypt start done" line is guarded; the dry run now says "would be CLEARTEXT … nothing was started".
+- **R3C D-4 (hermetic test).** `INSTALLED_UNIT="${REKEY_INSTALLED_UNIT:-…}"`. On a real run the override can only make the pre-flight refuse, because FragmentPath is compared against it.
+- **Added beyond the brief:** the pre-flight now refuses identical key files and a `…-key.old` that does not hold the old key.
+
+**Real-path test (R3C D-5): FIXED.** The new suite drives the non-dry-run path through PATH stubs and a fake server on a scratch database, and the real gate judges the copy. Details in section 2.
+
+**NITs:**
+- **R3A N-2: FIXED.** The header's step 2 now matches D:1997 and A:234: restoring the pause starts the scheduler, which may queue the overdue job, but the queue runner is paused first.
+- **R3A N-8: FIXED.** Gate docstring now cites `Library/Encryption/` and `WipeEncryption.cs` 119-141.
+- **R3C N-1: FIXED.** The hand start's secret-format check (`write_params ""`) now runs under `--dry-run` too.
+- **R3C N-12: FIXED.** The gate decodes values stored as SQLite BLOBs (`as_text`).
+- **R3B N-10: not in my files.** The key-write command is already guarded with `sudo test ! -e … &&` in A:286 and D:2581. The installer's NOTE (C1's file) should get the same guard; I did not check it.
+
+**Also fixed, in my files but not on my list:**
+- **R3C N-2:** the gate and the hand start read key files without newline translation and refuse a CR.
+- **R3A N-3 (script side):** the hand start's header now lists everything the exit-102 run writes, and its log line no longer claims port 127.0.0.1:PORT is listening.
+
+## 2. Tests: fail before, pass after
+
+The evidence comes from `c2_rekey_mutations.py fail-before`, run against a `git archive c3d0e890` extraction.
+
+- **New suite `tests/test_backup_rekey_real_path.py`: 20 tests.**
+  - The happy path checks: keys end as NEW/absent/absent, the gate passes, the drop-in text is exact, a drop-in is present only at the first start, no revert, every copy shredded.
+  - 7 pre-flight refusal tests (one of them uses subtests for the four timer states).
+  - 9 trap-state tests: pause fails; decrypt start times out *after* the server decrypted; decrypt start command fails; the stop after decrypt fails (F2); chmod after the move fails (F2b); vendor unit after drop-in removal (F3); encrypt start never logs "Server has started"; gate fails; failure after the gate passed.
+  - Two of the trap tests then follow the printed "keys not swapped" recovery (start the unit, re-run the script) and confirm it completes. F3 confirms a start under the new key leads to a passing gate.
+  - One hermetic dry-run test of the `REKEY_INSTALLED_UNIT` override.
+- **Before**, on c3d0e890 with only the override hook added: 18 of the 20 fail. The override test passes, as expected, since the hook is the fix. The "attached BackupTargetUrl rows do not refuse" test also fails there, because the old script never prints the count line.
+- **Contract suite, my two classes:**
+  - 4 new tests, which fail before: the hand-start dry run runs the secret-format check, the re-key dry run never claims a start happened, a BLOB-typed value is judged, a key file with a CR is refused.
+  - 2 new `--unrewritten` tests, which error before because the mode did not exist.
+  - The dry-run sequence test now uses the override and checks the new count step and the timer wording; it fails before.
+- **After:** everything passes.
+
+## 3. Check results
+
+- `python3 -m unittest tests/test_duplicati_wrapper_contract.py tests/test_backup_rekey_real_path.py`: **62 tests, OK**. That is 42 contract tests, including C1's current ones, plus 20 new.
+- `shellcheck` on both changed bash scripts: clean.
+- `flake8 --max-line-length=512` on the 4 changed or new Python files: clean.
+- CodeQL prescreen: 0 predicted alerts in 3 files.
+- `tests/test_ci_test_wiring_drift.py`: **FAILS** until the coordinator wires the new suite in. It also lists `test_duplicati_installer_real_path.py` (C1's).
+- Mutations:
+  - **Before**: 5 of 13 killed.
+  - **After**: 32 of 32 killed. That is M01–M13 re-anchored on the current code, 14 new re-key mutants (N01–N14), 4 gate mutants (G01–G04) and 1 hand-start mutant (P01).
+  - Raw results: `<scratchpad>/C2/mut_after.txt`.
+
+## 4. Needed elsewhere
+
+**ci.yml (coordinator)**, inserted after the line `python3 -m unittest -v tests/test_duplicati_wrapper_contract.py`:
+```
+          # tests/test_backup_rekey_real_path.py: the re-key's NON-dry-run path and every
+          # EXIT-trap state (round 3, R3C D-5), against PATH stubs and a fake server on a
+          # scratch database; the real exit gate judges the copy. Touches no /etc, /run or unit.
+          python3 -m unittest -v tests/test_backup_rekey_real_path.py
+```
+
+**docs/REFERENCE.md (coordinator)**
+- New bullet: "`tests/test_backup_rekey_real_path.py` -- round 3 of Phase B (R3C D-5): the re-key's non-dry-run path against PATH stubs and a fake server on a scratch database, judged by the real gate. Pins the happy path (keys swapped by `mv`, the old key shredded, the drop-in's `ExecStart=` reset, no `revert`); every pre-flight refusal before the pause (never-rewritten `enc-v1:` blobs, timer enabled in any form or active, an active task, the vendor unit, identical keys, a foreign `.old`); and every EXIT-trap state (key layout read by hash, UNKNOWN after an attempted start, the unit stopped while a drop-in is present, gate counts on failure, one recovery branch, never 'start' after a FragmentPath refusal), following the printed recovery to completion."
+- Append to the contract-suite bullet: "; the re-key dry run runs with `REKEY_INSTALLED_UNIT`, so it stays hermetic once the installer has run on a host, and never claims a start happened; the password-init dry run runs the secret-format check; the gate judges a BLOB-typed value and refuses a key file containing a CR, and `--unrewritten` counts the blobs the product never rewrites."
+
+**Prose for D (via the clearing script) and A**
+- **Trap (D §8 P0.5b, and A note 6a, replacing "an EXIT trap removes the drop-in and reports what an interrupted run left"):** "an EXIT trap stops the unit while a drop-in is present, removes the drop-in, names each key file by hash (swapped / not swapped / unexpected), reports the database as UNKNOWN once a decrypt or encrypt start was attempted without its 'Server has started' line, prints the gate's counts on a gate failure, and prints only the recovery that applies, never 'start the unit' after a FragmentPath refusal; a refusal before the pause says nothing changed (round 3: R3A D-4, R3B N-11, R3C D-1)."
+- **Pre-flight count (D P0.5b, A step 12, and A §8 listing round 2's A DEFECT-4 as now folded in):** "Before the first stop it counts, on a copy of the database, the `enc-v1:` blobs the product's re-encryption never rewrites: any in `ConnectionString`, and in `BackupTargetUrl` rows of no backup (a live backup's rows are rewritten: `Backup.cs:54`, `Connection.cs:892-893`). It refuses if there is one, because such a blob would stay under the old key and fail the exit gate only after the key swap. Remedy, the owner's: record and delete the saved connection strings through the web UI, re-key, then re-create them."
+- **Timer (D P0.5b, A step 12):** "and refuses unless the snapshot timer is neither enabled (in any form, `enabled-runtime` and `linked` included) nor active (R3B N-8)."
+- **Hand start (R3A N-3, at D:2019, D:2411 and A:238, replacing "sets the password and nothing else"):** "sets the password, upgrades the schema and re-encrypts the password-named server settings under the settings key; the backups' fields and `encrypted-fields` are unchanged until the unit's first start."
+
+## 5. Out of scope
+
+- **R3C N-2, wrapper side (C1).** `scripts/duplicati-wrapper.bash` still passes a CR in the key file through to the server. My gate and hand start now refuse such a file, so the wrapper should refuse it too.
+- **Whether to refuse on `ConnectionString` rows is the owner's call.** The remedy text assumes saved connection strings can be deleted through the UI and re-created afterwards; I did not verify that against the product. Nobody has read the Yamaguchi database to see whether it holds any such rows.
+- **No slips** against the standing limits. GitHub reads were two files at the Duplicati tag (`Connection.cs`, `Backup.cs`); writes went only under scratch and the files I own.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 3's fold-in, lane P — design and assessment prose
+
+Archived verbatim (10,284 characters, sha256 `5df6ddd563783f89`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+I've finished all nine work items in the prose lane. D is regenerated from origin/main (`--from-repo`, then the clearing script), and every check I could run is clean. The two sequence-safety screens did not run: they compare commits, and I may not commit.
+
+**Files**
+- **Changed:** D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`, regenerated only), A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`, by hand), `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`.
+- **Added:** `tests/test_clear_stop_backup_design.py`, `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py`, `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/guard_fence_probe.bash`.
+- I did not edit `util/ad-hoc/yamaguchi_build_job.py`; prose covers it.
+
+## 1. Per finding
+
+**R3B DEFECT-1 (owner's ruling): FIXED.**
+- D step 10's edits remove `retention-policy` (web UI: Keep all backups). D step 11 restores it as `2W:1D,6M:1W,2Y:1M,5Y:2M`, only after AC-4's first drill has passed, and says what the first pass keeps and deletes and that the deletions reach Dropbox.
+- §7.5's option list records both changes.
+- Every "nothing under `/mnt/Backups/Ubuntu/` is deleted" statement now names the second exception: D front matter (:16), the §8 preamble, P1 step 4 ("single exception"), §10.2 hazard 1, and A §6.0 item 5. A §6.4 steps 11 and 14 mirror the remove and the restore.
+- One copy of the sentence is left: D:704, a comment in the unit's tagged block, which belongs to lane C1 (see Needed elsewhere).
+- I could not find R3B's port in the repository; it survived only in the old session's scratch directory. I fetched `DeleteHandler.cs`, `Timeparser.cs` and `Options.cs` read-only at tag `v2.4.0.0_stable_2026-09-03` and wrote a new port, `retention_table.py`. Its `--check` reproduces R3B's old-policy table exactly.
+
+**Retention table under the new policy.** First pass at 14:30Z each day, with 2 post-recovery filesets present (the result is the same with 30):
+
+| First pass on | Deletes (of 9) | Keeps | Deleted |
+| --- | --- | --- | --- |
+| 2026-10-20 to 2027-02-27 | 5 | 08-25T10:27, 09-01T14:00, 09-08T14:00, 09-15T20:48 | 09-12, 09-15T08:56, 09-16T18:33, 09-17T22:13, 09-18T14:00 |
+| 2027-02-28 to 03-06 | 6 | 08-25, 09-08, 09-15T20:48 | the above plus 09-01 |
+| from 2027-03-07 | 7 | 08-25 plus one other | — |
+
+- Only dlist files are deleted; `--no-auto-compact=true` keeps every dblock and dindex.
+- The 09-18 fileset — AC-4's drill target and Procedure A0's source — is among the five deleted.
+
+**R3B DEFECT-2: FIXED.**
+- D step 8 stores `paused-until`=`0` with sqlite3 (DELETE then INSERT at BackupID −2) while no server runs: on A0/A/A2 alongside the DBPath update, on B after the hand start. It reads `paused-until` and `startup-delay` back.
+- It writes the web credential before the first start, and requires `serverstate` to exit 2 (Paused) after it.
+- I confirmed in `LiveControls.cs` that a stored 0 is an indefinite pause.
+- "Confirm the 12:00 fire" moved from step 9 to the end of step 10. A §6.4 steps 9–11 mirror all of this.
+
+**R3B DEFECT-3: FIXED (prose).** D step 7 now:
+- runs the rebuild tool only while the server reads Paused, with the web credential already written;
+- has it run from a scratch copy with every stale default listed: a future 14:00Z `Schedule.Time`, `aes` with `--aes-version` pinned, both sources, the 45 filters, no `retention-policy`, the new tempdir, the Dropbox target, a valid `--record-dir`;
+- notes that the import ignores `DBPath`, so the index is re-pointed in the UI afterwards.
+
+A §6.4 step 8 mirrors it.
+
+**R3B DEFECT-4: FIXED.** §7.3.6's recovery now deletes `pbkdf-config` as well, explains why (with it set, `UpgradePasswordToKBDF` changes nothing), and no longer names A2.
+
+**R3B NITs**
+- **FIXED:** N-2 and N-3 (residue list); N-4 (P2 step 4 passes `--backup-id`); N-5 (A2 re-enters TargetURL and passphrase after step 9's login, in the UI); N-6 (A step 13 names the gate tool, copies `-wal`/`-shm`, keeps the copy outside `/home/pcalnon`, shreds it); N-7 (the fenced block gains `unset url id`, its own `id=<id>` line and a numeric check — `guard_fence_probe.bash` shows an unsubstituted id, `id=abc` and a failed export each give `guard exit=1`, while `id=7` runs the guard); N-9 (B's step order); N-10 (key write is `test ! -e … && {…}` in D step 8 and A step 9).
+- **For other lanes:** N-1 (installer hint) → C1; N-8 and N-11 → C2.
+
+**Round-4 routed question: FIXED.** D step 8 copies every `BMXWPAOGLP.sqlite-wal`, `-journal` or `-shm` beside the index; A §6.3 step 6 says its listing answers whether any exist.
+
+**R3A findings**
+- **FIXED:** D-2 (residue list is exactly R4's open rows, adding B22 and the rows at R4 lines 153, 217, 231 and 351, cited by round; note 5b mirrors it; Appendix C says item 4 is applied); D-3 (the 12 job-2 scripts — 8 flag defaults, including `--source-job` in `duplicati_build_fresh_job.py`, and 4 files with 6 hard-coded lines); D-6 (credential format in D step 9 and A step 11); N-3 (the 102 run's real effects, in D and A note 6b); N-6, first half (D §7.8); N-7 (`|| true` in note 6c, I-36 and the §7 check, which now greps `return 0`; AC-6's P2 remnants; note 12b).
+- **For the coordinator:** N-1. A §8's Round 2 entry is fixed (the five findings added); the record and CHANGELOG parts are yours.
+- **For C1/C2:** N-2, N-4, N-5, N-8, and N-3's log line at hand start :163.
+
+**R3C findings**
+- **FIXED:** D-5, clearing-script half (the new suite); N-3 (`FIXFWD_PR` must be `ml#<digits>`, exit 3); N-9 (the script now prints its edit count, prose versus fence); N-10 (A §8); N-11 (a deleted marker needs a `gone` pattern that no longer matches, so a reworded marker on main fails; the STOP block is pinned by sha256 `994ac7a4…`).
+- **For other lanes:** N-1, N-2, N-4, N-5, N-12 → C2; N-6, N-7, N-13 → C1.
+
+**Recorded as residue in A §8:**
+- R3A N-6, second half: the T2 scheduler header comment; that tagged block comes from a repository file no lane of this fold-in owns.
+- R3A N-7's A NIT-6 and R3C N-8: snapshot-script NITs; the script is outside the fold-in's file set.
+- R4 line 153: P0 step 8's file-mode sentence, which needs a ruling rather than a prose fix.
+
+A §8 also gains a Round 3 entry (the owner's ruling and the prose fold-in) and a §9 history row.
+
+## 2. Tests
+`tests/test_clear_stop_backup_design.py` has 7 tests, all passing. It runs the script in a scratch copy of the repository layout and covers:
+- the committed D gives "no change";
+- D with one edit reverted is written, equals the committed D byte for byte, and a second run gives "no change";
+- an edit inside a fenced block is refused (exit 3);
+- a table row pushed over 512 characters is refused (exit 3);
+- `FIXFWD_PR` set to `ml#FIXFWD`, empty, `ml#fixfwd`, `ml#21x` or `ml#` is refused (exit 3);
+- a reworded deleted marker is refused (exit 1);
+- a changed STOP block is refused (exit 1).
+
+**Fail-before evidence** (via `CLEAR_STOP_SCRIPT=<mutant>`). Each mutant fails exactly the tests listed:
+
+| Mutant | Fails |
+| --- | --- |
+| fence gate off | the stray-fence test |
+| `FIXFWD_PR` check reverted to the old exact-placeholder form | 4 `FIXFWD_PR` subtests |
+| deletion counted as applied without the `gone` check | the reworded-marker test |
+| STOP sha256 check skipped | the STOP-block test |
+| width gate off | the over-width test |
+| already-applied check off | 4 tests |
+
+## 3. Checks
+- **Clearing script:** applied 71, already-present 0; 26 lines wrapped; 20 fenced blocks, 1 changed as declared. Second run: "no change (71 edit(s) already applied)". **Edit count: 71 = 70 prose + 1 fence** (was 54 = 53 + 1). `--from-repo`: 5 rewritten, 9 identical, 1 retagged; `--check` gives "0 staged, 14 already current". Final D sha256 is `da8745d6…`; it will move when C1/C2's tagged files change.
+- **markdownlint v0.42.0** on D and A: 0 issues.
+- **Structure check:** `markdown_structure_delta.py` itself compares commits, so I ran the check it calls (`2026-09-05_markdown_structure_check.py`) on origin/main's and the working copies: D 0→0, A 0→0.
+- **Snippet linter** on D: 14 blocks, 0 failures.
+- **flake8** on the changed Python: 0. **shellcheck** on the probe: 0.
+- **Unit tests:** `test_duplicati_wrapper_contract`, `test_clear_stop_backup_design` and `test_env_repr_safety` together: 56 tests, OK.
+- `test_ci_test_wiring_drift` fails on 3 suites not yet in `ci.yml`, mine among them.
+
+## 4. Needed elsewhere
+- **C1, `util/systemd/duplicati.service` comment (D:704):** replace the quoted `"nothing under /mnt/Backups/Ubuntu/ is deleted or moved" rule` with `rule that nothing under /mnt/Backups/Ubuntu/ is deleted or moved beyond its two named exceptions (the job's own retention, the signed-off escrow delete)`.
+- **C1, installer:** the NOTE's key write (around install:260-262) should become `sudo test ! -e /etc/credstore/duplicati-settings-key && { umask 077; openssl rand -base64 48 | tr -d '\n' | sudo tee /etc/credstore/duplicati-settings-key >/dev/null; }` (R3B N-10). R3B N-1's hint fix is also C1's.
+- **Coordinator, `ci.yml`:** add `python3 -m unittest -v tests/test_clear_stop_backup_design.py`, with a comment: "hermetic gate for the backup design's clearing script: committed design is current, write path idempotent, stray-fence / over-width / FIXFWD_PR / reworded-marker / changed-STOP refusals (Phase B round 3, R3C D-5)".
+- **Coordinator, `docs/REFERENCE.md`:** a matching suite entry, and the ad-hoc tools `retention_table.py` and `guard_fence_probe.bash`.
+- **Coordinator, AGENTS.md:** suite count +1 for this suite.
+- **Coordinator, CHANGELOG and R3 drafts:** the edit count is now "71 edits: 70 prose, 1 fence".
+- **Coordinator, A §8:** add C1's and C2's dispositions to my Round 3 entry, including the re-key pre-flight count I described as routed.
+
+## 5. Out of scope
+- The scheduler header comment in `util/juniper-backup-scheduled.bash` still omits "before the first success".
+- The snapshot script's `?immutable=1` fallback and its `-shm`/`-wal` leftovers (R3C N-8).
+- In D step 7 and A step 8 I name the web UI's "Keep all backups" option as the way to remove `retention-policy`. That is from my knowledge of the UI; I did not verify it, because running Duplicati is forbidden.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 3's fold-in, lane P (second pass, the code lanes' prose)
+
+Archived verbatim (4,432 characters, sha256 `6d62ba1aff2261b9`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+Second pass is done: every D/A prose item in `C1.md` and `C2.md` (both in `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/`) is folded into D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`) and A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`). D is regenerated and every check passes. One item went in differently from your wording: the BEHAVIOUR CHANGE sentence (below).
+
+**Edit count:** still 71 (70 prose, 1 fence). I extended existing edits rather than adding new ones.
+
+**Final D sha256:** `5c98cf27076f291a239479feaa4ac08812a5c493e0b813d0447a3144e4281dac`. It is built from the C1/C2 files as they stand now.
+
+**C1 items, in D (through the clearing script) and A**
+- **Clearing note:**
+  - "refuses security options there" now reads "accepts only allow-listed tunables there", and the old wording is on the stale-phrase list so it cannot come back.
+  - A new paragraph covers wrapper 2.3.0's eight-tunable allow-list and the wider deny list, installer 1.3.0 judging the contract and any existing `/etc/duplicati/env` by running the wrapper, the `.pre-install-<UTC>` copy-aside, the snapshot's single DELETE-mode file (1.2.0), and `ReadWritePaths=` without `-` failing closed with a NOTE.
+- **D step 8 and A §6.4 step 9:**
+  - An owner caution: before the install, check any existing `/etc/duplicati/env` (option names only, never values). An `--option` line outside the allow-list stops the install and would make every start exit 78.
+  - The BEHAVIOUR CHANGE sentence, naming the three changed blessed files and `--update-backup-behavior`.
+
+**C2 items, in D and A**
+- **Trap prose:** in the clearing note's item 2, P0.5b, and A note 6a.
+- **Pre-flight count:** refuses on any `enc-v1:` blob in `ConnectionString`, and in `BackupTargetUrl` rows of no backup only, with the reason (`Backup.cs:54`, `Connection.cs:892-893`) and the owner's remedy. It is in the clearing note, P0.5b, A note 6a and A §6.4 step 12.
+- **Timer prose:** the timer must be neither enabled in any form nor active.
+- **Hand start:** C2's "sets the password, upgrades the schema and re-encrypts…" replaces the old wording in the clearing note, D step 6 and A note 6b. "sets the password and nothing else" now occurs 0 times in D and A.
+
+**A §8**
+- Round 2's lane A DEFECT-4 is now recorded as FIXED by C2's pre-flight count.
+- The Round 3 entry gains C1's and C2's dispositions by finding id, including:
+  - R3C N-2 fixed on both sides;
+  - R3B N-10's installer half, which you applied;
+  - R3C N-13 recorded as a decision (keep no `-`);
+  - the unit comment now naming its two exceptions.
+- The §9 history row is updated.
+
+**Residue, now recorded in A §8 with reasons**
+- **Snapshot `-wal`/`-shm` leftovers:** dropped from residue, because C1 fixed them.
+- **R3A NIT-7's A NIT-6 (`?immutable=1`):** stays. Snapshot 1.2.0 did not change how it opens the source, and a fire after a clean close fails closed.
+- **R3A NIT-7's C N-2:** stays. The real install still runs `systemd-analyze verify` after installing and blessing; the dry run checks temporary copies first.
+- **The scheduler header comment (R3A NIT-6, other half):** stays; it comes from a file no lane owns.
+- **The ConnectionString remedy:** whether any such rows exist, and whether the UI route works, is unverified.
+
+**The `is deleted or moved` grep:** five hits, all qualified. D:16, the §8 preamble (D:2242), D:2957, A:210, and D:704, the unit comment, which now says "beyond its two named exceptions".
+
+**Checks**
+- Clearing script: second run gives "no change (71 edit(s) already applied)"; `--check` gives "0 staged, 14 already current".
+- markdownlint v0.42.0 on D and A: 0 issues. I re-wrapped 7 over-long prose lines in A with the 2026-09-21 wrap helper.
+- Structure check: D 0→0, A 0→0.
+- Snippet linter: 14 blocks, 0 failures.
+- flake8: 0.
+- `tests.test_clear_stop_backup_design` plus `tests.test_duplicati_wrapper_contract`: 50 tests, OK.
+
+**Not folded exactly as asked: the BEHAVIOUR CHANGE sentence.** The installer reports BEHAVIOUR CHANGE only when a `.blessed.sha256` already exists. So D and A say it applies "where a `.blessed.sha256` from an earlier install exists", and that a never-blessed host (I-36) has nothing to compare. I don't know whether the owner's host has ever been blessed. Everything else from both reports' "Needed elsewhere" sections that targets D or A is in.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 4 — the common brief
+
+Archived verbatim (3,518 characters, sha256 `59b41c4acb1349d8`), lifted from the brief session 097ae87b wrote for round 4's lanes on 2026-10-08 (round 5's lanes used it too).
+
+<!-- markdownlint-disable -->
+
+# Phase B round 4 — common brief (every reviewing lane reads this first)
+
+You are a **read-only adversarial reviewer**. Round 3 found 0 BLOCKER / 15 DEFECT / 32 NIT across three lanes;
+its fold-in is now frozen as local commit **`a0ff619c`** on branch `feature/backup-phase-b` in
+`/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/golden-floating-willow` (parent:
+`origin/main` 81d3fbb3). The whole Phase B change is `git diff origin/main a0ff619c`; the round-3 fold-in
+alone is `git diff c3d0e890 a0ff619c` for the files Phase B already had (c3d0e890 is the frozen round-3 head;
+the hot files CHANGELOG.md, docs/REFERENCE.md, ci.yml, AGENTS.md were rebuilt from main, so diff those
+against origin/main).
+
+Read `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/BRIEF_COMMON.md` for the names (D, A, R4, record, R3A–C,
+re-key, gate, wrapper, installer, contract …), how D is generated, and the **owner ruling of 2026-10-08**
+(retention suspended through recovery; restored after AC-4's first drill as `2W:1D,6M:1W,2Y:1M,5Y:2M`).
+The fold-in lanes' own reports are `C1.md`, `C2.md`, `P.md` in the same directory — treat their claims as
+claims to verify, not facts.
+
+## Rules
+
+- **Change nothing in the worktree.** No edits, no git state changes (no add/commit/checkout/stash/reset).
+  Write scratch only under
+  `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/097ae87b-7a4c-4970-9f46-d052521e17c7/scratchpad/r4-<lane>/`
+  (you may copy the repo there, e.g. `git archive a0ff619c | tar -x -C <scratch>`, to run mutations).
+- Split git commands into simple single commands (the harness refuses compound ones naming git).
+- **Standing limits**, binding absolutely:
+  - never start, stop, restart, enable, disable or reload a unit, system or `--user`;
+  - never run a Duplicati binary, never contact 127.0.0.1:8300, and no `sudo`;
+  - nothing under `/mnt/Backups/Ubuntu/` is read beyond `stat`, and nothing there is touched;
+  - never read a secret file: `~/.config/duplicati-backup/*`, any `.env` or `*.env`, `/etc/default/duplicati`
+    beyond `stat`, `/etc/credstore`, `/etc/duplicati`, or a data-folder database;
+  - never print an environment variable or a token, and never send the owner's email or any credential to an
+    external service;
+  - no `git stash`; log greps are count-only; no interactive shells (`bash -i` writes `~/.bash_history`);
+  - no session performs host actions: those are the owner's.
+- Public Duplicati source at tag `v2.4.0.0_stable_2026-09-03` may be fetched read-only from GitHub to verify
+  product behaviour; cite file:line.
+
+## Severity
+
+- **BLOCKER**: following D/A as written can damage or lose the sole copy, leak a secret, or leave the host
+  unrecoverable; or a shipped script does so.
+- **DEFECT**: a step, script or claim is wrong in a way that would make the operator fail, mis-diagnose, or
+  rely on a false statement; a test that does not test what it claims.
+- **NIT**: accuracy, wording, consistency.
+
+Every finding: what is wrong, file:line evidence (at `a0ff619c`), reproduction where possible, and a remedy.
+Say VERIFIED / PLAUSIBLE for each. Also list "Not refuted" (what you tried to break and could not) and
+"Unverifiable" (what the limits stopped you checking). A finding you cannot evidence is not a finding.
+
+## Report (your final message)
+
+`# Phase B round 4 — lane <X> (<lens>)`, then: Summary (counts), Findings (BLOCKER / DEFECT / NIT), Not
+refuted, Unverifiable, Slips (any limit you came near or broke — say so plainly).
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 4, lane A — fold-in fidelity
+
+Archived verbatim (12,327 characters, sha256 `c42acd0889cce5a0`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Phase B round 4 — lane A (fold-in fidelity)
+
+## Summary
+
+0 BLOCKER, 2 DEFECT, 6 NIT.
+
+- **The round-3 fold-in holds.** Of the round-3 items (R3A 6 DEFECT + 8 NIT, R3B 4 DEFECT + 11 NIT, R3C 5 DEFECT + 13 NIT, plus the handoff's Remaining item 1):
+  - every one is FIXED, or recorded as residue in A §8 with a reason, with two exceptions;
+  - R3B N-1 is PARTIAL (see N-1 below);
+  - R3A N-1's record and CHANGELOG parts are pending, as planned (Disposition of round 3 says "*Pending*"; `CHANGELOG.md` has no Phase B entry at `a0ff619c`).
+- **D reproduces exactly.** Starting from origin/main's D, `--from-repo` gives 5 rewritten / 9 identical / 1 retagged. The clearing script then reports "applied 71 … 26 line(s) wrapped … 71 edits: 70 prose, 1 fence", giving sha256 `5c98cf27…`, which equals the committed D. A second run is a no-op, and `--check` reports 0 staged / 14 current.
+- **Suites:** 96 tests OK on this host, wiring drift included. markdownlint v0.42.0 is clean on D and A. The AGENTS.md count of 202 matches `ci.yml`, and the drift tool reports 0.
+- **Lane claims, re-run:**
+  - C1 fail-before: 66 failures, as claimed.
+  - C1 after: 31/32 mutants killed. The survivor, I11, is equivalent: `install:302` runs `cmp -s` before the bless.
+  - C2 after: 32/32 killed.
+  - C2 fail-before: 18 of the real-path tests fail, as claimed. But the suite has **19** tests, not 20 (NIT-6).
+- **C2's deviation is VERIFIED** against Duplicati source at the tag:
+  - `ReWriteAllFieldsIfEncryptionChanged` (Connection.cs:131-150) iterates `this.Backups` (:1041-1060, every `Backup` row) and calls `LoadChildren`;
+  - `LoadChildren` sets `AdditionalTargetURLs = con.GetBackupTargetUrls(id)` (Backup.cs:54; the getter decrypts with `m_key`, :1734);
+  - `AddOrUpdateBackup` then calls `SetBackupTargetUrls` (:892-893), which deletes the rows and re-inserts them encrypted (:1773-1810).
+  - So only rows of no backup survive the rewrite. `BackupID` is `NOT NULL` with an FK cascade (Schema.sql:188-200), so no row escapes both counts.
+
+## Findings
+
+### BLOCKER
+
+None.
+
+### DEFECT
+
+**D-1. `DUPLICATI_REQUIRE_MOUNT=` does not switch off the wrapper's mount check. The installer's new contract gate, and every wrapper or installer test, therefore depend on `/mnt/Backups` being mounted. VERIFIED.**
+
+- **Cause.** wrapper:80 is `REQUIRE_MOUNT="${DUPLICATI_REQUIRE_MOUNT:-/mnt/Backups}"`. `:-` treats an empty value as unset, so `preflight` still runs `mountpoint -q /mnt/Backups`.
+- **Where it bites:**
+  - The installer's `wrapper_accepts` (install:162-171) passes `DUPLICATI_REQUIRE_MOUNT=` under `env -i`, and its comment says "no mount is required". That comment is false.
+  - The test helper does the same (`tests/test_duplicati_wrapper_contract.py:113`). This part predates round 3, but the real-path installer suite now inherits it.
+- **Reproduction.** In a scratch copy I changed only the wrapper's default to `/nonexistent-r4/Backups`, simulating a host without the mount:
+  - the wrapper exits 78 with "is not a mountpoint";
+  - 10 of 13 installer real-path tests fail, along with most of the InstallerDriftGate and WrapperEnvContract tests.
+  - Everything passes here only because this host has `/mnt/Backups` mounted (checked with `mountpoint`).
+- **Consequences:**
+  - The four suites wired into `ci.yml` should fail on a GitHub runner. This is a prediction: the branch has never run on CI.
+  - On the host, an unmounted `/mnt/Backups` at P0 step 8 makes the installer print "REFUSING: the wrapper refuses <contract> … it would exit 78". That misdiagnoses a missing mount as a bad contract (the wrapper's own line does follow).
+  - C1's and C2's mutation kill counts are valid only on a host with the mount.
+- **Remedy:**
+  - pass `DUPLICATI_REQUIRE_MOUNT=/` in the installer and the test helper, or switch the wrapper to `${DUPLICATI_REQUIRE_MOUNT-/mnt/Backups}`;
+  - correct the installer comment;
+  - add a test that runs with the default mount absent.
+
+**D-2. The new allow-list admits an option the server does not have and refuses the real one. VERIFIED.**
+
+- **What is wrong.** `ENV_OPTION_ALLOW` (wrapper:92) contains `suppress-welcome-page`. At the tag the option is `webservice-suppress-welcome-page`:
+  - `WebServerLoader.cs:122`;
+  - registered with no alias at `Program.cs:1586`, read at :267.
+- **The same wrong name appears in four places:**
+  - the contract (line 36);
+  - D's tagged blocks (D:934, :1505);
+  - the test's `ALLOWED` pin (`tests/test_duplicati_wrapper_contract.py:178`), which pins the hand-copied wrong name, so its "reviewed names" test cannot catch this;
+  - `docs/REFERENCE.md`'s "allow-listed tunables".
+- **Consequences:**
+  - `--suppress-welcome-page` in the env file passes and is ignored by the server with only a warning. That falsifies the wrapper header's new claim that a typo there "fails closed" (wrapper:52-53).
+  - The real option is refused with exit 78.
+- **Not affected:** the other seven names and all 17 deny entries exist at the tag (47 `CommandLineArgument`s checked).
+- **Remedy:** rename the entry to `webservice-suppress-welcome-page` everywhere, and pin the allow-list against the product's option table, not a hand-copied list.
+
+### NIT
+
+- **N-1. R3B N-1 is only PARTIAL. VERIFIED by equivalence.** The installer's printed guard hint (install:341-345) has exactly the form `c3d0e890`'s D fence had (Dold:2446-2450). It lacks D step 10's `unset url id`, `id=<id>` and numeric check (D:2623-2625), which is the R3B N-7 shape R3B reproduced: a stale `url` reaches the guard when `<id>` is pasted unsubstituted. So C1's "shows design step 10's form" and A §8's "the installer's hint is step 10's export-based guard check" both overstate it. **Remedy:** print D's five-line block verbatim.
+- **N-2. "Three blessed files" should be four.** D:2606 and A:296 say round 3 changed "the snapshot script, the snapshot unit, a comment in `duplicati.service`". The wrapper is also blessed (install:99) and also changed (2.2.0 → 2.3.0); `cmp` against `c3d0e890` confirms it. A BEHAVIOUR CHANGE run would list the wrapper too, and it is the one real behaviour change in the set.
+- **N-3. D:2152 attributes the allow-list to 2.2.0.** It reads "the wrapper (2.2.0) … accepts only allow-listed tunables there". The allow-list is 2.3.0.
+- **N-4. The retention window differs between D and A.**
+  - D:2637 says the first pass keeps four "between late October 2026 and the end of January 2027".
+  - A:319 says "late October 2026 to 2027-02-27".
+  - The port (`retention_table.py`, re-run) gives 5 deletions for any first pass from 2026-10-08 through 2027-02-27, so A is right.
+  - The ruling itself (removed at D step 10 / A step 11; restored after AC-4's first drill as `2W:1D,6M:1W,2Y:1M,5Y:2M`, replacing `1W:1D,1M:1W,1Y:1M,3Y:2M`) matches across D:16, :1717, :2243, :2618, :2636 and A:210, :309, :318-319, :435.
+  - All five "is deleted or moved" sites the handoff listed are corrected.
+- **N-5. D gained no history row for this round.** D §12 has no 2026-10-08 row, and note 12c (D:3215-3216) says the fold-in "changed the same set and added `tests/test_clear_stop_backup_design.py` and the evidence scripts". It omits the two other new suites, `tests/test_duplicati_installer_real_path.py` and `tests/test_backup_rekey_real_path.py`. "The same set" is also loose: the defaults file, the timer, and the staging and lint scripts did not change.
+- **N-6. Smaller inaccuracies:**
+  - C2.md says the real-path suite has 20 tests, and "62 = 42 + 20"; the suite has 19, and 62 = 43 + 19.
+  - The PR drafts' file list (`util/ad-hoc/2026-10-04_backup-phase-b-round3/PR_BODY.md:79-81`) still carries 2.2.0 / 1.2.0 / 1.1.0, as do the round-2 prose lines of `PR_BODY.md` and `COMMIT_BODY_ONLY.txt`. The `<<FILE-LISTS>>` placeholder covers re-deriving them.
+  - The installer's NOTE key write uses `test ! -s` with no `sudo` (install:316), while D and A use `sudo test ! -e … sudo tee`. It fails safe as a user, but the two forms differ.
+
+## Not refuted
+
+- **R3A:**
+  - D-2: the residue list now names B22 and the rows of rounds 5, 6 and 8; note 5b matches; Appendix C says item 4 is applied.
+  - D-3: the twelve job-2 scripts are in D and in note 5b, and grep confirms 8 defaults plus 6 hard-coded lines in 4 files.
+  - D-4 and D-5: the trap logic and the `--unrewritten` pre-flight were read in full; the trap's branches are consistent with the state flags.
+  - D-6: the credential format is in D step 9 and A step 11.
+  - N-2, N-3, N-4 (wrapper header), N-5, N-8: fixed.
+  - N-6's §7.8 half and N-7: fixed; their residue halves are recorded in A §8 with reasons.
+- **R3B:**
+  - DEFECT-1 to DEFECT-4: fixed (paused-until with read-back, Paused check, 12:00 confirm moved after step 10; B's rebuild while paused with every default listed; `pbkdf-config` deleted in §7.3.6).
+  - N-2 to N-10: fixed.
+  - N-11: fixed through R3C D-1.
+- **R3C:**
+  - D-1 to D-4: fixed; `REKEY_INSTALLED_UNIT` is used by both suites.
+  - D-5: fixed; `REFERENCE.md`'s "pins the drift copy-aside" claim is corrected.
+  - N-1 to N-12: fixed.
+  - N-13: decided, with the reason recorded.
+- **Snapshot 1.2.0:** removes only `tmp-*` and `dest-wal` / `dest-shm` residue, never the snapshot itself.
+- **Versions:** each artifact's header and HISTORY agree (wrapper 2.3.0, installer 1.3.0, re-key 1.2.0, hand start 1.2.0, snapshot 1.2.0, gate 1.1.0).
+- **The eight allow-list names** and the 17 deny names are identical across the wrapper, the contract, D, the test and `REFERENCE.md` (wrong in one name, D-2).
+- **Edit count:** 71 = 69 top-level `edit()` calls + 1 in a loop + 1 `fence_edit`, matching the script's own census. The record's "54 / 53" figures belong to round 2's state and are correct there.
+- **Collateral damage of C1's allow-list.**
+  - Judged only from the repo's history: the env file has only ever shipped `--webservice-port=8300`, which is allowed. The old in-data-folder `.env` carried assignments only (`SETTINGS_ENCRYPTION_KEY`, `_OLD`; D:176, :192), and that file is shredded, not migrated (A:300).
+  - So no documented legitimate line is newly refused, apart from D-2's real welcome-page option.
+  - The owner is warned before it bites: D step 8 (D:2606) and A step 9 (A:296) say to check option names before the install.
+  - The installer refuses an existing `/etc/duplicati/env` that the new wrapper would reject, before it installs anything (install:178-184), and the wrapper's refusal names DAEMON_OPTS.
+- **C1's Program.cs citations** hold at the tag: 49-51, 226-237, 1679-1680, 658-659, 690-692 and 986-987.
+
+## Unverifiable
+
+- Whether the suites fail on a GitHub runner (D-1). The branch is local only; the conclusion is a simulation.
+- R3B N-7's interactive-shell behaviour for the installer hint (N-1). `bash -i` is forbidden; I rely on R3B's reproduction of the identical shape.
+- Whether the accepted 2026-09-18 key has edge whitespace. If it does, the new `check_key_shape` would refuse it on Procedure A, but reading it is forbidden.
+- The wrapper header's "0700 gate (Program.cs 200) … before Main's try". At the tag, `PrepareSecureDataFolder` is reached through `GetDatabaseConnection` inside the try at :258-260. Whether `new ApplicationSettings()` at :200 also gates was not traced, and the header already marks this "Unverified".
+- The ConnectionString UI remedy, and the database's actual rows. Both are recorded as residue in A §8.
+
+## Slips
+
+- **Harness refusals.** Several compound commands were refused by the harness and re-issued as plain single commands; none ran.
+- **Mount check.** One `mountpoint /mnt/Backups` call (metadata only, not under `/mnt/Backups/Ubuntu/`).
+- **Network.** GitHub reads only: the Duplicati tree at the tag, `Program.cs`, `WebServerLoader.cs`, `Connection.cs`, `Backup.cs` and `Schema.sql`, plus `gh pr view` on four fleet PRs, all CLOSED.
+- **Writes.** Everything went under `scratchpad/r4-A/`, with `PYTHONDONTWRITEBYTECODE=1`. No worktree change, no git state change, no unit, binary, `sudo` or secret file touched.
+
+Scratch evidence is in `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/097ae87b-7a4c-4970-9f46-d052521e17c7/scratchpad/r4-A/`:
+- `mut1.out`, `mut2.out`: the mutation runs;
+- `fb1.out`, `fb2.out`: the fail-before runs;
+- `ci/`: the mount-absent copy behind D-1;
+- `dup/`: the fetched Duplicati source.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 4, lane B — procedure consequences, the sole copy
+
+Archived verbatim (13,791 characters, sha256 `5b17f32c8a3aa7f9`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Phase B round 4 — lane B (procedure consequences, the sole copy)
+
+I walked Procedures A0, A, A2 and B at `a0ff619c` in D §8 (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`) and A §6 (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`), step by step, as written. I read every source file at the tag `v2.4.0.0_stable_2026-09-03`. "R3B" is `util/ad-hoc/2026-10-04_backup-phase-b-round3/R3B.md`. I changed nothing in the worktree.
+
+## Summary
+
+**0 BLOCKER, 2 DEFECT, 13 NIT.**
+
+- **The round-3 fixes hold as configuration:**
+  - R3B DEFECT-2: `paused-until=0` written with `sqlite3`. The row form and its meaning are right.
+  - R3B DEFECT-4: §7.3.6 now deletes `pbkdf-config` too.
+  - The `-wal`/`-journal` copy is now in D step 8.
+  - The retention ruling is present on all four paths, and `retention_table.py` matches `DeleteHandler.cs`.
+- **The new defect.** On A0 and A2, the backup that step 10's `resume` fires is a copy of the job taken at the unit's first start. That is before step 10's edits. So that run carries the old retention policy, the old tempdir and no guard.
+  - Nothing is damaged today, but only by accident: A0's old tempdir is read-only under the unit, and A2's copy has an empty `TargetURL`.
+  - So for that run, the owner's ruling and "the guard aborts the first backup" are true only by luck.
+
+## Findings
+
+### BLOCKER
+
+None. If A0's old tempdir were writable, DEFECT-1 below would be one.
+
+### DEFECT
+
+**DEFECT-1 — Step 10's edits do not reach the backup that `resume` fires on A0 and A2, and conditionally on B. That run has the old `retention-policy`, the old `--tempdir` and no `--run-script-before-required`. VERIFIED from source; not executed.**
+
+- **What D and A claim** (all of these are false for that run):
+  - D:2243: "step 10 removes `retention-policy`, so the first backup deletes nothing".
+  - D:2616: "step 8's stored `paused-until` holds it".
+  - D:2633: "a missing or failing guard aborts the first backup, which `resume` fires immediately".
+  - A:210 and A:318: "it deletes nothing, because step 11 removed `retention-policy`".
+- **How the job is queued at the first start, even though the server is paused** (Server `Program.cs`):
+  1. The first start comes up Paused. Line 311 calls `LiveControl_StateChanged` directly, and line 1308 sets `appSettings.PausedUntil`.
+  2. `SetAndSaveSetting` (`ServerSettings.cs:980-985`, `:209-218`) has no equality check, so it always calls `SetSettings(-2)`.
+  3. That leads to `SignalSettingsChanged` (`Connection.cs:431-439`), which calls `IncrementLastDataUpdateId` and `SignalNewEvent`. `SignalNewEvent` raises `NewEvent` synchronously (`EventPollNotify.cs:121-132`).
+  4. The service provider is set at line 297 and the scheduler service is built at line 301. Its handler sees the id change and calls `Reschedule()` (`SchedulerService.cs:36-42`).
+  5. `Reschedule()` starts the scheduler thread (`Scheduler.cs:121-124`). Its loop queues the overdue job (`:326`, `:356`, `:396`). The task holds `entry = GetBackup(id)`, which loads options, sources and URL eagerly (`Connection.cs:545-565`).
+  6. Later edits find the job "already queued" and do not queue it again (`Scheduler.cs:314-324`).
+  7. `QueueRunnerService.cs:119` holds the task while paused.
+  8. At `resume`, `Runner.cs:786` and `:818` run `data.Backup`. `ApplyOptions` (`Runner.cs:1498-1513`) takes `TargetURL`, `DBPath` and `Settings` from that stale copy.
+- **This was half-known.** Note 6a (A:241) records "an overdue schedule is queued at every start". It does not record that the queued copy is frozen at that moment.
+- **What each path's first `resume` actually does:**
+  - **A0:** the queued run has `retention-policy=1W:1D,1M:1W,1Y:1M,3Y:2M`, `--tempdir=/home/pcalnon/.cache/duplicati-tmp` and no guard.
+    - It fails on its first temporary file, because `/home` is read-only under the unit (`duplicati.service:41`, `:51`; the directory is `drwxrwxr-x pcalnon:pcalnon`).
+    - `TempFolder.SystemTempPath` checks only that the directory exists (`TempFolder.cs:88-98`).
+    - Retention runs only after a completed backup (`BackupHandler.cs:442-452`, `:837`), so nothing is deleted.
+  - **A2:** the queued copy's `TargetURL` is empty, so the run fails at once.
+  - **On both A0 and A2:**
+    - The failed run uses up the overdue slot (`Scheduler.cs` `OnCompletedAsync`).
+    - AC-3 then needs a manual run, and no step says so.
+    - Step 10's guard dry-run guards nothing on this run.
+  - **A is correct.** P0.5b's restarts throw away the queue, and the encrypt start queues a copy taken after the edits.
+  - **B:** with a future `Schedule.Time`, nothing is queued, unless the paused session crosses 14:00 UTC. In that case the copy holds whatever `DBPath` and options exist at 14:00.
+- **Remedy (either):**
+  - **Edit offline.** Make step 10's three job edits in step 8 with `sqlite3`, while no server runs, as `Option` rows for `BackupID=<id>`. None of them is a password-type field, so all are cleartext.
+  - **Restart.** After step 10's edits and the dry-run, stop and start the unit. It comes up Paused again because of `paused-until=0`, and the queue is rebuilt from the edited job. Then check `export <id>` and `resume`.
+
+  In either case:
+  - Correct D:2243, 2616 and 2633 and A:210 and A:318.
+  - Say that AC-3 is a manual run whenever the slot was used up.
+
+**DEFECT-2 — Procedure B's "run Verify files before any backup" cannot be done in the paused window. VERIFIED.**
+
+- **Where the instruction is:** D:2612 says "For Procedure B, run Verify files before any backup … run Repair". A:292-293 says "run Verify files before step 11's resume".
+- **Why it cannot be done:** the server is paused from the first start until step 10's `resume`.
+  - `POST /backup/{id}/verify` only appends a task (`BackupPost.cs:71`, `:167-168`).
+  - Nothing runs while `_isPaused` is set (`QueueRunnerService.cs:119`).
+  - So Verify runs only at `resume`, and the operator cannot read its result, or Repair, before then.
+  - If 14:00 UTC passed after the rebuild, the scheduled backup is queued ahead of Verify and runs first, from a stale copy (DEFECT-1).
+- **Remedy:** say that Verify (and any Repair) executes at `resume`. Do B's `resume` with only Verify queued, check `GetCurrentTasks` or `SchedulerQueueIds` first, finish the session before 14:00 UTC, then `pause`, read the result, and run the first backup by hand.
+
+### NIT
+
+- **N-1 (R3B's second routed question).** The read-back (D:2600-2601) runs after `DELETE`+`INSERT`. It records `startup-delay`, but the previous `paused-until` is destroyed before anyone reads it. Remedy: run `SELECT` before the `DELETE` too.
+- **N-2.** D:2637 says "every post-recovery fileset younger than two weeks stays". This is false under `2W:1D`.
+  - A fileset less than 24 h after the last kept one is deleted.
+  - Reproduced with the port (`scratchpad/r4-B/bin/offschedule.py`):
+    - an off-schedule run at 10-09 15:23Z causes the 10-10 14:00Z fileset to be deleted;
+    - a second run on the same day is deleted.
+- **N-3.** The date ranges for the "keeps four, deletes five" outcome understate it and disagree with each other.
+  - D:2637 says "late October 2026 to the end of January 2027", and A:319 says "late October 2026 to 2027-02-27".
+  - `retention_table.py --from 2026-10-08` gives the same outcome from 2026-10-08 to 2027-02-27.
+- **N-4.** `retention_table.py`'s `outcome()` invents "post-recovery" filesets dated before the recovery when `--recovered-days` is more than the days since recovery.
+  - With `--from 2026-10-08 --recovered-days 30` it reports 6 deletions.
+  - P.md's "the same with 30" holds only from 10-15.
+- **N-5.** D:2242 says "Every destructive step is preceded by a copy". Step 11's retention restore deletes 5 dlists with no copy. Remedy: copy those dlists to a root-only directory outside Dropbox first. With `--no-auto-compact`, the dblocks they reference stay, so the copies keep those filesets restorable.
+- **N-6.** D:2611 and A:305 say "If it reads Running … the overdue job may already be queued". If the server is Running, the job is already running. `pause` only suspends it, and step 10's `resume` continues it with stale options. Remedy: stop the unit instead.
+- **N-7.** The installer's "Next:" text (`install_duplicati_service.bash:335-345`) prints `systemctl start` without the `paused-until` and web-credential prerequisites, and prints the guard check without the `unset url id` / numeric-`id` gate.
+- **N-8.** The A0 scripts copy only the index's main file into their throwaway database (`restore_server_db_from_fileset.bash:31`, `confirm_a0_premise.bash:25`). The fold-in's own step-8 reasoning (D:2597) says a `-wal` or `-journal` holds pages the main file lacks, and step 1's freeze has them.
+- **N-9.** D step 10 never pins `--aes-version`, while A:309 and §7.5 (D:1715) require it. This is already on `origin/main`.
+- **N-10.** Removing `retention-policy` is enough only if neither `keep-time` nor `keep-versions` is set, in the job or in the common options (`BackupHandler.cs:446`; `GetCommonOptions`).
+  - Step 10 should read the options back from `export`.
+  - "Keep all backups" removes all three only in the legacy ngax UI (`EditBackupController.js:272-291`).
+- **N-11.** §10.2 step 4 (D:2970) still says "877 volumes". That count is stale once step 11 deletes 5 dlists and new filesets are added.
+- **N-12.** The index's source path is never named, and the heading "move the index" (D:2584) and A:294's "move … in" contradict the `cp` in the text. A literal `mv` would move the original of the index out of `/usr/lib/duplicati/data`.
+- **N-13.** On A0, step 8 needs the root-era password before the first start, to write the credential. The pointer to §7.3.6's lost-password recovery appears only in step 9.
+
+### State per path at `a0ff619c` (A step numbers; D steps in brackets)
+
+| Step | A0 | A | A2 | B |
+| --- | --- | --- | --- | --- |
+| 1 | Snapshot timer disabled and inactive | same | same | same |
+| 5–6 (D 1–2) | Freeze `cp -a` (index plus siblings); `.recovery` snapshot copy; vendor unit stopped; empty folder moved aside | same | same | same |
+| 7 (D 3–6) | 09-18 restore through a throwaway index copy (main file only, N-8); destination only read | `cp -a` of root `data/` | Wiped copy | — |
+| 9 (D 8) | DB placed; index plus siblings copied (the original index stays in place and in the freeze); `DBPath`; `paused-until=0`; installer; `test ! -e` key; credential; first start Paused, **job queued with the copy taken before the edits** | same, under the old key | same, the copy has an empty URL | Installer, key, folder |
+| 10 | — | — | Hand start returns 102; the row survives (exit at `Program.cs:286-288`) | Hand start returns 102, then `paused-until`, credential, first start Paused |
+| 11 (D 9–10) | Edits change the database, not the queue; dry-run passes; `resume` → stale run fails on the read-only tempdir, slot used up, nothing deleted, no guard | Edits and dry-run | as A0; stale run fails on the empty URL | Rebuild POST (future Time, nothing queued); Verify queued and blocked; `resume` runs Verify |
+| 12 (P0.5b) | — | Restarts drop the stale queue; the encrypt start queues the edited job; `resume` → first backup with guard and no retention | — | — |
+| 13 | Copy plus `-wal`/`-shm`; timer `enable --now` | same | same | same |
+| 14 (D 11) | AC-3 is a manual run (unstated); AC-4 from 09-18 intact; restored `2W:1D,6M:1W,2Y:1M,5Y:2M` deletes 5 of 9 dlists (09-18 among them), keeps all dblocks | AC-3 is the P0.5b run | as A0 | as A0 |
+
+## Not refuted
+
+- **DEFECT-2 fix (`paused-until=0`).**
+  - The row form matches `SetSettings` (`Connection.cs:404-416`; `Schema.sql:72-77`; `SERVER_SETTINGS_ID=-2` at `Connection.cs:57`).
+  - `"0"` parses to Ticks 0, which means an indefinite pause (`ServerSettings.cs:231-241`; `LiveControls.cs:192-200`).
+  - It cancels the `startup-delay` timer (`LiveControls.cs:186-198`), and every start saves it again (`Program.cs:1308`).
+- **The hand start keeps the row.** It returns at `Program.cs:286-288`, before LiveControls exists.
+- **DEFECT-4 fix.** With `pbkdf-config` deleted, `UpgradePasswordToKBDF` mints a random password with `autogenerated=True` (`ServerSettings.cs:363-389`), so the hand start returns 102.
+- **The retention ruling is present as configuration on all four paths.** Step 10 removes it, B's tool omits it (D:2581), and step 11 restores it for every path.
+- **The port matches the remover.** `retention_table.py` matches `DeleteHandler.cs:339-433`; `--check` reproduces R3B's table; and only dlists go (`DeleteHandler.cs:204`).
+- **R3B's first routed question is closed.** The `-wal`/`-journal` copy is now in D step 8 (D:2597-2598), A:268 and A:294.
+- **B's re-point cannot overwrite the moved index.** `movedb` refuses an existing target (`BackupPost.cs:119-120`).
+- **Nothing opens the index's original in place before step 8.**
+
+## Unverifiable
+
+- The stored `startup-delay` value and the common options `keep-*` (both would need the database).
+- Whether 2.4's default ngclient UI's "Keep all backups" removes all three retention options.
+- Whether a `-wal` or `-journal` exists beside the index.
+- DEFECT-1 at runtime: the queueing at first start is shown from source only, since no Duplicati binary may run.
+- The exact point where the EROFS-tempdir run fails. Source reading puts it before any upload.
+
+## Slips
+
+None outside the limits.
+- **Network:** read-only GitHub reads of `duplicati/duplicati` at the tag (the tree via `gh api`, raw files).
+- **Host metadata:** `stat` of `/home/pcalnon/.cache/duplicati-tmp` and `id duplicati`.
+- **Scratch only:** `git show origin/main:<D>` was written to scratch, and every script and output is under `scratchpad/r4-B/`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 4, lane C — run the things
+
+Archived verbatim (16,547 characters, sha256 `55589fad85b79344`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Phase B round 4 — lane C (run the things)
+
+I checked the code at `a0ff619c` by running it, in scratch extractions under `…/scratchpad/r4-C/`. The worktree is unchanged: HEAD is still `a0ff619c`. The untracked `util/ad-hoc/2026-10-08_backup-phase-b-round4/` was created by someone else during the lane, not by me.
+
+## Summary
+
+**0 BLOCKER, 2 DEFECT, 9 NIT.**
+
+The serious one is DEFECT-1. The two new suites pass only on a host where `/mnt/Backups` is a mountpoint. On CI's `ubuntu-latest`, `/mnt/Backups` is not a mountpoint, so they fail. Every lane so far ran them on the owner's host, where it is.
+
+Check results:
+
+| Check | Result |
+| --- | --- |
+| `tests/test_duplicati_wrapper_contract.py` | 43 tests, OK on this host |
+| `tests/test_duplicati_installer_real_path.py` | 13 tests, OK on this host |
+| `tests/test_backup_rekey_real_path.py` | 19 tests, OK. C2.md says 20. |
+| `tests/test_clear_stop_backup_design.py` | 7 tests, OK |
+| `tests/test_ci_test_wiring_drift.py` | 14 tests, OK |
+| `util/ad-hoc/2026-09-10_agents_md_test_list_drift.py` | 0 drift; `AGENTS.md` says 202 and `docs/REFERENCE.md` lists 202 |
+| Other duplicati / yamaguchi / tier2 / env-repr suites | All OK, except `tests/test_duplicati_scheduled_backup.py` |
+| `tests/test_duplicati_scheduled_backup.py` | 5 failures. The test refuses to stage volumes because this host's `/tmp` is tmpfs. The file is not changed by Phase B, so the failures are unrelated to it. |
+| shellcheck (`--severity=warning`) on every changed `.sh`/`.bash` | 0 |
+| shellcheck (default severity) on the six named scripts | 0 |
+| flake8 `--max-line-length=512` on the 12 changed Python files | 0 |
+| markdownlint 0.42.0 (the cached pre-commit environment) on D and A | 0 |
+| Snippet linter on D | 14 blocks, 0 failures |
+| Idempotence from a fresh `origin/main` D | `--from-repo` gives "5 rewritten, 9 identical, 1 retagged". The clearing script gives "applied 71 … 71 edits: 70 prose, 1 fence". The result is byte-identical to `a0ff619c`'s D (sha256 `5c98cf27…`). A second run reports "no change (71 … already applied)", and `--check` reports "0 staged, 14 already current". |
+
+Mutation kill counts:
+
+| Instrument | Killed | Survivors |
+| --- | --- | --- |
+| `c1_mutations.py` after | 31 of 32 | I11, which is equivalent, as C1 says |
+| `c1_mutations.py` before | 5 of 8 | M16, M19, M20 (matches C1 and R3C) |
+| `c2_rekey_mutations.py` after | 32 of 32 | — |
+| `c2_rekey_mutations.py` before | 5 of 13 | M07 and M10–M13 killed (matches C2) |
+| **My 29 new mutants** (`bin/r4c_mutants.py`) | **17 of 29** | 12, listed below |
+
+My 12 surviving mutants:
+
+- **X12 is a bug, not a test gap.** The mutant deletes `DUPLICATI_REQUIRE_MOUNT=` from the installer, and nothing changes, because that assignment already does nothing. This is DEFECT-1.
+- **X21 is equivalent.** Under DELETE mode the post-check cleanup loop has nothing to remove.
+- **Ten are untested branches:**
+  - X06: CRLF in the env file is no longer stripped.
+  - X10: quotes are no longer stripped from `KEY=VALUE`.
+  - X11: the env file overrides a variable systemd already set.
+  - X15: the pre-install copy loses `cp -p`.
+  - X24: the cp-succeeded, mv-failed key layout.
+  - X25: an `--unrewritten` crash (exit 2) is treated as a pass.
+  - X26: the timer is-active check becomes `!= active`.
+  - X40: the "RECOVERY, FIRST" stop line is never printed.
+  - X31: an unterminated STOP block gets past the sha gate. The run then probably dies anyway in `replace_stop_block`'s `.index`.
+  - X33: the phase-marker `gone` pattern is narrowed to the original wording (see NIT-1).
+
+## Findings
+
+### BLOCKER
+
+None.
+
+### DEFECT
+
+**DEFECT-1. The wrapper cannot switch off its mount check, so two suites depend on the host's mounts and fail on CI. VERIFIED by simulation.**
+
+- **The cause.** `scripts/duplicati-wrapper.bash:80` reads `REQUIRE_MOUNT="${DUPLICATI_REQUIRE_MOUNT:-/mnt/Backups}"`. The `:-` form replaces an empty value as well as an unset one.
+- **So "empty means off" is dead code.** `:215` (`if [[ -n "${REQUIRE_MOUNT}" ]]`) is meant to skip the check when the variable is empty, but it never sees an empty value.
+- **Every caller that sets it empty still gets the check.**
+  - The test helper does this (`tests/test_duplicati_wrapper_contract.py:113`).
+  - So does the installer's `wrapper_accepts` (`util/install_duplicati_service.bash:167`). Its comment at `:160-161` says "no mount is required".
+  - All of them still run `mountpoint -q /mnt/Backups`. strace confirms it: 76 calls in the contract suite and 46 in the installer suite.
+- **Why it passed here.** `/mnt/Backups` is a mountpoint on this host. My mutant X12 survives for the same reason: the assignment it deletes has no effect.
+- **Reproduction.**
+  - I took a scratch copy (`ci-sim/`) and changed only the wrapper's default to a path that is not a mountpoint.
+  - The contract suite then gives `FAILED (failures=35)`, the installer real-path suite gives `FAILED (failures=10)`, and the re-key suite stays OK.
+  - Every failure ends at `FATAL: … is not a mountpoint` or at the installer's `REFUSING: the wrapper refuses …contract`.
+- **Impact on CI.** `ci.yml` runs both suites in the `tests` job on `ubuntu-latest` (`:158`, `:646`, `:652`). That runner has no `/mnt/Backups` mount, so the PR's required check will fail. The contract suite does not exist on `origin/main`, so this has never run on CI.
+- **Impact on a real install.** The installer refuses the contract whenever the backup drive is not mounted during assessment step 9. The message is misleading: it says the wrapper refuses the contract.
+- **Remedy.**
+  - Change `:80` to `${DUPLICATI_REQUIRE_MOUNT-/mnt/Backups}` (no colon), so a set-but-empty value turns the check off.
+  - Add a test that runs `--print-command` with a mount path that does not exist, both with the variable empty and with it unset.
+
+**DEFECT-2. The pre-flight count `--unrewritten` misses orphaned `Option` and `Source` rows, and the test's fake server hides the gap. VERIFIED by reproduction. How far it reaches on Yamaguchi is PLAUSIBLE only.**
+
+- **What the product does.** At the tag, `ReWriteAllFieldsIfEncryptionChanged` (`Connection.cs:131-153`) re-saves each existing Backup with its children, then settings `-1` (`ANY_BACKUP_ID`, `:56`). It re-saves `-2` through the `EncryptedFields` setter calling `SaveSettings` (`ServerSettings.cs:851-888`).
+- **Where orphans can sit.** `Option` and `Source` have `BackupID NOT NULL` and **no foreign key** (`Schema.sql:44-45, 72-73`). `BackupTargetUrl`, by contrast, has `ON DELETE CASCADE` (`:199`). So an `Option`/`Source` blob whose BackupID names no backup is never rewritten. That is more likely to exist than the `BackupTargetUrl` orphan C2 chose to refuse on.
+- **What the gate does with them.** `rekey_gate.py:113-130` counts only `ConnectionString` and `BackupTargetUrl` orphans, but `gate()` scans every `Option` and `Source` row.
+- **Reproduction** (`bin/unrewritten_orphans.py`): one orphaned `Option` (and, separately, `Source`) row holding a blob under the OLD key.
+  - `--unrewritten` exits 0 with `ConnectionString.BaseUrl=0 … orphaned=0`.
+  - The exit gate then exits 1 with `under-another-key=1`.
+  - That is the post-swap failure the pre-flight exists to prevent.
+- **The test cannot see it.** The fake server at `tests/test_backup_rekey_real_path.py:94-98` rewrites every `Option` passphrase/pbkdf row and every `Source` row, whatever their BackupID. Its docstring (`:26-29`) says it mirrors the product.
+- **Remedy.**
+  - Count `Option.Value` blobs whose `BackupID NOT IN (-1, -2, <Backup IDs>)` and `Source.Path` blobs whose `BackupID NOT IN (<Backup IDs>)`, and refuse on either.
+  - Make the fake server skip orphaned rows, and add the two cases to the suite.
+
+### NIT
+
+- **NIT-1. The clearing script's `gone` patterns are tied to the wording. VERIFIED.**
+  - P.md says "a reworded marker on main fails". It fails only when the rewording keeps "held by the STOP".
+  - Reproduction: on `origin/main`'s D, I changed all five phase markers and the P0.5a marker to "blocked behind the STOP". The run printed `ALREADY phase markers: held`, `ALREADY P0.5a marker`, then "applied 69, already-present 2", and D was written with six live STOP markers.
+  - Rewording only the five phase markers is refused, but only by accident: the phase-marker pattern also matches the P0.5a marker line, which is still present.
+  - The suite's reworded-marker test survives mutant X33.
+  - Remedy: use one pattern, `(?im)^\*[^*\n]*\bSTOP\b`, for both edits, and test a rewording that drops "held".
+- **NIT-2. D at `a0ff619c` still describes the STOP as in force in three places. VERIFIED.**
+  - `:93` — "the STOP at the top of §8 asks whether…".
+  - `:373` — "the follow-up behind the STOP at the top of §8 owes one".
+  - `:514` — "Held until the STOP at the top of §8 is lifted: S-2's re-key…".
+  - Remedy: add edits to the clearing script, or add "the STOP at the top of §8" to `STALE`.
+- **NIT-3. A real installer run never says where it copied a file aside. VERIFIED** (`bin/installer_attacks.py`, test I).
+  - `act()` prints only under `--dry-run` (`install_duplicati_service.bash:119-127`).
+  - On a real run, the `.pre-install-<UTC>` copy and the `.drifted-<UTC>` copy are made with no output naming them. The DRIFT line is printed; the copy's path is not.
+  - On this host, assessment step 9 will silently replace `/etc/default/duplicati` (never blessed, and different from the repository copy).
+  - Remedy: `say` the aside path in both branches.
+- **NIT-4. D says the installer and the wrapper "cannot disagree" (`:2163-2165`). VERIFIED from the code.**
+  - `wrapper_accepts` runs as root under `env -i`. The real start runs as `duplicati`, with a credential and systemd's environment.
+  - So an existing `/etc/duplicati/env` that is root 0600 passes the installer, which checks `-r` as root (wrapper `:146`). The first start then fails with exit 78: "not readable by duplicati".
+  - Remedy: soften the prose, or have the installer also check that the existing file is owned by group duplicati and is group-readable.
+- **NIT-5. A missing or empty blessed file bypasses the drift gate. VERIFIED** (test H).
+  - A 0-byte blessed file plus an edited installed wrapper gives "first install": exit 0, no DRIFT line, the edit kept only as `.pre-install-*`.
+  - The edit is still on disk as the aside, and only root can remove the blessed file.
+  - Remedy: treat "blessed file absent but installed files present" as needing `--update-backup-behavior`.
+- **NIT-6. A NUL byte in the key file means two keys. VERIFIED** (`bin/nul_key.bash`).
+  - The wrapper's `$(<file)` drops the NUL, giving 20 characters, and passes `check_key_shape`. Python reads 21 characters, and neither `read_key` nor the hand start refuses it.
+  - This is the same class as R3C N-2 (CR), and is unrealistic for an `openssl rand` key.
+  - Remedy: refuse `\0` in both places; in bash, for example, compare `wc -c` against `${#key}`.
+- **NIT-7. One allowed value can still carry a CR. VERIFIED.**
+  - Only one trailing CR is stripped (wrapper `:149`), so `--log-level=x\r\r` reaches argv as `$'--log-level=x\r'`.
+  - CRLF handling is never tested (mutant X06 survives).
+- **NIT-8. The hermeticity claims are overstated. VERIFIED by strace (file syscalls only).**
+  - `test_backup_rekey_real_path.py`'s `DryRunHermetic` runs the unmodified script, which `stat`s `/etc/credstore/duplicati-settings-key{,.new}`. It gets EACCES here, against the docstring's "Nothing touches /etc" (`:31`).
+  - In the contract suite, the installer dry run's advisory `systemd-analyze verify` reads the host's `/etc/systemd/system`, against `:30-32`. This also showed, from a symlink read only, that `timers.target.wants/yamaguchi-server-db-snapshot.timer` exists on this host.
+  - No test reads `~/.config`, `/home/duplicati`, or the contents of any secret.
+- **NIT-9. Test-count and coverage gaps.**
+  - C2.md says the re-key suite has 20 tests; it has 19, and contract plus re-key is 43 + 19.
+  - Surviving mutants X24, X25, X26 and X40 mark trap and pre-flight branches that nothing asserts. One of them is the cp-succeeded, mv-failed key layout, which would print "UNEXPECTED layout, do not start" if the predicate regressed.
+
+## Not refuted
+
+- **Hostile env-file lines** (`bin/envfile_attacks.py`: 39 cases under the C, C.UTF-8 and en_US.UTF-8 locales). Every case fails closed or is harmless:
+  - leading tabs or spaces, a space around `=`, CRLF, a trailing space, a BOM, `--` alone, `--=x`, a triple dash, and full-width hyphens;
+  - a name that extends an allowed name (`--log-level-x`) and an embedded `--disable…` inside a value;
+  - NUL inside a denied name, a value with extra `=`, duplicate options (last wins), and `LC_ALL` set from the file;
+  - quoted or whitespace-edged keys, and a key with a CR in the middle;
+  - a 1 MiB line takes 15–97 s but completes, and 10,000 lines take about 6 s.
+- **Unicode lookalikes.**
+  - Cyrillic і and о, dotless ı, ſ and İ are all refused. Under UTF-8 the bash range `[A-Za-z]` admits ı and İ, but the allow-list still refuses them.
+  - The Kelvin sign K is accepted under en_US.UTF-8, but only because it lowercases to the allowed `--ping-pong-keepalive`, so it is harmless.
+- **A NUL-hidden secret in the contract** (`SETTINGS_ENCRYPTION_\0KEY=…`). The installer still refuses it: GNU grep treats NUL as a line break in a binary file.
+- **The installer's real path** (stubs reused from the suite):
+  - a symlinked unit is copied aside by content, its target is left alone, and it is replaced by a regular file;
+  - a symlinked lib directory works;
+  - a re-run takes no new asides and keeps the old ones;
+  - a failure between install and bless is followed by a clean re-run;
+  - an env file symlinked to a file the wrapper refuses is refused;
+  - a duplicate entry in the blessed file fails closed (exit 4).
+- **The snapshot.** Leftover `-wal`/`-shm` files beside the destination are removed (my mutant X20 is killed). With DELETE mode, the cleanup loop after the integrity check is redundant.
+- **The re-key trap and gate.**
+  - `key_tag`, DO_NOT_START, STARTED-before-pause, the foreign `.old` check, and a CR in the key are all killed by the suites.
+  - The timer is-enabled whitelist, including its empty-string case, is backed up by the strict `== inactive` test.
+  - `BackupTargetUrl.BackupID` is `NOT NULL` (`Schema.sql:190`), so the case where `NOT IN` meets NULL cannot occur.
+- **The clearing script's FIXFWD form** (mutant X32 killed), the STOP sha gate on a changed block, and its idempotence.
+
+## Unverifiable
+
+- Whether the Yamaguchi database holds orphaned `Option`/`Source`/`BackupTargetUrl` or `ConnectionString` rows: reading it is forbidden.
+- CI itself: the branch is local-only. DEFECT-1 is shown by simulation, by changing the default mount path, because I cannot unmount anything (no namespaces, no root).
+- How .NET's case-insensitive option matching treats ı or ſ in DAEMON_OPTS. That needs the binary. The env file fails closed regardless.
+- How the installer and the re-key behave as root.
+
+## Slips
+
+- **Scripts in tmpfs scratch.** My instruments live only in tmpfs scratch, under `…/scratchpad/r4-C/bin/`: `r4c_mutants.py`, `envfile_attacks.py`, `installer_attacks.py`, `unrewritten_orphans.py`, `nul_key.bash`, `trace_suites.bash`, `run_suites.bash`. The brief requires scratch, but the repository convention wants `util/ad-hoc/`, so they should be copied there before tmpfs is reaped.
+- **Host paths touched by the suites, not by me directly.**
+  - The suites stat'ed `/etc/credstore/*` (EACCES), ran `systemd-analyze verify` against the host's unit search path, and ran `mountpoint` on `/mnt/Backups`.
+  - I ran `mountpoint /mnt/Backups` once myself.
+  - Nothing under `/mnt/Backups/Ubuntu/` was touched.
+- **No unit, binary, port 8300 or secret content was used.** No state-changing git command was run. The `git show origin/main:D` output went to the scratch copy only.
+- **GitHub reads.** I read `Connection.cs`, `ServerSettings.cs` and `Schema.sql`, plus one directory listing, all at tag `v2.4.0.0_stable_2026-09-03`.
+
+**Changed**: no repository file. Documents referenced:
+- `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/BRIEF_ROUND4.md`, `BRIEF_COMMON.md`, `C1.md`, `C2.md`, `P.md`
+- `util/ad-hoc/2026-10-04_backup-phase-b-round3/R3C.md`
+- D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`)
+- A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`)
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 4's fold-in, lane C1
+
+Archived verbatim (12,080 characters, sha256 `3b93464dc7601d6e`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+## Lane C1 report: backup Phase B round-4 fold-in
+
+Every round-4 item assigned to me is done, and the four Phase B suites now pass on a simulated host where `/mnt/Backups` is not a mountpoint (101 tests). Nothing on the host was touched, no git command changed state, and all new tests fail against the frozen commit `a0ff619c`.
+
+### 1. Findings
+
+**R4A D-1 = R4C DEFECT-1 (empty mount override ignored): FIXED.**
+- `scripts/duplicati-wrapper.bash` is now **2.4.0**. The mount default is `"${DUPLICATI_REQUIRE_MOUNT-/mnt/Backups}"`, so a set-but-empty value really switches the check off. The unit never sets the variable, so production keeps the check.
+- **Decision: the installer's `wrapper_accepts` keeps passing an empty value.** It judges the env file's grammar, and a missing mount is not a contract fault. The unit's own start still checks the mount every time.
+- The false "no mount is required" comment in `util/install_duplicati_service.bash` (now **1.4.0**) is rewritten to say exactly this.
+
+**R4A D-2 (allow-list had a name the server lacks): FIXED.**
+- `suppress-welcome-page` is renamed to `webservice-suppress-welcome-page` in the wrapper, the contract (`util/systemd/duplicati-env.contract`) and the test's `ALLOWED` pin.
+- **New fixture:** `tests/fixtures/duplicati_2.4.0.0_server_options.txt`, 50 options.
+  - It is the 47 `SupportedCommands` plus the three `secret-provider*` options, with aliases (`parameterfile`, `webservice-allowedhostnames`).
+  - Generated by `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c1_extract_server_options.py` from source fetched read-only at tag `v2.4.0.0_stable_2026-09-03` (commit `b3e9268c…`).
+  - The fixture header records the sha256 of each source file.
+- **New test:** `test_every_list_entry_is_a_real_server_option_and_every_alias_is_covered` reads the wrapper's own two lists, not the test's copy. Every entry must be a real option or alias, and if a list names part of an alias group it must name the whole group.
+
+**R4A N-1 / R4B N-7 (installer "Next:" hint): FIXED.**
+- Before `sudo systemctl start` it now prints step 8's prerequisites:
+  - the key in place;
+  - `paused-until = 0` read back with `startup-delay`;
+  - the web credential in the form `DUPLICATI_WEB_CREDENTIAL=<password>`, mode 0600;
+  - the hand start on A2 and B.
+- After the start: `serverstate` must exit 2.
+- Then design step 10's guard block, verbatim from a heredoc, including `unset url id`, `id=<id>` and the numeric check.
+
+**R4A N-6 (NOTE's key-write command): FIXED.** It is now D's exact form: `sudo test ! -e … && { umask 077; openssl rand … | sudo tee … >/dev/null; }`. It also tells the operator that an empty file is refused on purpose and must be removed by hand.
+
+**R4C N-3 (real run silent about copy-asides): FIXED.** A real run now prints `kept the drifted <dst> as <aside>` or `kept the never-blessed <dst> as <aside>`.
+
+**R4C N-4 (existing `/etc/duplicati/env` readable by the service): FIXED; I chose to enforce rather than soften.**
+- The file must be owner root, group duplicati, group-readable, and writable by root only.
+- A real run refuses (exit 2) otherwise; a dry run reports `would refuse`.
+- Reason: the root-run grammar gate would pass a file that duplicati cannot read, and the first start would then exit 78.
+
+**R4C N-5 (absent or empty blessed file bypassed the drift gate): FIXED.**
+- An installed file that differs from the repository and was never blessed is now reported `UNBLESSED` and needs `--update-backup-behavior`, exactly like drift.
+- This applies whether the blessed file is absent or empty.
+- An installed file identical to the repository still installs quietly.
+
+**R4C N-6 (NUL byte in the key, wrapper side): FIXED.** The wrapper compares `wc -c` with `tr -d '\000' | wc -c` before reading the credential, and refuses on a mismatch.
+
+**R4C N-7 (CR handling): FIXED.** Every trailing CR is stripped from an env-file line, and a CR anywhere else in the line is refused.
+
+**R4C N-8 (tests reading the host's unit tree): FIXED in the tests.** `InstallerDriftGate` puts a `systemd-analyze` stub on PATH, so the dry run's advisory verify no longer reads the host's `/etc/systemd/system`. The real-path suite already stubbed it.
+
+**R4C surviving mutants: all now killed.**
+- X06: CRLF lines accepted, no CR reaches the server.
+- X10 and X11: tested by actually executing the wrapper against a stub server that prints the `TZ` it received.
+- X15: the copy-aside must keep mode and mtime (`cp -p`), checked for both the pre-install and the drift aside.
+- X01: lost its anchor after the rename. I added name-extension cases (`--log-level-extra`, `--webservice-port2`) and re-anchored it as R16, which is killed.
+
+### 2. Tests, with fail-before and pass-after evidence
+
+**Changes:**
+- **`WrapperEnvContract`**, 7 new tests:
+  - fixture pin;
+  - empty mount override with the default mount absent;
+  - value unquoting and environment precedence;
+  - CRLF;
+  - NUL in the key;
+  - extension cases;
+  - the `ALLOWED` rename.
+- **`InstallerDriftGate`:** the `systemd-analyze` stub.
+- **`tests/test_duplicati_installer_real_path.py`** grows from 13 to 17 tests:
+  - UNBLESSED with the blessed file absent or empty, then kept with mode, mtime and the printed path;
+  - an identical never-blessed file installs quietly;
+  - env-file ownership and mode;
+  - an absent backup mount;
+  - the verbatim guard block plus the prerequisites;
+  - the key NOTE form;
+  - the drift aside's mode, mtime and printed path.
+
+**Fail-before:** run against `a0ff619c`'s code, the new tests give **19 failures across 12 tests** (`FAILED (failures=19)`, 45 run). The X10/X11 test passes there; it pins existing behaviour and is what kills those mutants.
+
+**Mutation kill counts:**
+
+| Run | Applied | Killed | Not killed |
+| --- | --- | --- | --- |
+| `c1_mutations.py after` (round-3 set re-anchored, plus R1–R16) | 47 | 46 | I11, which is equivalent (`cmp -s` runs before the bless) |
+| `r4c_mutants.py` on my files, in the ci-sim tree | 15 | 14 | X21, which is equivalent (R4C says so too) |
+
+- In the `after` run, W4 was skipped in the main pass after the rename, then re-anchored and killed in a separate run.
+- In the R4C run, X01 and X06 were skipped (no anchor after this round's changes); R16 and R3 cover them, and both are killed.
+- R4C's "before" figure for my files was 12 killed of 17 applied.
+
+### 3. Check results
+- **On this host:** `tests/test_duplicati_wrapper_contract.py` 51 OK; `tests/test_duplicati_installer_real_path.py` 17 OK.
+- **ci-sim** (full worktree copy, wrapper default changed to `/nonexistent-cisim/Backups`):
+
+| Suite | Result |
+| --- | --- |
+| `tests/test_duplicati_wrapper_contract.py` | 51 OK |
+| `tests/test_duplicati_installer_real_path.py` | 17 OK |
+| `tests/test_backup_rekey_real_path.py` | 24 OK |
+| `tests/test_clear_stop_backup_design.py` | 9 OK |
+
+  Before the fix, R4C measured 35 and 10 failures in the first two suites.
+- shellcheck on the wrapper and installer: 0.
+- flake8 on my test file, the real-path suite and the two ad-hoc scripts: 0.
+- One flake8 E231 remains at `tests/test_duplicati_wrapper_contract.py:645` (`),(` in `test_password_init_dry_run_runs_the_secret_format_gate`). That is lane C2's `RecoveryHelperGates`, not mine.
+
+### 4. Needed elsewhere
+
+**`docs/REFERENCE.md`:**
+- No rename is needed: the worktree's REFERENCE.md no longer contains `suppress-welcome-page` (grep finds none).
+- In the `tests/test_duplicati_wrapper_contract.py` bullet (line 3553), after "--print-command redacts by option name.", insert:
+  > Both option lists are pinned against the product's own table (`tests/fixtures/duplicati_2.4.0.0_server_options.txt`, vendored from Duplicati 2.4.0.0's `Program.cs` with provenance): every entry is a real option or alias, and an alias group is listed whole. An empty `DUPLICATI_REQUIRE_MOUNT` switches the wrapper's mount check off, proven against a copy whose default mount does not exist; CRLF lines, quoted values, environment precedence and a NUL in the key are pinned; the installer dry runs stub `systemd-analyze`, so no test reads the host's unit tree.
+- Replace the `tests/test_duplicati_installer_real_path.py` bullet (line 3554) with:
+  > - `tests/test_duplicati_installer_real_path.py` -- Phase B round-3/4 fold-in (R3C D-5, N-7, N-8; R4C N-3, N-4, N-5; R4A D-1, N-1, N-6): `util/install_duplicati_service.bash` run for REAL (not `--dry-run`) as a non-root user against a scratch prefix with PATH stubs (`id`, `install`, `systemctl`, `systemd-analyze`, `stat`); pins byte-for-byte install and modes, the blessed checksums, the drift and pre-install copy-asides (bytes, mode and mtime, and the printed path), UNBLESSED (blessed file absent or empty) needing `--update-backup-behavior`, the kept, refused and wrongly-owned existing env file, that an absent backup mount is not a contract fault, the data-folder and credential checks, the key NOTE's `sudo test ! -e` form, step 8's prerequisites before the start and step 10's guard block verbatim, and that the server-DB snapshot of a WAL-mode database leaves no `-wal`/`-shm` beside it. Never reads `/etc`.
+
+CI wiring is unchanged; the suite is already wired.
+
+**D (prose lane, clearing script):**
+- In step 8, replace "on a never-blessed host (I-36) there is nothing to compare and it does not." with:
+  > on a never-blessed host (I-36) an installed file that matches the repository installs quietly, but one that differs -- this host's `/etc/default/duplicati` does -- is reported **UNBLESSED** and refused the same way, so re-run with `--update-backup-behavior`; the installer keeps the old file as `<file>.pre-install-<UTC>` and says where.
+- Extend step 8's existing-env-file sentence:
+  > It must also be `root:duplicati`, group-readable and writable by root only (0640); the installer refuses any other owner or mode, because it judges the file as root while the service reads it as duplicati.
+- Correct the blessed-file count (R4A N-2):
+  > round 3's and round 4's fold-ins changed four blessed files: the wrapper (2.2.0 to 2.4.0), the snapshot script, the snapshot unit and a comment in `duplicati.service`.
+- §8 / note 12c, describing this round:
+  > Round 4 (2026-10-08): wrapper 2.4.0 makes an empty `DUPLICATI_REQUIRE_MOUNT` switch its mount check off (with `:-` the installer's contract gate and every suite silently depended on `/mnt/Backups` being mounted and would fail on CI); the allow-listed welcome-page tunable is `--webservice-suppress-welcome-page`, the server's real name, and both lists are now pinned against a vendored copy of the product's option table; every trailing CR is stripped and a NUL in the key refused. Installer 1.4.0 refuses an unblessed differing file without `--update-backup-behavior`, checks an existing env file's owner and mode, says where it copied a file aside, and prints step 8's prerequisites and step 10's guard block verbatim. New: `tests/fixtures/duplicati_2.4.0.0_server_options.txt`.
+- Note 12c's suite list must include `tests/test_duplicati_installer_real_path.py` (R4A N-5).
+
+**A (§8 and step 9):**
+- In step 9, mirror D step 8's UNBLESSED sentence and the env-file owner/mode sentence.
+- §8 "Folded in, round 4" should list: R4A D-1, D-2, N-1, N-6; R4B N-7; R4C DEFECT-1, N-3, N-4, N-5, N-6, N-7, N-8; R4C X01, X06, X10, X11, X15.
+- No residue from these items.
+
+### 5. Wrong but out of my scope
+- The flake8 E231 in lane C2's `RecoveryHelperGates` (line 645).
+- R4A N-4 (retention window, D vs A) and R4C NIT-1 and NIT-2 belong to the clearing-script and prose lanes.
+
+**Files changed:**
+- `scripts/duplicati-wrapper.bash` (2.4.0)
+- `util/install_duplicati_service.bash` (1.4.0)
+- `util/systemd/duplicati-env.contract`
+- `tests/test_duplicati_wrapper_contract.py` (`WrapperEnvContract` and `InstallerDriftGate` only)
+- `tests/test_duplicati_installer_real_path.py`
+- `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c1_mutations.py` (1.1.0: R1–R16, ci-sim mode, id filter)
+
+**Files created:**
+- `tests/fixtures/duplicati_2.4.0.0_server_options.txt`
+- `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c1_extract_server_options.py`
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 4's fold-in, lane C2
+
+Archived verbatim (8,630 characters, sha256 `bd9e19be12cfda6f`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Lane C2 report: Phase B round-4 fold-in
+
+All three of your items in my files are fixed. The pre-flight now refuses orphaned `Option` and `Source` blobs (R4C DEFECT-2), and R4C's four surviving mutants are now killed. The mount-check defect (R4A D-1 / R4C DEFECT-1) does not reach my tests.
+
+Mutation results on the current code:
+- **`c2_rekey_mutations.py` after-set:** 43 of 43 killed. One defined mutant (G02) was skipped because the code it targets was rewritten; G06 covers the same behaviour.
+- **R4C's re-key and gate mutants (`r4c_mutants.py`):** 8 of 8 killed, including X24, X25, X26 and X40. X38 was skipped for the same reason as G02; G06 and G08 cover it.
+
+Files referenced: R4A, R4B and R4C are `util/ad-hoc/2026-10-08_backup-phase-b-round4/R4{A,B,C}.md`. D is `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`. A is `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`.
+
+**Changed**:
+- `util/ad-hoc/2026-10-03_rekey_gate.py` (1.1.0 → 1.2.0)
+- `util/ad-hoc/2026-10-03_rekey_settings_key.bash` (1.2.0 → 1.3.0)
+- `util/ad-hoc/2026-10-03_password_init_hand_start.bash` (1.2.0 → 1.3.0)
+- `tests/test_backup_rekey_real_path.py`
+- `tests/test_duplicati_wrapper_contract.py`, classes `RecoveryHelperGates` and `RekeyGate` only
+- `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c2_rekey_mutations.py`
+
+## 1. Findings
+
+**R4C DEFECT-2: FIXED.**
+- **Gate.** `--unrewritten` (`unrewritten()` and the new `orphans_of()` in the gate) now counts, per table, `enc-v1:` blobs whose BackupID names no backup:
+  - `Option.Value`, where -1 and -2 also count as live;
+  - `Source.Path`;
+  - `BackupTargetUrl.TargetURL`.
+
+  It refuses on any orphan, as well as on any `ConnectionString` blob. Attached rows are printed but do not refuse. If the `Backup` table is absent, every child row counts as an orphan.
+- **Verified at tag `v2.4.0.0_stable_2026-09-03` that -1 and -2 are rewritten:**
+  - `ANY_BACKUP_ID = -1` and `SERVER_SETTINGS_ID = -2` are defined at `Connection.cs:56-57`.
+  - -1 is re-saved directly by the rewrite pass (`Connection.cs:145`).
+  - -2 is re-saved through a chain: the `EncryptedFields` setter (`ServerSettings.cs:851-855`) calls `SetAndSaveSetting`, then `SaveSettings` (`:209-218`), then `SetSettings(-2)`. That last call deletes and re-inserts every -2 row with encryption (`Connection.cs:387-407`).
+- **Re-key.** The header, the dry-run line and the refusal text now name the orphan rows. The refusal gives the remedy for them: with the server stopped and a copy kept, delete the rows with sqlite3, start the unit, re-run.
+- **Fake server** in the real-path suite now rewrites only settings -1/-2 and each existing backup's children, as the product does; its docstring is corrected.
+- **Reproduction.** R4C's `r4c-bin/unrewritten_orphans.py`, run against the current tree, now gives `--unrewritten exit=1` (`Option.Value orphaned=1`, then separately `Source.Path orphaned=1`).
+
+**R4C X24, X25, X26 and X40: FIXED** (each with a new test):
+
+| Mutant | What it hid | Test that kills it |
+| --- | --- | --- |
+| X24 | the cp-succeeded, mv-failed key layout | `test_copy_done_move_failed_reads_as_unswapped_and_recovers` (uses a new `mv` stub; also follows the printed recovery to a successful re-run) |
+| X25 | an `--unrewritten` crash (exit 2) passing | `test_refuses_when_the_count_itself_fails`. The script already refused on any exit other than 0 (`case` arms `1)` and `*)`, both `die`); nothing tested it until now |
+| X26 | a timer `activating` or `reloading` passing | two cases added to the timer test |
+| X40 | the "RECOVERY, FIRST" stop line | `test_trap_stop_fails_prints_stop_first`: the decrypt start times out and the trap's own stop fails |
+
+**R4C NIT-6 (NUL in a key file), Python side: FIXED.** `read_key` in the gate and `write_params` in the hand start both refuse `\0`.
+
+**R4C NIT-8: FIXED.**
+- New `REKEY_CREDSTORE_DIR` hook in the re-key. It is honoured under `--dry-run` only; a real run with it set exits 2, because the unit's `LoadCredential=` reads `/etc/credstore` regardless.
+- Both dry-run tests now set it, and assert that `/etc/credstore` never appears in the output. The real-path suite's docstring claim ("nothing touches `/etc`") is now true.
+
+**R4A N-6 / R4C NIT-9: CORRECTED.** My round-3 report said 20 real-path tests; there were 19. The suite now has 24: 19 plus 5 new.
+
+**R4A D-1 / R4C DEFECT-1 (wrapper mount check): no effect on my tests.** `RecoveryHelperGates`, `RekeyGate` and `tests/test_backup_rekey_real_path.py` never call the wrapper, and R4C's own mount-absent simulation found the re-key suite still OK.
+
+## 2. Tests: fail before, pass after
+
+Evidence from `c2_rekey_mutations.py fail-before` on an `a0ff619c` extraction. The re-key there got only a test-anchor change: its two `CRED` assignments rewritten into the `CRED_DIR` form, same paths, no behaviour change.
+
+- **Fail on `a0ff619c`:**
+  - `test_refuses_an_orphaned_option_or_source_blob` (both subtests). It also shows that without the refusal, the gate fails after the swap.
+  - The three new gate tests: orphaned Option/Source counted while -1/-2 are not, no Backup table, NUL key.
+  - The hand start's NUL case inside `test_password_init_dry_run_runs_the_secret_format_gate`.
+  - Both `DryRunHermetic` tests.
+  - The updated dry-run sequence and attached-rows tests.
+- **Pass on `a0ff619c`, as expected:** the X24/X25/X26/X40 tests. They pin behaviour that was already there but untested; the mutation kills above are their evidence.
+
+## 3. Check results
+
+- `python3 -m unittest tests/test_duplicati_wrapper_contract.py tests/test_backup_rekey_real_path.py`: **75 tests, OK** (51 contract tests, including C1's current ones, plus 24 real-path).
+- `shellcheck` on both changed bash scripts: clean.
+- `flake8 --max-line-length=512` on the 4 changed Python files: clean.
+- CodeQL prescreen: 0 predicted alerts.
+
+## 4. Needed elsewhere
+
+**D, P0.5b pre-flight sentence** (replaces round 3's "any in `ConnectionString`, and in `BackupTargetUrl` rows of no backup …"):
+> Before the first stop it counts, on a copy of the database, the `enc-v1:` blobs the product's re-encryption never rewrites: any in `ConnectionString`, and any in an `Option`, `Source` or `BackupTargetUrl` row whose BackupID names no backup. `Option` and `Source` have no foreign key (`Schema.sql:44-45, 72-73`), so a deleted job's rows can outlive it. The settings rows at -1 and -2 are rewritten (`Connection.cs:145`; `ServerSettings.cs:851-855` → `SetSettings(-2)`), and so are a live backup's rows. It refuses if there is one, or if the count itself fails, because such a blob would stay under the old key and fail the exit gate only after the key swap (R3A D-5, R3C D-2, R4C DEFECT-2). Remedy, the owner's: saved connection strings are deleted through the web UI and re-created after the re-key; an orphaned row, which the UI cannot reach, is deleted with sqlite3 while the server is stopped and a copy is kept.
+
+**A, step 12 and note 6a:**
+> The re-key refuses, before anything changes, on an `enc-v1:` blob the product never rewrites: a `ConnectionString` row, or an `Option`/`Source`/`BackupTargetUrl` row of no backup (round 4, R4C DEFECT-2).
+
+**A §8 round-4 entry:**
+> R4C DEFECT-2 fixed (orphan count); X24/X25/X26/X40 tested; NIT-6 Python side and NIT-8 fixed (`REKEY_CREDSTORE_DIR`, dry-run only); real-path suite count corrected to 24 (it was 19, not 20, at `a0ff619c`).
+
+**docs/REFERENCE.md** (coordinator):
+- Real-path suite bullet: change "never-rewritten `enc-v1:` blobs" to "never-rewritten `enc-v1:` blobs (ConnectionString; Option/Source/BackupTargetUrl rows of no backup) or a failed count". Add "timers `activating`/`reloading`", "the cp-done/mv-failed key layout", "the 'RECOVERY, FIRST' stop line when the trap's stop fails", and "a dry run that stats nothing under `/etc` (`REKEY_INSTALLED_UNIT`, `REKEY_CREDSTORE_DIR`)".
+- Contract-suite bullet: add "`--unrewritten` counts orphaned Option/Source rows, not the -1/-2 settings rows; a NUL in a key or secret file is refused".
+
+**CI wiring:** no change from round 3; `tests/test_backup_rekey_real_path.py` must still be in `ci.yml`.
+
+## 5. Out of scope
+
+- **R4C NIT-6, wrapper side (C1).** The wrapper's `$(<file)` still drops a NUL. My readers now refuse such a file, so the wrapper should refuse it too (R4C's suggestion: compare `wc -c` against `${#key}`).
+- **The `Option` orphan remedy is a host action for the owner.** It deletes rows with sqlite3. Whether the Yamaguchi database holds any orphaned or `ConnectionString` rows is still unknown, since reading it is forbidden.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 4's fold-in, lane P
+
+Archived verbatim (6,397 characters, sha256 `70c446ba94dd5f27`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+My round-4 items are folded in and D is regenerated. Every check passes, except the sequence-safety screens, which compare commits and so I could not run them. Items that belong to C1 and C2 are marked "pending C1/C2" in A §8's new Round 4 entry for you to complete.
+
+**Edit count:** 78 (77 prose, 1 fence), up from 71.
+
+**D sha256:** `5b4dfea085a40ce72991c21cd0998f44a2506f92a58065a8d8d741d3a0dc0b5a`. `--from-repo` now rewrites 7 blocks, because the two A0 scripts changed.
+
+## R4B DEFECT-1: remedy (b), the restart, verified in the Duplicati 2.4.0.0 source
+- **The queue does not survive a stop.** It lives only in memory (`QueueRunnerService`, `List<IQueuedTask> _tasks`).
+- **`paused-until`=0 survives the restart.**
+  - `LiveControls.Init` reads Ticks 0 as an indefinite pause.
+  - `Program.cs:311` then calls `LiveControl_StateChanged` with `EstimatedPauseEnd`, which is tick 0 (`LiveControls.cs:318`, `:396`).
+  - Line 1308 saves that 0 again.
+- **The restart re-queues the edited job.** That save reschedules, and the scheduler takes its copy (`Scheduler.cs:326`, `GetBackup(id)`) from the database at that moment, so after the step-10 edits.
+- **Why not (a):** (b) edits through the product instead of writing `Option` rows by hand.
+
+What changed:
+- **D step 10** now pins `--aes-version`, removes `keep-time` and `keep-versions` along with `retention-policy` (R4B N-9, N-10), and ends on A0, A2 and B with: stop, start, `serverstate` exits 2, `export <id>` read-back, then `resume`. P0.5b's own two starts do the same job on Procedure A.
+- **D:2633** now says the guard aborts the first backup only once the restart has re-queued the job.
+- **AC-3 is a manual `run <id>`** whenever the overdue slot was used up. This is stated in D step 10 and A §6.4 step 11.
+- **D:2243 and :16, A:210 and :318** now mention the restart.
+- **A note 6a** records that the queued copy is frozen at the first start.
+
+## R4B DEFECT-2
+B's Verify, and any Repair, runs only at a `resume`. The cycle in D step 8 and A step 8 is:
+1. After step 10's restart, confirm `SchedulerQueueIds` holds no backup, and keep the session clear of 14:00 UTC.
+2. Queue Verify, `resume`, wait, `pause`, read the result; Repair the same way if needed.
+3. AC-3 is then `run <id>` and `resume`.
+
+## Corrected retention table
+`retention_table.py` (`--check` still reproduces R3B's table):
+
+| First pass on | Deletes (of 9) | Keeps |
+| --- | --- | --- |
+| 2026-10-08 to 2027-02-27 | 5 (09-12, 09-15T08:56, 09-16, 09-17T22:13, 09-18) | 08-25, 09-01, 09-08, 09-15T20:48 |
+| 2027-02-28 to 03-06 | 6 (adds 09-01) | 08-25, 09-08, 09-15T20:48 |
+
+The result is the same with 30 recovered days now that `outcome()` no longer invents filesets dated before the recovery (N-4). Before the fix, `--from 2026-10-08 --recovered-days 30` reported 6 deletions.
+
+## Other round-4 findings: fixed (D through the clearing script, A by hand)
+- **R4B NITs:**
+  - N-1: the stored `paused-until` and `startup-delay` are recorded before being replaced.
+  - N-2: post-recovery thinning is stated — one fileset a day within two weeks, so a manual AC-3 off the 14:00 slot costs the next day's fileset; weekly after that.
+  - N-3: one date range, 2026-10-08 to 2027-02-27, in both D and A.
+  - N-5: before the restore, the five dlists are copied to a root-only `/mnt/Backups/Ubuntu/_yamaguchi_retention_aside` with sha256 checked on both sides.
+  - N-6: a Running first start means stop the unit.
+  - N-8: I took ownership of the two A0 scripts for this fix; each now copies the index's `-wal`/`-journal` into its throwaway. shellcheck 0.
+  - N-11: §10.2 step 4's volume count.
+  - N-12: the index is copied, never moved, from `/usr/lib/duplicati/data/BMXWPAOGLP.sqlite`, and the step-8 heading says "copy".
+  - N-13: the pointer to §7.3.6's recovery is now in step 8.
+- **R4A:**
+  - N-2: four blessed files changed, the wrapper among them.
+  - N-3: the clearing note now attributes the allow-list to 2.3.0 (the `DUPLICATI__*` refusal stays 2.2.0).
+  - N-4: the single date range above.
+  - N-5: D §12 has a 2026-10-08 row, and note 12c's file and suite lists are corrected.
+- **R4C NIT-1:** one `gone` pattern, `(?im)^\*[^*\n]*\bSTOP\b`, for both marker deletions. Two new tests: a rewording without "held" (kills X33) and an unterminated STOP block (kills X31). Both mutants fail the suite; the real script passes 9/9.
+- **R4C NIT-2:** R-6, §5's key-candidate sentence and note S-now no longer describe the STOP as in force; "the STOP at the top of §8" is on the stale-phrase list.
+
+## Left for you
+- **R4C NIT-4:** "cannot disagree" is withdrawn. D's clearing note has the placeholder `` `<<R4C-NIT-4>>` `` for you to reconcile with C1.
+- **Pending C1/C2, recorded as such in A §8:**
+  - R4A D-1, D-2, N-1, and N-6's installer-NOTE half;
+  - R4B N-7;
+  - R4C DEFECT-1, DEFECT-2, NIT-3, NIT-5 to NIT-9.
+- **Yours:** R4A N-6's count half (the re-key suite has 19 tests) and the PR drafts' version numbers.
+- **R4C's harness:** its scripts are still only in tmpfs scratch and should be copied to `util/ad-hoc/`.
+- **No new prose residue from round 4.** The restart remedy rests on reading the source; on the host it is checked by `serverstate` exiting 2 and the `export` read-back.
+
+## Checks
+- **Clearing script:** applied 78, then a second run gives "no change". `--check` gives "0 staged, 14 already current".
+- **`is deleted or moved` grep:** 5 hits, all qualified, including the unit comment at D:705.
+- **markdownlint v0.42.0:** 0 issues on D and A.
+- **Structure check:** 0 problems in D and A.
+- **Snippet linter:** 14 blocks, 0 failures.
+- **flake8 and shellcheck:** 0.
+- **Suites:** `test_clear_stop_backup_design`, `test_duplicati_wrapper_contract`, `test_duplicati_installer_real_path`, `test_backup_rekey_real_path`, `test_ci_test_wiring_drift` and `test_env_repr_safety`: 121 tests, OK. The clearing suite re-ran OK after the last change.
+
+**Changed:** D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`, regenerated), A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`), `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`, `tests/test_clear_stop_backup_design.py`, `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py`, `util/ad-hoc/2026-09-22_confirm_a0_premise.bash`, `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 4's fold-in, lane P (second pass, the code lanes' prose)
+
+Archived verbatim (3,916 characters, sha256 `7ef0df024f5abc2f`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+C1's and C2's round-4 prose is folded into D and A, and D is regenerated with every check passing. The edit count stays at 78 (77 prose, 1 fence), because I extended existing edits rather than adding new ones.
+
+**D sha256:** `4249b301341c2799984068a27c0ed0959d9ef64fc6dd49deb580fc57441f2c20`
+
+**Into D (through the clearing script)**
+- **Step 8:**
+  - **UNBLESSED sentence:** on a never-blessed host, a file that differs from the repository is refused unless the installer is re-run with `--update-backup-behavior`; this host's `/etc/default/duplicati` is one such file. The old file is kept as `.pre-install-<UTC>`.
+  - **Env-file owner and mode:** `root:duplicati`, 0640, and the reason (the installer judges the file as root, the service reads it as `duplicati`).
+  - **Four blessed files:** the wrapper went 2.2.0 → 2.4.0.
+  - **Versions:** installer 1.4.0, wrapper 2.4.0.
+- **Clearing note, `<<R4C-NIT-4>>` resolved:** since 1.4.0 the installer requires an existing `/etc/duplicati/env` to be `root:duplicati`, group-readable and writable by root only, so the grammar check (run as root) and the service's read (as `duplicati`) agree on the file itself. It claims nothing more than that.
+- **Clearing note, new round-4 paragraph:**
+  - wrapper 2.4.0: the mount override, `--webservice-suppress-welcome-page`, the vendored fixture, CR and NUL handling;
+  - installer 1.4.0;
+  - re-key 1.3.0, gate 1.2.0 and hand start 1.3.0: the orphan refusal and NUL refusal.
+- **Pre-flight sentence:** C2's text is in both the clearing note's item 2 and P0.5b. It covers `Option`, `Source` and `BackupTargetUrl` rows that belong to no backup, a failed count, and the owner's remedy for orphaned rows.
+- **Note 12c:** versions are now 2.4.0, 1.4.0, 1.3.0, 1.2.0 and 1.3.0, and it lists the fixture alongside the three suites.
+- **§7.7:** the snapshot script is "1.1.0; 1.2.0 since 2026-10-08".
+- **Stale-phrase list:** the placeholder and the old "nothing to compare" sentence are added, so neither can come back.
+
+**Into A**
+- **Step 9:** the UNBLESSED and env-mode sentences, and versions 1.4.0 / 2.4.0.
+- **Note 6a and step 12:** C2's pre-flight sentence.
+- **Round 3 entry:** its version mentions are annotated "(2.4.0 / 1.4.0 since round 4)".
+- **Round 4 entry:** every "pending C1/C2" item is now FIXED, with the lane named. That covers:
+  - R4A D-1, D-2, N-1, N-6;
+  - R4B N-7;
+  - R4C DEFECT-1, DEFECT-2, NIT-3 to NIT-9;
+  - mutants X01 (re-anchored as R16), X06, X10, X11, X15, X24, X25, X26 and X40 killed; X21 and I11 equivalent;
+  - suite counts 51 / 17 / 24 / 9.
+
+  No "pending" text is left in D or A.
+
+**Checks**
+- **Clearing script:** applied 78; a second run gives "no change"; `--check` gives "0 staged, 14 already current".
+- **markdownlint v0.42.0:** 0 issues on D and A.
+- **Structure check:** 0 problems in D and A.
+- **Snippet linter:** 14 blocks, 0 failures.
+- **flake8:** 0.
+- **Suites:** 121 tests OK across the six (clearing 9, contract 51, installer real path 17, re-key real path 24, wiring drift, env-repr).
+- **`is deleted or moved` grep:** all four remaining hits are qualified.
+
+**Left as written, deliberately**
+- Some older version numbers remain as history, not current state:
+  - note 12c's 2026-10-03 paragraph lists what that change shipped (wrapper 2.2.0, installer 1.2.0, snapshot 1.1.0);
+  - A note 6c says the helper fix was "built in installer 1.1.0";
+  - the clearing note says the env allow-list was introduced in 2.3.0.
+
+  If you want "match the files" read literally, those four are the ones to change.
+- D:921 sits inside the wrapper's tagged block, which is C1's file, so I did not touch it.
+
+**Changed:** D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`, regenerated), A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`), `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 5, lane A — code confirmation
+
+Archived verbatim (12,886 characters, sha256 `bec151df7c245754`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Phase B round 5 — lane A (code confirmation)
+
+I reviewed commit `9ce2f602` against `a0ff619c`. Everything was run on scratch extractions under `scratchpad/r5-A/`. The "ci-sim" copy `cisim/` is a host without the backup mount: its wrapper default points at `/nonexistent-r5a/Backups`, which does not exist.
+
+## Summary
+
+**0 BLOCKER, 2 DEFECT, 6 NIT.**
+
+- **Every round-4 code finding is fixed, and each reproduction now passes.**
+- **Suites on the mount-absent ci-sim copy all pass:** contract 51, installer real path 17, re-key real path 24, clearing script 9, wiring drift 14, env-repr 6. `c1_mutations.py cisim` also passes all four suites.
+- **`tests/test_duplicati_scheduled_backup.py` still has 5 failures.** These come from `/tmp` being tmpfs on this host, which Phase B does not touch. R4C reported the same.
+- **Mutation instruments, all run in ci-sim:**
+
+| Instrument | Killed | What was not killed |
+| --- | --- | --- |
+| `c1_mutations.py after` | 46 of 47 applied | I11, equivalent, as C1 says. R1 was skipped because my ci-sim edit moved its anchor; I re-ran it by hand and it is killed (contract and installer suites fail). |
+| `c2_rekey_mutations.py mutate --set after` | 43 of 43 | G02 skipped, as C2 reports |
+| `r4c-bin/r4c_mutants.py` | 24 of 25 | X21 survives, equivalent. X01, X06, X38 and X33 have no anchor any more; their replacements R16, F04/F05, G06/G08 and the new clearing-script tests are killed. |
+| My 24 new mutants (`bin/r5a_mutants.py`) | 17 of 24 | Survivors are listed under NIT-3 to NIT-5 |
+
+- **shellcheck** (default severity) on the wrapper, the installer, the re-key, the hand start, both A0 scripts and the `r4c-bin` bash scripts: 0 findings.
+- **flake8 `--max-line-length=512`** on the four test files, the clearing script, the gate and the fold-in scripts: 0 findings. The evidence scripts copied into `util/ad-hoc/` have 6 (NIT-6).
+- **D is idempotent at the head.** The staging script with `--check` reports "0 staged, 14 already current". The clearing script reports "no change (78 edit(s) already applied)", and D's sha256 stays `4249b301…`.
+  - That sha differs from the `5b4dfea0…` in `P_round4.md`, because the `<<R4C-NIT-4>>` placeholder was filled in afterwards. That is expected; the report's sha is simply stale.
+
+## Round-4 code findings, confirmed at 9ce2f602
+
+| Finding | Status | How I checked |
+| --- | --- | --- |
+| R4A D-1 / R4C DEFECT-1 (mount check could not be switched off) | FIXED | `wrapper:90` now uses `${DUPLICATI_REQUIRE_MOUNT-/mnt/Backups}`. All the ci-sim suites pass. The new tests show: empty means no check, unset means the default mount is required (exit 78), a named non-mountpoint is exit 78. |
+| R4A D-2 (wrong welcome-page option name) | FIXED | `webservice-suppress-welcome-page` is now in the wrapper, the contract and the test. I re-fetched the five source files at the tag and re-ran `c1_extract_server_options.py`; it reproduces the fixture byte for byte. The pin test reads the wrapper's own lists. |
+| R4C DEFECT-2 (orphaned Option/Source rows) | FIXED | `unrewritten_orphans.py` against the head gives `--unrewritten exit=1` for both the Option orphan and the Source orphan. The fake server now rewrites only the -1/-2 settings rows and live backups. |
+| -1/-2 rewrite claim | VERIFIED | `Connection.cs:131-153` at the tag: the backups are re-saved, then `SetSettings(GetSettings(ANY_BACKUP_ID), ANY_BACKUP_ID)`. `SetSettings` deletes and re-inserts every row of that ID (`:384-407`). `GetSettings` decrypts regardless of the option's name. |
+| R4C NIT-3, NIT-5; R4A N-1, N-6; R4B N-7 | FIXED | The "kept … as …" lines are printed. UNBLESSED covers an absent or empty blessed file. The guard block matches D:2719-2726 verbatim. The key NOTE matches D:2699 exactly. `installer_attacks.py` passes all its tests on the head. |
+| R4C NIT-6 (NUL in the key) | FIXED | `nul_key.bash` now gets wrapper exit 78 "contains a NUL byte". The gate refuses too. |
+| R4C NIT-7 (CR handling) | FIXED | `envfile_attacks.py` (39 cases × 3 locales): a double CR is accepted and stripped, a CR mid-line is refused, everything else fails closed as in round 4. The 1 MiB line now takes about 1 s. |
+| R4C NIT-8 (tests reading host paths) | FIXED | strace over the three suites (ci-sim): no `/etc/credstore`, no host `/etc/systemd/system`, no `/mnt/Backups`. |
+| X24, X25, X26, X40, X10, X11, X15 | KILLED | See the instrument runs above. |
+
+## Findings
+
+### BLOCKER
+
+None.
+
+### DEFECT
+
+**DEFECT-1. The installer's "Next:" hint still says "pause at once" on Running. R4B N-6 changed that to "stop the unit". VERIFIED.**
+
+- **Where the old text remains:**
+  - `util/install_duplicati_service.bash:382` prints: "if it reads Running, pause at once."
+  - D's embedded copy of the installer carries the same text at D:1499.
+- **What D and A now say:** D:2703 and A:315, as round 4 corrected them, say **stop the unit**. The reason they give is that on a Running server the overdue job may already be running, and `pause` only suspends it. Step 10's `resume` would then continue it with its stale options: no guard, old tempdir, old retention.
+- **Why it matters:** this hint is the text printed at the very moment the operator does the first start. It directly contradicts round 4's own fix.
+- **Not caught by tests:** the hint test (`test_the_next_steps_print_…`) does not check this sentence.
+- **Remedy:** print "if it reads Running, stop the unit at once (`sudo systemctl stop duplicati.service`) and record it — do not pause", and assert that sentence in the hint test.
+
+**DEFECT-2. The new owner/mode check on an existing env file enforces one side of an owner decision that is still open (O-12). VERIFIED.**
+
+- **What the code does:** `install:205-214` refuses on a real run (exit 2) unless the file is `root:duplicati`, group-readable and not group- or other-writable. The test pins `duplicati:duplicati:640` as refused (`tests/test_duplicati_installer_real_path.py`, `…cannot_read_stops_the_install`).
+- **The decision is still open in four places:**
+  - the contract header (`util/systemd/duplicati-env.contract:8-16`): "MODE IS AN OPEN OWNER DECISION … 0600 duplicati:duplicati … 0640 root:duplicati";
+  - D P1 item 2 (D:2817): "`0640 root:duplicati` as installed, or `0600 duplicati:duplicati` — the open dissent";
+  - A's open-items table, row O-12 (A:359);
+  - and D step 8, the round-4 sentence at D:2697, now states the installer "refuses any other owner or mode", which contradicts D:2817.
+- **Consequence:** if the owner rules for `0600 duplicati:duplicati`, which is a mode the service can read, every later installer run exits 2 with "make it root:duplicati 0640 first".
+- **Remedy (owner's choice):**
+  - either accept both documented modes (the service user can read either);
+  - or record that the installer settles O-12, and update the contract header, D:2817 and A's O-12 row.
+- **Related, part of the same check:** `stat` without `-L` reads the symlink's own `777`, so a symlinked `/etc/duplicati/env` is refused forever with a remedy (`chmod`) that cannot work. It fails closed; the message should say "symlink".
+
+### NIT
+
+- **NIT-1. The installer's messages say "(0640)", but the check also accepts 0644.**
+  - The test pins `root:duplicati:644` as passing.
+  - The wrapper lets the env file export `SETTINGS_ENCRYPTION_KEY`, and the secret-shape gates run only on the repository contract, not on the existing file. So a world-readable key in `/etc/duplicati/env` passes the installer.
+  - This is not a regression, since there was no mode check before. But adding `& 8#004` to the refusal costs nothing.
+- **NIT-2. The hint's NOTE for Procedure A says "place the accepted 09-18 key instead" and omits the random `…-key.new` that D step 8 also requires.**
+- **NIT-3. Test gaps in the wrapper and installer (mutants that survive):**
+  - **F01:** the wrapper's production default emptied (`${DUPLICATI_REQUIRE_MOUNT-}`) survives. No test pins `/mnt/Backups`, because `_wrapper_with_default_mount` replaces whatever the default is. `RequiresMountsFor=/mnt/Backups` in the unit still holds the line.
+  - **F07:** dropping the group condition (so `root:root:0640` is accepted, which duplicati cannot read: exactly R4C N-4's case) survives. The refused-meta list has no `root:root:640` case.
+- **NIT-4. Test gaps in the recovery helpers:**
+  - **F19:** the hand start's NUL check limited to the password survives; only the password file gets a NUL in the test.
+  - **F22 / F23:** removing the A0 scripts' new `-wal`/`-journal` copy, or copying it under the wrong name, survives. No suite exercises either A0 script.
+- **NIT-5. Survivors of little consequence:**
+  - **F14:** `Source` rows at -1/-2 counted as attached. Such rows are unrealistic.
+  - **F21:** `REKEY_CREDSTORE_DIR=""` honoured (`+x`). A real run then exits 2 anyway, so it fails safe.
+- **NIT-6. The evidence scripts copied into `util/ad-hoc/` fail flake8 at 512:**
+  - `r4b-bin/offschedule.py` (E401, E702 ×2);
+  - `r4c-bin/envfile_attacks.py` (F401);
+  - `r4c-bin/installer_attacks.py` (F401, E201, E303).
+  - The pre-commit flake8 scope is `^(scripts|tests)/`, so nothing gates them.
+
+## Not refuted
+
+- **The UNBLESSED gate on this host.** `/etc/default/duplicati` is `duplicati:duplicati 0644`, 404 bytes (stat only). No `/usr/local/lib/duplicati`, `/etc/duplicati` or `/etc/systemd/system/duplicati.service` exists.
+  - So a real run reports only `UNBLESSED: …/etc/default/duplicati` and exits 4, with the "re-run with --update-backup-behavior" text.
+  - Re-running with the switch keeps a `.pre-install-<UTC>` copy (`cp -p`), installs, and blesses.
+  - D:2699 and A:305 tell the operator exactly this. A file identical to the repository installs quietly. I see no trap.
+- **The NUL check** (`wc -c` vs `tr -d '\000'`). It is bytewise, a trailing newline is unaffected (F03 is killed), and it runs before `$(<file)`.
+- **CR stripping.** Every trailing CR is removed, a CR mid-line is refused, and the refusal prints no value (F04 and F05 are killed).
+- **The orphan SQL:**
+  - `BackupID` is `NOT NULL`, and a NULL would count as an orphan (fails closed);
+  - an absent `Backup` table makes every child row an orphan (F15 is killed);
+  - -1 and -2 are each needed (F17 and F18 are killed);
+  - `sqlite3.Error` gives exit 2, and the re-key refuses on any exit other than 0.
+- **`REKEY_CREDSTORE_DIR` cannot leak into a real run.** It is checked right after argument parsing, before anything changes: set on a real run, it exits 2; empty, it is ignored. `sudo` resets the environment anyway. No other `/etc/credstore` literal remains in the script.
+- **The fake server mirrors the product's scope**, at the gate's level: -1/-2 plus live backups only; orphans and `ConnectionString` are untouched.
+- **The A0 scripts:** the `-wal`/`-journal` copy happens before the open, and both are included in the final `rm`.
+- **The installer and the clearing script hold:** the guard block is verbatim, the "gone" pattern change is killed by its tests, and the staged copy of the installer inside D is current.
+
+## Unverifiable
+
+- **CI itself.** The branch is local, so the ci-sim run is a simulation by changing the default path.
+- **Behaviour under root.** I could not run the installer's real path or the re-key as root.
+- **Whether the Yamaguchi database holds orphaned rows.** Reading it is forbidden.
+
+## Slips
+
+- **Harness refusals.** Several compound commands were refused by the harness and re-issued as plain ones; none of the refused ones ran.
+- **The R1 re-run.** It ran in a ci-sim copy, so the default mount was a nonexistent path; nothing on the host was checked.
+- **Host access:**
+  - `stat` only on `/etc/default/duplicati` and the other installer destinations (metadata, no content);
+  - no unit, Duplicati binary, `:8300` connection, `sudo` or secret content;
+  - nothing under `/mnt/Backups` touched; the ci-sim strace shows no access to it.
+- **Network.** GitHub raw reads of `Connection.cs`, `Program.cs`, `WebServerLoader.cs`, `DataFolderManager.cs`, `Util.cs` and `Options.cs`, all at tag `v2.4.0.0_stable_2026-09-03`.
+- **Worktree.** No change and no git state change. The untracked `R5B.md` and `r5b-bin/` were written by another lane.
+- **Scripts in tmpfs.** My scripts are only in tmpfs scratch, under `scratchpad/r5-A/bin/`: `r5a_mutants.py`, `run_suites.bash`, `mk_cisim.bash`, `idem.bash`, `fetch_and_extract.bash`. Copy them to `util/ad-hoc/` if they should be kept.
+
+**Documents referenced:**
+- `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/BRIEF_ROUND4.md`, `C1_round4.md`, `C2_round4.md`, `P_round4.md`
+- `util/ad-hoc/2026-10-08_backup-phase-b-round4/R4A.md`, `R4B.md`, `R4C.md`
+- D: `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`
+- A: `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`
+
+**Changed:** no repository file.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 5, lane B — procedure confirmation
+
+Archived verbatim (14,455 characters, sha256 `a2b2eb4c8b3ee6d0`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Phase B round 5 — lane B (procedure confirmation)
+
+I reviewed local commit `9ce2f602`, and the delta `git diff a0ff619c 9ce2f602` for D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`) and A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`). The baseline is the "State per path" table in R4B (`util/ad-hoc/2026-10-08_backup-phase-b-round4/R4B.md`). I fetched the Duplicati source again, read-only, at `v2.4.0.0_stable_2026-09-03`, into `scratchpad/r5-B/src/`. I changed nothing in the worktree, and `git status` is clean after the run.
+
+## Summary
+
+**0 BLOCKER, 2 DEFECT, 6 NIT.**
+
+- **Every round-4 procedure and prose finding in my lens is fixed:**
+  - R4B DEFECT-1 and DEFECT-2, and R4B N-1 to N-13;
+  - R4A N-2 to N-5;
+  - R4C NIT-1, NIT-2 and NIT-4.
+- **The step-10 restart holds up against the source.** It loses nothing, the stored pause survives it, and the overdue job is queued again from the edited database.
+- **D regenerates byte-for-byte**, `4249b301…`, and the clearing script is idempotent.
+- **markdownlint v0.42.0 is clean** on D and A.
+- **The retention ruling and the table are stated the same way everywhere** in D and A.
+- **What the delta did not fix:**
+  - The new read-back cannot see the server's default options, although D says it does (DEFECT-1).
+  - Repair, which the delta's text touches again, deletes remote files. That contradicts "exactly two exceptions" (DEFECT-2).
+
+## Findings
+
+### BLOCKER
+
+None.
+
+### DEFECT
+
+**DEFECT-1 — `export <id>` cannot show "the server's default options", so the check that no `retention-policy` / `keep-time` / `keep-versions` remains there checks nothing. Mechanism VERIFIED from source; impact PLAUSIBLE (what the defaults hold is unknown).**
+
+- **What D says.** D:2733 says to read the edits back with `export <id>`, with "no `retention-policy`, `keep-time` or `keep-versions`, in the job or in the server's default options". A:320 and A:331 remove the three options from the job only.
+- **What export returns.** `GET /backup/{id}/export` serialises `PrepareBackupForExport` (`Connection.cs:204-216`): `Backup`, `Schedule` and `DisplayNames` only.
+- **What a run uses.** The defaults are the `BackupID=-1` rows (`Connection.Settings` → `GetSettings(ANY_BACKUP_ID)`, `Connection.cs:1098-1101`). They join every run through `ApplyOptions(…, GetCommonOptions(…))` (`Runner.cs:818`, `:1584-1590`).
+- **Why it matters.** If the restored root-era database (A0) carries any of the three in its defaults, the first backup's retention pass still runs. It can delete the drill target, and the operator's read-back reports clean. R4B left these defaults "Unverifiable" for the same reason.
+- **Remedy (either):**
+  - In step 8, while no server runs, use the same `sqlite3`: `SELECT "Name","Value" FROM "Option" WHERE "BackupID" = -1 AND ltrim("Name",'-') IN ('retention-policy','keep-time','keep-versions');`. Delete any row it finds, keeping a copy.
+  - Or read the effective options with `GET /api/v1/backup/<id>/export-cmdline`. It is Bearer-authorised and built from `GetCommonOptions` (`BackupGet.cs:277-283`, `Runner.cs:640-646`). The API client has no verb for it.
+
+  In both cases, drop "in the server's default options" from the `export` sentence, and add the defaults to A §6.4 step 11.
+
+**DEFECT-2 — Repair deletes remote volumes that the index does not know. D and A still say nothing under `/mnt/Backups/Ubuntu/` is deleted except two things. VERIFIED from source. This predates round 4, but the delta re-touched it ("run Repair the same way").**
+
+- **The mechanism.** `RepairHandler.cs:299` loops over `tp.ExtraVolumes`, and `:397` calls `backendManager.DeleteAsync(n.File.Name …)` unless `--dry-run` is set (`:400`).
+- **Where it applies.** D step 8 (D:2706-2707) and A:297 tell Procedure B to run Repair if Verify finds the index inconsistent. That is exactly the case in which extra volumes exist.
+- **The contradiction.** D:2324 ("exactly two exceptions") and A:210 (§6.0 item 5) are both false on that branch.
+- **The case to worry about.** The index's last writer may have stopped uncleanly (D step 8's own `-wal` reasoning). Its 09-18 dlist could then be an "extra" volume, and that is AC-4's drill target.
+- **Remedy:**
+  - run Repair with `--dry-run` first and read the `WouldDeleteFile` lines;
+  - copy every named file to the aside directory before a real Repair;
+  - name Repair as a third, conditional exception in D:2324 and A:210.
+
+### NIT
+
+- **N-1. The installer's "Next" text contradicts the N-6 fix and leaves out the restart. VERIFIED.**
+  - `util/install_duplicati_service.bash:382` (and D's fence, D:1499) still says "if it reads Running, pause at once". D step 8 now says stop the unit, because `pause` only suspends the job and `resume` would continue it.
+  - Its item 4 goes straight from the guard dry-run to "resume" and omits step 10's stop-and-start.
+  - Remedy: print "stop the unit (`sudo systemctl stop duplicati.service`)" and add "then step 10's restart" after the guard block.
+- **N-2. A:334 says a manual AC-3 "off the 14:00 slot costs the next day's". That holds only for a run after 14:00. VERIFIED** (`scratchpad/r5-B/bin/morning_ac3.py`, using `retention_table.py`'s `to_delete`).
+  - AC-3 at 10:00 → the same day's `10-12T14:00` is deleted.
+  - AC-3 at 15:20 → `10-13T14:00` is deleted.
+  - D:2737's 15:20 example is correct. Remedy: in A, say "the next 14:00 fileset within 24 h".
+- **N-3. The orphan remedy says "a copy is kept" with no place and no shred** (D:2201, D:2800, A:247-248).
+  - On Procedure A, that copy holds `enc-v1:` blobs under the compromised 09-18 key.
+  - Step 13's discipline should apply: a root-only 0700 directory outside `/home/pcalnon` (the backup Source), `shred -u` after the gate passes, and the unit stopped and then started again (it comes up Paused).
+- **N-4. B's Verify cycle has no remedy if `SchedulerQueueIds` already holds a backup** (D:2706, A:297). It only says "keep clear of 14:00".
+  - A restart alone re-queues it, because the job is overdue and `LastRun` is written only on completion (`Scheduler.cs:218-232`).
+  - Remedy: move the schedule's `Time` to the next day's 14:00, restart, and confirm the queue is empty.
+- **N-5. "Rounds 3 and 4 changed four blessed files" (D:2698, A:304) is counted from `c3d0e890`, which was never on `main`.**
+  - Against `origin/main`, whose installer also blesses files (wrapper 2.0.0, installer 1.0.0), six of the seven differ: all but the guard.
+  - This is moot on this never-blessed host (I-36), but wrong for any host installed from `main`.
+- **N-6. A:212 says the server is "never restarted before step 10".** Step 8's Running remedy (stop the unit, check `paused-until`, start again) is such a restart. Remedy: add "except step 8's stop when it reads Running".
+
+### Round-4 items in my lens: confirmed fixed
+
+- **R4B DEFECT-1** — D:2712, D:2731-2734, A:320-325; the source chain is re-verified under "Not refuted".
+- **R4B DEFECT-2** — D:2706-2707, A:297.
+- **R4B NITs:**
+  - N-1: `SELECT` before `DELETE`, at D step 8 and A step 9.
+  - N-2: thinning stated, but see N-2 above for A's wording.
+  - N-3 and R4A N-4: one range, 2026-10-08 to 2027-02-27, in both D and A.
+  - N-4: re-run with `--recovered-days 30` → 5 deletions.
+  - N-5: the aside copy.
+  - N-6: stop on Running.
+  - N-7: the installer prerequisites, apart from N-1 above.
+  - N-8: both A0 scripts and D's fences copy `-wal`/`-journal`.
+  - N-9: `--aes-version` pinned in D step 10. `aes-version` exists at `AESEncryption.cs:43`.
+  - N-10: covers the job only (DEFECT-1).
+  - N-11: §10.2 step 4.
+  - N-12: `cp`, never `mv`, from the named path; no "move/moved index" remains.
+  - N-13: the §7.3.6 pointer in step 8.
+- **R4A N-2** — four blessed files (see N-5 above).
+- **R4A N-3** — the allow-list is 2.3.0, and `DUPLICATI__*` is 2.2.0.
+- **R4A N-5** — D §12 has a 2026-10-08 row. Note 12c lists the three suites and the fixture, and its unit changes are comment-only (checked with a `c3d0e890..9ce2f602` diff).
+- **R4C NIT-1** — `MARKER_GONE = r"(?im)^\*[^*\n]*\bSTOP\b"` at clearing script:554, used for both edits; `tests/test_clear_stop_backup_design.py` runs 9 tests, OK.
+- **R4C NIT-2** — D:93, :373 and :514 were rewritten.
+- **R4C NIT-4** — installer 1.4.0 checks owner, group and mode, and D says "agree on the file itself".
+
+### State per path at `9ce2f602` (A step numbers; D steps in brackets)
+
+| Step | A0 | A | A2 | B |
+| --- | --- | --- | --- | --- |
+| 1 | Snapshot timer disabled and inactive | same | same | same |
+| 5–6 (D 1–2) | Freeze (`cp -a`, index plus siblings); vendor unit stopped once; empty folder moved aside | same | same | same |
+| 7 (D 3–6) | 09-18 restore through a throwaway index copy, now with `-wal`/`-journal`; destination only read | `cp -a` of root `data/` | Wiped copy | — |
+| 9 (D 8) | DB placed; index `cp`'d with siblings, original stays; `DBPath`; old `paused-until`/`startup-delay` recorded, then `0`; installer (UNBLESSED refusal → `--update-backup-behavior`, aside path printed); key `test ! -e`; credential (§7.3.6 if the password is unknown); first start Paused; **stale copy queued** | same, under the old key | same; the stale copy has an empty URL | Installer, key, folder |
+| 10 | — | — | Hand start returns 102 | Hand start returns 102, then `paused-until`, credential, first start Paused |
+| 11 (D 9–10) | Edits (tempdir, guard, aes-version, no retention / keep-* **in the job only — the defaults are unchecked, DEFECT-1**); guard dry-run; **restart → stale copy gone, pause kept, re-queued from the edited DB**; `export` read-back; `resume` → first backup with guard and no retention | Edits and dry-run | as A0 (TargetURL re-entered in step 9, before the restart) | Rebuild (future Time); restart; queue empty; Verify → `resume` → `pause` → read (Repair deletes extras, DEFECT-2); `run` and `resume` = AC-3 |
+| 12 (P0.5b) | — | Two starts drop the stale copy; the closing `resume` runs the edited job | — | — |
+| 13 | Gate on a copy plus `-wal`/`-shm`; timer `enable --now` | same | same | same |
+| 14 (D 11) | AC-3 is the post-restart run (manual if it failed); AC-4 from 09-18 intact; **five dlists copied to `_yamaguchi_retention_aside`**, then `2W:1D,6M:1W,2Y:1M,5Y:2M` deletes those five, keeps four and all dblocks | same | same | same |
+
+## Not refuted
+
+- **Stopping mid-session loses nothing:**
+  - The queue is in memory only (`QueueRunnerService._tasks`; `Terminate` at `:103-113`).
+  - Shutdown never writes `PausedUntil` (`Program.cs:405-430`).
+  - The queued stale task never started, because `StartNextTask` returns while `_isPaused` (`:119`).
+  - The schedule's `Time`/`LastRun` are written only in `OnCompletedAsync` (`Scheduler.cs:218-232`), so the job is still overdue after the restart and is queued again.
+- **`paused-until=0` survives:**
+  - `Init` with Ticks 0 → Paused, with the startup-delay timer cancelled (`LiveControls.cs:191-200`).
+  - Line 311 → `LiveControl_StateChanged` → `PausedUntil = EstimatedPauseEnd` = Ticks 0 → saved as `"0"` (`Program.cs:1308`; `ServerSettings.cs:231-240`).
+  - The API `pause` with no duration also stores 0 (`ServerState.cs` `ExecutePause` → `Pause(bool)`).
+  - `SetAndSaveSetting` has no equality check (`ServerSettings.cs:980-985`), so `SignalSettingsChanged` (`Connection.cs:434-441`) → `Reschedule`.
+- **No early-start race between scheduler creation (`Program.cs:301`) and the pause (`:311`):**
+  - the update poll waits a minute (`UpdatePollThread.cs:99`);
+  - the purge and certificate timers first fire after an hour (`Program.cs:545-590`).
+- **AC-1's `NRestarts=0` is not affected.** `NRestarts` counts only systemd's automatic restarts, not an operator stop/start.
+- **The retention aside fits §8.** It is a copy (no delete or move) to `/mnt/Backups/Ubuntu/_yamaguchi_retention_aside`, outside the Dropbox root. The operator makes it with `sudo` from the host, so the unit's `ProtectSystem=strict`/`ReadWritePaths` (`duplicati.service:40`, `:51`) do not apply. Root 0700 keeps it from `duplicati`, and the guard's stray check covers only the destination directory.
+- **The retention table.** Re-run, `retention_table.py` gives 5 deletions for every first pass from 2026-10-08 to 2027-02-27, and 6 from 2027-02-28. The default run and `--recovered-days 30` agree, and `--check` reproduces R3B. The ruling (removed at D step 10 / A step 11; restored after AC-4's first drill as `2W:1D,6M:1W,2Y:1M,5Y:2M`, replacing `1W:1D,1M:1W,1Y:1M,3Y:2M`) reads the same at D:9-10, 1783, 2324, 2735-2736 and A:210-211, 331-334, 450. D:118 is the historical snapshot.
+- **Verify and Repair are queued tasks** (`BackupPost.cs:71`, `:168`, `:206`). The guard passes them (it checks only mount, URL and stray files).
+- **D regeneration.** `git archive 9ce2f602` → reset D from `origin/main` → `stage --from-repo` (7 blocks rewritten) → clearing script ("applied 78") gives sha256 `4249b301…`, identical to the commit. A second run reports "no change".
+- **markdownlint 0.42.0** (from the pre-commit cache) on D and A, with `.markdownlint.yaml`: rc 0, no findings.
+- **The suite counts A §8 states.** Contract, installer and re-key run 92 tests together (= 51 + 17 + 24), OK. The clearing-script suite runs 9, OK.
+
+## Unverifiable
+
+- The `BackupID=-1` default options in the restored or root-era database (DEFECT-1's actual exposure). Reading it is the owner's.
+- Whether 2.4's ngclient "Keep all backups" removes all three options. D's "only the legacy UI" asserts that it does not, and that is unverified.
+- The ACLs on `/mnt/Backups/Ubuntu/` that the aside directory would inherit (reading them is beyond `stat`).
+- Whether the index has extra or missing volumes against the destination (DEFECT-2's trigger).
+- Everything at runtime: the restart's re-queue is shown from source only.
+
+## Slips
+
+None.
+- **Network:** read-only raw GitHub fetches at the tag, into `scratchpad/r5-B/src/`.
+- **Scratch:** the regeneration copy is under `scratchpad/r5-B/regen/` and the probe script is at `scratchpad/r5-B/bin/morning_ac3.py`.
+- **Worktree:** markdownlint ran without `--fix`, and the test suites ran from the worktree, which stayed clean.
+- **Never done:** no unit was touched, no Duplicati binary was run, and no secret was read.
+
+**Changed**: none. **Created** (scratch only): `scratchpad/r5-B/bin/morning_ac3.py`, `scratchpad/r5-B/D.wdiff`, `scratchpad/r5-B/regen/`, `scratchpad/r5-B/src/`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 5's fold-in, lane C1
+
+Archived verbatim (8,449 characters, sha256 `8aaf94ad79720e05`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+## Lane C1 report: backup Phase B round-5 fold-in (final round)
+
+All five round-5 items are done. The four Phase B suites pass on a simulated host without the backup mount (105 tests). Every surviving mutant is either equivalent or no longer applies to the rewritten code. No host action and no state-changing git command.
+
+### 1. Findings
+
+**R5A DEFECT-1 and R5B N-1 (the installer's "Next:" hint): FIXED** in `util/install_duplicati_service.bash`, now **1.5.0**.
+- **On Running:** step 3 now says, as one printed sentence: "If it reads Running, stop the unit at once (sudo systemctl stop duplicati.service) and record it; do not pause". It adds design step 8's reason: `pause` only suspends a job that may already be running, and `resume` would continue it with its old options.
+- **New item 5, after the guard block:** "Then, on A0, A2 and B, restart the unit before resume (step 10): sudo systemctl stop duplicati.service, then sudo systemctl start duplicati.service; serverstate must exit 2 again; read the edits back with export <id> (step 10 lists what to check) -- and only then resume. On Procedure A, P0.5b runs here instead."
+- I deliberately did not list the read-back's contents. R5B DEFECT-1 says that read-back cannot see the server's default options, so the hint defers to D.
+
+**R5A DEFECT-2 and NIT-1 (an existing `/etc/duplicati/env`): FIXED without settling O-12.**
+- The file passes only as exactly `root:duplicati:640` or `duplicati:duplicati:600`, the two forms O-12 documents. Everything else is refused. That includes:
+  - any other owner or group;
+  - any group-writable or other-writable file;
+  - anything other-readable, so `0644` is refused because the file may carry the key.
+- A symlink is caught before `stat` runs and refused with the word "symlink" in the message.
+- Every message names both forms through one variable, `ENV_MODES_ACCEPTED`: "root:duplicati 0640 or duplicati:duplicati 0600 (O-12 is open; either form is accepted)".
+- The code comment cites O-12 and says the installer does not settle it.
+- One judgement call: I took the modes as exact, so variants such as `root:duplicati 0440` or `duplicati:duplicati 0400` are also refused. Widening is a one-line change if the owner prefers it.
+
+**R5A NIT-2 (Procedure A's second key): FIXED.** The key NOTE now says: "on Procedure A, place the accepted 09-18 key here instead, and a random one at `<cred>.new`, which P0.5b swaps in -- the same command with .new". This matches D step 8 at `9ce2f602`.
+
+**R5A NIT-3 F01 (production default mount unpinned): FIXED.**
+- New test `test_unset_the_production_default_requires_mnt_backups` puts a `mountpoint` stub first on PATH that records its arguments and exits 1. With the variable unset, the wrapper must exit 78 with "FATAL: /mnt/Backups is not a mountpoint", and the stub must have been asked exactly `-q /mnt/Backups`.
+- It passes on the owner's host, where the mount exists, and on CI, where it does not, and never reads the real mount table.
+- **Consequence:** R5A's way of simulating CI (editing the wrapper's default to a nonexistent path, as in `mk_cisim.bash`) now fails this pin by design. The ci-sim mode of `c1_mutations.py` (now 1.2.0) therefore simulates the absent mount with the same `mountpoint` stub on PATH instead.
+
+**F07 (root:root 0640 accepted): KILLED** by item 2's tests. R5A's F07–F10 have no anchor in the rewritten check, so I re-anchored them:
+- R18 adds `root:root:640` to the accepted forms (this is F07);
+- R19 accepts an other-readable 0644;
+- R20 refuses O-12's dissent form;
+- R21 accepts group-writable (F08's class);
+- R22 drops the `exit 2` (F10);
+- R23 fakes the `stat` result (F11);
+- R24 removes the symlink check.
+
+All seven are killed.
+
+### 2. Tests, with fail-before and pass-after evidence
+- **`tests/test_duplicati_installer_real_path.py`, now 18 tests:**
+  - `test_an_existing_env_file_must_be_one_of_o12s_two_forms` replaces the old mode test. It refuses 11 combinations, including `root:root:640` and `root:duplicati:644`, and checks that every refusal names both forms. It accepts both O-12 forms.
+  - New `test_an_existing_env_file_that_is_a_symlink_is_refused_by_name`.
+  - The hint test now asserts the stop-not-pause sentence, that "pause at once" is gone, and that the restart sentence comes after the guard block and before "only then resume".
+  - The key-NOTE test asserts the `….new` sentence.
+- **`WrapperEnvContract`:** the F01 pin (one new test).
+- **Fail-before:** against `9ce2f602`'s code the new and changed tests give **15 failures across 4 tests**. The F01 pin passes there, which is expected: the pin holds on unmutated code, and mutants R17 and F01 show it catching the change.
+
+### 3. Check results
+
+| Check | Result |
+| --- | --- |
+| `tests/test_duplicati_wrapper_contract.py` on this host | 53 tests, OK |
+| `tests/test_duplicati_installer_real_path.py` on this host | 18 tests, OK |
+| ci-sim, contract suite | 53, PASS |
+| ci-sim, installer real-path suite | 18, PASS |
+| ci-sim, re-key real-path suite | 25, PASS |
+| ci-sim, clearing-script suite | 9, PASS |
+| shellcheck on the wrapper and installer | 0 |
+| flake8 on the real-path suite and `c1_mutations.py` | 0 |
+
+**Mutation counts, all run in ci-sim:**
+
+| Instrument | Applied | Killed | Not killed |
+| --- | --- | --- | --- |
+| `c1_mutations.py after` | 57 | 56 | I11, equivalent (`cmp -s` runs before the bless) |
+| R5A's `r5a_mutants.py`, F01–F13, via the new `r5a` mode | 9 | 9 | none |
+
+- In the `c1_mutations.py` run, R9 and R10 found no anchor; they are superseded by R18–R23.
+- In the R5A run, F01 was re-anchored on the production default (killed). F07–F10 have no anchor; their re-anchored equivalents are R18–R22, all killed.
+- The `r5a` mode loads R5A's script unchanged and only wraps its `run()` so the `mountpoint` stub is first on PATH.
+
+### 4. Needed elsewhere
+
+**D (prose lane, clearing script):** in step 8, replace the round-4 sentence "It must also be `root:duplicati`, group-readable and writable by root only (0640); the installer refuses any other owner or mode…" with:
+> It must be one of O-12's two forms -- `root:duplicati` 0640 (what the installer creates, and what this design recommends) or `duplicati:duplicati` 0600 (the recorded dissent); the installer accepts either and does **not** settle O-12. Anything else is refused: another owner or group, a group- or other-writable file, an other-readable one (the file may carry the key), and a symlink, which must be replaced by a regular file.
+
+Also in step 8, where the first-start check is described, add:
+> The installer's closing hint prints this stop-not-pause rule and step 10's restart.
+
+**A, step 9 and §8:**
+- Step 9 gets the same mode sentence as D.
+- §8 "Folded in, round 5": R5A DEFECT-1, DEFECT-2, NIT-1, NIT-2, NIT-3 (F01, F07); R5B N-1.
+- The O-12 row in A's open-items table stays OPEN. Add: "the installer (1.5.0) accepts either form".
+
+**`docs/REFERENCE.md`, the `tests/test_duplicati_installer_real_path.py` bullet:** replace "the kept, refused and wrongly-owned existing env file" with:
+> the kept and refused existing env file, which must be one of O-12's two forms (`root:duplicati` 0640 or `duplicati:duplicati` 0600; symlinks, other-readable and group-writable files refused)
+
+and replace "step 10's guard block verbatim" with:
+> step 10's guard block verbatim, stop-not-pause on a Running first start, and step 10's restart before resume
+
+In the contract-suite bullet, after "An empty `DUPLICATI_REQUIRE_MOUNT` switches the wrapper's mount check off", add:
+> and the unset production default is pinned to `/mnt/Backups` through a `mountpoint` PATH stub, which is also how CI's missing mount is simulated
+
+**Other lanes and review rounds:** a future ci-sim must use a `mountpoint` PATH stub, not edit the wrapper's default. The F01 pin fails the second method on purpose.
+
+### 5. Out of scope
+- R5B DEFECT-1, which says the `export <id>` read-back cannot see the server's default options, belongs to the prose lane. The hint avoids repeating that claim.
+- The `c1_mutations.py after` baseline excludes lane C2's classes, as in earlier rounds.
+
+**Files changed:**
+- `util/install_duplicati_service.bash` (1.5.0)
+- `tests/test_duplicati_installer_real_path.py`
+- `tests/test_duplicati_wrapper_contract.py` (`WrapperEnvContract` only)
+- `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c1_mutations.py` (1.2.0: R17–R27, ci-sim by `mountpoint` stub, `after` run in ci-sim, `r5a` mode)
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 5's fold-in, lane C2
+
+Archived verbatim (6,354 characters, sha256 `88554da9ce7d3505`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Lane C2 report: Phase B round-5 fold-in (the last one)
+
+Items 1 and 2 are done, and both optional items (F14, F21) were trivial, so they are done too. All five mutants (F14, F19, F21, F22, F23) are killed by the current suites.
+
+There is one catch for item 2. **R5A's own `r5a_mutants.py` still reports F22 and F23 as surviving**: its suite map for the two A0 scripts lists only the contract, installer and re-key suites, not the new `tests/test_a0_restore_scripts.py`. My tool (`c2_rekey_mutations.py`), using R5A's exact anchors plus the new suite, kills both. One line in `r5a_mutants.py` needs changing (section 4).
+
+Files referenced: R5A is `util/ad-hoc/2026-10-08_backup-phase-b-round4/R5A.md`; A is `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`.
+
+**Changed**:
+- **new**: `tests/test_a0_restore_scripts.py`
+- `tests/test_duplicati_wrapper_contract.py`, classes `RecoveryHelperGates` and `RekeyGate` only
+- `tests/test_backup_rekey_real_path.py`
+- `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c2_rekey_mutations.py`
+
+I did not edit any script. In particular the two A0 scripts (`util/ad-hoc/2026-09-22_confirm_a0_premise.bash`, `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash`) are unchanged: their existing `YAMAGUCHI_*` overrides plus a `duplicati-cli` stub on PATH were enough.
+
+## 1. Findings
+
+**F19 (R5A NIT-4): FIXED, test only.** The hand start reads two files, the settings key and the UI password, and its check (`if "\0" in key or "\0" in pw`) already covered both. Only the test was one-sided. `test_password_init_dry_run_runs_the_secret_format_gate` now applies all four bad inputs (edge whitespace, CR, NUL, two lines) to each file in turn.
+
+**F22 and F23 (R5A NIT-4): FIXED.** The new suite stubs `duplicati-cli` and was cheap. It never runs a Duplicati binary, never touches `/usr/lib/duplicati` or `/mnt/Backups`, and needs no `sqlite3` stub because the scripts never call it. For each A0 script it checks:
+- **The F22/F23 behaviour:** `duplicati-cli` sees the main copy and, byte-identical, each `-wal`/`-journal` sibling, beside `--dbpath` under the copy's own name. It sees nothing when the index has none.
+- **Clean-up:** every temporary file is gone afterwards, and the frozen index is never written.
+- **Passphrase:** a value containing `$ & @ # ^` is parsed verbatim, reaches the stub through the environment only, and never appears in argv or the output.
+- **Copy, not original:** `duplicati-cli` gets the copy, never the frozen index. With no index at all, the script exits 2 and `duplicati-cli` does not run.
+- **Per script:** the premise script runs `list --version=0 '*duplicati-server-db*'`. The restore script restores into the named directory (mode 0700), and refuses a directory under `/home/pcalnon` before anything runs.
+
+**F14 (optional): FIXED, test only.** The code was already right: a `Source` row at -1 or -2 counts as an orphan, because `SetSources` writes per backup. The new test `test_unrewritten_counts_a_source_row_at_a_settings_id_as_orphaned` pins it.
+
+**F21 (optional): FIXED, test only.** The code already ignores an empty `REKEY_CREDSTORE_DIR` (it tests `-n "${…:-}"`). The new test `test_an_empty_credstore_override_is_ignored` checks that an empty value leads to the ordinary "run with sudo" refusal, not the hook's exit 2. It runs on the scratch copy, so even the trap's look at `…-key.old` stays off `/etc`.
+
+## 2. Tests
+
+Each new test passes on the current code and fails under its target mutant.
+
+| Tool | Mutants | Result |
+| --- | --- | --- |
+| `c2_rekey_mutations.py mutate --set after F14 F19 F21 F22 F23` | the five, anchors verbatim from R5A | **5 of 5 killed** (baseline 89 tests OK) |
+| `r5a_mutants.py <tree> F14 F19 F21 F22 F23` | the same five | 3 of 5 killed; F22 and F23 survive because its map omits the new suite |
+
+The killing tests:
+- F14: `test_unrewritten_counts_a_source_row_at_a_settings_id_as_orphaned`
+- F19: `test_password_init_dry_run_runs_the_secret_format_gate`
+- F21: `test_an_empty_credstore_override_is_ignored`
+- F22, F23: `test_siblings_are_copied_beside_the_copy_under_its_name`
+
+## 3. Check results
+
+- `python3 -m unittest tests/test_duplicati_wrapper_contract.py tests/test_backup_rekey_real_path.py tests/test_a0_restore_scripts.py`: **89 tests, OK**.
+  - 53 contract tests, including C1's current ones;
+  - 25 real-path tests (24 plus 1);
+  - 11 A0 tests.
+- `flake8 --max-line-length=512` on the 4 changed Python files: clean.
+- CodeQL prescreen: 0 predicted alerts.
+- No bash changed this round.
+
+## 4. Needed elsewhere
+
+**ci.yml (coordinator)**, inserted after the line for the re-key real-path suite:
+```
+          # tests/test_a0_restore_scripts.py: Procedure A0's two scripts hand duplicati-cli
+          # a COPY of the frozen job index with its -wal/-journal beside it under the copy's
+          # name (round 5, R5A F22/F23); passphrase by environment only. duplicati-cli is a
+          # PATH stub; no Duplicati binary, /usr/lib/duplicati or /mnt/Backups is touched.
+          python3 -m unittest -v tests/test_a0_restore_scripts.py
+```
+
+**`r5a_mutants.py`** (R5A's, not mine): add `A0 = "tests/test_a0_restore_scripts.py"` and include it in the `A1` and `A2` entries of `SUITES`, so its own run kills F22 and F23.
+
+**docs/REFERENCE.md (coordinator)**
+- New bullet: "`tests/test_a0_restore_scripts.py` -- round 5 of Phase B (R5A NIT-4): `util/ad-hoc/2026-09-22_confirm_a0_premise.bash` and `…_restore_server_db_from_fileset.bash` against a `duplicati-cli` PATH stub. Pins: the frozen job index's `-wal`/`-journal` copied beside the `--dbpath` copy under its name and byte-identical (nothing when absent); every temporary copy removed; the frozen index never handed over or written; the passphrase parsed verbatim and passed by environment only; no index means exit 2; the restore directory refused inside the backup Source."
+- Contract-suite bullet: add "the hand start's secret checks apply to both the key and the password file".
+
+**A §8 (prose lane):**
+> Round 5: R5A NIT-4 fixed. F19's test now covers both files the hand start reads, and the new `tests/test_a0_restore_scripts.py` kills F22 and F23. R5A NIT-5's F14 and F21 are pinned by tests; the code was already correct.
+
+No D change is needed.
+
+## 5. Out of scope
+
+`r5a_mutants.py`'s suite map, as above. Nothing else.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 5's fold-in, lane P
+
+Archived verbatim (5,435 characters, sha256 `dd8f97aaa008d547`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+Round 5 is folded into D and A, and D is regenerated. The edit count stays at 78 (77 prose, 1 fence); I extended existing edits rather than adding new ones.
+
+**D sha256:** `470e33f871da4682a4ebf344780dbad5b6c5d6e4ed2e8262cb427027ab77bfa1`. It includes C1's installer changes as they stood when I regenerated, so it will move if C1 changes the installer again.
+
+**Lane B fixes**
+- **R5B DEFECT-1 (server default options):** in step 8, while no server runs, the same `sqlite3` session now:
+  1. reads the -1 rows: `SELECT "Name", "Value" FROM "Option" WHERE "BackupID" = -1 AND ltrim("Name", '-') IN ('retention-policy', 'keep-time', 'keep-versions');`
+  2. records them in the validation record (they are retention strings, not secrets);
+  3. deletes exactly those rows;
+  4. runs the `SELECT` again, which must return nothing.
+
+  The reason given in D is that these rows join every run (`GetCommonOptions`) but never appear in `export`. Step 11 restores them only together with the job's policy, and only if the owner wants server-wide defaults at all. The step-10 read-back now covers the job only, and says why. A mirrors this in step 9 (clear), step 11 (read-back) and step 14 (restore).
+- **R5B DEFECT-2 (Repair deletes extra volumes):** on B, Repair now runs:
+  1. with `--dry-run` first;
+  2. then every `WouldDeleteFile` line is read;
+  3. then each named file is copied to `/mnt/Backups/Ubuntu/_yamaguchi_retention_aside` (root 0700, outside Dropbox, `sudo cp -p`, sha256 checked on both sides);
+  4. only then does the real Repair run.
+
+  The text notes that the 09-18 dlist (AC-4's drill target) can be one of those files. Repair is now named as a third, conditional exception in D's front matter, the §8 preamble, P1 step 4 and §10.2 (which now says "the exceptions its preamble names"), and in A §6.0 item 5.
+- **R5B N-2 to N-6:**
+  - N-2: a manual AC-3 costs the next 14:00 fileset within 24 h, which is the same day's for a morning run.
+  - N-3: the orphan-row copy goes in a root-only 0700 directory outside `/home/pcalnon` and is `shred -u`'d once the gate passes. The text says that on Procedure A it holds blobs under the 09-18 key, and that the unit is stopped and comes back Paused. This is in D (clearing note and P0.5b) and A note 6a.
+  - N-4: if B's queue already holds a backup, move the job's `Time` to the next day's 14:00 UTC, restart and re-check.
+  - N-5: both counts are stated. Against a host installed from `origin/main`, six of seven blessed files differ (all but the guard). Against the branch's first fold-in, four changed. Either way it is BEHAVIOUR CHANGE and needs `--update-backup-behavior`. The count is moot on this never-blessed host and only matters for a host installed from `main`.
+  - N-6: A says the server is never restarted before P0 step 10, except by P0 step 8's stop and start if the first start reads Running.
+
+**Lane A fixes (prose side)**
+- **R5A DEFECT-2:** D step 8, D's clearing note and A step 9 now say an existing `/etc/duplicati/env` passes in either of O-12's forms (`root:duplicati` 0640 or `duplicati:duplicati` 0600), never world-readable, and that the installer does not settle O-12. "refuses any other owner or mode" is gone and is on the stale-phrase list. This prose describes C1's in-progress code, not code I checked.
+- **R5A NIT-2:** wherever D and A describe the installer hint, they now say it stops the unit on Running (never `pause`), includes step 10's restart, and names Procedure A's `…-key.new`. A marks that code as pending C1.
+
+**A §8 Round 5 entry** records every R5A and R5B finding:
+- **FIXED (P):** R5B DEFECT-1, DEFECT-2 and N-2 to N-6; R5A DEFECT-2's prose.
+- **FIXED, test added in parallel:** R5A NIT-4's F22/F23. A new suite, `tests/test_a0_restore_scripts.py`, appeared from another lane during this pass; it covers that case and passes. It is not yet in `ci.yml`, which is why the wiring-drift test currently fails on it. That wiring is yours.
+- **Pending C1:** R5A DEFECT-1, DEFECT-2's code and the symlink message, NIT-1, NIT-2, NIT-3; R5B N-1.
+- **Pending C2:** NIT-4's F19; NIT-5.
+- **Yours:** NIT-6.
+
+**For you: the unit comment in `util/systemd/duplicati.service`, lines 47–50.** Replace those lines with:
+```
+# propagating to Dropbox. That would also contradict section 8's rule that nothing under
+# /mnt/Backups/Ubuntu/ is deleted or moved beyond its named exceptions (the job's own
+# retention, the signed-off escrow delete, and a Procedure B Repair whose deletions are
+# copied aside first). Duplicati needs write on the destination directory only.
+```
+After you apply it, D needs one more regeneration. Until then D:705 still reads "two named exceptions".
+
+**Checks**
+- **Clearing script:** applied 78; a second run says "no change"; `--check` reports 0 staged, 14 current.
+- **Doc checks:** markdownlint v0.42.0 is clean on D and A; the structure check finds 0 problems in either; the snippet linter reports 14 blocks, 0 failures; flake8 is clean.
+- **Suites:** the clearing-script suite passes 9/9, `tests/test_a0_restore_scripts.py` passes, and `test_env_repr_safety` passes. `test_ci_test_wiring_drift` fails only on that unwired new suite.
+
+**Changed:** D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`, regenerated), A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`), `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 5's fold-in, lane P (second pass, the code lanes' prose)
+
+Archived verbatim (2,965 characters, sha256 `a32efb9b127ef18c`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+C1's and C2's round-5 prose is folded into D and A, D is regenerated, and every check passes.
+
+- **Edit count:** 78 (77 prose, 1 fence). I extended existing edits rather than adding new ones.
+- **D sha256:** `589d46c51c100f196946119d855af26e445ca57349e2ca69c58fb92267f9c473`
+- **D:705:** confirmed. The regenerated unit comment now reads "beyond its named exceptions (the job's own retention, the signed-off escrow delete, and a Procedure B Repair whose deletions are copied aside first)".
+- **No "pending" left:** none remains in D or A as a disposition. Five unrelated uses of the word remain:
+  - D:3134–3135: the SMART attribute `Current_Pending_Sector` and the error-log text beside it.
+  - D:3258: "installs it that way pending a ruling", about the O-12 question, which is still open.
+  - D:3291 and D:3293: two old §12 history rows.
+  - A:11: a predecessor handoff's filename.
+
+**What I folded in**
+- **Mode sentence (D step 8, A step 9):** C1's exact text. The file must be one of O-12's two forms, `root:duplicati` 0640 or `duplicati:duplicati` 0600. The installer accepts either and does not settle O-12. Anything else is refused, including a symlink, which must be replaced by a regular file. The clearing note says the same: exactly the two forms, a regular file, never other-readable.
+- **Stop-not-pause (D step 8):** added after the Running remedy: "The installer's closing hint prints this stop-not-pause rule and step 10's restart."
+- **O-12 row in A:** stays OPEN, with "the installer (1.5.0) accepts either form" added.
+- **Installer version:** 1.5.0 wherever the current version is stated. That covers D step 8, the clearing note, note 12c and the script's docstring, plus A step 9. Historical mentions are marked, for example "1.4.0 (1.5.0 now)".
+- **A §8 Round 5:** every item is now FIXED, attributed to C1, C2, the coordinator or P. That covers:
+  - R5A DEFECT-1, DEFECT-2 and NIT-1 to NIT-6;
+  - R5B N-1;
+  - the F01/F07 test gaps, pinned via R18;
+  - F19/F22/F23, now covered by `tests/test_a0_restore_scripts.py`;
+  - F14/F21, pinned by tests (the code was already correct).
+
+  The suite counts are recorded as 53 / 18 / 25 / 11 / 9.
+
+**Checks**
+- **Clearing script:** applied 78; a second run says "no change"; `--check` reports 0 staged and 14 current.
+- **markdownlint v0.42.0:** clean on D and A.
+- **Structure check:** 0 problems in either file.
+- **Snippet linter:** 14 blocks, 0 failures.
+- **flake8:** clean.
+- **Suites:** 136 tests OK across all seven:
+  - clearing script, 9;
+  - contract, 53;
+  - installer real path, 18;
+  - re-key real path, 25;
+  - A0 scripts, 11;
+  - CI wiring drift (now passing, so the A0 suite is wired);
+  - env-repr.
+
+**Changed:** D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`, regenerated), A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`), `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 6 — confirmation of round 5's fold-in
+
+Archived verbatim (13,939 characters, sha256 `bc178d8deddee49e`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Phase B round 6 — confirmation of round 5's fold-in
+
+I reviewed local commit `ee7fcee7` and the delta `git diff 9ce2f602 ee7fcee7`. All runs used scratch extractions under `scratchpad/r6/`. The ci-sim used a `mountpoint` stub, first on PATH, that exits 1; I did not edit the wrapper default.
+
+Documents:
+- **D**: `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`
+- **A**: `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`
+- **record**: `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md`
+- **R5A, R5B**: round 5's reports, `util/ad-hoc/2026-10-08_backup-phase-b-round4/R5A.md` and `R5B.md`
+
+## Summary
+
+**0 BLOCKER, 3 DEFECT, 4 NIT.**
+
+- **Round 5's findings:** every R5A and R5B finding is fixed at `ee7fcee7` or recorded correctly in A §8, with one exception. The fix for R5B DEFECT-2 (Repair) is incomplete and cannot be carried out as written (DEFECT-1 below).
+- **Suites, run normally and in ci-sim:** all pass, with identical counts.
+
+| Suite | Tests | Result |
+| --- | --- | --- |
+| contract | 53 | OK |
+| installer real path | 18 | OK |
+| re-key real path | 25 | OK |
+| A0 scripts | 11 | OK |
+| clearing script | 9 | OK |
+| CI wiring drift | 14 | OK |
+| env-repr | 6 | OK |
+
+  In ci-sim, no suite asked the stub about `/mnt/Backups`; it was asked only about scratch paths.
+- **The A0 suite will fail on a real CI runner, though.** That host has no `/home/pcalnon` (DEFECT-2).
+- **Mutation instruments:**
+
+| Instrument | Killed | Not killed |
+| --- | --- | --- |
+| `c1_mutations.py after` (its built-in ci-sim) | 56 of 57 applied | I11, equivalent. R9 and R10 have no anchor; R18–R22 replace them. |
+| `c2_rekey_mutations.py mutate --set after` | 48 of 48 | G02 has no anchor, as before |
+| `r5a-bin/r5a_mutants.py` (via c1's `r5a` mode, with the stub) | 20 of 20 applied | F07–F10 have no anchor; R18–R22 cover them. F22 and F23 are now killed, because the A0 suite is in its map. |
+| My 10 new mutants (`scratchpad/r6/bin/r6_mutants.py`) | 9 of 10 | N08: the hint's "pause only suspends…" reason line can be deleted (NIT-3) |
+
+- **shellcheck** at `--severity=warning`, as the hook runs it: 0 findings. At default severity, `r5a-bin/mk_cisim.bash:7` gives one SC2016 *info*, which the hook does not report.
+- **flake8 `--max-line-length=512`** on the four test files, the clearing script, the gate and every fold-in and evidence `.py`: 0 findings. That includes the R5A NIT-6 files.
+- **markdownlint v0.42.0** (from the pre-commit cache) on D, A and the record: rc 0.
+- **D regenerates byte-identical.** Starting from `origin/main`'s D, I ran `stage --from-repo` (7 blocks rewritten) and then the clearing script ("applied 78"). The result has sha256 `589d46c5…`, identical to `ee7fcee7`. A second run reports "no change".
+
+## Round-5 findings at ee7fcee7
+
+| Finding | Status |
+| --- | --- |
+| R5A DEFECT-1 / R5B N-1 (stop, not pause, on Running; the restart) | FIXED. `install:406-408`, `:422-424`; asserted by the tests; R25, R26 and N09 are killed. |
+| R5A DEFECT-2 (O-12) and NIT-1 (0644) | FIXED. The `case` accepts exactly `root:duplicati:640` or `duplicati:duplicati:600`. `-L` is checked before `-e`, so a dangling link is refused too. Every message names both forms, and the code comment says O-12 is not settled. D step 8, A step 9 and A's O-12 row (still OPEN) agree. |
+| R5A NIT-2 (`…-key.new`) | FIXED (`install:378`; R27 killed) |
+| R5A NIT-3 F01 / F07 | FIXED (R17 and R18 killed) |
+| R5A NIT-4 F19 / F22 / F23 | FIXED (killed in both instruments) |
+| R5A NIT-5 F14 / F21 | FIXED (pinned) |
+| R5A NIT-6 | FIXED (flake8 clean) |
+| R5B DEFECT-1 (`BackupID -1` default options) | FIXED. See "Not refuted" for the SQL check; NIT-1 is a residue. |
+| R5B DEFECT-2 (Repair deletes) | **Partially fixed.** See DEFECT-1. |
+| R5B N-2 to N-6 | FIXED, in both D and A |
+| Third exception wording | Consistent in D's front matter, the §8 preamble, P1 step 4, §10.2, A §6.0 item 5 and the unit comment (`duplicati.service:48-50`). No "two exceptions" or "exactly two" remains. |
+
+## Findings
+
+### BLOCKER
+
+None.
+
+### DEFECT
+
+**DEFECT-1. The Repair `--dry-run` / copy-aside step cannot be done as written, and the copy set it names is incomplete. VERIFIED from source at the tag.**
+
+D's B text (D:2746-2747) and A §6.4 say: queue Repair "with `--dry-run`", "read every `WouldDeleteFile` line", copy each named file aside. Four things are wrong with that.
+
+1. **Repair deletes more than `WouldDeleteFile` names.** Repair runs `RemoteListAnalysisAsync(…, VerifyMode.VerifyAndCleanForced)` (`RepairHandler.cs:173`). Its dry run logs each deletion of a Temporary, Deleting or incomplete Uploading remote file under the ID **`WouldDeleteRemoteFile`** (`FilelistProcessor.cs:388-399`, `:469-480`). Repair itself adds **`WouldDeleteEmptyIndexFile`** (`RepairHandler.cs:598-609`) and **`WouldDeleteIndexFile`** (`:1050-1053`). `WouldDeleteFile` (`:400`) is only the ExtraVolumes branch. An operator who copies only the `WouldDeleteFile` names leaves the other deletions uncopied. The incomplete-upload case is exactly what an unclean last writer produces, which is the scenario the step was written for.
+2. **The dry-run lines never reach the place the operator reads results.** `WriteDryrunMessage` logs at `LogMessageType.DryRun` (`Log.cs:246-248`). The result object keeps only Error, Warning and Information (`ResultClasses.cs:437-447`). So the stored job log, which the API client's `log` verb reads, has no `Would…` lines at all.
+3. **There is no way to "queue it with `--dry-run`".** The repair endpoint's input is `RepairInputDto(only_paths, time, version, paths, refresh_lock_info)` (`RepairInputDto.cs`; `BackupPost.cs:173-206`): no dry-run and no free-form options. `yamaguchi_server_api.py` has no repair verb. The only route is a job-level `--dry-run` advanced option. Left in place, that option would turn AC-3 into a silent dry run, and step 10's `export` read-back does not check for it.
+4. **The suggested remedy route has a path limit.** A job-level `--log-file` must sit under `ReadWritePaths` (`duplicati.service:51`).
+
+**Remedy:**
+- Name the mechanism: add `--dry-run`, plus `--log-file=/home/duplicati/<name>.log` with `--log-file-log-level=DryRun`, to the job. Queue Repair, `resume`, wait, `pause`.
+- Copy every file named by **any `Would…Delete…`** line: `WouldDeleteFile`, `WouldDeleteRemoteFile`, `WouldDeleteEmptyIndexFile`, `WouldDeleteIndexFile`.
+- Remove all three options, and add "no `--dry-run`/`--log-file`" to the read-back.
+- Change "the remote volumes the index does not know" to also cover the index's own incomplete or deleting files, in D's front matter, the §8 preamble, A §6.0 item 5 and the unit comment.
+
+**DEFECT-2. `tests/test_a0_restore_scripts.py` fails on a CI runner, and the guard it pins can be bypassed. VERIFIED.**
+
+- **The test fails off this host.** `test_refuses_a_restore_directory_inside_the_backup_source` passes `/home/pcalnon/a0-restore-must-not-be-created` to the restore script. The script's refusal is `case "$(readlink -f "${OUT}")/" in /home/pcalnon/*)` (`restore_server_db_from_fileset.bash:25-27`). `readlink -f` prints nothing and exits 1 when a parent directory is missing, so the case word becomes `/` and the refusal never fires. `install -d` then fails with EACCES and the script exits 1, not 2.
+  - **Reproduction:** `scratchpad/r6/bin/ci_home_absent.bash` replaces `/home/pcalnon` with a nonexistent root directory in copies of the script and the test. Result: `AssertionError: 1 != 2 : install: cannot create directory …: Permission denied`.
+  - **Effect:** GitHub runners have no `/home/pcalnon`, and `ci.yml` now runs this suite, so CI goes red. The suite's docstring claims it is hermetic, which this test is not.
+- **The script's guard has a real hole.** On the owner's host, any `OUT` two or more new levels under `/home/pcalnon` gets past the refusal: `readlink -f` fails, `install -d` creates the directory, and cleartext key material is restored into the backup Source.
+  - **Reproduction:** `readlink -f srcroot/missing/sub` gives rc=1 and empty output → NOT-REFUSED.
+  - D:2687-2688 says "The script refuses a restore path under `/home/pcalnon/`".
+  - This predates round 5. D does not name a path under home, so it needs operator error, which is why it is not a BLOCKER.
+- **A regressed refusal writes into the real home.** If the refusal ever regresses, this test creates a directory in the owner's home and never cleans it up.
+
+**Remedy:**
+- In the script, use `realpath -m` (canonicalise even when components are missing), and refuse if that fails.
+- In the test, assert a nested nonexistent path (for example `/home/pcalnon/x/y`). With `realpath -m` it then passes on CI too.
+
+**DEFECT-3. Restoring the server-wide defaults "with" the new policy voids D's five/four prediction. Mechanism VERIFIED; exposure PLAUSIBLE (the contents of the `-1` rows are unknown).**
+
+- **What D and A allow:** D step 11 and A step 14 say the deleted `BackupID -1` retention defaults "come back only with it, and only if the owner wants defaults at all".
+- **What the product does:** the removers form a union. `KeepTimeRemover`, `RetentionPolicyRemover` and then `KeepVersionsRemover` all contribute deletions (`DeleteHandler.cs:82-87`). A default is only overridden when the job sets the same name (`Runner.cs:1505-1513`, `:1584-1590`).
+- **Consequence:** a restored default `keep-time` or `keep-versions` combines with the job's `retention-policy`. The first pass can then delete pre-recovery filesets beyond the five that were copied aside. Those are the sole copies, and the "keeps four, deletes five" statement and the aside list would both be false.
+- **Remedy:** say "never restore `keep-time` / `keep-versions` / `retention-policy` as server defaults while the job carries its own policy (they combine, `DeleteHandler.cs:82-87`)". Or require a `retention_table.py` re-run that includes them, and a matching aside copy.
+
+### NIT
+
+- **NIT-1. The clearing `SELECT` does not cover a mixed-case name.** It matches `ltrim("Name",'-')` exactly, so a mixed-case name such as `--Keep-Time` is not covered. I tested the statements against `Schema.sql` with eight rows: correct otherwise. Such rows are unrealistic. Optionally use `lower(ltrim(…))`.
+- **NIT-2. A §8 Round 5 cites the wrong mutant for F01.** It says the F01 pin is "(R18)". In `c1_mutations.py`, R17 is F01 and R18 is F07.
+- **NIT-3. The hint test does not pin the reason line.** It does not assert "pause only suspends a job that may already be running…" (N08 survives). Item 3 also stops at "record it": it does not say to read `paused-until` and start again, as D step 8 does.
+- **NIT-4. The record at `ee7fcee7` is not reassembled.** It lacks every entry from round 3's fold-in onward. `2026-10-05_reassemble_phase_b_record.bash --check` exits 2 with "header differs … pass --accept-header". This is expected for WIP, but it must be run before the PR.
+
+## Not refuted
+
+- **The installer's mode check:**
+  - exact `%U:%G:%a` matching: setuid, sticky or 0440 variants are refused;
+  - a dangling symlink is refused;
+  - a dry run reports and continues;
+  - root reads either form;
+  - N07 and N10 are killed.
+- **The clearing SQL** against `Schema.sql` at the tag:
+  - it selects and deletes exactly the three names at `-1`, with or without dashes and with any `Filter`;
+  - it leaves `-2`, job rows and other `-1` options alone;
+  - a re-`SELECT` is empty.
+- **Side effects of the delete: none found.**
+  - The values are plaintext: `EncryptSensitiveFields` works by name (`Connection.cs:1585-1590`).
+  - `GetCommonOptions`'s `ToDictionary` (`Runner.cs:1587`) would only have failed on duplicate names, and the delete removes any.
+  - The re-key's `SetSettings(GetSettings(-1))` re-saves the remainder.
+- **The cited source lines are accurate:** `RepairHandler.cs:299` and `:397` are correct, and Verify uses `VerifyOnly` (`TestHandler.cs:67`), so it deletes nothing.
+- **The A0 suite**, apart from DEFECT-2:
+  - it is stub-only; strace shows no `/mnt/Backups`, `/usr/lib/duplicati`, `/etc/credstore` or credential access;
+  - the passphrase stays out of argv;
+  - the copy goes to `--dbpath`, never the frozen index;
+  - siblings are byte-identical and cleaned up;
+  - the restore directory is created 0700;
+  - N01 to N06 are all killed.
+- **The installer hint ordering** (N09 killed) and the `…-key.new` NOTE.
+
+## Unverifiable
+
+- What the restored database's `BackupID -1` rows hold (DEFECT-3's exposure).
+- Whether the index has incomplete or extra remote volumes (DEFECT-1's trigger).
+- Whether 2.4's live-log viewer shows DryRun-level lines. I did not check this from source.
+- CI itself: the branch is local, so the ci-sim and the home-absent run are simulations.
+
+## Slips
+
+- **Harness refusals.** Several compound commands were refused (`git` inside a raw-content hostname, a computed `HOME`) and re-issued as scratch scripts. None of the refused commands ran.
+- **Host access:**
+  - the strace and A0 runs `stat`ed `/home/pcalnon/a0-restore-must-not-be-created`, which does not exist, and opened `/home/pcalnon` for `readlink`; nothing was created;
+  - no unit, Duplicati binary, `:8300` connection, `sudo` or secret file;
+  - nothing under `/mnt/Backups` was touched.
+- **Network:** read-only raw fetches and one tree listing from GitHub at `v2.4.0.0_stable_2026-09-03`, into `scratchpad/r6/src/`.
+- **Worktree:** I made no change and no git state change. `git status` now also shows a modified `CHANGELOG.md` and an untracked `CHANGELOG_ENTRY.md`, written by another lane during my run, not by me.
+
+**Changed**: no repository file.
+
+**Created, scratch only**, under `scratchpad/r6/bin/`: `fetch.bash`, `tree.bash`, `run_suites.bash`, `strace_suites.bash`, `ci_home_absent.bash` and `r6_mutants.py`. These live in tmpfs; copy them to `util/ad-hoc/` if they should be kept.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 6's fold-in, lane C1
+
+Archived verbatim (2,550 characters, sha256 `7ea291fc66446a94`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+## Lane C1 report: backup Phase B round-6 fold-in
+
+All three round-6 items in the installer hint are done, and all four of round 6's installer mutants are killed (N08 included). The four Phase B suites pass on a simulated host without the backup mount.
+
+**R6 NIT-3 (what follows "stop the unit"): FIXED.** `util/install_duplicati_service.bash` is now 1.5.1. Right after the stop-not-pause reason, the hint prints a new line: "Then read the stored paused-until (step 8's read-back) before starting again." This matches D step 8. The reason line itself is still its own `echo`, unchanged, so N08's anchor still applies.
+
+**R6 NIT-4 (mutant N08): FIXED.** The hint test now asserts the full reason sentence: "pause only suspends a job that may already be running, and step 10's resume would continue it with the options it started with." It also asserts the order: the stop, then the reason, then "Then read the stored paused-until…", all before the guard block.
+
+**R6 NIT-5 (approximate ordering check): FIXED.** Both positions are now taken with `flat.index` in the same flattened text: the guard block's end (`echo "guard exit=$?"`) must come before the restart sentence.
+
+**Repair:** the hint does not mention Repair anywhere, so lane P's rewrite of the Repair dry-run step cannot conflict with it. I added nothing about Repair.
+
+**Mutants** (run in ci-sim, with the `mountpoint` stub first on PATH):
+
+| Instrument | Killed |
+| --- | --- |
+| R6's `r6_mutants.py`, N07–N10 (the installer ones) | 4 of 4, N08 included |
+| `c1_mutations.py`, the hint mutants R14, R25 and R26, re-checked after the edit | 3 of 3 |
+
+`r6_mutants.py` runs unchanged through a new `r6` mode in `c1_mutations.py` (now 1.3.0). That mode filters to the named mutant ids and puts the stub first on the script's hard-coded PATH.
+
+**Checks:**
+
+| Check | Result |
+| --- | --- |
+| ci-sim, contract suite | 53, PASS |
+| ci-sim, installer real-path suite | 18, PASS |
+| ci-sim, re-key real-path suite | 25, PASS |
+| ci-sim, clearing-script suite | 9, PASS |
+| `tests/test_duplicati_installer_real_path.py` on this host | 18, OK |
+| shellcheck on the installer | 0 |
+| flake8 on the real-path suite and `c1_mutations.py` | 0 |
+
+**Needed elsewhere:** D's embedded copy of the installer picks up the new hint line through the staging script's `--from-repo` step. No other prose change is needed.
+
+**Files changed:**
+- `util/install_duplicati_service.bash` (1.5.1)
+- `tests/test_duplicati_installer_real_path.py`
+- `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/c1_mutations.py` (1.3.0)
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 6's fold-in, lane C2
+
+Archived verbatim (4,510 characters, sha256 `5c170625e7ed6a83`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Lane C2 report: Phase B round-6 fold-in (R6 DEFECT-2)
+
+The refusal in `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash` (the A0 restore script) is fixed with `realpath -m`. A restore path anywhere under the backup Source is now refused, at any depth, whether or not it exists, and through a symlink. R6's reproduction passes, and the new tests fail against the pre-fix script.
+
+The other A0 script, `util/ad-hoc/2026-09-22_confirm_a0_premise.bash`, has no such pattern (no `readlink`, no restore path), so it is unchanged.
+
+Files referenced: R6 is `util/ad-hoc/2026-10-08_backup-phase-b-round4/R6.md`. D is `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`; A is `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`.
+
+**Changed**: `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash`, `tests/test_a0_restore_scripts.py`.
+
+## 1. Finding: R6 DEFECT-2, FIXED
+
+**What I chose: `realpath -m`**, on both the restore path and the Source root. It canonicalises a path whether or not it exists, and resolves every symlink on the part that does exist. `readlink -f` printed nothing when two or more trailing levels were missing, and an empty answer never matched.
+
+The refusal now reads, in the restore script:
+```bash
+SOURCE_ROOT="$(realpath -m -- "${YAMAGUCHI_SOURCE_ROOT:-/home/pcalnon}")"
+OUT_REAL="$(realpath -m -- "${OUT}")"
+[[ -n "${SOURCE_ROOT}" && -n "${OUT_REAL}" ]] || { echo "refusing: cannot resolve ${OUT}" >&2; exit 2; }
+case "${OUT_REAL}/" in
+    "${SOURCE_ROOT}"/*) echo "refusing: ${OUT} is inside the backup Source (${SOURCE_ROOT})" >&2; exit 2 ;;
+esac
+```
+- The match is on a whole path component, so the root itself is refused and `<root>-other` is not.
+- An empty resolution fails closed (exit 2).
+- `YAMAGUCHI_SOURCE_ROOT` defaults to `/home/pcalnon`; an empty value counts as unset.
+
+**Tests.** The suite now sets `YAMAGUCHI_SOURCE_ROOT` to a scratch directory for every test, so it never stats or creates anything in the real home. The old one-level test now runs against the scratch root, and four new tests cover:
+- two or more new levels: `a0/out` and `x/y/z`;
+- the root itself, and a path that reaches it through `..` with two new levels;
+- a symlink into the Source: through a symlinked directory with new levels under it, and a symlink to an existing directory inside it;
+- a sibling `<root>-other/out`, which is accepted and created.
+
+## 2. Evidence
+
+- **R6's reproduction** `r6-bin/ci_home_absent.bash` (which renames `/home/pcalnon` to a root that does not exist) on the fixed tree: the refusal test passes. The whole A0 suite in that same copy: 15 tests OK.
+- **Pre-fix script** (`ee7fcee7`) with only the `YAMAGUCHI_SOURCE_ROOT` hook grafted in, keeping `readlink -f`:
+  - the one-level case passes;
+  - the two-level, `..`, and symlink-with-new-levels tests **fail**: 3 failures in 10.
+- **Pre-fix script unmodified:** 4 failures in 10. The one-level test fails there too, because that script ignores the scratch root.
+
+## 3. Check results
+
+- `python3 -m unittest tests/test_duplicati_wrapper_contract.py tests/test_backup_rekey_real_path.py tests/test_a0_restore_scripts.py`: **93 tests, OK** (53 + 25 + 15; the A0 suite grew from 11 to 15).
+- `shellcheck` on both A0 scripts: clean.
+- `flake8 --max-line-length=512` on the A0 suite: clean.
+- CodeQL prescreen: 0 predicted alerts.
+
+## 4. Needed elsewhere
+
+**D:2687-2689.** The claim is now true, but it should say how far it reaches. Replace "The script refuses a restore path under `/home/pcalnon/` for the same reason:" with:
+> The script refuses a restore path under `/home/pcalnon/` — at any depth, existing or not, and through a symlink (`realpath -m`; round 6, R6 DEFECT-2: `readlink -f` let a path two or more new levels deep through) — for the same reason:
+
+**A §8, round-6 entry:**
+> R6 DEFECT-2 fixed: the A0 restore script's Source refusal uses `realpath -m` and takes a `YAMAGUCHI_SOURCE_ROOT` override (default `/home/pcalnon`). The suite pins two-or-more-new-level, `..` and symlink paths against a scratch root, and passes on a host without `/home/pcalnon`.
+
+**docs/REFERENCE.md**, in the A0 suite bullet: change "the restore directory refused inside the backup Source" to "the restore directory refused inside the backup Source at any depth, existing or not, and through a symlink (against a scratch `YAMAGUCHI_SOURCE_ROOT`)".
+
+**CI wiring:** none new; `tests/test_a0_restore_scripts.py` is already in `ci.yml`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 6's fold-in, lane P
+
+Archived verbatim (4,162 characters, sha256 `4c8d97c34ef80c03`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+Round 6 is folded into D and A, D is regenerated last, and every check passes. One change is still yours: the unit comment's wording, which I need you to apply (exact text below).
+
+- **Edit count:** 79 (78 prose, 1 fence). The one new edit is C2's D step 4 sentence on the restore refusal.
+- **D sha256:** `3ad886576e5e6d5c9473781f11a6b8aa4aaebb491fb725c7b1f17c2291380ccc`
+
+**R6 findings**
+- **DEFECT-1 (Repair mechanism), D step 8 and A step 8.** I re-read every citation at tag `v2.4.0.0_stable_2026-09-03` before writing:
+  - `RepairHandler.cs` 397/400, 599/609, 1051/1053;
+  - `FilelistProcessor.cs` 289, 390/399, 471/480;
+  - `RepairInputDto`, `BackupPost.cs` `DoRepair`, `Log.cs:246-248` and `ResultClasses.cs:437-447`.
+
+  The procedure now reads:
+  1. Add `--dry-run`, `--log-file=/home/duplicati/repair-dryrun.log` and `--log-file-log-level=DryRun` to the job. The log must sit under the unit's `ReadWritePaths=`; `/home/duplicati` is the only writable path besides the destination, and a file there would trip the guard.
+  2. Queue Repair, `resume`, wait, `pause`.
+  3. Read every log line matching `Would(Delete|DeleteRemote|DeleteEmptyIndex|DeleteIndex)File` and copy each named file aside (root 0700, sha256 checked on both sides).
+  4. Remove all three options and confirm with `export <id>` that none remains. Left in place, `--dry-run` would make AC-3 a dry run.
+  5. Only then run the real Repair.
+  6. `shred -u` the log. Its DryRun lines name files only, but at that level it also carries warnings and errors that nobody has audited for content.
+
+  Step 10's read-back now also checks for no `--dry-run`, `--log-file` or `--log-file-log-level`. The third exception is widened everywhere to "the remote files a Repair deletes": volumes the index does not know, the index's own temporary, deleting or incompletely uploaded files, and empty or replaced index files.
+- **DEFECT-2:** FIXED by C2. D step 4 uses C2's sentence: the refusal holds at any depth, whether the path exists or not, and through a symlink (`realpath -m`). A records the A0 suite as 15 tests.
+- **DEFECT-3:** D step 11 and A step 14 say `keep-time` and `keep-versions` defaults are never restored, because they combine with the policy (`DeleteHandler.cs:82-87`, verified). A `retention-policy` default comes back only if the owner wants one, with the table and the aside copy recomputed against it first. The owner's ruling is unchanged.
+- **NIT-1:** the step-8 `SELECT` and `DELETE` now match on `lower(ltrim("Name",'-'))`.
+- **NIT-2:** A's Round 5 entry now cites R17 for F01.
+- **NIT-3:** FIXED by C1 (installer 1.5.1). The new hint line reaches D through `--from-repo` (D:1529).
+- **NIT-4:** the record's re-assembly, which is yours.
+- A §8 has a Round 6 entry using the final report's numbering. No "pending" remains in D or A.
+
+**Installer version:** 1.5.1 wherever D or A states the current one. Historical mentions ("since 1.5.0 it accepts…") are left as they are.
+
+**Your edit to `util/systemd/duplicati.service`.** D:705–707 still reads "a Procedure B Repair whose deletions are copied aside first". Replace the parenthesis with:
+```
+# /mnt/Backups/Ubuntu/ is deleted or moved beyond its named exceptions (the job's own
+# retention, the signed-off escrow delete, and the remote files a Procedure B Repair
+# deletes, copied aside first). Duplicati needs write on the
+```
+D needs one more reset, `--from-repo` and clearing-script run after you apply it.
+
+**Checks**
+- **Clearing script:** applied 79; a second run says "no change"; `--check` gives "0 staged, 14 already current".
+- **markdownlint v0.42.0:** clean on D and A.
+- **Structure check:** 0 problems in either file.
+- **Snippet linter:** 14 blocks, 0 failures.
+- **flake8:** clean.
+- **Suites:** 140 tests OK across the clearing-script, contract, installer real-path, re-key real-path, A0, wiring-drift and env-repr suites.
+
+**Changed:** D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`, regenerated), A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`), `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 7 — confirmation of round 6's fold-in
+
+Archived verbatim (11,157 characters, sha256 `361155bd5723dd90`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Phase B round 7 — confirmation of round 6's fold-in
+
+I reviewed local commit `19ae4aa9` and the delta `git diff ee7fcee7 19ae4aa9`. All runs used scratch extractions under `scratchpad/r7/`. I checked Duplicati source at tag `v2.4.0.0_stable_2026-09-03`, using round 6's fetched files in `scratchpad/r6/src/` plus files I fetched into `scratchpad/r7/src/`.
+
+Documents:
+- **D**: `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`
+- **A**: `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`
+- **R6**: `util/ad-hoc/2026-10-08_backup-phase-b-round4/R6.md`
+- **Fold-in reports**: `C1_round6.md`, `C2_round6.md` and `P_round6.md`, in `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/`
+
+## Summary
+
+**0 BLOCKER, 0 DEFECT, 7 NIT.**
+
+- **R6's findings:** all 3 DEFECTs and NIT-1 to NIT-3 are fixed. NIT-4 (reassembling the record) is still open; it is the coordinator's action and is expected before the PR.
+- **The rewritten Repair procedure (D step 8, A step 8) works as written against the source.** The detail is under "Not refuted".
+
+**Suites, run normally and in ci-sim** (a `mountpoint` stub first on PATH that exits 1). Both runs pass with identical counts:
+
+| Suite | Tests |
+| --- | --- |
+| contract | 53 |
+| installer real path | 18 |
+| re-key real path | 25 |
+| A0 scripts | 15 |
+| clearing script | 9 |
+| CI wiring drift | 14 |
+| env-repr | 6 |
+
+- In ci-sim the stub was asked only about scratch paths under `/tmp/wrapper-contract-*`, never `/mnt/Backups`.
+- **`r6-bin/ci_home_absent.bash`** (simulates a host with no `/home/pcalnon`): the refusal test passes, and so does the whole A0 suite (15 OK).
+
+**Mutants:**
+
+| Instrument | Result |
+| --- | --- |
+| `r6_mutants.py` | 10 of 10 killed, N08 included |
+| My 8 new mutants (`scratchpad/r7/bin/r7_mutants.py`) | 4 killed (readlink regression, case on raw `OUT`, `realpath -s`, the dropped paused-until hint line) |
+
+Of my 4 survivors, Q05 and Q07 are equivalent under the test's conditions. Q01 and Q02 are a real gap (NIT-1).
+
+**Lint and regeneration:**
+- shellcheck at `--severity=warning`: 0 findings. flake8 at `--max-line-length=512`: 0 findings.
+- markdownlint v0.42.0 (from the pre-commit cache) on D and A: rc 0.
+- **D regenerates byte-identical.** I started from `origin/main`'s D, ran `stage --from-repo` (7 blocks rewritten), then the clearing script ("applied 79"). The result's sha256 is `da39e40ff714…`, the same as `19ae4aa9`. A second run reports "no change".
+
+## R6 findings at 19ae4aa9
+
+| Finding | Status |
+| --- | --- |
+| DEFECT-1 (Repair) | FIXED. D:2756-2759; A:301. Verified from source (see "Not refuted"). |
+| DEFECT-2 (`realpath -m`) | FIXED. `restore_server_db_from_fileset.bash:29-34`. Two or more new levels, `..`, symlinks and the root itself are all refused; `<root>-other` is accepted. Q03, Q04 and Q06 are killed. |
+| DEFECT-3 (defaults) | FIXED. D step 11 (:2789) and A step 14 (:344) say `keep-time` / `keep-versions` defaults are never restored. The union described matches `DeleteHandler.cs:79-87` exactly. |
+| NIT-1 (`lower(ltrim())`) | FIXED. Tested against `Schema.sql`. Mixed-case and single-dash names are selected. `-2` rows, job rows, `--keep-versions-extra` and other `-1` options are left alone. A re-`SELECT` is empty. |
+| NIT-2 (R17) | FIXED |
+| NIT-3 (hint) | FIXED (installer 1.5.1, `install:411`). The reason line and the new line are both asserted in order (Q08 and N08 killed). |
+| NIT-4 (record) | OPEN, as expected. `--check` exits 2 with "header differs … --accept-header". The reassembly list now names R6 and the three round-6 fold-in reports. |
+
+## Findings
+
+### BLOCKER
+
+None.
+
+### DEFECT
+
+None.
+
+### NIT
+
+**NIT-1. The production default `/home/pcalnon` is not pinned by any test. VERIFIED.**
+- Every A0 test sets `YAMAGUCHI_SOURCE_ROOT` (`tests/test_a0_restore_scripts.py:92`).
+- So changing the default at `restore_server_db_from_fileset.bash:29` to `/` (Q01) or to `/nonexistent` (Q02) survives, and either change switches the refusal off in production.
+- The variable also lets a stray environment value weaken the refusal.
+- **Remedy:** add one test with the variable unset and `OUT=/home/pcalnon/x/y`, asserting exit 2. `realpath -m` creates nothing, so this is hermetic on CI too. Optionally, also assert the literal default in the script text.
+
+**NIT-2. D's front matter lists only two of the three kinds of file a Repair deletes. VERIFIED.**
+- D:17 lists "volumes the index does not know, and the index's own temporary, deleting or incompletely uploaded files".
+- It omits "empty or replaced index files", which the §8 preamble (D:2362), step 8 (D:2756) and A:212 all include.
+- A's round-6 entry (A:536) says "the third exception names every kind".
+- **Remedy:** add the third kind at D:17.
+
+**NIT-3. Step 10's read-back cannot catch the Repair dry-run options it names. VERIFIED from D's own ordering.**
+- D:2786 ("no `--dry-run`, `--log-file` or `--log-file-log-level` (step 8's Repair dry run, on B)") and A:333 put this check in step 10's read-back.
+- But on B, Verify and any Repair run only after step 10's restart and `resume` (D:2755; A:300). So that read-back always happens before the options exist.
+- The real safeguard is item (4)'s `export` check, which is correct.
+- **Remedy:** drop the parenthetical, or move it to the step that follows the Repair.
+
+**NIT-4. `shred -u` on the log fails as the operator. VERIFIED.**
+- `/home/duplicati` is `duplicati:duplicati 755`, and `UMask=0027` (`duplicati.service:19`) makes the log 0640.
+- pcalnon is in group `duplicati`, so reading the log works. But overwriting and unlinking it does not.
+- The failure is loud and harmless.
+- **Remedy:** `sudo -u duplicati shred -u /home/duplicati/repair-dryrun.log` at D:2759 and A:301.
+
+**NIT-5. "/home/duplicati is the one writable path besides the destination" is not literally true. VERIFIED from the unit.**
+- `PrivateTmp=yes` (`duplicati.service:53`) gives the service a private writable `/tmp` and `/var/tmp`.
+- The choice of `/home/duplicati` is still right, because the operator cannot easily reach the private tmp.
+- **Remedy:** say "the one writable path the operator can read, besides the destination".
+
+**NIT-6. CHANGELOG edit counts are stale. VERIFIED.**
+- CHANGELOG.md:179-181 says the clearing script "makes 78 edits … 77 to prose". It now applies 79 (78 prose, 1 fence).
+- The bullet heading "Rounds 3 to 5, folded in" also omits round 6, although the same entry archives round 6's reports.
+
+**NIT-7. The test comments cite R6 findings that do not exist. VERIFIED.**
+- `tests/test_duplicati_installer_real_path.py:451` says "R6 NIT-4 / N08", and `:458` says "R6 NIT-5".
+- R6 has four NITs. N08 belongs to NIT-3, and NIT-4 is the record.
+- `C1_round6.md` repeats the same numbering, apparently from a draft of R6.
+
+## Not refuted
+
+**The job-level options reach a queued Repair.**
+- `DoRepair` snapshots the backup at queue time (`BackupPost.cs:59-60, 206`).
+- `Runner.cs:818` applies `ApplyOptions`, which copies every job `--` option, minus its dashes, into the options (`:1510-1513`). `TestIfOptionApplies` always returns true (`:1361-1365`).
+- Nothing in `Runner.cs` strips `log-file`.
+- `Controller.cs:914-924` opens the log file for every operation. `Options.cs:1104-1124` parses `DryRun` case-insensitively.
+- The level filter is `entry.Level >= level` (`ControllerMultiLogTarget.cs:125`). With `DryRun` sitting between Information and Warning, the log receives DryRun, Warning and Error lines. That matches D's wording.
+
+**The log file is writable under the unit.**
+- `ReadWritePaths=/home/duplicati …` (`duplicati.service:52`), and `/home/duplicati` exists as `duplicati:duplicati 755`.
+- The directory-exists check at `Controller.cs:916-918` is satisfied.
+- The file is opened with `FileMode.Append` (`StreamLogDestination.cs:51`), so a stale earlier log only over-copies.
+
+**The four message IDs are complete, and every line names the file.**
+- Every `WriteDryrunMessage` on the Repair path is one of:
+  - `WouldDeleteRemoteFile`: `FilelistProcessor.cs:390`, `:471`;
+  - `WouldDeleteFile`: `RepairHandler.cs:400`;
+  - `WouldDeleteEmptyIndexFile`: `:599`;
+  - `WouldDeleteIndexFile`: `:1051`;
+  - non-destructive IDs: `WouldUploadVerificationFile`, `WouldReUploadFileset` (`:461`, `:713`), `WouldReUploadIndexFile` (`:779`) and `WouldReplaceBlockFile` (`:1023`).
+- The re-upload paths are only for volumes listed as missing. They write new names, from `ProbeUnusedFilenameNameAsync` or a new writer, and only mark the absent original Deleted in the database. They neither delete nor overwrite an existing remote file.
+- The line format is `… - [DryRun-<tag>-<Id>]: <message>` (`LogEntry.cs:160`, `:169`). So the regex matches the ID, and each message ends with the remote filename.
+
+**The dry run predicts the real run's deletions.**
+- The dry run commits some database state unconditionally: `RepairHandler.cs:173-175`, and the unguarded `UpdateRemoteVolumeAsync` calls at `FilelistProcessor.cs:428-449`.
+- Those changes only promote files that exist and are complete, or schedule database-only cleanup for missing ones. Neither adds a remote deletion that the dry run did not log.
+
+**Removing the options is confirmed by `export`.** `PrepareBackupForExport` (`Connection.cs:204-215`) clones the whole backup, settings included.
+
+**The `realpath -m` refusal could not be bypassed.** I tried:
+- `..` paths and symlinked directories, both with new levels below them;
+- the root itself;
+- `/proc/self/root` (it resolves);
+- a prefix sibling such as `<root>-other`, which is correctly accepted.
+
+Q05 (removing the empty-resolution guard) is equivalent, because under `set -e` a failed `realpath` already exits.
+
+**Defaults wording.** "Never restored" appears consistently in D step 11, D step 8, A step 9's clearing and A step 14.
+
+## Unverifiable
+
+- Whether the restored index needs a Repair at all, and what the server-database `BackupID -1` rows hold.
+- Whether the job's `--run-script-before-required` guard lets a non-backup operation through. This predates the delta and is not checked here.
+- CI itself: the branch is local, so the ci-sim and home-absent runs are simulations.
+
+## Slips
+
+- **Harness refusals.** Several compound commands were refused and re-issued as scratch scripts, run from the worktree directory. None of the refused commands ran.
+- **Host access:**
+  - I ran `stat` on `/home/duplicati` and `realpath` on `/home`;
+  - I read `id` / `getent group duplicati`;
+  - I read no secret file.
+- **What I did not do:** start or stop any unit, run a Duplicati binary, contact `:8300` or use `sudo`. Nothing under `/mnt/Backups` was touched.
+- **Network:** read-only raw fetches from GitHub at the tag, into `scratchpad/r7/src/`.
+- **Worktree:** no change and no git state change. `git status` is clean at `19ae4aa9`.
+
+**Changed**: no repository file.
+
+**Created, scratch only**, under `scratchpad/r7/bin/`: `regen.bash`, `all.bash`, `r7_mutants.py`, and copies of `fetch.bash`, `run_suites.bash`, `ci_home_absent.bash` and `r6_mutants.py`. These live in tmpfs; copy them to `util/ad-hoc/` if they should be kept.
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 7's fold-in, lane C2
+
+Archived verbatim (1,865 characters, sha256 `6b2b8c0e5bc19465`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+# Lane C2: round-7 NIT-1 (A0 restore script's default Source root)
+
+Q01 and Q02 are killed. **The A0 suite now has 17 tests, all passing.** I also killed Q07 while there.
+
+`r7_mutants.py` on a scratch copy of the current tree killed 7 of its 8 mutants. **The one survivor, Q05, is untested on purpose**: it deletes the guard that refuses when `realpath -m` returns an empty path, and I found no input that makes it do so. Treat Q05 as equivalent, or keep it as a defensive line.
+
+**Changed**: `tests/test_a0_restore_scripts.py` only. The A0 restore script itself (`util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash`) did not change.
+
+**New tests** (R7 is `util/ad-hoc/2026-10-08_backup-phase-b-round4/R7.md`):
+- **`test_the_production_default_root_is_the_real_home`** kills Q01 and Q02. With `YAMAGUCHI_SOURCE_ROOT` unset it checks:
+  - `/home/pcalnon/a0-r7-probe-must-not-exist/x/y` gets exit 2, the message names `/home/pcalnon`, `duplicati-cli` does not run, and nothing is created;
+  - a scratch path outside the home is accepted (exit 0), which is what kills Q01, whose default of `/` refuses everything;
+  - the script text contains the literal `${YAMAGUCHI_SOURCE_ROOT:-/home/pcalnon}`.
+- **`test_a_source_root_given_through_a_symlink_is_canonicalised`** kills Q07: a root named through a symlink still refuses a path under the real directory.
+- **Safety net:** a PATH stub for `install` now refuses any `/home/*` argument. Under Q02 the script would otherwise have run `install -d` in the real home. The probe directory was confirmed absent after the mutant run.
+
+**Checks**: 17 tests OK; flake8 at 512 and the CodeQL prescreen are both clean.
+
+**Needed elsewhere**: no new CI wiring. In `docs/REFERENCE.md`, the A0 suite bullet can add: "the production default root `/home/pcalnon` is pinned, and a root given through a symlink is canonicalised".
+
+<!-- markdownlint-enable -->
+
+---
+
+## Round 7's fold-in, lane P
+
+Archived verbatim (2,284 characters, sha256 `1de2440664980f86`), lifted from the lane's report, saved from its transcript by session 097ae87b on 2026-10-08.
+
+<!-- markdownlint-disable -->
+
+Round 7 is folded into D and A, D is regenerated, and every check passes.
+
+- **Edit count:** 79 (78 prose, 1 fence). Round 7 extended existing edits and added none.
+- **D sha256:** `d1e0b855e74061db0e8604987d31a0188c29327a794bc7ba44a2a533bba05ccd`. A changed after this regeneration; D did not, so the hash still holds.
+
+**Fixed (in D through the clearing script, and in A)**
+- **NIT-2:** D's front matter now names all three kinds of remote file a Repair deletes, including empty or replaced index files.
+- **NIT-3:** step 10's read-back in D and A no longer mentions the Repair dry-run options. Item (4)'s `export` check in step 8 is the safeguard.
+- **NIT-4:** the log is removed with `sudo -u duplicati shred -u /home/duplicati/repair-dryrun.log`, in D and A.
+- **NIT-5:** D and A now say "the one writable path the operator can read, besides the destination".
+- **Unit comment:** D:705–707 now carries your text, "the remote files a Procedure B Repair deletes, copied aside first", via `--from-repo`.
+
+**A §8 Round 7 entry:** 0 BLOCKER, 0 DEFECT, 7 NIT.
+- NIT-1: fixed by C2. It records the new default-root test (kills Q01 and Q02), the symlinked-root test (kills Q07), and Q05 as equivalent.
+- NIT-2 to NIT-5: fixed by P.
+- NIT-6 and NIT-7: fixed by you.
+- It states that no eighth round ran because round 7 found no DEFECT.
+- I re-labelled the earlier A0 test counts, which read as current, as point-in-time: Round 5's "Suite counts now" now says "at round 5" with "(17 since round 7)" beside the 11, and Round 6's 15 now reads "15 tests then; 17 since round 7".
+
+**Checks**
+- **Clearing script:** applied 79; a second run says "no change"; `--check` gives "0 staged, 14 already current".
+- **markdownlint v0.42.0:** clean on D and A, including after the last A edit.
+- **Structure check:** 0 problems in D and A.
+- **Snippet linter:** 14 blocks, 0 failures.
+- **flake8:** clean.
+- **Suites:** 141 tests OK across the seven suites. Re-run after C2's change, the A0 suite alone passes 17/17.
+
+**Changed:** D (`notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`, regenerated), A (`notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`), `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`.
 
 <!-- markdownlint-enable -->

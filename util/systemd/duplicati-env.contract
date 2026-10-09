@@ -1,0 +1,64 @@
+# Duplicati server: local overrides. Installed at /etc/duplicati/env (0640 root:duplicati, in a
+# 0755 root:root directory) by util/install_duplicati_service.bash, which never overwrites an
+# existing copy -- an operator's tunables survive a re-install. The repository copy is
+# util/systemd/duplicati-env.contract: a name ending in .env is credential material there (the
+# `*.env` ignore rule and the unencrypted-.env hook), and this file carries no secret by
+# contract. The wrapper reads it first (DUPLICATI_ENV_FILE, default /etc/duplicati/env);
+# /etc/default/duplicati's DAEMON_OPTS wins for the same option name.
+# MODE IS AN OPEN OWNER DECISION (recorded as dissent in the design's section 11, O-12 of the
+# 2026-10-03 assessment):
+#   0600 duplicati:duplicati  -- Lane A3 / Lane B2 D15; the service user can rewrite its own
+#                                tunables, which was the status quo.
+#   0640 root:duplicati       -- Lane B3 F-5, and what the design RECOMMENDS and this installer
+#                                does: the wrapper only ever READS this file, so the service
+#                                user needs no write, and a file the plain duplicati uid can
+#                                write is a code-injection path into a process holding
+#                                CAP_DAC_READ_SEARCH (see the crossings table in 7.3.1).
+# The mode only binds because the file lives OUTSIDE the data folder (round 3's D13): that
+# directory must be 0700 duplicati:duplicati (Duplicati's own requirement) and the server must
+# own it to write its database there, so the duplicati uid holds write on the DIRECTORY -- and
+# in POSIX, delete permission comes from the parent directory, not the file. A 0640
+# root:duplicati file inside it would be unlink-and-recreate-able by the service user, which
+# defeats the whole point of the mode. /etc/duplicati is 0755 root:root, so it is not.
+# Grammar (enforced by the wrapper, which refuses anything else with exit 78). Accepted lines:
+#   an assignment (NAME=VALUE, optionally prefixed by `export`), an --option[=value] line, a
+#   # comment, or a blank line.
+# Values of assignments are literal (no shell expansion; matching surrounding quotes are removed),
+# and only these names may be exported: SETTINGS_ENCRYPTION_KEY, TMPDIR, TZ, LANG, LC_ALL. The
+# DUPLICATI__* family is NOT exportable from here: the server composes DUPLICATI__<OPTION> for
+# every option at runtime, so an exported DUPLICATI__DISABLE_DB_ENCRYPTION (value true) in this
+# unblessed file would have decrypted the database at the next start with no "Unknown option"
+# trace (Lane A, 2026-10-03).
+# --option lines are passed to the server verbatim, quotes included; leading whitespace is ignored.
+# Option names are compared case-insensitively, as the server does. Since wrapper 2.3.0 an
+# --option line here must name one of these TUNABLES, and nothing else:
+#   --webservice-port, --webservice-token-duration, --webservice-timezone, --log-level,
+#   --log-retention, --ping-pong-keepalive, --disable-update-check, --webservice-suppress-welcome-page.
+# Any other option is refused (exit 78). These SECURITY options get their own refusal message:
+#   --disable-db-encryption, --require-db-encryption-key, --settings-encryption-key,
+#   --allow-insecure-datafolder, --webservice-password, --webservice-password-init,
+#   --webservice-pre-auth-tokens, --webservice-reset-jwt-config, --webservice-disable-signin-tokens,
+#   --webservice-allowed-hostnames and its alias --webservice-allowedhostnames,
+#   --webservice-interface, --server-datafolder, --webservice-enable-forever-token,
+#   --webservice-cors-origins, and --parameters-file with its alias --parameterfile (the server
+#   reads that file itself and lets every option in it override argv, so one line naming it would
+#   re-open all the others).
+# Everything that is not a tunable belongs on argv: DAEMON_OPTS in /etc/default/duplicati (blessed
+# by the installer's drift gate) or the re-key's runtime drop-in. The installer gates this file by
+# running the wrapper itself on it, so the two can never disagree. A comment must never START
+# with an assignment -- that is the AC-8 shape this file is counted for (the 2026-09-20 file
+# carried five). The wrapper accepts such a comment; the installer refuses a secret-shaped one
+# (behind any run of `#`), and the repository test suite and AC-8's shape instrument refuse all.
+# NEVER keep a real secret in a comment. A commented-out assignment is still a secret on disk,
+# and on 2026-09-20 every line of the previous file was echoed into the system journal.
+# The settings encryption key is delivered by systemd (LoadCredential=) and must not be set
+# here while the unit supplies it. For a hand run outside systemd, export it in the shell.
+# A name the wrapper does not allow -- SETTINGS_ENCRYPTION_KEY_OLD was one -- is a fatal
+# configuration error (exit 78), not a warning: the server never starts on it.
+#
+# The --option line below is INERT under the unit as shipped: DAEMON_OPTS (precedence 3) also
+# sets --webservice-port, and a later source wins for the same option name. It is kept as a
+# worked example of the grammar, not as a live tunable -- changing it here changes nothing.
+# Declaring one setting in two artifacts is exactly what principle 1 of section 7.1 forbids;
+# when the port must change, change /etc/default/duplicati.
+--webservice-port=8300
