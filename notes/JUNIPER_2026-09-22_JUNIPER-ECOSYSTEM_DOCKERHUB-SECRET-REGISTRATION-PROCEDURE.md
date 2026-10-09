@@ -693,3 +693,4 @@ logout is bare). External, read 2026-09-22/23: Docker's *Personal access tokens*
 (<https://docs.docker.com/security/access-tokens/personal-access-tokens/>), its usage and pulls
 pages (§9), its Hub *Settings* page (§2), and the
 `docker/login-action` README (the `vars.` / `secrets.` split in §5.2B step 3a).
+nstall a new OS using Network Install
