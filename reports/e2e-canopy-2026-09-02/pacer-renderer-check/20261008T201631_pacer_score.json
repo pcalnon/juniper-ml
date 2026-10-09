@@ -1,0 +1,161 @@
+{
+ "arm": "pacer",
+ "requests": 172,
+ "completed": 171,
+ "applied": 170,
+ "applied_recorded_in_page": 169,
+ "applied_by_ack_only": [
+  118
+ ],
+ "evicted_total": 0,
+ "fires": 0,
+ "phases": {
+  "idle": {
+   "requests": 145,
+   "evicted": 0,
+   "stale": 0,
+   "requested_while_another_in_flight": 0,
+   "fires": 0,
+   "median_applied_gap_ms": 4161,
+   "reasons": {
+    "extra": 1,
+    "tick": 144
+   }
+  },
+  "triggers": {
+   "requests": 18,
+   "evicted": 0,
+   "stale": 0,
+   "requested_while_another_in_flight": 0,
+   "fires": 0,
+   "median_applied_gap_ms": 4291,
+   "reasons": {
+    "extra": 3,
+    "tick": 15
+   }
+  },
+  "strand": {
+   "requests": 8,
+   "evicted": 0,
+   "stale": 1,
+   "requested_while_another_in_flight": 0,
+   "fires": 0,
+   "median_applied_gap_ms": 4780,
+   "reasons": {
+    "stale": 1,
+    "tick": 7
+   }
+  }
+ },
+ "triggers": [
+  {
+   "kind": "tab",
+   "rep": 0,
+   "t": 1791508457322.166,
+   "k_in_flight": 146,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "apply",
+   "rep": 0,
+   "t": 1791508463639.0808,
+   "k_in_flight": 148,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "mode",
+   "rep": 0,
+   "t": 1791508470053.2393,
+   "k_in_flight": 150,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "release",
+   "rep": 0,
+   "t": 1791508476060.5227,
+   "k_in_flight": 151,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "tab",
+   "rep": 1,
+   "t": 1791508482066.9377,
+   "k_in_flight": 153,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "apply",
+   "rep": 1,
+   "t": 1791508488379.46,
+   "k_in_flight": 154,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "mode",
+   "rep": 1,
+   "t": 1791508495110.2498,
+   "k_in_flight": 156,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "release",
+   "rep": 1,
+   "t": 1791508501116.9126,
+   "k_in_flight": 157,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "tab",
+   "rep": 2,
+   "t": 1791508508142.2468,
+   "k_in_flight": 159,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "apply",
+   "rep": 2,
+   "t": 1791508514455.19,
+   "k_in_flight": 160,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "mode",
+   "rep": 2,
+   "t": 1791508521188.8574,
+   "k_in_flight": 162,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "release",
+   "rep": 2,
+   "t": 1791508527198.2434,
+   "k_in_flight": 163,
+   "in_flight_applied": true,
+   "next_applied": true
+  }
+ ],
+ "strand": {
+  "stranded_k": 166,
+  "stranded_applied": false,
+  "reissue_after_ms": 30998.9580078125,
+  "applied_after_reissue_ms": 3969.3271484375
+ },
+ "verdict": {
+  "a_no_eviction": true,
+  "b_idle_clean": true,
+  "c_triggers_next_applied": true,
+  "d_strand_recovers": true
+ },
+ "PASS": true
+}
