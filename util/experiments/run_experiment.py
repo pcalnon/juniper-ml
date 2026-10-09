@@ -64,6 +64,22 @@ That CLI is the one the launcher recorded for the served process (``ports.json``
 fallback for a run dir that records none; and the re-run must resolve the served process's
 interpreter and model version (rerun parity), or the phase fails without running it.
 
+Budgets and run identity (W1.5 of ``notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md``;
+F-D5, F-S6, F-CON1, F-CON2): dataset creation has its own budget, separate from the wall budget --
+``outputs.dataset_create_timeout_seconds`` (``--dataset-create-timeout-seconds``; default 120, the
+value it had as a literal) bounds ``POST /v1/datasets`` on both paths, where a cold equities fetch
+spends its time, while the wall budget bounds train, predict and crossval. Either one expiring is
+``outcome: timed_out`` (exit 1). Neither cancels anything: the driver stops waiting and asks no
+service to stop, and the recurrence fit in particular runs to its end and holds the service's
+``train_lock`` until it does. ``POST /v1/train`` therefore sends ``X-Request-ID``, which the service
+records as the fit's ``requested_by`` (a timed-out fit is findable in ``GET /v1/training/status``),
+and the ``operation_id`` it returns goes back on predict as ``expect_operation_id``: a model another
+caller trained or restored in between is refused with 409 instead of scored. A service that returns
+no ``operation_id`` (juniper-recurrence 0.5.0 predates it) gets no ``expect_operation_id``, and the
+manifest's ``operation`` block records that the predict scored an unverified model. ``save_model``
+needs no id: its CLI re-run fits its own model in a separate process, and the driver never calls
+the service's snapshot route.
+
 Plots (Wave 2.4, SS8.1): when ``outputs.plots`` requests them, the cascor path renders the SS8.1 set
 client-side from the collected payloads via ``plots_cascor.py`` (lazily loaded -- the driver stays
 importable without matplotlib): ``dataset`` (the fetched NPZ artifact; 2-feature generators only),
@@ -114,6 +130,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import uuid
 from urllib.parse import quote
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple
@@ -132,6 +149,9 @@ SCHEMA_VERSION_MAX = 1
 DEFAULT_POLL_INTERVAL = 5.0
 DEFAULT_STALL_SECONDS = 120.0  # Q-2 ratified default
 DEFAULT_MAX_WALL_SECONDS = 3600.0  # Q-2 ratified default (outputs.max_wall_seconds)
+#: W1.5 (F-D5): the budget for ``POST /v1/datasets`` (outputs.dataset_create_timeout_seconds), kept
+#: apart from the wall budget. 120 s is what dataset creation always had, as a literal.
+DEFAULT_DATASET_CREATE_TIMEOUT_SECONDS = 120.0
 DEFAULT_HEALTH_TIMEOUT = 90.0  # matches the launcher's JUNIPER_EXP_HEALTH_TIMEOUT default (F-8)
 DEFAULT_HTTP_TIMEOUT = 10.0
 DEFAULT_METRICS_HISTORY_COUNT = 1000
@@ -178,7 +198,7 @@ PREDICT_KEYS = frozenset({"enabled", "from_dataset_split"})
 CASCOR_PLOT_NAMES = frozenset({"dataset", "decision_boundary", "training_history", "candidate_correlation", "eval_metrics"})
 RECURRENCE_PLOT_NAMES = frozenset({"dataset_overview", "dt_histogram", "forecast_vs_truth", "residuals", "crossval_folds", "metrics_table"})
 RUNTIME_KEYS = frozenset({"num_processes", "blas_threads", "eval_metrics_enabled"})
-OUTPUTS_KEYS = frozenset({"decision_boundary_resolution", "metrics_history_count", "plots", "snapshot_at_end", "max_wall_seconds", "grafana_bridge", "save_model"})
+OUTPUTS_KEYS = frozenset({"decision_boundary_resolution", "metrics_history_count", "plots", "snapshot_at_end", "max_wall_seconds", "dataset_create_timeout_seconds", "grafana_bridge", "save_model"})
 # SS5.6 rule 6: infrastructure is launcher-owned; ``eval_metrics_enabled`` is process-env
 # territory (``runtime:``), not a Settings field.
 SERVICE_FORBIDDEN_KEYS = frozenset({"host", "port", "juniper_data_url", "eval_metrics_enabled"})
@@ -250,6 +270,18 @@ RECURRENCE_LAUNCH_KEY = "recurrence_launch"
 RECURRENCE_MODEL_VERSION_PROBE = 'from importlib.metadata import version; print(version("juniper-recurrence-model"))'
 #: What the launcher accepts as a probe answer: one version-shaped token (its bash ``=~`` pattern).
 _MODEL_VERSION_RE = re.compile(r"[A-Za-z0-9.+!_-]+")
+
+# W1.5 (F-S6 / F-CON1 / F-CON2): operation identity on the recurrence path, against the API of
+# juniper-recurrence#192. The service has one train_lock and one in-memory model for every caller.
+#: Sent on ``POST /v1/train``. The service stores it verbatim as the fit's ``requested_by``, shows it
+#: in the busy 409 it gives other callers, and reports it in ``GET /v1/training/status``.
+REQUEST_ID_HEADER = "X-Request-ID"
+#: The predict-body key carrying the train response's ``operation_id``. The service answers 409
+#: instead of scoring when its in-memory model came from another operation.
+EXPECT_OPERATION_ID_KEY = "expect_operation_id"
+#: Characters kept from the run id in the ``X-Request-ID`` value. A header value cannot carry CR or
+#: LF, and ``http.client`` encodes it as latin-1, so anything else becomes ``_``.
+_REQUEST_ID_UNSAFE = re.compile(r"[^A-Za-z0-9._-]")
 
 # SS13.4 git-provenance repos, probed relative to the ecosystem root (best-effort).
 MANIFEST_GIT_REPOS: Tuple[str, ...] = ("juniper-cascor", "juniper-recurrence", "juniper-data", "juniper-data-client", "juniper-deploy", "juniper-ml")
@@ -367,6 +399,15 @@ class RequestTimeout(ServiceUnreachable):
     """
 
 
+class DatasetCreateTimeout(RequestTimeout):
+    """``POST /v1/datasets`` outlived the dataset-create budget (W1.5, F-D5).
+
+    Raised by :func:`create_dataset`, with a message naming the budget and the knob that sets it.
+    Both run paths catch it ahead of :class:`ServiceUnreachable` and record ``timed_out`` (exit 1),
+    as the train call does for the wall budget: an expired budget is not an unreachable service.
+    """
+
+
 class RunFailed(Exception):
     """The run reached FAILED or a service answered 5xx -> exit 4."""
 
@@ -434,18 +475,21 @@ def _metrics_scraped(run_dir: Path, run_id: str, bridge: bool) -> Dict[str, Any]
     return out
 
 
-def _http_json(method: str, url: str, body: Optional[dict] = None, timeout: float = DEFAULT_HTTP_TIMEOUT) -> Tuple[int, Any]:
+def _http_json(method: str, url: str, body: Optional[dict] = None, timeout: float = DEFAULT_HTTP_TIMEOUT, headers: Optional[Mapping[str, str]] = None) -> Tuple[int, Any]:
     """JSON request returning ``(status_code, parsed_body)``.
 
     Non-2xx responses are returned (not raised) so callers can branch on the
-    code; connection-level failures raise :class:`ServiceUnreachable`.
+    code; connection-level failures raise :class:`ServiceUnreachable`. ``headers`` are
+    added to ``Accept`` / ``Content-Type`` (W1.5: ``X-Request-ID`` on the recurrence train).
     """
     data = None
-    headers = {"Accept": "application/json"}
+    request_headers = {"Accept": "application/json"}
     if body is not None:
         data = json.dumps(body).encode("utf-8")
-        headers["Content-Type"] = "application/json"
-    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+        request_headers["Content-Type"] = "application/json"
+    if headers:
+        request_headers.update(headers)
+    req = urllib.request.Request(url, data=data, headers=request_headers, method=method)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:  # nosec B310 - loopback experiment services
             raw = resp.read().decode("utf-8", "replace")
@@ -580,6 +624,35 @@ def _reject_unknown_keys(block: Dict[str, Any], allowed: frozenset, where: str) 
         raise ConfigError(f"unknown key(s) in {where}: {', '.join(unknown)} (allowed: {', '.join(sorted(allowed))})")
 
 
+def _is_positive_seconds(value: Any) -> bool:
+    """A usable timeout: an int or float (never a bool), finite and above zero."""
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value > 0
+
+
+def _positive_seconds_arg(text: str) -> float:
+    """argparse ``type=`` for a budget flag: a positive, finite number of seconds, else usage exit 2.
+
+    ``socket.settimeout`` rejects a negative value with ``ValueError`` and treats zero as
+    non-blocking, so either would surface mid-run as a crash or an instant timeout.
+    """
+    try:
+        value = float(text)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"not a number of seconds: {text!r}") from exc
+    if not _is_positive_seconds(value):
+        raise argparse.ArgumentTypeError(f"must be a positive, finite number of seconds: {text!r}")
+    return value
+
+
+def _dataset_create_timeout(args: argparse.Namespace, config: Dict[str, Any]) -> float:
+    """W1.5 (F-D5): the dataset-create budget -- ``--dataset-create-timeout-seconds`` > YAML
+    ``outputs.dataset_create_timeout_seconds`` > :data:`DEFAULT_DATASET_CREATE_TIMEOUT_SECONDS`."""
+    flag = getattr(args, "dataset_create_timeout_seconds", None)
+    if flag is not None:
+        return float(flag)
+    return float(_mapping(config.get("outputs")).get("dataset_create_timeout_seconds", DEFAULT_DATASET_CREATE_TIMEOUT_SECONDS))
+
+
 def load_config(path: Path) -> Dict[str, Any]:
     """Load and validate the experiment YAML; return the normalised config dict.
 
@@ -644,6 +717,11 @@ def load_config(path: Path) -> Dict[str, Any]:
     max_wall = outputs_raw.get("max_wall_seconds", DEFAULT_MAX_WALL_SECONDS)
     if not isinstance(max_wall, (int, float)) or isinstance(max_wall, bool) or max_wall <= 0:
         raise ConfigError(f"outputs.max_wall_seconds must be a positive number, got {max_wall!r}")
+    # W1.5 (F-D5): the dataset-create budget. Finite as well as positive: a YAML `.inf` would reach
+    # the socket as an infinite timeout, which is no budget at all.
+    dataset_budget = outputs_raw.get("dataset_create_timeout_seconds", DEFAULT_DATASET_CREATE_TIMEOUT_SECONDS)
+    if not _is_positive_seconds(dataset_budget):
+        raise ConfigError(f"outputs.dataset_create_timeout_seconds must be a positive, finite number of seconds, got {dataset_budget!r}")
     history_count = outputs_raw.get("metrics_history_count", DEFAULT_METRICS_HISTORY_COUNT)
     if not isinstance(history_count, int) or isinstance(history_count, bool) or history_count < 1:
         raise ConfigError(f"outputs.metrics_history_count must be a positive integer, got {history_count!r}")
@@ -660,6 +738,7 @@ def load_config(path: Path) -> Dict[str, Any]:
         "plots": plots,
         "snapshot_at_end": bool(outputs_raw.get("snapshot_at_end", False)),
         "max_wall_seconds": float(max_wall),
+        "dataset_create_timeout_seconds": float(dataset_budget),
         "grafana_bridge": bool(outputs_raw.get("grafana_bridge", False)),
         "save_model": bool(outputs_raw.get("save_model", False)),
     }
@@ -849,8 +928,13 @@ def preflight_generator(data_url: str, generator: str) -> Dict[str, Any]:
     return entry
 
 
-def create_dataset(data_url: str, dataset_cfg: Dict[str, Any]) -> Dict[str, Any]:
-    """``POST /v1/datasets`` on the run's juniper-data; returns the CreateDatasetResponse body."""
+def create_dataset(data_url: str, dataset_cfg: Dict[str, Any], timeout: float = DEFAULT_DATASET_CREATE_TIMEOUT_SECONDS) -> Dict[str, Any]:
+    """``POST /v1/datasets`` on the run's juniper-data; returns the CreateDatasetResponse body.
+
+    ``timeout`` is the dataset-create budget (W1.5, F-D5), the request's socket timeout. Running
+    past it raises :class:`DatasetCreateTimeout`, which names the knob. The driver only stops
+    waiting: juniper-data is not asked to stop generating.
+    """
     body: Dict[str, Any] = {
         "generator": dataset_cfg["generator"],
         "params": dataset_cfg["params"],
@@ -859,7 +943,14 @@ def create_dataset(data_url: str, dataset_cfg: Dict[str, Any]) -> Dict[str, Any]
     }
     if dataset_cfg.get("ttl_seconds") is not None:
         body["ttl_seconds"] = dataset_cfg["ttl_seconds"]
-    code, payload = _http_json("POST", f"{data_url}/v1/datasets", body=body, timeout=120.0)
+    try:
+        code, payload = _http_json("POST", f"{data_url}/v1/datasets", body=body, timeout=timeout)
+    except RequestTimeout as exc:
+        raise DatasetCreateTimeout(
+            f"POST /v1/datasets ({dataset_cfg['generator']}) did not answer within the {timeout:g}s dataset-create budget; "
+            f"raise outputs.dataset_create_timeout_seconds or pass --dataset-create-timeout-seconds (default {DEFAULT_DATASET_CREATE_TIMEOUT_SECONDS:g}s). "
+            f"The driver stopped waiting; juniper-data was not asked to stop: {exc}"
+        ) from exc
     if code in (200, 201) and isinstance(payload, dict) and payload.get("dataset_id"):
         return payload
     if code in (400, 422, 501):
@@ -1580,6 +1671,7 @@ def _stall_window_is_inert(stall_seconds: float, max_wall_seconds: float) -> boo
 def _run_cascor(args: argparse.Namespace, config: Dict[str, Any], config_path: Path, run_dir: Path) -> int:
     data_url, cascor_url, ports = resolve_endpoints(run_dir, args.data_url, args.cascor_url, kind="cascor")
     max_wall = float(args.max_wall_seconds) if args.max_wall_seconds is not None else config["outputs"]["max_wall_seconds"]
+    dataset_budget = _dataset_create_timeout(args, config)
     stall_inert = _stall_window_is_inert(float(args.stall_seconds), float(max_wall))
     if stall_inert:
         log.warning(
@@ -1635,7 +1727,11 @@ def _run_cascor(args: argparse.Namespace, config: Dict[str, Any], config_path: P
 
         t0 = time.monotonic()
         generator_entry = preflight_generator(data_url, generator)
-        dataset_response = create_dataset(data_url, config["dataset"])
+        try:
+            dataset_response = create_dataset(data_url, config["dataset"], timeout=dataset_budget)
+        except DatasetCreateTimeout:
+            _phase("dataset_create", t0)
+            raise
         _phase("dataset_create", t0)
         log.info("dataset ready: dataset_id=%s (generator %s v%s)", dataset_response.get("dataset_id"), generator, generator_entry.get("version"))
 
@@ -1721,6 +1817,13 @@ def _run_cascor(args: argparse.Namespace, config: Dict[str, Any], config_path: P
         acceptance_reasons.append("interrupted")
         exit_code = EXIT_ACCEPTANCE
         log.error("interrupted -- writing manifest with outcome torn_down_early")
+    except DatasetCreateTimeout as exc:
+        # W1.5 (F-D5): an expired dataset budget, not an unreachable service -- so ahead of the
+        # ServiceUnreachable arm it subclasses. Nothing was staged or started.
+        outcome = "timed_out"
+        acceptance_reasons.append(f"outcome: timed_out -- {exc}")
+        exit_code = EXIT_ACCEPTANCE
+        log.error("%s -- outcome: timed_out", exc)
     except ServiceUnreachable as exc:
         if timings.get("start") is not None and "drive" not in timings:
             # The service vanished mid-drive: record the evidence rather than dying bare.
@@ -1779,6 +1882,7 @@ def _run_cascor(args: argparse.Namespace, config: Dict[str, Any], config_path: P
                 "poll_interval": args.poll_interval,
                 "stall_seconds": args.stall_seconds,
                 "max_wall_seconds": max_wall,
+                "dataset_create_timeout_seconds": dataset_budget,
                 "stall_window_inert": stall_inert,
                 "metric_families": list(METRIC_FAMILIES),
                 "plots": plots_record,
@@ -2081,9 +2185,34 @@ def derive_recurrence_outcome(phases: Mapping[str, Any]) -> str:
     return "degraded" if _incomplete_aux_phases(phases) else "succeeded"
 
 
+def _train_request_id(run_id: str) -> str:
+    """The ``X-Request-ID`` this run's ``POST /v1/train`` sends (W1.5): who is asking, unique per call.
+
+    The service stores it verbatim as the fit's ``requested_by``, reports it in
+    ``GET /v1/training/status`` and shows it to every caller its lock refuses, so it names this
+    driver and this run. The random tail keeps a second driver invocation against the same run dir
+    distinct. Run-id characters outside ``[A-Za-z0-9._-]`` become ``_`` (:data:`_REQUEST_ID_UNSAFE`),
+    and the run id is cut at 96 characters.
+    """
+    safe_run = _REQUEST_ID_UNSAFE.sub("_", str(run_id))[:96] or "run"
+    return f"run_experiment:{safe_run}:{uuid.uuid4().hex[:12]}"
+
+
+def _train_operation_id(payload: Any) -> Optional[str]:
+    """``TrainResponse.operation_id`` when it is a non-blank string, else None (W1.5).
+
+    juniper-recurrence 0.5.0, the published release, sends none. Any other shape is treated the
+    same way rather than echoed back: the service refuses an empty ``expect_operation_id`` with 422
+    (``min_length=1``), and a coerced number would name no operation.
+    """
+    value = _mapping(payload).get("operation_id")
+    return value if isinstance(value, str) and value.strip() else None
+
+
 def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_path: Path, run_dir: Path) -> int:
     data_url, app_url, ports = resolve_endpoints(run_dir, args.data_url, args.recurrence_url, kind="recurrence")
     max_wall = float(args.max_wall_seconds) if args.max_wall_seconds is not None else config["outputs"]["max_wall_seconds"]
+    dataset_budget = _dataset_create_timeout(args, config)
 
     results_dir = run_dir / "artifacts" / "results"
     plots_dir = run_dir / "artifacts" / "plots"
@@ -2124,6 +2253,10 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
         "crossval": {"status": "not_reached" if config["crossval"]["enabled"] else "skipped"},
         "save_model": {"status": "not_reached" if config["outputs"]["save_model"] else "skipped"},
     }
+    # W1.5 (F-S6 / F-CON1 / F-CON2): this run's identity on the service, carried on the manifest as
+    # `operation`. `expect_operation_id_sent` stays None unless a predict was posted; `note` says
+    # why the identity is incomplete or what happened to it.
+    operation: Dict[str, Any] = {"request_id": _train_request_id(run_id), "operation_id": None, "expect_operation_id_sent": None, "note": None}
 
     def _phase(name: str, t0: float) -> None:
         timings[name] = round(time.monotonic() - t0, 3)
@@ -2168,7 +2301,11 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
 
         t0 = time.monotonic()
         generator_entry = preflight_generator(data_url, generator)
-        dataset_response = create_dataset(data_url, dataset_cfg)
+        try:
+            dataset_response = create_dataset(data_url, dataset_cfg, timeout=dataset_budget)
+        except DatasetCreateTimeout:
+            _phase("dataset_create", t0)
+            raise
         _phase("dataset_create", t0)
         dataset_id = dataset_response.get("dataset_id")
         log.info("dataset ready: dataset_id=%s (generator %s v%s)", dataset_id, generator, generator_entry.get("version"))
@@ -2178,13 +2315,15 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
         t0 = time.monotonic()
         _record_phase("train", "failed", PHASE_CUT_SHORT)
         try:
-            code, payload = _http_json("POST", f"{app_url}/v1/train", body={"dataset": {"dataset_id": dataset_id, "split": dataset_cfg["split"]}, **hyper}, timeout=max_wall)
+            code, payload = _http_json("POST", f"{app_url}/v1/train", body={"dataset": {"dataset_id": dataset_id, "split": dataset_cfg["split"]}, **hyper}, timeout=max_wall, headers={REQUEST_ID_HEADER: operation["request_id"]})
         except RequestTimeout as exc:
             _phase("train", t0)
             log.error("synchronous POST /v1/train exceeded the wall-clock budget %.1fs -- outcome: timed_out (Q-2): %s", max_wall, exc)
             outcome = "timed_out"
             acceptance_reasons.append("outcome: timed_out")
             _record_phase("train", "failed", f"exceeded the {max_wall:.1f}s wall-clock budget (Q-2): {exc}")
+            # W1.5 (F-S6): the timeout ends this run, not the fit.
+            operation["note"] = "POST /v1/train timed out client-side. The service does not cancel the fit: it runs to its end and holds the service's train_lock until then. GET /v1/training/status names it while requested_by equals this request_id."
         except ServiceUnreachable as exc:
             _record_phase("train", "failed", str(exc))
             raise
@@ -2192,6 +2331,9 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             _phase("train", t0)
             if code != 200:
                 _record_phase("train", "failed", f"HTTP {code}: {_detail(payload)}")
+            if code == 409:
+                # W1.5 (F-CON1): since juniper-recurrence#192 the busy 409's detail names the holder.
+                operation["note"] = "POST /v1/train was refused with 409: another operation holds the service's train_lock (phases.train.error carries the service's detail). One caller per service."
             if code == 422:
                 raise ConfigError(f"POST /v1/train rejected (422): {_detail(payload)}")
             if code != 200:
@@ -2203,13 +2345,25 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             train_ok = True
             _record_phase("train", "ok")
             log.info("train complete: n_epochs=%s stopped_reason=%s", train_summary.get("n_epochs"), train_summary.get("stopped_reason"))
+            operation["operation_id"] = _train_operation_id(train_summary)
+            if operation["operation_id"] is None:
+                operation["note"] = "POST /v1/train returned no usable operation_id (juniper-recurrence 0.5.0, the published release, predates it), so no expect_operation_id is sent and a predict cannot prove it scored this run's model."
+                log.warning("POST /v1/train returned no usable operation_id (a service older than W1.5); predict will not send expect_operation_id")
 
         if train_ok:
             if config["predict"]["enabled"]:
-                predict_payload = _aux_phase("predict", ("POST", f"{app_url}/v1/predict"), {"dataset": {"dataset_id": dataset_id, "split": config["predict"]["from_dataset_split"]}}, "predict_response.json")
+                predict_body: Dict[str, Any] = {"dataset": {"dataset_id": dataset_id, "split": config["predict"]["from_dataset_split"]}}
+                # W1.5 (F-CON1 / F-CON2): score this run's model or nothing. Only an id the train
+                # response actually carried is sent, so an older service is never sent the key.
+                if operation["operation_id"] is not None:
+                    predict_body[EXPECT_OPERATION_ID_KEY] = operation["operation_id"]
+                operation["expect_operation_id_sent"] = EXPECT_OPERATION_ID_KEY in predict_body
+                predict_payload = _aux_phase("predict", ("POST", f"{app_url}/v1/predict"), predict_body, "predict_response.json")
                 if isinstance(predict_payload, dict):
                     predict_shape = predict_payload.get("shape")
                     predict_full = predict_payload
+                elif operation["expect_operation_id_sent"] and str(phases["predict"].get("error", "")).startswith("HTTP 409"):
+                    operation["note"] = "predict was refused with 409 for expect_operation_id: the service's model is no longer this run's (another caller trained or restored after this run's train). phases.predict.error carries the service's detail."
             if config["crossval"]["enabled"]:
                 crossval_body: Dict[str, Any] = {
                     "dataset": {"dataset_id": dataset_id},
@@ -2268,6 +2422,13 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
         acceptance_reasons.append("interrupted")
         exit_code = EXIT_ACCEPTANCE
         log.error("interrupted -- writing manifest with outcome torn_down_early")
+    except DatasetCreateTimeout as exc:
+        # W1.5 (F-D5): the dataset budget expired before train -- `timed_out`, like the wall budget
+        # on train, and ahead of the ServiceUnreachable arm it subclasses. train stays not_reached.
+        outcome = "timed_out"
+        acceptance_reasons.append(f"outcome: timed_out -- {exc}")
+        exit_code = EXIT_ACCEPTANCE
+        log.error("%s -- outcome: timed_out", exc)
     except RunFailed as exc:
         outcome = "failed"
         acceptance_reasons.append(str(exc))
@@ -2315,6 +2476,9 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             # W0.3: what each phase did -- the record `outcome` is derived from, and what
             # run_suite prints for a degraded cell (`degraded (crossval failed: ...)`).
             "phases": phases,
+            # W1.5: the X-Request-ID the train sent, the operation_id it returned, whether predict
+            # carried it back as expect_operation_id, and a note when that chain is incomplete.
+            "operation": operation,
             "acceptance": {"ok": exit_code == EXIT_SUCCESS, "reasons": acceptance_reasons},
             "completion_reason": None,
             "drive_loop": {},
@@ -2332,6 +2496,7 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
                 "poll_interval": args.poll_interval,
                 "stall_seconds": args.stall_seconds,
                 "max_wall_seconds": max_wall,
+                "dataset_create_timeout_seconds": dataset_budget,
                 "metric_families": list(METRIC_FAMILIES),
                 "plots": plots_record,
             },
@@ -2399,6 +2564,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--poll-interval", type=float, default=DEFAULT_POLL_INTERVAL, help=f"status/metrics poll interval seconds (default {DEFAULT_POLL_INTERVAL})")
     parser.add_argument("--stall-seconds", type=float, default=DEFAULT_STALL_SECONDS, help=f"Q-2 stall threshold: no current_epoch progress for this long -> outcome stalled (default {DEFAULT_STALL_SECONDS})")
     parser.add_argument("--max-wall-seconds", type=float, default=None, help=f"Q-2 wall-clock budget override (CLI > YAML outputs.max_wall_seconds > {DEFAULT_MAX_WALL_SECONDS})")
+    parser.add_argument(
+        "--dataset-create-timeout-seconds",
+        type=_positive_seconds_arg,
+        default=None,
+        help=f"W1.5 budget for POST /v1/datasets, separate from the wall budget (CLI > YAML outputs.dataset_create_timeout_seconds > {DEFAULT_DATASET_CREATE_TIMEOUT_SECONDS})",
+    )
     parser.add_argument("--health-timeout", type=float, default=DEFAULT_HEALTH_TIMEOUT, help=f"health-wait bound per service in seconds (default {DEFAULT_HEALTH_TIMEOUT})")
     parser.add_argument("--ecosystem-root", default=None, help="override the ecosystem root for SS13.4 git provenance probing")
     parser.add_argument("--verbose", action="store_true", help="debug logging on stderr")
