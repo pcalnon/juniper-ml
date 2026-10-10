@@ -77,19 +77,29 @@ useDefault = true
 # printf or systemd specifier (`%s`, `%d`), a `<template>`, a `{format}` field
 # or code, never a literal.
 #
-# The allowlists hold the remaining placeholder classes. Each was measured
-# against every commit reachable from every branch and tag on the remote (what
-# a workflow_dispatch run scans): with all four in place the rule reports only
-# the two commits that carried the 2026-09-20 literal (.gitleaksignore). An
-# ablation that drops one allowlist adds: placeholder words 0 (they come from
-# the spec: REDACTED, changeme), short word-only values 1, single-case words 19
-# (16 of them the `abcdefghijklmnop` test fixture), code 5.
+# The three allowlists hold the remaining placeholder classes. Measured against
+# every commit reachable from every branch and tag on the remote (what a
+# workflow_dispatch run scans), the rule reports 8 historical lines: the two
+# commits that carried the 2026-09-20 literal, and six test fixtures and
+# synthetic keys, all in .gitleaksignore (commit-scoped). An ablation that
+# drops one allowlist adds: placeholder words 4 (`fixture-` / `placeholder-`
+# test values), one lowercase word 16 (the `abcdefghijklmnop` fixture), code 7.
 #
-# Known boundary, deliberate: a value of word characters only (letters,
-# digits, `_ . -`) shorter than 16 does not fire, nor does a value that is a
-# run of lowercase words. The default generic-api-key rule still covers the
-# first for the KEY / CREDENTIAL / password names; a short or word-only
-# PASSPHRASE is indistinguishable from the repository's fixtures.
+# Narrowed in review (ml#2203): a run of lowercase words joined by `-` or `_`
+# (a diceware passphrase) and a 12-15 character word-only value (a typical
+# human password) FIRE. generic-api-key covers neither under the PASSPHRASE
+# names, so this rule is the only thing that sees them there.
+#
+# Known boundary -- what still does NOT fire, deliberately:
+#   * a value under 12 characters, or one containing whitespace (a quoted
+#     multi-word phrase leaves only its first word);
+#   * ONE lowercase word (letters only: no digit, capital or separator);
+#   * UPPER words with an optional short number (they read as constant names);
+#   * lowercase words joined by `.` (indistinguishable from `args.passphrase`),
+#     and a lowercase or UPPER_SNAKE name closed by `) ] ,`;
+#   * a value starting with `$ % < { ( [ | \` or a non-ASCII character, or
+#     containing a placeholder word (redacted, changeme, placeholder, example,
+#     dummy, synthetic, fixture, fake, sample).
 # -----------------------------------------------------------------------------
 [[rules]]
 id = "juniper-secret-assignment"
@@ -115,15 +125,9 @@ keywords = [
   ]
 
   [[rules.allowlists]]
-  description = "Word characters only and shorter than 16 (a 15-character synthetic in a design record)"
+  description = "Single-case words: ONE lowercase word, or UPPER words with an optional short number (abcdefghijklmnop, SYNTHETIC-VALUE-01)"
   regexes = [
-    '''^[A-Za-z0-9_.\-]{12,15}$''',
-  ]
-
-  [[rules.allowlists]]
-  description = "Single-case words: lowercase words, or UPPER words with an optional short number (abcdefghijklmnop, SYNTHETIC-VALUE-01)"
-  regexes = [
-    '''^[a-z]+(?:[-_.][a-z]+)*$''',
+    '''^[a-z]+$''',
     '''^[A-Z]{3,}(?:[-_][A-Z]{2,})*(?:[-_]?[0-9]{1,3})?$''',
   ]
 

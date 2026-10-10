@@ -45,7 +45,11 @@ MUTANTS = (
     ("drop the code allowlist", ".gitleaks.toml", "'''^[a-z_][a-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)+[(\\[]?[)\\],]*$''',", ""),
     ("code allowlist takes a bare name", ".gitleaks.toml", "[(\\[)\\],]+$'''", "[(\\[)\\],]*$'''"),
     ("drop the placeholder words", ".gitleaks.toml", "'''(?i)redacted|change[-_]?me|placeholder|example|dummy|synthetic|fixture|fake|sample''',", ""),
+    # Review of ml#2203: the two exemptions that let human passphrases through must stay narrowed.
+    ("re-widen the lowercase allowlist to joined words (diceware)", ".gitleaks.toml", "'''^[a-z]+$''',", "'''^[a-z]+(?:[-_.][a-z]+)*$''',"),
+    ("re-add a short word-only allowlist", ".gitleaks.toml", "'''^[a-z]+$''',", "'''^[a-z]+$''',\n    '''^[A-Za-z0-9_.\\-]{12,15}$''',"),
     ("a file-scoped ignore", ".gitleaksignore", "6708cb287e346a7ce411f0b3b1372c6654422949:scripts/", "scripts/"),
+    ("an ignore group cut off from its class comment", ".gitleaksignore", "# Hash: a juniper-cascor commit SHA passed to a file-content helper.\n", "# Hash: a juniper-cascor commit SHA passed to a file-content helper.\n\n"),
     ("hook rev drifts from CI", ".pre-commit-config.yaml", "rev: v8.24.3", "rev: v8.28.0"),
     ("CI engine drifts from the hook", ".github/workflows/ci.yml", 'GITLEAKS_VERSION: "8.24.3"', 'GITLEAKS_VERSION: "8.28.0"'),
 )

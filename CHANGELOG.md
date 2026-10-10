@@ -15,10 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `PASSPHRASE[_OLD]`, `DUPLICATI_WEB_CREDENTIAL` or Duplicati's `DUPLICATI__` option forms are
     assigned a literal of 12 or more characters, and also for the argv forms `--passphrase=`,
     `--webservice-password[-init]=` and `--settings-encryption-key=`. It matches quoted or unquoted
-    values, after `export`, in a systemd `Environment=` line, or in a comment. It stays silent on
-    expansions, templates, placeholder words, code and single-case fixtures. Across every commit on
-    every remote branch and tag, it reports only the two commits that carried the 2026-09-20
-    settings-key literal. `.gitleaksignore` (new) holds those two as commit-scoped entries.
+    values, after `export`, in a systemd `Environment=` line, or in a comment. It also fires on a
+    diceware-style passphrase (lowercase words joined by `-` or `_`) and on a 12-15 character
+    word-only value; review narrowed both exemptions, because generic-api-key covers neither under
+    the PASSPHRASE names. It stays silent on expansions, templates, placeholder words, code and
+    one-word fixtures.
+  - Across every commit on every remote branch and tag, the rule reports 8 historical lines: the two
+    commits that carried the 2026-09-20 settings-key literal, and six test fixtures and synthetic
+    keys. `.gitleaksignore` (new) holds all of them as commit-scoped entries, each group under a
+    comment naming its class.
   - `.pre-commit-config.yaml` adds the upstream `gitleaks` hook at `v8.24.3`. `ci.yml` now states
     the same version as `GITLEAKS_VERSION`, instead of inheriting the action's default.
   - `tests/test_gitleaks_secret_assignment_rule.py` (new) is wired into `ci.yml` and
@@ -282,8 +287,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     history and 24 over every remote branch and tag. All were classified as false positives:
     placeholder keys, fixtures, a WebSocket nonce, a commit SHA, a self-signed test CA and GPG user
     IDs.
-  - They are NOT ignored. Push and pull_request scans cover only the event's commits and never see
-    them, but a manual `workflow_dispatch` of `ci.yml` scans all history and will report them.
+  - Push and pull_request scans cover only the event's commits and never see them. A manual
+    `workflow_dispatch` of `ci.yml` scans all history, so `.gitleaksignore` holds the 24 as
+    commit-scoped entries grouped by class. The full-history scan of every branch and tag now
+    reports nothing.
 
 - **Four defects from the Cursor flood-3 evaluation**
   (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §4):

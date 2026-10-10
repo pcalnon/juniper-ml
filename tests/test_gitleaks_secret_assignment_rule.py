@@ -148,10 +148,24 @@ def _b64_44() -> str:
     return base64.b64encode(hashlib.sha256(b"juniper-ml B9 regression sample, base64").digest()).decode("ascii")
 
 
+#: Four ordinary words, kept apart so that no file line holds a joined phrase.
+_WORDS = ("correct", "horse", "battery", "staple")
+
+
+def _diceware(sep: str) -> str:
+    """A diceware-style passphrase: lowercase dictionary words joined by `sep`."""
+    return sep.join(_WORDS)
+
+
 def _positive_values() -> list[tuple[str, str]]:
     hexed = _hex64()
     values = [
         ("2026-09-20 shape: 36 chars, digit first, * @ $ %", _shaped()),
+        # A human-chosen PASSPHRASE: generic-api-key does not cover the PASSPHRASE names, so nothing else would see these.
+        ("diceware: 4 lowercase words joined by -", _diceware("-")),
+        ("diceware: 4 lowercase words joined by _", _diceware("_")),
+        ("13 chars mixed-case alphanumeric, letter first", _spread(13, offset=40)),
+        ("12 chars word characters only (the minimum)", _spread(12, offset=17)),
         ("random-looking alphanumeric, 32", _spread(32, offset=5)),
         ("hex, 64", hexed),
         # A lowercase hex or alphanumeric value is a valid identifier; the code allowlist must not take it.
@@ -220,8 +234,9 @@ NEGATIVE_VALUES = (
     ("call left open", "os.environ.get("),
     ("constant reference", "PROBE_PASSPHRASE_VALUE,"),
     ("name and paren", "passphrase_from_file)"),
-    ("lowercase fixture", "abcdefghijklmnopqrstuvwxyz"),
-    ("lowercase words", "correct-horse-battery-staple"),
+    ("ONE lowercase word (the abcdefghijklmnop fixture class)", "abcdefghijklmnopqrstuvwxyz"),
+    # Known boundary, pinned: words joined by `.` cannot be told apart from attribute access (args.passphrase).
+    ("lowercase words joined by . (reads as attribute access)", _diceware(".")),
     ("UPPER words with a number", "SYNTHETIC-TEST-VALUE-01"),
     ("UPPER words", "BACKUP_ARCHIVE_PASSPHRASE_2"),
     ("placeholder word", "placeholder-for-the-real-one"),
@@ -229,9 +244,9 @@ NEGATIVE_VALUES = (
     ("dummy word", "dummy-passphrase-0001"),
     ("fixture word", "fixture-key-with-$-and-%"),
     ("fake word", "fake-web-credential-99"),
-    ("short, punctuated (11 chars)", "Tr0ub4d0r&3"),
-    ("word characters only, 15", "Ab3dEf6hIj9lMn2"),
-    ("a quoted value with spaces", "correct horse battery staple"),
+    ("11 chars, under the 12 minimum", "Tr0ub4d0r&3"),
+    # Known boundary, pinned: the value stops at whitespace, so a quoted multi-word phrase leaves one short word.
+    ("a quoted value with spaces", _diceware(" ")),
 )
 
 #: Lines that merely mention a name, or that use a name this rule does not cover. Every line ends its value before the
@@ -304,6 +319,15 @@ class RuleModelTest(unittest.TestCase):
         line = "".join(("#     Environment=SETTINGS_ENCRYPTION_KEY", "=", _shaped()))
         self.assertEqual(len(self.model.reported(line)), 1)
 
+    def test_human_passphrases_fire_under_the_passphrase_names(self) -> None:
+        # Review of ml#2203: generic-api-key does not cover the PASSPHRASE names, so a diceware phrase or a short
+        # mixed-case password there is caught by this rule or by nothing. Both used to be allowlisted.
+        samples = (("diceware, -", _diceware("-")), ("diceware, _", _diceware("_")), ("13 chars mixed-case", _spread(13, offset=40)))
+        for label, value in samples:
+            for name in ("PASSPHRASE", "PASSPHRASE_OLD", "DUPLICATI__PASSPHRASE", "--passphrase"):
+                with self.subTest(case=f"{name} | {label}"):
+                    self.assertTrue(self.model.fires("".join((name, "=", value))), "did not fire")
+
     def test_positives_fire(self) -> None:
         cases = _positive_lines()
         self.assertGreater(len(cases), 500)
@@ -331,29 +355,39 @@ class RuleModelTest(unittest.TestCase):
 
 
 class IgnoreFileTest(unittest.TestCase):
-    """`.gitleaksignore` holds only documented, commit-scoped entries."""
+    """`.gitleaksignore` holds only commit-scoped entries, each in a group under a comment naming its class."""
 
     S1_ENTRIES = (
         "6708cb287e346a7ce411f0b3b1372c6654422949:scripts/duplicati-wrapper.bash:juniper-secret-assignment:49",
         "60d1c45db8a4a20ae702417a252386d3ce065ce4:scripts/duplicati-wrapper.bash:juniper-secret-assignment:46",
     )
+    ENTRY = re.compile(r"[0-9a-f]{40}:[^:\s]+:[a-z0-9-]+:[0-9]+")
 
     def setUp(self) -> None:
-        self.lines = (ROOT / ".gitleaksignore").read_text(encoding="utf-8").splitlines()
+        self.lines = [line.strip() for line in (ROOT / ".gitleaksignore").read_text(encoding="utf-8").splitlines()]
 
-    def test_entries_are_commit_scoped_and_commented(self) -> None:
-        entry = re.compile(r"[0-9a-f]{40}:[^:]+:[a-z0-9-]+:[0-9]+")
-        for i, raw in enumerate(self.lines):
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
+    def _entries(self) -> list[tuple[int, str]]:
+        return [(i, line) for i, line in enumerate(self.lines) if line and not line.startswith("#")]
+
+    def test_entries_are_commit_scoped(self) -> None:
+        entries = self._entries()
+        self.assertTrue(entries, "the S-1 commits at least must be ignored")
+        for i, line in entries:
             with self.subTest(line=i + 1):
-                self.assertRegex(line, entry, "an entry must name its 40-hex commit; a file-scoped one would hide FUTURE secrets")
-                self.assertTrue(self.lines[i - 1].strip().startswith("#"), "each entry carries a comment saying why")
+                self.assertRegex(line, f"^{self.ENTRY.pattern}$", "an entry must name its 40-hex commit; a file-scoped one would hide FUTURE secrets")
+        self.assertEqual(len(entries), len({line for _, line in entries}), "duplicate entries")
+
+    def test_every_entry_sits_under_a_class_comment(self) -> None:
+        # Entries may be grouped, but the nearest line above a group must be a comment: a blank line orphans it.
+        for i, _ in self._entries():
+            j = i - 1
+            while j >= 0 and self.ENTRY.fullmatch(self.lines[j]):
+                j -= 1
+            with self.subTest(line=i + 1):
+                self.assertTrue(j >= 0 and self.lines[j].startswith("#"), "every entry belongs to a group under a comment naming its class")
 
     def test_the_two_s1_commits_are_ignored(self) -> None:
-        entries = {line.strip() for line in self.lines if line.strip() and not line.strip().startswith("#")}
-        self.assertEqual(entries, set(self.S1_ENTRIES), "only the 2026-09-20 literal's two commits are ignored")
+        self.assertLessEqual(set(self.S1_ENTRIES), {line for _, line in self._entries()}, "the 2026-09-20 literal's two commits are ignored")
 
 
 class EnginePinTest(unittest.TestCase):

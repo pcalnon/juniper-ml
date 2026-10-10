@@ -3,12 +3,20 @@
 # Every entry is COMMIT-scoped (`<40-hex commit>:<file>:<rule>:<line>`), so it
 # silences that one historical commit and nothing a later commit adds. A
 # file-scoped entry (`<file>:<rule>:<line>`) would also hide any FUTURE secret
-# written at that line, so none is allowed here
-# (tests/test_gitleaks_secret_assignment_rule.py enforces both).
+# written at that line, so none is allowed here, and every entry sits under a
+# comment naming its class (tests/test_gitleaks_secret_assignment_rule.py
+# enforces all three).
 #
 # Only push / pull_request scans are commit-ranged; a workflow_dispatch run of
-# ci.yml scans every commit reachable from every remote branch and tag, which
-# is where these two would fail the job.
+# ci.yml scans every commit reachable from every remote branch and tag. These
+# entries are what that scan finds, measured 2026-10-10 with
+# `util/ad-hoc/2026-10-10_gitleaks_probe.py scan --scope ci-dispatch` and
+# classified with `util/ad-hoc/2026-10-10_gitleaks_finding_inspect.py` (shape and
+# masked context only; no value was printed). Values are never written here.
+#
+# ============================================================================
+# juniper-secret-assignment
+# ============================================================================
 #
 # S-1 (backup design notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md
 # section 6): the 36-character Duplicati settings-encryption-key literal in the commented
@@ -22,3 +30,53 @@
 6708cb287e346a7ce411f0b3b1372c6654422949:scripts/duplicati-wrapper.bash:juniper-secret-assignment:49
 # S-1, head of branch feat/duplicati-wrapper-script-for-systemd-unit (ml#1967 / ml#1968), still on the remote:
 60d1c45db8a4a20ae702417a252386d3ce065ce4:scripts/duplicati-wrapper.bash:juniper-secret-assignment:46
+#
+# Synthetic: the "[15 chars]" key of the round-1 env-file parsing experiment (lowercase letters, a hyphen, digits).
+05c5f794c99c30aed3fbf36a905bca539986493a:notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md:juniper-secret-assignment:401
+# Synthetic: the 33-character tripwire key (6 lowercase words joined by -) in the round-2 "KEY REJECTED" transcript.
+43980f13f9457c4e16989f93cf3e7672a5f54633:notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md:juniper-secret-assignment:1470
+# Fixture: the wrapper contract test's --webservice-password-init= argument (4 lowercase words joined by -, 13 chars), and its Phase-B transcript.
+d3971e102c5a0c05b2bec02c0dd1e30f20cf6ee7:notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md:juniper-secret-assignment:447
+cb4d63a4644dbcd2ea472fb87c941c2827361c42:tests/test_duplicati_wrapper_contract.py:juniper-secret-assignment:387
+# Fixture: a 4-word test passphrase (24 chars) written to a temp env file for the fake Duplicati server in test_yamaguchi_edit_target.
+20e6658666a32c9db89cb0bfaa8ed09307712ee9:tests/test_yamaguchi_edit_target.py:juniper-secret-assignment:338
+959748c5e03d8313959b4d9ff8460700103aa149:tests/test_yamaguchi_edit_target.py:juniper-secret-assignment:340
+#
+# ============================================================================
+# gitleaks' default ruleset -- every entry below classified as a false positive
+# ============================================================================
+#
+# Placeholder: the documented placeholder API key (4 capitalised words joined by _; juniper-service-core/juniper_service_core/auth_posture.py:15) in curl examples.
+2974e1fb4e1f243677af39112b9a1a4a28946d14:notes/STACK_REGRESSION_ANALYSIS_2026-05-27.md:curl-auth-header:28
+2974e1fb4e1f243677af39112b9a1a4a28946d14:notes/STACK_REGRESSION_ANALYSIS_2026-05-27.md:curl-auth-header:37
+2974e1fb4e1f243677af39112b9a1a4a28946d14:notes/STACK_REGRESSION_ANALYSIS_2026-05-27.md:curl-auth-header:195
+fcf7a1967a1eefad1842f95f587c30227c5f890d:notes/STACK_REGRESSION_ANALYSIS_2026-05-27.md:curl-auth-header:28
+fcf7a1967a1eefad1842f95f587c30227c5f890d:notes/STACK_REGRESSION_ANALYSIS_2026-05-27.md:curl-auth-header:37
+fcf7a1967a1eefad1842f95f587c30227c5f890d:notes/STACK_REGRESSION_ANALYSIS_2026-05-27.md:curl-auth-header:195
+# Name: an environment-variable NAME, read across the newline of an empty-value template.
+a7bd1b11592839127661ebbbbe7400d02eade80b:notes/SOPS_IMPLEMENTATION_PLAN.md:generic-api-key:77
+a7bd1b11592839127661ebbbbe7400d02eade80b:notes/SOPS_IMPLEMENTATION_PLAN.md:generic-api-key:101
+# Name: a JSON field name in a list of keys.
+46b4d1f265605d5527a37183164f37505785f1f9:reports/2026-10-05_recurrence-equities-cv-consensus/laneA1.md:generic-api-key:192
+b9aa74f755575e834b47ca28d837b0a02900d085:reports/2026-10-05_recurrence-equities-cv-consensus/laneA1.md:generic-api-key:192
+# Name: GPG user-ID comments of the backup recipients, public identifiers (unmerged Cursor branch).
+e3ac6a238ebce6fedca78f9159547900352077e9:tests/test_juniper_backup.py:generic-api-key:33
+e3ac6a238ebce6fedca78f9159547900352077e9:tests/test_juniper_backup.py:generic-api-key:34
+# Synthetic: descriptive probe keys (words joined by -) sent to fake or local services by the round-42 canopy probes.
+ac912ebad990e938cbd7be232855405dcea60d8a:reports/2026-09-24_defect-register-round-42/canopy678-postmerge-validation.md:generic-api-key:42
+ac912ebad990e938cbd7be232855405dcea60d8a:reports/2026-09-24_defect-register-round-42/wip-canopy-followup-base-e9053227.patch:generic-api-key:495
+d941e99d6a366e39c1393fb57ee46f063acf2302:reports/2026-09-24_defect-register-round-42/canopy683-validation.md:generic-api-key:21
+d941e99d6a366e39c1393fb57ee46f063acf2302:util/ad-hoc/2026-09-24_round42_probes/canopy683-v683/e2e_anon_extract.py:generic-api-key:72
+d941e99d6a366e39c1393fb57ee46f063acf2302:util/ad-hoc/2026-09-24_round42_probes/canopy683-v683/e2e_other_secrets.py:generic-api-key:99
+d941e99d6a366e39c1393fb57ee46f063acf2302:util/ad-hoc/2026-09-24_round42_probes/canopy683-v683/e2e_other_secrets.py:generic-api-key:103
+# Synthetic: a constructed-fake PyPI token prefix (the script builds fakes to test secret shapes).
+48fc09e510cf2daf8a803317b9afa0b0905cef26:util/ad-hoc/2026-09-24_secret_shape_check.py:generic-api-key:51
+# Example: the RFC 6455 sample Sec-WebSocket-Key nonce.
+d941e99d6a366e39c1393fb57ee46f063acf2302:util/ad-hoc/2026-09-24_round42_probes/bytes-compare-ml2086-data440-cascor689-vbytes/svc_probe.py:generic-api-key:177
+d941e99d6a366e39c1393fb57ee46f063acf2302:util/ad-hoc/2026-09-24_round42_probes/bytes-compare-ml2086-data440-cascor689-vbytes/svc_probe_pii.py:generic-api-key:179
+# Hash: a juniper-cascor commit SHA passed to a file-content helper.
+4d17ed59bad6843ce0028fd5956fc22f673b7311:util/ad-hoc/2026-09-24_round42_probes/handoff-consolidated-round2-laneF/cascorchk.py:generic-api-key:44
+# Prose: a validator report sentence about PEM forms whose match spans a BEGIN marker and later text; no key material.
+48fc09e510cf2daf8a803317b9afa0b0905cef26:reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round8.md:private-key:79
+# Fixture: the self-signed test CA key (CN=juniper-service-core-test-ca) used only by test_tls_* (unmerged agent branch).
+cf2f81025299587500471a88ca5e19f38311c4f6:juniper-service-core/tests/test_workers_coverage.py:private-key:66

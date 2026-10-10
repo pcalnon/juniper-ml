@@ -101,6 +101,22 @@ def git_object_type(value: str) -> str:
     return "not an object in any --sibling"
 
 
+FIND_IN: list[str] = []
+
+
+def tracked_paths_holding(value: str) -> list[str]:
+    """Paths (never lines) of tracked files in each --find-in repository that contain `value` verbatim.
+
+    Files named `.env*` are skipped unread: they may hold live credentials, and the question is only whether the value
+    is published somewhere as an example or a default.
+    """
+    out = []
+    for repo in FIND_IN:
+        res = subprocess.run(["git", "-C", repo, "grep", "-l", "-F", "-I", "-e", value, "--", ".", ":(exclude,glob)**/.env*"], capture_output=True, text=True)  # nosec B603 B607
+        out += [f"{os.path.basename(os.path.normpath(repo))}:{p}" for p in res.stdout.splitlines()]
+    return out
+
+
 def value_id(value: str) -> str:
     return hmac.new(RUN_KEY, value.encode("utf-8", "replace"), hashlib.sha256).hexdigest()[:8]
 
@@ -256,8 +272,10 @@ def main() -> int:
     ap.add_argument("--compact", action="store_true", help="one line per finding: location || value shape")
     ap.add_argument("--file", action="append", default=[], help="only findings in this path (repeatable)")
     ap.add_argument("--structure", action="store_true", help="also print each value's character-class runs (opt-in: it shows layout)")
+    ap.add_argument("--find-in", action="append", default=[], help="repository whose tracked files are searched for each value; prints PATHS only, skips .env* (repeatable)")
     args = ap.parse_args()
     SIBLINGS.extend(args.sibling)
+    FIND_IN.extend(args.find_in)
     if args.config:
         load_rule_models(args.config)
 
@@ -301,7 +319,7 @@ def main() -> int:
             descs = [desc]
         else:
             values = locate_by_rule(f["RuleID"], span) if f.get("RuleID") in RULE_MODELS else locate(f.get("Match", ""), span)
-            descs = [f"value: {describe(v)}" + (f" structure=[{structure(v)}]" if args.structure else "") for v in values] or ["value: not located from the template"]
+            descs = [f"value: {describe(v)}" + (f" structure=[{structure(v)}]" if args.structure else "") + (f" also_in={tracked_paths_holding(v)}" if FIND_IN else "") for v in values] or ["value: not located from the template"]
         if args.compact:
             print(f"{head} || {' ;; '.join(descs)}")
         else:

@@ -113,25 +113,38 @@ def present(shas: list[str]) -> list[str]:
 def scan(args: argparse.Namespace) -> int:
     base = [args.gitleaks]
     tail = ["--redact", "--no-banner", "--no-color", "--exit-code=2", "--report-format=json", f"--report-path={args.report}"]
+    source = REPO
+    if args.no_ignore:
+        # gitleaks reads .gitleaksignore from --source and from --gitleaks-ignore-path. Pointing --source at a
+        # subdirectory keeps `git -C <source> log` on this repository's whole history while finding no ignore file
+        # there, and the ignore path is an empty directory. The config is then not auto-discovered, so it is passed.
+        if args.scope == "worktree":
+            print("--no-ignore applies to history scopes only (a dir scan has no commit-scoped fingerprints)", file=sys.stderr)
+            return 3
+        source = REPO / ".github"
+        args.config = args.config or str(REPO / ".gitleaks.toml")
     if args.config:
         tail += ["--config", args.config]
     for rule in args.enable_rule:
         tail += ["--enable-rule", rule]
-    if args.scope == "worktree":
-        argv = base + ["dir"] + tail + [str(REPO)]
-    else:
-        if args.scope == "main":
-            log_opts = "--full-history origin/main"
+    with tempfile.TemporaryDirectory(prefix="gitleaks-noignore-") as empty:
+        if args.no_ignore:
+            tail += ["--gitleaks-ignore-path", empty]
+        if args.scope == "worktree":
+            argv = base + ["dir"] + tail + [str(REPO)]
         else:
-            shas = sorted(set(remote_shas("--heads") + remote_shas("--tags")))
-            missing = present(shas)
-            if missing:
-                print(f"refusing: {len(missing)} remote SHA(s) are not present locally; fetch first", file=sys.stderr)
-                return 3
-            print(f"ci-dispatch scope: {len(shas)} remote head/tag SHA(s), all present locally")
-            log_opts = "--full-history " + " ".join(shas)
-        argv = base + ["detect", "--source", str(REPO), f"--log-opts={log_opts}"] + tail
-    res = subprocess.run(argv, capture_output=True, text=True, check=False)  # nosec B603
+            if args.scope == "main":
+                log_opts = "--full-history origin/main"
+            else:
+                shas = sorted(set(remote_shas("--heads") + remote_shas("--tags")))
+                missing = present(shas)
+                if missing:
+                    print(f"refusing: {len(missing)} remote SHA(s) are not present locally; fetch first", file=sys.stderr)
+                    return 3
+                print(f"ci-dispatch scope: {len(shas)} remote head/tag SHA(s), all present locally")
+                log_opts = "--full-history " + " ".join(shas)
+            argv = base + ["detect", "--source", str(source), f"--log-opts={log_opts}"] + tail
+        res = subprocess.run(argv, capture_output=True, text=True, check=False)  # nosec B603
     for line in res.stderr.splitlines() + res.stdout.splitlines():
         if " INF " in line or " WRN " in line or " ERR " in line or " FTL " in line:
             print(line)
@@ -150,6 +163,7 @@ def main() -> int:
     s.add_argument("--report", required=True)
     s.add_argument("--config", help="config path (default: auto-discovered .gitleaks.toml at the repo root, as CI does)")
     s.add_argument("--enable-rule", action="append", default=[], help="restrict to this rule id (repeatable)")
+    s.add_argument("--no-ignore", action="store_true", help="report what .gitleaksignore would hide (raw counts); history scopes only")
     args = ap.parse_args()
     return vacuity(args) if args.cmd == "vacuity" else scan(args)
 
