@@ -1,0 +1,13 @@
+[18:17:22] leg http://127.0.0.1:8052 serves 3029d07d00a7197258a34a31dfcdd3807d8dec93
+[18:25:58]   T-gate: fired at 330026 ms on request 25
+[t= 525667ms]   modal cleared after 1 attempt(s)
+[18:29:23]   T-tab: fired at 531304 ms on request 41
+[18:33:33]   T-apply: fired at 787410 ms on request 55
+[18:46:42]   T-mode: fired at 1575475 ms on request 144
+[18:46:44] BASELINE {"resolved": 19, "answered": 19, "answered_with_props": 19, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 11520, "verdict": "CLEAN"}
+[18:46:44] T-gate took=False {"resolved": 13, "answered": 13, "answered_with_props": 13, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 12059, "verdict": "NO-EFFECT", "late": {"resolved": 6, "answered": 6, "answered_with_props": 6, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 14033}}
+[18:46:44] T-tab took=False {"resolved": 11, "answered": 11, "answered_with_props": 11, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 12405, "verdict": "NO-EFFECT", "late": {"resolved": 6, "answered": 6, "answered_with_props": 6, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 10636}}
+[18:46:44] T-apply took=False {"resolved": 22, "answered": 22, "answered_with_props": 22, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 8033, "verdict": "NO-EFFECT", "late": {"resolved": 11, "answered": 11, "answered_with_props": 11, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 8173}}
+[18:46:44] T-mode took=False {"resolved": 19, "answered": 19, "answered_with_props": 19, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 8484, "verdict": "NO-EFFECT", "late": {"resolved": 10, "answered": 10, "answered_with_props": 10, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 7459}}
+[18:46:44] IDLE {"resolved": 65, "answered": 65, "answered_with_props": 65, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 8445, "fires": []}
+[18:46:44] -> reports/e2e-canopy-2026-09-02/pacer-live/f058-census-run2

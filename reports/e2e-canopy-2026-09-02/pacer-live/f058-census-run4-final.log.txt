@@ -1,0 +1,13 @@
+[19:35:55] leg http://127.0.0.1:8052 serves 2689a2074970f927f0246cb3e3a52a27b4a0491e
+[t=  10995ms]   modal cleared after 1 attempt(s)
+[19:43:50]   T-gate: fired at 293722 ms on request 54
+[19:46:57]   T-tab: fired at 478536 ms on request 86
+[19:51:06]   T-apply: fired at 729482 ms on request 120
+[20:04:12]   T-mode: fired at 1514647 ms on request 276
+[20:04:15] BASELINE {"resolved": 44, "answered": 44, "answered_with_props": 44, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 5081, "verdict": "CLEAN"}
+[20:04:15] T-gate took=False {"resolved": 30, "answered": 30, "answered_with_props": 30, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 5785, "verdict": "NO-EFFECT", "late": {"resolved": 14, "answered": 14, "answered_with_props": 14, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 5894}}
+[20:04:15] T-tab took=False {"resolved": 31, "answered": 31, "answered_with_props": 31, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 5357, "verdict": "NO-EFFECT", "late": {"resolved": 16, "answered": 16, "answered_with_props": 16, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 5305}}
+[20:04:15] T-apply took=False {"resolved": 35, "answered": 35, "answered_with_props": 35, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 5069, "verdict": "NO-EFFECT", "late": {"resolved": 17, "answered": 17, "answered_with_props": 17, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4914}}
+[20:04:15] T-mode took=False {"resolved": 27, "answered": 27, "answered_with_props": 27, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 6272, "verdict": "NO-EFFECT", "late": {"resolved": 12, "answered": 12, "answered_with_props": 12, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 6602}}
+[20:04:15] IDLE {"resolved": 119, "answered": 119, "answered_with_props": 119, "evicted": 0, "evicted_fraction": 0.0, "longest_evicted_run": 0, "cadence_ms_median": 4996, "fires": []}
+[20:04:15] -> reports/e2e-canopy-2026-09-02/pacer-live/f058-census-run4-final.json

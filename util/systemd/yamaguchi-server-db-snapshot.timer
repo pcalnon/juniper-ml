@@ -1,6 +1,7 @@
 [Unit]
 Description=Daily Duplicati server-DB snapshot, just before the Yamaguchi backup
-Documentation=file:///home/pcalnon/Development/python/Juniper/juniper-ml/util/ad-hoc/yamaguchi_server_db_snapshot.py
+# The installed copy, not the checkout: the service unit executes /usr/local/lib/duplicati/… (P0.5a item 2).
+Documentation=file:///usr/local/lib/duplicati/yamaguchi_server_db_snapshot.py
 
 [Timer]
 # The Yamaguchi job fires daily at 14:00Z. Snapshot 15 minutes earlier so the

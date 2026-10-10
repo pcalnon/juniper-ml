@@ -115,7 +115,15 @@ Lane A (E2E):
    files and a results note are outside the repo, in `/home/pcalnon/Development/python/Juniper/backups/2026-10-05_f058_census_v2_final/`.
    Owed: move them under `util/ad-hoc/2026-10-04_f058_census_v2_*` and record the run as the ledger's Phase 11, with
    its own consensus rounds.
-4. **AG — one redesign for F-CANOPY-055 + F-CANOPY-058 + F-CANOPY-068** (ledger item 0, second half, and Phase 11's item
+4. **DONE IN CODE 2026-10-08: canopy#731** (branch `fix/f055-f058-f068-request-ack-pacer`, head `65ead946`).
+   - It went through three independent review rounds: `reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_canopy731_pacer_rounds1-3.md`.
+   - Live: 0 of 912 requests evicted across four census runs, and F-055's census APPLIES on `2689a207`
+     (`reports/e2e-canopy-2026-09-02/pacer-live/README.md`).
+   - Still owed: the merge, if pending, and the ledger's Phase 12 with its own consensus rounds. See
+     `HANDOFF_2026-10-08_canopy-pacer-731-landed-phase12-owed.md`.
+   - The original item follows, for context.
+
+   **AG — one redesign for F-CANOPY-055 + F-CANOPY-058 + F-CANOPY-068** (ledger item 0, second half, and Phase 11's item
    24): request/ack handshake pacer. **Unblocked 2026-10-08** (item 3 is done).
    - It must answer F-CANOPY-068 too. Lane B's pacer takes the watchdog off the guarded lane. A design that keeps a
      watchdog must base it on progress, not on samples of `disabled`.

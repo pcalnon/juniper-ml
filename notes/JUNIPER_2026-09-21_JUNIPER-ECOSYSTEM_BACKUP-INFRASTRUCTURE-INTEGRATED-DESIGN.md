@@ -3,16 +3,18 @@
 - **Project**: Juniper (workstation backup infrastructure, host `yamaguchi`)
 - **Author**: Paul Calnon
 - **Date**: 2026-09-21
-- **Status**: HELD, except what note 10.1g releases — §8 is behind a STOP (rounds 4–8, 2026-09-24). Rounds 1 and 2 are reconciled; round 3 found 15 defects and 13 were applied, D13 is open (note 12a); rounds 4–8 found defects in §8's procedure, which are open (§11). The owner's rulings are in §10.1.
+- **Status**: EXECUTABLE in the order below, since 2026-10-03 — the STOP of 2026-09-24 is cleared: its five procedure defects, and the findings beneath them, are fixed in the artifacts §8 installs (note 8a); what is not fixed is listed there as residue. Rounds 1 and 2 are reconciled; round 3's D13 is closed (the env contract lives at `/etc/duplicati/env`); rounds 4–8's §8 defects are closed (§11). The owner's rulings are in §10.1. The execution plan — who does what, in which
+  sitting — is `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6.
   Verbatim reports:
   - `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`
   - `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`
   - `JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md` — rounds 4–8, which found defects in §8's procedure itself
-- **STOP — §8 is held, except what the owner released on 2026-09-24.** Rounds 4–8 found defects in the procedure that can re-lock the recovered database, pass the pre-backup guard without its `TargetURL` check, or copy a cleartext database into the backup Source. The STOP block at the top of §8 lists them and what may run now — P0.5a items 1, 5, 6 and 7, P3's tier-2 fix, §6's sink checklist, S-4's `chmod 0600` and the reads it names — within its two limits (note 10.1g); the rest waits until it is gone.
-- **§8's order once the STOP is cleared — this and no other, unless the follow-up changes it**: **P0.5a** items 1, 2 and 4, in that order, then **P0 step −1** (a review — all nine scripts §8 invokes are merged; the tenth is a P3 deliverable), then **P0 step 0** (a verification since the 2026-09-22 rulings, §10.1; item (c) after step 1's freeze), then **P0 steps 1–8**, then **P0.5b** (the re-key, same session as step 8 — it needs the recovered data folder), then **P0 steps 9–11**.
+- **The STOP of 2026-09-24 is cleared (2026-10-03, note 8a).** The owner's release of that day (note 10.1g) stands as history: its two limits still bind — no history file is wiped before P0 step 3 has tested the key candidates it may hold, and the transcript limit is discharged, every round of this arc being archived on `main` — and everything it held is now runnable in the order below.
+- **§8's order — this and no other**: **P0.5a** items 1, 2 and 4, in that order, then **P0 step −1** (a review — every script §8 invokes is merged on `main`; the paragraph after note 8a names them), then **P0 step 0** (a verification since the 2026-09-22 rulings, §10.1; item (c) after step 1's freeze), then **P0 steps 1–9**, then **P0 step 10** — on Procedure A with **P0.5b** (the re-key) run inside it, after its edits and in place of the operator's `resume` — then **P0 step 11**.
   - P0.5a items 5–7 run alongside, each before the step that needs it: item 7 before step 8's first start, item 5 before step 10's `resume`; item 6, a repository change, lands whenever it is ready and gates nothing (owner ruling 2026-09-24, note 10.1f).
   - P0.5a item 1 is released now (note 10.1g); if it has already run, this order starts at item 2.
-  - Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the in-tree escrow `…/Dropbox/Backups/_yamaguchi_keys/`, which only P1 step 4 deletes, once P0.5a item 5 or P1 step 4 has copied it out.
+  - Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except (1) the in-tree escrow `…/Dropbox/Backups/_yamaguchi_keys/`, which only P1 step 4 deletes, once P0.5a item 5 or P1 step 4 has copied it out, and (2) the old filesets the job's own retention pass deletes once P0 step 11 restores `retention-policy` — as `2W:1D,6M:1W,2Y:1M,5Y:2M`, after AC-4's first drill has passed, and after the five dlists it will delete are copied out of the Dropbox root; P0 step 10 removes
+    it and restarts the unit, so the first backup after the recovery runs from the edited job and deletes nothing (owner ruling 2026-10-08); and (3), on Procedure B only and only if Verify finds the index inconsistent, the remote files a Repair deletes — volumes the index does not know, the index's own temporary, deleting or incompletely uploaded files, and empty or replaced index files — which P0 step 8 first copies aside after a dry run.
 - **Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
 - **Companions**:
   - [`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md) (the design of record, "PLAN"),
@@ -89,7 +91,7 @@ Sources: **O** = owner prompt of 2026-09-21 (archived as `prompts/manual/prompt1
 | R-3 | Unit file specifies user/group; defaults in `/etc/default/duplicati`; a wrapper script launches the server | O | Kept, with the unit moved to `/etc/systemd/system/` and the wrapper installed as a root-owned copy (§7.3.4) — the symlink form is retained only as a fallback (D-6) |
 | R-4 | Wrapper input precedence: argv words after `DAEMON_OPTS` > `DAEMON_OPTS` > `.env` > script defaults; `.env` constants exported | O | Kept exactly; implemented without `eval` (§7.3.3) |
 | R-5 | `.env` in the duplicati home holds `SETTINGS_ENCRYPTION_KEY` | O | Changed: the key is delivered by systemd `LoadCredential=`; `.env` keeps the same grammar and may carry it only for hand runs (§7.3.5, D-1) |
-| R-6 | `duplicati` is a system user; shell only during development | O | Kept; `nologin` in §8 P0.5a item 7, before step 8's first start (owner ruling, note 10.1f; the STOP at the top of §8 asks whether Procedure B's step-7 start must come first) — moved out of P4 because a duplicati-uid shell outside the unit escapes §7.3.2's mount mask through `/proc/<pid>/root` |
+| R-6 | `duplicati` is a system user; shell only during development | O | Kept; `nologin` in §8 P0.5a item 7, before step 8's first start (owner ruling, note 10.1f; the 2026-09-24 STOP asked whether Procedure B's step-7 start must come first — note 8a: it follows step 8's installer) — moved out of P4 because a duplicati-uid shell outside the unit escapes §7.3.2's mount mask through `/proc/<pid>/root` |
 | R-7 | `pcalnon` (member of group `duplicati`) has read/write/execute as appropriate on all backup files and scripts | O | Kept for the destination tree, the scripts and the daily server-DB snapshot copy (group ownership, setgid dirs, `0007` umask; §7.4). **Not** for the live data folder: 2.4.0.0 refuses one with any group/other bit (§7.3.2); `pcalnon` uses `sudo -u duplicati` or the snapshot copy. The installed wrapper is changed via repository + install script, not in place (D-6) |
 | R-8 | Destination writable+executable by `duplicati`; readable+executable by `pcalnon` so Dropbox can sync | O | Kept; §7.4 gives the exact mode/ACL model and the Dropbox-daemon group prerequisite |
 | R-9 | `/mnt/Backups/Ubuntu/Dropbox` is a live Dropbox root; the synced copy is the cloud-hosted backup instance | O | Kept as **tier 1c**; guarded by a pre-backup hook and a stray-file check (§7.5); `duplicati-sync-tool` offered as the alternative (D-3) |
@@ -172,7 +174,7 @@ Each rule below is load-bearing for §7/§8. Citations name the document that re
 | Dropbox | root `/mnt/Backups/Ubuntu/Dropbox` (Pro), daemon PID 2948130 | pcalnon, **without gid 139** | "Up to date"; 9 folders excluded, `Backups/` synced; the root also holds personal files, which sync too | `dropbox status`, `exclude list`, `/proc/<pid>/status` |
 | Wrapper | `/home/duplicati/bin/duplicati-wrapper.bash` → symlink to the **primary checkout's** `scripts/duplicati-wrapper.bash`; `bin/` is **0777** | — | the target changed three times between 02:15 and 03:14 today (an uncommitted `--daemon-opts` revision → `#1968` → `main` `d721fc78`, i.e. `#1969`, merged 08:07 UTC); parses `.env` with `eval`; debug mode echoes secrets (§4.3) | `diff`, step-2b report |
 | `/etc/default/duplicati` | `DAEMON_OPTS="--webservice-port=8300"`; owned **`duplicati:duplicati`** 0644 | — | the service user can rewrite its own next argv; → `root:root` in P0.5 | `ls -la` |
-| `.env` | `/home/duplicati/.config/Duplicati/.env` 0660 duplicati:duplicati, 1,599 B | — | one active line (`SETTINGS_ENCRYPTION_KEY`, 32-char value, single-quoted, contains `$ @ & #`), five commented-out lines carrying `PASSPHRASE_OLD`, `PASSPHRASE` and three spellings of the key; **the active key equals `PASSPHRASE`** | `2026-09-21_env_file_shape.py` |
+| `.env` | `/home/duplicati/.config/Duplicati/.env` 0660 duplicati:duplicati, 1,599 B on 09-21; **0640, 1,701 B since 09-22** (note e) | — | on 09-21 one active line (`SETTINGS_ENCRYPTION_KEY`, 32-char value, single-quoted, contains `$ @ & #`), five commented-out lines carrying `PASSPHRASE_OLD`, `PASSPHRASE` and three spellings of the key; **the active key equals `PASSPHRASE`**; since 09-22 **two** active lines, `_OLD` fatal to wrapper v2 (note e) | `2026-09-21_env_file_shape.py`; re-run 10-03 |
 | Package | `duplicati 2.4.0.0` (upgraded from 2.3.0.4 at 2026-09-19 21:29, reinstalled 21:35) | — | server schema 12 (2.4.0.0) vs 11 (2.3.0.4) | `/var/log/dpkg.log`, forensics |
 | Tar lane | `util/juniper-backup.bash` (manual; expects drives `EBC5-F0A3`, `DFF3-2782` under `/media/pcalnon/`) | pcalnon | no timer, path unit, cron or udev rule anywhere; **device detection broken since 2026-09-07** — udisks now mounts under `/run/media/pcalnon/` (§4.5); neither drive is attached now | agent 1b, `ls /media/pcalnon /run/media/pcalnon`, dpkg log |
 | pcalnon profile | `/home/pcalnon/.config/Duplicati/` (0700) | — | orphaned since 08-25; `Duplicati-server.sqlite` = 4 KB stub + 112 MB WAL of an aborted local-DB Recreate; `Duplicati-server.backup` = last real profile DB (jobs `Ubuntu`, `Ubuntu-fresh`, `Schedule` empty) and **itself `enc-v1:`** (11 blobs, one key — note d); 56 GiB of job-DB copies under `backups/`; `installation.txt` rewritten 09-20 18:10:32 | forensics |
@@ -187,6 +189,14 @@ Notes on the rows above:
 - **(b)** `/usr/lib/duplicati` itself is `duplicati:duplicati 0755` with no sticky bit, so the service user can `mv` any entry aside and drop in its own `duplicati-cli`, `duplicati-database-tool` or `duplicati-server` — all of which root and `pcalnon` execute during P0. `/usr/bin/duplicati-*` are symlinks into it, and `webroot/` is writable the same way. This is why the chown moves to **P0.5**, ahead of the recovery, not to P2.
 - **(c)** `sys.path[0]` is therefore a pcalnon-writable directory, and the unit runs as **root** at 13:45 UTC every day: a standing pcalnon→root code path that every branch switch in the primary checkout re-arms. Fixed in P0.5 (§7.7).
 - **(d)** That the pcalnon `.backup` is itself `enc-v1:` — under a libsecret-minted key nobody typed (§5.4) — means every "the database stores the passphrase in cleartext" statement in the record is true of the **root** database only, and only before 09-18 21:03 (Appendix C item 9).
+- **(e)** The `.env` was rewritten on 2026-09-22 at 19:17:37 CDT (00:17Z on 09-23 — 24 minutes before ml#2029's first commit, so that
+  PR, which recorded that the new secret "does NOT go in `.env`", did not know of it): 0640 duplicati:duplicati, 1,701 B, two active
+  lines — `SETTINGS_ENCRYPTION_KEY_OLD` holding a 32-character value (the length of the previous active key) and
+  `SETTINGS_ENCRYPTION_KEY` holding a new 64-character one — with the five commented-out assignments still present. The
+  directory's mtime twelve seconds after the write, with no swap file left, reads as an interactive rename of the old key plus a
+  new one (an inference; O-1 of the assessment). `SETTINGS_ENCRYPTION_KEY_OLD` is read by nothing in 2.4.0.0 (note 10.1b) and is
+  fatal to wrapper v2 (exit 78, before `preflight()`; §4.3 item 9). Measured with `2026-09-21_env_file_shape.py` through
+  `sg duplicati`, names and lengths only (`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §3, note 3a).
 
 Every row above is a **Lane A subject**: each was re-measured on the live host by Lane A1 on
 2026-09-21 (03:47–03:55 and 13:40–13:55 CDT) with the command named in its Evidence column, and §11
@@ -249,7 +259,9 @@ Read from `scripts/duplicati-wrapper.bash` at `#1968` (`52571621`, line numbers 
 7. The header comment (lines 38–57) carries a credential-shaped 36-character literal (an old settings key). The repository is **public** (`gh repo view`: `visibility: PUBLIC`); gitleaks passed both PRs.
 8. The live symlink points into a developer checkout — today on `main` at `d721fc78`, clean for that file and byte-identical to `main:scripts/duplicati-wrapper.bash`, not on a feature branch as an earlier revision of this document said. The risk is unchanged and is about the *mechanism*, not the branch: `git checkout`, `git pull`, `git worktree remove` or an unfinished edit changes what the service runs on its next start. `/home/duplicati/bin` and
    `/home/duplicati/.config/Duplicati` are world-writable with no sticky bit, so any local user can rename-replace the script or the database until P0.5 closes them.
-9. The unit now loaded (`ExecStart=… '--daemon-opts="${DAEMON_OPTS}"'`, armed by a global systemd reload at 03:23:44 on 09-21) and both wrapper revisions are mutually incompatible: systemd unquotes first and substitutes second, so the wrapper receives the single word `--daemon-opts="--webservice-port=8300"` (inner quotes literal). `#1968` passes it through as an unknown option and suppresses the default port; `d721fc78` — the revision the live symlink has resolved to since
+9. *(Measured again 2026-10-03: the live symlink has resolved to wrapper v2 since 09-22 12:56, which passes the armed word through as an unknown option and supplies its own port default — so the argv incompatibility below is history. The next start now fails **earlier**: v2 exits 78 at the `.env`'s `SETTINGS_ENCRYPTION_KEY_OLD` line, before `preflight()`; and were that line removed, the 0700 gate refuses the 0777 folder as before. Two blockers, both closed by P0; the verdict
+   "does not start" is unchanged.)* The unit now loaded (`ExecStart=… '--daemon-opts="${DAEMON_OPTS}"'`, armed by a global systemd reload at 03:23:44 on 09-21) and both wrapper revisions of 09-21 are mutually incompatible: systemd unquotes first and substitutes second, so the wrapper receives the single word `--daemon-opts="--webservice-port=8300"` (inner quotes literal). `#1968` passes it through as an unknown option and suppresses the default port; `d721fc78` — the
+   revision the live symlink has resolved to since
    03:13:57 — extracts `"--webservice-port` (no value, stray quote) and ignores the
    `DAEMON_OPTS` environment entirely. **The next restart or reboot therefore does not bring the server up at all** — and that verdict does not rest on the argv bug: 2.4.0.0 checks the 0700 data-folder gate at every start, the folder has been 0777 since 09-20 18:33:45, and the gate refuses it *before* argv is parsed (§5.5). "On 8200, or not at all" was this document's earlier reading; the gate collapses it to "not at all". The watchdog reads `UNREACHABLE`
    either way. Do not restart the current unit before §8 P0 installs the corrected unit and wrapper and sets the folder to 0700.
@@ -359,8 +371,8 @@ failures (note sink-b). The unit's editor swap file, `/usr/lib/systemd/system/.d
 (§6's `.swp` row), and there is no `duplicati.service~` and no `duplicati.service.d/`. Those files are the only
 untested places, and each needs root to read — even to confirm that root's two exist, since `/root` is 0700; a
 candidate found there is tested with the probe in seconds.
-No §8 step yet extracts a candidate from them without printing it; the follow-up behind the STOP at the top of
-§8 owes one.
+No §8 step yet extracts a candidate from them without printing it; the no-print key-candidate extractor (§8 note 8a's
+residue, built only if the history counts are non-zero) owes one.
 
 **How a database comes to be `enc-v1:` with nobody typing a key**: on Linux the default secret provider is
 `LibSecretLinuxProvider` (`SecretProviderLoader.cs` 195–205) and the server auto-generates a random key when a
@@ -500,7 +512,7 @@ Notes on the rows above:
 - **(S-8a)** Procedure B must state whether the rebuild re-creates the report URL; if it does, the new JWT is a new secret and belongs in this table on the same terms.
 - **(S-now)** What the rows above let the owner do now (the 2026-09-24 release, note 10.1g): S-4's `chmod 0600`
   and its copy out of the Dropbox root, and S-7's removal (P0.5a item 5); S-1's detection gap (item 6). Held
-  until the STOP at the top of §8 is lifted: S-2's re-key (P0.5b), S-3's line deletion (P1 step 2), S-4's in-tree
+  until the STOP of 2026-09-24 was cleared (2026-10-03, note 8a), and runnable since in §8's order: S-2's re-key (P0.5b), S-3's line deletion (P1 step 2), S-4's in-tree
   delete, "Delete forever" and account audit (P1 step 4), S-5's and S-6's password work (P0 step 9), and the D-8
   scrub (P0.5a item 4).
 
@@ -627,9 +639,16 @@ Data folder: `/home/duplicati/.config/Duplicati/` (owner's choice), **always** p
 # Read by systemd (EnvironmentFile=), NOT by a shell: no variable expansion, no command
 # substitution, no secrets. Each whitespace-separated word of DAEMON_OPTS becomes one argv
 # element of the wrapper ($DAEMON_OPTS, unbraced, in ExecStart=). Owned root:root 0644.
-# Under decision D-1 "keep encryption", append --require-db-encryption-key so a missing
-# credential stops the server instead of silently starting it unencrypted.
-DAEMON_OPTS="--webservice-port=8300 --webservice-interface=loopback --server-datafolder=/home/duplicati/.config/Duplicati --disable-update-check"
+# --require-db-encryption-key (D-1, ruled 2026-09-22): a missing credential stops the server
+# instead of silently starting it unencrypted. NOTE: --disable-db-encryption SATISFIES this
+# flag (Server/Program.cs: `require && !(hasValidKey || disable)`), so that flag must never
+# live here; the re-key script delivers it through a runtime drop-in it removes itself.
+# --webservice-disable-signin-tokens (D-9): applied UNCONDITIONALLY at every start, not "once a
+# password exists" -- so a known UI password must exist BEFORE the unit's first start on a
+# database whose password is autogenerated (Procedures A2 and B: the password-init hand start).
+# --webservice-allowed-hostnames=localhost: an IP-literal Host is always allowed, so the
+# loopback API clients cannot be locked out by it.
+DAEMON_OPTS="--webservice-port=8300 --webservice-interface=loopback --server-datafolder=/home/duplicati/.config/Duplicati --disable-update-check --require-db-encryption-key --webservice-disable-signin-tokens --webservice-allowed-hostnames=localhost"
 ```
 
 The unit is a **full unit in `/etc/systemd/system/`**, which takes precedence over the vendor file and survives package upgrades (a drop-in would also work, but `ExecStart=` must then be reset with an empty assignment first; a complete file is easier to review).
@@ -682,8 +701,10 @@ ProtectHome=read-only
 # .dlist.zip.gpg archives -- and every one of those directories is drwxrwx---
 # pcalnon:duplicati with NO sticky bit, so a ReadWritePaths= on the parent would let this
 # service read AND UNLINK the only key custody T1 and T1c have, with the deletion
-# propagating to Dropbox. That would also contradict section 8's own "nothing under
-# /mnt/Backups/Ubuntu/ is deleted or moved" rule. Duplicati needs write on the
+# propagating to Dropbox. That would also contradict section 8's rule that nothing under
+# /mnt/Backups/Ubuntu/ is deleted or moved beyond its named exceptions (the job's own
+# retention, the signed-off escrow delete, and the remote files a Procedure B Repair
+# deletes, copied aside first). Duplicati needs write on the
 # destination directory only.
 ReadWritePaths=/home/duplicati /mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi
 PrivateTmp=yes
@@ -741,16 +762,22 @@ RestrictNamespaces=yes
 # hashes; /run/log/journal is the volatile journal, which -/var/log does not cover; and
 # /var/spool/cups is named by section 6's own sink checklist as a place the printed escrow
 # sheet may still sit, which makes it the one entry whose contents may be a live passphrase.
-InaccessiblePaths=-/etc/shadow -/etc/shadow- -/etc/gshadow -/etc/gshadow- -/etc/ssh -/etc/credstore -/etc/credstore.encrypted -/var/lib/docker -/var/log -/run/log/journal -/var/spool/cups -/root -/mnt/Backups/Ubuntu/Dropbox/Backups/_yamaguchi_keys
-# Disabled by the names the software ACTUALLY reads. DUPLICATI__DISABLE_UPDATE_CHECK and
-# DUPLICATI__USAGE_REPORTER_LEVEL do NOT exist: a utf-8 AND utf-16le scan of all 1,443
-# files under /usr/lib/duplicati finds neither in either encoding
-# (util/ad-hoc/2026-09-22_duplicati_literal_scan.py). The generic DUPLICATI__ mapping is
-# LOWER-case with '-' -> '_' (run-script-example.sh ll. 76-80); the upper-case forms in the
-# product are hand-written specials, e.g. DUPLICATI__ALLOW_INSECURE_DATAFOLDER, which the
-# same scan does find. An unread environment variable produces no "Unknown option supplied"
-# line, so AC-14 structurally CANNOT catch a wrong name here -- which is why the option form
-# below is also set, in /etc/default/duplicati, where AC-14 can see a typo.
+# Both escrow copies are masked: the in-tree one inside the Dropbox root and the sibling
+# that P0.5a item 5 copies out to /mnt/Backups/Ubuntu/_yamaguchi_keys (round 7, B12).
+InaccessiblePaths=-/etc/shadow -/etc/shadow- -/etc/gshadow -/etc/gshadow- -/etc/ssh -/etc/credstore -/etc/credstore.encrypted -/var/lib/docker -/var/log -/run/log/journal -/var/spool/cups -/root -/mnt/Backups/Ubuntu/Dropbox/Backups/_yamaguchi_keys -/mnt/Backups/Ubuntu/_yamaguchi_keys
+# Disabled by the names the software ACTUALLY reads -- corrected 2026-10-03 (Phase B
+# validation, Lane A). The server COMPOSES an environment name for every supported option at
+# runtime: DUPLICATI__ + the option name upper-cased with '-' -> '_' (Server/Program.cs
+# 971-983), honoured whenever that option is not on argv. So DUPLICATI__DISABLE_UPDATE_CHECK
+# IS read (the literal scan cannot see a composed name; its NOT-FOUND was the trap its own
+# docstring warns about), while DUPLICATI__USAGE_REPORTER_LEVEL is not an option name and is
+# not read. The lower-case '-' -> '_' mapping in run-script-example.sh ll. 76-80 is the
+# OPPOSITE direction: what the product exports to run-scripts. An unread environment variable
+# produces no "Unknown option supplied" line, so AC-14 structurally CANNOT catch a wrong name
+# here -- which is why the option form is also set, in /etc/default/duplicati, where AC-14
+# can see a typo. The same composed family is why the wrapper (since 2.2.0) no longer exports
+# DUPLICATI__* names from the env file: DUPLICATI__DISABLE_DB_ENCRYPTION there would have
+# decrypted the database at the next start with no trace.
 #
 # Note for anyone re-running that scan: the two names below are NOT literals either. The
 # assemblies carry the templates AUTOUPDATER_{0}_SKIP_UPDATE (Duplicati.Library.AutoUpdater.dll)
@@ -821,44 +848,105 @@ Requirements it meets: R-4 precedence, no `eval`, arrays for argv, fail-closed p
 # Project:      juniper-ml
 # Sub-Project:  backup infrastructure
 # Author:       Paul Calnon
-# Version:      2.0.0 (design draft 2026-09-21)
+# Version:      2.4.0 (2026-10-08: an empty DUPLICATI_REQUIRE_MOUNT switches the mount check off; see HISTORY)
 # License:      MIT
 #
 # Option precedence, lowest to highest -- a later source overrides an earlier one for the SAME
 # option name; distinct options accumulate:
 #   1. DEFAULT_OPTS below
-#   2. --option lines in the .env file        (/home/duplicati/.config/Duplicati/.env)
+#   2. --option lines in the env file         (/etc/duplicati/env; D13 -- outside the data folder)
 #   3. DAEMON_OPTS, delivered by systemd as separate argv words (EnvironmentFile=/etc/default/duplicati)
 #   4. further argv words appended after DAEMON_OPTS
-# KEY=VALUE lines in the .env file are exported if the name is on the allow-list below; a variable
+# KEY=VALUE lines in the env file are exported if the name is on the allow-list below; a variable
 # already present in the environment is NOT overridden (systemd's environment wins). The settings encryption key is read from
 # $CREDENTIALS_DIRECTORY/settings-key when systemd supplies it (LoadCredential=), otherwise from
-# SETTINGS_ENCRYPTION_KEY if the environment or the .env file set it.
+# SETTINGS_ENCRYPTION_KEY if the environment or the env file set it.
+#
+# WHAT THE ENV FILE MAY NOT CARRY (2.2.0). The server composes an environment name for EVERY option
+# at runtime -- DUPLICATI__<OPTION_WITH_UNDERSCORES>, upper-case (Server/Program.cs 971-983) -- and
+# honours it whenever the option is not on argv. The first allow-list admitted that whole family,
+# so `DUPLICATI__DISABLE_DB_ENCRYPTION=true` in the env file -- a file the drift gate does not
+# bless, by design -- would have satisfied --require-db-encryption-key and decrypted the database
+# at the next start with no "Unknown option" line for AC-14 to see (Phase B validation, Lane A).
+# Nothing in the contract uses that family, so it is gone from the allow-list; and an --option line
+# in the env file may not name a security option either (ENV_OPTION_DENY below): the re-key delivers
+# --disable-db-encryption through a RUNTIME DROP-IN on argv (precedence 4), never through this file.
+# 2.3.0: a deny list alone was the wrong shape -- round 3 found it open to --parameters-file (the
+# server reads that file in-process and copies every option in it OVER argv, Program.cs 230-237,
+# 1680), and 2.4.0.0 has ~47 server options, many of them posture changes (remote-control
+# registration, webroot, forever tokens persisted into the database, CORS, secret providers). So an
+# --option line in the env file must now ALSO be on ENV_OPTION_ALLOW, a short list of tunables that
+# change no security posture; anything else belongs in DAEMON_OPTS, which the drift gate blesses.
+# The deny list stays, first, so the named hazards get the specific "security option" refusal.
 # No eval. No word-splitting of file content. No secret value is ever printed -- including by
 # the error paths, which print an option's NAME and its value's LENGTH only.
 #
 # Unknown options: this wrapper does NOT validate option names against the server's own list,
 # and NEITHER DOES THE SERVER. 2.4.0.0's CommandLineArgumentValidator.ValidateArguments logs
 # "Unknown option supplied: <name>" as a WARNING and continues; the only non-zero exits in
-# Server/Program.cs are 100 (unhandled exception) and 102/103 (--webservice-password-init).
-# So a typo in .env is a SILENT MISCONFIGURATION, not a start failure: the service comes up
-# with the option ignored, and the only trace is a warning. This fails OPEN, which is the
+# Server/Program.cs are 100 (an exception caught by Main's own handler), 102/103
+# (--webservice-password-init) and 200 (single-instance lock held by another server, Program.cs
+# 949/960). An exception thrown BEFORE Main's try -- the data folder's 0700 gate (Program.cs 200)
+# and the --parameters-file parse (:237) among them -- is rethrown by CrashlogHelper and ends the
+# process as an UNHANDLED .NET exception: the exit status is the runtime's (on Linux typically a
+# SIGABRT, 134), not 100. Unverified on this host (it needs the binary).
+# So a typo in DAEMON_OPTS or argv is a SILENT MISCONFIGURATION, not a start failure: the service
+# comes up with the option ignored, and the only trace is a warning. This fails OPEN, which is the
 # opposite of what this contract wants, and it is what let the glued --daemon-opts word through
-# on 09-20 (section 4.3 item 9) while the server started on 8200.
-# Two consequences: (1) verify every .env option name against `duplicati-cli help advanced`
+# on 09-20 (section 4.3 item 9) while the server started on 8200. (Since 2.3.0 an env-file
+# --option outside ENV_OPTION_ALLOW is refused with exit 78, so a typo THERE fails closed.)
+# Two consequences: (1) verify every DAEMON_OPTS option name against `duplicati-cli help advanced`
 # and, for server-only names, against the string table of Duplicati.Server.Implementation.dll
 # -- the spelling is `--webservice-token-duration`, hyphenated, even though the C# constant is
 # OPTION_WEBSERVICE_TOKENDURATION, and a misspelling would be ignored rather than refused;
-# (2) after any .env change, grep the journal for "Unknown option supplied" before calling the
+# (2) after any env-file change, grep the journal for "Unknown option supplied" before calling the
 # start good. AC-14 pins that grep. (Lane B2 C6, corrected by round 2 Lane A.)
+#
+# HISTORY
+#   2.0.0  2026-09-21  design draft (ml#1968, landed ml#1999).
+#   2.1.0  2026-10-03  env file moved to /etc/duplicati/env (round 3's D13).
+#   2.2.0  2026-10-03  Phase B validation fold-in (Lane A): DUPLICATI__* dropped from the export
+#                      allow-list; security options refused from the env file; --print-command
+#                      redacts by option NAME (password-init= and pre-auth-tokens= were missed);
+#                      option names compared case-insensitively, as the server does; exit 200 named.
+#   2.3.0  2026-10-08  Phase B round-3 fold-in (R3A D-1, R3C D-3, R3C N-2, R3A N-4): env-file
+#                      --option lines must be on ENV_OPTION_ALLOW (tunables only); the deny list
+#                      gains parameters-file and its alias parameterfile, webservice-enable-forever-
+#                      token, webservice-cors-origins and the alias webservice-allowedhostnames; a
+#                      settings key with a carriage return or edge whitespace is refused (the server
+#                      uses the value as-is while the hand start and the gate strip it -- one file,
+#                      two keys); the exit-code gloss no longer calls every crash 100.
+#   2.4.0  2026-10-08  Phase B round-4 fold-in: DUPLICATI_REQUIRE_MOUNT= (set, empty) now really
+#                      switches the mount check off (`-` instead of `:-`; R4A D-1 / R4C DEFECT-1);
+#                      the allow-listed welcome-page tunable is webservice-suppress-welcome-page,
+#                      the server's real name (R4A D-2 -- 2.3.0 allowed a name the server does not
+#                      have); every trailing CR of an env-file line is stripped and a CR anywhere
+#                      else refused (R4C N-7); a NUL byte in the credential is refused (R4C N-6).
 set -euo pipefail
 
 readonly DUPLICATI_SERVER="${DUPLICATI_SERVER:-/usr/bin/duplicati-server}"
-readonly ENV_FILE="${DUPLICATI_ENV_FILE:-/home/duplicati/.config/Duplicati/.env}"
+readonly ENV_FILE="${DUPLICATI_ENV_FILE:-/etc/duplicati/env}"
 readonly DATA_FOLDER="${DUPLICATI_DATA_FOLDER:-/home/duplicati/.config/Duplicati}"
-readonly REQUIRE_MOUNT="${DUPLICATI_REQUIRE_MOUNT:-/mnt/Backups}"
+# `-`, not `:-` (2.4.0): a SET-BUT-EMPTY value switches the mount check off, which the installer's
+# contract gate and the test suites need -- with `:-` an empty value meant /mnt/Backups again, so
+# both silently depended on this host's mount and would fail on a CI runner (R4A D-1, R4C DEFECT-1).
+# The unit never sets it, so production keeps the check.
+readonly REQUIRE_MOUNT="${DUPLICATI_REQUIRE_MOUNT-/mnt/Backups}"
 readonly CRED_NAME="settings-key"
-readonly ENV_EXPORT_ALLOW='^(SETTINGS_ENCRYPTION_KEY|DUPLICATI__[A-Z0-9_]+|TMPDIR|TZ|LANG|LC_ALL)$'
+readonly ENV_EXPORT_ALLOW='^(SETTINGS_ENCRYPTION_KEY|TMPDIR|TZ|LANG|LC_ALL)$'
+# Options the env file may never set: each one weakens or replaces the credential/encryption
+# posture or the UI authentication, and each belongs on argv (DAEMON_OPTS, or the re-key's drop-in).
+# parameters-file / parameterfile: the server reads that file in-process and copies its options OVER
+# argv (Program.cs 49-51, 230-237, 1680) -- one line here would re-open every other entry.
+# webservice-enable-forever-token PERSISTS into the database (Program.cs 658-659); the alias
+# webservice-allowedhostnames is honoured whenever the main name is absent (Program.cs 690-692).
+readonly ENV_OPTION_DENY='^--(disable-db-encryption|require-db-encryption-key|settings-encryption-key|allow-insecure-datafolder|webservice-password|webservice-password-init|webservice-pre-auth-tokens|webservice-reset-jwt-config|webservice-disable-signin-tokens|webservice-allowed-hostnames|webservice-allowedhostnames|webservice-interface|server-datafolder|parameters-file|parameterfile|webservice-enable-forever-token|webservice-cors-origins)(=|$)'
+# The ONLY options an env-file line may set (2.3.0): tunables that change no security posture.
+# Everything else -- including every option not yet invented -- belongs in DAEMON_OPTS.
+readonly ENV_OPTION_ALLOW='^--(webservice-port|webservice-token-duration|webservice-timezone|log-level|log-retention|ping-pong-keepalive|disable-update-check|webservice-suppress-welcome-page)(=|$)'
+# --print-command redacts a word by its option NAME, not by a substring of the value's key:
+# password-init= and pre-auth-tokens= slipped through the first pattern (Lane A).
+readonly REDACT_NAME='^--[^=]*(password|passphrase|key|token|secret)[^=]*='
 DEFAULT_OPTS=(
     "--webservice-interface=loopback"
     "--webservice-port=8300"
@@ -884,6 +972,8 @@ add_opt() {
         die "${src}: not a Duplicati option: '${word%%=*}' (value length ${#word})"
     fi
     name="${word%%=*}"
+    name="${name,,}"   # the server's slim parser compares option names case-insensitively
+    word="${name}${word:${#name}}"
     if [[ -z "${OPT_VALUE[${name}]+x}" ]]; then
         OPT_ORDER+=("${name}")
     fi
@@ -910,12 +1000,19 @@ load_env_file() {
     [[ -r "${file}" ]] || die "env file ${file} exists but is not readable by $(id -un)"
     while IFS= read -r line || [[ -n "${line}" ]]; do
         n=$((n + 1))
-        line="${line%$'\r'}"
+        while [[ "${line}" == *$'\r' ]]; do line="${line%$'\r'}"; done   # EVERY trailing CR; 2.3.0 stripped one (R4C N-7)
+        [[ "${line}" != *$'\r'* ]] || die "${file}:${n}: a carriage return inside the line (allowed only at its end)"
         line="${line#"${line%%[![:space:]]*}"}"   # drop leading whitespace
         if [[ -z "${line}" || "${line}" == \#* ]]; then
             continue
         fi
         if is_option "${line}"; then
+            if [[ "${line,,}" =~ ${ENV_OPTION_DENY} ]]; then
+                die "${file}:${n}: ${line%%=*} may not be set from the env file (security option; use DAEMON_OPTS or argv)"
+            fi
+            if [[ ! "${line,,}" =~ ${ENV_OPTION_ALLOW} ]]; then
+                die "${file}:${n}: ${line%%=*} is not an env-file tunable (allowed: ${ENV_OPTION_ALLOW}); set it in DAEMON_OPTS, which the drift gate blesses"
+            fi
             add_opt "${file}:${n}" "${line}"
         elif [[ "${line}" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
             key="${BASH_REMATCH[2]}"
@@ -935,14 +1032,29 @@ load_env_file() {
     done < "${file}"
 }
 
+check_key_shape() {
+    # check_key_shape <source-label> <key>: the server uses the value byte-for-byte (Program.cs
+    # 986-987), while the password-init hand start and the re-key gate read the file in text mode,
+    # which drops a CR -- so a CR (a CRLF-edited file) or edge whitespace would make one file two
+    # keys (round 3 lane C N-2). Refuse both; the message names the source, never the value.
+    local src="$1" key="$2"
+    [[ "${key}" != *$'\r'* ]] || die "${src}: the settings key contains a carriage return; rewrite it without one"
+    [[ "${key}" == "${key#[[:space:]]}" && "${key}" == "${key%[[:space:]]}" ]] || die "${src}: the settings key has leading or trailing whitespace; rewrite it without"
+}
+
 load_settings_key() {
     local cred="${CREDENTIALS_DIRECTORY:-}/${CRED_NAME}" key
     if [[ -n "${CREDENTIALS_DIRECTORY:-}" && -r "${cred}" ]]; then
+        # `$(<file)` silently drops a NUL byte, while the hand start and the gate (Python) keep it:
+        # one file, two keys again (R4C N-6). Refuse it before reading.
+        [[ "$(wc -c < "${cred}")" -eq "$(tr -d '\000' < "${cred}" | wc -c)" ]] || die "systemd credential ${CRED_NAME} contains a NUL byte; rewrite it without one"
         key="$(<"${cred}")"
         [[ -n "${key}" ]] || die "systemd credential ${CRED_NAME} is empty"
+        check_key_shape "systemd credential ${CRED_NAME}" "${key}"
         export SETTINGS_ENCRYPTION_KEY="${key}"
         log "settings encryption key: systemd credential ${CRED_NAME} (${#key} chars)"
     elif [[ -n "${SETTINGS_ENCRYPTION_KEY:-}" ]]; then
+        check_key_shape "SETTINGS_ENCRYPTION_KEY" "${SETTINGS_ENCRYPTION_KEY}"
         log "settings encryption key: environment/.env (${#SETTINGS_ENCRYPTION_KEY} chars)"
     else
         log "settings encryption key: NOT SET (the server encrypts nothing new and refuses an encrypted database)"
@@ -984,7 +1096,7 @@ main() {
     if (( PRINT_ONLY )); then
         printf 'would exec: %q' "${DUPLICATI_SERVER}"
         for word in "${argv[@]}"; do
-            if [[ "${word}" =~ (password|passphrase|key|token)= ]]; then
+            if [[ "${word}" =~ ${REDACT_NAME} ]]; then
                 printf ' %q' "${word%%=*}=<redacted>"
             else
                 printf ' %q' "${word}"
@@ -1005,66 +1117,293 @@ main "$@"
 ```bash
 # file: util/install_duplicati_service.bash
 #!/usr/bin/env bash
-# Install the duplicati.service lane from this repository: wrapper, unit, defaults file.
+# Install the duplicati.service lane from this repository: wrapper, unit, defaults file, guard,
+# the env contract, and the server-DB snapshot lane (script, unit, timer).
 #
 # Project:      juniper-ml
 # Sub-Project:  backup infrastructure
 # Author:       Paul Calnon
-# Version:      1.0.0 (design draft 2026-09-21)
+# Version:      1.5.1 (2026-10-08: Phase B round-6 fold-in -- see History)
 # License:      MIT
 #
 # Copies, never symlinks: a symlink into a git checkout turns a branch switch or a worktree
-# removal into a silent change of what the service executes. Run with sudo. Does NOT restart
-# the service; prints the verification commands instead.
+# removal into a silent change of what the service executes. Run with sudo. Does NOT start,
+# stop or restart any unit; prints the verification commands instead.
+#
+# Usage:  sudo bash util/install_duplicati_service.bash [--dry-run] [--update-backup-behavior]
+#   --dry-run                 run every check and print every action; write nothing, reload nothing.
+#                             Works without root, so a reviewer can rehearse it.
+#   --update-backup-behavior  bless the repository's current contents when they differ from what
+#                             was last blessed (D-6's escape hatch; see the drift gate below). An
+#                             installed file that itself drifted is copied aside first, never lost.
+#
+# Step numbers below are the assessment's section 6.4 checklist
+# (notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md),
+# whose numbering differs from the design's P0 -- say "assessment step N" when citing them.
+#
+# History:
+#   1.0.0  2026-09-21  design draft; blessed-checksum drift gate (D-6, ruled 2026-09-22).
+#   1.1.0  2026-10-03  (a) FIRST-INSTALL FIX: with no blessed file, blessed_for() returned 1 and
+#                      `want="$(blessed_for …)"` under `set -e` ended the script silently before
+#                      any install -- the never-blessed path is exactly this host's (assessment
+#                      I-36, validation Lane B B-3). (b) The snapshot lane joins the blessed set
+#                      (STOP item 5 / P0.5a item 2: installed copy, hardened unit). (c) The env
+#                      contract deploys to /etc/duplicati/env, outside the data folder (round 3's
+#                      D13), and is never overwritten once present. (d) --dry-run. (e) The hint
+#                      at the end says `start`, never `restart`: the design's rule is that the
+#                      old server is stopped once, by P0 step 2, and started by P0 step 10.
+#   1.2.0  2026-10-03  Phase B validation fold-in (lanes B and C): (a) the "no secret in the
+#                      contract" gate refuses every secret-shaped assignment, commented or not, and
+#                      every option line naming a key, password or the two insecure-mode flags --
+#                      the 1.1.0 gate matched three names and let SETTINGS_ENCRYPTION_KEY_OLD, a
+#                      commented key and --settings-encryption-key= through; (b) an installed file
+#                      that DRIFTED is copied to <dst>.drifted-<UTC> before --update-backup-behavior
+#                      overwrites it (the drift was "the only evidence" and 1.1.0 destroyed it);
+#                      (c) DUPLICATI_INSTALL_PREFIX, for the hermetic test suite only, prefixes every
+#                      destination so the never-blessed, drift and kept-existing paths can be
+#                      rehearsed against a scratch tree instead of this host's real files; (d) the
+#                      dry run verifies the three unit files on a temp copy (ExecStart rewritten,
+#                      advisory); (e) no .pyc is written by the syntax check; (f) the guard hint
+#                      uses `env VAR=value` (sudoers refuses the bare prefix, round-4 B14).
+#   1.3.0  2026-10-08  Phase B round-3 fold-in: (a) the contract's --option lines are judged by
+#                      the WRAPPER ITSELF (--print-command against a scratch data folder), so the
+#                      installer and the wrapper apply one rule -- the 1.2.0 HAZARD_OPTION regex
+#                      was a second copy that missed --parameters-file (R3A D-1, R3C D-3) and five
+#                      lines the wrapper refuses (R3C N-6), and refused a tunable the wrapper
+#                      allows (--webservice-token-duration); an existing /etc/duplicati/env is
+#                      judged the same way, since the new wrapper reads it at the next start;
+#                      (b) the secret gates see through any run of `#` (`## KEY=...`) and refuse a
+#                      secret-valued --option line even when commented (R3A N-5); (c) a first
+#                      install over a file that was never blessed but differs from the repository
+#                      copies it to <dst>.pre-install-<UTC> first (R3C N-7); (d) a NOTE when the
+#                      snapshot destination is absent: the unit's ReadWritePaths= has no `-` by
+#                      design, so it fails closed until the directory exists (R3C N-13); (e) the
+#                      guard check is printed in the design's step-10 form -- URL read from the job,
+#                      after the start -- not with a hand-typed URL (R3B N-1).
+#   1.4.0  2026-10-08  Phase B round-4 fold-in: (a) the contract gate's empty DUPLICATI_REQUIRE_MOUNT
+#                      now really switches the wrapper's mount check off (wrapper 2.4.0), so an
+#                      unmounted drive no longer reads as "the wrapper refuses the contract" (R4A
+#                      D-1); (b) an installed file that differs from the repository and was never
+#                      blessed -- including when the blessed file is absent or empty -- is UNBLESSED
+#                      and needs --update-backup-behavior, as drift does (R4C N-5); (c) a real run
+#                      says where it copied a file aside (R4C N-3); (d) an existing /etc/duplicati/env
+#                      must be root:duplicati, group-readable and writable by root only (R4C N-4);
+#                      (e) the NOTE's key write is the design's `sudo test ! -e … | sudo tee` form
+#                      (R4A N-6); (f) "Next:" prints the step-8 prerequisites before the start and
+#                      step 10's guard block verbatim, `unset url id` and numeric id included (R4A
+#                      N-1, R4B N-7).
+#   1.5.0  2026-10-08  Phase B round-5 fold-in: (a) an existing /etc/duplicati/env passes as EITHER
+#                      of O-12's two forms, root:duplicati 0640 or duplicati:duplicati 0600 -- the
+#                      installer does not settle O-12; 1.4.0 enforced one side (R5A DEFECT-2) and
+#                      admitted an other-readable 0644 (R5A NIT-1); a symlink is refused by name;
+#                      (b) "Next:" says stop the unit, never pause, when the first start reads
+#                      Running, and prints step 10's restart before resume (R5A DEFECT-1, R5B N-1);
+#                      (c) the key NOTE names Procedure A's random …-key.new (R5A NIT-2).
+#   1.5.1  2026-10-08  Phase B round-6 fold-in (R6 NIT-3): after "stop the unit", the hint says what
+#                      comes next -- read the stored paused-until before starting again (D step 8).
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# DUPLICATI_INSTALL_PREFIX and DUPLICATI_INSTALL_BLESSED exist for the hermetic test suite only:
+# they point every destination (and the blessed file) into a scratch tree. Production never sets them.
+PREFIX="${DUPLICATI_INSTALL_PREFIX:-}"
 WRAPPER_SRC="${REPO_DIR}/scripts/duplicati-wrapper.bash"
 UNIT_SRC="${REPO_DIR}/util/systemd/duplicati.service"
 DEFAULTS_SRC="${REPO_DIR}/util/systemd/duplicati.default"
 GUARD_SRC="${REPO_DIR}/util/yamaguchi-pre-backup-guard.bash"
-WRAPPER_DST=/usr/local/lib/duplicati/duplicati-wrapper.bash
-UNIT_DST=/etc/systemd/system/duplicati.service
-DEFAULTS_DST=/etc/default/duplicati
-GUARD_DST=/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash
-DATA_FOLDER=/home/duplicati/.config/Duplicati
-CRED_DST=/etc/credstore/duplicati-settings-key
+ENV_SRC="${REPO_DIR}/util/systemd/duplicati-env.contract"
+SNAP_SRC="${REPO_DIR}/util/ad-hoc/yamaguchi_server_db_snapshot.py"
+SNAP_UNIT_SRC="${REPO_DIR}/util/systemd/yamaguchi-server-db-snapshot.service"
+SNAP_TIMER_SRC="${REPO_DIR}/util/systemd/yamaguchi-server-db-snapshot.timer"
+LIB_DIR="${PREFIX}/usr/local/lib/duplicati"
+CREDSTORE_DIR="${PREFIX}/etc/credstore"
+WRAPPER_DST="${LIB_DIR}/duplicati-wrapper.bash"
+UNIT_DST="${PREFIX}/etc/systemd/system/duplicati.service"
+DEFAULTS_DST="${PREFIX}/etc/default/duplicati"
+GUARD_DST="${LIB_DIR}/yamaguchi-pre-backup-guard.bash"
+ENV_DIR="${PREFIX}/etc/duplicati"
+ENV_DST="${ENV_DIR}/env"
+SNAP_DST="${LIB_DIR}/yamaguchi_server_db_snapshot.py"
+SNAP_UNIT_DST="${PREFIX}/etc/systemd/system/yamaguchi-server-db-snapshot.service"
+SNAP_TIMER_DST="${PREFIX}/etc/systemd/system/yamaguchi-server-db-snapshot.timer"
+DATA_FOLDER="${PREFIX}/home/duplicati/.config/Duplicati"
+CRED_DST="${CREDSTORE_DIR}/duplicati-settings-key"
+# The snapshot unit's ReadWritePaths= (yamaguchi-server-db-snapshot.service); checked, never created.
+SNAP_DEST_DIR="${PREFIX}/home/pcalnon/.local/state/duplicati-server-db"
+BLESSED="${DUPLICATI_INSTALL_BLESSED:-${LIB_DIR}/.blessed.sha256}"
 
-[[ "$(id -u)" -eq 0 ]] || { echo "run with sudo" >&2; exit 2; }
-for f in "${WRAPPER_SRC}" "${UNIT_SRC}" "${DEFAULTS_SRC}" "${GUARD_SRC}"; do
+# The blessed set: every file a root unit executes or reads, as SRC:DST:MODE. The env contract
+# is NOT in it -- it is installed only when absent and an operator may change it afterwards.
+PAIRS=(
+    "${WRAPPER_SRC}:${WRAPPER_DST}:0755"
+    "${UNIT_SRC}:${UNIT_DST}:0644"
+    "${DEFAULTS_SRC}:${DEFAULTS_DST}:0644"
+    "${GUARD_SRC}:${GUARD_DST}:0755"
+    "${SNAP_SRC}:${SNAP_DST}:0755"
+    "${SNAP_UNIT_SRC}:${SNAP_UNIT_DST}:0644"
+    "${SNAP_TIMER_SRC}:${SNAP_TIMER_DST}:0644"
+)
+
+DRY_RUN=0
+UPDATE_BEHAVIOR=0
+for arg in "$@"; do
+    case "${arg}" in
+        --dry-run) DRY_RUN=1 ;;
+        --update-backup-behavior) UPDATE_BEHAVIOR=1 ;;
+        *) echo "unknown argument: ${arg}" >&2; exit 2 ;;
+    esac
+done
+
+say() { printf '%s\n' "$*"; }
+act() {
+    # act <description> <command...>: print, then run unless --dry-run.
+    local what="$1"; shift
+    if (( DRY_RUN )); then
+        say "would: ${what}"
+    else
+        "$@"
+    fi
+}
+
+if (( DRY_RUN == 0 )) && [[ "$(id -u)" -ne 0 ]]; then
+    echo "run with sudo (or --dry-run to rehearse without root)" >&2
+    exit 2
+fi
+for f in "${WRAPPER_SRC}" "${UNIT_SRC}" "${DEFAULTS_SRC}" "${GUARD_SRC}" "${ENV_SRC}" "${SNAP_SRC}" "${SNAP_UNIT_SRC}" "${SNAP_TIMER_SRC}"; do
     [[ -f "${f}" ]] || { echo "missing source: ${f}" >&2; exit 2; }
 done
 bash -n "${WRAPPER_SRC}"
 bash -n "${GUARD_SRC}"
+# A syntax check that writes no .pyc into the checkout (py_compile did, as root under sudo).
+python3 -c 'import ast, sys; ast.parse(open(sys.argv[1], encoding="utf-8").read(), sys.argv[1])' "${SNAP_SRC}"
+
+# --- the contract carries no secret, and the wrapper accepts it ----------------------------------
+# Refused, commented or not (behind any run of `#`): an assignment whose NAME looks like a secret
+# (…KEY…, …PASSPHRASE…, …PASSWORD…, …CREDENTIAL…, …TOKEN…, …SECRET…) with a value that is not
+# empty, not a $variable and not a <placeholder>; and an --option line whose name carries a secret
+# (…password…, …passphrase…, …secret…, …encryption-key…, …auth-token…) with such a value. A
+# commented-out secret is still a secret on disk (AC-8), and the 2026-09-22 file's
+# SETTINGS_ENCRYPTION_KEY_OLD line is exactly the shape the 1.1.0 gate missed.
+SECRET_ASSIGN='^[[:space:]]*(#[#[:space:]]*)?(export[[:space:]]+)?[A-Za-z0-9_]*(KEY|PASSPHRASE|PASSWORD|CREDENTIAL|TOKEN|SECRET)[A-Za-z0-9_]*[[:space:]]*=[[:space:]]*["'"'"']?[^"'"'"'$<[:space:]]'
+SECRET_OPTION='^[[:space:]]*(#[#[:space:]]*)?--[a-z0-9-]*(password|passphrase|secret|encryption-key|auth-token)[a-z0-9-]*=[[:space:]]*["'"'"']?[^"'"'"'$<[:space:]]'
+if grep -Eiq "${SECRET_ASSIGN}" "${ENV_SRC}"; then
+    echo "REFUSING: ${ENV_SRC} carries a secret-shaped assignment (commented or not); the contract allows none" >&2
+    exit 2
+fi
+if grep -Eiq "${SECRET_OPTION}" "${ENV_SRC}"; then
+    echo "REFUSING: ${ENV_SRC} carries an option line with a secret value (commented or not); the contract allows none" >&2
+    exit 2
+fi
+# Which --option lines the env file may carry is the WRAPPER's rule (its ENV_OPTION_DENY and
+# ENV_OPTION_ALLOW), so the wrapper being installed judges the file: one rule, not two copies.
+# A clean environment, a scratch data folder and /bin/true as the server: nothing is started and
+# no key reaches it (the wrapper prints option NAMES and lengths only). DUPLICATI_REQUIRE_MOUNT is
+# set EMPTY, which since wrapper 2.4.0 really switches its mount check off (2.3.0's `:-` turned an
+# empty value back into /mnt/Backups, so an unmounted drive read as "the wrapper refuses the
+# contract" -- R4A D-1). That is deliberate: this gate judges the file's grammar, and a missing
+# mount is not a contract fault -- the unit's own start checks the mount, every time.
+wrapper_accepts() {
+    # wrapper_accepts <env file>: 0 when the wrapper's env-file grammar accepts it; else prints why.
+    local scratch out rc=0
+    scratch="$(mktemp -d)"
+    out="$(env -i PATH=/usr/bin:/bin DUPLICATI_ENV_FILE="$1" DUPLICATI_SERVER=/bin/true \
+        DUPLICATI_DATA_FOLDER="${scratch}" DUPLICATI_REQUIRE_MOUNT= \
+        "${BASH}" "${WRAPPER_SRC}" --print-command 2>&1 >/dev/null)" || rc=$?
+    rm -rf "${scratch}"
+    (( rc == 0 )) || printf '%s\n' "${out}" | sed 's/^/  wrapper: /' >&2
+    return "${rc}"
+}
+if ! wrapper_accepts "${ENV_SRC}"; then
+    echo "REFUSING: the wrapper refuses ${ENV_SRC} (see its lines above); it would exit 78 at the next start" >&2
+    exit 2
+fi
+# The modes an existing env file may have. Which one is RIGHT is the owner's open decision O-12
+# (the contract header, D's P1 item 2, A's O-12 row); this installer does NOT settle it, so it
+# accepts either documented form and nothing else (R5A DEFECT-2):
+#   root:duplicati 0640 -- what this installer creates, and what the design recommends;
+#   duplicati:duplicati 0600 -- the dissent (Lane A3 / Lane B2 D15).
+# Anything else is refused: another owner or group, any group- or other-writable file, and any
+# other-readable one (the file may export SETTINGS_ENCRYPTION_KEY -- R5A NIT-1), and a group that
+# cannot read it (root:root 0640 passes the root-run grammar gate and then fails every start with
+# exit 78 -- R4C N-4). A SYMLINK is refused by name: stat would judge the link's own 0777, and the
+# fix is a real file, not a chmod.
+ENV_MODES_ACCEPTED="root:duplicati 0640 or duplicati:duplicati 0600 (O-12 is open; either form is accepted)"
+if [[ -L "${ENV_DST}" ]]; then
+    if (( DRY_RUN )); then
+        say "would refuse: ${ENV_DST} is a symlink; it must be a regular file, ${ENV_MODES_ACCEPTED}"
+    else
+        echo "REFUSING: ${ENV_DST} is a symlink; replace it with a regular file, ${ENV_MODES_ACCEPTED}" >&2
+        exit 2
+    fi
+elif [[ -e "${ENV_DST}" ]]; then
+    if [[ ! -r "${ENV_DST}" ]]; then
+        say "cannot judge the existing ${ENV_DST} without root (a dry run as a user); the real run does"
+    elif ! wrapper_accepts "${ENV_DST}"; then
+        echo "REFUSING: the wrapper being installed refuses the existing ${ENV_DST} (see above); it is never overwritten, so fix it by hand first" >&2
+        exit 2
+    fi
+    # Refused on a real run; reported on a dry run, which as a user cannot tell a scratch prefix's
+    # owner from the host's.
+    env_meta="$(stat -c '%U:%G:%a' "${ENV_DST}")"
+    case "${env_meta}" in
+        root:duplicati:640|duplicati:duplicati:600) ;;
+        *)
+            if (( DRY_RUN )); then
+                say "would refuse: ${ENV_DST} is ${env_meta}; it must be ${ENV_MODES_ACCEPTED}"
+            else
+                echo "REFUSING: ${ENV_DST} is ${env_meta}; the service reads it as duplicati -- make it ${ENV_MODES_ACCEPTED}" >&2
+                exit 2
+            fi
+            ;;
+    esac
+fi
 
 # --- D-6 drift gate (RULED 2026-09-22) -----------------------------------------------------
 # The repository is canonical and what the unit executes is a COPY. Two different things can
 # therefore drift, and they mean OPPOSITE things:
 #
-#   * the INSTALLED file no longer matches what was blessed -> someone edited /usr/local/lib
-#     outside this installer. Never overwrite that silently; it is the only evidence.
+#   * the INSTALLED file no longer matches what was blessed -> someone edited the installed copy
+#     outside this installer. Never overwrite that silently; it is the only evidence -- so with
+#     --update-backup-behavior it is copied to <dst>.drifted-<UTC timestamp> before the install.
 #   * the REPOSITORY no longer matches what was blessed -> an intended behaviour change. That
 #     is legitimate, and is exactly what --update-backup-behavior authorises.
 #
 # A symlink into the checkout was considered for this job and rejected: on a fresh host the
 # checkout does not exist yet, so ExecStart= would resolve to a dangling target and the service
 # would not start -- failing in the bare-metal recovery case the symlink was proposed for.
-BLESSED=/usr/local/lib/duplicati/.blessed.sha256
-UPDATE_BEHAVIOR=0
-for arg in "$@"; do
-    [[ "${arg}" == "--update-backup-behavior" ]] && UPDATE_BEHAVIOR=1
-done
-
-blessed_for() { [[ -s "${BLESSED}" ]] && awk -v d="$1" '$2 == d { print $1 }' "${BLESSED}"; }
+#
+# blessed_for prints the blessed checksum of a destination, or nothing. It must RETURN 0 either
+# way: under `set -e`, `want="$(blessed_for …)"` inherits the substitution's status, and a
+# helper that returned 1 on "no blessed file yet" ended the first install silently (1.1.0 (a)).
+blessed_for() {
+    if [[ -s "${BLESSED}" ]]; then
+        awk -v d="$1" '$2 == d { print $1 }' "${BLESSED}"
+    fi
+    return 0
+}
 
 drift=0
-for pair in "${WRAPPER_SRC}:${WRAPPER_DST}" "${UNIT_SRC}:${UNIT_DST}" "${DEFAULTS_SRC}:${DEFAULTS_DST}" "${GUARD_SRC}:${GUARD_DST}"; do
-    src="${pair%%:*}"; dst="${pair##*:}"
+declare -A DRIFTED=()
+declare -A PREEXISTING=()
+for triple in "${PAIRS[@]}"; do
+    IFS=: read -r src dst _mode <<< "${triple}"
     want="$(blessed_for "${dst}")"
-    [[ -n "${want}" ]] || continue          # never blessed: first install, nothing to compare
+    if [[ -z "${want}" ]]; then
+        # Never blessed: nothing to compare against -- but a file already there that differs from
+        # the repository is someone's, and is copied aside before it is replaced (R3C N-7).
+        if [[ -f "${dst}" ]] && ! cmp -s "${src}" "${dst}"; then
+            PREEXISTING["${dst}"]=1
+            # An absent or empty blessed file must not turn an edited installed file into a quiet
+            # "first install" (R4C N-5): replacing a file nobody blessed takes the same switch.
+            echo "UNBLESSED: installed ${dst} differs from the repository and was never blessed" >&2
+            drift=1
+        fi
+        continue
+    fi
     if [[ -f "${dst}" ]] && [[ "$(sha256sum "${dst}" | cut -d' ' -f1)" != "${want}" ]]; then
         echo "DRIFT: installed ${dst} does not match its blessed checksum -- changed outside this installer" >&2
         drift=1
+        DRIFTED["${dst}"]=1
     fi
     if [[ "$(sha256sum "${src}" | cut -d' ' -f1)" != "${want}" ]]; then
         echo "BEHAVIOUR CHANGE: ${src} differs from the blessed checksum" >&2
@@ -1076,52 +1415,138 @@ if (( drift == 1 && UPDATE_BEHAVIOR == 0 )); then
     echo "to bless the current repository contents as what this host executes." >&2
     exit 4
 fi
+if [[ ! -s "${BLESSED}" ]]; then
+    say "first install: no ${BLESSED} yet, nothing to compare"
+fi
 
-install -d -m 0755 -o root -g root /usr/local/lib/duplicati
-install -d -m 0700 -o root -g root /etc/credstore
-install -m 0755 -o root -g root "${WRAPPER_SRC}" "${WRAPPER_DST}"
-install -m 0644 -o root -g root "${UNIT_SRC}" "${UNIT_DST}"
-install -m 0644 -o root -g root "${DEFAULTS_SRC}" "${DEFAULTS_DST}"
-# The guard is --run-script-before-REQUIRED: a missing file aborts every backup. It must be
-# installed by the same script that installs the unit, or the first post-recovery run fails.
-install -m 0755 -o root -g root "${GUARD_SRC}" "${GUARD_DST}"
+# --- unit files: a syntax pass on a temp copy, before anything is installed (advisory) --------
+# The real `systemd-analyze verify` runs on the installed units at the end; on a first install it
+# cannot run earlier, because the wrapper the unit executes is not installed yet. The dry run
+# therefore verifies COPIES whose ExecStart is rewritten to /bin/true, so a directive typo is
+# seen before the install. Advisory only: the verifier's output is printed, never fatal, because
+# a runner without the duplicati user or this host's systemd would otherwise refuse a good unit.
+if (( DRY_RUN )) && command -v systemd-analyze >/dev/null 2>&1; then
+    VERIFY_TMP="$(mktemp -d)"
+    for u in "${UNIT_SRC}" "${SNAP_UNIT_SRC}" "${SNAP_TIMER_SRC}"; do
+        sed -E 's#^ExecStart=.*#ExecStart=/bin/true#' "${u}" > "${VERIFY_TMP}/$(basename "${u}")"
+    done
+    say "dry run: systemd-analyze verify on temp copies (ExecStart rewritten to /bin/true):"
+    systemd-analyze verify --man=no "${VERIFY_TMP}"/*.service "${VERIFY_TMP}"/*.timer 2>&1 | sed 's/^/  verify: /' || true
+    rm -rf "${VERIFY_TMP}"
+fi
 
-# 2.4.0.0 refuses a pre-existing data folder with any group or other bit, at EVERY start.
-install -d -m 0700 -o duplicati -g duplicati "${DATA_FOLDER}"
-if [[ "$(stat -c '%U:%a' "${DATA_FOLDER}")" != "duplicati:700" ]]; then
+# --- install ---------------------------------------------------------------------------------
+act "install -d -m 0755 -o root -g root ${LIB_DIR}" install -d -m 0755 -o root -g root "${LIB_DIR}"
+act "install -d -m 0700 -o root -g root ${CREDSTORE_DIR}" install -d -m 0700 -o root -g root "${CREDSTORE_DIR}"
+act "install -d -m 0755 -o root -g root ${ENV_DIR}" install -d -m 0755 -o root -g root "${ENV_DIR}"
+for triple in "${PAIRS[@]}"; do
+    IFS=: read -r src dst mode <<< "${triple}"
+    if [[ -n "${DRIFTED[${dst}]+x}" ]]; then
+        aside="${dst}.drifted-$(date -u +%Y%m%dT%H%M%SZ)"
+        act "cp -p ${dst} ${aside}  (the drifted installed copy is kept as evidence)" cp -p "${dst}" "${aside}"
+        (( DRY_RUN )) || say "kept the drifted ${dst} as ${aside}"
+    elif [[ -n "${PREEXISTING[${dst}]+x}" ]]; then
+        aside="${dst}.pre-install-$(date -u +%Y%m%dT%H%M%SZ)"
+        act "cp -p ${dst} ${aside}  (a never-blessed file that differs from the repository is kept)" cp -p "${dst}" "${aside}"
+        (( DRY_RUN )) || say "kept the never-blessed ${dst} as ${aside}"
+    fi
+    act "install -m ${mode} -o root -g root ${src#"${REPO_DIR}"/} ${dst}" install -m "${mode}" -o root -g root "${src}" "${dst}"
+done
+
+# The env contract: installed once, 0640 root:duplicati, never overwritten (an operator's
+# tunables are theirs). The service user reads it through the group and cannot replace it:
+# /etc/duplicati is root-owned 0755, so the unlink-and-recreate path the data folder allowed
+# (round 3's D13) does not exist here.
+if [[ -e "${ENV_DST}" ]]; then
+    say "kept existing ${ENV_DST} (not overwritten; diff against ${ENV_SRC#"${REPO_DIR}"/} by hand)"
+else
+    act "install -m 0640 -o root -g duplicati ${ENV_SRC#"${REPO_DIR}"/} ${ENV_DST}" install -m 0640 -o root -g duplicati "${ENV_SRC}" "${ENV_DST}"
+fi
+
+# The data folder: 0700 duplicati:duplicati or the server refuses it at every start. `install -d`
+# re-modes an existing folder too, so a 0777 folder left over from the migration is corrected
+# here -- but P0 moves that folder aside first (D's step 2) and places the recovered database
+# before this installer runs (assessment step 9), so on the recovery day this creates nothing new.
+act "install -d -m 0700 -o duplicati -g duplicati ${DATA_FOLDER}" install -d -m 0700 -o duplicati -g duplicati "${DATA_FOLDER}"
+if (( DRY_RUN == 0 )) && [[ "$(stat -c '%U:%a' "${DATA_FOLDER}")" != "duplicati:700" ]]; then
     echo "${DATA_FOLDER} must be duplicati-owned mode 0700 (Duplicati refuses anything else)" >&2
     exit 1
 fi
 
-: > "${BLESSED}.new"
-for pair in "${WRAPPER_SRC}:${WRAPPER_DST}" "${UNIT_SRC}:${UNIT_DST}" "${DEFAULTS_SRC}:${DEFAULTS_DST}" "${GUARD_SRC}:${GUARD_DST}"; do
-    src="${pair%%:*}"; dst="${pair##*:}"
-    cmp -s "${src}" "${dst}" || { echo "checksum mismatch after install: ${dst}" >&2; exit 1; }
-    printf '%s  %s\n' "$(sha256sum "${dst}" | cut -d' ' -f1)" "${dst}" >> "${BLESSED}.new"
-    echo "installed ${dst} ($(sha256sum "${dst}" | cut -c1-16))"
-done
-# Bless only after every copy verified. A blessed file written earlier would record a state that
-# a later failure never reached, and the next run would compare against a fiction.
-install -m 0644 -o root -g root "${BLESSED}.new" "${BLESSED}"
-rm -f "${BLESSED}.new"
-echo "blessed ${BLESSED} (re-bless deliberately with --update-backup-behavior)"
+# --- bless -----------------------------------------------------------------------------------
+if (( DRY_RUN )); then
+    say "would: write ${BLESSED} with the sha256 of each of the ${#PAIRS[@]} installed files"
+else
+    : > "${BLESSED}.new"
+    for triple in "${PAIRS[@]}"; do
+        IFS=: read -r src dst _mode <<< "${triple}"
+        cmp -s "${src}" "${dst}" || { echo "checksum mismatch after install: ${dst}" >&2; exit 1; }
+        printf '%s  %s\n' "$(sha256sum "${dst}" | cut -d' ' -f1)" "${dst}" >> "${BLESSED}.new"
+        echo "installed ${dst} ($(sha256sum "${dst}" | cut -c1-16))"
+    done
+    install -m 0644 -o root -g root "${BLESSED}.new" "${BLESSED}"
+    rm -f "${BLESSED}.new"
+    echo "blessed ${BLESSED} (${#PAIRS[@]} files; re-bless deliberately with --update-backup-behavior)"
+fi
 
-if [[ ! -s "${CRED_DST}" ]]; then
-    printf '%s\n' "NOTE: ${CRED_DST} is absent or empty. Create it before starting:" \
-        "      umask 077; openssl rand -base64 48 | tr -d '\\n' > ${CRED_DST}; chmod 0600 ${CRED_DST}" \
-        "      and escrow it with the passphrases (it is a third key)." >&2
+# --- the settings key ------------------------------------------------------------------------
+if (( DRY_RUN )); then
+    say "would: check ${CRED_DST} exists, is root-owned and mode 0600 (its content is never read here)"
+elif [[ ! -s "${CRED_DST}" ]]; then
+    # The design's step-8 form, character for character (R4A N-6): `test ! -e`, not `! -s` -- an
+    # EMPTY file is still refused, because writing over anything that exists is the hazard.
+    printf '%s\n' "NOTE: ${CRED_DST} is absent or empty. On A0, A2 and B create it before starting (on Procedure A, place the accepted 09-18 key here instead, and a random one at ${CRED_DST}.new, which P0.5b swaps in -- the same command with .new):" \
+        "      sudo test ! -e ${CRED_DST} && { umask 077; openssl rand -base64 48 | tr -d '\\n' | sudo tee ${CRED_DST} >/dev/null; }" \
+        "      and escrow it with the passphrases (it is a third key) BEFORE the first start. An EMPTY file is refused" \
+        "      by that test on purpose: remove it by hand first, after checking that nothing was ever encrypted under it." >&2
 else
     [[ "$(stat -c '%U:%a' "${CRED_DST}")" == "root:600" ]] || { echo "${CRED_DST} must be root-owned mode 0600" >&2; exit 1; }
 fi
 
-systemctl daemon-reload
-systemd-analyze verify "${UNIT_DST}"
+# The snapshot unit's ReadWritePaths= deliberately has NO `-` prefix: a missing destination fails
+# the unit at namespace setup (226/NAMESPACE) -- loud, and seen by the watchdog -- rather than
+# running the script under ProtectHome=read-only, where its makedirs could not create the
+# directory either. So the directory must exist. This installer does not create it: `install -d`
+# would leave any missing parent (~/.local, ~/.local/state) owned by root.
+if [[ ! -d "${SNAP_DEST_DIR}" ]]; then
+    printf '%s\n' "NOTE: ${SNAP_DEST_DIR} is absent; the snapshot unit fails until it exists. As pcalnon:" \
+        "      mkdir -p -m 0700 ${SNAP_DEST_DIR}" >&2
+fi
+
+act "systemctl daemon-reload" systemctl daemon-reload
+act "systemd-analyze verify ${UNIT_DST} ${SNAP_UNIT_DST} ${SNAP_TIMER_DST}" systemd-analyze verify "${UNIT_DST}" "${SNAP_UNIT_DST}" "${SNAP_TIMER_DST}"
 echo
-echo "Next: sudo -u duplicati ${WRAPPER_DST} --print-command  (dry run, no server started)"
-echo "      sudo -u duplicati DUPLICATI__REMOTEURL=file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi \\"
-echo "           ${GUARD_DST}; echo \"guard exit=\$?\"   (must be 0 BEFORE the job is resumed)"
-echo "      systemctl restart duplicati.service && journalctl -u duplicati.service -n 20"
+echo "Next -- the design's P0 steps 8 to 10 (assessment steps 9 to 11); the design is the authority:"
+echo "  1. sudo -u duplicati ${WRAPPER_DST} --print-command   (dry run, no server started)"
+echo "  2. BEFORE the first start (step 8): the settings key is in place (see any NOTE above); the placed database"
+echo "     holds paused-until = 0, read back with startup-delay; the web credential is written"
+echo "     (~/.config/duplicati-backup/web-credential, 0600, one line DUPLICATI_WEB_CREDENTIAL=<password>);"
+echo "     on Procedures A2 and B the password-init hand start has run."
+echo "  3. sudo systemctl start duplicati.service   (START, never restart: the old server was stopped once, by step 2)"
+echo "     python3 util/ad-hoc/yamaguchi_server_api.py serverstate   must exit 2 (Paused). If it reads Running, stop the unit at once"
+echo "     (sudo systemctl stop duplicati.service) and record it; do not pause -- pause only suspends a job that may already"
+echo "     be running, and step 10's resume would continue it with the options it started with."
+echo "     Then read the stored paused-until (step 8's read-back) before starting again."
+echo "  4. Before any resume (step 10), dry-run the guard with the URL read FROM THE JOB; replace <id> on the second"
+echo "     line only, and require guard exit=0:"
+cat <<'EOF'
+unset url id
+id=<id>
+case "$id" in ''|*[!0-9]*) echo "REFUSE: set id to the job's number" >&2; false ;; esac &&
+url="$(python3 util/ad-hoc/yamaguchi_server_api.py export "$id" \
+  | python3 -c 'import json,sys; print(json.load(sys.stdin)["Backup"]["TargetURL"])')"
+test -n "$url" || { echo "REFUSE: export $id gave no TargetURL" >&2; false; } &&
+sudo -u duplicati env DUPLICATI__REMOTEURL="$url" \
+EOF
+# shellcheck disable=SC2016  # the $? is the operator's, printed literally
+printf '  %s; echo "guard exit=$?"\n' "${GUARD_DST}"
+echo "  5. Then, on A0, A2 and B, restart the unit before resume (step 10): sudo systemctl stop duplicati.service,"
+echo "     then sudo systemctl start duplicati.service; serverstate must exit 2 again; read the edits back with"
+echo "     export <id> (step 10 lists what to check) -- and only then resume. On Procedure A, P0.5b runs here instead."
+echo
 echo "      systemd-analyze security duplicati.service"
+echo "      the snapshot timer stays disabled until the first start has re-encrypted the database:"
+echo "        systemctl enable --now yamaguchi-server-db-snapshot.timer   (assessment step 13, not before)"
 ```
 
 `util/systemd/duplicati.service` and `util/systemd/duplicati.default` are the repository copies of the two
@@ -1140,35 +1565,64 @@ The T2 lane needs its own installer and does not have one: `util/install_duplica
 #### 7.3.5 The `.env` contract and the settings key
 
 ```text
-# file: home/duplicati/.config/Duplicati/.env
-# Duplicati server: local overrides.
-# MODE IS AN OPEN OWNER DECISION (recorded as dissent in the design's section 11):
+# file: etc/duplicati/env
+# Duplicati server: local overrides. Installed at /etc/duplicati/env (0640 root:duplicati, in a
+# 0755 root:root directory) by util/install_duplicati_service.bash, which never overwrites an
+# existing copy -- an operator's tunables survive a re-install. The repository copy is
+# util/systemd/duplicati-env.contract: a name ending in .env is credential material there (the
+# `*.env` ignore rule and the unencrypted-.env hook), and this file carries no secret by
+# contract. The wrapper reads it first (DUPLICATI_ENV_FILE, default /etc/duplicati/env);
+# /etc/default/duplicati's DAEMON_OPTS wins for the same option name.
+# MODE IS AN OPEN OWNER DECISION (recorded as dissent in the design's section 11, O-12 of the
+# 2026-10-03 assessment):
 #   0600 duplicati:duplicati  -- Lane A3 / Lane B2 D15; the service user can rewrite its own
-#                                tunables, which is the status quo.
-#   0640 root:duplicati       -- Lane B3 F-5, and what this design RECOMMENDS: the wrapper
-#                                only ever READS this file, so the service user needs no
-#                                write, and a file the plain duplicati uid can write is a
-#                                code-injection path into a process holding
+#                                tunables, which was the status quo.
+#   0640 root:duplicati       -- Lane B3 F-5, and what the design RECOMMENDS and this installer
+#                                does: the wrapper only ever READS this file, so the service
+#                                user needs no write, and a file the plain duplicati uid can
+#                                write is a code-injection path into a process holding
 #                                CAP_DAC_READ_SEARCH (see the crossings table in 7.3.1).
-# Until the owner rules, install it 0640 root:duplicati -- AND OUTSIDE THE DATA FOLDER.
-# The mode only binds if the file leaves /home/duplicati/.config/Duplicati/: that directory
-# must be 0700 duplicati:duplicati (Duplicati's own requirement) and the server must own it
-# to write its database there, so the duplicati uid holds write on the DIRECTORY -- and in
-# POSIX, delete permission comes from the parent directory, not the file. A 0640
-# root:duplicati .env inside it is unlink-and-recreate-able by the service user, which
-# defeats the whole point of the mode. Install it at /etc/duplicati/env in a 0755 root:root
-# directory and point the wrapper's DUPLICATI_ENV_FILE default there. That also removes a
-# second-order contradiction: section 7.3.2 requires files in the data folder to be 0600
-# while this contract installs one at 0640.
-# Grammar (enforced by the wrapper, which refuses anything else):
-#   KEY=VALUE | export KEY=VALUE | --option[=value] | # comment | blank
-# KEY=VALUE values are literal (no shell expansion; matching surrounding quotes are removed), and
-# only these names may be exported: SETTINGS_ENCRYPTION_KEY, DUPLICATI__*, TMPDIR, TZ, LANG, LC_ALL.
+# The mode only binds because the file lives OUTSIDE the data folder (round 3's D13): that
+# directory must be 0700 duplicati:duplicati (Duplicati's own requirement) and the server must
+# own it to write its database there, so the duplicati uid holds write on the DIRECTORY -- and
+# in POSIX, delete permission comes from the parent directory, not the file. A 0640
+# root:duplicati file inside it would be unlink-and-recreate-able by the service user, which
+# defeats the whole point of the mode. /etc/duplicati is 0755 root:root, so it is not.
+# Grammar (enforced by the wrapper, which refuses anything else with exit 78). Accepted lines:
+#   an assignment (NAME=VALUE, optionally prefixed by `export`), an --option[=value] line, a
+#   # comment, or a blank line.
+# Values of assignments are literal (no shell expansion; matching surrounding quotes are removed),
+# and only these names may be exported: SETTINGS_ENCRYPTION_KEY, TMPDIR, TZ, LANG, LC_ALL. The
+# DUPLICATI__* family is NOT exportable from here: the server composes DUPLICATI__<OPTION> for
+# every option at runtime, so an exported DUPLICATI__DISABLE_DB_ENCRYPTION (value true) in this
+# unblessed file would have decrypted the database at the next start with no "Unknown option"
+# trace (Lane A, 2026-10-03).
 # --option lines are passed to the server verbatim, quotes included; leading whitespace is ignored.
+# Option names are compared case-insensitively, as the server does. Since wrapper 2.3.0 an
+# --option line here must name one of these TUNABLES, and nothing else:
+#   --webservice-port, --webservice-token-duration, --webservice-timezone, --log-level,
+#   --log-retention, --ping-pong-keepalive, --disable-update-check, --webservice-suppress-welcome-page.
+# Any other option is refused (exit 78). These SECURITY options get their own refusal message:
+#   --disable-db-encryption, --require-db-encryption-key, --settings-encryption-key,
+#   --allow-insecure-datafolder, --webservice-password, --webservice-password-init,
+#   --webservice-pre-auth-tokens, --webservice-reset-jwt-config, --webservice-disable-signin-tokens,
+#   --webservice-allowed-hostnames and its alias --webservice-allowedhostnames,
+#   --webservice-interface, --server-datafolder, --webservice-enable-forever-token,
+#   --webservice-cors-origins, and --parameters-file with its alias --parameterfile (the server
+#   reads that file itself and lets every option in it override argv, so one line naming it would
+#   re-open all the others).
+# Everything that is not a tunable belongs on argv: DAEMON_OPTS in /etc/default/duplicati (blessed
+# by the installer's drift gate) or the re-key's runtime drop-in. The installer gates this file by
+# running the wrapper itself on it, so the two can never disagree. A comment must never START
+# with an assignment -- that is the AC-8 shape this file is counted for (the 2026-09-20 file
+# carried five). The wrapper accepts such a comment; the installer refuses a secret-shaped one
+# (behind any run of `#`), and the repository test suite and AC-8's shape instrument refuse all.
 # NEVER keep a real secret in a comment. A commented-out assignment is still a secret on disk,
-# and on 2026-09-20 every line of this file was echoed into the system journal.
+# and on 2026-09-20 every line of the previous file was echoed into the system journal.
 # The settings encryption key is delivered by systemd (LoadCredential=) and must not be set
 # here while the unit supplies it. For a hand run outside systemd, export it in the shell.
+# A name the wrapper does not allow -- SETTINGS_ENCRYPTION_KEY_OLD was one -- is a fatal
+# configuration error (exit 78), not a warning: the server never starts on it.
 #
 # The --option line below is INERT under the unit as shipped: DAEMON_OPTS (precedence 3) also
 # sets --webservice-port, and a later source wins for the same option name. It is kept as a
@@ -1258,14 +1712,18 @@ this server must name both. The in-process client remains the fix. A recovered d
 UI password until it is changed.
 
 **If the root-era UI password is not known, none of the routes above applies** — and this is not a corner
-case: Procedures A0, A and A2 all recover a database whose `server-passphrase`/`-salt` hashes survive
-(`wipe-encryption` does not clear them, §8 step 6), so the server does **not** consider the password
-autogenerated, `--webservice-password-init` refuses it with exit 103, and the argv routes are banned. The
-recovery is to clear the stored hash **on the copy, before step 8 installs it**, so the server treats it as
-autogenerated again: with the server stopped,
-`DELETE FROM Option WHERE BackupID=-2 AND Name IN ('server-passphrase','server-passphrase-salt','server-passphrase-trayicon','server-passphrase-trayicon-hash');`
-then `--webservice-password-init` on a single hand start. Without this, P0 step 9 is unreachable for three of
-the four procedures, and step 10, AC-2, AC-5, AC-9 and AC-13 all sit behind it.
+case: Procedures A0 and A recover a database whose password is real, so the server does **not** consider it
+autogenerated, `--webservice-password-init` refuses it with exit 103, and the argv routes are banned. Since 2.1
+the password lives in `pbkdf-config` (`UpgradePasswordToKBDF` nulls `server-passphrase`), and that function
+returns at once while `pbkdf-config` is set — so the recovery must delete **`pbkdf-config` too**, or it changes
+nothing. On the placed database, with no server running, as `duplicati`:
+`DELETE FROM Option WHERE BackupID=-2 AND Name IN ('pbkdf-config','server-passphrase','server-passphrase-salt','server-passphrase-trayicon','server-passphrase-trayicon-hash');`
+The next start then mints a random password and marks it autogenerated, so the password-init hand start
+(`util/ad-hoc/2026-10-03_password_init_hand_start.bash`, run before the unit's first start, as on A2) returns
+102. Until 2026-10-08 this paragraph deleted only the `server-passphrase` rows, which ends in exit 103 and an
+unreachable server (Phase B round 3, lane B DEFECT-4), and it named A2, whose `wipe-encryption` already empties
+`pbkdf-config` (§8 step 6) — A2 always takes the hand start and never needs this. Without it, P0 step 9 is
+unreachable on A0 and A whenever the password is lost, and step 10, AC-2, AC-5, AC-9 and AC-13 all sit behind it.
 
 Remote control and the cloud report URL stay as the owner left them (deferred item) — but the report URL's
 bearer JWT is a secret carried by every database copy (S-8).
@@ -1355,7 +1813,7 @@ Dropbox prerequisite: the daemon must run with gid 139. After `pcalnon` logs in 
 
 Job settings are the certified ones (R-16) with **four** changes: `--tempdir=/home/duplicati/.cache/duplicati-tmp`; `--run-script-before-required=/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash`; `TargetURL=file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi`; and **`--aes-version` pinned explicitly**. The fourth is new and is not cosmetic: the existing 877 volumes are AES Crypt **v2** (newest dlist header bytes `41455302`), whose KDF is the legacy
 iterated SHA-256, while 2.4.0.0 defaults to `--aes-version=3` (PBKDF2, `--aes-v3-iterations` 300000). Left unpinned, the first post-recovery run silently changes the on-disk format mid-set. Pin **2** to keep the set homogeneous, or pin 3 and accept a mixed set — in which case AC-4 must drill one pre- and one post-upgrade fileset. This only matters if `PASSPHRASE` is not random: with 32 random characters both KDFs are irrelevant, with a human phrase v2 is GPU-crackable. Record the
-passphrase's provenance (generator and length) with the decision. Everything else — sources, 45 filters, AES, `--blocksize=1MB`, `--dblock-size=500MB`, `--no-auto-compact=true`, `retention-policy=1W:1D,1M:1W,1Y:1M,3Y:2M`, `--asynchronous-upload-limit=1`,
+passphrase's provenance (generator and length) with the decision. Everything else — sources, 45 filters, AES, `--blocksize=1MB`, `--dblock-size=500MB`, `--no-auto-compact=true`, `retention-policy` (removed by P0 step 10 and restored by step 11, after AC-4's first drill, as `2W:1D,6M:1W,2Y:1M,5Y:2M` — replacing the snapshot's `1W:1D,1M:1W,1Y:1M,3Y:2M`; owner ruling 2026-10-08), `--asynchronous-upload-limit=1`,
 `--allow-missing-source=true`, `compression-module=zip`, schedule 14:00 UTC daily — is taken from the 2026-09-20 snapshot.
 
 Rules for a destination that is also a Dropbox-synced folder:
@@ -1474,17 +1932,27 @@ answer.
 - **Service level**: `OnFailure=duplicati-failure.service` is added to `duplicati.service` once a reporter exists for the system scope (the user-lane reporter `util/duplicati_backup_failure.bash` is the template; it writes a durable record first and notifies second).
 - **Watchdog** (`util/ad-hoc/yamaguchi_watchdog.py`, user timer 12:00): read the UI credential from `~/.config/duplicati-backup/web-credential` (a file the operator rotates, instead of the primary checkout's `.env`); add the `ProgramState`/`SchedulerQueueIds` check from YAM §8.22 (`Paused` with a non-empty queue = fault); anchor freshness on the newest **Backup** operation, not any operation; add a Dropbox check (`dropbox filestatus` of the newest dlist must read `up to
   date` within 24 h); keep the 26 h staleness rule and the desktop notification as best-effort.
-- **One credential path, in both clients, in the same PR.** `util/ad-hoc/yamaguchi_server_api.py:41` hard-codes `CRED_FILE` to the primary checkout's `.env`, and `util/ad-hoc/duplicati_api.py`'s `PW_FILE` defaults to the same file; `util/ad-hoc/yamaguchi_reboot_verify.bash:73` calls the first and the census goes through the second. Re-pointing only one of them leaves every acceptance instrument 401-ing after the password rotates — which is exactly today's watchdog symptom.
-  Both move to `~/.config/duplicati-backup/web-credential`, and P0 is ordered so that file exists **before** AC-2 runs.
-- **The deployed watchdog unit takes no `--backup-id`**, so it uses the client's default of 2. If recovery assigns the job a different id (Procedure B always does — `sqlite_sequence` starts at 1), the unit must be redeployed with `--backup-id <id>` or it alerts `JOB_MISSING` forever.
+- **One credential path, in both clients — built (B2, ml#2115).** `util/ad-hoc/yamaguchi_server_api.py` and `util/ad-hoc/duplicati_api.py` both read `~/.config/duplicati-backup/web-credential` (0600) through one parser, `read_credential()`; until ml#2115 the first hard-coded the primary checkout's `.env` and the second defaulted to it. `util/ad-hoc/yamaguchi_reboot_verify.bash:73` and the census (`util/ad-hoc/yamaguchi_census.py:37`) both go through the **first** client;
+  until 2026-10-04 this paragraph said the census used the second, whose only importer is `util/ad-hoc/duplicati_build_fresh_job.py`. Re-pointing only one of them would have left every acceptance instrument 401-ing after the password rotates, which is the watchdog's daily symptom since 09-18.
+  P0 is ordered so that file exists **before** AC-2 runs.
+- **The job id has no default since B2.** The repository unit passes `--backup-id ${YAMAGUCHI_BACKUP_ID}`, which the drop-in written by `util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>` sets. The unit still loaded on the host predates that and passes no id: the 2026-10-04 12:00 check, the first to run the B2 script through it, exited 2 and wrote no record. Since ml#2134 an absent id is recorded as `ALERT JOB_MISSING` instead. So run the deploy script right after
+  every sync of the primary checkout, and again whenever recovery assigns the job a new id (Procedure B always does — `sqlite_sequence` starts at 1).
 - **Deployment**: the watchdog unit keeps executing the primary checkout's script until the arc's own item (`HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md` §1.6) converts it to an installed copy; that conversion belongs to P2 — with the same integrity argument as the snapshot timer in §7.7.
 
 ### 7.7 The server-DB snapshot lane
 
-`util/ad-hoc/yamaguchi_server_db_snapshot.py` keeps `SRC = /usr/lib/duplicati/data/Duplicati-server.sqlite`.
-After recovery it must read `/home/duplicati/.config/Duplicati/Duplicati-server.sqlite`. Its docstring lines
-20 and 36 ("the encrypted passphrase") are corrected to state the actual condition: encrypted only when the
-settings key is in force (D-1).
+*(As built 2026-10-03, the assessment's B3.)* `util/ad-hoc/yamaguchi_server_db_snapshot.py` (1.1.0; 1.2.0 since 2026-10-08) reads
+`/home/duplicati/.config/Duplicati/Duplicati-server.sqlite` and its docstring states the actual condition of
+the passphrase (encrypted under the settings key since 2026-09-18, cleartext before — §5.4). The unit
+`util/systemd/yamaguchi-server-db-snapshot.service` executes the **installed copy**
+`/usr/local/lib/duplicati/yamaguchi_server_db_snapshot.py` under `ProtectSystem=strict` **with**
+`ReadWritePaths=/home/pcalnon/.local/state/duplicati-server-db` (the STOP's item 5: `strict` alone broke the
+snapshot), `ProtectHome=read-only` and `PrivateTmp=yes`; `util/install_duplicati_service.bash` installs the
+script, the unit and the timer under its blessed-checksum gate, so the lane changes only by re-running it.
+The script opens the source `mode=ro`, and `ProtectHome=read-only` makes the data folder read-only to the
+unit, so SQLite can read the WAL-mode database only while its `-wal` and `-shm` already exist — it cannot
+create them. While the server runs they do; a fire after a clean close that removed them fails closed, with an
+SQLite error (the Phase B round, lane A NIT-6).
 
 **The unit cannot simply become `User=duplicati`.** `/home/pcalnon/.local/state` is mode **0700**, so the
 `duplicati` user cannot traverse to the snapshot destination however the leaf directory is chmod'ed — and the
@@ -1505,7 +1973,7 @@ only, since it already runs as `pcalnon`).
 
 Mechanism: a `systemd --user` timer defines the cadence; a `.path` unit fires the same service when either drive appears; the service runs a scheduler that decides whether a run is *due* and only then invokes `util/juniper-backup.bash`. `Linger=yes` is already in force for `pcalnon`. The drives are automounted by udisks under `/run/media/pcalnon/<UUID>` (since the 2026-09-07 udisks2 upgrade, §4.5 — `util/juniper-backup.bash` must be changed to the same root before any of
 this works) and only while a graphical session exists; the more robust form is an fstab entry per drive keyed by UUID with `noauto,nofail,x-systemd.automount` under `/mnt/`, which mounts on first access without a session and works with the same units (D-10); the scheduler treats "no valid drive mounted" as a benign skip, and escalates to a
-failure (so `OnFailure=` fires) only when no run has succeeded within `STALE_DAYS`.
+failure (so `OnFailure=` fires) only when no run has succeeded within `STALE_DAYS` — or at all: before the lane's first success a skip reads `FAILED` (ml#2114), and the first `OK` needs **both** configured drives mounted (AC-10).
 
 ```ini
 # file: home/pcalnon/.config/systemd/user/juniper-backup.timer
@@ -1704,9 +2172,10 @@ Retention on the drives (every run mints a new UUID set; nothing prunes; ~135 Gi
 The owner's sentence for this tier ends at "the additional backup should". Proposed default until D-5 rules:
 
 - **Content**: the ten repos **plus** `juniper-legacy` (18 GB, no `.git`, in no tier today) **plus** the parent-level `notes prompts util backups` directories — all children of the Juniper parent, so `util/juniper-backup.bash --repos "…"` archives them without code changes — labelled `full`.
-- **Cadence**: monthly, when the drive is attached; the same scheduler with `JUNIPER_BACKUP_DEVICES` set to the drive's mount name, `JUNIPER_BACKUP_PERIOD_DAYS=30` and a second timer/path pair (`juniper-backup-full.*`).
-- **Mounting**: the drive gets an fstab line keyed by UUID with `noauto,nofail,x-systemd.automount,x-systemd.device-timeout=10s` under `/mnt/JuniperArchive`, so it is fstab-managed (rule 2) and appears the same way whether or not a desktop session exists. `util/juniper-backup.bash` needs one change for this: a `MEDIA_NAMES` entry beginning with `/` is taken as an absolute mount root (today every entry is forced under `/media/pcalnon/`, a path udisks stopped using on
-  2026-09-07, §4.5 — so the change is required for Tier 2 as well, not only for the external drive).
+- **Cadence**: monthly, when the drive is attached; the same scheduler with `JUNIPER_BACKUP_MEDIA_ROOT=/mnt` and `JUNIPER_BACKUP_DEVICES=JuniperArchive` — the relative (leaf) form, which the scheduler and the runner resolve to the same path — `JUNIPER_BACKUP_PERIOD_DAYS=30` and a second timer/path pair (`juniper-backup-full.*`).
+- **Mounting**: the drive gets an fstab line keyed by UUID with `noauto,nofail,x-systemd.automount,x-systemd.device-timeout=10s` under `/mnt/JuniperArchive`, so it is fstab-managed (rule 2) and appears the same way whether or not a desktop session exists. *(As built 2026-10-03, ml#2114.)* `util/juniper-backup.bash` takes an entry beginning with `/` as an absolute mount root, accepted only strictly under `/mnt`, `/media` or `/run/media`. That form is **runner-only**: the
+  scheduler prefixes `${MEDIA_ROOT}` to every entry, so it never finds such a drive and the lane never runs on it — which is why the cadence above uses the relative form. Both now default to `/run/media/$USER`; the runner used to force `/media/pcalnon/`, a path udisks stopped using on 2026-09-07 (§4.5), so the change was
+  required for Tier 2 as well, not only for the external drive.
 - **Retention**: keep the last three `full` sets; delete older sets by UUID only after a restore drill of the newest passes.
 - **Offline discipline**: the drive is connected for the run and disconnected afterwards; the scheduler's `.path` unit makes the run happen on connection.
 
@@ -1730,72 +2199,146 @@ Dropbox client (270.4.3312) owned `duplicati:duplicati` that nothing runs — th
 
 ## 8. Remediation plan
 
-> **STOP — §8 is not executable as written (rounds 4–8, 2026-09-24).** Independent validation of this
-> document (`JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md`) found defects in the
-> procedure itself. This block stays until a follow-up change fixes items 1–5 and the findings beneath them,
-> settles each open question in its last paragraph, passes its own validation round, and removes it. Until then
-> the owner's 2026-09-24 ruling (note 10.1g) decides what runs:
+> **The STOP of 2026-09-24 is cleared — 2026-10-03 (note 8a).** Rounds 4–8 found five defects in this
+> procedure. Each is fixed in the artifact that would have executed it, not in prose, and the artifacts are
+> what §8 installs:
 >
-> - **Held**: P0.5a items 2 and 4, P0, P0.5b, P1, P2 and P4.
-> - **Released**: P0.5a items 1, 5, 6 and 7 — item 1 still before item 4 — and P3's tier-2 fix (its steps 1 and
->   2; step 3 waits on D-5); §6's sink checklist and S-4's `chmod 0600`; and "read-only steps", which the design
->   reads as reads that change nothing outside a scratch directory and run no Duplicati binary (note 10.1g) —
->   P0 step −1's `--check` review, P0 step 1's two `sudo ls` listings and §6's count-only greps. P0 step 0(c) is
->   not one of them: it runs `duplicati-cli`, which item 1 must secure first, with the passphrase, and it needs
->   step 1's freeze, which writes.
-> - **Two limits on what is released**: no history file is wiped before P0 step 3 has tested the key candidates
->   it may hold (§6's history rows, note sink-b), and no transcript is purged before "this arc's reports are
->   archived", which the design reads as every validation round of the arc — any still running, and the
->   follow-up's own — archived verbatim into a record merged to `main` (note sink-c, note 10.1g).
+> 1. **Step 0(a) can pass.** `--require-db-encryption-key` (D-1), `--webservice-disable-signin-tokens` and
+>    `--webservice-allowed-hostnames=localhost` (D-9, §7.3.6) ship in `util/systemd/duplicati.default`'s
+>    `DAEMON_OPTS`, so the installed copy carries them and D-6's drift gate protects them. Note that the
+>    signin-token flag is applied **unconditionally at every start** (Server `Program.cs`), so "once a password
+>    exists" is an order the procedure keeps — step 10 — not a property of the flag.
+> 2. **The re-key cannot re-lock the database.** `util/ad-hoc/2026-10-03_rekey_settings_key.bash` (Procedure A
+>    only) keeps the old key at the credential path for the decrypt start and the new key at `…-key.new`, and
+>    delivers `--disable-db-encryption` through a runtime drop-in under `/run/systemd/system/` — never through
+>    `/etc/default/duplicati`, because that flag **satisfies** `--require-db-encryption-key` and would decrypt the
+>    database silently on every later start. It removes the drop-in with `rm` and `daemon-reload` and then asserts
+>    that systemd still loads the installed unit — **never `systemctl revert`**: a dpkg vendor unit exists under
+>    `/usr/lib/systemd/system/`, so revert would delete the installed `/etc/systemd/system/duplicati.service` and
+>    the encrypt start would run the vendor unit, unconfined and without `LoadCredential=` (the Phase B round's
+>    BLOCKER, found by all three lanes). The key swap is a copy then one atomic `mv`, so the credential path is
+>    never absent. An EXIT trap stops the unit while a drop-in is present, removes the drop-in, names each key
+>    file by hash (swapped / not swapped / unexpected), reports the database as UNKNOWN once a decrypt or
+>    encrypt start was attempted without its "Server has started" line, prints the gate's counts on a gate
+>    failure, and prints only the recovery that applies, never "start the unit" after a FragmentPath refusal;
+>    a refusal before the pause says nothing changed (Phase B round 3: lane A D-4, lane B N-11, lane C D-1).
+>    Before the first stop it counts, on a copy of the database, the `enc-v1:` blobs the product's
+>    re-encryption never rewrites: any in `ConnectionString`, and any in an `Option`, `Source` or
+>    `BackupTargetUrl` row whose BackupID names no backup. `Option` and `Source` have no foreign key
+>    (`Schema.sql:44-45, 72-73`), so a deleted job's rows can outlive it. The settings rows at -1 and -2 are
+>    rewritten (`Connection.cs:145`; `ServerSettings.cs:851-855` → `SetSettings(-2)`), and so are a live
+>    backup's rows. It refuses if there is one, or if the count itself fails, because such a blob would stay
+>    under the old key and fail the exit gate only after the key swap (lane A D-5, lane C D-2; round 4, lane
+>    C DEFECT-2). Remedy, the owner's: saved connection strings are deleted through the web UI and re-created
+>    after the re-key; an orphaned row, which the UI cannot reach, is deleted with sqlite3 while the unit is
+>    stopped (it comes up Paused again), a copy of the database first kept in a root-only 0700 directory outside
+>    `/home/pcalnon` and shredded (`shred -u`) once the exit gate has passed — on Procedure A that copy holds
+>    blobs under the compromised 09-18 key (Phase B round 5, lane B NIT-3). It refuses unless the snapshot timer is neither enabled (in any form, `enabled-runtime` and
+>    `linked` included) nor active (lane B N-8), and while a task is active; it pauses the scheduler through the
+>    API before the decrypt start (an indefinite pause persists across both starts; an overdue schedule is
+>    queued at every start), and its exit gate, on a copy, is
+>    `encrypted-fields` True and every `enc-v1:` blob in all five encrypted columns under the new key
+>    (`util/ad-hoc/2026-10-03_rekey_gate.py`), with no drop-in present.
+> 3. **Step 10's guard dry-run cannot pass on an empty `TargetURL`.** The API clients read one 0600 credential
+>    (`~/.config/duplicati-backup/web-credential`), carry `serverstate`/`pause`/`resume`, and require
+>    `--backup-id` (the assessment's B2, ml#2115). `export` obtains the single-operation token 2.4.0.0 requires
+>    and prints nothing on stdout when it fails (ml#2134; ml#2115 alone sent the Bearer header, and every
+>    export was HTTP 400). Step 10's dry-run now refuses an empty URL before it runs the guard.
+> 4. **The snapshot timer cannot copy a cleartext database into the Source.** It is `disable --now` at the start
+>    of the P0 session (a plain `stop` does not survive a reboot under `Persistent=true`) and `enable --now` only
+>    at `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6.4 step 13, after the first start has re-encrypted the placed database and that is verified
+>    on a copy.
+> 5. **`ProtectSystem=strict` does not break the snapshot.** The unit carries `ReadWritePaths=` on its output
+>    directory and executes the installed copy (§7.7).
 >
-> Re-derived from source:
+> Beside the five: round 3's D13 is closed (`/etc/duplicati/env`, §7.3.5); `InaccessiblePaths=` masks the sibling
+> escrow copy `/mnt/Backups/Ubuntu/_yamaguchi_keys` that P0.5a item 5 creates; the installer's first-install bug
+> is fixed (with no blessed file it ended silently — `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` I-36); the wrapper no longer exports
+> `DUPLICATI__*` names from the env file (2.2.0) — the server reads `DUPLICATI__<OPTION>` for **every** option,
+> including `disable-db-encryption` — accepts only allow-listed tunables there (2.3.0, below), and redacts
+> `--print-command` by option name; and **Procedure A2 is no longer the cheap path**: `wipe-encryption` clears `pbkdf-config`, the only
+> home of the web-UI password, so A2 and B need the password-init hand start
+> (`util/ad-hoc/2026-10-03_password_init_hand_start.bash`, steps 6–8). It sets the password, upgrades the
+> schema and re-encrypts the password-named server settings under the settings key; the backups' fields and
+> `encrypted-fields` are unchanged until the unit's first start; and A0 is the default.
 >
-> 1. **Step 0(a) cannot pass where it sits.** It asks for `--require-db-encryption-key` (D-1) and a
->    `.blessed.sha256` (D-6). No shipped artifact carries the flag — `util/systemd/duplicati.default` names it
->    only in a comment — and the blessed file is written by step 8's installer. The flag also has no durable
->    home: added by hand to `/etc/default/duplicati`, it trips D-6's drift gate, and the gate's
->    `--update-backup-behavior` reinstalls the repository copy, which lacks it.
-> 2. **P1 step 1, which P0.5b runs, can re-lock the database.** Its key command writes the new key over
->    `/etc/credstore/duplicati-settings-key`, then asks for the first start "with the **old** key still in the
->    credential file".
-> 3. **Step 10's guard dry-run can pass without its `TargetURL` check.** Step 9's client change — the credential
->    path, and `pause`/`resume` — has not landed: `util/ad-hoc/yamaguchi_server_api.py` still reads the primary
->    checkout's `.env` and has neither subcommand. When the client fails, the dry-run's TargetURL is empty, and
->    the guard compares TargetURL only when it is non-empty. Its mount, directory and stray-file checks still
->    run, but `TargetURL` is one of the two checks §7.5 item 6 says give the guard its value.
-> 4. **Restarting the snapshot timer after step 8 can copy a cleartext database into the backup Source.** The
->    timer is `Persistent=yes`, so a restart fires a missed 13:45 UTC run at once. P0.5a item 2 says to restart
->    it once step 8 has placed the recovered database, and under Procedure A0 that database is cleartext until
->    the first start.
-> 5. **P0.5a item 2's `ProtectSystem=strict` — §7.7 prescribes it too — breaks the snapshot.** `strict` mounts
->    the whole hierarchy read-only (`systemd.exec(5)`), and the unit writes into
->    `/home/pcalnon/.local/state/duplicati-server-db` with no `ReadWritePaths=`.
+> Round 3's fold-in (2026-10-08) tightened the env file further. Its `--option` lines are now an allow-list
+> of eight tunables (wrapper 2.3.0; 2.4.0 now); the deny list, kept for its specific refusal, gains
+> `--parameters-file`/`--parameterfile` (the server reads that file in-process and copies its options over
+> argv), `--webservice-enable-forever-token`, `--webservice-cors-origins` and the alias
+> `--webservice-allowedhostnames`; and the installer (1.3.0; 1.5.1 now) judges the contract — and any existing
+> `/etc/duplicati/env` — by running the wrapper itself, so both apply one grammar. Since 1.4.0 the installer also
+> checks an existing `/etc/duplicati/env`'s owner and mode, and since 1.5.0 it accepts exactly O-12's two forms —
+> `root:duplicati` 0640 or `duplicati:duplicati` 0600, a regular file, never other-readable — so the grammar check
+> (run as root) and the service's read (as `duplicati`) agree on the file itself; it does not settle O-12 (§11;
+> P1 step 2). A first install copies a
+> never-blessed file that differs from the repository's aside (`<file>.pre-install-<UTC>`) before replacing
+> it; the snapshot script (1.2.0) writes a single DELETE-mode file with no `-wal`/`-shm` beside it; and the
+> snapshot unit's `ReadWritePaths=` stays without a `-` prefix, so a missing destination fails the unit
+> closed (the installer prints a NOTE rather than creating it).
 >
-> Also re-derived, beside the five: D-9's `--webservice-disable-signin-tokens` and §7.3.6's
-> `--webservice-allowed-hostnames=localhost` are installed by no artifact and no step — item 1's shape — and
-> round 3's D13, the `.env` path, is still open and P1 step 2 inherits it (note 12a). Three more matter because
-> of the release (round 7): no P0 step 3 procedure extracts key candidates from root's and `duplicati`'s shell
-> and vim histories without printing them (§5.4), and the release's first limit waits on one; P1 step 4's
-> `cp -a` nests a second copy if P0.5a item 5 already made it; and §7.3.2's `InaccessiblePaths=` masks the
-> escrow inside the Dropbox root but not the copy item 5 makes at `/mnt/Backups/Ubuntu/_yamaguchi_keys/`.
+> Round 4 (2026-10-08): wrapper 2.4.0 makes an empty `DUPLICATI_REQUIRE_MOUNT` switch its mount check off
+> (with `:-` the installer's contract gate and every suite silently depended on `/mnt/Backups` being mounted
+> and would fail on CI); the allow-listed welcome-page tunable is `--webservice-suppress-welcome-page`, the
+> server's real name, and both lists are now pinned against a vendored copy of the product's option table
+> (`tests/fixtures/duplicati_2.4.0.0_server_options.txt`); every trailing CR is stripped and a NUL in the key
+> refused. Installer 1.4.0 (1.5.1 now) refuses an unblessed differing file without `--update-backup-behavior`, checks an
+> existing env file's owner and mode, says where it copied a file aside, and prints step 8's prerequisites
+> and step 10's guard block verbatim; since round 5 the hint also says to stop the unit (never `pause`) if the
+> first start reads Running, includes step 10's restart, and names Procedure A's `…-key.new`. The re-key (1.3.0) and its gate (1.2.0) also refuse orphaned `Option`
+> and `Source` blobs, and the gate and the hand start (1.3.0) refuse a NUL in a key file.
 >
-> Reported by rounds 4 and 5 and still to be re-derived: whether P0.5b is needed at all after Procedures A0, A2
-> and B — its claim to close S-1 and S-2 (P0.5a's intro, P0.5b, §7.3.5) contradicts §6, where S-2's value is the
-> live passphrase — and whether its placement runs server starts before step 10's `pause`; Procedure B starting
-> the server before step 8 installs the unit; whether P0.5a items 5 and 7 are timed to the right events
-> (Procedure B's first start is step 7, and the overdue job can run before `resume`); and the lower-severity
-> items the record lists.
+> **Residue, recorded as the STOP's exit condition required** (`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` I-41 and note 5b, which lists the
+> same items; the round-4 record's follow-up rows, rounds 4–8). Closed since that list was drawn: round-4 B14
+> (the installer's hint uses `env`), B16 (P1 step 2 names the moved-aside `.env`), B17 (step 8 re-points
+> `DBPath` while no server runs), B18 (AC-6 waits for the first fire after the timer is re-enabled), and B26
+> and U2 (moot: Python's `sqlite3`; I-28). Open: AC-14's raw `\|`; P0 step 1's second listing; §4.1/§7.3.1's
+> "P0.5 closes 0777 `.config`"; the no-print key-candidate extractor for P0 step 3 (built only if Phase C's
+> history counts are non-zero); round-4 B11, B13, B15, B22 (AC-8's undefined "hardening timestamp"), B24, B27,
+> U1, U3 and U4; from the record's round-5 disposition, P0 step 8's own over-broad file-mode sentence; from its
+> round-6 disposition, the frozen 811-volume copy and `PASSPHRASE_OLD`, which have no route (the owner's O-9),
+> and what §10.2 step 7's swap does with the local pre-rotation set; from its round-8 disposition, note
+> sink-c's counting method; Appendix C's corrections other than item 4; wrapper v2's `die` path with an
+> `=`-less word; the sign-in URL logged whatever the token flag says (round 5); the sdc4 read-only loop probe
+> and the frozen evidence mirror (D-12a); the Dropbox account audit after "Delete forever" (P1 step 4);
+> Procedure B's statement on `additional-report-url` (S-8); `confirm_a0_premise.bash`'s "here" comment; and
+> ml#2115's job-2 residue, twelve ad-hoc scripts (ml#2134's list). Eight take a job-id flag that defaults to
+> 2 — pass the id explicitly: `--backup-id` in `yamaguchi_census.py`, `yamaguchi_edit_setting.py`,
+> `yamaguchi_edit_sources.py`, `yamaguchi_edit_target.py`, `yamaguchi_config_record.py`,
+> `duplicati_source_measure.py` and `duplicati_size_histogram.py`, `--source-job` in
+> `duplicati_build_fresh_job.py`. Four
+> hard-code job 2 on six lines and take no id at all, so after a recovery that assigns another id they must
+> not be run: `yamaguchi_switch_aes.py` (three lines, among them a **PUT** to `/api/v1/backup/2`),
+> `yamaguchi_retire_tier3.py`, `old_archive_purge.py` and `yamaguchi_retire_tier2.bash`. None changes a step
+> that runs on the host before P1, except P0 step 3 if Phase C's history counts are non-zero: the extractor is
+> its instrument.
 
-**Ten paths are named below; nine are landed and one is not.** Landed, and byte-identical to their tagged
+Notes on the clearing:
+
+- **(8a)** The STOP's exit condition was "fixes items 1–5 and the findings beneath them, settles each open
+  question in its last paragraph, passes its own validation round, and removes it." The fixes are the
+  artifacts named in the block above and in §12's 2026-10-03 row; the open questions are settled thus: P0.5b
+  is needed on Procedure A only (its heading); it runs inside step 10, after that step's edits and in place
+  of the operator's `resume` — the script refuses while a task is active, pauses the scheduler itself, and
+  its own closing `resume` fires the overdue backup, under the new key; Procedure B's first start follows
+  step 8's installer and the password-init hand start (step 7); P0.5a items 5 and 7 keep their 2026-09-24
+  timing (note 10.1f) and item 7's precondition is met — the two `su - duplicati` shells closed on
+  2026-09-24 (note sink-b). The validation is the assessment's Phase B round and the round on its fold-in,
+  recorded in `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §8 and archived verbatim in `JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md`. Residue is the block's last paragraph.
+
+**Ten paths are named below, and all ten are landed.** Nine are byte-identical to their tagged
 blocks here: `util/install_duplicati_service.bash`, `util/yamaguchi-pre-backup-guard.bash`,
 `util/systemd/duplicati.service`, `util/systemd/duplicati.default`,
 `util/ad-hoc/2026-09-22_confirm_a0_premise.bash`, `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash`,
 `util/ad-hoc/2026-09-21_probe_settings_key_on_copy.bash`,
 `util/ad-hoc/2026-09-21_backup_destination_permissions.bash` and `util/juniper-backup-scheduled.bash`. The
-tenth, `util/install_juniper_backup_timer.bash`, has **no tagged block** in this document and is a **P3
-deliverable** (§7.3.4, §7.8), not a P0 item — do not look for it here. **P0 step −1 is to review the nine.**
-All nine are merged on `main` — ml#1999 landed them, and ml#2029 re-landed the three the 2026-09-22 rulings
-changed — so nothing is left to merge: re-extract them with `util/ad-hoc/2026-09-21_lint_design_snippets.py`,
+tenth, `util/install_juniper_backup_timer.bash`, has **no tagged block** in this document; it landed with ml#2114 (B6) and is a
+**P3** item (§7.3.4, §7.8), not a P0 one — do not look for it here. Three files §8 invokes since 2026-10-03 have no tagged block
+either and are read in the repository: `util/ad-hoc/2026-10-03_password_init_hand_start.bash` (steps 6–8),
+`util/ad-hoc/2026-10-03_rekey_settings_key.bash` and its gate `util/ad-hoc/2026-10-03_rekey_gate.py` (P0.5b). **P0 step −1 is to
+review the nine and those three.**
+All twelve are merged on `main` — ml#1999 landed the nine, ml#2029 re-landed the three the 2026-09-22 rulings
+changed, and the 2026-10-03 change (§12) landed the three helpers and re-landed the installer, the unit and the defaults — so nothing is left to merge: re-extract them with `util/ad-hoc/2026-09-21_lint_design_snippets.py`,
 run `util/ad-hoc/2026-09-22_stage_design_artifacts.py --check` and read its closing line — it exits 0 either
 way, so only **"0 staged"** means current, and anything else is a drift to re-stage (without `--check`), review
 and merge before P0 — and read what will run, rather than pasting it onto a root prompt during the recovery.
@@ -1804,7 +2347,7 @@ that differ. `sqlite3` and `gitleaks` are **not installed** on this host; step 3
 second.
 
 Phases are ordered, and apart from P0.5 — printed after P0, but its items run before P0 or inside it (note
-10.1f) — and step 9's client change, which must land with §7.6's re-pointing before P0 runs, nothing in a later
+10.1f) — and step 9's client change, which landed with ml#2115, nothing in a later
 phase is a precondition of an earlier one — **but that is true of
 phases, not of decisions**. That distinction mattered while the gates were open; **they were ruled on
 2026-09-22 and §10.1 records them**, so P0 now applies decisions rather than recommendations: D-1
@@ -1816,15 +2359,15 @@ written under the current passphrase deliberately, not by default, and is re-enc
 discarded. Step 0 verifies the artifacts match §10.1 instead of asking for a decision.
 
 Every destructive step is preceded by a copy. **Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved by
-any step below, with exactly one exception, and it needs owner sign-off**: the passphrase escrow copy at
+any step below, with two exceptions and one conditional third.** The third applies only if Procedure B's Verify finds the index inconsistent: a Repair deletes remote files — volumes the index does not know (`RepairHandler.cs:299`, `:397`), files the index itself holds as temporary, deleting or incompletely uploaded (`FilelistProcessor.cs`, `VerifyAndClean`, `:384-400`, `:469-480`), and empty or replaced index files (`RepairHandler.cs:599-609`, `:1050-1053`) — so step 8 runs
+it as a dry run first and copies every file it would delete aside (Phase B rounds 5 and 6). The first is the job's own retention pass: step 10 removes `retention-policy` and restarts the unit, so the first backup runs from the edited job and deletes nothing, and step 11 restores it, as `2W:1D,6M:1W,2Y:1M,5Y:2M`, only after AC-4's first drill has passed — its first pass then deletes five of the nine pre-recovery filesets, which step 11 first copies to a root-only directory
+outside the Dropbox root, and the deletions reach Dropbox (step 11; owner ruling 2026-10-08). Until 2026-10-08 this paragraph named only the second, and the first backup's pass under the old policy would have deleted six to eight of the nine, AC-4's drill target among them (Phase B round 3, lane B DEFECT-1). The second needs owner sign-off: the passphrase escrow copy at
 `…/Dropbox/Backups/_yamaguchi_keys/`, which P0.5a item 5 or P1 step 4 first **copies** to a sibling outside the
 Dropbox root, and which only P1 step 4 then deletes from the synced tree (S-4). The earlier revision of this preamble stated the rule
 without the exception while P1 step 4 performed it — a contradiction inside one document. The pcalnon profile
 directory is not modified by anything here.
 
 ### P0 — freeze and recover the job (target: same day)
-
-*Held by the STOP at the top of §8 (note 10.1g).*
 
 **Run P0.5a items 1, 2 and 4, in that order, before anything in P0 — item 1 is released and may already have
 run; items 5–7 may run now too (note 10.1g), each before the step that needs it** — item 7 before step 8's first
@@ -1838,7 +2381,7 @@ otherwise run the recovery with that path open.
 **0. Owner gates — RULED 2026-09-22 (§10.1); this step is now a verification, not a decision.** (a) Confirm the
 installed artifacts match the rulings: `UMask=0027` in the unit (D-14), `AmbientCapabilities=CAP_DAC_READ_SEARCH`
 with the §7.3.2 confinement set (D-4), `--webservice-interface=loopback` (D-9),
-`--require-db-encryption-key` (D-1), and a `.blessed.sha256` written by the installer (D-6). D-2's rotation is
+`--require-db-encryption-key` (D-1) and D-9's two web-service options — all in the installed `/etc/default/duplicati` since the 2026-10-03 change — and a `.blessed.sha256` written by the installer listing its seven files (D-6). D-2's rotation is
 **not** part of P0 — it runs after recovery, per §10.2. (b) Have the escrowed `PASSPHRASE` to hand, from the printed
 sheet or the password manager — **not** from the Dropbox-synced copy, which is the thing S-4 is about. (c)
 Confirm Procedure A0's premise with the read-only script below. **Run P0 step 1's freeze first** — it
@@ -1878,6 +2421,11 @@ JOBDB="${YAMAGUCHI_JOB_DB:-/home/duplicati/.cache/root-data-folder-2026-09-22/BM
 install -d -m 0700 "${WORKDIR}"
 TMPDB="$(mktemp -u "${WORKDIR}/a0-probe-XXXXXX.sqlite")"
 cp -p "${JOBDB}" "${TMPDB}"
+# A -wal or hot -journal beside the frozen index holds pages the main file lacks; SQLite applies it
+# at the first open only if it sits beside the copy under the copy's name (2026-10-08, round 4 R4B N-8).
+for sfx in -wal -journal; do
+    if [[ -e "${JOBDB}${sfx}" ]]; then cp -p "${JOBDB}${sfx}" "${TMPDB}${sfx}"; fi
+done
 
 # The credential file is PARSED, never SOURCED. The live PASSPHRASE is UNQUOTED and carries
 # '$', '&', '@', '#' and '^' (util/ad-hoc/2026-09-22_credential_file_shape.py reports
@@ -2098,13 +2646,25 @@ JOBDB="${YAMAGUCHI_JOB_DB:-/home/duplicati/.cache/root-data-folder-2026-09-22/BM
 # The restored file is a CLEARTEXT server database carrying the job passphrase (rule 8,
 # Appendix C item 3). It must not land inside the backup Source, or the next run archives it --
 # the S-7 shape, and the rule P4 step 1 states for the analogous tar.
-case "$(readlink -f "${OUT}")/" in
-    /home/pcalnon/*) echo "refusing: ${OUT} is inside the backup Source" >&2; exit 2 ;;
+# `realpath -m` canonicalises whether or not the path exists, resolving every symlink on the part that does.
+# `readlink -f` printed NOTHING when two or more trailing levels were missing, so `/home/pcalnon/a0/out`
+# passed this refusal and `install -d` then created it inside the Source (2026-10-08, round 6 R6 DEFECT-2).
+# YAMAGUCHI_SOURCE_ROOT exists so the suite can point the refusal at a scratch root.
+SOURCE_ROOT="$(realpath -m -- "${YAMAGUCHI_SOURCE_ROOT:-/home/pcalnon}")"
+OUT_REAL="$(realpath -m -- "${OUT}")"
+[[ -n "${SOURCE_ROOT}" && -n "${OUT_REAL}" ]] || { echo "refusing: cannot resolve ${OUT}" >&2; exit 2; }
+case "${OUT_REAL}/" in
+    "${SOURCE_ROOT}"/*) echo "refusing: ${OUT} is inside the backup Source (${SOURCE_ROOT})" >&2; exit 2 ;;
 esac
 install -d -m 0700 "${OUT}"
 install -d -m 0700 "${WORKDIR}"
 TMPDB="$(mktemp -u "${WORKDIR}/a0-restore-XXXXXX.sqlite")"
 cp -p "${JOBDB}" "${TMPDB}"
+# A -wal or hot -journal beside the frozen index holds pages the main file lacks; SQLite applies it
+# at the first open only if it sits beside the copy under the copy's name (2026-10-08, round 4 R4B N-8).
+for sfx in -wal -journal; do
+    if [[ -e "${JOBDB}${sfx}" ]]; then cp -p "${JOBDB}${sfx}" "${TMPDB}${sfx}"; fi
+done
 
 # PARSED, never SOURCED -- see the premise-check script for why (dot-sourceable=NO).
 PASSPHRASE="$(
@@ -2135,7 +2695,7 @@ echo "SHRED ${OUT} once step 8 has installed the database -- it is cleartext key
    directory**: `sudo find <restore-dir> -type f -exec shred -u {} + && sudo rmdir <restore-dir>`. Nothing
    later in this plan removes it, and until it is gone it is a cleartext copy of the passphrase on disk, which
    is the sink class §6's checklist exists to enumerate. The script refuses a restore path under
-   `/home/pcalnon/` for the same reason: that is the backup Source, and a restore into it would archive the
+   `/home/pcalnon/` — at any depth, existing or not, and through a symlink (`realpath -m`; Phase B round 6, DEFECT-2: `readlink -f` let a path two or more new levels deep through) — for the same reason: that is the backup Source, and a restore into it would archive the
    cleartext database on the next run (the S-7 shape).
 5. **Procedure A — re-use the whole data folder (only if step 3 found a key).** `sudo cp -a /usr/lib/duplicati/data /home/duplicati/.config/Duplicati`; `sudo chown -R duplicati:duplicati /home/duplicati/.config/Duplicati`; `chmod 0700` on the folder and `0600` on its files (§7.3.2); write the accepted key to `/etc/credstore/duplicati-settings-key` (0600 root) **and leave it there until P0.5b's re-key replaces it** — the earlier "for the first start only" would
    re-create the 09-18 `SettingsEncryptionKeyMissingException` loop on the very next restart. Then step 8.
@@ -2145,12 +2705,20 @@ echo "SHRED ${OUT} once step 8 has installed the database -- it is cleartext key
    `ProbeOnly` mode — so a clean run here is **no** evidence that the copy's folder is acceptable to the
    *server*; step 8's `install -d -m 0700` is what makes it so. Second, `--server-datafolder <dir>` **is** an option of the *subcommand* (`duplicati-database-tool help wipe-encryption`) even though the top-level `help` does not list it, and it defaults to
    `$HOME/.config/Duplicati` — i.e. the orphaned pcalnon profile when run as `pcalnon`, so **always name the copy's folder**; and `--dry-run` is **not read-only** — it flips the copy's header to WAL mode and changes its sha256, so hash the copy before, or re-copy after. What is cleared: `Backup.TargetURL`, `Source.Path`, `ConnectionString.BaseUrl`, `BackupTargetUrl.TargetURL` and password-typed `Option.Value` (the job `passphrase`, `jwt-config`, `pbkdf-config`,
-   `remote-control-config`, ssl cert fields, `client-license-key`). The tool leaves a `-<ts>.bak` beside the database (delete it — it still holds the encrypted values) and refuses a non-server database. `Source` rows in the snapshot are cleartext, so sources survive; `server-passphrase`/`-salt` are **hashes** and not in the wipe list, so the **UI password survives** and "set the UI password afresh" is optional, not required.
-   Re-enter the two values that matter — `TargetURL=file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi` and the passphrase — through the **web UI** or `util/ad-hoc/yamaguchi_build_job.py`, which reads the passphrase in-process; never a `curl -X PUT` that puts the passphrase on argv. Then step 8.
-7. **Procedure B — rebuild the job through the API.** Start the empty server with the §7.3 unit and a **new** settings key, in a data folder created `0700 duplicati:duplicati` (the one moved aside in step 2 is 0777 and 2.4.0.0 refuses it); set the UI password through the web UI; rebuild the job from the snapshot — sources, filters, schedule and option names are readable in it (`2026-09-21_duplicati_server_db_forensics.py` prints them; option *values* come from
-   the record, §7.5), `TargetURL` as above, passphrase from `~/.config/duplicati-backup/env` (`util/ad-hoc/yamaguchi_build_job.py` built the job the first time and reads the passphrase in-process; update its defaults before use). **The rebuilt job is not id 2**: `sqlite_sequence` starts at 1, and the deployed watchdog, `yamaguchi_census.py`, AC-2 and AC-5 all default to 2 (step 9 already takes `--backup-id <id>` explicitly). Record the assigned id and pass it explicitly everywhere, including
+   `remote-control-config`, ssl cert fields, `client-license-key`). The tool leaves a `-<ts>.bak` beside the database (delete it — it still holds the encrypted values) and skips a non-server database with exit 0 (`WipeEncryption.cs`), so read its output, not its status. `Source` rows in the snapshot are cleartext, so sources survive. **The UI password does NOT survive** (corrected 2026-10-03,
+   `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` I-37, confirmed in the 2.4.0.0 source): `pbkdf-config` — the only home of the web-UI password since 2.1, because `UpgradePasswordToKBDF` nulls `server-passphrase` — is in the password-field set the tool clears, so the next start mints a random password, and with `--webservice-disable-signin-tokens` installed no signin token is accepted either. So in step 8, after the database is
+   placed and the installer has run but **before** `systemctl start`, run the password-init hand start (`util/ad-hoc/2026-10-03_password_init_hand_start.bash`: one server run with `--webservice-password-init` through a 0600 `--parameters-file`, exit 102; `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6.4 step 10). That run sets the password (`pbkdf-config` becomes an `enc-v1:` blob under the new key), upgrades the schema and
+   re-encrypts the password-named server settings under the settings key; the backups' fields and `encrypted-fields` are unchanged until the unit's first start; and the whole database is re-encrypted at the unit's first start, which is where to check it. This, not the restore, is why A0 is the default path and A2 the fallback. The tool also wipes `remote-control-config`.
+   Then step 8. The two values that matter — `TargetURL=file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi` and the passphrase — are re-entered **after step 9's login**, in the **web UI**'s editor of the existing job (no server runs before step 8, so not here), and before step 10's dry-run reads the `TargetURL`. Not `util/ad-hoc/yamaguchi_build_job.py`, which POSTs a *new* job (it refuses an existing name, and with `--allow-duplicate` would create a second job on the same
+   destination), and never a `curl -X PUT` that puts the passphrase on argv.
+7. **Procedure B — rebuild the job through the API.** These run inside step 8, in this order: after its installer **and its key write** (the hand start refuses a missing key file), create the data folder `0700 duplicati:duplicati` (the one moved aside in step 2 is 0777 and 2.4.0.0 refuses it); run the password-init hand start against it (`util/ad-hoc/2026-10-03_password_init_hand_start.bash`, exit 102 — the empty database's password is autogenerated, and the installed
+   signin-token flag accepts no token); store `paused-until` and write the web credential as step 8 says; then start the unit with the **new** settings key, confirm it reads Paused, and log in with that password; rebuild the job from the snapshot — sources, filters, schedule and option names are readable in it (`2026-09-21_duplicati_server_db_forensics.py` prints them; option *values* come from
+   the record, §7.5), `TargetURL` as above, passphrase from `~/.config/duplicati-backup/env` (`util/ad-hoc/yamaguchi_build_job.py` built the job the first time and reads the passphrase in-process). **That tool is a 2026-08-25 template, not runnable as it stands** (Phase B round 3, lane B DEFECT-3): it POSTs a job whose schedule `Time` is already past, and any change to the job list reschedules, so on a running server the job starts at the POST — before its index is
+   re-pointed, before **Verify files**, before the guard. So: the server reads Paused before the POST (step 8's `paused-until`; `serverstate` exits 2) and stays paused until step 10's `resume`; the web credential exists first (its `login()` reads it; step 8 writes it); and in a scratch copy of the tool, never committed, every default the rebuild needs is changed — `Schedule.Time` to the next 14:00 UTC still in the future (`Repeat` `1D`); `encryption-module` `aes` (the 877
+   volumes are `.zip.aes`), `--gpg-encryption-switches` dropped and `--aes-version` pinned (§7.5); `Sources` the snapshot's two; `Filters` the snapshot's 45, not the runner's parse; `retention-policy` removed (step 10; step 11 restores it); `--tempdir=/home/duplicati/.cache/duplicati-tmp`; the remaining options from §7.5's list — and its command line names `--target /mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi` and a `--record-dir` outside the Source (the default is a
+   retired `/media/pcalnon/` path). The import ignores a `DBPath` sent with it: the new job gets a fresh index name, so re-point it at the copied index afterwards (step 8). **The rebuilt job is not id 2**: `sqlite_sequence` starts at 1, and the deployed watchdog, `yamaguchi_census.py`, AC-2 and AC-5 all default to 2 (step 9 already takes `--backup-id <id>` explicitly). Record the assigned id and pass it explicitly everywhere, including
    `--backup-id <id>` on the redeployed watchdog unit. State in the rebuild whether it re-creates `additional-report-url`; if it does, that bearer JWT is a secret (S-8).
-8. **Common to A0, A, A2 and B — place the database, move the index, re-point `DBPath`, all BEFORE the first run.** **First, place the recovered database.** A0 and A2 produce a *file*, not a folder; Procedure A produced the folder in step 5 and B created one in step 7. For **A0** and **A2**:
+8. **Common to A0, A, A2 and B — place the database, copy the index, re-point `DBPath`, all BEFORE the first run.** **First, place the recovered database.** A0 and A2 produce a *file*, not a folder; Procedure A produced the folder in step 5 and B created one in step 7. For **A0** and **A2**:
 
    ```text
    sudo install -d -m 0700 -o duplicati -g duplicati /home/duplicati/.config/Duplicati
@@ -2162,33 +2730,70 @@ echo "SHRED ${OUT} once step 8 has installed the database -- it is cleartext key
    sibling alongside it: the recovered file is a clean, closed database, and a stale WAL from another process
    would be replayed over it. Verify with the forensics script *after* the copy, as the `duplicati` user.
    Without this, A0 and A2 end with the recovered database still in a scratch directory and the server
-   starting against the empty folder the installer created — `0 backups`, exactly where the arc began. The snapshot's `Backup` row carries `DBPath=/usr/lib/duplicati/data/BMXWPAOGLP.sqlite`, an **absolute** path, and `RestConnection.cs`'s `ResolveDbPath` returns a rooted path unchanged — the server never relocates it. The §7.3.2 unit makes `/usr/lib/duplicati` read-only and P4 deletes it, so a procedure that skips this fails its first backup read-only and then
-   loses the index. So: stop the server, `cp` `BMXWPAOGLP.sqlite` into the new data folder (`chown duplicati`, `0600`), and update the row — UI **Database → Placement → Save**, or `PUT /api/v1/backup/<id>` — after which 2.4.0.0 stores it *relative* (`GetRelativeDbPath`). Install §7.3 (unit, defaults, wrapper, guard) with
+   starting against the empty folder the installer created — `0 backups`, exactly where the arc began. The snapshot's `Backup` row carries `DBPath=/usr/lib/duplicati/data/BMXWPAOGLP.sqlite`, an **absolute** path, and `ResolveDbPath` (`Duplicati/Library/RestAPI/Database/Connection.cs:766`) returns a rooted path unchanged — the server never relocates it. The §7.3.2 unit makes `/usr/lib/duplicati` read-only and P4 deletes it, so a procedure that skips this fails its first backup read-only and then
+   loses the index. So, with no server running, `cp` — never `mv`: the original stays in place, and in step 1's freeze, until P4 — `/usr/lib/duplicati/data/BMXWPAOGLP.sqlite` into the new data folder (`chown duplicati`, `0600`) **together with every `BMXWPAOGLP.sqlite-wal`, `-journal` or `-shm` beside it**, under the same names — unlike the recovered server database above, whose file is clean and closed: the index is the sole copy, and whether its last writer closed it
+   cleanly is not known; a `-wal` or a hot `-journal` holds pages the main file alone lacks, which SQLite applies at the first open (the assessment's Phase C step 6 lists `/usr/lib/duplicati/data/` and so says whether any exist; copy whatever it shows). On **A0, A and A2** re-point the row in the placed database as the `duplicati` user — `UPDATE "Backup" SET "DBPath" = '/home/duplicati/.config/Duplicati/BMXWPAOGLP.sqlite' WHERE "ID" = <id>;` with `sqlite3` (installed in the
+   assessment's Phase C) — and read it back: the UI's **Database → Placement → Save** and `PUT /api/v1/backup/<id>` need a running server, and none may run before this step is done (round-4 B17). On **B** the job does not exist until step 7 rebuilds it with the server running, so point it at the copied index there — the UI's Placement page, after the rebuild (the import ignores a `DBPath` sent with it) — after which 2.4.0.0 stores it *relative* (`GetRelativeDbPath`). **Then
+   hold the scheduler, on every path, while no server runs** (Phase B round 3, lane B DEFECT-2): in the placed `Duplicati-server.sqlite`, as `duplicati` and with the same `sqlite3`, first record what is stored — `SELECT "Name", "Value" FROM "Option" WHERE "BackupID" = -2 AND "Name" IN ('paused-until', 'startup-delay');` (it says how far the old pause reached; Phase B round 4, lane B NIT-1) — then `DELETE FROM "Option" WHERE "BackupID" = -2 AND "Name" = 'paused-until'; INSERT
+   INTO "Option" ("BackupID", "Filter", "Name", "Value") VALUES (-2, '', 'paused-until', '0');` — a stored `0` is an indefinite pause, which every start restores and only `resume` lifts (`Duplicati/Library/RestAPI/LiveControls.cs`, `Init`) — then run the same `SELECT` again and record both values. The stored `startup-delay` (30m when last read, on 08-31) is the only other pause there is: without this row the job, overdue since 09-19, starts when that delay lapses — or at
+   once, if it is unset — before step 10's guard is in place, and on Procedure A under the 09-18 key. On **A0, A and A2** do it here, with the `DBPath` update; on **B**, after step 7's hand start and before the first start. **In the same session, clear the server's default retention options**: the `Option` rows at `BackupID` -1 join every run (`Runner.cs`, `GetCommonOptions`) but never appear in `export`, so step 10's read-back cannot see them (Phase B round 5, lane B
+   DEFECT-1). `SELECT "Name", "Value" FROM "Option" WHERE "BackupID" = -1 AND lower(ltrim("Name", '-')) IN ('retention-policy', 'keep-time', 'keep-versions');` (any case — Phase B round 6, NIT-1) — record what it returns in the validation record (the values are retention strings, not secrets) — then delete exactly those rows (`DELETE FROM "Option"` with the same `WHERE`) and run the `SELECT` again: it must return nothing. `keep-time` and `keep-versions` defaults are never
+   restored (step 11); a `retention-policy` default only if the owner wants one. The ruling's home is the job's own `retention-policy`. Install §7.3 (unit, defaults, wrapper, guard) with
    **`sudo bash util/install_duplicati_service.bash`** — through `bash`, not directly. Every script this
    document landed was committed through GitHub's `createCommitOnBranch` API, which **carries no file
    mode**, so each arrives `100644` and is not executable whatever the working tree said. That is a
-   property of any API-signed commit, not a one-off to fix: the next one lands the same way. Then
-   `sudo systemctl start duplicati.service`. Expect in the journal: schema upgrade 11→12 and
-   `Server has started`. The job appears with its existing index — no Recreate. For Procedure B, run **Verify files** before any backup; if verification reports the index inconsistent with the destination, run Repair (this index *is* the destination's own, last written 09-18, so rule 11 does not apply) or, last resort, Recreate.
-9. **Re-arm alerting FIRST — every command in step 10 goes through the API client.** Set the UI password (§7.3.6, and read its "if the root-era password is unknown" paragraph *before* you need it), write `~/.config/duplicati-backup/web-credential` (0600), and re-point **both** API clients at it (§7.6). `util/ad-hoc/yamaguchi_server_api.py:41` hard-codes the primary checkout's `.env`, whose value §6 S-5 records as stale, so a run order that pauses the
-   scheduler first and creates the credential afterwards makes step 10's `pause` 401 — and `resume` is what fires the overdue backup. Land the client changes (the credential path **and** the new `pause`/`resume` subcommands) in the same PR as §7.6's re-pointing, before P0 runs. Redeploy the watchdog with `--backup-id <id>`; confirm the next 12:00 fire reads `OK`.
-10. **Before the first run.** The job still carries `--tempdir=/home/pcalnon/.cache/duplicati-tmp` (unwritable under the new confinement) and its schedule `Time` is in the past, so it will start on its own once the startup pause lapses. Immediately after the server is up: **sample the scheduler state before touching it** — `GET /api/v1/serverstate`, recording `ProgramState`, `paused-until` and `SchedulerQueueIds` — then `pause`, change `--tempdir` to
-   `/home/duplicati/.cache/duplicati-tmp` (create it, 0700 duplicati), add `--run-script-before-required` (§7.5), then `resume` and **sample `serverstate` again** (the credential this needs was created in step 9). This is the 2026-08-30 stuck-pause class (`HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md` §1.7, YAM §8.22–§8.23): a first start under changed `DAEMON_OPTS` followed by pause/resume is the exact untested sequence that produced a 42.6 h silent outage, and without the two samples a
-   recurrence is invisible. Pause and resume go through `util/ad-hoc/yamaguchi_server_api.py` (extended with `pause`/`resume`), **not** `duplicati-server-util`, which takes its secrets on argv. Before `resume`, dry-run the guard as the service user, with `env` rather than a bare `VAR=value` prefix (sudoers refuses the prefix under the default `env_reset` with no `setenv`) and with the URL read **from the job** rather than typed:
+   property of any API-signed commit, not a one-off to fix: the next one lands the same way. **Before the install, check any existing `/etc/duplicati/env` — option names only, never values**: since the installer's 1.5.1 judges that file by running the wrapper it is installing (2.4.0), an `--option` line in it outside the wrapper's eight allow-listed tunables stops the install, and would make every start exit 78. It must be one of O-12's two forms — `root:duplicati` 0640
+   (what the installer creates, and what this design recommends) or `duplicati:duplicati` 0600 (the recorded dissent); the installer accepts either and does **not** settle O-12 (§11; P1 step 2). Anything else is refused: another owner or group, a group- or other-writable file, an other-readable one (the file may carry the key), and a symlink, which must be replaced by a regular file. Where a `.blessed.sha256` from an earlier install exists, this install reports **BEHAVIOUR
+   CHANGE** and refuses: against a host installed from `origin/main`'s installer (wrapper 2.0.0, installer 1.0.0), six of the seven blessed files differ — all but the guard; against the Phase B branch's own first fold-in, rounds 3 and 4 changed four: the wrapper (2.2.0 to 2.4.0, the env file's allow-list — the one real behaviour change), the snapshot script, the snapshot unit and a comment in `duplicati.service`. Either way read the differences and re-run it with
+   `--update-backup-behavior`; on a never-blessed host (I-36) an installed file that matches the repository installs quietly, but one that differs — this host's `/etc/default/duplicati` does — is reported **UNBLESSED** and refused the same way, so re-run with `--update-backup-behavior`; the installer keeps the old file as `<file>.pre-install-<UTC>` and says where. **Write the settings key before any start** — the unit's `LoadCredential=` fails on an absent file — **and never
+   over an existing one**: on **A0, A2 and B** a new random key, `sudo test ! -e /etc/credstore/duplicati-settings-key && { umask 077; openssl rand -base64 48 | tr -d '\n' | sudo tee /etc/credstore/duplicati-settings-key >/dev/null; }` (mode 0600; on a re-run of this step the `test` refuses, because the database may already be under the key on disk and the escrowed copy would be the only other one); on **Procedure A** the accepted 09-18 key to
+   `/etc/credstore/duplicati-settings-key` and a random one to `…-key.new`, which P0.5b swaps in. Escrow the new key now and verify it by hash (`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6.4 step 9). On **A2**, run the password-init hand start now (step 6; B did in step 7). **Write the web credential before the first start** (the format is step 9's), with the password the database holds now — on A0 and A the root-era one (if
+   it is not known, §7.3.6's recovery runs here, before the first start), on A2 and B the hand start's — so that the first start can be checked and B's rebuild can log in; step 9 rewrites it after the password change. Then
+   `sudo systemctl start duplicati.service`, and `python3 util/ad-hoc/yamaguchi_server_api.py serverstate` must exit **2** (Paused, the stored `paused-until` above). If it reads Running, **stop the unit** at once (`sudo systemctl stop duplicati.service`) and record it: on a running server the overdue job may already be running, and `pause` only suspends it — step 10's `resume` would continue it with the options it started with. Read the stored `paused-until` before starting
+   again (Phase B round 4, lane B NIT-6). The installer's closing hint prints this stop-not-pause rule and step 10's restart. Expect in the journal `Server has started`, and on **A0** a schema upgrade
+   11→12 — on A2 and B the hand start already upgraded the database, so this start shows none. The job appears with its existing index — no Recreate. For Procedure B, **Verify files** must pass before the first backup — and it cannot run while the server is paused: a verify, like a Repair, is a task appended to the same queue, held until `resume` (`BackupPost.cs`; `QueueRunnerService`; Phase B round 4, lane B DEFECT-2). So on B, step 10's `resume` runs Verify alone: after
+   step 10's restart, confirm that `serverstate`'s `SchedulerQueueIds` holds no backup (the rebuilt job's `Schedule.Time` is in the future; keep the session clear of 14:00 UTC, or a scheduled run is queued ahead of Verify). If it already holds one, a restart alone re-queues it — the job stays overdue until a run completes — so move the job's schedule `Time` to the next day's 14:00 UTC, restart again, and confirm the queue is empty (Phase B round 5, lane B NIT-4). Then queue
+   **Verify files**, `resume`, wait for it to finish, `pause`, and read its result. If it reports the index inconsistent with the destination, Repair it the same way (this index *is* the destination's own, last written 09-18, so rule 11 does not apply) — but **a Repair deletes remote files**: volumes the index does not know (`RepairHandler.cs:299`, `:397`), files the index itself holds as temporary, deleting or incompletely uploaded (`FilelistProcessor.cs`, `VerifyAndClean`,
+   `:384-400`, `:469-480`), and empty or replaced index files (`RepairHandler.cs:599-609`, `:1050-1053`); the 09-18 dlist, AC-4's drill target, can be among them. The queued Repair takes no `--dry-run` of its own (`RepairInputDto` carries only `only_paths`, `time`, `version`, `paths` and `refresh_lock_info`; `BackupPost.cs` `DoRepair`), and its dry-run lines never reach the job's stored result, which keeps only errors, warnings and information (`ResultClasses.cs:437-447`;
+   `Log.cs:246-248` logs them at `DryRun`). So, in this order (Phase B rounds 5 and 6, DEFECT-2 and DEFECT-1): (1) add three options to the job — `--dry-run`, `--log-file=/home/duplicati/repair-dryrun.log` and `--log-file-log-level=DryRun`; the log must sit under the unit's `ReadWritePaths=`, and `/home/duplicati` is the one writable path the operator can read, besides the destination, where a stray file would trip the guard; (2) queue Repair, `resume`, wait for it to
+   finish, `pause`; (3) read every line of that log matching `Would(Delete|DeleteRemote|DeleteEmptyIndex|DeleteIndex)File` and copy each named file to `/mnt/Backups/Ubuntu/_yamaguchi_retention_aside` (root 0700, outside the Dropbox root; `sudo cp -p`, `sha256sum` on both sides); (4) **remove all three options** and confirm with `export <id>` that none remains — left in place, `--dry-run` would make every later run, AC-3 among them, a dry run; (5) only then queue the real
+   Repair. Then `sudo -u duplicati shred -u /home/duplicati/repair-dryrun.log` (the log is the service's, 0640): its `DryRun` lines name remote files only, but at that level it also carries warnings and errors, which nobody audited for content. Last resort, Recreate. B's first backup, AC-3, is then a manual `run <id>` and `resume`.
+9. **Re-arm alerting FIRST — every command in step 10 goes through the API client.** Set the UI password (§7.3.6, and read its "if the root-era password is unknown" paragraph *before* you need it) and rewrite `~/.config/duplicati-backup/web-credential` (0600) with the new password — step 8 wrote it with the old one — the one file **both** API clients read since B2 (ml#2115; §7.6). Its format is one line, `DUPLICATI_WEB_CREDENTIAL=<password>`; the clients strip **one**
+   matching pair of outer quotes, so a password whose first and last characters are the same quote character is written inside one more pair. A run order that pauses the
+   scheduler first and creates the credential afterwards makes step 10's `pause` fail — and `resume` is what fires the overdue backup. On **A2**, re-enter `TargetURL` and the passphrase now, in the web UI's editor of the existing job (step 6). Redeploy the watchdog with `util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>`; its first 12:00 check is confirmed after step 10, not here.
+10. **Before the first run.** The job still carries `--tempdir=/home/pcalnon/.cache/duplicati-tmp` (unwritable under the new confinement) and its schedule `Time` is in the past, so on a running server it would start on its own. Step 8's stored `paused-until` keeps it from running, but **not from being queued**: the first start's own pause bookkeeping reschedules, and the scheduler queues the overdue job as a copy of it taken then — before any of this step's edits, which a
+    queued task never sees (`Scheduler.cs`: `GetBackup(id)` at queue time, and a job already queued is not queued again; Phase B round 4, lane B DEFECT-1). That is why this step ends with a restart. Before anything is changed: **sample the scheduler state before touching it** — `GET /api/v1/serverstate`, recording `ProgramState`, `paused-until` and `SchedulerQueueIds` — then `pause`, change `--tempdir` to
+   `/home/duplicati/.cache/duplicati-tmp` (create it, 0700 duplicati), add `--run-script-before-required` (§7.5), **pin `--aes-version`** (§7.5; `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` O-14 recommends 2) and **remove `retention-policy`** — and any `keep-time` or `keep-versions` — from the job's options (only the legacy UI's **Keep all backups** removes all three) — the owner's 2026-10-08 ruling suspends retention until
+   AC-4's first drill has passed (step 11): left in place, the first backup's retention pass would delete six to eight of the nine pre-recovery filesets, the 2026-09-18 one AC-4 drills among them, and the deletions reach Dropbox (Phase B round 3, lane B DEFECT-1) — then the guard dry-run and the restart below, then `resume`, and **sample `serverstate` again** (the credential this needs exists since step 8). This is the 2026-08-30 stuck-pause class
+   (`HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md` §1.7, YAM §8.22–§8.23): a first start under changed `DAEMON_OPTS` followed by pause/resume is the exact untested sequence that produced a 42.6 h silent outage, and without the two samples a
+   recurrence is invisible. Pause and resume go through `util/ad-hoc/yamaguchi_server_api.py`'s `pause`/`resume` verbs (B2; each reads the state back), **not** `duplicati-server-util`, which takes its secrets on argv. Before `resume`, dry-run the guard as the service user, with `env` rather than a bare `VAR=value` prefix (sudoers refuses the prefix under the default `env_reset` with no `setenv`) and with the URL read **from the job** rather than typed:
 
    ```text
-   sudo -u duplicati env \
-     DUPLICATI__REMOTEURL="$(python3 util/ad-hoc/yamaguchi_server_api.py export <id> \
-       | python3 -c 'import json,sys; print(json.load(sys.stdin)["Backup"]["TargetURL"])')" \
+   unset url id
+   id=<id>
+   case "$id" in ''|*[!0-9]*) echo "REFUSE: set id to the job's number" >&2; false ;; esac &&
+   url="$(python3 util/ad-hoc/yamaguchi_server_api.py export "$id" \
+     | python3 -c 'import json,sys; print(json.load(sys.stdin)["Backup"]["TargetURL"])')"
+   test -n "$url" || { echo "REFUSE: export $id gave no TargetURL" >&2; false; } &&
+   sudo -u duplicati env DUPLICATI__REMOTEURL="$url" \
      /usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash; echo "guard exit=$?"
    ```
 
-   Require exit 0: it is `--run-script-before-**required**`, so a missing or failing guard aborts the first backup, which `resume` fires immediately. A **hand-typed** URL would make the guard's `TargetURL` comparison compare the operator's own string with itself — vacuous, and `TargetURL` is one of the two checks, with the mount, that §7.5 item 6 says give the guard its value.
-11. **Prove it.** `AC-2`, then one backup run (`AC-3`), then the two restore drills (`AC-4`), then `AC-12` and `AC-13`. `AC-6` cannot be proved here — it becomes provable only when the snapshot lane is re-pointed (P0.5a item 2), and `AC-1` needs 24 h.
+   Require exit 0: it is `--run-script-before-**required**`, so a missing or failing guard aborts the first backup that `resume` fires — once the restart below has queued the job afresh from the edited database; the copy queued at the first start carries no guard. A **hand-typed** URL would make the guard's `TargetURL` comparison compare the operator's own string with itself — vacuous, and `TargetURL` is one of the two checks, with the mount, that §7.5 item 6 says give the
+   guard its value; and the `test -n` line is not optional either: command substitution ignores a failed `export`, and an empty `DUPLICATI__REMOTEURL` makes the guard skip its `TargetURL` comparison and pass (the 2026-09-24 STOP's item 3). Replace `<id>` on the second line only. The first line is there because a line with `<id>` left in it is a syntax error that an interactive shell discards before running the next one, so without the `unset` a `url` left over from earlier
+   in the session reached the guard (Phase B round 3, lane B NIT-7); now an unset or non-numeric `id` refuses, and so does the empty `url` it leaves. **Then, on A0, A2 and B, restart the unit before `resume`**: `sudo systemctl stop duplicati.service`, then `sudo systemctl start duplicati.service`. The queue lives only in the server's memory (`QueueRunnerService`), so the copy queued at the first start — old `retention-policy`, old `--tempdir`, no guard — goes with the
+   process; the start restores the stored indefinite pause (`LiveControls.Init` reads `paused-until` 0, and `Program.cs` `LiveControl_StateChanged` saves it again, line 1308), and that save reschedules, so the overdue job is queued afresh from the edited database. `serverstate` must exit 2 again. Read the edits back with `export <id>` — `--tempdir`, `--run-script-before-required` and `--aes-version` as set, and no `retention-policy`, `keep-time` or `keep-versions` in the job
+   — the server's default options never appear in `export`, which is why step 8 clears them with `sqlite3` — and only then `resume`. **AC-3 is a manual run whenever the overdue slot was used up** — by a run `resume` fired before the restart, or by any failed run — because `resume` then fires nothing: `python3 util/ad-hoc/yamaguchi_server_api.py run <id>`. **On Procedure A, P0.5b runs here** instead of the restart, after these edits and this dry-run and **in place of** the
+   operator's `resume`: its own two starts drop the stale copy the same way, and its closing `resume` fires the overdue backup, under the new key. On A0, A2 and B, `resume` after the restart. Then confirm that the watchdog's next 12:00 check reads `OK` — step 9 asked for it before this step until 2026-10-08, which kept the server waiting up to a day before its guard was in place.
+11. **Prove it.** `AC-2`, then one backup run (`AC-3`), then the two restore drills (`AC-4`), then `AC-12` and `AC-13`. **Restore `retention-policy` only after AC-4's first drill has passed**, and as the new policy `2W:1D,6M:1W,2Y:1M,5Y:2M` (owner ruling 2026-10-08; it replaces `1W:1D,1M:1W,1Y:1M,3Y:2M`, which step 10 removed) — the web UI's retention setting, custom — and record the date and the string in the validation record. Of the server-wide defaults step 8 deleted,
+    **`keep-time` and `keep-versions` are never restored**: the removers combine — `DeleteHandler.cs:82-87` takes the union of `KeepTimeRemover` and `RetentionPolicyRemover`, then applies `KeepVersionsRemover` to what is left — so either default would delete beyond the table below and the aside list, and could take some of the four filesets it keeps, the sole copy (Phase B round 6, DEFECT-3). A `retention-policy` default may come back only if the owner wants one, and only
+    after the table and the aside copy are recomputed against it (`util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py --policy …`). The owner's ruling — the job's own `2W:1D,6M:1W,2Y:1M,5Y:2M` — is unchanged. Its first pass runs at the end of the next backup. For a first pass on any date from 2026-10-08 to 2027-02-27 it **keeps four** of the nine pre-recovery filesets — `20260825T102739Z`, `20260901T140000Z`, `20260908T140000Z` and `20260915T204850Z` — and
+    **deletes five**: `20260912T140000Z`, `20260915T085649Z`, `20260916T183346Z`, `20260917T221344Z` and `20260918T140000Z`, the fileset AC-4's first drill restored and Procedure A0's source; from 2027-02-28 it deletes more. Post-recovery filesets are thinned too: within two weeks to one a day — a fileset less than 24 h after the last one kept is deleted, so an off-schedule run such as a manual AC-3 at 15:20 UTC costs the next day's 14:00 fileset — and to one a week after
+    that. **Before restoring it, copy the five dlists it will delete** (`duplicati-<timestamp>.dlist.zip.aes`, the timestamps above, or the port's for a later date) to a root-only directory outside the Dropbox root — `sudo install -d -m 0700 -o root -g root /mnt/Backups/Ubuntu/_yamaguchi_retention_aside`, `sudo cp -p` each, and compare `sha256sum` on both sides — so this destructive step too is preceded by a copy; `--no-auto-compact=true` keeps every dblock and dindex those
+    dlists reference, so the copies keep the five filesets recoverable (Phase B round 4, lane B NIT-5). Only dlists go, and **the deletions reach Dropbox**, which keeps a deleted file 30 or 180 days by plan (§10.2 step 8). The figures are a port of 2.4.0.0's retention remover (`DeleteHandler.cs`, `RetentionPolicyRemover`), `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py`. `AC-6` cannot be proved here: step 8's installer re-points the snapshot lane, but AC-6
+    needs the 13:45 UTC fire and the 14:00 UTC fileset after the timer is re-enabled (P0.5a item 2) — and `AC-1` needs 24 h.
 
 ### P0.5a — items 1, 2 and 4, in that order, before P0; items 5–7 alongside it
-
-*Items 2 and 4 are held by the STOP at the top of §8; items 1, 5, 6 and 7 are released (note 10.1g).*
 
 Items 1, 2, 4, 5, 6 and 7 below. These were scattered across P1, P2 and P4 while the recovered server ran for
 days with the holes open. Only item 2's timer restart waits on the recovery (for step 8), and item 1 closes the
@@ -2213,42 +2818,65 @@ closes S-1 and S-2; item 2's timer restart, which waits for step 8, came later, 
    sudo find /usr/lib/duplicati -mindepth 1 -maxdepth 1 ! -name data -exec chown -R root:root {} +
    ```
 
-   Expect 97 directories to change owner and 21 (the `runtimes/` subtree and ten `licenses/<package>/`
+   Expect 96 directories to change owner (95 below the top and the top itself; this said 97 until 2026-10-04, counting `data/` and its subdirectory, which the command excludes) and 21 (the `runtimes/` subtree and ten `licenses/<package>/`
    directories) to be no-ops — they were never chowned in the first place (§4.1 note b), so "nothing changed"
    is the *expected* result for those, not evidence the command failed. Also `chown root:root
    /etc/default/duplicati` (today `duplicati:duplicati` 0644 — the service user can rewrite its own next
    argv), and remove `/home/duplicati/bin/` entirely: it holds only the symlink into a developer checkout that
    D-6 replaces with an installed copy.
-2. **Install the snapshot timer's script as a root-owned copy** under `/usr/local/lib/duplicati/` and add `ProtectSystem=strict` to `yamaguchi-server-db-snapshot.service`. It runs as **root** today with `ExecStart` naming the primary checkout, so `sys.path[0]` is pcalnon-writable and every branch switch changes what root executes at 13:45 UTC (§7.7). In the **same installed copy**, re-point `SRC` to
-   `/home/duplicati/.config/Duplicati/Duplicati-server.sqlite`, and **stop the timer** (`systemctl stop yamaguchi-server-db-snapshot.timer`) until P0 step 8 has placed the recovered database; restart it only then. Leaving it pointed at `/usr/lib/duplicati/data` means every 13:45 UTC fire copies the **abandoned** database — the one encrypted under the unidentified 09-18 key — over `~/.local/state/duplicati-server-db/` and into the 14:00 UTC fileset, which
-   silently destroys Procedure A0's own source for any later re-run and makes AC-6 unprovable until P2. Note also that after this step the unit no longer executes the repository file, so a later repository edit plus `daemon-reload` changes nothing: move changes into production by re-running the installer.
+2. **The snapshot lane is installed by `util/install_duplicati_service.bash` at P0 step 8** — the script as a root-owned copy under `/usr/local/lib/duplicati/`, the unit with `ProtectSystem=strict` **and** `ReadWritePaths=` on its output directory, reading the new data folder (§7.7; all three blessed). It runs as **root** today with `ExecStart` naming the primary checkout, so `sys.path[0]` is pcalnon-writable and every branch switch changes what root executes at 13:45 UTC.
+   What this item does **before** P0 is `systemctl disable --now yamaguchi-server-db-snapshot.timer` (not `stop`: `Persistent=true` re-fires after a reboot), and the timer is `enable --now` only after the first start has re-encrypted the placed database (on Procedure A, after P0.5b) and a copy has been checked — `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6.4 step 13. Leaving it pointed at `/usr/lib/duplicati/data` means every
+   13:45 UTC fire copies the **abandoned** database — the one encrypted under the unidentified 09-18 key — over `~/.local/state/duplicati-server-db/` and into the 14:00 UTC fileset, which
+   silently destroys Procedure A0's own source for any later re-run and makes AC-6 unprovable. Note also that after this step the unit no longer executes the repository file, so a later repository edit plus `daemon-reload` changes nothing: move changes into production by re-running the installer.
 3. **Moved to P0.5b — do NOT run this here.** The re-key runs the server against the *recovered* data folder, so it cannot precede P0 step 8; the procedure is in P0.5b below. The number is kept so that §6's S-2 row, §7.3.5 and P1 step 1 still land on something.
-4. **Scrub both log stores** — `/var/log/syslog*` *and* the journal, in that order (§6, D-8) — and verify with `sudo ls -la /var/log/syslog-2026092*`. A journal-only scrub leaves an identical copy behind. **This is D-8's one scrub** (amended 2026-09-24 from "after P1" to here — §10.1, note 10.1e): do not repeat it after P1, where `--vacuum-time=1s` would also delete the journal of the recovery itself.
+4. **Scrub the journal** (§6, D-8). *(Both stores were named here until 2026-10-03; `logrotate` pruned the `/var/log/syslog*` copy of the 09-20 echoes around 10-01 — `rotate 10`, daily — so a count-only `zgrep` over every `syslog*` file now reads 0 and the journal, 264 lines, is the one copy left: `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` note 3c.)* **This is D-8's one scrub** (amended 2026-09-24 from "after P1" to here —
+   §10.1, note 10.1e): do not repeat it after P1, where `--vacuum-time=1s` would also delete the journal of the recovery itself.
 5. **Handle S-7 and S-4.** Remove the world-readable `.env` inside `…/worktrees/curious-plotting-hummingbird/` after the fingerprint reconciliation (the file only — that worktree is do-not-sweep), `chmod 0600` the escrow `env`, then make P1 step 4's copy:
    confirm `/mnt/Backups/Ubuntu/_yamaguchi_keys` does not exist — nothing in this arc creates it, so stop if it does, and into an existing directory `cp -a` nests — then `cp -a` the folder to it, `chmod 0700` the copy (`cp -a` carries the source's `0770`; §7.4) and sha256-verify both sides. The in-tree delete, Dropbox's "Delete forever" and the account audit stay with P1 step 4, which the STOP holds.
 6. **Close the detection gap**: enable `secret_scanning_non_provider_patterns`, add a gitleaks **content** rule for `(SETTINGS_ENCRYPTION_KEY|PASSPHRASE(_OLD)?|DUPLICATI_WEB_CREDENTIAL|webservice-password|passphrase)=` with a non-placeholder value, and add a gitleaks pre-commit hook. The repository's current rule cannot match a value containing `* @ $ %`, which is why both PRs passed; CI runs gitleaks only *after* publication.
 7. **`usermod -s /usr/sbin/nologin duplicati`** (moved here from P4, which no longer performs it). While a `duplicati`-uid shell exists outside the unit, §7.3.2's mount mask can be escaped through `/proc/<pid>/root`, so every such session is a hole in `InaccessiblePaths=` for as long as it lives. Do this **after** every `duplicati`-uid shell outside the unit has exited — the two §6 named have (note sink-b), and `ps -u duplicati` should list only the server; this makes
    the next one impossible.
 
-### P0.5b — immediately after P0 step 8, same session
+### P0.5b — Procedure A only: inside P0 step 10, in place of the operator's `resume`
 
-*Held by the STOP at the top of §8 (note 10.1g).*
-
-**Item 3 (the re-key) only.** It runs the server against the **recovered** data folder, so it cannot precede
-the recovery: stop the snapshot timer, do the two-start re-key back to back, then
-`PRAGMA wal_checkpoint(TRUNCATE); VACUUM;` with the server stopped, then restart the timer (§7.3.5). This is
-the item that closes S-1 and S-2, so it is not deferrable to P1 — but it is also not runnable before step 8.
+**Item 3 (the re-key) only, and only on Procedure A.** On A0, A2 and B the placed database was never under a
+compromised key in the new folder, and the first start with the new credential encrypts it — nothing to re-key
+(`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6.4 step 10, O-7). On Procedure A the recovered folder arrives under the accepted 09-18 key: run
+`util/ad-hoc/2026-10-03_rekey_settings_key.bash` inside step 10, after its edits and its guard dry-run, **in
+place of** the operator's `resume`. It refuses while a task is active, and unless the snapshot timer is neither
+enabled (in any form, `enabled-runtime` and `linked` included) nor active. Before the first stop it counts, on a
+copy of the database, the `enc-v1:` blobs the product's re-encryption never rewrites: any in `ConnectionString`,
+and any in an `Option`, `Source` or `BackupTargetUrl` row whose BackupID names no backup. `Option` and `Source`
+have no foreign key (`Schema.sql:44-45, 72-73`), so a deleted job's rows can outlive it. The settings rows at -1
+and -2 are rewritten (`Connection.cs:145`; `ServerSettings.cs:851-855` → `SetSettings(-2)`), and so are a live
+backup's rows. It refuses if there is one, or if the count itself fails, because such a blob would stay under the
+old key and fail the exit gate only after the key swap (Phase B round 3, lanes A and C; round 4, lane C DEFECT-2). Remedy, the owner's:
+saved connection strings are deleted through the web UI and re-created after the re-key; an orphaned row, which
+the UI cannot reach, is deleted with sqlite3 while the unit is stopped (it comes up Paused again), a copy of the
+database first kept in a root-only 0700 directory outside `/home/pcalnon` and shredded (`shred -u`) once the exit
+gate has passed — on Procedure A that copy holds blobs under the compromised 09-18 key. It then pauses the scheduler, does the two starts with a
+runtime drop-in that it removes with `rm` and `daemon-reload` (never `systemctl revert` — note 8a), swaps the
+keys by a copy and one atomic `mv`, gates on a copy (all five encrypted columns), runs
+`PRAGMA wal_checkpoint(TRUNCATE); VACUUM;` with the server stopped, and resumes — that `resume` fires the overdue
+backup, now under the new key (§7.3.5). Its EXIT trap stops the unit while a drop-in is present, removes the
+drop-in, names each key file by hash (swapped / not swapped / unexpected), reports the database as UNKNOWN once a
+decrypt or encrypt start was attempted without its "Server has started" line, prints the gate's counts on a gate
+failure, and prints only the recovery that applies — never "start the unit" after a FragmentPath refusal; a
+refusal before the pause says nothing changed (Phase B round 3). It needs step 9's credential, because its pause
+goes through the API. This is
+the item that closes S-1 and S-2, so it is not deferrable to P1 — but it is also not runnable before step 10.
 
 ### P1 — secrets (same week)
 
-*Held by the STOP at the top of §8 (note 10.1g).*
-
-1. *(Executed in P0.5b — kept here as the procedure of record.)* Generate a new settings key (`umask 077; openssl rand -base64 48 | tr -d '\n' > /etc/credstore/duplicati-settings-key`), then re-key the database in two starts: first with the **old** key still in the credential file and `--disable-db-encryption` appended to `DAEMON_OPTS` (every field is decrypted on that start), then with the new key in the credential file and the flag removed (every field is
+1. *(Procedure A only; executed in P0.5b by `util/ad-hoc/2026-10-03_rekey_settings_key.bash` — kept here as the procedure of record.)* Generate the new settings key into `/etc/credstore/duplicati-settings-key.new` (`umask 077; openssl rand -base64 48 | tr -d '\n'`), then re-key the database in two starts: first with the **old** key still at `…/duplicati-settings-key` and `--disable-db-encryption` delivered by a runtime drop-in under `/run/systemd/system/` — never in
+   `DAEMON_OPTS`, where it would satisfy `--require-db-encryption-key` and decrypt the database silently on every later start — (every field is decrypted on that start), then, after the new key is copied into place with one atomic `mv` and the drop-in is removed (`rm` and `daemon-reload` — never `systemctl revert`, which would delete the installed unit, note 8a), with the new key (every field is
    re-encrypted; add `--require-db-encryption-key` at this point). Stop the snapshot timer across both starts and `VACUUM` afterwards (§7.3.5). Escrow the new key with the passphrases (printed, password manager, machine-local copy outside the Dropbox root).
-2. Delete the five commented lines from `.env`; set it to the §7.3.5 contract. **Mode: `0640 root:duplicati` as recommended, or `0600 duplicati:duplicati` — this is the open dissent recorded in §11**; install the stricter form until the owner rules.
+2. The contract file is `/etc/duplicati/env`, installed by P0 step 8's installer from `util/systemd/duplicati-env.contract` (§7.3.5, D13 closed): confirm it carries no key line and no commented assignment, and `shred -u` the old `.env` in the moved-aside folder `Duplicati.empty-2026-09-20/` (P0 step 9 of the assessment does this; it held both keys and the five commented secrets). **Mode: `0640 root:duplicati` as installed, or `0600 duplicati:duplicati` — the open dissent
+   recorded in §11 (O-12 of the assessment)**.
 3. *(**Executed in-tree and merged** — ml#1999, `43980f13`: `scripts/duplicati-wrapper.bash` has been replaced by §7.3.3's wrapper v2 and carries no credential-shaped literal — its one `SETTINGS_ENCRYPTION_KEY=` is the legitimate `export` of a variable. Verify with `grep -c 'Environment=SETTINGS' scripts/duplicati-wrapper.bash` = 0, which is AC-8's own check.)* Remove the commented "Old Unit file" block from `scripts/duplicati-wrapper.bash`. **The exposure in `main`'s git
    history is untouched by this and stays untouched** — the key is dead, and S-1 records why a history rewrite is not worth its cost.
-4. **Copy** `_yamaguchi_keys/` out of the Dropbox root — `cp -a` to `/mnt/Backups/Ubuntu/_yamaguchi_keys/`, a sibling of `Dropbox/` — verify sha256 on both sides, and delete the in-tree copy **only on owner sign-off** (this is the single exception to the "nothing under `/mnt/Backups/Ubuntu/` is moved" rule; the preamble names it). Then, on dropbox.com, **Delete forever** and audit the account. `dropbox exclude add` is not a substitute: it removes the local copy
+4. **Copy** `_yamaguchi_keys/` out of the Dropbox root — `cp -a` to `/mnt/Backups/Ubuntu/_yamaguchi_keys/`, a sibling of `Dropbox/` — verify sha256 on both sides, and delete the in-tree copy **only on owner sign-off** (this is the one exception to the "nothing under `/mnt/Backups/Ubuntu/` is moved" rule that needs owner sign-off; the preamble names it and the others: the job's own retention pass after P0 step 11, and on Procedure B the remote files a Repair deletes, copied
+   aside first). Then, on dropbox.com, **Delete forever** and audit the account. `dropbox exclude add` is not a substitute: it removes the local copy
    and leaves the cloud one. Exclude `_yamaguchi_records/` too if it lists paths. (S-4)
 5. *(**D-2 and D-8 are RULED** — §10.1; kept so the numbering holds.)* This step asked for D-2 to be re-decided, not merely
    executed: the "accept + scrub" ruling assumed a local-journal exposure, and the same lines are in `/var/log/syslog*`, in
@@ -2258,12 +2886,10 @@ the item that closes S-1 and S-2, so it is not deferrable to P1 — but it is al
 
 ### P2 — hardening and re-pointing (same week)
 
-*Held by the STOP at the top of §8 (note 10.1g).*
-
 1. *(The chown, the `bin/` removal and `/etc/default/duplicati` moved to P0.5a item 1.)* Confirm `chmod 0700 /home/duplicati/.config/Duplicati` and `0600` its files (Duplicati's own requirement, §7.3.2) survived the recovery.
 2. **D-14 is RULED** — the read-only model (§10.1), which the script now implements. Run `util/ad-hoc/2026-09-21_backup_destination_permissions.bash` — first on a scratch directory **on `sda1`** to check ext4's default-ACL creation modes, and only when `dropbox status` reads up to date (it produces ~1,700 metadata updates). Restart Dropbox in a session carrying gid 139; verify `AC-7`.
-3. Confirm the snapshot lane: the **installed** copy under `/usr/local/lib/duplicati/` (not the repository file — P0.5a item 2 made the unit execute the copy) reads the new data folder, the timer is running again, and the next 13:45 UTC snapshot lands with a fresh mtime. **AC-6 is a P2 criterion**, not a P0 one, for exactly this reason.
-4. Watchdog changes (§7.6); redeploy with `util/ad-hoc/yamaguchi_watchdog_deploy.bash`.
+3. Confirm the snapshot lane: the **installed** copy under `/usr/local/lib/duplicati/` (not the repository file — P0.5a item 2 made the unit execute the copy) reads the new data folder, the timer is running again, and the next 13:45 UTC snapshot lands with a fresh mtime. AC-6 itself is provable the day after P0, at the first 13:45 UTC fire after the timer is re-enabled (round-4 B18); this step re-confirms it once P2's changes are in.
+4. Watchdog changes (§7.6); redeploy with `util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>` (without the id the script refuses, exit 2, before it changes anything).
 5. `systemd-analyze security duplicati.service`; record the score in the validation record.
 6. Reboot test (`util/ad-hoc/yamaguchi_reboot_verify.bash pre` / `post`; AC-9).
 
@@ -2271,16 +2897,16 @@ the item that closes S-1 and S-2, so it is not deferrable to P1 — but it is al
 
 *Steps 1 and 2, the tier-2 fix, are released by the owner's 2026-09-24 ruling (note 10.1g); step 3, tier 3, waits on D-5.*
 
-1. **Fix the runner's mount root first — and install it.** Add the absolute-mount-root form to `util/juniper-backup.bash` (a `MEDIA_NAMES` entry beginning with `/` is taken as an absolute mount root) and have the scheduler and the runner read **one** mount-root setting. Note that the scheduler executes `~/.local/bin/juniper-backup.bash`, which **does not exist** — `~/.local/bin/` holds only the old lane's two scripts — so the repository fix cannot
+1. *(Landed 2026-10-03 by ml#2114, the assessment's B6: the runner and the scheduler read one root setting, `JUNIPER_BACKUP_MEDIA_ROOT`, default `/run/media/$USER`; an absolute entry is accepted only under `/mnt`, `/media` or `/run/media`, and is runner-only — §7.9.)* **Fix the runner's mount root first — and install it.** Add the absolute-mount-root form to `util/juniper-backup.bash` (a `MEDIA_NAMES` entry beginning with `/` is taken as an absolute mount root) and have the
+   scheduler and the runner read **one** mount-root setting. Note that the scheduler executes `~/.local/bin/juniper-backup.bash`, which **does not exist** — `~/.local/bin/` holds only the old lane's two scripts — so the repository fix cannot
    reach production until step 2's installer copies it there. Until both land, every "due" run ends `FATAL: runner missing` or `FAILED runner rc=1`, and step 2 cannot produce its own OK run (§4.5, §7.8).
 2. Land `util/juniper-backup-scheduled.bash`, `util/install_juniper_backup_timer.bash` (it must copy the runner, the scheduler **and** the failure reporter into `~/.local/bin/`, as `util/install_duplicati_timer.bash` already does for the old lane), the three user units above **and** `juniper-backup-failure.service` — which must carry `Environment=DUPLICATI_STATE_DIR=%h/.local/state/juniper-backup` and
-   `ExecStart=%h/.local/bin/duplicati-backup-failure.bash juniper-backup.service`, or it writes its record into the *duplicati* lane's `failures.log` and tails that lane's `last-run.status`, reproducing the very defect it exists to avoid. The reporter itself already takes the unit name as `$1` (`util/duplicati_backup_failure.bash:31`), so no reporter change is needed. Install; enable; observe one SKIPPED (unplugged) and one OK (plugged) run; watch
-   `systemctl --user status juniper-backup.path` for 30 s after the plug-in to confirm the `.path` unit is still active; class-1 drill (`util/ad-hoc/2026-08-26_backup_restore_drill.bash`). The scheduler and the three user units landed with ml#1999; the installer and `juniper-backup-failure.service` have not.
+   `ExecStart=%h/.local/bin/duplicati-backup-failure.bash juniper-backup.service`, or it writes its record into the *duplicati* lane's `failures.log` and tails that lane's `last-run.status`, reproducing the very defect it exists to avoid. The reporter takes the unit name as `$1`; ml#2114 also titles its notification with it (`Backup FAILED: <unit>`), where it named the duplicati lane before. Install; enable; do the **OK run first, with BOTH configured sticks mounted**
+   (`EBC5-F0A3` and `DFF3-2782`) — the runner counts the configured devices, so a one-stick run is PARTIAL (rc 4) and reads `FAILED` — then one run unplugged, which reads `SKIPPED` only after that first success (before it, a lane that has never succeeded reads `FAILED`); watch
+   `systemctl --user status juniper-backup.path` for 30 s after the plug-in to confirm the `.path` unit is still active; class-1 drill (`util/ad-hoc/2026-08-26_backup_restore_drill.bash`). The scheduler and the three user units landed with ml#1999; the installer and `juniper-backup-failure.service` with ml#2114.
 3. Rule on D-5; fstab line for the external drive; first `full` set; restore drill of one archive from it.
 
 ### P4 — cleanup (after seven consecutive successful daily runs)
-
-*Held by the STOP at the top of §8 (note 10.1g).*
 
 1. Archive `/usr/lib/duplicati/data/` and remove it. **Not** into `~/.local/state/` as an unencrypted tar: that directory is inside the backup source and group-shared, and the tar holds the server database (encrypted under the burned, public key) plus the per-job index, which carries the full path list of the whole home directory — backing that up in cleartext violates this design's own rule 8. Write it to a **root-only 0700 directory outside the backup source**,
    or encrypt the tar. `/usr/lib/duplicati` is already fully `root:root` from P0.5.
@@ -2299,11 +2925,11 @@ the item that closes S-1 and S-2, so it is not deferrable to P1 — but it is al
 | AC-3 | First post-recovery backup `ParsedResult=Success`, **`Warnings=0` and `NotProcessedFiles=0`**, `SourceFilesCount` within 2 % of 1,024,167 and `SourceSizeString` within 5 % of 290.61 GiB, **plus a positive find of one `~/.ssh` and one `~/.gnupg` path**; census `AGREE` (note AC-3a) | `python3 util/ad-hoc/yamaguchi_census.py --runs 1`; `duplicati-cli find`; `Metadata` via the forensics script on a fresh snapshot |
 | AC-4 | **Two** restore drills, not one: one from `duplicati-20260918T140000Z` (pre-recovery) and one from the first post-recovery fileset. Both with local blocks **off** (the 2.4.0.0 default; never pass `--restore-with-local-blocks`; `--no-local-blocks` is deprecated), SHA-256 and length match on ≥ 15 files, one negative control fails (note AC-4a) | `util/ad-hoc/yamaguchi_drill_watch.bash` lineage |
 | AC-5 | Watchdog reads `OK` three consecutive days; a deliberate `--backup-id 999` fires `JOB_MISSING` | `~/.local/state/duplicati/server-watchdog.log` |
-| AC-6 | **(A P2 criterion — not provable at the end of P0.)** Snapshot lane reads the new data folder; the snapshot file's mtime advances daily; it appears in the next fileset | snapshot journal; `duplicati-cli list` / UI search |
+| AC-6 | **(Provable the day after P0, not at its end: the 13:45 UTC fire after the timer is re-enabled.)** Snapshot lane reads the new data folder; the snapshot file's mtime advances daily; it appears in the next fileset | snapshot journal; `duplicati-cli list` / UI search |
 | AC-7 | Dropbox daemon carries gid 139; newest dlist `up to date` within 24 h of its write; `_yamaguchi_keys/` outside the Dropbox root | `/proc/<pid>/status`; `dropbox filestatus`; `ls` |
 | AC-8 | No secret in **either log store** since the hardening timestamp: zero `LINE: "`, `Exporting Environment` and `Settings Encryption Key:` lines in the journal **and in `/var/log/syslog*`**; zero in the job log's run-script output; `.env` has no commented assignment; the wrapper has no credential-shaped literal; the P0.5 gitleaks rule passes (note AC-8a) | `journalctl --since <ts>`; `sudo grep -c` over `/var/log/syslog*`; `2026-09-21_env_file_shape.py` |
 | AC-9 | Reboot: service back within 60 s of boot, job present, next scheduled run fires unattended | `yamaguchi_reboot_verify.bash post` |
-| AC-10 | T2: timer fires weekly; a run with no drive reads `SKIPPED`; a run with a drive attached (mounted under the root `util/juniper-backup.bash` is configured for — `/run/media/pcalnon/` or the fstab paths, §4.5) produces verified archives on every mounted drive; class-1 drill passes | `~/.local/state/juniper-backup/last-run.status`; drill script |
+| AC-10 | T2: timer fires weekly; the first run, with **both** configured drives attached (under the runner's root — `/run/media/pcalnon/` or the fstab paths, §4.5), reads `OK` with verified archives on both — one drive is PARTIAL (rc 4), `FAILED`; after that first success a run with no drive reads `SKIPPED`, before it `FAILED`; class-1 drill passes | `~/.local/state/juniper-backup/last-run.status`; drill script |
 | AC-11 | T3: first `full` set written; one archive restored and diffed against the live tree | manual |
 | AC-12 | `systemd-analyze security duplicati.service` reports an exposure **at or below 2.0** and no ✗ row outside the accepted set in note AC-12a; the server completes AC-3 under every confinement directive the unit sets — one it cannot run under is removed **and recorded**, never silently | `systemd-analyze security`; journal of the first start; a `systemd-run` trial against the **P0 step 1 data-folder freeze** first |
 | AC-13 | The job's `--run-script-before-required` equals `/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash` and nothing else; no other run-script option is set (note AC-13a) | `python3 util/ad-hoc/yamaguchi_server_api.py export <id>`; diff against the design's path |
@@ -2488,7 +3114,7 @@ owner's two criteria:
    Blue (SMR)"), so `--reupload` against the live destination is a full band-rewrite of the only copy —
    slow enough that it must not be mistaken for a hung operation. This is why the ruling is
    **stage → verify → swap** and not in-place, and why nothing here contradicts §8's rule that nothing
-   under `/mnt/Backups/Ubuntu/` is deleted or moved.
+   under `/mnt/Backups/Ubuntu/` is deleted or moved beyond the exceptions its preamble names.
 2. **The local database must be deleted before and recreated after.** A Recreate across 877 volumes is
    long, and §5.3 records that an *aborted* per-job Recreate is precisely what produced the database
    this whole arc began by misreading.
@@ -2501,7 +3127,7 @@ owner's two criteria:
 | 1 | SMART test `sda` — **DONE 2026-09-23, PASSED** (note 10.2a). Restore-drill the CURRENT set — outstanding, and **discharged by AC-4's pre-recovery drill inside §8 P0 step 11**, not before P0 (note 10.2c) | AC-4's first drill passes on the current passphrase |
 | 2 | Confirm the leaked copies are gone: the S-7 file (P0.5a item 5); S-2's active key line and S-3's comment block in the live `.env` (P1 step 2) and in `Duplicati.empty-2026-09-20/.env`, which P0 step 2 moved aside and only P4 step 2 removes; both log stores — D-8's one scrub, P0.5a item 4 | S-2, S-3 and S-7 counts read zero on §6's labels, case-sensitively (v2 logs a lowercase `settings encryption key:`), and S-6 holds no unexpired token (note 10.1e) |
 | 3 | Mint the new passphrase; place it at `/etc/credstore/duplicati-passphrase` root:root 0600 | never in `.env`, never on argv, never echoed |
-| 4 | Copy the 877 volumes to staging on **`nvme0n1p5` (`/`)** — **not** `sda` (note 10.2b); ≈203 GiB required | per-file hashes match the source |
+| 4 | Copy every volume at the destination (877 on 09-21; after P0, five dlists fewer and the new filesets' volumes more) to staging on **`nvme0n1p5` (`/`)** — **not** `sda` (note 10.2b); ≈203 GiB required | per-file hashes match the source |
 | 5 | `recompress … --reencrypt --new-passphrase` against the **staging** copy only | exit 0, and every volume re-encrypted |
 | 6 | Recreate the local database against staging; restore-drill from staging | a drill passes on the NEW passphrase |
 | 7 | Swap staging in as the live destination | the old set is retained untouched until step 6 passed |
@@ -2509,8 +3135,7 @@ owner's two criteria:
 
 **Step 1 is first, is not optional, and is currently HALF DONE**: the SMART half passed on
 2026-09-23; the drill half is AC-4's and runs inside P0 (note 10.2c), so step 2 is not unblocked and
-**the next action in this arc is the follow-up change that clears the STOP block at the top of §8, then §8's
-P0 recovery — not anything in §10.2**. Steps 4–7 remain a bulk
+**the next action in this arc is §8's P0 recovery, in the order `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6.3–6.4 gives — not anything in §10.2**. Steps 4–7 remain a bulk
 rewrite of the only local copy of 202.8 GiB. A rotation that loses the data it was protecting has
 failed at the thing it was for.
 
@@ -2557,7 +3182,8 @@ failed at the thing it was for.
 
 ## 11. Validation record (CON §7)
 
-**State of the record: rounds 1 and 2 delivered and fully reconciled; round 3's D13 open (note 12a); rounds 4–8 (2026-09-24) open — their §8 defects are the STOP block at the top of §8, and their other findings, several outside §8, are follow-up items in the round-4 record.** Round 1's six verbatim reports are
+**State of the record (2026-10-03): rounds 1 and 2 delivered and fully reconciled; round 3's D13 closed; rounds 4–8's §8 defects closed by the artifacts (note 8a), their residue listed there; the 2026-10-03 assessment's own round 1 (three lanes) is in that document's §8. Until 2026-10-03 this line read: round 3's D13 open (note 12a); rounds 4–8 (2026-09-24) open — their §8 defects are the STOP block at the top of §8, and their other findings, several outside §8, are
+follow-up items in the round-4 record.** Round 1's six verbatim reports are
 archived in `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`, round 2's four in
 `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`, and the five step reports the
 design was drafted from in `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-STEP-REPORTS-RECORD.md`.
@@ -2690,6 +3316,8 @@ design was drafted from in `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-S
 | 2026-09-23 (later) | **§10.2 step 1's drill placed** — ml#2057 (`d15e7c01`): it is AC-4's first drill, run inside P0 step 11, and cannot precede P0 (note 10.2c). **Changed**: this file. **Added**: `util/ad-hoc/2026-09-23_clarify_drill_ordering.py`. |
 | 2026-09-24 | **Front matter reformatted**, content unchanged — ml#2067 (`dcfc024f`), re-landing that part of the closed ml#2045's change to this file (note 12b). **Changed**: this file. **Added**: `util/ad-hoc/2026-09-24_reformat_design_frontmatter.py`, `util/ad-hoc/2026-09-23_pr2045_net_effect.py`. |
 | 2026-09-24 (later) | **D-8 amended; P0's gate and the STOP's scope ruled; §8 behind a STOP** (notes 10.1e–10.1g, 12b). **Changed**: this file; the round-2 record's round-3 count; `util/ad-hoc/smart_checks_backup-sda.bash` (the owner's ml#2045 refactor, adopted but for its mode). **Added**: `JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md` (rounds 4–8), `util/ad-hoc/2026-09-24_amend_d8_and_repair_backup_design.py`, `util/ad-hoc/2026-09-24_archive_round4_reports.py`. |
+| 2026-10-03 | **The STOP cleared; its five defects fixed in the artifacts** — Phase B of `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` (note 8a), with its validation round folded in. **Changed**: this file, the assessment, seven service-lane files and two design scripts (note 12c names each). **Added**: the env contract, the re-key script and its gate, the password-init helper, a test suite, the round record and this change's edit script (note 12c). |
+| 2026-10-08 | **Phase B rounds 3 and 4 folded in**: the retention ruling (P0 steps 10–11), the stored pause and the restart that re-queues the edited job (steps 8, 10), B's rebuild and Verify, §7.3.6, the env allow-list, the re-key's pre-flight and trap. **Changed**/**Added**: note 12c; dispositions in the assessment's §8. |
 
 Notes on the rows above:
 
@@ -2698,12 +3326,12 @@ Notes on the rows above:
   reconstructed from each PR's merge commit and file list, not from memory. Each PR also archived its body under
   `util/ad-hoc/2026-09-22_backup-design-round2/`; those files are not repeated per row. Round 3's D13 — point
   wrapper v2's `.env` default at §7.3.5's `/etc/duplicati/env` and install that path — changes landed artifacts,
-  and is open.
-- **(12b)** What the 2026-09-24 (later) row changed. **The owner's rulings**: D-8's amendment (§10.1's row and
+  and was open until 2026-10-03 (note 12c).
+- **(12b)** What the 2026-09-24 (later) row — ml#2113 (`c01c837e`), landed 2026-10-03 — changed. **The owner's rulings**: D-8's amendment (§10.1's row and
   preamble, note 10.1e, P0.5a item 4, §10.2's heading and step 2) and P0's gate (note 10.1f, the front matter,
   the P0 preamble, P0.5a's heading and intro, R-6). **Leftovers of the 2026-09-22 rulings and of ml#1999's own
   merge**: the front matter's status and order (step −1 a review of nine merged scripts; step 0 a verification;
-  P0.5b between steps 8 and 9, not after step 11), §8's phase-order sentence and step −1 paragraph (with
+  P0.5b between steps 8 and 9, not after step 11 — since moved inside step 10, note 8a), §8's phase-order sentence and step −1 paragraph (with
   `--check`'s exit status), P1 steps 3 and 5, P2 step 2, §6's S-1/S-2/S-3 sentence, §10's preface, §11's
   round-3 count and D-14 dissent, and note 10.2a — its dead "§12" citation now reads
   §3.4, and its evidence line names the copy of the SMART script that produced the report. **Host state that
@@ -2729,6 +3357,32 @@ Notes on the rows above:
   **Rounds 4–8**: the front matter's STOP bullet, the STOP block at the top of §8, P0 step 10's guard sentence
   (one of two checks), §10.2's next action — which ml#2057 wrote on 2026-09-23 and the STOP overtook — §11's
   entries and round count, and the round-4 record, which holds all five rounds.
+- **(12c)** The 2026-10-03 row's files — Phase B of the assessment, its §6.2 rows B1, B3, B4, B5, B7, B8 and B10 (B2
+  and B6 landed on their own: ml#2115 with its fix-forward ml#2134, and ml#2114). **Changed**: this file; the
+  assessment (its Phase B rows and round record); `util/systemd/duplicati.default` (D-1 and D-9's options in
+  `DAEMON_OPTS`); `util/systemd/duplicati.service` (`InaccessiblePaths=` on both escrow copies);
+  `scripts/duplicati-wrapper.bash` (2.2.0: `/etc/duplicati/env` is the default, and the env file can carry neither a
+  security option nor a `DUPLICATI__*` export); `util/install_duplicati_service.bash` (1.2.0: seven files under the
+  gate, `--dry-run`, the first-install fix, `/etc/duplicati/env` installed if absent, a wider secret gate, drift
+  copied aside); `util/systemd/yamaguchi-server-db-snapshot.service` (the installed copy under
+  `ProtectSystem=strict` with `ReadWritePaths=`); `util/systemd/yamaguchi-server-db-snapshot.timer` (its
+  `Documentation=` names the installed copy); `util/ad-hoc/yamaguchi_server_db_snapshot.py` (1.1.0: the new `SRC`);
+  `util/ad-hoc/2026-09-22_stage_design_artifacts.py` (`--from-repo`); `util/ad-hoc/2026-09-21_lint_design_snippets.py`
+  (the env grammar for `etc/duplicati/`). **Added**: `util/systemd/duplicati-env.contract`,
+  `util/ad-hoc/2026-10-03_rekey_settings_key.bash` and its gate `util/ad-hoc/2026-10-03_rekey_gate.py`,
+  `util/ad-hoc/2026-10-03_password_init_hand_start.bash`, `tests/test_duplicati_wrapper_contract.py` (wired into
+  `ci.yml` and `docs/REFERENCE.md`), `JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md` (the round's reports, verbatim) and
+  `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`, this edit set. The fold-in of rounds 3 and 4
+  (2026-10-08, the 2026-10-08 row) changed this file, the assessment, `scripts/duplicati-wrapper.bash` (2.4.0),
+  `util/install_duplicati_service.bash` (1.5.1), `util/systemd/duplicati-env.contract`, the comments of
+  `util/systemd/duplicati.service` and `util/systemd/yamaguchi-server-db-snapshot.service`,
+  `util/ad-hoc/yamaguchi_server_db_snapshot.py` (1.2.0), the re-key (1.3.0), its gate (1.2.0), the hand start (1.3.0),
+  the two A0 scripts (`2026-09-22_confirm_a0_premise.bash`, `2026-09-22_restore_server_db_from_fileset.bash`),
+  `tests/test_duplicati_wrapper_contract.py` and this edit set; it added three suites —
+  `tests/test_clear_stop_backup_design.py`, `tests/test_duplicati_installer_real_path.py` and
+  `tests/test_backup_rekey_real_path.py` — the fixture `tests/fixtures/duplicati_2.4.0.0_server_options.txt` and the
+  evidence scripts under
+  `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/`; `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §8 records each finding.
 
 ---
 
@@ -2790,7 +3444,7 @@ afternoon. (The older file is identifiable in the journal by its own error, `lin
 | `etc/systemd/system/duplicati.service` | the service unit | `systemd-analyze verify` |
 | `usr/local/lib/duplicati/duplicati-wrapper.bash` | wrapper v2 | `bash -n`, shellcheck |
 | `util/install_duplicati_service.bash` | installer | `bash -n`, shellcheck |
-| `home/duplicati/.config/Duplicati/.env` | `.env` contract | `KEY=VALUE` / `--option` grammar (keyed on the basename `.env`) |
+| `etc/duplicati/env` | env contract (`util/systemd/duplicati-env.contract`) | `KEY=VALUE` / `--option` grammar (keyed on the directory `etc/duplicati/`) |
 | `util/ad-hoc/2026-09-21_backup_destination_permissions.bash` | permission model | `bash -n`, shellcheck |
 | `usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash` | pre-backup guard | `bash -n`, shellcheck |
 | `home/pcalnon/.config/systemd/user/juniper-backup.{timer,path,service}` | T2 units | `systemd-analyze verify` |
@@ -2814,4 +3468,5 @@ Run: `python3 util/ad-hoc/2026-09-21_lint_design_snippets.py --doc notes/JUNIPER
 9. **The pcalnon `Duplicati-server.backup` is itself `enc-v1:`** — 11 encrypted values under a single key hash, which the offline probe verified 11/11 and matched to no candidate. It is a libsecret-minted key (§5.4), which is how a database comes to be encrypted with nobody typing one. Every "the database stores the passphrase in cleartext" statement in the record (YAM §8.19.3, and item 3 above) is therefore true of the **root** database only, and only before 09-18 21:03.
 10. YAM §8.20.2's record that the owner **rejected** `SETTINGS_ENCRYPTION_KEY` on 2026-08-30 was reversed without a record by the 09-18 unit edits and the 09-20 `.env`. D-1 asks the question again. (Already in §3.5; repeated here because Appendix C is the list a future reader diffs against the record.)
 
-**None of items 1–10 has been applied to its target document.** That is tracked work, not a closed correction: item 1's targets are YAM §8.20.4 and `HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md` §1.8; item 4's are `util/ad-hoc/yamaguchi_server_db_snapshot.py:20,36` and `util/systemd/yamaguchi-server-db-snapshot.service:5`; item 5's is the destination README. Item 2's own text was rewritten by consensus round 1 (Lane A2) and item 9 is new in the reconciliation.
+**Of items 1–10, only item 4 has been applied to its target**, by the 2026-10-03 change (note 12c): the snapshot script's docstring and the snapshot unit's comment now state the condition (encrypted under the settings key since 2026-09-18, cleartext before). The rest is tracked work, not a closed correction, and §8's residue carries it: item 1's targets are YAM §8.20.4 and `HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md` §1.8; item 5's is the destination README. Item
+2's own text was rewritten by consensus round 1 (Lane A2) and item 9 is new in the reconciliation.

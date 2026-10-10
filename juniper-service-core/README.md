@@ -104,7 +104,7 @@ Only an HTTP 401 is recorded by `FailedAuthThrottle` (default 10 failures per so
 
 `surrogatepass` is required: it encodes a lone surrogate (a JSON-decoded config value can contain one) and it does not map two different strings onto the same bytes. `surrogateescape` does both of those wrong.
 
-Releases up to and including **0.7.0** compare `str` and still return a 500 on such a header (juniper-ml#2086 made the change). Do not catch the `TypeError`. The Sentry half of the same incident — frame locals, including the one holding the configured key — is `juniper-observability`'s `configure_sentry`. Operator notes: [juniper-ml REFERENCE](../docs/REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
+Releases up to and including **0.7.0** compare `str` and still return a 500 on such a header; **0.7.1** is the first release with the bytes compare (juniper-ml#2086 made the change). Do not catch the `TypeError`. The Sentry half of the same incident — frame locals, including the one holding the configured key — is `juniper-observability`'s `configure_sentry`. Operator notes: [juniper-ml REFERENCE](../docs/REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
 
 ## Status
 

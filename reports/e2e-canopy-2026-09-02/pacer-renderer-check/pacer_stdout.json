@@ -1,0 +1,156 @@
+{
+ "arm": "pacer",
+ "requests": 172,
+ "completed": 171,
+ "applied": 169,
+ "evicted_total": 1,
+ "fires": 0,
+ "phases": {
+  "idle": {
+   "requests": 146,
+   "evicted": 1,
+   "stale": 0,
+   "requested_while_another_in_flight": 0,
+   "fires": 0,
+   "median_applied_gap_ms": 4153,
+   "reasons": {
+    "tick": 146
+   }
+  },
+  "triggers": {
+   "requests": 17,
+   "evicted": 0,
+   "stale": 0,
+   "requested_while_another_in_flight": 0,
+   "fires": 0,
+   "median_applied_gap_ms": 4423,
+   "reasons": {
+    "extra": 3,
+    "tick": 14
+   }
+  },
+  "strand": {
+   "requests": 8,
+   "evicted": 0,
+   "stale": 1,
+   "requested_while_another_in_flight": 0,
+   "fires": 0,
+   "median_applied_gap_ms": 4776,
+   "reasons": {
+    "stale": 1,
+    "tick": 7
+   }
+  }
+ },
+ "triggers": [
+  {
+   "kind": "tab",
+   "rep": 0,
+   "t": 1791499139003.5337,
+   "k_in_flight": 147,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "apply",
+   "rep": 0,
+   "t": 1791499145318.9578,
+   "k_in_flight": 148,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "mode",
+   "rep": 0,
+   "t": 1791499151739.215,
+   "k_in_flight": 150,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "release",
+   "rep": 0,
+   "t": 1791499158063.4329,
+   "k_in_flight": 152,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "tab",
+   "rep": 1,
+   "t": 1791499164069.1133,
+   "k_in_flight": 153,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "apply",
+   "rep": 1,
+   "t": 1791499170380.8691,
+   "k_in_flight": 154,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "mode",
+   "rep": 1,
+   "t": 1791499176793.8943,
+   "k_in_flight": 156,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "release",
+   "rep": 1,
+   "t": 1791499182801.2764,
+   "k_in_flight": 157,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "tab",
+   "rep": 2,
+   "t": 1791499189133.1667,
+   "k_in_flight": 159,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "apply",
+   "rep": 2,
+   "t": 1791499195451.2708,
+   "k_in_flight": 160,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "mode",
+   "rep": 2,
+   "t": 1791499202187.593,
+   "k_in_flight": 162,
+   "in_flight_applied": true,
+   "next_applied": true
+  },
+  {
+   "kind": "release",
+   "rep": 2,
+   "t": 1791499208199.0032,
+   "k_in_flight": 163,
+   "in_flight_applied": true,
+   "next_applied": true
+  }
+ ],
+ "strand": {
+  "stranded_k": 166,
+  "stranded_applied": false,
+  "reissue_after_ms": 30994.818359375,
+  "applied_after_reissue_ms": 3968.49267578125
+ },
+ "verdict": {
+  "a_no_eviction": false,
+  "b_idle_clean": false,
+  "c_triggers_next_applied": true,
+  "d_strand_recovers": true
+ },
+ "PASS": false
+}

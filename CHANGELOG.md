@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`util/ad-hoc/2026-10-08_run_ci_regression_suites.py`, and the flood-3 record's follow-up
+  statuses.**
+  - The script runs exactly CI's hand-maintained regression list locally, one process per suite as
+    CI does. A repo-wide lint suite judges files a change never touched, so "the suites I edited
+    pass" is not the question CI asks.
+  - `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` now records the
+    owner-requested follow-up:
+    - three `ANTHROPIC_API_KEY` secrets added;
+    - the five §4 defects fixed, across nine repos;
+    - the data-client `t` / `dt` check accepted as written;
+    - juniper-service-core 0.7.1, juniper-observability 0.4.1 and juniper-data 0.17.0 cut and parked
+      at the `pypi` gate;
+    - six new open findings.
+
 - **Cursor flood-3 disposition record and its tooling**
   (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, new; 46
   `util/ad-hoc/2026-10-08_*` files and `util/ad-hoc/flood3_canopy_slowlog_plugin.py`, new). How the
@@ -127,6 +141,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   force-pushed head survives there, and a `ci-probe/*` positive control is excluded.
   `util/ad-hoc/2026-09-23_data_additive_overflow_repro.py` is juniper-data#432's reproduction
   through the real route.
+
+- **The backup design's STOP is cleared: its five procedure defects are fixed in the artifacts §8
+  installs, and the validation rounds that checked them are folded in** (Phase B of
+  `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`, rows B1,
+  B3, B4, B5, B7, B8 and B10; note 8a of
+  `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`). The 2026-09-24
+  STOP held §8 because its procedure could re-lock the recovered database, pass the pre-backup guard
+  without its `TargetURL` check, or copy a cleartext database into the backup Source.
+  - **The service lane.** `util/systemd/duplicati.default` carries D-1's `--require-db-encryption-key` and
+    D-9's two web-service options. `util/systemd/duplicati.service` masks both escrow copies. The snapshot
+    lane runs an installed copy under `ProtectSystem=strict` with `ReadWritePaths=`
+    (`util/systemd/yamaguchi-server-db-snapshot.service` and `.timer`;
+    `util/ad-hoc/yamaguchi_server_db_snapshot.py` 1.2.0, which now writes one DELETE-mode file with no
+    `-wal`/`-shm`). `scripts/duplicati-wrapper.bash` 2.4.0 reads `/etc/duplicati/env` and accepts only an
+    allow-list of eight tunables there. Its deny list, which `--parameters-file` had slipped past, is kept for
+    its specific refusals. Both lists are pinned against a vendored copy of the product's option table
+    (`tests/fixtures/duplicati_2.4.0.0_server_options.txt`). It refuses `DUPLICATI__*` exports (the server
+    reads `DUPLICATI__<OPTION>` for every option, `disable-db-encryption` included) and a CR or NUL in the
+    key. `util/install_duplicati_service.bash` 1.5.1 installs seven files under its blessed-checksum gate,
+    gains `--dry-run`, and judges the contract by running the wrapper itself. It refuses an unblessed file
+    that differs without `--update-backup-behavior`, and copies such a file aside before replacing it, saying
+    where. An existing env file must be in either of O-12's two forms; the installer does not settle O-12.
+    The contract's repository copy is `util/systemd/duplicati-env.contract`, because a `*.env` name is
+    gitignored here.
+  - **The recovery helpers.** `util/ad-hoc/2026-10-03_rekey_settings_key.bash` (1.3.0) and its gate
+    `util/ad-hoc/2026-10-03_rekey_gate.py` (1.2.0) re-key Procedure A's database in two starts.
+    - Before anything changes, the re-key refuses on an `enc-v1:` blob the product never rewrites: a
+      `ConnectionString`, or an `Option`, `Source` or `BackupTargetUrl` row of no backup. It also refuses on a
+      snapshot timer that is enabled in any form or is active.
+    - Its EXIT trap reads the key layout by hash, stops the unit while a drop-in is present, reports the
+      database UNKNOWN after an attempted start, and prints only the recovery that applies.
+    - `util/ad-hoc/2026-10-03_password_init_hand_start.bash` (1.3.0) sets a known UI password on A2 and B,
+      where `wipe-encryption` or an empty database leaves none.
+  - **Round 2's BLOCKER, found by all three lanes by reading.** `systemctl revert duplicati.service` would have
+    deleted the installed unit, because a dpkg vendor unit exists under `/usr/lib/systemd/system/`. The
+    re-key now removes its drop-in with `rm` and `daemon-reload`, then asserts which unit systemd loads.
+  - **Rounds 3 to 7, folded in.** The procedure changes:
+    - **Retention (owner ruling, 2026-10-08).** Retention is suspended through recovery, in the job and in the
+      server's default options. It is restored as `2W:1D,6M:1W,2Y:1M,5Y:2M` only after AC-4's first drill
+      passes, and the five dlists that first pass deletes are copied aside first.
+    - **The start-up sequence.** Step 8 stores `paused-until=0` while no server runs. Step 10 ends with a
+      restart, so the first backup runs the edited job and not a copy queued before the edits.
+    - **Procedure B.** Its rebuild runs while paused. Verify runs in a resume/pause cycle. Repair runs
+      `--dry-run` first and copies every file it would delete aside; it is now named as §8's third,
+      conditional exception.
+    - **The rest.** §7.3.6 deletes `pbkdf-config` too. The index's `-wal`/`-journal` are copied with it,
+      including into the A0 scripts' throwaway copy.
+  - **The design** is regenerated from `main`'s copy by
+    `util/ad-hoc/2026-09-22_stage_design_artifacts.py --from-repo` and
+    `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`. The second makes 79 edits: one declared
+    change to a fenced block, so that step 10's guard dry-run refuses an empty or unsubstituted id or URL, and
+    78 to prose. Its gates now also refuse a reworded deleted marker, a changed STOP block, and a
+    `FIXFWD_PR` that is not `ml#<digits>`.
+  - **Tests and record.** There are five new hermetic suites, wired into `ci.yml`; none runs a Duplicati
+    binary or depends on `/mnt/Backups` being mounted:
+    - `tests/test_duplicati_wrapper_contract.py` (53 tests);
+    - `tests/test_duplicati_installer_real_path.py` (18);
+    - `tests/test_backup_rekey_real_path.py` (25);
+    - `tests/test_a0_restore_scripts.py` (17);
+    - `tests/test_clear_stop_backup_design.py` (9).
+
+    Every report from rounds 2 to 7, the fold-in lanes' reports and the handoff validations are archived
+    verbatim in `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md`.
 
 ### Changed
 
@@ -315,6 +392,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (pinned to run without `-s`, from `/`). New tests: `TestRecurrenceUpLaunchRecord`,
     `TestRecurrenceLaunchRecordWiring`, `TestPortsJsonRender` and a `TestDryRunUp` arm in that
     suite; `SaveModelLaunchRecordTest` and `LauncherMirrorTest` in `tests/test_run_experiment.py`.
+- **Dataset creation gets its own budget, and a recurrence predict proves which model it scores**
+  (W1.5's driver half, against the service half in juniper-recurrence#192; F-D5, F-CON1, F-CON2 and
+  F-CON3 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  `util/experiments/run_experiment.py`, `util/experiments/run_suite.py`, `util/experiment_stack.bash`,
+  `docs/REFERENCE.md`; `tests/test_recurrence_operation_identity_and_dataset_budget.py`, new, wired
+  into `ci.yml` and both `docs/REFERENCE.md` lists; `tests/test_run_suite.py`,
+  `tests/test_experiment_stack_script.py`). `POST /v1/datasets`, where a cold equities fetch spends
+  its time, ran under a fixed 120 s literal that no config could raise, and a timeout there was
+  reported as "service unreachable" (exit 3). The driver sent no run identity, so a predict on a
+  listener another caller had trained on scored that caller's model without a sign.
+  - **The dataset budget.** `outputs.dataset_create_timeout_seconds` / `--dataset-create-timeout-seconds`
+    (default 120, the old literal; positive and finite, else exit 2) bounds `POST /v1/datasets` on
+    both paths, apart from the wall budget, which still bounds train, predict and crossval. An expired
+    dataset budget is `outcome: timed_out`, exit 1, with the knob named in `acceptance.reasons`, on the
+    cascor path as well as the recurrence one. `manifest.driver` records it. Neither budget cancels
+    anything, and the module docstring and the runbook now say so: the recurrence fit runs to its end
+    and holds `train_lock`.
+  - **Operation identity.** `POST /v1/train` sends `X-Request-ID: run_experiment:<run_id>:<12 hex>`,
+    the fit's `requested_by`. The `operation_id` it returns goes back on predict as
+    `expect_operation_id`, so a model replaced in between is refused with 409 and the run is
+    `degraded`; crossval is never sent it (it never reads the model), and `save_model` needs none (its
+    CLI re-run fits its own model; the driver never calls `POST /v1/model/snapshots`). A service that
+    returns no usable id, such as the published juniper-recurrence 0.5.0, is never sent the key, since
+    it would ignore it; the driver logs a warning. The new `manifest.operation` block records the
+    request id, the operation id, whether predict carried it, and a note for a missing id, a timed-out
+    train, a busy 409 or a refused predict.
+  - **The service's inner budget.** `run_suite.py` gains `execution.dataset_create_timeout_seconds`
+    (forwarded on the `max_wall_seconds` rule), and exports a recurrence cell's dataset budget (that
+    key, else the cell's `outputs` key) to `--up` as `JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS`,
+    recorded on the registry row as `service_env`. `recurrence_up` passes that variable to `serve` when
+    set, names it like the log knobs, records it in `ports.json` as the JSON number
+    `recurrence_launch.juniper_data_timeout_seconds`, and refuses the leg before the env preflight
+    unless it is a plain positive decimal. On the driver's path the service only downloads an artifact
+    the driver already created, so this aligns the two budgets rather than fixing a reproduced failure.
+  - **The runbook.** `docs/REFERENCE.md` § "One caller per recurrence service" now says the driver
+    half is built, that a service is owned by one caller at a time, and how the launcher's per-run
+    ports (8260-8289, lockdirs, an `ss` probe) keep a suite off canopy's and Compose's listeners.
+  - **The acceptance case**, time scaled 1:100 in the new suite: a juniper-data that sleeps 40 s fails
+    inside a service modelled on #192 at the client's old 30 s default while the driver's budgets are
+    untouched, and succeeds at the budget the suite exports.
+  - **Three existing assertions changed**, in `tests/test_experiment_stack_script.py`: two exact
+    `recurrence_launch` dicts gain `"juniper_data_timeout_seconds": None`, and the wiring pins on the
+    serve announce and launch lines gain `${data_timeout_announce}` / `"${data_timeout_env[@]}"`. Each
+    keeps its other assertions. The log-var arm now unsets the data timeout first, and the dry-run
+    harness pins it empty, so an operator's export cannot reach an exact record.
 - **Tier 2 finds its drives under `/run/media` again, and gains its installer, its failure unit and a
   gate** (B6 / I-20 of
   `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`;
