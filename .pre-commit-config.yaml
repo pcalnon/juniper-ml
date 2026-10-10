@@ -300,6 +300,23 @@ repos:
         files: '^\.env(\.secrets)?$'
         types: [file]
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Secrets: Gitleaks on the staged diff (backup recovery B9, design P0.5a item 6)
+  # CI's Security Scan runs gitleaks only AFTER a push; this hook stops a secret
+  # before it is committed. The upstream hook runs
+  # `gitleaks git --pre-commit --redact --staged --verbose`, which reads
+  # .gitleaks.toml and .gitleaksignore from the repo root, exactly as CI does.
+  # `rev` must equal ci.yml's GITLEAKS_VERSION (one engine, one verdict);
+  # tests/test_gitleaks_secret_assignment_rule.py fails if they drift.
+  # In CI nothing is staged, so this hook scans nothing and passes there -- the
+  # Security Scan step is the CI gate. language: golang -- pre-commit builds the
+  # binary from this tag with the `go` on PATH, or downloads a toolchain.
+  # ═══════════════════════════════════════════════════════════════════════════
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.3
+    hooks:
+      - id: gitleaks
+
 # CI configuration (for pre-commit.ci service, if used)
 ci:
   autofix_prs: false
