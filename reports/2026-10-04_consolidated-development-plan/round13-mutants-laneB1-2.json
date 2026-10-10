@@ -1,0 +1,7 @@
+[
+  {"id": "R13B1-M2b-prefix-tail-alnum", "desc": "clause 3: a listed line's last three characters, when letters or digits, printed in clear in its len= field",
+   "reps": [["len={len(text)} names=", "len={len(text)}{''.join(c for c in text[-3:] if c.isalnum())} names="]]},
+  {"id": "R13B1-M10-offset-field", "desc": "clause 3: KEY mode prints the first two characters at the finding's offset in clear in its offset= field",
+   "reps": [["offset = f\" offset={char_col(text, col, n == 1)}\"", "offset = f\"{''.join(c for c in text[char_col(text, col, n == 1):][:2] if c.isalnum())} offset={char_col(text, col, n == 1)}\""]]},
+  {"id": "R13B1-EMPTY", "desc": "harness: a mutant with no replacement (should be reported, as SURVIVED)", "reps": []}
+]

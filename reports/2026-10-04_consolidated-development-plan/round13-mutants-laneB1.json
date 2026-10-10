@@ -1,0 +1,20 @@
+[
+  {"id": "R13B1-M1-stderr-clear", "desc": "clause 3: every listed line also printed in clear on stderr",
+   "reps": [["            shown.add(n)\n", "            shown.add(n)\n            print(text, file=sys.stderr)\n"]]},
+  {"id": "R13B1-M2-prefix-tail", "desc": "clause 3: a listed line's last three characters printed in clear in its len= field",
+   "reps": [["len={len(text)} names=", "len={len(text)}{text[-3:]} names="]]},
+  {"id": "R13B1-M3-below-twice", "desc": "clause 2: a line below is printed again for each listed line it falls under (not each line once)",
+   "reps": [["for k, b in below:\n                if k not in shown and k not in found:", "for k, b in below:\n                if k not in found:"]]},
+  {"id": "R13B1-M4-listed-as-below", "desc": "clause 2: a listed line is printed again as another entry's below line",
+   "reps": [["for k, b in below:\n                if k not in shown and k not in found:", "for k, b in below:\n                if k not in shown:"]]},
+  {"id": "R13B1-M5-bare-env-words", "desc": "clause 1: an unprefixed upper-case TOKEN, PASSWORD or SECRET is not listed (only API_KEY(S) without a prefix)",
+   "reps": [["(?:\" + _ENV_WORDS + \")(?:_[A-Z0-9]+)*(?![A-Za-z0-9_])\"", "(?:API_KEYS?)(?:_[A-Z0-9]+)*(?![A-Za-z0-9_])\""]]},
+  {"id": "R13B1-M6-passin-passout", "desc": "clause 1: openssl's -passin and -passout are not markers",
+   "reps": [["-pass(?:in|out|w\" + \"ord)?", "-pass(?:w\" + \"ord)?"]]},
+  {"id": "R13B1-M7-key-outside-root", "desc": "clause 4: a KEY path with .. or an absolute path is read, not refused",
+   "reps": [["if not parts or Path(rel).is_absolute() or \"..\" in parts:", "if not parts:"]]},
+  {"id": "R13B1-M8-key-line-zero", "desc": "clause 4: a KEY naming line 0 is read (as the file's last line), not refused",
+   "reps": [["if not 1 <= first <= last <= len(lines):", "if not first <= last <= len(lines):"]]},
+  {"id": "R13B1-M9-nul-refusal-bytes", "desc": "clause 4: the NUL refusal prints the file's first bytes",
+   "reps": [["raise Refused(\"a NUL character", "raise Refused(repr(data[:40]) + \"a NUL character"]]}
+]
