@@ -1303,6 +1303,16 @@ jobs:
           # screened and still fails clean; exit >=2 or a missing code does not advance
           # the base; the screens step records the codes and exits 0.
           python3 -m unittest -v tests/test_main_verify_screen_verdicts.py
+          # tests/test_gitleaks_secret_assignment_rule.py: backup recovery B9. .gitleaks.toml
+          # must extend the default ruleset (without [extend] gitleaks loaded ZERO rules, so
+          # the Security Scan could not fail), and juniper-secret-assignment must fire on a
+          # backup credential literal -- the 2026-09-20 shape: 36 chars carrying * @ $ %, in
+          # a commented systemd Environment= line -- under every export / systemd / comment /
+          # argv form, and on no expansion, template, placeholder, code or fixture. Python
+          # model of gitleaks 8.24.3's matcher; every positive is assembled at runtime. Also
+          # pins .gitleaksignore (commit-scoped, documented) and CI == hook engine version.
+          # Its RealEngine tests skip here (no binary) and run in the Security Scan job.
+          python3 -m unittest -v tests/test_gitleaks_secret_assignment_rule.py
 
       - name: Run bash regression tests
         run: |
@@ -1991,13 +2001,38 @@ jobs:
           # gitleaks-action ships as a Node.js 20 action; opt into Node 24 to match the
           # sibling repos and avoid the deprecation warning. Drop once upstream repins.
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+          # The engine version, stated rather than inherited: v3.0.0 defaults to the same
+          # 8.24.3 (src/index.js), but a bump of the action SHA would change it silently.
+          # Must equal the gitleaks pre-commit hook's `rev` (one engine, one verdict);
+          # tests/test_gitleaks_secret_assignment_rule.py fails if they drift.
+          GITLEAKS_VERSION: "8.24.3"
         # No `fail` input exists on this action version (passing it errors); it exits
         # non-zero on leaks by default, which is the behaviour we want.
+        #
+        # What it scans (src/index.js / src/gitleaks.js at the pinned SHA): `push` and
+        # `pull_request` scan the event's own commits; `workflow_dispatch` passes no
+        # --log-opts, so it scans EVERY commit reachable from every branch and tag of this
+        # fetch-depth-0 checkout. `merge_group` is not a supported event and fails the step.
+        # .gitleaks.toml and .gitleaksignore are auto-discovered at the repo root.
+        # 2026-10-10 (B9): .gitleaks.toml had no `[extend]`, so this step ran with ZERO
+        # rules from 2026-08-13 until then and could not fail.
 
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
+
+      - name: Gitleaks rule self-test (real engine)
+        # The regression job checks the juniper-secret-assignment rule through a Python
+        # model of it. This runs the same suite's RealEngine tests against the binary the
+        # gitleaks step put on PATH: the built-in ruleset must fire on a fabricated token
+        # (the config is not vacuous), and the rule must fire on every positive and on
+        # no negative. GITLEAKS_PARITY_REQUIRED turns a missing binary into a failure
+        # instead of a skip, because a check that could not run is not a pass.
+        if: github.event_name != 'repository_dispatch'
+        env:
+          GITLEAKS_PARITY_REQUIRED: "1"
+        run: python3 -m unittest -v -k RealEngine tests/test_gitleaks_secret_assignment_rule.py
 
       - name: Run pip-audit
         run: |
