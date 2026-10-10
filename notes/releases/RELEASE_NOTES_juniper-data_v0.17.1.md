@@ -2,23 +2,23 @@
 
 **Release Date:** 2026-10-10
 **Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Priority:** High: upgrade every juniper-data deployment that reports to Sentry
 **Package Affected:** juniper-data
 
 ---
 
-This is a security-bearing release of `juniper-data` v0.17.1. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a security patch release of `juniper-data` v0.17.1. Its image now runs `juniper-observability` 0.4.1, whose `configure_sentry` no longer sends frame-local variables to Sentry. The 0.17.0 image installed 0.4.0, so an error raised in a frame that held the real configured API key could carry the key to Sentry; `api/app.py` calls `configure_sentry`, and the vector needs Sentry to be configured. The image lock also moves `juniper-service-core` to 0.7.1, and the wheel's floors rise to `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0`. No application code changed beyond the version string.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-data` |
 | **Fixed in** | 0.17.1 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | Sensitive information sent to an external service ([CWE-201](https://cwe.mitre.org/data/definitions/201.html)) |
+| **Advisory** | None. Internal finding from the validation of juniper-canopy#683 (2026-09-24), fixed in juniper-observability 0.4.1 and delivered to this image here; there is no CVE or Dependabot alert |
 
 ---
 
