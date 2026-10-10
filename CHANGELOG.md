@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A gitleaks content rule for backup credentials, a gitleaks pre-commit hook, and a suite that
+  pins both** (backup recovery B9, design P0.5a item 6).
+  - `.gitleaks.toml` gains `juniper-secret-assignment`. It fires when `SETTINGS_ENCRYPTION_KEY[_OLD]`,
+    `PASSPHRASE[_OLD]`, `DUPLICATI_WEB_CREDENTIAL` or Duplicati's `DUPLICATI__` option forms are
+    assigned a literal of 12 or more characters, and also for the argv forms `--passphrase=`,
+    `--webservice-password[-init]=` and `--settings-encryption-key=`. It matches quoted or unquoted
+    values, after `export`, in a systemd `Environment=` line, or in a comment. It stays silent on
+    expansions, templates, placeholder words, code and single-case fixtures. Across every commit on
+    every remote branch and tag, it reports only the two commits that carried the 2026-09-20
+    settings-key literal. `.gitleaksignore` (new) holds those two as commit-scoped entries.
+  - `.pre-commit-config.yaml` adds the upstream `gitleaks` hook at `v8.24.3`. `ci.yml` now states
+    the same version as `GITLEAKS_VERSION`, instead of inheriting the action's default.
+  - `tests/test_gitleaks_secret_assignment_rule.py` (new) is wired into `ci.yml` and
+    `docs/REFERENCE.md`. A new Security Scan step runs its RealEngine tests against the action's own
+    binary.
+  - New: `util/ad-hoc/2026-10-10_gitleaks_probe.py`, `…_gitleaks_finding_inspect.py`,
+    `…_gitleaks_rule_mutation_check.py` and `…_secret_assignment_corpus_survey.py`. These are the
+    measurements behind the change; none of them prints a value.
+  - Owner action, not done here: enable `secret_scanning_non_provider_patterns` on the repository.
+
 - **`util/ad-hoc/2026-10-08_run_ci_regression_suites.py`, and the flood-3 record's follow-up
   statuses.**
   - The script runs exactly CI's hand-maintained regression list locally, one process per suite as
@@ -252,6 +272,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_perf-lane-helper-binds-axis3-run-d6-control-micro-cut.md`.
 
 ### Fixed
+
+- **CI's gitleaks scan loaded zero rules, from 2026-08-13 until this change.** `.gitleaks.toml`
+  had an `[allowlist]` and no `[extend]`. In that case gitleaks v8 loads only the file's own
+  `[[rules]]`, and there were none.
+  - Measured with 8.24.3: the old config passed a fabricated GitHub token that the built-in config
+    flags (`util/ad-hoc/2026-10-10_gitleaks_probe.py vacuity`).
+  - `[extend] useDefault = true` restores the default ruleset. It reports 17 findings over main's
+    history and 24 over every remote branch and tag. All were classified as false positives:
+    placeholder keys, fixtures, a WebSocket nonce, a commit SHA, a self-signed test CA and GPG user
+    IDs.
+  - They are NOT ignored. Push and pull_request scans cover only the event's commits and never see
+    them, but a manual `workflow_dispatch` of `ci.yml` scans all history and will report them.
 
 - **Four defects from the Cursor flood-3 evaluation**
   (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §4):
