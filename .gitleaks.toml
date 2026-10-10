@@ -13,14 +13,31 @@
 # Kept byte-identical in intent to juniper-deploy / juniper-cascor so the fleet
 # shares one allowlist contract.
 #
-# Usage:
-#   gitleaks detect --config .gitleaks.toml
-#   gitleaks detect --config .gitleaks.toml --baseline-path .gitleaks-baseline.json
+# 2026-10-10 (backup recovery B9, design P0.5a item 6): until this date the file
+# had no `[extend]` table, and a gitleaks v8 config without one loads ONLY its
+# own `[[rules]]` -- of which there were none. Every CI scan from 2026-08-13 ran
+# with ZERO rules and passed vacuously, which is how a 36-character credential
+# literal in scripts/duplicati-wrapper.bash went through two PRs (#1967, #1968).
+# `[extend] useDefault = true` below loads gitleaks' built-in ruleset; the
+# `juniper-secret-assignment` rule adds the shape that ruleset cannot see
+# (its generic-api-key value class `[\w.=-]` stops at `* @ $ %`).
+# tests/test_gitleaks_secret_assignment_rule.py pins both.
+#
+# Usage (the CI step and the pre-commit hook both auto-discover this file):
+#   gitleaks git --redact          # committed history; honours .gitleaksignore
+#   gitleaks dir --redact .        # the working tree, INCLUDING gitignored files:
+#                                  # a __pycache__/*.pyc can read as a finding
+#   python3 util/ad-hoc/2026-10-10_gitleaks_probe.py vacuity --gitleaks <bin>
 #
 # See: https://github.com/gitleaks/gitleaks#configuration
 # =============================================================================
 
 title = "Juniper Gitleaks Configuration"
+
+# Load gitleaks' built-in rules; the rules and allowlists below EXTEND them.
+# Removing this table silently empties the ruleset again (see the header).
+[extend]
+useDefault = true
 
 # Do NOT use [allowlist].paths to exempt .env.enc files — this would
 # skip ALL rules for those files, including plaintext secret detection.
@@ -38,4 +55,88 @@ title = "Juniper Gitleaks Configuration"
   regexes = [
     '''age1[a-z0-9]{58}''',
     '''ENC\[AES256_GCM,data:[A-Za-z0-9+/=]+,''',
+  ]
+
+# -----------------------------------------------------------------------------
+# juniper-secret-assignment -- a backup credential assigned a literal value.
+#
+# NAME=VALUE for the backup stack's credentials, in every form the repository
+# uses: `export`, a systemd `Environment=` line (quoted or not), a comment (a
+# commented-out secret is still a secret), and argv (`--passphrase=`,
+# `--webservice-password=`, `--settings-encryption-key=`). Names, matched
+# case-sensitively after a word boundary (so TEST_PASSPHRASE is not one):
+#   SETTINGS_ENCRYPTION_KEY[_OLD]   PASSPHRASE[_OLD]   DUPLICATI_WEB_CREDENTIAL
+#   DUPLICATI__PASSPHRASE / __SETTINGS_ENCRYPTION_KEY / __WEBSERVICE_PASSWORD
+#     (Duplicati's environment form of its options; run-scripts receive them)
+#   settings-encryption-key   webservice-password[-init]   passphrase
+#
+# The VALUE (group 1, after an optional opening quote) is at least 12
+# characters with no whitespace, quote, backtick or backslash. It must not
+# START with `$ % < { ( [ | \` or any other character outside the class below:
+# a value beginning that way is an expansion (`$VAR`, `${VAR:-}`, `$(cmd)`), a
+# printf or systemd specifier (`%s`, `%d`), a `<template>`, a `{format}` field
+# or code, never a literal.
+#
+# The three allowlists hold the remaining placeholder classes. Measured against
+# every commit reachable from every branch and tag on the remote (what a
+# workflow_dispatch run scans), the rule reports 8 historical lines: the two
+# commits that carried the 2026-09-20 literal, and six test fixtures and
+# synthetic keys, all in .gitleaksignore (commit-scoped). An ablation that
+# drops one allowlist adds: placeholder words 4 (`fixture-` / `placeholder-`
+# test values), one lowercase word 16 (the `abcdefghijklmnop` fixture), code 7.
+#
+# Narrowed in review (ml#2203): a run of lowercase words joined by `-` or `_`
+# (a diceware passphrase) and a 12-15 character word-only value (a typical
+# human password) FIRE. generic-api-key covers neither under the PASSPHRASE
+# names, so this rule is the only thing that sees them there.
+#
+# Known boundary -- what still does NOT fire, deliberately:
+#   * a value under 12 characters, or one containing whitespace (a quoted
+#     multi-word phrase leaves only its first word);
+#   * ONE lowercase word (letters only: no digit, capital or separator);
+#   * UPPER words with an optional short number (they read as constant names);
+#   * lowercase words joined by `.` (indistinguishable from `args.passphrase`),
+#     and a lowercase or UPPER_SNAKE name closed by `) ] ,`;
+#   * a value starting with `$ % < { ( [ | \` or a non-ASCII character, or
+#     containing a placeholder word (redacted, changeme, placeholder, example,
+#     dummy, synthetic, fixture, fake, sample).
+# -----------------------------------------------------------------------------
+[[rules]]
+id = "juniper-secret-assignment"
+description = "Backup credential (Duplicati settings key, passphrase, web credential) assigned a literal value"
+regex = '''\b(?:SETTINGS_ENCRYPTION_KEY(?:_OLD)?|settings-encryption-key|PASSPHRASE(?:_OLD)?|DUPLICATI_WEB_CREDENTIAL|webservice-password(?:-init)?|passphrase|DUPLICATI__(?:PASSPHRASE|SETTINGS_ENCRYPTION_KEY|WEBSERVICE_PASSWORD))=["']?([A-Za-z0-9!#&*+,\-./:;=?@^_~][^ \t\r\n"'`\\]{11,})'''
+secretGroup = 1
+# gitleaks evaluates a rule only on content containing one of its keywords
+# (lowercased); every name above must contain one of these.
+keywords = [
+  "settings_encryption_key",
+  "settings-encryption-key",
+  "passphrase",
+  "duplicati_web_credential",
+  "webservice-password",
+  "webservice_password",
+]
+
+  [[rules.allowlists]]
+  description = "Placeholder words, and a value with no letter or digit other than x/X (xxx, ***, ...)"
+  regexes = [
+    '''(?i)redacted|change[-_]?me|placeholder|example|dummy|synthetic|fixture|fake|sample''',
+    '''^[^0-9A-WYZa-wyz]*$''',
+  ]
+
+  [[rules.allowlists]]
+  description = "Single-case words: ONE lowercase word, or UPPER words with an optional short number (abcdefghijklmnop, SYNTHETIC-VALUE-01)"
+  regexes = [
+    '''^[a-z]+$''',
+    '''^[A-Z]{3,}(?:[-_][A-Z]{2,})*(?:[-_]?[0-9]{1,3})?$''',
+  ]
+
+  # A BARE name is deliberately not allowlisted: a lowercase hex or alphanumeric
+  # key is a valid identifier too. The second form needs trailing code syntax
+  # and a name of lowercase letters/underscores or UPPER_SNAKE (with a `_`).
+  [[rules.allowlists]]
+  description = "Code: attribute access or a call (args.passphrase, self._read()), or a name closed by ) ] , (passphrase), PROBE_PASSPHRASE,)"
+  regexes = [
+    '''^[a-z_][a-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+[(\[]?[)\],]*$''',
+    '''^(?:[a-z_]+|_*[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)[(\[)\],]+$''',
   ]
