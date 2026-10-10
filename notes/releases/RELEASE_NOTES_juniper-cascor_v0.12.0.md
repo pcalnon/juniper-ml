@@ -1,24 +1,24 @@
-# juniper-cascor v0.12.0 – :lock: SECURITY PATCH RELEASE
+# juniper-cascor v0.12.0 – :lock: SECURITY RELEASE (MINOR)
 
 **Release Date:** 2026-10-10
-**Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Release Type:** MINOR (security-bearing)
+**Priority:** High: upgrade every juniper-cascor deployment
 **Package Affected:** juniper-cascor
 
 ---
 
-This is a security-bearing release of `juniper-cascor` v0.12.0. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a minor release of `juniper-cascor` that carries three security fixes. A non-ASCII `X-API-Key` is answered 401 instead of a 500 whose Sentry error event could carry the real configured key (#689). `FailedAuthThrottle.check()` no longer adds a table entry for every unseen client address, so the table stays bounded (#710). And the image now runs `juniper-observability` 0.4.1, whose `configure_sentry` no longer sends frame-local variables to Sentry (#711). It also stops a local image build from baking in the snapshot directory's authkeys (#661; no published image was affected), and makes `APIKeyAuth` walk every configured key (#659). The rest of the release is listed below.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-cascor` |
 | **Fixed in** | 0.12.0 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | Improper handling of an exceptional condition that exposed a secret ([CWE-755](https://cwe.mitre.org/data/definitions/755.html)); allocation of resources without limits ([CWE-770](https://cwe.mitre.org/data/definitions/770.html)); sensitive information sent to an external service ([CWE-201](https://cwe.mitre.org/data/definitions/201.html)) |
+| **Advisory** | None. Internal findings from the juniper-canopy#683 validation (2026-09-24) and the Cursor flood-3 evaluation (2026-10-08); there is no CVE or Dependabot alert |
 
 ---
 
