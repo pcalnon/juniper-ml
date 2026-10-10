@@ -1,0 +1,9 @@
+[
+ {"id": "R13A-passin-passout", "desc": "clause 1: openssl's -passin and -passout no longer markers", "reps": [["-pass(?:in|out|w\" + \"ord)?", "-pass(?:w\" + \"ord)?"]]},
+ {"id": "R13A-key-outside-root", "desc": "clause 4: KEY mode reads a KEY path outside --root (.. or absolute)", "reps": [["if not parts or Path(rel).is_absolute() or \"..\" in parts:", "if not parts:"]]},
+ {"id": "R13A-key-symlinked-root", "desc": "clause 4: KEY mode reads under a symlinked --root", "reps": [["    if root.is_symlink() or not root.is_dir():\n        raise Refused(", "    if not root.is_dir():\n        raise Refused("]]},
+ {"id": "R13A-below-twice", "desc": "clause 2: a listed line below another prints twice (as below and as its own entry)", "reps": [["            for k, b in below:\n                if k not in shown and k not in found:", "            for k, b in below:\n                if True:"]]},
+ {"id": "R13A-above-twice", "desc": "clause 2: a line above prints again though shown or listed", "reps": [["            for k, a in above:\n                if k not in shown and k not in found:", "            for k, a in above:\n                if True:"]]},
+ {"id": "R13A-refusal-unnamed", "desc": "clause 4: a walk refusal does not name the file", "reps": [["refused.append(f\"{rel}: {_why(exc)}\")", "refused.append(\"refused\")"]]},
+ {"id": "R13A-key-refusal-unnamed", "desc": "clause 4: a KEY-mode refusal does not name the file or the reason", "reps": [["print(f\"REFUSED {m['path']}: {_why(exc)}\", file=sys.stderr)", "print(\"REFUSED\", file=sys.stderr)"]]}
+]
