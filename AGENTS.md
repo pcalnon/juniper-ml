@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.10.0
-**Last Updated**: 2026-10-10
+**Last Updated**: 2026-10-16
 
 ---
 
@@ -44,6 +44,12 @@ PR rather than waiving the budget gate.
   which falls back to 10000. The direct CLI aliases the two. **Any CLI-vs-service
   comparison must set both, to the same value**, or the service is quietly
   better-trained and slower than the config appears to ask for.
+- **One unsigned commit makes a branch permanently unmergeable.** The repos carry
+  `required_signatures` (all 9 as of 2026-08-12), and squash does not rescue it. A
+  host without signing configured (turing, as of 2026-10-15) must land work through
+  `util/open_signed_pr.py`, not a local commit + push. Check with
+  `git log -1 --format=%G?` (`N` = unsigned). Plan:
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`.
 
 ---
 
