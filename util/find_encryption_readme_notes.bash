@@ -4,7 +4,7 @@
 FILENAME="encryption.bash"
 WORKING_DIR="/Users/pcalnon/Development"
 
-cd "${WORKING_DIR}"
+cd "${WORKING_DIR}" || exit 1
 for i in $(find . | grep "${FILENAME}"); do
     CMD="ls -Fla ${i}"
     echo -ne "${CMD}:\t"
@@ -18,4 +18,3 @@ for i in $(find . | grep "${FILENAME}"); do
         echo -ne "Invalid\n"
     fi
 done
-
