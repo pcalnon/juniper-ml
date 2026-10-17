@@ -1313,6 +1313,17 @@ jobs:
           # pins .gitleaksignore (commit-scoped, documented) and CI == hook engine version.
           # Its RealEngine tests skip here (no binary) and run in the Security Scan job.
           python3 -m unittest -v tests/test_gitleaks_secret_assignment_rule.py
+          # tests/test_juniper_clone.py: turing bring-up A4 / R-A4. util/juniper_clone.bash
+          # clones through the github_juniper-<repo> ssh alias and verifies the PERSISTED
+          # remote.origin.url (config --get; remote get-url would expand insteadOf). The helper
+          # it replaces persisted git@github.com:, which is how juniper-k8s's origin broke.
+          # Real git against a local bare repo via insteadOf; ssh is a stub that answers -G only.
+          python3 -m unittest -v tests/test_juniper_clone.py
+          # tests/test_find_encryption_readme_notes.py: turing bring-up B9 / R-B9. A file named
+          # with shell syntax ($(...), backticks, ; || |) is listed literally and never executed;
+          # a negative control proves the same names DO execute through the eval loop of the
+          # juniper-ml#2222 original. Paths are NUL-delimited, absolute and $HOME-relative.
+          python3 -m unittest -v tests/test_find_encryption_readme_notes.py
 
       - name: Run bash regression tests
         run: |
