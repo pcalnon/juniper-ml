@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The re-land of juniper-ml#2222 with GitHub-signed commits, carrying the turing bring-up plan's
+  A4 and B9 corrections** (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  juniper-ml#2222's branch held three unsigned commits from turing, so `required_signatures`
+  blocked it with every check green. That PR is closed in favour of this one.
+  - `util/juniper_clone.bash` (new, A4) clones through the `github_juniper-<repo>` ssh alias. It
+    then reads the persisted `remote.origin.url` back and exits 1 unless that value is in alias form.
+    It replaces the branch's `util/git_clone_with_specified_id.bash`, which is not landed. That
+    helper persisted `git@github.com:`, which bypasses the alias, and that is how juniper-k8s's
+    origin broke on turing (plan §4.1).
+  - `util/find_encryption_readme_notes.bash` (rewritten, B9) no longer runs `eval` on `find`
+    output. A file named `$(:>x)encryption.bash` was executed, not listed. Paths are now
+    NUL-delimited and absolute, the default root is `$HOME`-relative, and the exit codes are
+    0 / 1 / 2.
+  - `tests/test_juniper_clone.py` and `tests/test_find_encryption_readme_notes.py` (new) are wired
+    into `ci.yml` and `docs/REFERENCE.md`. They pin R-A4 and R-B9. The B9 suite carries a
+    negative control: the same file names do execute through the original eval loop.
+  - `util/ad-hoc/2026-10-16_turing_a4_b9_mutation_check.py` (new) shows that the two suites
+    kill 17 of 17 mutants.
+  - `prompts/manual/prompt133_2026-10-15.md`, the turing bring-up session prompt, lands
+    unchanged from the branch.
+
 - **A gitleaks content rule for backup credentials, a gitleaks pre-commit hook, and a suite that
   pins both** (backup recovery B9, design P0.5a item 6).
   - `.gitleaks.toml` gains `juniper-secret-assignment`. It fires when `SETTINGS_ENCRYPTION_KEY[_OLD]`,
