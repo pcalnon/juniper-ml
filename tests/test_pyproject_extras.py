@@ -147,7 +147,7 @@ EXPECTED_EXTRAS = {
         "juniper-cascor-worker>=0.4.0",
     },
     "servers": {
-        "juniper-canopy>=0.8.1",
+        "juniper-canopy>=0.9.0",
         "juniper-cascor>=0.11.0",
         "juniper-data>=0.17.0",
     },
@@ -163,8 +163,8 @@ EXPECTED_EXTRAS = {
         "juniper-doc-tools>=0.1.0,<0.2.0",
     },
     "recurrence": {
-        "juniper-recurrence-model>=0.3.0,<0.4.0",
-        "juniper-recurrence>=0.5.0,<0.6.0",
+        "juniper-recurrence-model>=0.3.0,<0.5.0",
+        "juniper-recurrence>=0.6.0,<0.7.0",
         "juniper-recurrence-client>=0.3.0,<0.4.0",
     },
     "all": {
