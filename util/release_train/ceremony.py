@@ -102,6 +102,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import contextlib
 import json
 import os
 import re
@@ -879,10 +880,8 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
                 ]
             )
         finally:
-            try:
+            with contextlib.suppress(OSError):  # best-effort cleanup of the temp file; gh has already read it
                 os.unlink(contents_file)
-            except OSError:
-                pass
         try:  # best-effort: return the created commit oid (callers use the PR URL from gh pr create)
             data = json.loads(out) if out else {}
             return (((data.get("data") or {}).get("createCommitOnBranch") or {}).get("commit") or {}).get("oid") or ""
