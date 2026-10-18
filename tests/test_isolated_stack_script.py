@@ -923,6 +923,7 @@ mv -f "{launch_log}.partial" "{launch_log}"
   printf 'JUNIPER_DATA_URL=%s\\n' "${{JUNIPER_DATA_URL-}}"
   printf 'JUNIPER_RECURRENCE_METRICS_ENABLED=%s\\n' "${{JUNIPER_RECURRENCE_METRICS_ENABLED-}}"
   printf 'JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=%s\\n' "${{JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED-}}"
+  printf 'JUNIPER_RECURRENCE_SNAPSHOTS_DIR=%s\\n' "${{JUNIPER_RECURRENCE_SNAPSHOTS_DIR-__UNSET__}}"
 }} >"{env_log}.partial"
 mv -f "{env_log}.partial" "{env_log}"
 exit 0
@@ -980,6 +981,12 @@ exit 0
             self.assertIn("JUNIPER_DATA_URL=http://127.0.0.1:65101", env_text)
             self.assertIn("JUNIPER_RECURRENCE_METRICS_ENABLED=true", env_text)
             self.assertIn("JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false", env_text)
+            # 2c (recurrence plan, ruled 2026-10-18): the leg's snapshots go to the run's own
+            # ${RUN_DIR}/snapshots (experiment_stack W1.10 parity), and the dir exists before serve.
+            # Unexported, the service wrote a CWD-relative recurrence-snapshots/ (F-D9).
+            self.assertIn(f"JUNIPER_RECURRENCE_SNAPSHOTS_DIR={run_dir}/snapshots\n", env_text)
+            self.assertNotIn("JUNIPER_RECURRENCE_SNAPSHOTS_DIR=__UNSET__", env_text)
+            self.assertTrue((run_dir / "snapshots").is_dir(), "recurrence_up must create ${RUN_DIR}/snapshots before serve")
 
             pid_path = run_dir / "juniper-recurrence.pid"
             self.assertTrue(pid_path.is_file(), "recurrence_up must write juniper-recurrence.pid")

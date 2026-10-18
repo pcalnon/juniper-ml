@@ -102,6 +102,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import contextlib
 import json
 import os
 import re
@@ -295,6 +296,31 @@ _CREATE_COMMIT_ON_BRANCH_MUTATION = (
     "}) { commit { oid url } } }"
 )
 
+# The archive commit travels base64-encoded inside ONE createCommitOnBranch request: a FileAddition
+# replaces the whole file, so a large archive cannot be split across mutations. Two caps bound it
+# (juniper-ml#2227). The first, a Linux runner's MAX_ARG_STRLEN (128 KiB per argv string), no longer
+# applies: create_signed_commit hands `contents` to gh as `-F contents=@<file>`. The second is the
+# GraphQL request body, measured from turing on 2026-10-17 at about 128 KiB (130,000 B accepted,
+# 131,000 B refused with HTTP 499) but NOT established as GitHub's own limit rather than that host's
+# link (re-diagnosed 2026-10-18 as turing's weak Wi-Fi: GitHub's GraphQL frontend drops a request that runs
+# past about 7-10 s, so the figure is a request-duration symptom, not a body-size rule). plan_ceremony HALTs `archive-too-large` BEFORE any write when the encoded archive exceeds this
+# many bytes (owner ruling 2026-10-18: the conservative measured figure as the default);
+# JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX overrides it once a runner-side measurement settles the real cap.
+# The remedy is to condense the notes (util/ad-hoc/2026-10-17_condense_release_notes_section.py, the
+# juniper-canopy 0.9.0 precedent), never to invent an archive body.
+ARCHIVE_B64_MAX_DEFAULT = 125_000
+ARCHIVE_B64_MAX_ENV = "JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX"
+
+
+def archive_b64_max() -> int:
+    """The one-request signed-commit cap in base64 bytes: the env override when it is a positive int, else the default."""
+    raw = (os.environ.get(ARCHIVE_B64_MAX_ENV) or "").strip()
+    try:
+        value = int(raw) if raw else ARCHIVE_B64_MAX_DEFAULT
+    except ValueError:
+        return ARCHIVE_B64_MAX_DEFAULT
+    return value if value > 0 else ARCHIVE_B64_MAX_DEFAULT
+
 
 def _api_field(args: list, key: str) -> "str | None":
     """The value of the first ``-f/-F <key>=<value>`` (or bare ``<key>=<value>``) token, else None.
@@ -367,6 +393,11 @@ def _gh(args: list, timeout: int = 90) -> "str | None":
         raise SourceError("gh CLI not found (install/authenticate GitHub CLI)") from exc
     except subprocess.TimeoutExpired as exc:
         raise SourceError(f"gh timed out: {' '.join(args)}") from exc
+    except OSError as exc:
+        # juniper-ml#2227: execve refused the argv (E2BIG -- one string over the kernel's MAX_ARG_STRLEN,
+        # 128 KiB on a Linux runner). Before this clause the OSError escaped _gh and crashed the ceremony
+        # AFTER create_branch, leaving an empty archive branch behind. A SourceError HALTs cleanly.
+        raise SourceError(f"gh could not be executed ({exc.__class__.__name__}: {exc}): {' '.join(tok[:80] for tok in args[:4])}") from exc
     if proc.returncode != 0:
         stderr = (proc.stderr or "").strip()
         low = stderr.lower()
@@ -820,26 +851,37 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         # through GitHub's API under the App / GITHUB_TOKEN identity is GitHub-signed / Verified, so the
         # exempt archive PR satisfies the ruleset's required_signatures rule (hands-free auto-merge).
         # expectedHeadOid pins optimistic concurrency to the branch tip create_branch just resolved.
-        out = _cgh(
-            [
-                "api",
-                "graphql",
-                "-f",
-                f"query={_CREATE_COMMIT_ON_BRANCH_MUTATION}",
-                "-f",
-                f"repoWithOwner={owner}/{repo}",
-                "-f",
-                f"branch={branch}",
-                "-f",
-                f"headline={message}",
-                "-f",
-                f"path={path}",
-                "-f",
-                f"contents={content_b64}",
-                "-f",
-                f"expectedHeadOid={expected_head_oid}",
-            ]
-        )
+        # The base64 goes to gh as `-F contents=@<file>` (gh reads the value from the file), never as an
+        # argv value: a Linux runner caps one argv string at 128 KiB, which a ~97 KB archive exceeded and
+        # crashed the ceremony with E2BIG after the branch existed (juniper-ml#2227). The planner's
+        # archive-too-large HALT bounds the request body itself, before this call.
+        with tempfile.NamedTemporaryFile("w", encoding="ascii", prefix="archive-contents-", suffix=".b64", delete=False) as handle:
+            handle.write(content_b64)
+            contents_file = handle.name
+        try:
+            out = _cgh(
+                [
+                    "api",
+                    "graphql",
+                    "-f",
+                    f"query={_CREATE_COMMIT_ON_BRANCH_MUTATION}",
+                    "-f",
+                    f"repoWithOwner={owner}/{repo}",
+                    "-f",
+                    f"branch={branch}",
+                    "-f",
+                    f"headline={message}",
+                    "-f",
+                    f"path={path}",
+                    "-F",
+                    f"contents=@{contents_file}",
+                    "-f",
+                    f"expectedHeadOid={expected_head_oid}",
+                ]
+            )
+        finally:
+            with contextlib.suppress(OSError):  # best-effort cleanup of the temp file; gh has already read it
+                os.unlink(contents_file)
         try:  # best-effort: return the created commit oid (callers use the PR URL from gh pr create)
             data = json.loads(out) if out else {}
             return (((data.get("data") or {}).get("createCommitOnBranch") or {}).get("commit") or {}).get("oid") or ""
@@ -1017,6 +1059,17 @@ def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySour
     # in-repo package archive_repo == repo, so this is unchanged from Phase 3.
     open_pr = find_open_archive_pr(sources.list_open_prs(plan.archive_repo), plan.archive_branch)
     on_main = sources.archive_on_main(plan.archive_relpath)
+
+    # 4b. juniper-ml#2227: an archive the one-request signed commit cannot carry HALTs HERE, before
+    # create_branch runs, so no empty release-notes/<pkg>-v<ver> branch is left behind. Only when an
+    # archive PR would actually be opened: a Release already cut resumed above, and an archive already
+    # open or on main (perhaps condensed by hand, the canopy 0.9.0 precedent) needs no new commit.
+    if open_pr is None and not on_main:
+        raw_len = len(plan.archive_content.encode("utf-8"))
+        encoded_len = len(base64.b64encode(plan.archive_content.encode("utf-8")))
+        cap = archive_b64_max()
+        if encoded_len > cap:
+            return _halt(plan, "archive-too-large", f"the rendered archive {plan.archive_relpath} is {raw_len} B raw / {encoded_len} B base64, over the {cap} B one-request signed-commit cap ({ARCHIVE_B64_MAX_ENV}; juniper-ml#2227) -- nothing was written; condense the notes (util/ad-hoc/2026-10-17_condense_release_notes_section.py, the juniper-canopy 0.9.0 precedent) and re-run, or raise the cap after a runner-side measurement; never invent an archive body", when)
 
     actions: list = []
     if open_pr is not None:

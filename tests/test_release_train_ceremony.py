@@ -47,6 +47,7 @@ from __future__ import annotations
 import base64
 import io
 import json
+import os
 import subprocess  # nosec B404 - git init/commit/status of a throwaway tmp repo for the dry-run snapshot
 import sys
 import tempfile
@@ -55,6 +56,7 @@ import unittest
 from collections import OrderedDict
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 UTIL_DIR = REPO_ROOT / "util" / "release_train"
@@ -588,6 +590,42 @@ class LiveSeamSurfaceTest(unittest.TestCase):
         self.assertTrue(any("createCommitOnBranch" in tok for tok in gql[0]))
         self.assertEqual(ce._api_field(gql[0], "repoWithOwner"), "pcalnon/juniper-ml")
 
+    def test_signed_commit_contents_travel_by_file_not_argv(self):
+        # juniper-ml#2227: a Linux runner caps ONE argv string at 128 KiB (MAX_ARG_STRLEN), so the
+        # base64 archive must reach gh as `-F contents=@<file>`, never as an argv value. The file holds
+        # the exact encoding at call time (gh reads it then) and is removed afterwards.
+        body = "notes body\n" * 20_000  # ~220 KB raw, ~293 KB base64: far over the argv cap
+        seen = {}
+
+        def gh(args, timeout=90):
+            if args[:2] == ["api", "graphql"]:
+                tokens = [tok for tok in args if tok.startswith("contents=@")]
+                self.assertEqual(len(tokens), 1, args)
+                self.assertEqual(args[args.index(tokens[0]) - 1], "-F")
+                path = Path(tokens[0][len("contents=@") :])
+                seen["path"] = path
+                seen["decoded"] = base64.b64decode(path.read_text(encoding="ascii")).decode("utf-8")
+                self.assertLess(max(len(tok) for tok in args), 2048, "no argv token may carry the archive")
+            return self._rec_gh(args, timeout=timeout)
+
+        src = ce.make_live_sources("pcalnon", self.tmp, self.tmp.parent, gh=gh, git=self._rec_git)
+        src.open_archive_pr("juniper-ml", "main", "release-notes/juniper-service-core-v0.5.0", "notes/releases/RELEASE_NOTES_juniper-service-core_v0.5.0.md", body, "release-notes: juniper-service-core v0.5.0", "pr body")
+        self.assertEqual(seen["decoded"], body)
+        self.assertFalse(seen["path"].exists(), "the contents file is removed after the call")
+        gql = [a for a in self.gh_calls if a[:2] == ["api", "graphql"]]
+        self.assertEqual(len(gql), 1, self.gh_calls)
+        allowed = ce.publishing_repo_slugs(d.load_registry(UTIL_DIR / "registry.yaml"), "pcalnon")
+        ce._assert_gh_allowed(gql[0], allowed)  # the R7 carve-out still recognises the call
+        self.assertEqual(ce._api_field(gql[0], "repoWithOwner"), "pcalnon/juniper-ml")
+
+    def test_gh_runner_turns_e2big_into_a_source_error(self):
+        # juniper-ml#2227: OSError(E2BIG) from execve escaped _gh and crashed the ceremony after the
+        # archive branch existed. It is a SourceError now, which the ceremony HALTs on cleanly.
+        with mock.patch.object(ce.subprocess, "run", side_effect=OSError(7, "Argument list too long")):
+            with self.assertRaises(ce.SourceError) as ctx:
+                ce._gh(["api", "graphql", "-f", "query=x"])
+        self.assertIn("Argument list too long", str(ctx.exception))
+
 
 # ── main-CI probe: workflow-scoped + completed-only (dispatch self-observation fix) ──
 
@@ -715,6 +753,50 @@ class PreconditionHaltTest(unittest.TestCase):
         )
         self._assert_halt(plan, "notes-render-failed")
         self.assertIn("could not render the release notes template", plan.halt_reason)
+
+    @staticmethod
+    def _big_changelog(raw_bytes: int) -> str:
+        bullets = "\n".join(f"- Fixed entry {i}: " + ("x" * 200) for i in range(raw_bytes // 220 + 1))
+        return CHANGELOG_050.replace("- A real bug.\n", bullets + "\n")
+
+    def test_archive_too_large_halts_before_any_write(self):
+        # juniper-ml#2227: the archive travels base64-encoded in ONE createCommitOnBranch request, so an
+        # archive whose encoding exceeds the cap HALTs in the planner -- before create_branch, so no empty
+        # release-notes/<pkg>-v<ver> branch is left behind -- instead of crashing at the gh call.
+        rec = _Recorder()
+        plan = _plan(changelog=self._big_changelog(130_000), recorder=rec)
+        self._assert_halt(plan, "archive-too-large")
+        self.assertIn("condense the notes", plan.halt_reason)
+        self.assertIn("nothing was written", plan.halt_reason)
+        self.assertEqual(rec.calls, [])  # planning is pure: no open_archive_pr, no create_release
+        self.assertGreater(len(base64.b64encode(plan.archive_content.encode("utf-8"))), ce.ARCHIVE_B64_MAX_DEFAULT)
+
+    def test_archive_under_cap_is_planned(self):
+        plan = _plan(changelog=self._big_changelog(60_000))
+        self.assertEqual(plan.state, "CEREMONY_PLANNED")
+        self.assertEqual(plan.action_kinds[0], "open_archive_pr")
+
+    def test_archive_cap_is_env_overridable_and_falls_back_on_junk(self):
+        with mock.patch.dict(os.environ, {ce.ARCHIVE_B64_MAX_ENV: "10000000"}):
+            self.assertEqual(ce.archive_b64_max(), 10_000_000)
+            plan = _plan(changelog=self._big_changelog(130_000))
+        self.assertEqual(plan.state, "CEREMONY_PLANNED")
+        for junk in ("not-a-number", "0", "-5", "", "  "):
+            with mock.patch.dict(os.environ, {ce.ARCHIVE_B64_MAX_ENV: junk}):
+                self.assertEqual(ce.archive_b64_max(), ce.ARCHIVE_B64_MAX_DEFAULT, junk)
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(ce.archive_b64_max(), ce.ARCHIVE_B64_MAX_DEFAULT)
+
+    def test_cap_does_not_block_reentry_when_the_release_or_archive_already_exists(self):
+        # A Release already cut, an archive PR already open, or an archive already on main (perhaps
+        # condensed by hand -- the canopy 0.9.0 precedent) needs no new signed commit, so the cap is moot.
+        big = self._big_changelog(130_000)
+        self.assertEqual(_plan(changelog=big, release_cut=True).state, "RESUME_MONITOR")
+        self.assertEqual(_plan(changelog=big, on_main=True).state, "CEREMONY_PLANNED")
+        open_pr = {"number": 7, "headRefName": "release-notes/juniper-service-core-v0.5.0", "url": "u"}
+        plan = _plan(changelog=big, open_prs=[open_pr])
+        self.assertEqual(plan.state, "CEREMONY_PLANNED")
+        self.assertNotIn("open_archive_pr", plan.action_kinds)
 
     def test_halt_issue_title_keyed_on_pkg_and_reason(self):
         plan = _plan(main_ci="failure")
@@ -1220,6 +1302,7 @@ class _ApiLaneRecorder:
     def __init__(self, *, branch_exists=False, existing_tip=None, existing_parent=None, base_sha=BASE_SHA, refs_error=None, graphql_payload=None):
         self.gh_calls = []
         self.git_calls = []
+        self.contents_b64 = None  # what gh read from the `-F contents=@<file>` token (juniper-ml#2227)
         self._branch_exists = branch_exists
         self._tip = existing_tip
         self._parent = existing_parent
@@ -1239,6 +1322,11 @@ class _ApiLaneRecorder:
                 raise ce.SourceError("gh failed (api repos): HTTP 422: Reference already exists")
             return json.dumps({"ref": "refs/heads/x", "object": {"sha": self._base_sha or BASE_SHA}})
         if pair == ("api", "graphql"):
+            # juniper-ml#2227: the base64 reaches gh as `-F contents=@<file>`; gh reads the file during the
+            # call and the seam removes it afterwards, so snapshot it here, as gh would see it.
+            for tok in args:
+                if tok.startswith("contents=@"):
+                    self.contents_b64 = Path(tok[len("contents=@") :]).read_text(encoding="ascii")
             if self._graphql_payload is not None:
                 return self._graphql_payload
             return json.dumps({"data": {"createCommitOnBranch": {"commit": {"oid": "c0ffee", "url": "u"}}}})
@@ -1306,8 +1394,10 @@ class ArchiveLaneApiCommitTest(unittest.TestCase):
         rec = _ApiLaneRecorder()
         self._open(rec, content="A new capability.\nAnd a fix.\n")
         gql = next(a for a in rec.gh_calls if a[:2] == ["api", "graphql"])
-        contents_b64 = ce._api_field(gql, "contents")
-        self.assertEqual(base64.b64decode(contents_b64).decode("utf-8"), "A new capability.\nAnd a fix.\n")
+        # juniper-ml#2227: the contents travel by file, so the argv field is `@<path>` and the recorder
+        # snapshotted what gh read from it; the argv must NOT carry the encoding itself.
+        self.assertTrue(ce._api_field(gql, "contents").startswith("@"), gql)
+        self.assertEqual(base64.b64decode(rec.contents_b64).decode("utf-8"), "A new capability.\nAnd a fix.\n")
         # expectedHeadOid pins optimistic concurrency to the branch tip create_branch resolved (== base sha)
         self.assertEqual(ce._api_field(gql, "expectedHeadOid"), BASE_SHA)
 
