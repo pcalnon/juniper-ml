@@ -94,14 +94,15 @@ _CL_ENTRY = f"""- **BREAKING (resolution): {_ENTRY_MARKER}, and `[recurrence]` a
     `>=0.3.0` and data-client `>=0.4.2`.
   - **Pre-flighted against real PyPI** on 2026-10-18, with
     `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py` (new). It runs pip's resolver over
-    Linux x86_64 wheels and installs nothing.
+    Linux x86_64 wheels (every `manylinux_2_39` to `manylinux_2_17` tag, plus the legacy aliases)
+    and installs nothing.
     - **`[servers]`** resolves in 61 packages on Python 3.12, 3.13 and 3.14: canopy 0.9.0, cascor
       0.11.0, data 0.17.0, service-core 0.7.1, observability 0.4.1.
     - **`[recurrence]`** resolves in 32 packages on all three: recurrence 0.6.0, model 0.4.0, client
       0.3.0, data-client 0.6.0, service-core 0.7.1.
-    - **`[all]`** resolves in 76 packages on 3.13 and 3.14. **On 3.12 it was not confirmed** from the
-      host that ran this: one attempt hit an interrupted wheel download, and the re-run was stopped
-      for low host memory. Both extras this change touches do resolve on 3.12.
+    - **`[all]`** resolves in 95 packages on all three, with juniper-cascor-worker 0.6.1 and torch
+      through it. This was measured on a Linux host, because the run on this change's own host
+      could not complete torch's download.
   - The release train cuts the version that carries this (0.11.0 in the plan), and the `0.11.x` row of
     `docs/REFERENCE.md`'s compatibility matrix lands with that bump. Applied by
     `util/ad-hoc/2026-10-18_raise_recurrence_canopy_pins_w1_13.py`, which asserts each site's exact

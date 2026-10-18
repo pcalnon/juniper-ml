@@ -39,7 +39,12 @@ import tomllib
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
-_PLATFORMS = ["manylinux_2_28_x86_64", "manylinux_2_17_x86_64", "manylinux2014_x86_64", "manylinux_2_5_x86_64", "manylinux1_x86_64"]
+# pip treats --platform as an EXACT tag list: naming manylinux_2_28 does not admit manylinux_2_27. The first
+# version of this script listed only 2_28 / 2_17 / 2014 / 2_5 / 1, and torch >= 2.10's NVIDIA wheels are
+# tagged manylinux_2_27_x86_64 alone, so torch was unresolvable and pip silently backtracked [worker] to
+# juniper-cascor-worker 0.4.0. Its "[all] resolves in 76 packages" described an install nobody gets.
+# (Found by the Linux-host session, 2026-10-18.) Every glibc minor a current manylinux host serves is listed.
+_PLATFORMS = [f"manylinux_2_{minor}_x86_64" for minor in range(39, 16, -1)] + ["manylinux2014_x86_64", "manylinux_2_5_x86_64", "manylinux1_x86_64"]
 _SELF = re.compile(r"^juniper-ml\[(?P<extras>[^\]]+)\]$")
 
 
