@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`util/macvm_ctl.bash`: gated start / stop / status for turing's k8s worker VM** (bring-up task
+  F5a, `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - `start` never calls `VBoxManage startvm` unless gate G-MEM passes: free + inactive memory
+    covers the VM plus 4 GiB, at most 2 GiB of swap is in use, and Docker Desktop is not running.
+    Otherwise it names each failing condition with its value and threshold and exits 1. A running
+    VM exits 0 with no gate, so F7's LaunchDaemon can call `start` at every boot.
+  - `tests/test_macvm_ctl.py` (new) pins R-F5 with every tool stubbed, so it runs on Linux CI. It is
+    wired into `ci.yml` and `docs/REFERENCE.md`.
+  - `util/ad-hoc/2026-10-17_turing_f5a_mutation_check.py` (new) shows that the suite kills 22 of 22
+    mutants.
+  - `util/ad-hoc/2026-10-17_turing_wire_suite.py` (new) applies the plan's CI wiring rule to `ci.yml`,
+    `docs/REFERENCE.md`, `CHANGELOG.md` and `AGENTS.md` the same way for each Session 1 suite PR, and
+    refuses when an anchor is missing or the suite is already wired.
+
 - **The re-land of juniper-ml#2222 with GitHub-signed commits, carrying the turing bring-up plan's
   A4 and B9 corrections** (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
   juniper-ml#2222's branch held three unsigned commits from turing, so `required_signatures`
