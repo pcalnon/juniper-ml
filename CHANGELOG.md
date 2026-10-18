@@ -267,6 +267,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`[recurrence]` now floors `juniper-recurrence>=0.6.1`**, the release that carries the recurrence floors ruling
+  (M1 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-18 UTC). The floor was `>=0.6.0`.
+  - **Why 0.6.0 was not enough.** 0.6.0 shipped without the owner's 2026-10-10 floors ruling: it still
+    admitted `juniper-recurrence-model>=0.3.0` and `juniper-data-client>=0.4.2`. Over a 0.5.0
+    environment, `pip install -U juniper-recurrence` kept model 0.3.0 and data-client 0.5.0,
+    `pip check` was clean, and the service started without the W1.4 rules (`float32`, finite `dt`,
+    `target_dt`, `seq_lengths`) and without the model 0.4.0 target checks. juniper-recurrence#206
+    raised the floors to model `>=0.4.0` and data-client `>=0.6.0`, and 0.6.1 published them on
+    2026-10-18. Its `requires_dist` on PyPI carries both.
+  - **The meta-package's own model (`>=0.3.0`) and data-client (`>=0.5.0`) floors stay**, as the
+    extras ruling of 2026-10-18 kept them. recurrence 0.6.1's floors do the forcing: with this floor,
+    `pip install -U juniper-ml[recurrence]` cannot resolve the stale pair either.
+  - **Pre-flighted against real PyPI** on 2026-10-18 with
+    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages
+    on Python 3.12, 3.13 and 3.14, with recurrence 0.6.1, model 0.4.0, client 0.3.0, data-client 0.6.0
+    and service-core 0.7.1.
+  - The release train cuts the version that carries this (0.11.0 in the plan). Applied by
+    `util/ad-hoc/2026-10-18_raise_recurrence_floor_0_6_1.py`, which asserts each site's exact text and
+    requires exactly one match apiece.
+
 - **`util/isolated_stack.bash` hands the `--with-recurrence` leg `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${RUN_DIR}/snapshots`
   and creates that directory before `serve`** (item 2c of
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, owner
