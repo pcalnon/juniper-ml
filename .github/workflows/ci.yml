@@ -1324,6 +1324,12 @@ jobs:
           # a negative control proves the same names DO execute through the eval loop of the
           # juniper-ml#2222 original. Paths are NUL-delimited, absolute and $HOME-relative.
           python3 -m unittest -v tests/test_find_encryption_readme_notes.py
+          # tests/test_macvm_ctl.py: turing bring-up F5a / R-F5. util/macvm_ctl.bash start must
+          # refuse (exit 1) and never call VBoxManage startvm unless G-MEM passes: free + speculative
+          # + inactive >= VM size + 4 GiB, swap used <= 2 GiB, Docker Desktop not running. Every tool
+          # is a stub reached through VBOXMANAGE / VM_STAT / SYSCTL / PGREP, and a PATH shadow fails
+          # any bare-name call, so no case can reach a real VirtualBox.
+          python3 -m unittest -v tests/test_macvm_ctl.py
 
       - name: Run bash regression tests
         run: |
