@@ -253,6 +253,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`util/isolated_stack.bash` hands the `--with-recurrence` leg `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${RUN_DIR}/snapshots`
+  and creates that directory before `serve`** (item 2c of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, owner
+  ruling 2026-10-18: the name is W1.10's, which `util/experiment_stack.bash` already ships; canopy Lane B
+  adopts it in juniper-canopy#751). Unexported, the service wrote a CWD-relative `recurrence-snapshots/`
+  (F-D9). `tests/test_isolated_stack_script.py` pins the variable and the directory.
+
 - **BREAKING (resolution): `[servers]` now floors `juniper-canopy>=0.9.0`, and `[recurrence]` admits the W1.13 releases, with
   `juniper-recurrence>=0.6.0,<0.7.0` and `juniper-recurrence-model>=0.3.0,<0.5.0`** (W1.13 of
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`). The meta-package could not install either new recurrence release. `[recurrence]`
@@ -361,6 +368,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_perf-lane-helper-binds-axis3-run-d6-control-micro-cut.md`.
 
 ### Fixed
+
+- **The release-train ceremony can archive notes larger than about 97 KB, and it HALTs before any write
+  when an archive cannot travel in one signed commit** (juniper-ml#2227). `util/release_train/ceremony.py`'s
+  `create_signed_commit` passed the base64 file as one `gh` argument, which a Linux runner caps at 128 KiB
+  (`MAX_ARG_STRLEN`); the `E2BIG` escaped `_gh` after the archive branch existed, so an empty
+  `release-notes/<pkg>-v<ver>` branch was left behind, and juniper-canopy 0.9.0's 103 KB notes had to be
+  condensed (juniper-ml#2225). Now the base64 reaches gh as `-F contents=@<file>`, `_gh` turns an `OSError`
+  into a `SourceError`, and `plan_ceremony` HALTs `archive-too-large` after the re-entry checks and before
+  `create_branch` when the encoded archive exceeds 125,000 B. That default is the figure measured from turing
+  for the GraphQL request body, which is not yet established as GitHub's own limit rather than that host's
+  weak link (re-diagnosed 2026-10-18: GitHub's GraphQL frontend drops a request that runs past about 7-10 s);
+  `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides it after a runner-side measurement (owner ruling
+  2026-10-18). The HALT names the condenser as the remedy, never an invented body.
+  `tests/test_release_train_ceremony.py` pins the file transport, the HALT, the env override, that re-entry
+  is not blocked by the cap, and the `OSError` mapping; the release-train operator runbook §4 and
+  `docs/REFERENCE.md` gain the reason key.
 
 - **CI's gitleaks scan loaded zero rules, from 2026-08-13 until this change.** `.gitleaks.toml`
   had an `[allowlist]` and no `[extend]`. In that case gitleaks v8 loads only the file's own
