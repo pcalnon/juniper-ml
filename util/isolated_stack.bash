@@ -53,7 +53,8 @@
 #                                  matches experiment_stack.bash JUNIPER_EXP_RECURRENCE_CONDA)
 #   JUNIPER_E2E_SKIP_ENV_PREFLIGHT — 1 = --skip-env-preflight (matches experiment_stack.bash
 #                                  JUNIPER_EXP_SKIP_ENV_PREFLIGHT)
-#   JUNIPER_E2E_RUN_DIR        — scratch run dir (venv/logs/data) (default: ${TMPDIR:-/tmp}/juniper-e2e)
+#   JUNIPER_E2E_RUN_DIR        — scratch run dir (venv/logs/data; the recurrence leg's snapshots
+#                                  land in ${RUN_DIR}/snapshots, W1.10 parity) (default: ${TMPDIR:-/tmp}/juniper-e2e)
 #   JUNIPER_E2E_DATA_EXTRAS    — juniper-data pip extras  (default: api; use api,mnist for the D2/I-5 checks)
 #   JUNIPER_E2E_HEALTH_TIMEOUT — per-service health wait, seconds (default: 60)
 #   JUNIPER_E2E_CASCOR_WS_EXTRA_ORIGINS
@@ -438,11 +439,15 @@ recurrence_up() {
     [[ "${SKIP_ENV_PREFLIGHT}" == "1" ]] && skip_flag=" --skip"
     banner "juniper-recurrence  ->  http://127.0.0.1:${RECURRENCE_PORT}  (${RECURRENCE_CONDA}, console script)"
     announce "LD_LIBRARY_PATH= bash ${ENV_PREFLIGHT} --python ${python_bin}${skip_flag}   # W0.2 recurrence env preflight: a finding refuses the leg; report -> ${LOG_DIR}/launch.log"
-    announce "LD_LIBRARY_PATH= JUNIPER_RECURRENCE_METRICS_ENABLED=true JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false JUNIPER_DATA_URL=http://127.0.0.1:${DATA_PORT} ${RECURRENCE_BIN} serve --host 127.0.0.1 --port ${RECURRENCE_PORT}   # nohup -> ${LOG_DIR}/juniper-recurrence.log"
+    announce "LD_LIBRARY_PATH= JUNIPER_RECURRENCE_METRICS_ENABLED=true JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${RUN_DIR}/snapshots JUNIPER_DATA_URL=http://127.0.0.1:${DATA_PORT} ${RECURRENCE_BIN} serve --host 127.0.0.1 --port ${RECURRENCE_PORT}   # nohup -> ${LOG_DIR}/juniper-recurrence.log"
     if is_dry; then return 0; fi
 
     ensure_dir "${RUN_DIR}"
     ensure_dir "${LOG_DIR}"
+    # 2c (recurrence plan W1.10 parity, ruled 2026-10-18): the leg's snapshots live in the run's own
+    # ${RUN_DIR}/snapshots, the name experiment_stack.bash shipped. Unexported, the service falls back
+    # to a CWD-relative recurrence-snapshots/ (F-D9), which here is ${RUN_DIR}/recurrence-snapshots.
+    ensure_dir "${RUN_DIR}/snapshots"
     # See data_up: ``recurrence_up || failed=1`` disables set -e inside this body.
     if [[ ! -x "${RECURRENCE_BIN}" ]]; then
         log "ERROR: juniper-recurrence console script not found at ${RECURRENCE_BIN} (set JUNIPER_E2E_RECURRENCE_CONDA)"
@@ -458,6 +463,7 @@ recurrence_up() {
         LD_LIBRARY_PATH='' \
             JUNIPER_RECURRENCE_METRICS_ENABLED=true \
             JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false \
+            JUNIPER_RECURRENCE_SNAPSHOTS_DIR="${RUN_DIR}/snapshots" \
             JUNIPER_DATA_URL="http://127.0.0.1:${DATA_PORT}" \
             nohup "${RECURRENCE_BIN}" serve --host 127.0.0.1 --port "${RECURRENCE_PORT}" >"${LOG_DIR}/juniper-recurrence.log" 2>&1 &
         echo "$!" >"${RUN_DIR}/juniper-recurrence.pid"
