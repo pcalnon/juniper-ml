@@ -253,6 +253,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **BREAKING (resolution): `[servers]` now floors `juniper-canopy>=0.9.0`, and `[recurrence]` admits the W1.13 releases, with
+  `juniper-recurrence>=0.6.0,<0.7.0` and `juniper-recurrence-model>=0.3.0,<0.5.0`** (W1.13 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`). The meta-package could not install either new recurrence release. `[recurrence]`
+  capped `juniper-recurrence<0.6.0` and `juniper-recurrence-model<0.4.0`, and both caps were
+  escaped: model 0.4.0 was published on 2026-10-13, and recurrence 0.6.0 and canopy 0.9.0 on
+  2026-10-17.
+  - **The two ceilings rise to the next minor**: `<0.5.0` for the model, `<0.7.0` for the app.
+  - **Two floors rise, each to a security release** (owner ruling, 2026-10-18 UTC).
+    - `juniper-canopy>=0.9.0`, up from `>=0.8.1`. 0.9.0 is rated High. It refuses an outbound key
+      with padding, a line break or a non-ASCII character where the key is read. It keeps a
+      padded `CANOPY_API_KEY` out of the logs and Sentry, compares every API key without
+      short-circuiting, and picks up the juniper-observability 0.4.1 and juniper-service-core 0.7.1
+      patches.
+    - `juniper-recurrence>=0.6.0`, up from `>=0.5.0`. 0.6.0 is rated Medium. It carries W1.14: a
+      5xx no longer relays the data client's text, which could quote a padded
+      `JUNIPER_DATA_API_KEY`, and a padded key is refused at load. It also picks up the same two
+      shared patches.
+
+    The model and data-client floors do not move, because recurrence 0.6.0 itself admits model
+    `>=0.3.0` and data-client `>=0.4.2`.
+  - **Pre-flighted against real PyPI** on 2026-10-18, with
+    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py` (new). It runs pip's resolver over
+    Linux x86_64 wheels and installs nothing.
+    - **`[servers]`** resolves in 61 packages on Python 3.12, 3.13 and 3.14: canopy 0.9.0, cascor
+      0.11.0, data 0.17.0, service-core 0.7.1, observability 0.4.1.
+    - **`[recurrence]`** resolves in 32 packages on all three: recurrence 0.6.0, model 0.4.0, client
+      0.3.0, data-client 0.6.0, service-core 0.7.1.
+    - **`[all]`** resolves in 76 packages on 3.13 and 3.14. **On 3.12 it was not confirmed** from the
+      host that ran this: one attempt hit an interrupted wheel download, and the re-run was stopped
+      for low host memory. Both extras this change touches do resolve on 3.12.
+  - The release train cuts the version that carries this (0.11.0 in the plan), and the `0.11.x` row of
+    `docs/REFERENCE.md`'s compatibility matrix lands with that bump. Applied by
+    `util/ad-hoc/2026-10-18_raise_recurrence_canopy_pins_w1_13.py`, which asserts each site's exact
+    text and requires exactly one match apiece.
+
 - **BREAKING (resolution): `[servers]` now floors `juniper-data>=0.17.0`, so the meta-package stops admitting the
   juniper-data releases that serve `equities_seq` as `classification`** (W1.11 and F-P4 of
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`). Every published juniper-data up to 0.16.0 serves `equities_seq` with
