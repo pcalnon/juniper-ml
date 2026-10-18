@@ -23,7 +23,7 @@ Continue the arc from plan v1.7.0. **M1's code, publication and deployment halve
 - **juniper-deploy#249 merged** (squash of `980989e9`) through `util/safe_merge.py`, after the Linux-host session's smokes passed (8/8 and 3/3; outputs on #249). Compose and Helm now pin data 0.17.0 / recurrence 0.6.0 / canopy 0.9.0.
 - **recurrence 0.6.1** (the floors 0.6.0 shipped without, juniper-recurrence#206):
   - proposal juniper-recurrence#207 merged as `cad03ed5` (version, CHANGELOG `[0.6.1]`, AGENTS.md rows);
-  - the release-train ceremony ran from turing against the tree extracted at that commit (`--cross-repo --target-sha cad03ed5…`): archive juniper-ml#2238 (auto-merge armed), Release `juniper-recurrence-v0.6.1`, publish run parked at **PENDING_PYPI_APPROVAL** (https://github.com/pcalnon/juniper-recurrence/actions/runs/39152653722).
+  - the release-train ceremony ran from turing against the tree extracted at that commit (`--cross-repo --target-sha cad03ed5…`): archive juniper-ml#2238 (merged), Release `juniper-recurrence-v0.6.1`, publish run parked at **PENDING_PYPI_APPROVAL** (https://github.com/pcalnon/juniper-recurrence/actions/runs/39152653722).
 - **juniper-ml#2227 fixed** (`util/release_train/ceremony.py`, in #2235): `-F contents=@<file>`, `OSError` → `SourceError`, `archive-too-large` pre-write HALT (125,000 B base64 default, `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX`). Five new tests; runbook §4 and `docs/REFERENCE.md` rows. The 0.6.1 ceremony was the first run on the fixed code.
 - **canopy 0.9.0's full notes re-archived**: juniper-ml#2234 merged. Rebuilt from canopy's CHANGELOG with the ceremony's renderer; re-condensing reproduces the old archive byte for byte. The archive guard is add-only, so the commit carried `Allow-Archive-Edit: notes/releases/RELEASE_NOTES_juniper-canopy_v0.9.0.md` (a trailer-less first attempt, #2233, was closed).
 - **2c**: `util/isolated_stack.bash` hands the `--with-recurrence` leg `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${RUN_DIR}/snapshots` and creates the dir; `tests/test_isolated_stack_script.py` pins it (#2235). juniper-canopy#751 filed for Lane B.
@@ -36,11 +36,11 @@ Continue the arc from plan v1.7.0. **M1's code, publication and deployment halve
 
    ```bash
    curl -s https://pypi.org/pypi/juniper-recurrence/json | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d["info"]["version"], d["info"]["requires_dist"])'   # 0.6.1; model>=0.4.0,<0.5.0 and data-client>=0.6.0,<0.7.0
-   gh pr view 2238 --repo pcalnon/juniper-ml --json state     # MERGED once auto-merge fires
+   gh pr view 2238 --repo pcalnon/juniper-ml --json state     # MERGED (auto-merge fired 2026-10-18)
    ```
 
    Then: a juniper-ml extras PR moving `[recurrence]` to `juniper-recurrence>=0.6.1` (owner ruling; lockstep files as in juniper-ml#2232: `pyproject.toml`, `tests/test_pyproject_extras.py`, `README.md`, `AGENTS.md`, `docs/QUICK_START.md`, `docs/REFERENCE.md`, `CHANGELOG.md`; pre-flight against PyPI on 3.12–3.14), and the owner's decision on whether the Compose pin follows to 0.6.1.
-2. **Merge juniper-ml#2235** once green (CI was re-run after a black/isort fix). It carries plan v1.7.0 rebased on v1.6.2, so juniper-ml#2236 must be merged first; if #2236 changes again, re-run `edit_plan_v170_on_162.py` (the scratch script is gone with the session; the edits are all exact-string replacements listed in the 1.7.0 change-log row).
+2. **Merge juniper-ml#2235** once green (CI was re-run after a black/isort fix). It carries plan v1.7.0 re-based on v1.6.2 after juniper-ml#2236 merged (`8580153c`); the edits are exact-string replacements, listed in the 1.7.0 change-log row.
 3. **Remove the merged juniper-deploy worktree** (owner, sibling-repo git is refused in agent sessions):
 
    ```bash
@@ -91,7 +91,7 @@ grep -n 'archive-too-large' util/release_train/ceremony.py | head -3          # 
 
 ## Git status at handoff
 
-- **juniper-ml worktree** `unified-knitting-galaxy`: branch `worktree-unified-knitting-galaxy`, fast-forwarded to `origin/main` at `2719f7f3` (juniper-ml#2232). Local modifications are exactly #2235's files (pushed as signed commits through the API, one per file) plus this handoff; nothing is committed locally.
+- **juniper-ml worktree** `unified-knitting-galaxy`: branch `worktree-unified-knitting-galaxy`, fast-forwarded to `origin/main` at `8580153c` (juniper-ml#2236, plan v1.6.2). Local modifications are exactly #2235's files (pushed as signed commits through the API, one per file) plus this handoff; nothing is committed locally.
 - **Sibling worktree** `/Users/pcalnon/Development/python/Juniper/worktrees/juniper-deploy--chore--pin-recurrence-0.6.0-canopy-0.9.0--20261017-1945--541e65e`: juniper-deploy#249's tree, merged; remove it (step 3).
 - **Scratch** (session-specific, gone with the sandbox): the rebuilt canopy notes, the 0.6.1 proposal files, the ceremony manifest and log, and the edit scripts.
 
