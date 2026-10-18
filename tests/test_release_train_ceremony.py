@@ -46,17 +46,17 @@ from __future__ import annotations
 
 import base64
 import io
-import os
 import json
+import os
 import subprocess  # nosec B404 - git init/commit/status of a throwaway tmp repo for the dry-run snapshot
 import sys
 import tempfile
 import textwrap
 import unittest
-from unittest import mock
 from collections import OrderedDict
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 UTIL_DIR = REPO_ROOT / "util" / "release_train"
@@ -602,7 +602,7 @@ class LiveSeamSurfaceTest(unittest.TestCase):
                 tokens = [tok for tok in args if tok.startswith("contents=@")]
                 self.assertEqual(len(tokens), 1, args)
                 self.assertEqual(args[args.index(tokens[0]) - 1], "-F")
-                path = Path(tokens[0][len("contents=@"):])
+                path = Path(tokens[0][len("contents=@") :])
                 seen["path"] = path
                 seen["decoded"] = base64.b64decode(path.read_text(encoding="ascii")).decode("utf-8")
                 self.assertLess(max(len(tok) for tok in args), 2048, "no argv token may carry the archive")
@@ -1326,7 +1326,7 @@ class _ApiLaneRecorder:
             # call and the seam removes it afterwards, so snapshot it here, as gh would see it.
             for tok in args:
                 if tok.startswith("contents=@"):
-                    self.contents_b64 = Path(tok[len("contents=@"):]).read_text(encoding="ascii")
+                    self.contents_b64 = Path(tok[len("contents=@") :]).read_text(encoding="ascii")
             if self._graphql_payload is not None:
                 return self._graphql_payload
             return json.dumps({"data": {"createCommitOnBranch": {"commit": {"oid": "c0ffee", "url": "u"}}}})
