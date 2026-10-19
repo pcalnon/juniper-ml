@@ -6121,10 +6121,10 @@ The driver keeps train and crossval aligned by spreading one dict onto both bodi
 A `crossval:` block turns CV on unless it sets `enabled: false`; with no block, CV is off. The body is:
 
 - `dataset.dataset_id`
-- `n_folds` (required integer ≥ 2 when enabled), `scheme` (default `expanding`), `embargo` (default `0`), `min_train` only when set
+- `n_folds` (required integer ≥ 2 when enabled), `scheme` (default `expanding`), `embargo` and `min_train` only when set
 - the filtered train keys
 
-The service has the same `scheme` / `embargo` defaults. `n_folds` has no service default; the schema requires it (`ge=2`).
+The service has the same `scheme` default. An omitted `embargo` is omitted from the request (W5.2), so the service's default applies: `0` on recurrence ≤ 0.7.0, one look-back per entity from 0.8.0. `n_folds` has no service default; the schema requires it (`ge=2`).
 
 ### What an omitted model field becomes
 
