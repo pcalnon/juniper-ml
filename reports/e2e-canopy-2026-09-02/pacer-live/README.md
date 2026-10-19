@@ -13,9 +13,9 @@ The legs for runs 1–3 served an **uncommitted** working tree, so their `/v1/he
 
 | run | when (CDT) | served code | how it is known |
 |---|---|---|---|
-| F-055 census, run 1, run 2 | 17:43–18:47 | the tree before commit 1 (its pacer is commit 1's) | this session's edit history; **not recorded by hash** |
-| F-055 census (v2), run 3 | 19:02–19:33 | commit 2's tree (`b344ff97`'s content) | the page carried `__junPollPacerLastUnacked`, which only commit 2 has |
-| F-055 census (final), run 4 | 19:33–20:04 | **`2689a207`** | `/v1/health` `git_sha` (`2026-10-08_final_leg_health_2689a207.json`) and the captured `_dash-dependencies` (`2026-10-08_final_leg_dash_dependencies_2689a207.json`: no `running=` guard; each feeder's only Input is its request store) |
+| F-058 census v2, run 1, run 2 (the table said "F-055 census" until 2026-10-19, ledger Phase 12) | 17:43–18:47 | the tree before commit 1 (its pacer is commit 1's) | this session's edit history; **not recorded by hash** |
+| F-058 census v2, run 3 | 19:02–19:33 | commit 2's tree (`b344ff97`'s content) | the leg's `build_date`, 2026-10-09T00:02:18Z (`2026-10-08_status_bar_apply_census_8052_pacer_v2.json`), sixteen seconds after commit 2 and before commit 3, on the assumption that the leg does not reload its source; and the page carried `__junPollPacerLastUnacked`, which commit 1 lacks (this cell said "which only commit 2 has" until 2026-10-19; commits 3 to 5 keep the name: ledger Phase 12) |
+| F-058 census v2, run 4 | 19:33–20:04 | **`2689a207`** | `/v1/health` `git_sha` (`2026-10-08_final_leg_health_2689a207.json`) and the captured `_dash-dependencies` (`2026-10-08_final_leg_dash_dependencies_2689a207.json`: no `running=` guard; each feeder's only Input is its request store) |
 
 `65ead946` (commit 5, a CodeQL fix) has a callback graph identical to that capture: 179 callbacks, symmetric
 difference 0 (`util/ad-hoc/2026-10-08_compare_canopy_wiring.py`). Its pacer JavaScript is unchanged from commit 3's.

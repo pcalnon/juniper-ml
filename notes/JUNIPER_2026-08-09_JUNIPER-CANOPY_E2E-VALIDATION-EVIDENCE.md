@@ -8251,7 +8251,16 @@ v3 is frozen as the local commit `a967a5bd`. It is both lanes' minimal change pl
 
 ### F-CANOPY-055 — the top status bar never applies: F-035's class on a fourth writer
 
-**F-CANOPY-055 — the top status bar never applies a periodic response, so status, phase, step, hidden units and latency hold their layout defaults for the life of the page, and the Live Dataset Switch gate computed inside it never lands (P1, canopy repo; found 2026-09-23 by the one-browser census Phase 7 owed; OPEN).**
+**F-CANOPY-055 — the top status bar never applies a periodic response, so status, phase, step, hidden units and latency hold their layout defaults for the life of the page, and the Live Dataset Switch gate computed inside it never lands (P1, canopy repo; found 2026-09-23 by the one-browser census Phase 7 owed; FIXED by canopy#731, merged 2026-10-09 as `25c5c887` and shipped in canopy 0.9.0; verified live on the branch at `2689a207` 2026-10-08, Phase 12).**
+
+- **Status 2026-10-19: FIXED by canopy#731 (Phase 12).** The feeder is paced by request/ack: its only Input is
+  `status-bar-request`, written by a clientside pacer on the 1 s lane once the previous request's ack has landed,
+  so no response is evicted by the next tick's request. The census above, its rule unchanged, read APPLIES on the
+  branch at `2689a207` (12 watched, 11 executed, 11 latency changes, the bar at the server's `Completed — early
+  stopped`, epoch 76) and NEVER-APPLIES on a same-day `main` control (0 of 34 executed, `Stopped` / `0`). Not
+  driven: the Live Dataset Switch allow arm, the second half of this entry's own verification rule, which needs
+  a running training (Phase 12, item 27; last driven 2026-09-23 on demo legs, Phase 9). The fix direction below,
+  a `running=` guard on its own lane, is the first fix, refuted in Phase 9; the pacer replaced it.
 
 `update_unified_status_bar` (`dashboard_manager.py`) is a server callback. It has:
 
@@ -9128,8 +9137,17 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   - it keys on the page's own session while the WS broadcast reaches every page;
   - weights that arrive while it is closed are drained into the next session.
 
-**F-CANOPY-058 — a `running=` guard is released by an evicted request's completion too, so a mid-request re-request, or a re-enable that lets the next request be made before the in-flight response lands, can start an eviction cascade, and the lane's responses can stop applying for minutes (P1, canopy repo; found 2026-09-23 by F-CANOPY-055's round-1 adversarial lane; mechanism observed live on canopy `main` 2026-10-05, Phase 11, in runs of up to 11 evictions and 34.8 s, the minutes only in synthetic repros; OPEN).**
+**F-CANOPY-058 — a `running=` guard is released by an evicted request's completion too, so a mid-request re-request, or a re-enable that lets the next request be made before the in-flight response lands, can start an eviction cascade, and the lane's responses can stop applying for minutes (P1, canopy repo; found 2026-09-23 by F-CANOPY-055's round-1 adversarial lane; mechanism observed live on canopy `main` 2026-10-05, Phase 11, in runs of up to 11 evictions and 34.8 s, the minutes only in synthetic repros; FIXED by canopy#731 (the guard removed), merged 2026-10-09 as `25c5c887`, in canopy 0.9.0; verified live on the branch at `2689a207` 2026-10-08, Phase 12).**
 
+- **Status 2026-10-19: FIXED by canopy#731 (Phase 12).** The guard is gone, and nothing is left for an evicted
+  request's completion to release: the feeder's only Input is `metrics-store-request`, written by a clientside
+  pacer once the ack has caught up or the request is past its stale bound, and the display mode is State of the
+  feeder and an Input of the pacer, compared by value. The gate is again the lane's only writer of `disabled`,
+  and a completion cannot re-enable a lane under the Apply clamp (the clamp defeat, below). The census v2,
+  unchanged but for the feeder's key, counted 0 of 912 requests evicted in four 25-minute runs on the branch,
+  the last on `2689a207`, against 29 of 611 on `main` in Phase 11; the real-renderer check PASSED on the final
+  pacer and FAILED on the guard-and-watchdog control. The minutes below were never reached on canopy and were
+  not driven again: with no guard, the mechanism has nothing to run on. Limits: Phase 12.
 - **Status 2026-10-05: OBSERVED LIVE on canopy `main`, at `60ae1870` and `c7876f5a` (Phase 11).** Two census
   runs found 29 of 611 responses evicted, in eight runs of up to 11 evictions; the longest left the lane 34.8 s
   without an applied answer, and the minutes below were reached only in synthetic repros (Lanes B and B1). Read one
@@ -10712,8 +10730,17 @@ on each transcript; where two figures are given, they are the first run's and th
 
 ### New findings
 
-**F-CANOPY-068 — canopy's metrics-store strand watchdog re-enables a lane that has not stranded: it samples the lane's `disabled` on the 5 s slow lane and restarts its 30 s clock only on a sample that finds the lane enabled, so when the feeder's cycle is close to 5 s its samples keep landing on requests in flight; on canopy `main` it fired 13 and 15 times in two 25-minute runs, each time during a fetch, which its own comment says it must never do, and 7 of the 28 fires evicted a response, 6 of them starting F-CANOPY-058 cascades (P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2, the second limb of the owner's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census; re-rated P1 in round 1 of this phase's validation; OPEN).**
+**F-CANOPY-068 — canopy's metrics-store strand watchdog re-enables a lane that has not stranded: it samples the lane's `disabled` on the 5 s slow lane and restarts its 30 s clock only on a sample that finds the lane enabled, so when the feeder's cycle is close to 5 s its samples keep landing on requests in flight; on canopy `main` it fired 13 and 15 times in two 25-minute runs, each time during a fetch, which its own comment says it must never do, and 7 of the 28 fires evicted a response, 6 of them starting F-CANOPY-058 cascades (P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2, the second limb of the owner's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census; re-rated P1 in round 1 of this phase's validation; FIXED by canopy#731 (the watchdog removed), merged 2026-10-09 as `25c5c887`, in canopy 0.9.0; verified live on the branch at `2689a207` 2026-10-08, Phase 12).**
 
+- **Status 2026-10-19: FIXED by canopy#731 (Phase 12).** The watchdog and `METRICS_STORE_STRAND_TIMEOUT_MS` are
+  removed. A request that never gets a response is re-issued by its own age, past a stale bound of
+  `max(POLL_PACER_STALE_MS 30 s, 3 × the longest round trip seen on that poll)`, capped at 120 s: progress, not
+  samples of a prop, as the fix direction below asked. Four 25-minute census runs on the branch logged no fire,
+  which is the structural expectation, not a measurement, since the fire detector has nothing left to see; the
+  real-renderer check's 10 idle minutes on a lane whose cycle was near 5 s issued no stale re-issue, where the
+  guard-and-watchdog control fired 4 times. canopy's CHANGELOG `[0.9.0]` carries the correction to the `[0.8.0]`
+  description. The rating's condition, the second limb of the owner's question, now decides this entry's rating
+  of record only; it moves no count (Phase 12, Matrix effect and counts).
 - **The watchdog** is the repair for a lane stranded by a request that never gets a response
   (`dashboard_manager.py:2497-2555` at canopy `60ae1870`). It is a clientside callback on `slow-update-interval`
   (5 s, `canopy_constants.py:371`) that reads the lane's `disabled` and `apply-in-flight` as State and writes the
@@ -11228,3 +11255,501 @@ New items:
     mechanism, of the behaviour it breaks. Start with F-CANOPY-057, F-CANOPY-018, F-CANOPY-012 and F-CANOPY-013, and re-rate what the ruling
     reaches. Whatever the ruling, the CAN-015g/h design note's "every CAN-015g item has merged to `main`" needs a
     dated correction: g-3 never reached cascor `main` (F-CANOPY-057's History).
+
+## Phase 12 — 2026-10-19: one request/ack pacer closes F-CANOPY-055, F-CANOPY-058 and F-CANOPY-068 (canopy#731, shipped in canopy 0.9.0); the P1 count falls from 7 to 4
+
+**Summary.**
+
+- **The fix.** canopy#731 (branch `fix/f055-f058-f068-request-ack-pacer`) paces both slow polls by request/ack.
+  Each feeder's only Input is a request store, written by a clientside pacer on the poll's existing Interval, and
+  each feeder echoes the request's `seq` into an ack store on every return path. The pacer asks again only once
+  the ack has caught up, or once the request is past its stale bound. canopy#613's `running=` guard, the strand
+  watchdog and `METRICS_STORE_STRAND_TIMEOUT_MS` are gone, and the display mode is State of the feeder and an
+  Input of the pacer, compared by value. It was squash-merged on 2026-10-09T02:27:27Z as `25c5c887`, after three
+  review rounds, and shipped in **canopy 0.9.0** (CHANGELOG dated 2026-10-10; GitHub Release published 2026-10-17T19:45:37Z
+  at `bd001153`; on PyPI when this phase was written).
+- **Three findings are FIXED**: F-CANOPY-055 (P1), F-CANOPY-058 (P1) and F-CANOPY-068 (P1 or P2 by the owner's
+  ruling). Each is fixed in code on the merge and verified live on the branch at `2689a207`, the fourth commit,
+  on 2026-10-08, within the limits in "What VERIFIED LIVE rests on" below. No live run has been made on the merged
+  tree or on the 0.9.0 wheel.
+- **The evidence was made on 2026-10-08 by the session that wrote the fix** and landed in juniper-ml#2196
+  (`0174c3dd`, merged 2026-10-09T02:36:55Z): the real-renderer check (`reports/e2e-canopy-2026-09-02/pacer-renderer-check/`),
+  the live census runs (`reports/e2e-canopy-2026-09-02/pacer-live/`) and the review record
+  (`reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_canopy731_pacer_rounds1-3.md`). This
+  phase re-derived every number below from those files, with the archived readers, and ran nothing live.
+  - **Live, on the branch**: 0 of 912 feeder requests evicted in four 25-minute census runs, against 29 of 611
+    on `main` in Phase 11, and no fire. F-CANOPY-055's census read APPLIES on `2689a207` and NEVER-APPLIES on a
+    same-day `main` control.
+  - **Real renderer**: the final pacer PASSED, with 0 of 172 requests evicted over 10 idle minutes, three rounds
+    of four mid-request triggers and one stranded request; the guard-and-watchdog control FAILED, with 88 of 198
+    evicted and 4 false fires.
+- **The cost the fix introduced, disclosed in the PR and the CHANGELOG.** A failure outside a feeder's own `try`
+  (a non-OK reply from Dash or a middleware, or a network failure such as a canopy restart) lands no ack, so that
+  lane's request is re-issued only after its stale bound, 30 s to 120 s, and answered a tick and a round trip
+  later (the renderer check's stranded request: re-issued at 31.0 s, applied at 35.0 s). The bound is a running
+  maximum that only grows for the life of the page: the 16–17 s in-flight times of census runs 1 and 2 would
+  have set it to as much as 49–52 s, the pacer's own round trip being a lower bound (round 1, Lane 12-B; round
+  2, Lane 12-R2B). On `main` the metrics store retried on the next
+  tick after a non-OK reply and recovered from a network failure by the watchdog's 30 s; the status bar's 1 s
+  lane retried on the next tick. No live run injected such a failure.
+- **Phase 11's items 0 and 24 are closed.** The canopy text Phase 11 listed is corrected, and canopy's CHANGELOG
+  `[0.9.0]` entry carries the correction to the `[0.8.0]` watchdog description.
+- **Counts** (`e2e_finding_triage.py`): 79 findings, **56 fixed**, 1 accepted, 2 withdrawn, **20 open**; no open
+  P0, **4 open P1** and 16 open P2.
+
+### Who, and from what
+
+- **Who.** This phase was written in juniper-ml worktree `squishy-growing-breeze` on a host with no Juniper
+  service listening and no reach to the trio, so it is a reading of archived artifacts and of the GitHub API,
+  not a live phase. The fix, its review and its evidence are the work of the P2 Lane A session of 2026-10-08
+  in worktree `agile-napping-popcorn`, recorded as it stood in
+  `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-08_canopy-pacer-731-landed-phase12-owed.md`.
+- **canopy#731** holds eight commits: the five that session signed (`7aed1f2b` the pacer; `b344ff97` round 1's
+  answers; `957176de` round 2's; `2689a207` round 3's one test; `65ead946` the pacers' lanes wired from
+  `_PACED_POLLS`) and three merges of `main` into the branch (`13dcc58a`, `d777a86e`, `13834945`, the head at the
+  merge), GitHub-signed as well. It was squash-merged: `25c5c887` has one parent, `4f69524b`, so the merged tree
+  is the head's, and CI on the squash passed (53 check runs: 46 successful, 7 skipped). Its one review thread, CodeQL's "unused
+  global variable" on `_PACED_POLLS` (`dashboard_manager.py:520`), is resolved; commit 5 answered it. By that
+  session's `util/ad-hoc/2026-10-08_compare_canopy_wiring.py`, the callback graph of `65ead946` is identical to
+  the capture taken from the leg serving `2689a207`, 179 callbacks with a symmetric difference of 0. The
+  comparison needs a built canopy app, so this phase confirmed the capture's side only: 179 callbacks, no
+  `running=`, one writer of each paced lane's `disabled`, and one Input per feeder (round 1, Lanes 12-A and
+  12-B). The three merge commits are not in that comparison.
+- **canopy 0.9.0.** The CHANGELOG `[0.9.0]` entry, dated 2026-10-10, carries the fix as its first Fixed item, with
+  the three finding ids, the stale bound, the cost and the `[0.8.0]` correction. The release's notes are archived
+  in `notes/releases/RELEASE_NOTES_juniper-canopy_v0.9.0.md`.
+
+### The design, as merged
+
+- **The pacer** (`poll_pacer_js`, `dashboard_manager.py`) is one clientside function registered twice, once per
+  paced poll, with state keyed by the request store's id. On each tick of the poll's Interval it reads the last
+  request and the ack. If the ack has caught up, it writes request `seq + 1` (the layout's seq-0 request is
+  acknowledged by the feeder's own initial call). If the ack is behind, it writes nothing, unless the request is
+  older than the stale bound, when it re-issues it as `stale`. A display-mode change issues an `extra` request on
+  the first pacer run after the fetch in flight is acknowledged (the pacer runs on the mode store and on the
+  1 s tick), and a lost `extra` request is re-issued as `extra`.
+- **The stale bound** is `max(POLL_PACER_STALE_MS, 3 × the longest round trip seen on that poll)`, capped at
+  120 s, with `POLL_PACER_STALE_MS` at 30 s (`canopy_constants.py`). Each round trip is a lower bound, measured
+  with `performance.now()` to the last pacer run that still saw the request unanswered, so a throttled
+  background tab cannot inflate it (round 1's Lane B found the first version inflated by one throttled tick, to
+  about 180 s, before it was pushed).
+- **The feeders.** `update_metrics_store`'s Input is `metrics-store-request` alone; the display mode and the rest
+  are State. It writes `metrics-store-ack` on every return path, a raising handler included, so a handler that
+  raises acks with `no_update` for the data and the next request is a tick. `update_unified_status_bar`'s Input is
+  `status-bar-request`, and it writes `status-bar-ack` the same way. Each feeder now has a multi-output key
+  (`..metrics-panel-metrics-store.data...metrics-store-ack.data..`), which any collector matching an output key
+  exactly misses: `src/tests/ui/test_ws_silent_poll_liveness.py` failed in CI this way until commit 2, and the
+  census needed the wrapper under Instruments.
+- **What is gone.** The `running=` guard on `metrics-store-interval`, the strand watchdog on the slow lane and
+  `METRICS_STORE_STRAND_TIMEOUT_MS`. The fused tab/apply gate is again the only writer of
+  `metrics-store-interval.disabled`, and a completion can no longer re-enable a lane under the CAN-000 Apply
+  clamp, the clamp defeat Phase 8's item 6 named and F-CANOPY-058's entry carried. Both pacers ride clamped lanes,
+  so under the clamp neither issues a request.
+- **Two paths still re-request a feeder, each costing at most one response and no chain**, because no guard is
+  left to release: the renderer's initial call when `suppress_cascade_tabs` rebuilds the tab container after a
+  live/one-shot model switch (`update_metrics_store` keeps `prevent_initial_call=False`), and a pacer write that
+  lands during that call. Round 1's Lane A found them; the PR and the CHANGELOG disclose them. Neither is filed
+  as a finding: one lost response, replaced by the initial call's own answer, with no chain, sits below plan
+  §6.3's drift, and the capture confirms a single writer of each paced lane's `disabled`, so no release can
+  follow (round 1, Lane 12-B).
+- **Also changed.** `FULL_HISTORY_POLL_TICK_MODULUS` (5) now counts requests issued (the feeder passes the
+  request's `seq`, so a stale re-issue counts too), not ticks of the guarded Interval, so the full views refetch
+  on every fifth request, expected every 5–10 s and not measured. Not filed: the gate runs on the same 1 s tick,
+  so the cadence is equivalent until Phase 9's item 4 measures it (round 1, Lane 12-B). A display-mode change
+  now waits for the fetch in flight and up to one tick before its own fetch is issued, where on `main` the mode
+  store was an Input of the feeder and the fetch went out at once, evicting the one in flight: in the renderer
+  check's final run the three `extra` requests were issued 3.0, 4.7 and 3.7 s after the switch and their data
+  landed 6.7, 8.0 and 7.4 s after it, at a 3.6 s round trip; on a real page the wait runs up to the lane's
+  in-flight time, 17 s under the load of census runs 1 and 2 (round 1, Lane 12-B). `_PACED_POLLS` registers the
+  paced polls; `_setup_poll_pacers` wires their lanes from it, the F-CANOPY-027 poller census counts them from it, and
+  a structural test keeps it complete.
+
+### The review of the fix
+
+Three rounds of independent adversarial review, 2026-10-08, recorded in
+`reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_canopy731_pacer_rounds1-3.md`. The six lane
+reports there are condensed in transcription, which the file says; the full texts are in that session's
+transcript. The review ended at round 3, which changed no behaviour-relevant conclusion.
+
+- **Round 1** (commit 1, `7aed1f2b`; three lanes). Lane A, renderer mechanics, did not refute the core mechanism and
+  found two of the PR's absolute claims false in letter (the initial-call re-request, and "nothing re-requests a
+  feeder while in flight", which the stale re-issue does by design) and one regression (recovery after a
+  Dash-level failure, 1 s to about 30 s). Lane B returned REFUTED as pushed on that undisclosed regression, found
+  the unpushed adaptive bound inflatable by one throttled tick, and ran 16 mutations, of which only M2 (never
+  stale) survived the simulation. Lane C re-probed 26 claims and found four stated as observed on canopy that
+  were inferred or synthetic. Commit 2 (`b344ff97`) answered every finding.
+- **Round 2** (commit 2; two lanes, 20 mutations). No BLOCKER or MAJOR. Lane R2-A found the wall clock (a forward
+  step gives a false stale re-issue or a permanently inflated bound) and pacer state keyed by lane rather than by
+  request store, whose shared-key mutation M18 survived every suite. Lane R2-B found that T-apply had never been a
+  mid-request test, that a lost `extra` request's re-issue read `stale`, that the renderer run and the first census
+  runs predate commit 1 and ran an unhashed tree, and that the commit-2 status-bar census read VOID. Commit 3
+  (`957176de`) answered them: `performance.now()`, state keyed per poll with a node test driving both pacers on
+  one `window`, and `extra` carried over.
+- **Round 3** (commit 3's diff; one lane). No BLOCKER or MAJOR. One mutation, dropping the `!acked &&` guard so
+  `extra` sticks forever, survived; commit 4 (`2689a207`) added the test that kills it. By that session's
+  `util/ad-hoc/2026-10-08_pacer_round2_mutation_check.py`, each new node test fails on its own mutation (shared
+  key, `Date.now()`, no carry, sticky `extra`); it needs canopy's environment and was not re-run here.
+- **Tests on the branch**, as the PR records them: the full canopy unit suite on commit 2, 6,819 passed and 0
+  failed, run with `LD_LIBRARY_PATH` and `LIBTORCH` unset (the handoff adds `LIBTORCH_LIB`; with them set, 116
+  tests fail identically on `main`); `tests/unit/frontend` on commits 3 and 4, 0 failures; regression and integration, 0
+  failures; `-m "ui and not slow"`, 33 passed and 1 xfailed; all 25 CI checks on `2689a207`. The new suite is
+  `src/tests/unit/frontend/test_f055_f058_f068_request_ack_pacer.py`: the wiring, the acks on every return path,
+  the registered pacer under node, and a 10-idle-minute simulation of a healthy lane whose cycle is near 5 s,
+  which the same simulation of the old guard and watchdog fails by firing falsely. Lane B called that simulation
+  weak as a non-vacuity check in round 1; commit 2 added delayed acks and a stranded request to it.
+- **What the review could not support**: recovery on a real page after a non-OK reply or a network failure (only
+  the scratch app strands a request); any renderer but dash 4.2.0 (Lane A compared the 4.4.1 sites by reading
+  the wheel, and did not run it); live training or the full-history views on a leg.
+
+### The live checks, re-derived
+
+All on verify legs on `:8052` (`util/ad-hoc/2026-09-04_canopy_verify_instance.bash`), each reading the trio's
+cascor `:8202` and data `:8101` and writing neither, with `:8051` never touched, one headless Chromium page per
+run on dash 4.2.0 (`JuniperCanopy1`). The README in `reports/e2e-canopy-2026-09-02/pacer-live/` states what each
+leg served and how it is known; this phase's readings agree with it on what each leg served, and qualify its
+commit-2 discriminator below. Two slips in the two evidence READMEs, found by this phase's review, are corrected
+by its round-2 pass, outside the reviewed files: the pacer-live README's table called census runs 1 to 4 the
+"F-055 census", and the renderer-check README dated the first two runs 17:40–17:54 CDT, where their requests ran
+17:29–17:41 (round 2, Lane 12-R2A; round 1, Lanes 12-A and 12-C).
+
+- **What the legs served.** Runs 1 to 3 of the F-058 census and the first two status-bar runs served an
+  **uncommitted** working tree, so each transcript's `served` field is the base commit, `3029d07d`, not the code
+  under test. Runs 1 and 2 ran the tree before commit 1, by that session's edit history and not by any hash; their
+  leg's `build_date`, 2026-10-08T22:43:05Z, precedes commit 1 (23:28:34Z). Run 3 ran commit 2's tree: its leg's
+  `build_date` is 00:02:18Z, sixteen seconds after commit 2 (00:02:02Z) and before commit 3 (00:19:57Z), on the
+  assumption that the leg does not reload its source, and the page carried `__junPollPacerLastUnacked`, which
+  commit 1 lacks (the README's "which only commit 2 has" was true when the leg was built and is false in letter
+  since commit 3, which kept the name; round 1, Lane 12-B). The build dates are in the status-bar census files,
+  whose legs are the census runs' legs. Run 4 and
+  the final status-bar run served **`2689a207`**, from the leg's `/v1/health` (`git_sha`; its `version` reads
+  `0.6.0`, the environment's stale editable install, Phase 10's O4) and from the captured `_dash-dependencies`,
+  which has no `running=` guard and one Input per feeder.
+- **The F-058 census v2** ran unchanged through `util/ad-hoc/2026-10-08_f058_census_v2_on_pacer_leg.py`, which
+  sets the census's feeder key to the paced feeder's multi-output key and nothing else. Read again here with
+  `util/ad-hoc/2026-10-04_f058_census_v2_analyze.py`, which dates changes by their enclosing records as it did in
+  Phase 11:
+
+| run | served | answered / evicted | still in flight at close | in flight from `watched`: median / p90 / max | the clamp's episode | fires | eviction runs |
+|---|---|---|---|---|---|---|---|
+| 1 | `3029d07d` (the tree before commit 1) | 188 / 0 | 1 | 6,194 / 12,113 / 16,363 ms | 58.4 s | 0 | none |
+| 2 | `3029d07d` (same leg) | 164 / 0 | 0 | 7,891 / 11,748 / 17,308 ms | 59.9 s | 0 | none |
+| 3 | `3029d07d` (commit 2's tree) | 256 / 0 | 1 | 4,809 / 6,707 / 9,547 ms | 59.4 s | 0 | none |
+| 4 | **`2689a207`** | 304 / 0 | 0 | 3,991 / 5,179 / 6,655 ms | 59.1 s | 0 | none |
+
+  - **912 requests answered, 0 evicted**, 845 of them inside the scored windows (170, 149, 240 and 286). The two
+    requests still in flight when a page closed are counted in neither. In Phase 11, 29 of 611 were evicted.
+  - **No fire**, in every run. The detector has nothing to see on the branch: 0 is the fix's structure, not a
+    measurement of the watchdog.
+  - **The gate wrote 8 or 9 times per run**: `false` onto an enabled lane 7, 6, 6 and 6 times (two at page load,
+    one at T-gate, two or three at T-tab, one at the census's own release after T-apply, and none at T-mode),
+    once `true` (the T-apply clamp, held
+    58.4–59.9 s) and once `false` onto the disabled lane (the clamp's release). A request was in flight at 5, 5,
+    5 and 2 of the enabled-lane writes, and none evicted anything, because the pacer issues the next request
+    only on the ack (round 1, Lanes 12-A and 12-B; the draft had counted the clamp's two writes among the
+    enabled-lane writes and said "most" for run 4's 2 of 6).
+  - **Load.** The README gives one `uptime` reading after each run, 32.7, 13.8, 5.4 and 9.9 on 16 cores: runs 1 and
+    2 shared the host with other sessions' work and canopy unit suites. The in-flight times fall with the load,
+    and run 4's cycle of about 5.0 s (median applied gap 5.0–6.3 s by window) is the one comparable with Phase
+    11's 4.9 s. These are readings taken afterwards, not samples over the runs.
+  - **The triggers.** T-gate, T-tab and T-mode read NO-EFFECT in every run, which is the fix's prediction: their
+    TOOK predicates look for a gate write of `false` onto a disabled lane, or a second feeder request while one is
+    open, and the pacer leaves neither. **T-apply did not test a mid-request Apply release.** Under the clamp the
+    pacer issues nothing, so the census found no request open; the clamp was released 58.4–59.9 s after it was
+    set, which fits E-3's 60 s force-release (`APPLY_IN_FLIGHT_MAX_MS`) by timing, and the census's own release
+    then landed on an enabled lane. That is the same gap Phase 11 had on `main`, for a different reason: there
+    nothing started under the clamp; here nothing is issued under it.
+- **F-CANOPY-055's census** (`util/ad-hoc/2026-09-23_status_bar_apply_census.py`, rule unchanged: 45 s settle,
+  then a 60 s window; a verdict needs 10 responses). Verdicts re-read from the archived JSON:
+
+| served | verdict | watched / executed | latency changes |
+|---|---|---|---|
+| the tree before commit 1 | **APPLIES** | 56 / 56 | 42 |
+| commit 2's tree | **VOID** (9 responses, under the floor) | 9 / 9 | 8 |
+| **`2689a207`** | **APPLIES** | 12 / 11 (one in flight at the end) | 11 |
+| a `git archive` of `main` `3029d07d` on `:8053` (`git_sha` null; `main` by assertion) | **NEVER-APPLIES** | 34 / 0 | 0 |
+
+  On every pacer leg the bar showed the server's `Completed — early stopped` at epoch 76; on the control it held
+  `Stopped` / `0`, as on 2026-09-23. The VOID is the rule's floor, sized for a 1 Hz lane, meeting a lane that
+  self-clocks on its round trip under load (Phase 9's item 14, fourth rule); the responses it did get were all
+  executed. The fix's census is the third row, on the hashed leg.
+
+### The real renderer
+
+`util/ad-hoc/2026-10-08_f055_f058_f068_pacer_renderer_check.py` (its docstring fixed the phases, the verdict rule
+and the expectations before the first run) registers canopy's own `poll_pacer_js`, imported from the branch, in a
+scratch Dash app under dash 4.2.0 and headless Chromium (Playwright 1.59.0), with round trips drawn per request
+from a seeded normal around 3,600 ms, clipped to Phase 11's measured 888–5,345 ms. Each run is 10 idle minutes,
+then three rounds of the four triggers (a tab switch, an Apply, a second-Input change, a mode change) fired
+mid-request, then, on the pacer arm, one request stranded for 45 s. Scores re-read from the archived JSON:
+
+| | pacer, final (`2689a207`'s JavaScript; 20:04–20:16 CDT) | pacer, first (the tree before commit 1; 17:29–17:41 CDT) | guard + watchdog control (17:29–17:40 CDT) |
+|---|---|---|---|
+| requests / completed | 172 / 171 | 172 / 171 | 198 / 197 |
+| evicted, the stranded request excluded | **0** | 0 | **88** (70 in idle, 18 at the triggers) |
+| made while another was in flight | 0 | 0 | 96 (69 in idle, 27 at the triggers) |
+| false fires in idle | — (no watchdog) | — | 4 |
+| idle: requests, stale re-issues, median applied gap | 145, 0, 4,161 ms | 146, 0, 4,153 ms | 167, —, 4,618 ms |
+| triggers followed by an applied response | 12 of 12 | 12 of 12 | 2 of 12 |
+| the stranded request | re-issued 30,999 ms after it began; applied 3,969 ms later | 30,995 ms; 3,968 ms | not run |
+| ack-derived applications | 1 (k=118) | 1 (k=109) | — |
+| verdict | **PASS** | **PASS** | **FAIL**, as expected |
+
+- **The first scoring of the first pacer run read one eviction**, k=109, and was corrected before any result was
+  reported: the pacer issued request 109 ten milliseconds after that response ended, which it does only after
+  reading ack 108, and the feeder writes the ack and the data in one response, so k=109 applied. The page's
+  recording callback had been coalesced behind the next request. The scorer now derives application from the
+  acks as well (`applied_by_ack_only`) and reports it separately; `pacer_stdout.json` keeps the first score. It
+  recurred once in the final run (k=118). The guard arm has no ack, so its 88 may include such coalescing; its 96
+  requests made in flight do not depend on the recorder.
+- The first run's pacer had a fixed 30 s bound and let `stale` take precedence over a mode change; commits 2 and
+  3 changed both, and the final run is on the final JavaScript, which commits 4 and 5 left unchanged. The two runs
+  ran 17:29–17:41 CDT (their file names carry their end times; round 1, Lane 12-A) beside two canopy unit suites,
+  at a load read afterwards, at 18:17, of 32.7 on 16 cores; the final run at 9.9 before and 5.9 after.
+- **What it does not show**: canopy itself (the live census does that); any browser but headless Chromium; any
+  renderer but dash 4.2.0, where canopy's lock ships 4.4.1.
+
+### What VERIFIED LIVE rests on, and its limits
+
+The three entries say "verified live on the branch at `2689a207`". That rests on run 4 of the F-058 census and the
+third status-bar row, both on the hashed leg, with the real-renderer check on the same JavaScript and the three
+runs on earlier trees as corroboration. It does not rest on:
+
+- **a mid-request Apply release.** T-apply has not tested one on any leg. Under the pacer no request is issued
+  under the clamp, and the clamp was force-released by E-3 at about 60 s before the census's own release in every
+  run, so the only mid-request release the design allows is a request issued after the clamp's release, which the
+  census does not make. The renderer check's Apply trigger (3 of the 12) is the only mid-request Apply tested,
+  on the scratch app.
+- **an injected failure.** No live run produced a non-OK reply or a network failure, so the stale bound's ≥ 30 s
+  wait, the cost above, was reached only by the renderer check's stranded request.
+- **a run that trained.** Every page sat on an idle trio, so the WS short-circuit (`ws_live`), the full-history
+  views, the accuracy charts' refetch under the new modulus and the status bar during a run went unexercised.
+- **the merged tree or the shipped wheel.** `2689a207` is the fourth of eight commits. Commit 5 changes wiring
+  only, and its callback graph equals the capture; the three merges of `main` bring the changes `main` took
+  between 2026-10-08 and 10-09, which no live run on the branch included. canopy 0.9.0 adds the rest of its
+  CHANGELOG on top. The trio's canopy `:8051` has not been restarted on 0.9.0 by this arc.
+- **a second host or a second renderer.** One host, 16 cores, under other sessions' load; dash 4.2.0 only.
+- **F-CANOPY-055's Live Dataset Switch allow arm**, which needs a running training (item 27).
+- **F-CANOPY-058's minutes**, which were synthetic and are not reachable without a guard.
+
+The dispositions stand as FIXED on that basis. Should any of those limits turn up a defect, it is a new finding
+against the pacer, not a reopening of these three, unless it shows that a response is evicted or a lane stalls
+by the mechanisms these entries describe.
+
+### The canopy text corrected
+
+Phase 11's "Still owed" item 0 listed the canopy text F-CANOPY-058 and F-CANOPY-068 contradicted. canopy#731
+corrected it, by its PR body and its diff: the `_GATED_POLL_INTERVALS` comment ("the harmless window", was
+`dashboard_manager.py:467-472` at `60ae1870`); the feeder's "THREE QUALIFICATIONS" comment ("Self-healing, bounded
+to one cycle", was `:4734-4737`); the watchdog's own comment (was `:2514-2522`), removed with it;
+`canopy_constants.py`'s strand constant (was `:412-424`), removed; `test_poll_gating.py:194-197` ("continuously
+``True``") and `:313` ("the apply clamp alone"), rewritten so that the suite now requires one writer per
+`disabled` prop and no `running=` guard. The modulus comment was corrected too, which Phase 11 did not list. In
+the CHANGELOG, the `[0.9.0]` entry states that the `[0.8.0]` watchdog "could not do" what that entry described,
+and why. Phase 11's `test_poll_gating.py` observation that the watchdog's tests never ran its predicate is moot:
+the predicate is gone, and the pacer's own rule runs under node.
+
+### Instruments
+
+- **New in canopy#731's session**, all in `util/ad-hoc/` and all merged in juniper-ml#2196:
+  - `2026-10-08_f055_f058_f068_pacer_renderer_check.py`, the real-renderer check above, with the ack-derived
+    correction and, since round 3, each request's `stale` flag logged and the acks and stale re-issues derived
+    from it (re-scoring the earlier runs was byte-identical);
+  - `2026-10-08_f058_census_v2_on_pacer_leg.py`, the wrapper that points the census at the paced feeder's key;
+  - `2026-10-08_pacer_round2_mutation_check.py`, which runs each new node test against its own mutation;
+  - `2026-10-08_compare_canopy_wiring.py`, which compares a built app's callback graph with a captured
+    `_dash-dependencies`.
+- **Phase 11's readers were not run on these transcripts**, and would read nothing: the release trace pairs each
+  late release of the `running=` guard with the evicted request whose successor was in flight, and the replay
+  samples the watchdog's logic over the lane's `disabled` episodes; the branch has neither a guard nor a watchdog,
+  and its one `disabled` episode per run is the T-apply clamp. Item 24's reader change (a push-order walk of the
+  lane records compared with the type selection, exit 2 on a difference, and `--self-test` refusing an alternation
+  break) was not made. Two lanes walked Phase 11's transcripts in push order and found the type selection's
+  changes, and no transcript the readers will be asked to read again exists, so the change is dropped, not
+  carried.
+- **The census's limits under the pacer.** Its triggers' TOOK predicates were written for a guarded lane, so on a
+  paced lane every scored trigger reads NO-EFFECT by construction, and the evictions are the only score. Item 25's
+  method, triggers fired from the page as a request enters `watched`, still applies, but T-apply needs a design of
+  its own: under the pacer the clamp stops the requests, so a mid-request Apply release can only be reached by a
+  request issued after the release, or by an Apply whose clamp is set while a request is in flight and released
+  before its ack, which E-3's 60 s force-release never allows on an idle page.
+- **This phase's own readings** used only the archived readers and Python's `json`, on the files in the two
+  evidence directories, with no live service. Nothing in those directories was changed.
+
+### Consensus record (§7 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`)
+
+- **Round 1**: three lanes on the frozen `c626e847`, briefed separately with different entry points. Briefs are in
+  `reports/e2e-canopy-2026-09-02/drafts/lane12{A,B,C}_phase12_ledger_brief.md`, and the reports, verbatim, in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-19_validator_reports_phase12_round1.md`.
+  - Lane 12-A re-derived every number and source claim from the artifacts first, with its own reader of the census
+    transcripts before the repo's, then the GitHub API and canopy's source at `25c5c887`.
+  - Lane 12-B was adversarial on the dispositions: whether FIXED and "verified live" should stand, what the phase
+    took from the PR body rather than from an artifact, the counts, the dropped reader change and the new items.
+  - Lane 12-C checked the five changed files against each other, the rest of the ledger, the repo and GitHub, and
+    ran the new handoff's verification commands.
+  - The lanes' own probes are in their scratch directories and were not archived: each was a reader of the
+    archived JSON or a `gh` query, and none produced a figure the ledger now rests on that a `json` reading of the
+    archived files does not reproduce.
+- **Verdicts.** All three returned SOUND-WITH-FIXES. Lane 12-A's first two findings and Lane 12-B's first change
+  numbers in the phase text (the gate's writes, and the first renderer runs' times), and Lane 12-C's MAJOR changes the stated
+  history behind item 27, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`
+  requires round 2. None refuted a disposition, the counts or an action.
+- **What round 1 changed:**
+  - the gate's writes on the census legs: 8 or 9 per run in all, of which `false` onto an enabled lane 7, 6, 6
+    and 6, with a request in flight at 5, 5, 5 and 2 of those; the draft had counted the clamp's two writes among
+    them and said "most" for run 4 (Lanes 12-A and 12-B; Lane 12-B's 4 in flight for run 2 was not adopted, both
+    the orchestrator's reader and the archived one giving 5);
+  - the first renderer runs ran 17:29–17:41 CDT; their file names carry their end times (Lane 12-A);
+  - item 27's history: the allow arm was last driven on 2026-09-23 on demo legs, where it landed on the unfixed
+    parent too, so Phase 8's "inferred regressed" was never established; the draft said it had not been driven
+    since canopy#514 (Lane 12-C, MAJOR). It also now names the experimental toggle the gate needs (Lane 12-B);
+  - run 3's provenance now rests on its leg's `build_date` against commits 2 and 3, with the page's
+    `__junPollPacerLastUnacked` as the secondary basis, since commits 3 to 5 carry that name too (Lane 12-B);
+  - a display-mode change's own fetch now waits for the fetch in flight plus up to one tick, measured at 3.0–4.7 s
+    to issue in the renderer check's final run, recorded under "Also changed" as a change a user could notice (Lane 12-B);
+  - the cost is stated as the re-issue bound plus a tick and a round trip, and the bound as a running maximum
+    that only grows (Lane 12-B);
+  - item 0 is "closed", with its allow-arm drive converted to item 27 and its scored triggers to item 25, and
+    F-CANOPY-055's Status bullet says which half of the entry's own verification rule is still owed (Lane 12-B);
+  - the wiring comparison and the mutation check are labelled as the fix session's results, with what this phase
+    could confirm from the capture alone (Lanes 12-A and 12-B);
+  - the two residual re-request paths and the modulus change are each dispositioned, not filed, with the reason
+    (Lane 12-B);
+  - the squash: `25c5c887` has one parent, so the merged tree is the head's; CI on the squash (Lane 12-B); the
+    merge commits are GitHub-signed too (Lane 12-A);
+  - wording: the pacer's rule with no request yet (Lane 12-A); the modulus counts requests issued, `seq`
+    (Lanes 12-A and 12-B); `LIBTORCH_LIB` is the handoff's, not the PR's (Lane 12-A); the worktree-cleanup
+    procedure's real filename, in item 29 and the handoff (Lane 12-C);
+  - the handoff: where items 25, 27 and 28 run, four references that lacked filenames, and item 4's echo of
+    item 27's history (Lane 12-C).
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-19_phase12_ledger_round1_corrections.py`,
+    17 substitutions in the ledger and 6 in the handoff.
+- **Re-derived by the orchestrator before applying:**
+  - every gate write in the four transcripts, from `…_analyze.py`'s per-write list: 9, 8, 8 and 8; one `true` and
+    one `false` onto the disabled lane per run; the requests in flight at each;
+  - the first renderer runs' trigger stamps, 17:38:59–17:40:12 CDT, ten idle minutes after a 17:29 start;
+  - Phase 9's allow-arm table (`:8058` LANDS 13.0 s on the first fix, `:8059` LANDS 19.7 s on the parent) and its
+    Matrix ruling that F-CANOPY-025 "stays counted FIXED";
+  - the legs' `build_date` fields (22:43:05Z, 00:02:18Z, 00:33:31Z) against the five commits' committer dates
+    (23:28:34Z, 00:02:02Z, 00:19:57Z, 00:28:03Z, 01:19:15Z);
+  - the three `extra` requests of the final renderer run: issued 3,010, 4,693 and 3,687 ms after the switch, landed
+    6,695, 8,047 and 7,397 ms after it;
+  - `25c5c887`'s one parent `4f69524b`, and its 46 successful and 7 skipped check runs;
+  - `_gate_live_switch_button_handler`'s `return not (flags_ok and running)` at `25c5c887`;
+  - the pacer's `reason = changed ? 'extra' : (acked ? 'tick' : 'stale')` and `n=seq` at `25c5c887`;
+  - `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md` exists and the short name does not.
+- **Not applied.** Lane 12-C's lint finding (the markdownlint hook excludes `notes/` and `prompts/`; the two
+  headers were over 512 characters before this phase) and its note that the pacer-live README's heading calls
+  runs 1–4 the "F-055 census": the README is not under review, and the ledger names the files correctly.
+  Lane 12-C's finding 5, that the handoff describes a landing that has not happened, is checked once the commits
+  land, before the PR is marked ready, as that finding asks.
+- **Slips.** None reported.
+- **Round 2**: two lanes on the frozen `190c896c`, briefed on round 1's corrections only, from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane12R2_phase12_ledger_brief.md`. The reports, verbatim, are in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-19_validator_reports_phase12_round2.md`.
+  - Lane 12-R2A replayed round 1's pass on `c626e847`: `190c896c` byte for byte, with no hand edit, and re-derived
+    every claim the pass introduced with its own readers of the transcripts, the renderer runs, the capture and
+    canopy's source at `25c5c887`. Lane 12-R2B was adversarial on the pass, and replayed it too.
+  - Both found every corrected number and credit to re-derive, the diff to hold nothing the record does not list,
+    and the triage unchanged.
+- **Verdicts.** Both returned SOUND-WITH-FIXES. Neither found anything that changes a number, a disposition or an
+  action, so under §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` **the
+  review ends at round 2.**
+- **What round 2 changed**, wording only:
+  - where the enabled-lane gate writes fall: two at page load, one at T-gate, two or three at T-tab, one at the
+    census's own release, none at T-mode (Lanes 12-R2A and 12-R2B);
+  - item 27 says what a demo drive can and cannot establish: that the arm reaches the paced bar, not a difference
+    from the old code, which Phase 9 found also got through on a demo page; Phase 9's item 0 asked for a leg "where
+    the old code fails", which has no venue that trains, and that ask is recorded as unmet by design (Lane 12-R2B);
+  - the cost's wording in item 18 and in the handoff now adds the tick and the round trip after the bound, as the
+    Summary does, and the 49–52 s is "as much as", since the pacer's own round trip is a lower bound (Lane 12-R2B;
+    Lane 12-R2A's note);
+  - the squash's check runs: 53, of which 46 successful and 7 skipped (Lane 12-R2B);
+  - the sentence on the pacer-live README now says where this phase departs from it, and two slips in the two
+    READMEs, found in round 1, are corrected by this pass outside the reviewed files: the pacer-live README's table
+    called census runs 1 to 4 the "F-055 census" and gave the commit-2 discriminator round 1 qualified, and the
+    renderer-check README dated the first two runs 17:40–17:54 CDT (Lane 12-R2A; round 1, Lanes 12-A and 12-C);
+  - round 1's record: the lanes' figures are ones a `json` reading of the archived files reproduces, not the
+    archived readers; the renderer measurement is the final run's; Lane 12-B's count of 4 in flight for run 2 was
+    not adopted, both readers giving 5; the times were Lane 12-A's second finding; the handoff's item-4 echo is
+    listed; and Lane 12-C's finding 5 is checked once the commits land, before the PR is marked ready (Lanes
+    12-R2A and 12-R2B).
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-19_phase12_ledger_round2_corrections.py`,
+    13 substitutions in the ledger, 6 in the handoff and 5 in the two READMEs.
+- **Re-derived by the orchestrator before applying:** every gate write's place against the triggers in the four
+  transcripts, none after T-mode (the last writes at 744,000, 789,703, 741,583 and 730,977 ms, T-mode at
+  1,514,647 ms or later); the two READMEs' lines; the 53 check runs; the pacer's `maxRtt` as the age at the last
+  pacer run that still saw the request unanswered (`dashboard_manager.py:578-587` at `25c5c887`).
+- **Unresolved dissent.** None.
+- **What the evidence cannot support** is unchanged from "What VERIFIED LIVE rests on": nothing live on the merged
+  tree or the wheel, no injected failure, no training run, no mid-request Apply release, one host, dash 4.2.0
+  only. The instrument of this phase is a reading of archived files and of the GitHub API; it could have produced
+  a different answer only where those files disagree with the fix session's README and PR body, and the two
+  places it found are recorded above.
+- **Slips.** None reported.
+
+### Matrix effect and counts
+
+- No matrix row changes: this phase drove no matrix row.
+- **Counts**, from `e2e_finding_triage.py`: **79 findings**, 56 fixed, 1 accepted, 2 withdrawn, **20 open**.
+  - **No open P0.**
+  - **4 open P1:** F-CANOPY-064, F-CANOPY-065, F-CASCOR-001 and F-CASCOR-002. F-CANOPY-065 is P1 only if a shipped
+    CHANGELOG or design-plan promise counts as documented, the first limb of the owner's question: by that ruling
+    alone, 4 open P1 and 16 open P2, as the triage counts them, or 3 and 17.
+  - **The second limb moves no count now.** It decides F-CANOPY-068's rating of record, which stays "P1 if … else
+    P2" in its header, with FIXED after it. O17 of the owner batch still asks both limbs, because the first reaches
+    F-CANOPY-057, F-CANOPY-018, F-CANOPY-012 and F-CANOPY-013 (Phase 11, item 26), and the second is the record.
+  - **16 open P2**, unchanged. Of the three findings Phase 11 named within the first limb's reach, and F-CANOPY-013,
+    none is touched by this phase.
+- **Plan §6.3's Phase 2 exit criterion**, every P0 and P1 closed or explicitly deferred with owner sign-off, now
+  waits on four P1s: F-CANOPY-064 (item 18), F-CANOPY-065 (item 20 and the ruling), and the two cascor findings,
+  which are not this arc's to fix.
+
+### Still owed after this phase
+
+Phase 11's list stands, items 0 to 26, with these changes:
+
+- **Item 0 is closed**, both halves: F-CANOPY-058 was confirmed live in Phase 11, and one design for F-CANOPY-055,
+  F-CANOPY-058 and F-CANOPY-068 merged as canopy#731. Its real-renderer tests ran on the scratch app (the four
+  triggers mid-request, 10 idle minutes on a lane whose cycle is near 5 s, and a stranded request); its live
+  verification ran on the branch (the census and the status-bar census). Two of its asks are converted rather
+  than done: the allow-arm drive to item 27, and the census's scored triggers on the fix's leg to item 25
+  (round 1, Lane 12-B). The canopy text is corrected.
+- **Item 24 is DONE** for the fix and its live check: four census runs on the fix's legs, no fire and no eviction
+  run, two of them on hashed code (one at `2689a207`). Its reader change is dropped (Instruments). Its "measure
+  the rate during a run" does not apply: no watchdog remains.
+- **Item 5 of Phase 9** (the clamp defeat, folded into F-CANOPY-058) closes with it: a completion no longer
+  re-enables a lane under the clamp.
+- **Item 18**'s note that a canopy restart "can also strand a page's metrics poll for about 30 s (the watchdog's
+  30 s, counted from a 5 s slow tick)" is corrected as of 2026-10-09: on the pacer a restart lands no ack, so the
+  poll's request is re-issued after its stale bound, at least 30 s and at most 120 s counted from the request,
+  and answered a tick and a round trip later. The drives that item
+  asks for are unchanged; the Sliding Window page can hold the burst's rows that long for the new reason.
+- **Item 25** stays, on the merged code, with T-apply redesigned for the pacer (Instruments).
+- **Item 26** stays, unchanged, F-CANOPY-012 and F-CANOPY-013 first.
+
+New items:
+
+27. **F-CANOPY-055's Live Dataset Switch allow arm.** F-CANOPY-025's gate is computed inside the status-bar feeder.
+    The arm was last driven on 2026-09-23, on demo legs (Phase 9), where it landed on F-CANOPY-055's first fix and
+    on the unfixed parent alike, so Phase 8's "inferred regressed" was never established; it has not been driven
+    on a page at the trio's latency, nor on the pacer (round 1, Lane 12-C). This is the second half of
+    F-CANOPY-055's own verification rule, and of Phase 9's item 0. Drive it on a demo leg serving canopy 0.9.0 or
+    later, whose training may be started (never the trio), with the experimental-functions toggle on (the gate
+    is `not (flags_ok and running)`, `_gate_live_switch_button_handler`; round 1, Lane 12-B), expecting the
+    switch enabled while a run is active and disabled after the stop. A demo drive can show that the arm reaches
+    the paced bar; as Phase 9 found, it cannot discriminate from the old code, which also got responses through
+    on a demo page. Phase 9's item 0 asked for a leg "where the old code fails", which failed only at the trio's
+    latency on a page that does not train; that ask has no venue and is unmet by design (round 2, Lane 12-R2B).
+    Record the result in F-CANOPY-025's and F-CANOPY-055's entries.
+28. **The first live run on the shipped pacer.** When the trio's canopy `:8051` is next restarted on 0.9.0 or
+    later (the owner's call, O13), or on any leg serving the merged tree, re-run the F-058 census through the
+    wrapper and the status-bar census once each, 25 minutes and 60 s, as a check that the merged tree behaves as
+    the branch did; and, on a leg that may be restarted, inject one failure (stop the leg for 10 s with a page
+    open) and read how long the lane waits before its first applied answer, against the stale bound. This is the
+    cost's first measurement on a real page.
+29. **Housekeeping, on the Linux host.** Remove canopy worktree
+    `juniper-canopy--fix--f055-f058-f068-request-ack-pacer--20261008-1713--3029d07d` (branch merged; HEAD
+    `65ead946`), per `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`, and juniper-ml worktree
+    `agile-napping-popcorn`
+    once its staged copies are confirmed to be the files juniper-ml#2196 merged. This phase could not reach that
+    host.
