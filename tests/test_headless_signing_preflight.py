@@ -823,5 +823,20 @@ class SourceContractTest(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
 
+class StaleKeyIdTest(unittest.TestCase):
+    """R-B8 (plan task B8): the superseded ed448 key id (plan erratum X7) must not survive in an executable file.
+
+    util/test_gpg_signing.bash hard-coded it, and B8 deletes that script. This preflight replaces it.
+    """
+
+    def test_r_b8_stale_key_id_is_gone_from_util_and_scripts(self) -> None:
+        needle = b"93e8591643c507ff"
+        hits = sorted(str(p.relative_to(REPO_ROOT)) for top in ("util", "scripts") for p in (REPO_ROOT / top).rglob("*") if p.is_file() and needle in p.read_bytes().lower())
+        self.assertEqual(hits, [], "the superseded ed448 signing key id is back in an executable file (plan X7, task B8)")
+
+    def test_r_b8_the_stale_validator_is_deleted(self) -> None:
+        self.assertFalse((REPO_ROOT / "util" / "test_gpg_signing.bash").exists(), "util/test_gpg_signing.bash pinned the ed448 key; B8 deletes it")
+
+
 if __name__ == "__main__":
     unittest.main()

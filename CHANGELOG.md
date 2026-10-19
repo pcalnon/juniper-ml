@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Turing bring-up B8: the superseded ed448 signing key leaves the executable tree**
+  (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, erratum X7).
+  - `util/test_gpg_signing.bash` is deleted. It ran `gpg --clearsign -u 93E8591643C507FF`, the ed448 key, which has
+    not been the signing key since 2026-08-07. `util/headless_signing_preflight.bash` replaces it with non-credential
+    checks.
+  - `tests/test_headless_signing_preflight.py` gains R-B8: no file under `util/` or `scripts/` may carry that key id,
+    and the deleted validator stays deleted.
+  - `notes/JUNIPER_2026-07-16_JUNIPER-ECOSYSTEM_CODE-SIGNING-KEY-MIGRATION-STATUS.md` is marked SUPERSEDED, with a banner
+    naming the current key (`BA18D1A733B1831A`) and the audit that records it (audit findings A1-F1 and A1-F2).
 - **`util/headless_signing_preflight.bash`: the turing bring-up B7 signing preflight**
   (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
   - It runs non-credential checks only: R-B7a's `!` pin, `commit.gpgsign`, R-B7b's GUI pinentry (turing named
