@@ -3,7 +3,7 @@
 - **Project**: Juniper ecosystem. The plan lives in juniper-ml; it touches juniper-ml, juniper-k8s and juniper-recurrence, plus the host's own configuration.
 - **Author**: Paul Calnon (investigation and drafting via a Claude Code session on turing)
 - **Date**: 2026-10-15 (round-1 reconciliation 2026-10-16)
-- **Version**: 1.1.1 — v1.1.0 plus task E6 closed (errata X6 and X10) and erratum E-CQ, 2026-10-19. v1.1.0 added the Session 1 record and errata (§16). Where §16 and an earlier section disagree, §16 wins.
+- **Version**: 1.2.0 — v1.1.1 plus the Session 2 record (§17, 2026-10-19). v1.1.1 closed task E6 and added erratum E-CQ; v1.1.0 added the Session 1 record and errata (§16). Where §16 or §17 disagrees with an earlier section, the later section wins.
 - **Status**: VALIDATED. Consensus round 1 had 3 reviewers, all ACCEPT-WITH-CHANGES and no BLOCKER; all findings at MAJOR and above were applied; round 2 (§15.2) found 1 MAJOR, which was applied. The plan authorizes the tasks in §6. Tasks marked **OWNER** need the owner at the keyboard.
 - **Owner**: Paul Calnon
 - **Template**: `notes/templates/TEMPLATE_DEVELOPMENT_ROADMAP.md`, adapted to a single-host bring-up
@@ -884,6 +884,40 @@ This section records what the session did and corrects the plan where measuremen
   - **The UTC date.** The advisory "Verify AGENTS.md Last Updated" check wants today's *UTC* date (juniper-ml#2245, #2247).
 - **E-B8 (closeout-plan §7.4).** `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md` §7.4 expected deleting `util/test_gpg_signing.bash` to be a symbol-loss `LOST` finding. The screen inventories bash *functions* only, and that script defines none, so no `Allow-Symbol-Loss` trailer was needed (juniper-ml#2249).
 - **E-CQ (the CodeQL follow-up in the 2026-10-19 handoff).** That handoff asked for CodeQL's `py/import-and-import-from` to be folded into `util/ad-hoc/2026-10-05_codeql_python_prescreen.py`. The pre-screen has had that rule, for standard-library modules, since it landed (juniper-ml#2183). On the file CodeQL flagged in juniper-ml#2242 (`tests/test_claude_agent_guard.py` at `afb75f71`) it reports exactly that alert, at line 50, and nothing else, so nothing was folded. The one-off `util/ad-hoc/2026-10-18_codeql_import_and_import_from_screen.py` claimed the pre-screen lacked the query; its header now carries a correction.
+
+## 17. Session 2 record (v1.2.0, 2026-10-19)
+
+Session 2 ran on turing on 2026-10-19. It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-1-six-code-prs-landed-owner-steps-next.md`, and its own handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-2-e6-d5-d6-h1-done-e2-blocked-on-little-snitch.md`.
+
+### 17.1 Owner rulings
+
+- **D5 (2026-10-19): demote, don't remove.** `/opt/local/{bin,sbin}` move to the end of PATH. Removing them would drop 128 MacPorts-only commands, including the owner's `gpg2`, `gnupg` and `gnupg2` links into Homebrew's gnupg Cellar (`reports/2026-10-19_turing-d5-path-inventory/`).
+- **Order (2026-10-19): E2 next**, ahead of the G-arc PRs and of MCP (H4, H5).
+
+### 17.2 Task status after Session 2
+
+| Task | Status | Record |
+|---|---|---|
+| E6 | done | juniper-ml#2259 (`c92ed76d`): X6 and X10, plus erratum E-CQ (§16.3). juniper-ml#2262 then reverted X10's six lines (E-LAND-2), and juniper-ml#2268 (`63358646`) re-applied them |
+| D6 | done 2026-10-19 | The pre-commit gitleaks env builds, and the hook runs and passes; `SKIP=gitleaks` is retired on turing. The Session 1 failure was a TCP dial timeout to proxy.golang.org. Its cause is not established: the 2.4 GHz link (§16.3 E-NET) or an unanswered Little Snitch alert for `go` (E-NET-2) |
+| D5 | done 2026-10-19, as ruled | `~/.bash_profile:87` reads `export PATH="${HOME}/.local/bin:${PATH}:/opt/local/bin:/opt/local/sbin"`, with the ruling in a comment above it. Backup: `~/.bash_profile.bak-2026-10-19-pre-D5`. In a clean login shell, `gpg` resolves to Homebrew, and `gpg2` and `rlwrap` still resolve to `/opt/local/bin` |
+| H1 | done 2026-10-19 | `util/install_agents.bash`, run from the primary checkout, linked 6 agents and 3 skills into `~/.claude/{agents,skills}`. The checkout is on `main` but 21 commits behind; its `.claude/agents`, `.claude/skills` and installer are identical to `origin/main`. H2 brings the count to 9 |
+| E2 | **blocked (OWNER: Little Snitch)** | `conf/hosts/turing/conda-envs/{JuniperCascor1,JuniperData,JuniperCanopy1}.yml` are derived and solve under `mamba --dry-run`, but no env is created (E-E2, E-NET-2). The resume runner is `util/ad-hoc/2026-10-19_turing_e2_validate_envs.py` |
+
+### 17.3 Errata
+
+- **E-D5 (D5's acceptance).** "`which -a gpg` shows Homebrew only" becomes "`which -a gpg` lists Homebrew's `gpg` first". `/opt/local/bin/gpg` stays on PATH, last, and it is itself a link into the same Homebrew Cellar.
+- **E-E2 (D8, E2).** Each repo's `conf/conda_environment.yaml` is a linux-64 export (build strings, CUDA wheels, Linux compilers), so none solves on osx-64.
+  - turing's specs are derived by `util/ad-hoc/2026-10-19_turing_e2_derive_conda_envs.py`. It keeps versions, drops the Linux-only and CUDA packages, takes torch from conda-forge's CPU build, and relaxes only the pins that have no osx-64 build. Each relaxation is in the spec's header; the main ones are pytorch 2.9.1 → 2.10.0 (osx-64 has no py314 build of 2.9.x, and 2.10.0 is cascor's own floor) and MKL 2025.3 → 2023.2 (Intel's last macOS MKL).
+  - Upstream drift, for the owner: cascor's Linux spec pins torch 2.9.1, below the repo's own 2.10.0 floor. canopy's `[test]` extra needs newer packaging, coverage and anyio than its spec pins.
+- **E-NET-2 (per-app outbound filtering).**
+  - The same HTTPS URL succeeds from `curl`, `gh` and JuniperPython's `python3.14`, but times out from Miniforge's base `python3.13` (conda's interpreter) and from `mamba`. That holds for conda.anaconda.org and pypi.org alike, so the filter is per application, not per host.
+  - Little Snitch 5.8's network extension is active. A timeout rather than a refusal fits a connection alert that nobody answered. New env interpreters will raise the same alert.
+  - OWNER: allow `conda.anaconda.org` for `/usr/local/miniforge3/bin/python3.13` and `/usr/local/miniforge3/bin/mamba`, and `pypi.org` plus `files.pythonhosted.org` for the new envs' interpreters. Approving the alerts while a build runs also works.
+  - The link that day: 5 GHz ch 149, SNR 8-10 dB, a 10 MB download at 5.85 MB/s, and the 1.33 MB upload gate in 0.99-2.43 s.
+- **E-C8 (the C8 install).** The primary checkout predates juniper-ml#2242, so it has no `util/install_claude_agent_guard.bash`; the owner must fast-forward it before installing. The hook's default interpreter, `/usr/bin/python3` (Xcode's 3.9.6), passes the guard's `--self-test` (32 of 32).
+- **E-LAND-2 (post-merge revert).** A concurrent session's whole-file upload can revert lines that another PR has just merged, and no check catches it. juniper-ml#2262 carried copies of `AGENTS.md` and `docs/REFERENCE.md` taken before #2259 merged, and so put back X10's six lines. After merging a change to a shared file, re-check `origin/main` later. Keep such edits in an idempotent script, so that a revert costs one re-run.
+- **E-ENV (JuniperPython's env vars).** `conda-meta/state` sets `PYTHONPATH` to the unexpanded literal `${CONDA_PREFIX}/lib/python3.9/site-packages`, a Python 3.9-era leftover that leaks into every shell. OWNER: `conda env config vars unset PYTHONPATH -n JuniperPython`.
 
 ## Appendix A — probe output excerpts (2026-10-15)
 
