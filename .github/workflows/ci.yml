@@ -1353,6 +1353,12 @@ jobs:
           # by construction". Stub gpgconf/pinentries, a real repo and AF_UNIX socket; tripwire
           # gpg, ssh-add and ykman on PATH must never run.
           python3 -m unittest -v tests/test_headless_signing_preflight.py
+          # tests/test_juniper_repo_ssh_setup.py: turing bring-up A5. util/juniper_repo_ssh_setup.bash
+          # creates id_ed25519_github_juniper-<repo> when absent (600/644) and appends the canonical Host
+          # block via a same-dir temp file, an ssh -F <temp> -G pre-check and mv; a second run is
+          # byte-identical. A key not at 600, a missing .pub or AddKeysToAgent yes exits 1, nothing
+          # written. UseKeychain Darwin-only. Stub ssh-keygen/ssh (-G only); real tools on a scratch dir.
+          python3 -m unittest -v tests/test_juniper_repo_ssh_setup.py
 
       - name: Run bash regression tests
         run: |
