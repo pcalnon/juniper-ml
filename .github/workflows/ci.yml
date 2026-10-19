@@ -1338,6 +1338,12 @@ jobs:
           # JUNIPER_GUARD_HOME: allowed calls print nothing (never "allow"); bad input exits 2.
           # Also drives util/install_claude_agent_guard.bash against a temp settings file.
           python3 -m unittest -v tests/test_claude_agent_guard.py
+          # tests/test_git_remote_alias_check.py: turing bring-up G2 / R-G2a/b/c (gate G-ALIAS).
+          # util/git_remote_alias_check.py checks each checkout's PERSISTED origin and pushurl
+          # (config --get; remote get-url would expand insteadOf), the alias's ssh -G view and the
+          # key's mode by os.stat alone. Real git on temp repos, an ssh stub answering -G only; a
+          # real pre-push hook in a linked worktree (git exports GIT_DIR) must read each own origin.
+          python3 -m unittest -v tests/test_git_remote_alias_check.py
 
       - name: Run bash regression tests
         run: |

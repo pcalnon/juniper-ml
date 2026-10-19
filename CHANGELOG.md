@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`util/git_remote_alias_check.py`, the G-ALIAS gate** (turing bring-up task G2,
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - It checks each checkout's persisted origin and `pushurl`, its alias's `ssh -G` view, and its key's mode.
+    On turing it names juniper-k8s (R-G2a) and juniper-recurrence (R-G2b), the two remotes task A1 rewrites.
+  - `--fix` rewrites only a same-repository origin. `--if-configured` passes hosts that have no aliases, for
+    the G6 pre-push hook. Every git call drops the `GIT_DIR` that a hook inherits in a linked worktree.
+  - `tests/test_git_remote_alias_check.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
+  - `util/ad-hoc/2026-10-17_turing_g2_mutation_check.py` (new) shows that the suite kills 16 of 16 mutants.
+
 - **The D11 item 4 agent guard for turing** (task C8, option (b) of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). Pattern rules alone cannot carry D11:
   `Read(~/.ssh/**)` does not bind Bash, and `gh api` takes its flags in any order. The macOS sandbox alternative,
