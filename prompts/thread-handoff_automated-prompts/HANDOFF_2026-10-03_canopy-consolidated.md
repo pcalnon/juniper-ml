@@ -115,7 +115,18 @@ Lane A (E2E):
    files and a results note are outside the repo, in `/home/pcalnon/Development/python/Juniper/backups/2026-10-05_f058_census_v2_final/`.
    Owed: move them under `util/ad-hoc/2026-10-04_f058_census_v2_*` and record the run as the ledger's Phase 11, with
    its own consensus rounds.
-4. **DONE IN CODE 2026-10-08: canopy#731** (branch `fix/f055-f058-f068-request-ack-pacer`, head `65ead946`).
+4. **DONE 2026-10-19 — this item is closed.** canopy#731 (branch `fix/f055-f058-f068-request-ack-pacer`) merged on
+   2026-10-09 as `25c5c887` and shipped in **canopy 0.9.0** (Release published 2026-10-17; on PyPI). The ledger's
+   Phase 12 (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, 2026-10-19) records it: F-CANOPY-055,
+   -058 and -068 are FIXED, verified live on the branch at `2689a207` within stated limits (no mid-request Apply
+   release, no injected failure, no training run, nothing live on the merged tree or the wheel). Triage: 79 findings /
+   56 fixed / 1 accepted / 2 withdrawn / 20 open, 4 P1 (F-CANOPY-064, F-CANOPY-065, F-CASCOR-001, F-CASCOR-002), 16 P2.
+   New ledger items 27 (F-055's Live Switch allow arm), 28 (first live run on the shipped pacer, plus one injected
+   failure) and 29 (worktree housekeeping on the Linux host). Current Lane A handoff:
+   `HANDOFF_2026-10-19_canopy-phase12-recorded-pacer-shipped-in-0-9-0-items-25-26-next.md`. The status as of 2026-10-08
+   follows, for context.
+
+   **DONE IN CODE 2026-10-08: canopy#731** (branch `fix/f055-f058-f068-request-ack-pacer`, head `65ead946`).
    - It went through three independent review rounds: `reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_canopy731_pacer_rounds1-3.md`.
    - Live: 0 of 912 requests evicted across four census runs, and F-055's census APPLIES on `2689a207`
      (`reports/e2e-canopy-2026-09-02/pacer-live/README.md`).
@@ -442,7 +453,8 @@ consensus round (the 09-24 request "the combined handoff should be validated by 
 archiving it with predecessors A and B. O17 (added 2026-10-08, ledger Phase 11's Matrix effect and counts) asks the §6.3 question in two
 limbs. First: does a CHANGELOG or design-plan promise count as "documented"? That decides F-CANOPY-065, and may also reach F-CANOPY-057,
 -018 and -012. Second: if it does, does that extend to a CHANGELOG's description of an internal mechanism? That decides F-CANOPY-068.
-Moving 065 and 068 alone, the counts are 7/16, 6/17 or 5/18 open P1/P2. Phase 11's item 26 checks every open finding against canopy's
+Moving 065 and 068 alone, the counts are 7/16, 6/17 or 5/18 open P1/P2 (since Phase 12, 2026-10-19, F-CANOPY-068 is FIXED, so the second limb
+decides its rating of record only and moves no count; the first limb alone gives 4/16 or 3/17). Phase 11's item 26 checks every open finding against canopy's
 manual without waiting for the ruling, then sweeps the rest once the owner rules.
 
 ---
