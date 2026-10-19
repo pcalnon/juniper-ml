@@ -791,7 +791,10 @@ def load_config(path: Path) -> Dict[str, Any]:
             "enabled": crossval_enabled,
             "n_folds": crossval_raw.get("n_folds"),
             "scheme": crossval_raw.get("scheme", "expanding"),
-            "embargo": crossval_raw.get("embargo", 0),
+            # None = the config omitted it, and the request omits it too, so the service's default
+            # applies: 0 on recurrence <= 0.7.0, one look-back from 0.8.0 (plan W5.2). A config that
+            # names a value (the E-G sweep) still sends it.
+            "embargo": crossval_raw.get("embargo"),
             "min_train": crossval_raw.get("min_train"),
         }
 
@@ -2369,9 +2372,10 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
                     "dataset": {"dataset_id": dataset_id},
                     "n_folds": config["crossval"]["n_folds"],
                     "scheme": config["crossval"]["scheme"],
-                    "embargo": config["crossval"]["embargo"],
                     **hyper,
                 }
+                if config["crossval"]["embargo"] is not None:
+                    crossval_body["embargo"] = config["crossval"]["embargo"]
                 if config["crossval"]["min_train"] is not None:
                     crossval_body["min_train"] = config["crossval"]["min_train"]
                 crossval_payload = _aux_phase("crossval", ("POST", f"{app_url}/v1/crossval"), crossval_body, "crossval_response.json")

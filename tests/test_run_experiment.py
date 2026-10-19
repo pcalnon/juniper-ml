@@ -1513,6 +1513,17 @@ class RecurrencePathTest(_StubTestCase):
                 cfg[key] = value
         return _write_config(self.tmp, cfg)
 
+    def test_recurrence_crossval_omits_embargo_when_the_config_does(self) -> None:
+        """W5.2: an omitted ``crossval.embargo`` is omitted from the request, so the service's default applies (one look-back from recurrence 0.8.0), rather than being sent as 0."""
+        cfg = _recurrence_config()
+        del cfg["crossval"]["embargo"]
+        code, stdout = _invoke(_write_config(self.tmp, cfg), self.run_dir)
+        self.assertEqual(code, rx.EXIT_SUCCESS, stdout)
+        crossval_bodies = self._posts("/v1/crossval")
+        self.assertEqual(len(crossval_bodies), 1)
+        self.assertNotIn("embargo", crossval_bodies[0])
+        self.assertEqual(crossval_bodies[0]["n_folds"], 2)
+
     def test_recurrence_run_end_to_end(self) -> None:
         code, stdout = _invoke(self._config(), self.run_dir)
         self.assertEqual(code, rx.EXIT_SUCCESS, stdout)
