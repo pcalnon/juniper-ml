@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`util/juniper_repo_ssh_setup.bash`: one repo's deploy key and Host alias, idempotently** (turing bring-up
+  task A5, `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - It creates `id_ed25519_github_juniper-<repo>` when absent and appends the canonical
+    `Host github_juniper-<repo>` block (`AddKeysToAgent no`). It prints the web-UI deploy-key step and checks
+    the alias with `ssh -G`. A second run writes nothing. Existing non-compliant state is reported, not fixed.
+    `UseKeychain` is written on Darwin only, because upstream OpenSSH rejects it.
+  - `tests/test_juniper_repo_ssh_setup.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
+  - `util/ad-hoc/2026-10-17_turing_a5_mutation_check.py` (new) shows that the suite kills 16 of 16 mutants.
+
 - **Turing bring-up B8: the superseded ed448 signing key leaves the executable tree**
   (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, erratum X7).
   - `util/test_gpg_signing.bash` is deleted. It ran `gpg --clearsign -u 93E8591643C507FF`, the ed448 key, which has
