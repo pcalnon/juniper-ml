@@ -2560,7 +2560,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 
 ### What This Is
 
-Git worktrees allow multiple branches of a repository to be checked out simultaneously in separate directories. For the Juniper ecosystem, all worktrees are centralized in **`/home/pcalnon/Development/python/Juniper/worktrees/`** using a standardized naming convention.
+Git worktrees allow multiple branches of a repository to be checked out simultaneously in separate directories. For the Juniper ecosystem, all worktrees are centralized in **`~/Development/python/Juniper/worktrees/`** using a standardized naming convention.
 
 The full setup and cleanup procedures are defined in:
 
@@ -2576,7 +2576,7 @@ Format: `<repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>`
 Example: `juniper-ml--chore--update-deps--20260225-1430--519bda91`
 
 - Slashes in branch names are replaced with `--`
-- All worktrees reside in `/home/pcalnon/Development/python/Juniper/worktrees/`
+- All worktrees reside in `~/Development/python/Juniper/worktrees/`
 
 ### When to Use Worktrees
 
@@ -2593,13 +2593,13 @@ Example: `juniper-ml--chore--update-deps--20260225-1430--519bda91`
 **Setup** (full procedure in `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`):
 
 ```bash
-cd /home/pcalnon/Development/python/Juniper/juniper-ml
+cd ~/Development/python/Juniper/juniper-ml
 git fetch origin && git checkout main && git pull origin main
 BRANCH_NAME="chore/my-task"
 git branch "$BRANCH_NAME" main
 REPO_NAME=$(basename "$(pwd)")
 SAFE_BRANCH=$(echo "$BRANCH_NAME" | sed 's|/|--|g')
-WORKTREE_DIR="/home/pcalnon/Development/python/Juniper/worktrees/${REPO_NAME}--${SAFE_BRANCH}--$(date +%Y%m%d-%H%M)--$(git rev-parse --short=8 HEAD)"
+WORKTREE_DIR="$HOME/Development/python/Juniper/worktrees/${REPO_NAME}--${SAFE_BRANCH}--$(date +%Y%m%d-%H%M)--$(git rev-parse --short=8 HEAD)"
 git worktree add "$WORKTREE_DIR" "$BRANCH_NAME"
 cd "$WORKTREE_DIR"
 ```
@@ -2638,7 +2638,7 @@ util/worktree_cleanup.bash \
 
 ### Rules
 
-- **Centralized location**: All worktrees go in `/home/pcalnon/Development/python/Juniper/worktrees/`. Never create worktrees inside the repo directory.
+- **Centralized location**: All worktrees go in `~/Development/python/Juniper/worktrees/`. Never create worktrees inside the repo directory.
 - **Clean before you start**: Ensure the main working directory is clean before creating a worktree.
 - **Push before you merge**: Always push the working branch to remote before merging (backup).
 - **Prune after cleanup**: Run `git worktree prune` after removing a worktree to clean metadata.

@@ -3,7 +3,7 @@
 - **Project**: Juniper ecosystem. The plan lives in juniper-ml; it touches juniper-ml, juniper-k8s and juniper-recurrence, plus the host's own configuration.
 - **Author**: Paul Calnon (investigation and drafting via a Claude Code session on turing)
 - **Date**: 2026-10-15 (round-1 reconciliation 2026-10-16)
-- **Version**: 1.1.0 — v1.0.0 plus the Session 1 record and errata (§16, 2026-10-19). Where §16 and an earlier section disagree, §16 wins.
+- **Version**: 1.1.1 — v1.1.0 plus task E6 closed (errata X6 and X10) and erratum E-CQ, 2026-10-19. v1.1.0 added the Session 1 record and errata (§16). Where §16 and an earlier section disagree, §16 wins.
 - **Status**: VALIDATED. Consensus round 1 had 3 reviewers, all ACCEPT-WITH-CHANGES and no BLOCKER; all findings at MAJOR and above were applied; round 2 (§15.2) found 1 MAJOR, which was applied. The plan authorizes the tasks in §6. Tasks marked **OWNER** need the owner at the keyboard.
 - **Owner**: Paul Calnon
 - **Template**: `notes/templates/TEMPLATE_DEVELOPMENT_ROADMAP.md`, adapted to a single-host bring-up
@@ -859,7 +859,7 @@ This section records what the session did and corrects the plan where measuremen
 | B8 (erratum X7) | landed | juniper-ml#2249 |
 | A5 | landed | juniper-ml#2250 |
 | A1 | **pending (OWNER)** | `python3 util/git_remote_alias_check.py` fails on exactly juniper-k8s and juniper-recurrence |
-| E6 | X7 done (B8); **X6 and X10 remain** | — |
+| E6 | done 2026-10-19 | X7 by B8 (juniper-ml#2249). X6: a dated correction under the first stale statement in each of the eight archived handoffs (2026-09-11 to 2026-10-03) that call turing down or the Pi-pull candidate, and on the P4-27 row of `reports/2026-10-04_consolidated-development-plan/extraction-P4-release-P11-k8s.md`. X10: `AGENTS.md` § Ecosystem Context and `docs/REFERENCE.md` § Worktree Procedures Reference now say `~/`. REFERENCE.md's other `/home/pcalnon` hits document literals hard-coded in scripts and change with those scripts (G5, D12). Applied by `util/ad-hoc/2026-10-19_turing_e6_errata.py` |
 
 ### 16.3 Errata
 
@@ -883,6 +883,7 @@ This section records what the session did and corrects the plan where measuremen
   - **CodeQL threads.** A `main` pull_request rule sets `required_review_thread_resolution: true`, so even a note-level CodeQL comment blocks the merge until the alert is fixed (juniper-ml#2242).
   - **The UTC date.** The advisory "Verify AGENTS.md Last Updated" check wants today's *UTC* date (juniper-ml#2245, #2247).
 - **E-B8 (closeout-plan §7.4).** `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md` §7.4 expected deleting `util/test_gpg_signing.bash` to be a symbol-loss `LOST` finding. The screen inventories bash *functions* only, and that script defines none, so no `Allow-Symbol-Loss` trailer was needed (juniper-ml#2249).
+- **E-CQ (the CodeQL follow-up in the 2026-10-19 handoff).** That handoff asked for CodeQL's `py/import-and-import-from` to be folded into `util/ad-hoc/2026-10-05_codeql_python_prescreen.py`. The pre-screen has had that rule, for standard-library modules, since it landed (juniper-ml#2183). On the file CodeQL flagged in juniper-ml#2242 (`tests/test_claude_agent_guard.py` at `afb75f71`) it reports exactly that alert, at line 50, and nothing else, so nothing was folded. The one-off `util/ad-hoc/2026-10-18_codeql_import_and_import_from_screen.py` claimed the pre-screen lacked the query; its header now carries a correction.
 
 ## Appendix A — probe output excerpts (2026-10-15)
 

@@ -89,6 +89,14 @@
   recorded two non-blocking residual gaps in recurrence#178; **both are closed** [CHANGED SINCE HANDOFF: the concurrency group was fixed by juniper-recurrence#185 (merged 2026-09-23 20:22:55Z); the missing-listener-reads-as-success gap by juniper-data#431 (merged 2026-09-23 22:58:39Z, contained in `v0.16.0`), per #178's last comment — VERIFIED 2026-10-03: `gh pr view`, compare `v0.16.0...35b44cc1`
   = behind]. #178 itself is OPEN, because the token is not widened yet.
 - After Wave 4, docker.io pulls follow REGISTRATION-PROCEDURE §9 (nodes log in with their own read-only token; nodes sharing an account share its 200 pulls / 6 h). **The Pi pull** (PUBLISHING-PLAN §5.1) is an anonymous GHCR pull of worker 0.6.1, owed before any Pi runs a Juniper image; needs 64-bit Pi OS; `turing` was reported down 09-22. [UNVERIFIED — from the data handoff]
+  > **Correction, 2026-10-19 (erratum X6 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).**
+  > `turing` was not down, and it was never a Pi-pull candidate. It is the owner's 15-inch 2018 Intel
+  > MacBook Pro (x86_64, macOS), a development laptop in active use away from yamaguchi
+  > (`notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_BYPASS-CANDIDATE-DETERMINATION.md:174`), so it cannot
+  > meet the pull's 64-bit Pi OS precondition. `192.168.50.222` comes from
+  > `juniper-k8s/util/node_scripts/testing/hosts:7`, but turing's Wi-Fi address is DHCP-assigned
+  > (`192.168.50.131` on 2026-10-15, `192.168.50.180` on 2026-10-19), so a failed probe of `.222` did
+  > not show turing down. The Pi pull still needs a real arm64 Pi.
 
 ### The egress guards as merged (the text item 1 writes into PUBLISHING-PLAN)
 
