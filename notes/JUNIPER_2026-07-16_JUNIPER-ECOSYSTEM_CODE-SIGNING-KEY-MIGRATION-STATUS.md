@@ -4,9 +4,18 @@
 **Scope**: Ecosystem-wide (git commit signing on the development host + GitHub account keys + per-repo rulesets)
 **Author**: Paul Calnon (investigation and edits driven via Claude Code session)
 **Date**: 2026-07-16
-**Status**: PARTIALLY MIGRATED — remaining steps DEFERRED (see §5)
+**Status**: SUPERSEDED 2026-10-17 by `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_HEADLESS-SIGNING-AND-SERENA-HARNESS-AUDIT.md` — see banner below (was: PARTIALLY MIGRATED — remaining steps DEFERRED, §5)
 
 ---
+
+> **SUPERSEDED 2026-10-17 (turing bring-up task B8, erratum X7).** This record is historical. Since 2026-08-07 the
+> signing key has been the ed25519 sign subkey `BA18D1A733B1831A`, pinned as
+> `B5619F58FDA4D94E2D73D8BABA18D1A733B1831A!`. It is not the ed448 key `93E8591643C507FF` that this note calls the
+> current `user.signingkey`, which is neither used nor registered on GitHub. The current state is in
+> `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_HEADLESS-SIGNING-AND-SERENA-HARNESS-AUDIT.md` (findings A1-F1 and A1-F2;
+> config at :78-81, keys at :251-254). The repo's only validator for the ed448 key, `util/test_gpg_signing.bash`, was
+> deleted in the same change. `util/headless_signing_preflight.bash` replaces it with non-credential checks
+> (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, tasks B7 and B8).
 
 ## 1. How this surfaced
 
