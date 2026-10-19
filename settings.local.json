@@ -44,6 +44,7 @@
       "Bash(python3 -c ' *)"
     ]
   },
+  "idleCompaction": false,
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "hf-mcp-server",
