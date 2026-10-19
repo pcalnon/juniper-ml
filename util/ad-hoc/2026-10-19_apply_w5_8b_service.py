@@ -368,6 +368,16 @@ restores the old behaviour. See the `juniper-recurrence-model` README for the sp
 )
 
 edit(
+    APP + "README.md",
+    """`null_model` flags (`null` means *not determined*; `null_model` is populated once the model
+reports it). The `train` CLI prints the same block under `Readout:`.
+""",
+    """`null_model` flags (booleans on a GCV-selected fit, which juniper-recurrence-model 0.5.0 reports;
+`null` means *not determined*, as on a fixed-ridge fit). The `train` CLI prints the same block under `Readout:`.
+""",
+)
+
+edit(
     APP + "CHANGELOG.md",
     """  made null-model-aware without it, and the W5.8 (B) default (`default_ridge: "gcv"`), which
   abstains silently, is gated on the response announcing the lambda it chose.
