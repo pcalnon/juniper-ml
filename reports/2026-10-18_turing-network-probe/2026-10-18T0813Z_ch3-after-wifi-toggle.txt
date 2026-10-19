@@ -1,0 +1,29 @@
+
+== host
+turing  15.7.1  2026-10-18T08:13:19Z
+
+== routes
+default via 192.168.50.1 on en0; api.github.com via utun4
+  lo0     127.0.0.1        mtu 16384  
+  en0     192.168.50.131   mtu 1500   autoselect
+  utun4   100.64.0.6       mtu 1350   
+
+== Wi-Fi radio link
+current: 802.11n, channel 3 (2GHz, 20MHz), signal/noise -72 dBm / -80 dBm (SNR 8 dB), tx rate 39 Mbps, MCS 10
+other radios with the same network name: 8; foreign networks visible: 0
+  2GHz channel   1: signal/noise -43/-79 dBm (SNR 36 dB)
+  5GHz channel 153: signal/noise -49/-80 dBm (SNR 31 dB)
+  2GHz channel  10: signal/noise -52/-79 dBm (SNR 27 dB)
+  2GHz channel  10: signal/noise -62/-79 dBm (SNR 17 dB)
+  2GHz channel   5: signal/noise -69/-79 dBm (SNR 10 dB)
+  2GHz channel   3: signal/noise -69/-79 dBm (SNR 10 dB)
+  2GHz channel   1: signal/noise -76/-80 dBm (SNR 4 dB)
+  2GHz channel   6: signal/noise -85/-79 dBm (SNR -6 dB)
+
+== local hop: ping the gateway 192.168.50.1 (30 at 0.2 s)
+30 packets transmitted, 28 packets received, 6.7% packet loss
+round-trip min/avg/max/stddev = 2.940/34.853/203.102/48.301 ms
+
+== internet path: ping 1.1.1.1 (30 at 0.2 s)
+30 packets transmitted, 20 packets received, 33.3% packet loss
+round-trip min/avg/max/stddev = 905.843/1498.163/2274.021/438.037 ms
