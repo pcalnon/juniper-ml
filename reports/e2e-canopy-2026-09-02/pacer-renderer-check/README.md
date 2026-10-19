@@ -8,12 +8,12 @@ pacer JavaScript is canopy's own `poll_pacer_js`. dash 4.2.0 (JuniperCanopy1), h
 Phase 11's measured range). The measured median gaps between applied responses were 4,153 ms (pacer) and
 4,618 ms (guard), against canopy `main`'s ~4.9 s in Phase 11.
 
-**The first two runs (17:40–17:54 CDT) predate commit 1 of canopy#731.** They imported the uncommitted working
+**The first two runs (17:29–17:41 CDT; this said 17:40–17:54 until 2026-10-19, their file names carrying their end times: ledger Phase 12) predate commit 1 of canopy#731.** They imported the uncommitted working
 tree, whose pacer is commit 1's by this session's edit history; its identity was not recorded by hash. That pacer
 had a fixed 30 s stale bound and let `reason: "stale"` take precedence over a mode change. Commits 2 and 3 changed
 both. The run on the final pacer has its own section below.
 
-Both arms ran concurrently, 17:40–17:54 CDT, beside two canopy unit suites and other sessions' work. Load was
+Both arms ran concurrently, 17:29–17:41 CDT, beside two canopy unit suites and other sessions' work. Load was
 not sampled during the runs; read at 18:17 the host's 1/5/15-minute load averages were 32.7 / 29.0 / 21.9 on 16
 cores.
 
