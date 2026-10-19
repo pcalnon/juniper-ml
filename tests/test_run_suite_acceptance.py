@@ -203,33 +203,33 @@ class EvaluateAndApplyTest(unittest.TestCase):
         self.assertEqual([r["value"] for r in results], [None, None])
 
     def test_gate_miss_fails_report_miss_flags_and_the_error_names_the_miss(self) -> None:
-        row: dict[str, Any] = {"outcome":"succeeded", "metrics": {"cv_r2": -18081.0, "cv_r2_std": 36000.5}}
+        row: dict[str, Any] = {"outcome": "succeeded", "metrics": {"cv_r2": -18081.0, "cv_r2_std": 36000.5}}
         run_suite.apply_acceptance(row, R5_BAND)
         self.assertEqual(row["outcome"], "failed")
         self.assertEqual(row["error"], "acceptance: cv_r2=-18081.0 outside [-1.0, 0.5] (gate); cv_r2_std=36000.5 outside <= 0.5 (gate)")
         self.assertEqual([r["result"] for r in row["acceptance"]], ["fail", "fail"])
 
-        row = {"outcome":"succeeded", "metrics": {"cv_r2": -18081.0, "cv_r2_std": 0.01}}
+        row = {"outcome": "succeeded", "metrics": {"cv_r2": -18081.0, "cv_r2_std": 0.01}}
         run_suite.apply_acceptance(row, [{"metric": "cv_r2", "min": -1.0, "max": 0.5, "mode": "report"}])
         self.assertEqual(row["outcome"], "flagged")
         self.assertEqual(row["error"], "acceptance: cv_r2=-18081.0 outside [-1.0, 0.5] (report)")
 
     def test_absent_follows_the_mode(self) -> None:
-        row: dict[str, Any] = {"outcome":"succeeded", "metrics": {"train_r2": 0.11}}
+        row: dict[str, Any] = {"outcome": "succeeded", "metrics": {"train_r2": 0.11}}
         run_suite.apply_acceptance(row, [{"metric": "cv_r2", "min": -1.0, "max": 0.5, "mode": "gate"}])
         self.assertEqual((row["outcome"], row["error"]), ("failed", "acceptance: cv_r2 absent (gate)"))
-        row = {"outcome":"succeeded", "metrics": {"train_r2": 0.11}}
+        row = {"outcome": "succeeded", "metrics": {"train_r2": 0.11}}
         run_suite.apply_acceptance(row, [{"metric": "cv_r2", "min": -1.0, "max": 0.5, "mode": "report"}])
         self.assertEqual((row["outcome"], row["error"]), ("flagged", "acceptance: cv_r2 absent (report)"))
 
     def test_a_gate_miss_outranks_a_report_miss_and_a_pass_stays_succeeded(self) -> None:
         bands = [{"metric": "cv_r2", "min": -1.0, "max": 0.5, "mode": "report"}, {"metric": "cv_r2_std", "max": 0.5, "mode": "gate"}]
-        row: dict[str, Any] = {"outcome":"succeeded", "metrics": {"cv_r2": -5.0, "cv_r2_std": 8.75}}
+        row: dict[str, Any] = {"outcome": "succeeded", "metrics": {"cv_r2": -5.0, "cv_r2_std": 8.75}}
         run_suite.apply_acceptance(row, bands)
         self.assertEqual(row["outcome"], "failed")
         self.assertIn("cv_r2_std=8.75 outside <= 0.5 (gate)", row["error"])
         self.assertIn("cv_r2=-5.0 outside [-1.0, 0.5] (report)", row["error"], "the report miss is still named")
-        row = {"outcome":"succeeded", "metrics": {"cv_r2": -0.111, "cv_r2_std": 0.041}}
+        row = {"outcome": "succeeded", "metrics": {"cv_r2": -0.111, "cv_r2_std": 0.041}}
         run_suite.apply_acceptance(row, R5_BAND)
         self.assertEqual(row["outcome"], "succeeded")
         self.assertNotIn("error", row)
@@ -237,14 +237,14 @@ class EvaluateAndApplyTest(unittest.TestCase):
 
     def test_a_degraded_or_failed_cell_keeps_its_outcome_but_records_the_bands(self) -> None:
         for outcome in ("degraded", "failed", "timed_out"):
-            row: dict[str, Any] = {"outcome":outcome, "error": "crossval failed", "metrics": {"train_r2": 0.11}}
+            row: dict[str, Any] = {"outcome": outcome, "error": "crossval failed", "metrics": {"train_r2": 0.11}}
             run_suite.apply_acceptance(row, R5_BAND)
             self.assertEqual(row["outcome"], outcome)
             self.assertEqual(row["error"], "crossval failed", "the phase failure stays the finding")
             self.assertEqual([r["result"] for r in row["acceptance"]], ["absent", "absent"])
 
     def test_no_bands_means_no_acceptance_key(self) -> None:
-        row: dict[str, Any] = {"outcome":"succeeded", "metrics": {"cv_r2": -18081.0}}
+        row: dict[str, Any] = {"outcome": "succeeded", "metrics": {"cv_r2": -18081.0}}
         run_suite.apply_acceptance(row, [])
         self.assertEqual(row, {"outcome": "succeeded", "metrics": {"cv_r2": -18081.0}})
 
