@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **`util/experiments/run_experiment.py` omits `embargo` from the crossval request when the config
+  omits it** (W5.2 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`).
+  It used to send `embargo: 0`, which overrode the service's default; from juniper-recurrence 0.8.0
+  that default is one look-back per entity (the gap that keeps an eval window's history clear of
+  every train window), so a suite row that names no embargo now gets it. A config that names a value
+  -- the E-G scheme × embargo sweep -- still sends it, and on recurrence ≤ 0.7.0 an omitted value is
+  still the service's 0. `tests/test_run_experiment.py` pins the omission.
+
 ### Added
 
 - **`util/juniper_repo_ssh_setup.bash`: one repo's deploy key and Host alias, idempotently** (turing bring-up
