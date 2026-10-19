@@ -1344,6 +1344,15 @@ jobs:
           # key's mode by os.stat alone. Real git on temp repos, an ssh stub answering -G only; a
           # real pre-push hook in a linked worktree (git exports GIT_DIR) must read each own origin.
           python3 -m unittest -v tests/test_git_remote_alias_check.py
+          # tests/test_headless_signing_preflight.py: turing bring-up B7 / R-B7a, R-B7b.
+          # util/headless_signing_preflight.bash runs non-credential checks only (plan D11) and
+          # lists every failure: user.signingkey pinned with '!', commit.gpgsign true, a GUI
+          # pinentry by the Assuan GETINFO flavor probe (curses, tty, emacs, a curses fallback or
+          # a missing program fail), the agent socket, no-allow-external-cache, HEAD's %G?. The
+          # D11 env override (GIT_CONFIG_KEY_n=commit.gpgsign, false) fails as "signing disabled
+          # by construction". Stub gpgconf/pinentries, a real repo and AF_UNIX socket; tripwire
+          # gpg, ssh-add and ykman on PATH must never run.
+          python3 -m unittest -v tests/test_headless_signing_preflight.py
 
       - name: Run bash regression tests
         run: |
