@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`[recurrence]` now floors `juniper-recurrence>=0.7.0`** (`<0.8.0`) **and `juniper-recurrence-model>=0.5.0` (`<0.6.0`)**, the
+  P5 release pair (W5.8 (B), W5.9, W5.10 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  approved 2026-10-19 with the session's merge approval, the ruling 0.7.0 reopened). The pins were
+  `juniper-recurrence>=0.6.1,<0.7.0` and `juniper-recurrence-model>=0.3.0,<0.5.0`.
+  - **Why both move.** recurrence 0.7.0's `requires_dist` is `juniper-recurrence-model>=0.5.0,<0.6.0`:
+    its `default_ridge` is `"gcv"`, which is safe only on model 0.5.0's train-fold standardisation of the
+    linear readout's memory block. Lifting the recurrence ceiling alone would leave the extra
+    unsatisfiable under the old model cap `<0.5.0`. The model range is the one 0.7.0 requires, not a
+    wider one: 0.7.0 refuses model 0.6.0, which is recurrence 0.8.0's floor (W5.2, on an open PR); the
+    next raise moves both again.
+  - **What 0.7.0 brings** to `pip install juniper-ml[recurrence]`: `POST /v1/crossval` on the equities
+    row no longer blows up under the default readout (the W5.1 note's −2.1e4 becomes −0.195 on the E-H
+    artifact), and every fit carries a `diagnostics` block (`readout`, `theta`, `ridge_mode` /
+    `ridge_selected`, `gamma`, `gcv_at_edge` / `null_model`).
+  - **0.7.0's own `[torch]` extra is unresolvable** (`juniper-recurrence-model[torch]>=0.4.0,<0.5.0`
+    against the base `>=0.5.0`); `[recurrence]` installs the base distribution and is unaffected. The
+    fix rides on juniper-recurrence#215 for 0.8.0.
+  - **Pre-flighted against real PyPI** on 2026-10-19 with
+    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages on Python 3.12, 3.13 and 3.14, with recurrence 0.7.0, model
+    0.5.0, client 0.3.0, data-client 0.6.0, model-core 0.3.2 and service-core 0.7.1; `[all]` resolves in 76 on
+    each, the same versions plus canopy 0.9.0, cascor 0.11.0, cascor-worker 0.6.1 and juniper-data 0.17.0.
+  - The client floor `juniper-recurrence-client>=0.3.0,<0.4.0` stays (no client contract changed). The
+    release train cuts the version that carries this (0.11.0 in the plan). Applied by
+    `util/ad-hoc/2026-10-19_raise_recurrence_floor_0_7_0.py`, which asserts each site's exact text and
+    requires exactly one match apiece.
+
 - **`util/experiments/run_experiment.py` omits `embargo` from the crossval request when the config
   omits it** (W5.2 of
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`).
