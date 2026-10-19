@@ -9,7 +9,7 @@
 
 ## Handoff goal
 
-Continue the arc from plan v1.7.2. **Every M1 landing except the owner's Compose-pin decision is on `main`**: recurrence 0.6.1 is on PyPI with the owner-ruled floors, and the juniper-ml `[recurrence]` floor is `>=0.6.1`. The next owner ruling is whether juniper-deploy's Compose pin follows to 0.6.1 (the inputs are below). The next development thread is P5, starting with W5.10, with P2–P4 alongside.
+Continue the arc from plan v1.7.3. **Every M1 landing is on `main`** (the Compose pin followed in juniper-deploy#251 after this handoff was first written; step 1 below records it): recurrence 0.6.1 is on PyPI with the owner-ruled floors, and the juniper-ml `[recurrence]` floor is `>=0.6.1`. The next owner ruling is whether juniper-deploy's Compose pin follows to 0.6.1 (the inputs are below). The next development thread is P5, starting with W5.10, with P2–P4 alongside.
 
 ## Completed this session
 
@@ -24,7 +24,7 @@ Continue the arc from plan v1.7.2. **Every M1 landing except the owner's Compose
 
 ## Remaining work (in order)
 
-1. **Owner: whether the Compose recurrence pin follows to 0.6.1** (juniper-deploy; open on the plan's M1 row). The inputs are all in hand:
+1. **Done 2026-10-19 UTC — the owner ruled yes and juniper-deploy#251 merged as `b645acfd`** (`docker-compose.yml` pins `juniper-recurrence:0.6.1`; the prose in `README.md`, `docs/REFERENCE.md` and `scripts/test_recurrence_snapshots.sh` follows; plan v1.7.3). **Owed from it**: the W1.12 snapshot smoke and W1.11 canopy smoke on a host whose Docker reaches GHCR, at the next bring-up. The inputs that were in hand when this was written:
    - the `0.6.1` image exists on GHCR (digest and revision above);
    - the Helm chart carries **no** recurrence image at all. juniper-deploy#249's `k8s/helm/juniper/values.yaml` hunk moved only canopy's `tag: "0.8.1"` → `"0.9.0"`;
    - so the change is `docker-compose.yml:598` (`image: ghcr.io/pcalnon/juniper-recurrence:0.6.0` → `0.6.1`) plus the prose that names 0.6.0: the compose comment block beneath it, `README.md`'s snapshot-routes paragraph (`the published 0.6.0 is 535d1e78` → `0.6.1 is cad03ed5`), `docs/REFERENCE.md` and a CHANGELOG entry. 0.6.1 changes packaging metadata only; `requirements.lock` already pinned model 0.4.0 / data-client 0.6.0, so the image's runtime is the same as 0.6.0's.
