@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`util/headless_signing_preflight.bash`: the turing bring-up B7 signing preflight**
+  (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - It runs non-credential checks only: R-B7a's `!` pin, `commit.gpgsign`, R-B7b's GUI pinentry (turing named
+    the curses build until B1), the agent socket and `no-allow-external-cache`. It lists every failure and
+    exits 0 / 1 / 2. The D11 override fails as "signing disabled by construction". The card checks of the
+    original design (`notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md`)
+    stay owner-run.
+  - `tests/test_headless_signing_preflight.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
+  - `util/ad-hoc/2026-10-17_turing_b7_mutation_check.py` (new) shows that the suite kills 18 of 18 mutants.
+
 - **`util/git_remote_alias_check.py`, the G-ALIAS gate** (turing bring-up task G2,
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
   - It checks each checkout's persisted origin and `pushurl`, its alias's `ssh -G` view, and its key's mode.
