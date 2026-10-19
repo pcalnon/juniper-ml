@@ -3,11 +3,11 @@
 - **Project**: Juniper ecosystem. The plan lives in juniper-ml; it touches juniper-ml, juniper-k8s and juniper-recurrence, plus the host's own configuration.
 - **Author**: Paul Calnon (investigation and drafting via a Claude Code session on turing)
 - **Date**: 2026-10-15 (round-1 reconciliation 2026-10-16)
-- **Version**: 1.0.0 — v0.9 plus every round-1 finding integrated (§15.1)
+- **Version**: 1.1.0 — v1.0.0 plus the Session 1 record and errata (§16, 2026-10-19). Where §16 and an earlier section disagree, §16 wins.
 - **Status**: VALIDATED. Consensus round 1 had 3 reviewers, all ACCEPT-WITH-CHANGES and no BLOCKER; all findings at MAJOR and above were applied; round 2 (§15.2) found 1 MAJOR, which was applied. The plan authorizes the tasks in §6. Tasks marked **OWNER** need the owner at the keyboard.
 - **Owner**: Paul Calnon
 - **Template**: `notes/templates/TEMPLATE_DEVELOPMENT_ROADMAP.md`, adapted to a single-host bring-up
-- **Session prompt**: `prompts/manual/prompt133_2026-10-15.md` (defines the work arc; not versioned)
+- **Session prompt**: `prompts/manual/prompt133_2026-10-15.md` (defines the work arc; versioned since juniper-ml#2228)
 - **Evidence script**: [`util/ad-hoc/2026-10-15_turing_host_state_probe.bash`](../util/ad-hoc/2026-10-15_turing_host_state_probe.bash) is read-only; Appendix A is its output.
 
 ---
@@ -819,6 +819,70 @@ One reviewer checked v1.0.0 against every round-1 MAJOR and found all of them re
 - **NIT:** the §9.3 heading scope, the undefined U-F5 ID, the G4 step-gating wording, and the B1 split note.
 
 Rounds 1 and 2 leave no open BLOCKER or MAJOR. The plan is VALIDATED.
+
+## 16. Session 1 record and errata (v1.1.0, 2026-10-19)
+
+Session 1 ran on turing from 2026-10-17 to 2026-10-19. Its handoffs are:
+
+- `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-17_turing-prs-landed-session-1-partial-owner-c8-a1-d6-next.md`;
+- `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-18_turing-session-1-code-staged-landing-blocked-by-wifi.md`;
+- `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-1-six-code-prs-landed-owner-steps-next.md`.
+
+This section records what the session did and corrects the plan where measurement overtook it.
+
+### 16.1 Owner rulings
+
+- **D6 (2026-10-17): conda-forge plus vendor binaries, not Homebrew.** On Intel turing every `brew install` builds from source and upgrades dependencies, per the header of `conf/hosts/turing/hosttools-environment.yml`.
+  - The CLI tools come from the conda-forge env `JuniperHostTools` that the file specifies. Only the named binaries are symlinked into `~/.local/bin`.
+  - sops is its release binary, and ykman a venv on the env's Python 3.13.
+  - pinentry-mac is the one Homebrew exception: bottle only, `--ignore-dependencies`, with owner sign-off.
+  - No `brew install` or `brew upgrade` runs without a `--dry-run` and owner sign-off.
+- **C8 (2026-10-17).** D11 item 1 is applied at once through `~/.claude/settings.json` `env`. Item 4 is delivered as a tested PreToolUse hook, enforcement option (b), which the owner installs.
+- **Merging.** Approval is granted for every PR in the work arc, merging only after green.
+- **Network.** The owner rejected ExpressVPN as the cause of the HTTP 499s, since yamaguchi runs the same VPN, and pointed the diagnosis at the local link (E-NET below).
+
+### 16.2 Task status after Session 1
+
+| Task | Status | Record |
+|---|---|---|
+| C8 item 1 | done 2026-10-17 | `~/.claude/settings.json` `env`; `git config --show-origin` reports `command line: false` |
+| C8 item 4 | landed; **install pending (OWNER)** | juniper-ml#2242: `util/claude_agent_guard.py`, `util/install_claude_agent_guard.bash` |
+| C4, A7, A8 | done 2026-10-17 | backup `~/.ssh/config.bak-2026-10-17-pre-A8-A7`; the G2 read-only run shows `addkeystoagent false` on all 10 aliases and every key at mode 600 |
+| B1, agent part | done | `no-allow-external-cache`; pinentry-mac 1.3.1.1 with `pinentry-program /usr/local/bin/pinentry-mac` (`GETINFO flavor` answers `mac`); ykman 5.9.2. B1-verify, a real PIN prompt, stays OWNER with B3 |
+| D0, D1-tools | done, in the D6 form | `conf/hosts/turing/hosttools-environment.yml` |
+| H0 | done | no MCP server is configured. The 23-entry `mcpServers` block in `~/.claude/settings.json` is inert: settings.json does not read that key |
+| F3, dev mode | done | `reports/2026-10-17_turing-headroom/`: 487 samples, G-MEM passed 0 of 487 |
+| F3, node mode | **pending (OWNER sets the host state)** | — |
+| F5a | landed | juniper-ml#2237 |
+| G2 | landed | juniper-ml#2245 |
+| B7 | landed | juniper-ml#2247 |
+| B8 (erratum X7) | landed | juniper-ml#2249 |
+| A5 | landed | juniper-ml#2250 |
+| A1 | **pending (OWNER)** | `python3 util/git_remote_alias_check.py` fails on exactly juniper-k8s and juniper-recurrence |
+| E6 | X7 done (B8); **X6 and X10 remain** | — |
+
+### 16.3 Errata
+
+- **E-HDR (header).** `prompts/manual/prompt133_2026-10-15.md` has been versioned since juniper-ml#2228, and the header now says so.
+- **E-NET (§2.2).** The HTTP 499s on large `createCommitOnBranch` uploads come from turing's Wi-Fi link, not ExpressVPN. Measured 2026-10-17 to 2026-10-19 with `util/ad-hoc/2026-10-17_turing_network_probe.bash` and `util/ad-hoc/2026-10-18_turing_link_gate.py`; outputs are in `reports/2026-10-18_turing-network-probe/`.
+  - **Sticky weak radio.** turing stayed on the weakest radio of its own network: 2.4 GHz ch 3 at about −72 dBm, SNR 4-10 dB. The same network offered radios at −38 to −55 dBm.
+  - **Upload times.** On ch 3 a single-flow 1.33 MB upload (REFERENCE.md as base64) took about 9 s, and GitHub's GraphQL frontend drops a request that runs past about 7-10 s. On 5 GHz the same upload took 1.2-2.2 s, even at SNR 9-12 dB. Of five REFERENCE.md pushes on 2026-10-18/19, four landed on attempt 1 and one on attempt 2.
+  - **Gateway loss swings.** A 20-ping sample read 0%; a 50-ping sample minutes later read 42% (2026-10-19T01:30Z).
+  - **`en0` is DHCP-assigned.** It was `192.168.50.131` on 2026-10-15 and 2026-10-18 and `192.168.50.180` on 2026-10-19, so A6's reservation must cover it.
+  - ⚠ **An open radio.** One broadcasts the owner's network name with `Security: None` (2.4 GHz ch 10; on 2026-10-19 it was the strongest signal, at −38 dBm). OWNER: identify it.
+  - **VPN lock.** ExpressVPN's network lock blocks traffic outside the tunnel, so the ISP path cannot be measured apart from it.
+  - **Remediation is physical:** Ethernet on `en7` (F2), moving turing, or router roaming and band steering.
+- **E-D6 (D6, D0, D1-tools, G-TOOLS).** The D6 ruling (§16.1) supersedes "Homebrew is the single source".
+  - There is no Brewfile. `conf/hosts/turing/hosttools-environment.yml` is the record, and its header gives the recreate commands.
+  - G-TOOLS's `brew bundle check` becomes: every tool that file names resolves from `~/.local/bin` (`command -v`).
+  - D2-upg (the 139-formula upgrade) and D4 (`kubectl` from Homebrew) need re-planning under the ruling.
+  - MacPorts is dead: it was built for darwin 18, and every `port` command errors. That supports D5 (drop `/opt/local/bin`).
+- **E-C8 (C4, A7, A8, B1's config).** These edit `~/.ssh` and `~/.gnupg`, which the C8 guard denies to agents once installed. They are done (§16.2). Any re-run becomes OWNER, as does every credential check in §14.1.
+- **E-LAND (landing through the API).**
+  - Once the C8 guard is installed it denies `gh api -X`/`-f` and `gh pr create`, so agents land with `util/open_signed_pr.py`, `util/ad-hoc/2026-10-17_push_signed_with_retry.py` and `util/safe_merge.py`.
+  - **CodeQL threads.** A `main` pull_request rule sets `required_review_thread_resolution: true`, so even a note-level CodeQL comment blocks the merge until the alert is fixed (juniper-ml#2242).
+  - **The UTC date.** The advisory "Verify AGENTS.md Last Updated" check wants today's *UTC* date (juniper-ml#2245, #2247).
+- **E-B8 (closeout-plan §7.4).** `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md` §7.4 expected deleting `util/test_gpg_signing.bash` to be a symbol-loss `LOST` finding. The screen inventories bash *functions* only, and that script defines none, so no `Allow-Symbol-Loss` trailer was needed (juniper-ml#2249).
 
 ## Appendix A — probe output excerpts (2026-10-15)
 

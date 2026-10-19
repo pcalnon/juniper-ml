@@ -1,0 +1,23 @@
+
+== host
+turing  15.7.1  2026-10-18T01:52:21Z
+
+== routes
+default via 192.168.50.1 on en0; api.github.com via utun4
+  lo0     127.0.0.1        mtu 16384  
+  en0     192.168.50.131   mtu 1500   autoselect
+  utun4   100.64.0.6       mtu 1350   
+
+== Wi-Fi radio link
+  File "<string>", line 14
+    print(f"current: {field(\"PHY Mode\", body)}, channel {field(\"Channel\", body)}, signal/noise {field(\"Signal / Noise\", body)} (SNR {snr}), tx rate {field(\"Transmit Rate\", body)} Mbps, MCS {field(\"MCS Index\", body)}")
+                             ^
+SyntaxError: unexpected character after line continuation character
+
+== local hop: ping the gateway 192.168.50.1 (30 at 0.2 s)
+30 packets transmitted, 22 packets received, 26.7% packet loss
+round-trip min/avg/max/stddev = 6.727/700.174/2273.786/751.410 ms
+
+== internet path: ping 1.1.1.1 (30 at 0.2 s)
+30 packets transmitted, 22 packets received, 26.7% packet loss
+round-trip min/avg/max/stddev = 104.965/801.582/1824.688/488.164 ms

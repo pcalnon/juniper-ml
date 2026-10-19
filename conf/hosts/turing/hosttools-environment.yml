@@ -1,0 +1,45 @@
+---
+# turing host-tools environment: the D6 ruling of 2026-10-17 (conda-forge plus vendor binaries).
+#
+# Homebrew stopped building Intel macOS bottles in September 2026, so every `brew install` on turing
+# compiles from source and upgrades dependencies. The owner ruled that the ecosystem's CLI tools come
+# from this conda-forge env instead, with only the named binaries symlinked into ~/.local/bin (first
+# on PATH ahead of /opt/local/bin and /usr/local/bin). The env's bin/ is never put on PATH, so GNU
+# coreutils do not shadow the BSD userland.
+#
+# Recreate:
+#   CONDA_SSL_VERIFY=true mamba env create --override-channels -f conf/hosts/turing/hosttools-environment.yml
+#   for t in timeout shellcheck yamllint actionlint age age-keygen yq iperf3; do
+#     ln -sf "$(conda info --base)/envs/JuniperHostTools/bin/$t" ~/.local/bin/$t
+#   done
+# markdownlint-cli2 gets a 2-line wrapper in ~/.local/bin that runs the env's own node, because the
+# package's `#!/usr/bin/env node` would otherwise pick up whatever node is first on PATH.
+#
+# Installed outside this env:
+#   sops 3.13.3      the release binary sops-v3.13.3.darwin.amd64 in ~/.local/opt/sops/v3.13.3/, its sha256
+#                    checked against the release's checksums.txt (cosign not available to check the signature)
+#   ykman 5.9.2      a venv at ~/.local/opt/ykman on this env's python3.13, linked into ~/.local/bin:
+#                    `python3.13 -m venv ~/.local/opt/ykman && ~/.local/opt/ykman/bin/python -m pip install
+#                    --only-binary cryptography "cryptography==48.0.1" yubikey-manager`. pyscard has no
+#                    conda-forge build and no cp314 wheel, hence Python 3.13. cryptography 50.x ships no
+#                    Intel macOS wheel (48.0.1 is the last universal2 one). pipx hung in its own pip bootstrap.
+#   pinentry-mac     Homebrew 1.3.1.1, poured from its Sonoma amd64 bottle with --ignore-dependencies
+#                    (owner sign-off 2026-10-17); its bottle was built against libgpg-error 1.51,
+#                    libassuan 3.0.1, gettext 0.23.1 and libunistring 1.3, and turing has newer of each
+#
+# Versions resolved on 2026-10-17 are pinned below. The first solve picked nodejs 12.4.0, which cannot
+# load markdownlint-cli2's ES module, so nodejs>=22 is explicit.
+name: JuniperHostTools
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13.16
+  - coreutils=9.12
+  - shellcheck=0.11.0
+  - yamllint=1.38.0
+  - actionlint=1.7.12
+  - age=1.3.2
+  - go-yq=4.54.1
+  - iperf=3.20
+  - markdownlint-cli2=0.23.3
+  - nodejs=26.10.0

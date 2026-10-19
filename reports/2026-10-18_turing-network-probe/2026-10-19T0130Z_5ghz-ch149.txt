@@ -1,0 +1,32 @@
+
+== host
+turing  15.7.1  2026-10-19T01:30:25Z
+
+== routes
+default via 192.168.50.1 on en0; api.github.com via utun4
+  lo0     127.0.0.1        mtu 16384  
+  en0     192.168.50.180   mtu 1500   autoselect
+  en8     169.254.65.141   mtu 1500   autoselect (100baseTX <full-duplex>)
+  utun4   100.64.0.6       mtu 1350   
+
+== Wi-Fi radio link
+current: 802.11ac, channel 149 (5GHz, 80MHz), signal/noise -81 dBm / -92 dBm (SNR 11 dB), tx rate 13 Mbps, MCS 1, security WPA2 Personal
+other radios with the same network name: 10; foreign networks visible: 0
+  2GHz channel  10: signal/noise -38/-92 dBm (SNR 54 dB), 802.11b/g/n, None
+  2GHz channel   8: signal/noise -49/-92 dBm (SNR 43 dB), 802.11b/g/n, WPA2 Personal
+  5GHz channel 153: signal/noise -55/-92 dBm (SNR 37 dB), 802.11a/n/ac, WPA2 Personal
+  2GHz channel   3: signal/noise -71/-92 dBm (SNR 21 dB), 802.11b/g/n/ac/ax, WPA2 Personal
+  5GHz channel 149: signal/noise -80/-92 dBm (SNR 12 dB), 802.11a/n/ac/ax, WPA2 Personal
+  5GHz channel 136: signal/noise -80/-92 dBm (SNR 12 dB), 802.11a/n/ac/ax, WPA2 Personal
+  2GHz channel  11: signal/noise -81/-92 dBm (SNR 11 dB), 802.11b/g/n, WPA2 Personal
+  2GHz channel   2: signal/noise -83/-92 dBm (SNR 9 dB), 802.11g/n, WPA2 Personal
+  2GHz channel  10: signal/noise -83/-92 dBm (SNR 9 dB), 802.11g/n, WPA2 Personal
+  2GHz channel   6: signal/noise -86/-92 dBm (SNR 6 dB), 802.11b/g/n, WPA2 Personal
+
+== local hop: ping the gateway 192.168.50.1 (50 at 0.2 s)
+50 packets transmitted, 29 packets received, 42.0% packet loss
+round-trip min/avg/max/stddev = 4.195/11.540/27.934/6.798 ms
+
+== internet path: ping 1.1.1.1 (50 at 0.2 s)
+50 packets transmitted, 46 packets received, 8.0% packet loss
+round-trip min/avg/max/stddev = 51.836/127.271/405.199/93.489 ms
