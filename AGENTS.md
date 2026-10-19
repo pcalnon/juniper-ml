@@ -251,7 +251,7 @@ The repository uses [SOPS](https://github.com/getsops/sops) with age encryption 
 
 ## Ecosystem Context
 
-This repo is part of the broader Juniper ecosystem. See the parent directory's `CLAUDE.md` at `/home/pcalnon/Development/python/Juniper/CLAUDE.md` for the full project map, dependency graph, shared conventions, and conda environment details.
+This repo is part of the broader Juniper ecosystem. See the parent directory's `CLAUDE.md` at `~/Development/python/Juniper/CLAUDE.md` for the full project map, dependency graph, shared conventions, and conda environment details.
 
 ### Dependency extras reference
 

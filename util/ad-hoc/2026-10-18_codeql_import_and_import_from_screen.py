@@ -16,6 +16,12 @@ Why: on juniper-ml#2242 CodeQL posted a note-level `py/import-and-import-from` c
 repo idiom that avoids it is `import unittest` + `import unittest.mock as mock`. This screen ran over the
 remaining Session 1 files before their PRs opened; it found nothing.
 
+Correction (2026-10-19): the general pre-screen does cover this query. Its `import-and-import-from` rule
+(standard-library modules only, as calibrated on juniper-ml#2157) has been there since it landed in
+juniper-ml#2183, and on the file CodeQL flagged in #2242 (`tests/test_claude_agent_guard.py` at `afb75f71`)
+it reports exactly that alert. This screen differs mainly in also flagging non-standard-library modules,
+which CodeQL did not flag on #2157.
+
 Usage:
     python3 -I util/ad-hoc/2026-10-18_codeql_import_and_import_from_screen.py FILE.py [FILE.py ...]
 

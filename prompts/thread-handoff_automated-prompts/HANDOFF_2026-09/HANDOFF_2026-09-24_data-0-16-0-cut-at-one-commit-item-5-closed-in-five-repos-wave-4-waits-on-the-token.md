@@ -264,6 +264,15 @@ was reported down on 09-22. After Wave 4, pulls from docker.io follow `…REGIST
 §9: the nodes log in with their own read-only token, and nodes that share one account share its
 200 pulls per 6 h. None of that applies to the GHCR pull.
 
+> **Correction, 2026-10-19 (erratum X6 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).**
+> `turing` was not down, and it was never a Pi-pull candidate. It is the owner's 15-inch 2018 Intel
+> MacBook Pro (x86_64, macOS), a development laptop in active use away from yamaguchi
+> (`notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_BYPASS-CANDIDATE-DETERMINATION.md:174`), so it cannot
+> meet the pull's 64-bit Pi OS precondition. `192.168.50.222` comes from
+> `juniper-k8s/util/node_scripts/testing/hosts:7`, but turing's Wi-Fi address is DHCP-assigned
+> (`192.168.50.131` on 2026-10-15, `192.168.50.180` on 2026-10-19), so a failed probe of `.222` did
+> not show turing down. The Pi pull still needs a real arm64 Pi. This covers every `turing` statement in this file.
+
 **Mechanisms worth keeping** (the detail is in `…PUBLISHING-PLAN.md` §5.2): only committed files
 reach a CI-published image; a bare `.dockerignore` pattern matches the context root only; the
 check unit is the context root; a `/app`-only scan passes vacuously; never blanket-add `**/logs/`, because canopy's is a symlink.

@@ -141,6 +141,15 @@ Neither was visible from reading. Both are in the plan and in
   > refused because no sshd runs locally. **It is not a Pi candidate and never was.** `turing`
   > (192.168.50.222) is the only real one, and is ARP-FAILED / unreachable. Re-probed: no arm64
   > binfmt handler, `docker buildx` offers `linux/amd64` only.
+  >
+  > **Correction, 2026-10-19 (erratum X6 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).**
+  > `turing` was not down, and it was never a Pi-pull candidate. It is the owner's 15-inch 2018 Intel
+  > MacBook Pro (x86_64, macOS), a development laptop in active use away from yamaguchi
+  > (`notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_BYPASS-CANDIDATE-DETERMINATION.md:174`), so it cannot
+  > meet the pull's 64-bit Pi OS precondition. `192.168.50.222` comes from
+  > `juniper-k8s/util/node_scripts/testing/hosts:7`, but turing's Wi-Fi address is DHCP-assigned
+  > (`192.168.50.131` on 2026-10-15, `192.168.50.180` on 2026-10-19), so a failed probe of `.222` did
+  > not show turing down. The Pi pull still needs a real arm64 Pi. This covers every `turing` statement in this file.
 
 ### Traps this session paid for
 
