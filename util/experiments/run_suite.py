@@ -25,10 +25,12 @@ Usage:
     python util/experiments/run_suite.py --suite SUITE.yaml [--dry-run] [--resume SUITE_ID]
                                          [--only CELL_ID ...]
 
-Exit codes: 0 = every cell in the FULL EXPANSION has succeeded (in this invocation or
-an earlier one resumed with --resume); 1 = suite completed with failed, degraded or not-run
-cells (or aggregation found none succeeded); 2 = misuse / suite-validation error.
+Exit codes: 0 = every cell in the FULL EXPANSION has succeeded or is ``flagged`` (in this
+invocation or an earlier one resumed with --resume); 1 = suite completed with failed, degraded
+or not-run cells (or aggregation found none succeeded); 2 = misuse / suite-validation error.
 A ``degraded`` cell trained but lost a phase its config enabled (W0.3); it is never a success.
+A ``flagged`` cell succeeded and missed a ``mode: report`` acceptance band (W5.4 / R6); it is
+complete, and the exit code ignores it. A ``mode: gate`` band miss makes the cell ``failed``.
 So a partial --only run exits 1 even when every selected cell succeeded -- by design:
 under --resume, 0 means "the suite is now complete". Read the cell's outcome instead
 (docs/REFERENCE.md § "Resume, --only, and exit codes"; this line said "every executed
@@ -84,7 +86,18 @@ DEFAULT_RUN_ROOT = Path(os.environ.get("JUNIPER_EXP_RUN_ROOT", str(Path.home() /
 
 RUN_ID_BANNER = re.compile(r"Experiment run (\S+) is up")
 
-SUITE_KEYS = frozenset({"schema_version", "suite", "execution", "matrix", "include", "exclude", "outputs"})
+SUITE_KEYS = frozenset({"schema_version", "suite", "execution", "matrix", "include", "exclude", "outputs", "acceptance"})
+# W5.4 (F-D3 / F-SCI4): acceptance bands. A band names one headline metric (the W0.4 recurrence keys or
+# the cascor accuracies `_headline_metrics` reads), a `min` and / or `max` bound, and a `mode`. Bands
+# live on the SUITE (every cell) or on an `include` row (that row only -- the R5 band is row-scoped to
+# the E-H equities row because the irregular-sine control's cv_r2 0.975 would fail +0.5). Outcome
+# semantics are R6's: a `gate` miss makes a succeeded cell `failed` (non-zero exit); a `report` miss
+# makes it `flagged` (exit unchanged). A metric the band names that the cell did not produce follows the
+# mode -- `failed (cv_r2 absent)` under gate, `flagged (cv_r2 absent)` under report -- and is distinct
+# from `degraded`, which says an enabled PHASE did not run.
+ACCEPTANCE_BAND_KEYS = frozenset({"metric", "min", "max", "mode"})
+ACCEPTANCE_MODES = ("gate", "report")
+ACCEPTANCE_METRICS = frozenset({"final_accuracy", "test_accuracy", "val_accuracy", "train_r2", "cv_r2", "cv_r2_std", "n_windows"})
 SUITE_SUITE_KEYS = frozenset({"name", "description", "app", "base_config", "seed_policy"})
 EXECUTION_KEYS = frozenset({"mode", "max_parallel", "continue_on_failure", "per_run_timeout_seconds", "stall_seconds", "max_wall_seconds", "dataset_create_timeout_seconds"})
 #: W1.5 (F-D5 / F-S9): the recurrence service's own juniper-data client timeout, the setting
@@ -94,7 +107,11 @@ RECURRENCE_DATA_TIMEOUT_ENV = "JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS"
 # whose ENABLED predict / crossval / save_model phase failed. Terminal -- the run is over -- but
 # NOT a success: the summary counts it on its own, `--resume` re-runs it, and it keeps the suite's
 # exit code non-zero (R6, the plan's recommended ruling, applied pending the owner's).
-TERMINAL_OUTCOMES = frozenset({"succeeded", "degraded", "failed", "stalled", "timed_out"})
+TERMINAL_OUTCOMES = frozenset({"succeeded", "flagged", "degraded", "failed", "stalled", "timed_out"})
+# The outcomes a cell is DONE with: `--resume` skips them and the exit code accepts them. `flagged`
+# (W5.4) is a succeeded cell that missed a `mode: report` band -- information for a person, not a
+# build outcome (R6), so it sits here and never in `failed`.
+COMPLETE_OUTCOMES = frozenset({"succeeded", "flagged"})
 
 # W0.4 (F-D2): each recurrence headline column and the path to it inside `stats["recurrence"]`, as
 # `stats_summary.build_stats` writes that block. The first reader looked for `train_r2` / `cv_r2` /
@@ -192,7 +209,53 @@ def load_suite(path: Path) -> dict:
     dataset_budget = execution.get("dataset_create_timeout_seconds")
     if dataset_budget is not None and not _is_positive_seconds(dataset_budget):
         raise SuiteError(f"execution.dataset_create_timeout_seconds must be a positive, finite number of seconds, got {dataset_budget!r}")
+    # W5.4: a malformed band refuses the suite HERE, before any cell launches -- a band that cannot be
+    # evaluated is a suite defect, and finding out after the E-H row's twenty-minute run is too late.
+    _require_sequence(doc, "acceptance")
+    parse_acceptance(doc.get("acceptance"), "acceptance")
+    for position, item in enumerate(doc.get("include") or []):
+        if isinstance(item, dict) and item.get("acceptance") is not None:
+            parse_acceptance(item["acceptance"], f"include[{position}].acceptance")
     return doc
+
+
+def parse_acceptance(spec, where: str) -> "list[dict]":
+    """Validate one ``acceptance:`` list and return its bands normalised (``min`` / ``max`` ``None`` when absent).
+
+    ``None`` (the key absent) is an empty list. Every other shape is checked strictly: a list of
+    mappings whose keys are exactly from ``ACCEPTANCE_BAND_KEYS``, ``metric`` one of the headline
+    columns ``_headline_metrics`` can produce, ``mode`` one of ``ACCEPTANCE_MODES`` (required -- a
+    band that does not say whether it gates is the ambiguity R6 exists to remove), at least one of
+    ``min`` / ``max``, both numbers (never ``bool``), ``min <= max``. Any violation is a ``SuiteError``.
+    """
+    if spec is None:
+        return []
+    if not isinstance(spec, list):
+        raise SuiteError(f"{where} must be a list of bands, got {type(spec).__name__}")
+    bands: "list[dict]" = []
+    for index, band in enumerate(spec):
+        label = f"{where}[{index}]"
+        if not isinstance(band, dict):
+            raise SuiteError(f"{label} must be a mapping with metric / min / max / mode, got {type(band).__name__}")
+        unknown = set(band) - ACCEPTANCE_BAND_KEYS
+        if unknown:
+            raise SuiteError(f"{label}: unknown keys {sorted(unknown)} (allowed: {sorted(ACCEPTANCE_BAND_KEYS)})")
+        metric = band.get("metric")
+        if metric not in ACCEPTANCE_METRICS:
+            raise SuiteError(f"{label}.metric must be one of {sorted(ACCEPTANCE_METRICS)}, got {metric!r}")
+        mode = band.get("mode")
+        if mode not in ACCEPTANCE_MODES:
+            raise SuiteError(f"{label}.mode must be one of {list(ACCEPTANCE_MODES)}, got {mode!r}")
+        low, high = band.get("min"), band.get("max")
+        if low is None and high is None:
+            raise SuiteError(f"{label}: at least one of min / max is required")
+        for name, value in (("min", low), ("max", high)):
+            if value is not None and (not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(value)):
+                raise SuiteError(f"{label}.{name} must be a finite number, got {value!r}")
+        if low is not None and high is not None and low > high:
+            raise SuiteError(f"{label}: min {low!r} is above max {high!r}")
+        bands.append({"metric": metric, "min": low, "max": high, "mode": mode})
+    return bands
 
 
 def _is_positive_seconds(value) -> bool:
@@ -407,6 +470,11 @@ def expand_cells(doc: dict, suite_path: Path) -> "list[dict]":
     def excluded(overrides: dict) -> bool:
         return any(all(overrides.get(k) == v for k, v in row.items()) for row in exclude)
 
+    # W5.4: suite-level bands reach every cell; an include row's bands reach that row only. Bands are
+    # NOT part of the cell id -- they judge the result, they do not change the experiment, so adding a
+    # band to a row keeps its id (and its resume identity) stable.
+    suite_bands = parse_acceptance(doc.get("acceptance"), "acceptance")
+
     cells: "list[dict]" = []
     index = 0
     for config_rel in suite["base_config"]:
@@ -417,16 +485,17 @@ def expand_cells(doc: dict, suite_path: Path) -> "list[dict]":
             # Hash the RELATIVE reference, not the resolved path — cell ids stay
             # identical between the canonical checkout and a worktree (JUNIPER_EXP_PROJECT_DIR rebase).
             cell_id = f"c{index:03d}-{_sha8(config_rel + json.dumps(overrides, sort_keys=True))}"
-            cells.append({"cell_id": cell_id, "index": index, "name": None, "config_path": str(config_path), "overrides": dict(overrides)})
+            cells.append({"cell_id": cell_id, "index": index, "name": None, "config_path": str(config_path), "overrides": dict(overrides), "acceptance": list(suite_bands)})
             index += 1
-    for item in include:
+    for position, item in enumerate(include):
         if not isinstance(item, dict) or "overrides" not in item:
             raise SuiteError("include entries must be mappings with an 'overrides' key")
         config_rel = item.get("config", suite["base_config"][0])
         config_path = _resolve_base_config(suite_path, config_rel)
         overrides = dict(item["overrides"])
         cell_id = f"c{index:03d}-{_sha8(config_rel + json.dumps(overrides, sort_keys=True))}"
-        cells.append({"cell_id": cell_id, "index": index, "name": item.get("name"), "config_path": str(config_path), "overrides": overrides})
+        row_bands = parse_acceptance(item.get("acceptance"), f"include[{position}].acceptance")
+        cells.append({"cell_id": cell_id, "index": index, "name": item.get("name"), "config_path": str(config_path), "overrides": overrides, "acceptance": list(suite_bands) + row_bands})
         index += 1
     if not cells:
         raise SuiteError("suite expands to zero cells")
@@ -733,6 +802,86 @@ def _outcome_line(row: dict) -> str:
     return f"{row.get('outcome')}" + (f" ({detail})" if detail else "")
 
 
+def _band_text(band: dict) -> str:
+    """``[-1.0, 0.5]``, ``>= -1.0`` or ``<= 0.5`` -- the bound as the report prints it."""
+    low, high = band.get("min"), band.get("max")
+    if low is not None and high is not None:
+        return f"[{low}, {high}]"
+    return f">= {low}" if low is not None else f"<= {high}"
+
+
+def evaluate_acceptance(bands: "list[dict]", metrics: dict) -> "list[dict]":
+    """Compare each band with the cell's headline metrics (W5.4).
+
+    One result per band: the band's own fields plus ``value`` (the metric as ``_headline_metrics``
+    read it, ``None`` when absent) and ``result`` -- ``pass``, ``fail`` or ``absent``. ``absent`` is
+    its own word rather than a ``fail`` because the plan separates the two (a gate that cannot be
+    evaluated has not passed, but the report must say WHY). Bounds are inclusive; the comparison is
+    the plain float comparison, so ``cv_r2 = -18081.0`` against ``[-1.0, 0.5]`` fails and ``-1.0``
+    passes.
+    """
+    results: "list[dict]" = []
+    for band in bands:
+        value = (metrics or {}).get(band["metric"])
+        if not _is_metric(value):
+            result = "absent"
+            value = None
+        else:
+            low, high = band.get("min"), band.get("max")
+            below = low is not None and value < low
+            above = high is not None and value > high
+            result = "fail" if (below or above) else "pass"
+        results.append({**band, "value": value, "result": result})
+    return results
+
+
+def _acceptance_summary(results: "list[dict]") -> str:
+    """``cv_r2=-18081.0 outside [-1.0, 0.5] (gate); cv_r2_std absent (gate)`` -- the misses, for the console and the row's ``error``."""
+    parts = []
+    for item in results:
+        if item["result"] == "pass":
+            continue
+        if item["result"] == "absent":
+            parts.append(f"{item['metric']} absent ({item['mode']})")
+        else:
+            parts.append(f"{item['metric']}={item['value']} outside {_band_text(item)} ({item['mode']})")
+    return "; ".join(parts)
+
+
+def _acceptance_cell(row: dict) -> str:
+    """The one-cell summary for ``aggregate.csv`` / the REPORT table: ``""`` without bands, ``pass``, or the misses."""
+    results = row.get("acceptance")
+    if not results:
+        return ""
+    return _acceptance_summary(results) or "pass"
+
+
+def apply_acceptance(row: dict, bands: "list[dict]") -> None:
+    """Record the band results on the registry row and apply R6's outcome semantics (W5.4).
+
+    Only a ``succeeded`` cell can change outcome here: a cell that is already ``failed``,
+    ``degraded``, ``stalled`` or ``timed_out`` keeps that outcome (the phase failure is the finding;
+    its bands are still evaluated and recorded so the report can say what the numbers were). For a
+    succeeded cell, any ``gate`` miss or absence makes it ``failed`` and names the misses in
+    ``error``; otherwise any ``report`` miss or absence makes it ``flagged`` with the same note.
+    Cells with no bands are untouched and carry no ``acceptance`` key.
+    """
+    if not bands:
+        return
+    results = evaluate_acceptance(bands, row.get("metrics") or {})
+    row["acceptance"] = results
+    if row.get("outcome") != "succeeded":
+        return
+    gate_misses = [r for r in results if r["mode"] == "gate" and r["result"] != "pass"]
+    report_misses = [r for r in results if r["mode"] == "report" and r["result"] != "pass"]
+    if gate_misses:
+        row["outcome"] = "failed"
+        row["error"] = "acceptance: " + _acceptance_summary(gate_misses + report_misses)
+    elif report_misses:
+        row["outcome"] = "flagged"
+        row["error"] = "acceptance: " + _acceptance_summary(report_misses)
+
+
 def execute_cell(
     cell: dict,
     cell_yaml: Path,
@@ -919,7 +1068,10 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
         writer = csv.writer(fh)
         # step_count / mean_step_seconds sit next to wall_seconds deliberately: the de-ratified
         # metric stays for continuity, but it is no longer the only thing on offer.
-        writer.writerow(["cell_id", "name", "run_id", "outcome", "exit_code", "wall_seconds", "step_count", "mean_step_seconds", *override_keys, *metric_keys])
+        # W5.4: the `acceptance` column is LAST so every earlier column keeps its position (the
+        # REPORT.md row prefix `| c000 | succeeded | 1000.0 | 50.000 |` is pinned by a test).
+        # One word per cell: `pass`, or the misses `_acceptance_summary` prints; blank without bands.
+        writer.writerow(["cell_id", "name", "run_id", "outcome", "exit_code", "wall_seconds", "step_count", "mean_step_seconds", *override_keys, *metric_keys, "acceptance"])
         for cell in cells:
             row = registry.get(cell["cell_id"], {})
             cell_gate = gate.get(cell["cell_id"], {})
@@ -935,32 +1087,58 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
                     cell_gate.get("mean_step_seconds", ""),
                     *[cell["overrides"].get(k, "") for k in override_keys],
                     *[(row.get("metrics") or {}).get(k, "") for k in metric_keys],
+                    _acceptance_cell(row),
                 ]
             )
     succeeded = [c for c in cells if registry.get(c["cell_id"], {}).get("outcome") == "succeeded"]
     # W0.3: counted on its own rather than folded into failed/other, so the summary says what
     # happened -- and never into `succeeded`, which is what the driver used to record (F-D1).
     degraded = [c for c in cells if registry.get(c["cell_id"], {}).get("outcome") == "degraded"]
-    failed = [c for c in cells if registry.get(c["cell_id"], {}).get("outcome") not in (None, "succeeded", "degraded")]
+    # W5.4 / R6: a `flagged` cell completed and missed a report-mode band. Counted on its own, never
+    # in failed/other, and it does not move the exit code.
+    flagged = [c for c in cells if registry.get(c["cell_id"], {}).get("outcome") == "flagged"]
+    failed = [c for c in cells if registry.get(c["cell_id"], {}).get("outcome") not in (None, "succeeded", "degraded", "flagged")]
+    banded = [c for c in cells if c.get("acceptance")]
     lines = [
         f"# Suite report — {suite['name']}",
         "",
         f"{suite.get('description', '')}".strip(),
         "",
-        f"Cells: {len(cells)} total, {len(succeeded)} succeeded, {len(degraded)} degraded, {len(failed)} failed/other, {len(cells) - len(succeeded) - len(degraded) - len(failed)} not run.",
+        f"Cells: {len(cells)} total, {len(succeeded)} succeeded, " + (f"{len(flagged)} flagged, " if flagged else "") + f"{len(degraded)} degraded, {len(failed)} failed/other, {len(cells) - len(succeeded) - len(flagged) - len(degraded) - len(failed)} not run.",
         "",
-        "| cell | outcome | step_count | mean step (ms) | wall (s) | " + " | ".join(override_keys + metric_keys) + " |",
-        "|---|---|---|---|---|" + "---|" * (len(override_keys) + len(metric_keys)),
+        "| cell | outcome | step_count | mean step (ms) | wall (s) | " + " | ".join(override_keys + metric_keys + (["acceptance"] if banded else [])) + " |",
+        "|---|---|---|---|---|" + "---|" * (len(override_keys) + len(metric_keys) + (1 if banded else 0)),
     ]
     for cell in cells:
         row = registry.get(cell["cell_id"], {})
         cell_gate = gate.get(cell["cell_id"], {})
         mean_step = cell_gate.get("mean_step_seconds")
         values = [str(cell["overrides"].get(k, "")) for k in override_keys] + [str((row.get("metrics") or {}).get(k, "")) for k in metric_keys]
+        if banded:
+            values.append(_acceptance_cell(row))
         lines.append(
             f"| {cell['cell_id']} | {row.get('outcome') or 'not-run'} | {cell_gate.get('step_count') or ''} | "
             f"{f'{mean_step * 1000:.3f}' if isinstance(mean_step, float) else ''} | {row.get('wall_seconds') or ''} | " + " | ".join(values) + " |"
         )
+    if banded:
+        lines += [
+            "",
+            "## Acceptance bands",
+            "",
+            "One row per band per cell (W5.4). `gate` misses make the cell `failed` and the suite exit non-zero; `report` misses make it `flagged` and leave the exit code alone (R6). `absent` means the cell produced no such headline metric.",
+            "",
+            "| cell | metric | band | mode | value | result |",
+            "|---|---|---|---|---|---|",
+        ]
+        for cell in banded:
+            row = registry.get(cell["cell_id"], {})
+            if not row:
+                results = [{**band, "value": None, "result": "not-run"} for band in cell["acceptance"]]
+            else:
+                # A row written by this run carries its results; one from an older registry does not.
+                results = row.get("acceptance") or evaluate_acceptance(cell["acceptance"], row.get("metrics") or {})
+            for item in results:
+                lines.append(f"| {cell['cell_id']} | {item['metric']} | {_band_text(item)} | {item['mode']} | {'' if item['value'] is None else item['value']} | {item['result']} |")
     if degraded:
         lines += [
             "",
@@ -1029,7 +1207,8 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
         lines.append("The suite's own exit code does NOT reflect this verdict — whether the run tier gates is a")
         lines.append("separate owner decision (§6 of the P1 design). Read the verdict, or run `compare_baseline.py`.")
     (suite_dir / "REPORT.md").write_text("\n".join(lines) + "\n")
-    return 0 if len(succeeded) == len(cells) else 1
+    # R6: `flagged` is complete -- the exit code counts it with `succeeded`.
+    return 0 if len(succeeded) + len(flagged) == len(cells) else 1
 
 
 def main(argv: "list[str] | None" = None) -> int:
@@ -1085,7 +1264,7 @@ def main(argv: "list[str] | None" = None) -> int:
         # is read from its materialised YAML, which a dry run does not write.
         up_env = "".join(f"{key}={value} " for key, value in recurrence_data_timeout_env(suite["app"], {}, dataset_create_timeout_seconds).items())
         for cell in cells:
-            print(f"  {cell['cell_id']}  config={Path(cell['config_path']).name}  overrides={json.dumps(cell['overrides'], sort_keys=True)}" + (f"  name={cell['name']}" if cell["name"] else ""))
+            print(f"  {cell['cell_id']}  config={Path(cell['config_path']).name}  overrides={json.dumps(cell['overrides'], sort_keys=True)}" + (f"  name={cell['name']}" if cell["name"] else "") + (f"  acceptance={json.dumps(cell['acceptance'], sort_keys=True)}" if cell.get("acceptance") else ""))
             print(f"    $ {up_env}{launcher} --up --{suite['app']} --config {suite_dir}/cells/{cell['cell_id']}/experiment.yaml --experiment {cell['cell_id']}")
             stall_flag = f" --stall-seconds {stall_seconds}" if stall_seconds is not None else ""
             wall_flag = f" --max-wall-seconds {max_wall_seconds}" if max_wall_seconds is not None else ""
@@ -1107,7 +1286,7 @@ def main(argv: "list[str] | None" = None) -> int:
         return 2
 
     (suite_dir / "suite_manifest.json").write_text(
-        json.dumps({"schema": "juniper-experiment-suite/1", "suite_id": suite_id, "suite": suite, "execution": execution, "cells": [{k: c[k] for k in ("cell_id", "index", "name", "config_path", "overrides")} for c in cells], "suite_yaml_sha256": hashlib.sha256(args.suite.read_bytes()).hexdigest()}, indent=2, sort_keys=True)
+        json.dumps({"schema": "juniper-experiment-suite/1", "suite_id": suite_id, "suite": suite, "execution": execution, "cells": [{k: c[k] for k in ("cell_id", "index", "name", "config_path", "overrides", "acceptance")} for c in cells], "suite_yaml_sha256": hashlib.sha256(args.suite.read_bytes()).hexdigest()}, indent=2, sort_keys=True)
         + "\n"
     )
 
@@ -1118,8 +1297,10 @@ def main(argv: "list[str] | None" = None) -> int:
     runnable = []
     for cell in selected:
         prior = registry_rows.get(cell["cell_id"])
-        if prior and prior.get("outcome") == "succeeded":
-            print(f"[suite] {cell['cell_id']}: already succeeded — skipped (resume)")
+        if prior and prior.get("outcome") in COMPLETE_OUTCOMES:
+            # `flagged` (W5.4) is complete: the cell ran to the end and a report-mode band missed.
+            # Re-running it would measure the same thing again; the miss is in the registry row.
+            print(f"[suite] {cell['cell_id']}: already {prior.get('outcome')} — skipped (resume)")
             continue
         runnable.append(cell)
     try:
@@ -1156,6 +1337,9 @@ def main(argv: "list[str] | None" = None) -> int:
         return 2
 
     def _record(cell: dict, row: dict) -> None:
+        # W5.4: judge the row BEFORE it is written anywhere, so registry.jsonl, index.jsonl, the console
+        # line and the exit code all see one outcome. The cell's bands are suite-level + its own row's.
+        apply_acceptance(row, cell.get("acceptance") or [])
         row["suite_id"] = suite_id
         _append_jsonl(suite_dir / "registry.jsonl", row)
         _append_jsonl(DEFAULT_RUN_ROOT / "index.jsonl", {"suite_id": suite_id, "cell_id": cell["cell_id"], "run_id": row.get("run_id"), "outcome": row.get("outcome"), "run_dir": row.get("run_dir")})
@@ -1178,7 +1362,7 @@ def main(argv: "list[str] | None" = None) -> int:
                 cell = futures[future]
                 row = future.result()
                 _record(cell, row)
-                if row["outcome"] != "succeeded":
+                if row["outcome"] not in COMPLETE_OUTCOMES:
                     any_failed = True
                     if not continue_on_failure:
                         stop.set()
@@ -1187,7 +1371,7 @@ def main(argv: "list[str] | None" = None) -> int:
             print(f"[suite] {cell['cell_id']}: running ({json.dumps(cell['overrides'], sort_keys=True)})", flush=True)
             row = execute_cell(cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]], dataset_create_timeout_seconds=dataset_create_timeout_seconds, service_env=service_envs[cell["cell_id"]])
             _record(cell, row)
-            if row["outcome"] != "succeeded":
+            if row["outcome"] not in COMPLETE_OUTCOMES:
                 any_failed = True
                 if not continue_on_failure:
                     break

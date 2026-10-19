@@ -2560,7 +2560,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 
 ### What This Is
 
-Git worktrees allow multiple branches of a repository to be checked out simultaneously in separate directories. For the Juniper ecosystem, all worktrees are centralized in **`~/Development/python/Juniper/worktrees/`** using a standardized naming convention.
+Git worktrees allow multiple branches of a repository to be checked out simultaneously in separate directories. For the Juniper ecosystem, all worktrees are centralized in **`/home/pcalnon/Development/python/Juniper/worktrees/`** using a standardized naming convention.
 
 The full setup and cleanup procedures are defined in:
 
@@ -2576,7 +2576,7 @@ Format: `<repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>`
 Example: `juniper-ml--chore--update-deps--20260225-1430--519bda91`
 
 - Slashes in branch names are replaced with `--`
-- All worktrees reside in `~/Development/python/Juniper/worktrees/`
+- All worktrees reside in `/home/pcalnon/Development/python/Juniper/worktrees/`
 
 ### When to Use Worktrees
 
@@ -2593,13 +2593,13 @@ Example: `juniper-ml--chore--update-deps--20260225-1430--519bda91`
 **Setup** (full procedure in `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`):
 
 ```bash
-cd ~/Development/python/Juniper/juniper-ml
+cd /home/pcalnon/Development/python/Juniper/juniper-ml
 git fetch origin && git checkout main && git pull origin main
 BRANCH_NAME="chore/my-task"
 git branch "$BRANCH_NAME" main
 REPO_NAME=$(basename "$(pwd)")
 SAFE_BRANCH=$(echo "$BRANCH_NAME" | sed 's|/|--|g')
-WORKTREE_DIR="$HOME/Development/python/Juniper/worktrees/${REPO_NAME}--${SAFE_BRANCH}--$(date +%Y%m%d-%H%M)--$(git rev-parse --short=8 HEAD)"
+WORKTREE_DIR="/home/pcalnon/Development/python/Juniper/worktrees/${REPO_NAME}--${SAFE_BRANCH}--$(date +%Y%m%d-%H%M)--$(git rev-parse --short=8 HEAD)"
 git worktree add "$WORKTREE_DIR" "$BRANCH_NAME"
 cd "$WORKTREE_DIR"
 ```
@@ -2638,7 +2638,7 @@ util/worktree_cleanup.bash \
 
 ### Rules
 
-- **Centralized location**: All worktrees go in `~/Development/python/Juniper/worktrees/`. Never create worktrees inside the repo directory.
+- **Centralized location**: All worktrees go in `/home/pcalnon/Development/python/Juniper/worktrees/`. Never create worktrees inside the repo directory.
 - **Clean before you start**: Ensure the main working directory is clean before creating a worktree.
 - **Push before you merge**: Always push the working branch to remote before merging (backup).
 - **Prune after cleanup**: Run `git worktree prune` after removing a worktree to clean metadata.
@@ -3318,6 +3318,7 @@ python3 -m unittest -v tests/test_claude_agent_guard.py
 python3 -m unittest -v tests/test_git_remote_alias_check.py
 python3 -m unittest -v tests/test_headless_signing_preflight.py
 python3 -m unittest -v tests/test_juniper_repo_ssh_setup.py
+python3 -m unittest -v tests/test_run_suite_acceptance.py
 bash scripts/test_resume_file_safety.bash
 # doc-link validator regression tests live in juniper-doc-tools/tests/
 # and run under the dedicated `CI -- juniper-doc-tools` workflow.
@@ -3536,6 +3537,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_soak_ledger_status_token.py` -- The `util/soak_ledger.py` status first-token contract the dry-run suite cannot see: the token a downstream reader keys on, pinned against a renaming that keeps the line but changes its meaning.
 - `tests/test_soak_analyse_date_pool.py` -- Pins that `analyse()` pools the corpus the probe picker now SPLITS by date -- a pooled analysis over a split corpus silently mixes cohorts and reports one number for two populations.
 - `tests/test_run_suite_gate_metrics.py` -- Suite-report gate values that the header pin in #1643 cannot see: the header can be correct while the gate VALUES beneath it are stale or absent.
+- `tests/test_run_suite_acceptance.py` -- W5.4 (F-D3 / F-SCI4): the suite `acceptance:` facility and the R5 band on the E-H row. The schema (a list of `{metric, min, max, mode}` bands on the suite or on an `include` row; every malformed shape refuses the suite at load, before a launch); the comparator over the W0.4 headline keys with inclusive bounds and `0.0` a value; R6's outcomes -- `cv_r2 = -18081` is `failed` under `gate` (exit 1) and `flagged` under `report` (exit 0), an absent metric follows the mode and is not `degraded`, a degraded cell keeps its outcome with the bands recorded; row scoping (the irregular-sine control's `cv_r2 0.975` fails `+0.5` only under a suite-level band); `flagged` is complete for `--resume` and the exit code; the `acceptance` column is LAST in `aggregate.csv` and the REPORT table, with a `## Acceptance bands` section; bands do not enter the cell id; the shipped E-H suite carries `cv_r2 in [-1.0, 0.5]` and `cv_r2_std <= 0.5`, both `gate`, on the equities row only. Hermetic (stub launcher + driver through the `JUNIPER_SUITE_*` seams).
 - `tests/test_list_runs_classify_guards.py` -- The `list_runs` classification guards the happy-path suite never reaches -- the arms that REFUSE to classify, which a well-formed run never enters.
 - `tests/test_register_close_protocol.py` -- The defect-register operator pair that #1648/#1717 cannot see: the close protocol itself, distinct from the open-set reader and the status crosscheck.
 - `tests/test_stats_summary_render.py` -- `summary.md` scrape-honesty line collection: which lines the renderer must emit, the conditional class-distribution line, the reason sub-bullet, and `present`/`written` key precedence.
@@ -5128,15 +5130,15 @@ python util/experiments/run_suite.py --suite path/to/suite.yaml --only c000-dead
 
 | Exit | Meaning |
 |------|---------|
-| `0` | Every executed cell succeeded (and `--dry-run`) |
-| `1` | Suite finished with at least one failed / stalled / timed-out cell, or aggregation found none succeeded |
+| `0` | Every executed cell succeeded or is `flagged` (a `mode: report` band miss, W5.4) (and `--dry-run`) |
+| `1` | Suite finished with at least one failed / degraded / stalled / timed-out cell (a `mode: gate` band miss is `failed`), or aggregation found none succeeded |
 | `2` | Misuse / suite-validation (`SuiteError`, unknown `--only` id, `--resume` dir missing) |
 
 `--compare-baseline TAG` pastes a standalone comparator verdict into `REPORT.md` and **never** changes this exit code. Use `util/experiments/compare_baseline.py` when you want the comparator's own 0/1/2.
 
 #### Suite YAML
 
-`schema_version` must be `1`. Allowed top-level keys: `schema_version`, `suite`, `execution`, `matrix`, `include`, `exclude`, `outputs`. Unknown keys exit `2` (the `stall_second` typo class).
+`schema_version` must be `1`. Allowed top-level keys: `schema_version`, `suite`, `execution`, `matrix`, `include`, `exclude`, `outputs`, `acceptance` (W5.4, below). Unknown keys exit `2` (the `stall_second` typo class).
 
 | `suite.` | Constraint |
 |----------|------------|
@@ -5148,6 +5150,21 @@ python util/experiments/run_suite.py --suite path/to/suite.yaml --only c000-dead
 `matrix` is an `itertools.product` of dotted-path → non-empty lists. `exclude` drops an exact override match. `include` appends extra cells that carry **only** their own `overrides` — they do **not** inherit the matrix. PF-1's repeats are a matrix axis of `experiment.description` for that reason: expressing repeats as `include` while putting the workload in `matrix` would run one real cell and N inherited smokes.
 
 Cell ids are `c{index:03d}-{sha8(relative_config + sorted_overrides)}`. The hash uses the **relative** `base_config` string so ids stay identical between the canonical checkout and a `JUNIPER_EXP_PROJECT_DIR` rebase.
+
+#### Acceptance bands (W5.4)
+
+`acceptance:` is a **list** of bands, on the suite (judges every cell) or on one `include` row (judges that row only). A band names one headline metric `aggregate.csv` carries -- the W0.4 recurrence keys `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` or the cascor `final_accuracy` / `test_accuracy` / `val_accuracy` -- with `min` and / or `max` (inclusive, finite numbers; `min <= max`) and a required `mode`:
+
+| `mode` | A miss, or a metric the cell did not produce | Exit code |
+|--------|-----------------------------------------------|-----------|
+| `gate` | the cell is `failed`; `error` names the miss (`acceptance: cv_r2=-18081.0 outside [-1.0, 0.5] (gate)` / `cv_r2 absent (gate)`) | non-zero |
+| `report` | the cell is `flagged` with the same note | unchanged |
+
+Semantics are the plan's R6: `gate` is the row's explicit opt-in to fail; `flagged` is information for a person, not a build outcome, so it counts as **complete** -- `--resume` skips it and the exit code counts it with `succeeded`. An absent metric follows the mode and is distinct from `degraded` (W0.3), which says an enabled *phase* did not run; a cell that is already `failed` / `degraded` / `stalled` / `timed_out` keeps that outcome, and its bands are still recorded. A malformed band (not a list, unknown key, unknown metric, missing `mode`, no bound, `min > max`, a bool or non-finite bound) refuses the suite at load (exit `2`), before any cell launches. Bands do **not** enter the cell id: they judge the result, they do not change the experiment, so adding one keeps a row's resume identity.
+
+Surface: the registry row carries `acceptance` (one result per band: `value`, `result` in `pass` / `fail` / `absent`); `aggregate.csv` gains an `acceptance` column **last** (blank without bands, `pass`, or the misses); the REPORT table gains the same column when any cell has bands, plus a `## Acceptance bands` section (one row per band per cell); `--dry-run` prints each banded cell's `acceptance=`; `suite_manifest.json` records each cell's bands.
+
+The shipped band is **R5** on `suites/p4/e-h-recurrence-real-data.yaml`'s equities row only -- `cv_r2 ∈ [-1.0, +0.5]` and `cv_r2_std ≤ 0.5`, both `gate` (owner ruling 2026-10-18; re-measured on W5.2's trainval population 2026-10-19: the bare 0.7.0 default scores -0.298 / 0.281, the recommended RFF configuration -0.111 / 0.041). It is row-scoped because the irregular-sine control's `cv_r2 0.975` would fail `+0.5` under a suite-level band. Gate: `tests/test_run_suite_acceptance.py`.
 
 #### Execution knobs
 
@@ -5173,7 +5190,7 @@ Parallel cells get the H-11 budget: `max(1, nproc // (2 * max_parallel))`. Casco
 
 Default run root is `$JUNIPER_EXP_RUN_ROOT` (falls back to `~/.local/state/juniper-experiments`). Suite dir is `outputs.suite_dir` if set, else `$JUNIPER_EXP_RUN_ROOT/suites/<suite_id>`. A fresh `suite_id` is `<name>-<UTC yyyymmddTHHMMSSZ>`; `--resume SUITE_ID` reuses that id. When `outputs.suite_dir` is unset, pass the existing directory's basename.
 
-`--resume` skips only cells whose `registry.jsonl` outcome is `succeeded`. Failed / stalled / timed-out / not-run cells run again. `--dry-run` prints the expansion and the exact `--up` / driver / `--down` lines, creates no directory, and appends no `index.jsonl`.
+`--resume` skips only cells whose `registry.jsonl` outcome is `succeeded` or `flagged` (complete, W5.4). Failed / degraded / stalled / timed-out / not-run cells run again. `--dry-run` prints the expansion and the exact `--up` / driver / `--down` lines, creates no directory, and appends no `index.jsonl`.
 
 Each cell writes:
 

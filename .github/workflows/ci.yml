@@ -1359,6 +1359,12 @@ jobs:
           # byte-identical. A key not at 600, a missing .pub or AddKeysToAgent yes exits 1, nothing
           # written. UseKeychain Darwin-only. Stub ssh-keygen/ssh (-G only); real tools on a scratch dir.
           python3 -m unittest -v tests/test_juniper_repo_ssh_setup.py
+          # tests/test_run_suite_acceptance.py: W5.4 -- the suite `acceptance:` facility (a list of {metric, min, max, mode}
+          # bands on the suite or an include row) and the R5 band on the E-H row. A malformed band refuses the suite at load;
+          # cv_r2 = -18081 is `failed` under gate (exit 1) and `flagged` under report (exit 0); an absent metric follows the
+          # mode and is not `degraded`; the band is row-scoped (the control's 0.975 fails +0.5 only when suite-level);
+          # `flagged` is complete for --resume and the exit code; the `acceptance` column is last in aggregate.csv.
+          python3 -m unittest -v tests/test_run_suite_acceptance.py
 
       - name: Run bash regression tests
         run: |

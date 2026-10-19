@@ -46,6 +46,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`util/experiments/run_suite.py` gains the `acceptance:` facility, and the E-H recurrence suite carries
+  the R5 band** (W5.4 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  F-D3 / F-SCI4; rulings R5 and R6). Before this the audited E-H cell scored `cv_r2 = -18081` and the suite
+  called it `succeeded` -- a number the suite produced correctly, which nothing judged.
+  - **Schema.** `acceptance:` is a list of bands `{metric, min, max, mode}` on the suite (every cell) or on an
+    `include` row (that row only). `metric` is one of the headline columns `aggregate.csv` carries (`train_r2`,
+    `cv_r2`, `cv_r2_std`, `n_windows`, `final_accuracy`, `test_accuracy`, `val_accuracy`); `min` / `max` are
+    inclusive finite numbers, at least one present, `min <= max`; `mode` is `gate` or `report` and is required.
+    A malformed band refuses the suite at load (exit 2), before any cell launches. Bands do not enter the cell
+    id -- they judge the result, they do not change the experiment.
+  - **Outcomes (R6).** A `gate` miss makes a succeeded cell `failed`, with `error` naming the miss
+    (`acceptance: cv_r2=-18081.0 outside [-1.0, 0.5] (gate)`), and the suite exits non-zero; a `report` miss
+    makes it **`flagged`** (new outcome; `TERMINAL_OUTCOMES`) with the same note and the exit code unchanged.
+    A metric the band names that the cell did not produce follows the mode (`cv_r2 absent (gate)`) and is
+    distinct from `degraded`, which says an enabled phase did not run; a cell already `failed` / `degraded` /
+    `stalled` / `timed_out` keeps that outcome with its bands recorded. `flagged` is complete: `--resume` skips
+    it and the exit code counts it with `succeeded` (`COMPLETE_OUTCOMES`).
+  - **Surface.** The registry row carries `acceptance` (per band: `value`, `result` in `pass` / `fail` /
+    `absent`); `aggregate.csv` gains an `acceptance` column, placed **last** so no existing column moves; the
+    REPORT table gains the same column when any cell has bands, plus a `## Acceptance bands` section, and the
+    summary line counts `flagged` cells when there are any; `--dry-run` prints each banded cell's bands;
+    `suite_manifest.json` records them.
+  - **The R5 band**, on `util/experiments/suites/p4/e-h-recurrence-real-data.yaml`'s equities row only:
+    `cv_r2 ∈ [-1.0, +0.5]` and `cv_r2_std ≤ 0.5`, both `gate` (the owner accepted the W5.1 note's amended
+    recommendation on 2026-10-18). Row-scoped because the irregular-sine control's `cv_r2 0.975` would fail
+    `+0.5` under a suite-level band. Re-measured on W5.2's trainval population on 2026-10-19 before encoding
+    (1,522 windows, five expanding folds, embargo = look-back 64): the bare 0.7.0 default scores `-0.298` /
+    `0.281`, the recommended RFF / ridge 1.0 / 256 / median configuration `-0.111` / `0.041`; both inside.
+    Round 3 of the CV-blowup note's consensus review (Lane A1-r3, 45 checks) was already recorded complete in
+    `notes/JUNIPER_2026-10-05_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-CONSENSUS-VALIDATION.md`, so the plan's
+    "round 3 first" precondition was met.
+  - `tests/test_run_suite_acceptance.py` (20 tests, hermetic through the `JUNIPER_SUITE_*` seams) pins the
+    schema, the comparator, the outcomes, the row scoping, the resume and exit behaviour, the columns and the
+    shipped band; wired into `ci.yml` and `docs/REFERENCE.md`'s run list (213 suites).
+
 - **`util/juniper_repo_ssh_setup.bash`: one repo's deploy key and Host alias, idempotently** (turing bring-up
   task A5, `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
   - It creates `id_ed25519_github_juniper-<repo>` when absent and appends the canonical
