@@ -1330,6 +1330,14 @@ jobs:
           # is a stub reached through VBOXMANAGE / VM_STAT / SYSCTL / PGREP, and a PATH shadow fails
           # any bare-name call, so no case can reach a real VirtualBox.
           python3 -m unittest -v tests/test_macvm_ctl.py
+          # tests/test_claude_agent_guard.py: turing bring-up C8 (D11 item 4, option (b)). The
+          # PreToolUse hook util/claude_agent_guard.py denies ~/.ssh / ~/.gnupg in any spelling,
+          # ssh -T / ssh-add, sudo, defaults write, gpg card/secret/sign ops, gh pr create|merge,
+          # gh auth, deploy keys, gh api write/field flags in any position, keychain dumps and
+          # user-level .claude settings edits. Payloads pipe through it with a temp
+          # JUNIPER_GUARD_HOME: allowed calls print nothing (never "allow"); bad input exits 2.
+          # Also drives util/install_claude_agent_guard.bash against a temp settings file.
+          python3 -m unittest -v tests/test_claude_agent_guard.py
 
       - name: Run bash regression tests
         run: |

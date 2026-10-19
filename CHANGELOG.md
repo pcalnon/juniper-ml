@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The D11 item 4 agent guard for turing** (task C8, option (b) of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). Pattern rules alone cannot carry D11:
+  `Read(~/.ssh/**)` does not bind Bash, and `gh api` takes its flags in any order. The macOS sandbox alternative,
+  option (a), would break agent `git fetch` and push over ssh.
+  - `util/claude_agent_guard.py` (new) is a PreToolUse hook with 15 rules. It only denies, never allows, and it
+    fails closed.
+  - `util/install_claude_agent_guard.bash` (new, owner-run) installs a checksummed copy, self-tests it, and prints
+    or merges the settings entry plus 8 `permissions.deny` rules.
+  - `tests/test_claude_agent_guard.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
+  - `util/ad-hoc/2026-10-17_turing_c8_guard_mutation_check.py` (new) shows that the suite kills 18 of 18 mutants.
+    `util/ad-hoc/2026-10-17_turing_c8_guard_review_probe.py` (new) is an independent black-box review, 71 of 71.
+
 - **`util/macvm_ctl.bash`: gated start / stop / status for turing's k8s worker VM** (bring-up task
   F5a, `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
   - `start` never calls `VBoxManage startvm` unless gate G-MEM passes: free + inactive memory
