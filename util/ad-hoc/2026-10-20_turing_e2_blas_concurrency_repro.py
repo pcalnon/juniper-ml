@@ -19,8 +19,11 @@ earlier tests (matmul -> mv -> sgemv, and linear -> sgemm). This script tries th
 canopy. Each worker thread runs float32 `linear` and matrix-vector products, the same BLAS entry
 points, and the main thread waits with a deadline.
 
-Result, 2026-10-20: it does NOT reproduce the hang. Both modes finish in JuniperCanopy1 (OpenBLAS
-0.3.30, openmp build) and in JuniperCascor1 (MKL), with and without OMP_NUM_THREADS. canopy's own
+Result, 2026-10-20: it does NOT reproduce the hang. Both modes finish on the OpenBLAS stack the
+hang ran on, and in JuniperCascor1 (MKL), with and without OMP_NUM_THREADS. The OpenBLAS runs came
+first in JuniperCanopy1 itself. After that env moved to MKL, this final version (the guard, and the
+parallel-region trigger in place of a getter call) ran again in a throwaway env pinned to the same
+builds: pytorch cpu_generic_py314_he5833f4_3 and libopenblas 0.3.30 openmp_h6006d49_4. canopy's own
 unit lane is the reproducer: it hung at the same test in two runs, and with OMP_NUM_THREADS=6, so
 that every thread's OpenMP count equals torch's default, it ran to the end. The trigger needs more
 than concurrent small BLAS calls. The script is kept as the record of what did not reproduce it
@@ -34,10 +37,16 @@ Run it with an env's own interpreter, isolated from the worktree:
 `--mode uniform` (the default) builds each worker's tensors inside the worker. That runs ops
 which initialise torch's per-thread OpenMP count, so every thread agrees on one count.
 `--mode mixed` gives the shape the hang had. The main thread builds the tensors and the workers
-only call BLAS. Worker 0 first calls torch.get_num_threads(), which sets its OpenMP count to
-torch's intra-op default. The other workers never do, so they keep OpenMP's default. Each OpenBLAS
-call from a thread whose omp_get_max_threads() differs from OpenBLAS's process-wide count calls
-goto_set_num_threads, and those calls race.
+only call BLAS. Worker 0 first runs an op over more elements than torch's grain size (32768). That
+enters at::parallel_for, whose per-thread lazy init re-pins the thread's OpenMP count to torch's
+intra-op default: the same re-pin a torch.get_num_threads() call performs (util/thread_width.py,
+hazard 1), done here by torch itself. The other workers run only small BLAS calls, which never
+enter a parallel region, so they keep OpenMP's default. Each OpenBLAS call from a thread whose
+omp_get_max_threads() differs from OpenBLAS's process-wide count calls goto_set_num_threads, and
+those calls race.
+
+The script installs util/thread_width.py's install_torch_getter_guard, so the getter can only be
+read on the main thread (tests/test_thread_width.py enforces that for util/ad-hoc/).
 
 Exit 0: every thread finished its iterations. Exit 2: a thread missed the deadline. The stuck
 threads are inside native code, so the script leaves through os._exit.
@@ -45,9 +54,13 @@ threads are inside native code, so the script leaves through os._exit.
 
 import argparse
 import os
+import pathlib
 import sys
 import threading
 import time
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+from thread_width import install_torch_getter_guard  # noqa: E402 -- util/ is on sys.path only after the line above
 
 
 def _blas_line(torch):
@@ -70,6 +83,7 @@ def main(argv=None):
 
     import torch
 
+    install_torch_getter_guard(torch)
     print(f"python {sys.version.split()[0]}  torch {torch.__version__}  {_blas_line(torch)}  torch threads {torch.get_num_threads()}  mode {args.mode}")
     print("env:", {k: os.environ[k] for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS") if k in os.environ})
 
@@ -94,7 +108,7 @@ def main(argv=None):
 
     def mixed_worker(index):
         if index == 0:
-            torch.get_num_threads()  # torch's lazy per-thread init: this thread's OpenMP count becomes torch's
+            torch.ones(1 << 20).sum()  # enters at::parallel_for: torch's lazy per-thread init re-pins this thread
         x, w, b, v = tensors[index]
         with torch.no_grad():
             for _ in range(args.iterations):
