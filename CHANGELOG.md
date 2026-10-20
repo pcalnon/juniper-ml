@@ -46,6 +46,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`util/home_path_literal_check.py`, the G-PATH gate** (turing bring-up task G5, decision D12 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - A tracked `.bash`, `.sh`, `.py` or `.yml` file under `util/`, `scripts/` or `.github/` may hold no more
+    lines carrying `/home/pcalnon` than `conf/home_path_literal_baseline.json` (new) allows it. The baseline
+    holds the 436 files and 651 lines in scope when the gate landed; 427 of the files are under `util/ad-hoc/`.
+    A line ending in `# home-path-literal: allow` is not counted.
+  - It runs as the `home-path-literal` pre-commit hook on staged files, and as a whole-scope step in
+    ci.yml's Pre-commit job. `--update-baseline` recounts, and `--dry-run` writes nothing.
+  - `tests/test_home_path_literal_check.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
+  - `util/ad-hoc/2026-10-20_turing_g5_mutation_check.py` (new) shows that the suite kills 22 of 22 mutants.
+
 - **`util/experiments/run_suite.py` gains the `acceptance:` facility, and the E-H recurrence suite carries
   the R5 band** (W5.4 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
   F-D3 / F-SCI4; rulings R5 and R6). Before this the audited E-H cell scored `cv_r2 = -18081` and the suite
