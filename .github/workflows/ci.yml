@@ -401,6 +401,15 @@ jobs:
           # {Read,Grep,Glob,Bash}, opus+max, and body wiring to predict_merge.py + all four
           # verdict tokens + the read-only/never-push + two-key DUP-CLOSE contract.
           python3 -m unittest -v tests/test_fleet_supervisor_contract.py
+          # tests/test_macos_host_sme_contract.py, tests/test_signing_auth_sme_contract.py and
+          # tests/test_k8s_node_sme_contract.py: turing bring-up H2's SME agents (.claude/agents/
+          # macos-host-sme.md, signing-auth-sme.md, k8s-node-sme.md). Each pins its exact tool set (k8s-node-sme:
+          # WebFetch and no Bash) and its plan §11 Must-never items, and runs util/claude_agent_guard.py to show
+          # the guard denies each item under the rule the agent cites while passing the agent's own procedure.
+          # Shared checks: tests/agent_contract_support.py. Uses PyYAML above.
+          python3 -m unittest -v tests/test_macos_host_sme_contract.py
+          python3 -m unittest -v tests/test_signing_auth_sme_contract.py
+          python3 -m unittest -v tests/test_k8s_node_sme_contract.py
           # tests/test_pr_budget_alarm.py: YAML-extraction rehearsal for
           # .github/workflows/pr-budget-alarm.yml (flood P1 §5 / #870) -- OK/WARN/ALARM
           # thresholds, empty-var defaults (15/30), gh soft-fail -> level=OK exit 0, and

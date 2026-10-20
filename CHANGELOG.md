@@ -208,6 +208,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the advisory `host-tooling-macos` job and `docs/REFERENCE.md` (220 suites).
   - `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` (new) shows that they kill 57 of 57 mutants.
 
+- **Turing bring-up H2: the three SME agents of plan §11** (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - `.claude/agents/macos-host-sme.md` (new) measures a macOS host against `conf/hosts/<host>/expected.yaml`
+    with `util/host_state_check.py --json`, and explains each failing gate condition with its plan task, actor
+    and remediation. It writes one `reports/` file and changes nothing on the host.
+  - `.claude/agents/signing-auth-sme.md` (new) diagnoses git transport and commit signing from the repo's
+    non-credential checkers and read-only `gh api` GETs. Its one `reports/` file ends with the OWNER command
+    list: every check an agent may not run.
+  - `.claude/agents/k8s-node-sme.md` (new) reviews the Mac worker VM (sizing, kubelet reservations, taints,
+    join steps) against the juniper-k8s primer and decision D1, and reconciles errata X1-X5, in one `notes/`
+    audit. It holds WebFetch and no Bash.
+  - `tests/test_macos_host_sme_contract.py`, `tests/test_signing_auth_sme_contract.py` and
+    `tests/test_k8s_node_sme_contract.py` (new) share `tests/agent_contract_support.py` (new). Each pins its
+    agent's exact tool set and Must-never items, and runs `util/claude_agent_guard.py` to show that the guard
+    denies each item under the rule the agent cites while passing the agent's own procedure. They are wired
+    into `ci.yml` and `docs/REFERENCE.md` (223 suites).
+  - `util/ad-hoc/2026-10-20_turing_h2_mutation_check.py` (new) shows that they kill 28 of 28 mutants, six of
+    them in the guard.
+
 - **The D11 item 4 agent guard for turing** (task C8, option (b) of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). Pattern rules alone cannot carry D11:
   `Read(~/.ssh/**)` does not bind Bash, and `gh api` takes its flags in any order. The macOS sandbox alternative,
