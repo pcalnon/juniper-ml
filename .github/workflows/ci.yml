@@ -151,6 +151,14 @@ jobs:
             pre-commit run --all-files --show-diff-on-failure
           fi
 
+      - name: Run the pre-push stage (G6 smoke)
+        # Turing bring-up G6. The git-remote-alias hook runs only at the pre-push stage, which the
+        # run above never reaches. On a runner it must skip: ~/.ssh/config defines no
+        # github_juniper-* alias, so util/git_remote_alias_check.py --check --if-configured exits 0.
+        # The hook is named, so a hook that later joins the stage cannot turn this into a whole-tree
+        # lint run; and a git-remote-alias that left the stage fails here ("No hook with id").
+        run: pre-commit run --hook-stage pre-push git-remote-alias --all-files
+
       - name: Check home-path literals, whole scope (G5, G-PATH)
         # Turing bring-up G5 (decision D12). The home-path-literal pre-commit hook sees only the
         # changed files on a pull request; this step checks every tracked .bash/.sh/.py/.yml under

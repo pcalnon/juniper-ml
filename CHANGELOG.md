@@ -46,6 +46,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The `git-remote-alias` pre-push hook** (turing bring-up task G6, gate G-ALIAS of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - `.pre-commit-config.yaml` runs `util/git_remote_alias_check.py --check --if-configured` (task G2) at the
+    pre-push stage. On a host with the `github_juniper-*` aliases, a push is blocked while any of the 10
+    checkouts bypasses its alias, is missing, or has a key not at mode 600. A host without the aliases skips.
+  - Each host opts in with `pre-commit install --hook-type pre-push`. `minimum_pre_commit_version` rises from
+    3.0.0 to 3.2.0, the release that named the stage `pre-push`.
+  - `default_stages: [pre-commit]` keeps every other hook at commit time. Without it, a hook with no `stages`
+    runs at every stage: a push would re-run the whole commit suite, and the CI smoke step would lint the
+    whole tree, undoing the Pre-commit job's changed-files split. `check-added-large-files` and `isort` set
+    `stages: [pre-commit]` themselves, because their upstream manifests list pre-push and override
+    `default_stages`.
+  - ci.yml's Pre-commit job runs the pre-push stage as a smoke test, and `tests/test_git_remote_alias_check.py`
+    pins the hook's configuration.
+
 - **`util/home_path_literal_check.py`, the G-PATH gate** (turing bring-up task G5, decision D12 of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
   - A tracked `.bash`, `.sh`, `.py` or `.yml` file under `util/`, `scripts/` or `.github/` may hold no more
