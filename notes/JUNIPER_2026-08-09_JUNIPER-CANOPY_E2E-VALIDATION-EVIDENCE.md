@@ -260,7 +260,7 @@ Freeing the VRAM via the repo's own reaper took down the live cascor service leg
 **F-CANOPY-017 — a step-invalid numeric param silently applied a hardcoded default (P1; FIXED canopy#489, verified live segment 12).**
 Minted in run `20260811T010700Z` (`statuses.tsv:90`) but never entered this ledger until segment 12 — recorded here to close that gap. HTML5 evaluates `step` relative to `min`, so `#nn-learning-rate-input` (`min=0.0001, step=0.001`) admitted only `0.0001+n*0.001`; no plausible learning rate was on that grid, an edit therefore delivered Dash `None`, and `_apply_parameters_handler` substituted `DEFAULT_LEARNING_RATE`. Live instance: `/api/state` 0.0789 → user types 0.0733 → POSTs 0.01. A DOM sweep found 7 of 22 sidebar number inputs whose own seeded value was already `stepMismatch`. **FIXED** by juniper-canopy#489 (`d11bfcd`, 2026-08-14), which cites the finding by name: float params now use `step="any"`, integer params `step=1`, and a `None` numeric State refuses the apply and names the offending fields instead of substituting a default. **Verified live in segment 12** — all 20 sidebar numeric inputs report `validity.valid=true` / `stepMismatch=false`, and the finding's own 0.0733 instance now commits. Consequence: the matrix's `AUTO-API` class for the sidebar numeric rows is stale (see §1.1).
 
-**F-CANOPY-018 — `params-status` has two writers, so the apply toast is always overwritten (P2, OPEN).**
+**F-CANOPY-018 — `params-status` has two writers, so the apply toast is always overwritten (P1 since 2026-10-19, Phase 13, by the manual's Apply-button rule; P2 before that; code change canopy#533, merged 2026-08-28, in canopy 0.7.0, its live re-drive owed, item 30; OPEN).**
 Minted in run `20260811T010700Z` (`statuses.tsv:88`, W3-08) but never entered this ledger until segment 12. `params-status.children` is written both by `apply_parameters` (the toast, via `_compose_apply_toast` `:7057`) and by `track_param_changes` (`:4385-4389`), which takes `applied-params-store` as an Input — so a successful apply re-fires the tracker, which overwrites the toast. **Segment 12 sharpened it:** the toast *is* rendered (`Parameters applied` observed at t=1800 ms) and survives **~900 ms** before being replaced by `⚠️ Unsaved changes`; the earlier "never the success toast" reading was a sampling artifact. Also: after a successful apply the form never returns to clean until a page reload. Matrix row C2.9-05 **FAIL**.
 
 > **CORRECTED + FIX AUTHORED (2026-08-27, `juniper-canopy#533`; CI green, NOT merged — entry stays OPEN).**
@@ -278,6 +278,17 @@ Minted in run `20260811T010700Z` (`statuses.tsv:88`, W3-08) but never entered th
 > dirty *and* lit Apply for an edit Apply cannot make. `nn_spiral_rotations` / `nn_spiral_number` ride both
 > payloads and stay compared. The class-level pin — *every key the tracker compares must be a key the apply
 > payload writes* — makes the next `#2b`-style trim fail loudly instead of silently latching.
+
+> **RE-RATED P1 (2026-10-19, Phase 13, item 26's first step).** The manual's Configuration Parameters text reads
+> "Edits are staged until you click **Apply** — the button enables only when a value differs from the last applied
+> set" (`docs/USER_MANUAL.md:267-268` at canopy `main` `571743db`). Segment 12 measured the opposite after a
+> successful apply: Apply stayed enabled and `params-status` read `⚠️ Unsaved changes` until a page reload, with
+> no value differing (the three-key latch above). That is a documented behaviour broken, P1 under plan §6.3. The
+> toast this entry is named for the manual does not describe; canopy's 0.6.0 CHANGELOG does (`CHANGELOG.md:2360-2365`
+> at `571743db`), which is the owner's first limb (O17) and is no longer needed for this rating. The fix is in
+> code: canopy#533 (`6b55399d`, merged 2026-08-28T05:09:29Z, an ancestor of v0.7.0). The entry stays OPEN until
+> C2.9-05 is re-driven on a leg serving that code (item 30); the row was measured in service mode, and the tracker
+> and toast are canopy-side, so a demo leg is expected to reach them, to be confirmed on the drive.
 
 **F-CANOPY-022 — the "Add Top Tier Candidates" option can never be applied (P1; FIXED juniper-canopy#492 `0460240`).**
 canopy emits `value: "top_tier"` (`juniper-canopy/src/frontend/dashboard_manager.py:1471`); cascor accepts only `Literal["top","random","mixed"]` (`juniper-cascor/src/api/models/training.py:159`, `:327`). No translation exists — `_toggle_cn_selection_inputs_handler` (`dashboard_manager.py:6815-6821`) uses `top_tier` only for UI gating and the raw value enters the payload, so Apply returns a Pydantic `literal_error` surfaced as HTTP 502. Control: the sibling `random` arm matches cascor's literal and applies cleanly. cascor's `mixed` has no canopy option at all. Fix direction: map at the payload boundary, or change the option value.
@@ -3065,7 +3076,7 @@ investigations. Reproduce with `util/ad-hoc/e2e_f027_redux_actions.py`.
 > next to a storm of "reset to layout defaults"): **0 of 40 resets target the graph or any ancestor of
 > it**, so F-033 is *not* F-039's cause and the two stay separate findings.
 
-**F-CANOPY-028 — pinned params are silently discarded on the first pin after any reload (P2, OPEN; segment 15).**
+**F-CANOPY-028 — pinned params are silently discarded on the first pin after any reload (P1 since 2026-10-19, Phase 13, by the manual's pin-persistence sentence, the narrowest of that phase's five re-ratings; P2 before that; code change canopy#533, merged 2026-08-28, in canopy 0.7.0, its live re-drive owed, item 30; OPEN; segment 15).**
 `pinned-params-store` is `storage_type="local"` and survives reload correctly, but the `{"type":"param-pin"}` checkboxes in the Parameters tables **do not rehydrate from it** — after a reload they all render unchecked while the store and the sidebar card still show the pinned set. Because the single pattern-matched writer (`dashboard_manager.py:3948-3952`) *collects the state of every checkbox*, the next pin action writes a list built from the un-rehydrated DOM, dropping everything pinned before the reload. Reproduced end-to-end: pinned `learning_rate` → `pinned-params-store` `["learning_rate"]`, sidebar card `display:block` showing "Learning Rate" → full page reload → `localStorage["pinned-params-store"]` still `["learning_rate"]`, card still shown, **but the `learning_rate` checkbox reads `checked:false`** → pinning `max_iterations` → store and localStorage both become `["max_iterations"]`, `learning_rate` gone with no warning. Matrix rows M-PARAMETERS-04/-05/-06 still **PASS** on their own stated expectations (the store write, the card reveal, and persistence all work); this is the cross-cutting defect those rows sit on top of.
 
 > **CORRECTED + FIX AUTHORED (2026-08-27, `juniper-canopy#533`; CI green, NOT merged — entry stays OPEN).**
@@ -3085,6 +3096,18 @@ investigations. Reproduce with `util/ad-hoc/e2e_f027_redux_actions.py`.
 >
 > **The precise repro recorded above was not reproduced from source**, so the live re-drive should re-check
 > the original symptom rather than assume this closed it.
+
+> **RE-RATED P1 (2026-10-19, Phase 13, item 26's first step).** The manual's Parameters Tab text reads "**Pin
+> checkboxes** — pinned parameters appear as read-only name + value rows in the sidebar's **Pinned** card; the pin
+> set lives in browser local storage, so it survives a reload" (`docs/USER_MANUAL.md:754-755` at canopy `main`
+> `571743db`). Segment 15 measured the set surviving the reload itself and being discarded by the first pin after
+> it, so the persistence the manual promises lasts until the user next uses the control it is described with: a
+> documented behaviour broken, P1 under plan §6.3. This is the narrowest of Phase 13's five re-ratings, and the
+> counter-reading is recorded: the sentence promises survival of a reload, which the store did, and says nothing
+> of the next pin; by that reading the finding is P2. It is rated on what a user following the manual sees. The
+> fix is in code: canopy#533 (`6b55399d`, merged 2026-08-28T05:09:29Z, an ancestor of v0.7.0), which repaired the
+> writer, not the rehydration (above), and whose own note says the repro was not reproduced from source. The entry
+> stays OPEN until M-PARAMETERS-04/-05/-06 are re-driven on a leg serving that code (item 30).
 
 **F-CANOPY-029 — the Dataset View "Generate Dataset" modal can never open: its callback 500s on every click (P1; FIXED juniper-canopy#504, `041eb69`; found segment 16).**
 `toggle_generate_modal` (`dashboard_manager.py:3869-3870`) does `ctx = get_callback_context()` and then reads **`ctx.triggered_id`**. `get_callback_context()` returns canopy's **own** `CallbackContextAdapter` (`frontend/callback_context.py:53`), whose only accessor is **`get_triggered_id()`** (`:78`) — there is no `triggered_id` property. Every click therefore raises `AttributeError: 'CallbackContextAdapter' object has no attribute 'triggered_id'. Did you mean: 'get_triggered_id'?` and Dash returns **HTTP 500**; the browser console shows `Callback error updating dataset-plotter-generate-modal.is_open`, and the canopy log carries the full traceback. Deterministic — reproduced on every attempt. The other three production `.triggered_id` reads (`dashboard_manager.py:2411`, `:2429`, `callback_context.py:92`) are on the genuine `dash.callback_context`, which is why the model-selection modal (C2.6-18) still passes; this one call site mixes the adapter object with the raw-dash attribute name. Fix: `ctx.get_triggered_id()`.
@@ -3109,7 +3132,7 @@ investigations. Reproduce with `util/ad-hoc/e2e_f027_redux_actions.py`.
 
 **CLOSED (2026-08-25, canopy#517 `9dcbb77a`; run `20260825T101752Z`). Two stacked mechanisms, both addressed.** (1) The fetch lost the race: the panel's bare 2 s `api_timeout` against the ~4.9 s unbounded scan+serialize of the whole store — every list fetch timed out, so the panel never left its layout-default "Loading snapshots…" (neither data nor the empty state, exactly as observed). (2) The render could never scale: one `html.Tr` — two buttons plus a four-item dropdown, five pattern-matching ids — per snapshot × 27,903, and under the ratified no-deletion retention the corpus only grows. Fix: `GET /api/v1/snapshots` gains `limit`/`offset` (a server-side slice of the already newest-first list; omitting `limit` keeps the legacy full list for existing callers; the demo branch slices identically) and **always** reports the pre-slice `total`; the panel fetches only the newest `SNAPSHOT_TABLE_PAGE_SIZE` (200) with the create-path's `+3` timeout headroom, and its status line reads **"Showing newest N of TOTAL snapshot(s)"** — truncation is never silent. **Verified live against the real corpus** (28,016 files under the symlinked e2e root; canopy leg `:8051`, probes 10:17–10:22Z on the branch working tree committed as `5560cb19` at 10:23Z and squashed as `9dcbb77a` at 10:40Z — the two trees differ only by #516's four memory-budget files, so every file the fix touched is byte-identical in merged main): the table rendered **200 rows in seconds** with status `"Showing newest 200 of 28016 snapshot(s)"` and the empty state correctly hidden; `data-snapshot-id` was present on **all 200 rows** — the entry's secondary observation ("attributes on zero elements") was zero *rows*; the attributes were always in the row builder, so the feared second defect never existed. **The full M-SNAPSHOTS-19 chain works**: right-click on the newest row → the context menu (243×235: Restore / Replay / Resume training / Retrain) → Restore → the **Confirm Snapshot Operation** modal (500×1044) naming that exact snapshot (`cascor_snapshot_20260824_234648_5c7c8004-…`), with the `context-menu-trigger` store write captured on the wire at t+13.4 s. M-SNAPSHOTS-19 → `PASS (re-validated @ 9dcbb77)`; the FA-4 block ("nothing to right-click") is gone. Pinned by `src/tests/unit/test_f031_snapshot_scale.py` (route: newest-head slice + `total`, offset, legacy no-params, demo parity; panel: one-page fetch with headroom timeout, `total` threading, the truncation line and the plain line when not truncated); one existing route test updated for the additive `total`. Instrument note: two intermediate probes matched the welcome modal's container (1600×1100, "Welcome to Juniper Canopy") through a generic modal selector before the confirm modal was targeted by its own element — select modals by their own ids. The probe scripts themselves lived in `/tmp` and are gone (the surviving logs are `/tmp/juniper-e2e/f031_verify*.log`); an `f031` driver step is owed at the next stack window so the row's regression re-drive is reproducible.
 
-**F-CANOPY-032 — the worker panel's "Worker data degraded" alert never renders even though canopy's own API reports the error (P2, OPEN; segment 16).**
+**F-CANOPY-032 — the worker panel's "Worker data degraded" alert never renders even though canopy's own API reports the error (P1 since 2026-10-19, Phase 13, by the manual's Workers Tab entry; P2 before that; no code change: canopy#533 added contract pins only and the mechanism is unsettled, so the live re-drive, item 30, decides whether it closes or is re-diagnosed; OPEN; segment 16).**
 `worker_panel.py:226-227` renders a dismissable `dbc.Alert(f"Worker data degraded: {upstream_error}")` when `upstream_error` is set. Driven under **both** upstream failure modes — control-WS-only outage (`stream_health.overall == "degraded"`) and cascor fully down (`overall == "reconnecting"`) — `worker-panel-error-display` stayed present-but-empty (`display:block`, 860x0, text `""`) across 60 s each, with the panel showing `NO WORKERS` and all-zero tiles. Yet with cascor down canopy's own endpoints carry the error explicitly: `GET /api/v1/workers/list` → `{"workers":[],"count":0,"local_reported":false,"error":"Upstream error","error_id":"dd1a84f727da"}` and `/api/v1/workers/stats` → `{...,"error":"Upstream error","error_id":"450850d9f349"}`. So the signal exists end-to-end and the alert branch never fires. Matrix row M-WORKERS-02 **FAIL**. Consistent with the F-CANOPY-027 filled-data / dead-render class, though the store fill itself was not separately instrumented here.
 
 > **NOT FIXED — RE-DIAGNOSED (2026-08-27). The stated mechanism does not reproduce from source, and no
@@ -3129,6 +3152,18 @@ investigations. Reproduce with `util/ad-hoc/e2e_f027_redux_actions.py`.
 > not have counted as a failure. With cascor's HTTP up, `list_workers()` succeeds and the route returns no
 > `error` key at all, so no alert is the correct behaviour there; "NO WORKERS" then simply means no workers
 > are registered.
+
+> **RE-RATED P1 (2026-10-19, Phase 13, item 26's first step).** The manual's Workers Tab lists, second among its
+> display elements, "**Degradation alert** — "Worker data degraded: …" when the upstream call fails
+> (dismissable)" (`docs/USER_MANUAL.md:732` at canopy `main` `571743db`). Segment 16 measured the alert absent for
+> 60 s under each of two inductions, with canopy's own API carrying the error under the cascor-down one. The
+> correction above stands: the
+> control-WS-only arm should not have counted, and the cascor-down arm is an upstream failure by any reading; one
+> arm suffices. A documented behaviour broken, P1 under plan §6.3. Unlike Phase 13's other four re-ratings,
+> nothing in code claims to fix it: canopy#533 pinned the path with four contract tests and changed no behaviour,
+> and Phase 4 found the source correct end to end and suspected F-CANOPY-027's filled-store / dead-render class,
+> since FIXED. So M-WORKERS-02's re-drive, the cascor-down arm first (item 30), either closes this entry or
+> re-diagnoses it; until it runs this is the one open P1 of Phase 13 with no fix in code.
 
 ### Observations (non-finding)
 
@@ -3831,8 +3866,9 @@ still replay and resume from the pristine artifact.
 ### Findings opened in segment 6 (continued)
 
 **F-CANOPY-012 — `output_weights`, the Network Editor's DEFAULT patch target, is structurally impossible
-to patch from the UI: the panel parses a flat 1-D list while the route requires 2-D (P2, OPEN;
-root-caused).**
+to patch from the UI: the panel parses a flat 1-D list while the route requires 2-D (P1 since 2026-10-19,
+Phase 13, by the manual's Patch Weights entry; P2 before that; code change canopy#535, merged 2026-08-28, in
+canopy 0.7.0, its live re-drive owed, item 30; OPEN; root-caused).**
 `_parse_float_list` (`network_editor_panel.py:415-431`) returns a **flat** `List[float]`, and
 `on_patch_weights` (`:721-760`) forwards it verbatim as `body["values"]` — there is **no reshape anywhere**
 in the callback, and none is possible today because the topology needed to infer the shape is exactly what
@@ -3845,10 +3881,31 @@ Mitigating: the failure is loud, precise, and non-mutating. Fix options are a 2-
 nested `[[…],[…]]`) or a reshape using `(I+H, output_size)` once the topology is available — which makes
 this dependent on the D-0 route fix.
 
+> **RE-RATED P1 (2026-10-19, Phase 13, item 26's first step).** canopy's manual documents the behaviour this
+> finding breaks: `docs/USER_MANUAL.md` § Network Editor Tab lists `output_weights` first among the four groups
+> **Patch Weights** patches, with values "entered as comma-, semicolon-, or newline-separated floats" (`:493-501`
+> at canopy `main` `571743db`; the same words stood at canopy#535's parent `28da69f8^`, `:407-415`, Phase 11). On
+> the code this entry measured, no value a user could type was accepted for that group, so the documented
+> operation did not exist, which plan §6.3 rates P1: the rule that made F-CANOPY-056 P1, and F-CANOPY-057 P1 while
+> the manual promised its stream. The manual's "lets CasCor validate the exact target shape" does not change that;
+> it says who checks a shape, not that an entry form existed that could pass. This entry had weighed the failure's
+> being "loud, precise, and non-mutating", not the manual. The fix is in code: canopy#535 (`28da69f8`, merged
+> 2026-08-28T04:54:55Z, an ancestor of v0.7.0) accepts one row per line or per `;` for `output_weights`, or a flat
+> list reshaped `(I+H, output_size)` from the panel's topology store (`_resolve_patch_values`,
+> `network_editor_panel.py:457-507` at `571743db`). The entry stays OPEN until M-NETWORK-EDITOR-17 is re-driven
+> on a leg serving that code (item 30). A residue, dispositioned and not filed (Phase 13, round 1, Lane 13-B):
+> `_parse_float_rows` (`:437-456`) makes newlines and semicolons row separators, so the manual's semicolon- or
+> newline-separated floats for `output_weights` become one row per value, which cascor's shape check rejects
+> wherever the network has more than one output, loudly; only the comma form reaches the reshape. Item 30 drives
+> all three forms; the manual's Patch Weights sentence
+> then needs the row idiom, or the parser a single-width rule.
+
 **F-CANOPY-013 — Network Editor success messages read payload keys off the response ENVELOPE, so a
-successful append reports `index None (now None hidden units)` (P2, OPEN; root-caused, one latent second
-instance; re-tagged 2026-08-24 from an out-of-vocabulary "P3" — the plan §9 severity scale is P0/P1/P2
-only, and the untagged state made `e2e_finding_triage.py` report the finding as priority `?`).**
+successful append reports `index None (now None hidden units)` (P1 since 2026-10-19, Phase 13, by the
+manual's workflow step 6; P2 before that; code change canopy#532, merged 2026-08-28, in canopy 0.7.0, its
+live re-drive owed, item 30; OPEN; root-caused, one latent second instance; re-tagged 2026-08-24 from an
+out-of-vocabulary "P3" — the plan §9 severity scale is P0/P1/P2 only, and the untagged state made
+`e2e_finding_triage.py` report the finding as priority `?`).**
 `_post_json` (`:433-465`) returns `{"success": True, "data": resp.json()}` — i.e. `result["data"]` is the
 **entire** cascor envelope `{"status":…, "data": {…}, "meta":…}`, as confirmed live by the DELETE response
 body. But `on_add_unit` (`:608-611`) does `data = result["data"]; idx = data.get("unit_index"); total =
@@ -3863,6 +3920,17 @@ path where nobody is looking for a bug. **Second, latent instance:** `on_remove_
 the pattern verbatim and would render `Removed unit N (now None hidden units).` — unreachable today only
 because the remove dropdown is empty, so it will surface the moment F-CANOPY-011 and D-0 are fixed. Fix
 both call sites together.
+
+> **RE-RATED P1 (2026-10-19, Phase 13, item 26's first step).** The manual's Network Editor workflow, step 6, reads
+> "Use the API response shown in the status alert to confirm the edit" (`docs/USER_MANUAL.md:510` at canopy
+> `main` `571743db`; `:424` at `28da69f8^`, Phase 11). The alert this entry measured reported a successful append
+> as `index None (now None hidden units)`, and segment 7 saw a successful remove reported the same way, so the
+> documented confirmation step gave a false reading on the success path: a documented behaviour broken, P1 under
+> plan §6.3, as Phase 11's round 5 lanes read it (that phase's Matrix effect). This entry's "cosmetic only" weighed
+> the unharmed state, not the manual. The fix is in code: canopy#532 (`359e1bf7`, merged 2026-08-28T04:16:14Z, an
+> ancestor of v0.7.0) unwraps cascor's envelope at both call sites (`_envelope_payload`,
+> `network_editor_panel.py:563-585`, called at `:731` and `:828` at `571743db`). The entry stays OPEN until
+> M-NETWORK-EDITOR-09 and -13 are re-driven on a leg serving that code (item 30).
 
 ### W5 steps 16-26 — replay starts perfectly, then cannot be controlled at all
 
@@ -9101,6 +9169,23 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   `notes/development/REPLAY_V2_FAQ.md` opens with a status note that no replay weight reaches the page. That is
   the re-rating the Severity bullet below said was owed with the merge. The defect itself stands.
 
+- **Status 2026-10-19 (Phase 13): P2 stands; the manual re-read, the defect re-confirmed at both current `main`s,
+  and the design note corrected.** At canopy `main` `571743db` the Replay Tab still says "Today no weight sample
+  reaches the page" (`docs/USER_MANUAL.md:820-822`) and the Network Evolution Tab "none do today" (`:714-715`), so
+  the manual does not reach this entry. At cascor `main` `4c26919f` (2026-10-16) `_emit_frame`
+  (`src/api/lifecycle/manager.py:1260-1297`) still emits no `weights` key and `weights_at` (`:1244`) has no caller
+  in the file; `dbc25277` is 3 ahead and 537 behind that `main`. At canopy `571743db` `_to_dashboard_metric`
+  (`src/backend/cascor_service_adapter.py:1960-1991`) still rebuilds each row without `weights`. The CAN-015g/h
+  design note (`JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`) now carries the dated
+  correction item 26 required: g-3 never reached `main`. With that it no longer records the stream as shipped, and
+  the owner's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1
+  (`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`) and the 2026-05-05 audit's §5.2 (`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md`), which had said "shipped end-to-end
+  on `main`" while its own §11.4 confirmed only g-1 and g-6, carry the same correction since Phase 13's rounds 1
+  and 2, and the roadmap's CAN-015 row and the audit's three restatements (its §5.2 Status delta, §8.1 and §11.7
+  rows) point at it since rounds 2 and 3; the audit's §5.1 line "CAN-015g replay V2 wired" (`:112`) describes
+  canopy's consumers, which shipped, and stands. No document this phase or its lanes read still records the stream
+  as shipped without the correction, or a pointer to it, beside the claim.
+
 - **Cascor.** The replay frames carry no weights. On `main`, `weights_at` (`src/api/lifecycle/manager.py`) is
   called only by its unit tests, and `_emit_frame` adds no `weights` key (re-derived by `git grep` on
   `origin/main`).
@@ -10104,6 +10189,11 @@ either: round 1 of this phase's validation found it (Consensus record, below).
 
 **F-CANOPY-065 — `/api/set_params`'s `applied` list omits every key sent over `/ws/control`, so the apply toast canopy 0.6.0 promised never reports a key cascor declines there: canopy's partition extractor never looks where cascor's WS ack carries the partition (P1 if a shipped CHANGELOG or design-plan promise counts as documented, else P2, the first limb of the owner's question; canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**
 
+- **Status 2026-10-19 (Phase 13): not reached by canopy's manual.** At canopy `main` `571743db` the manual says
+  only that edits are staged until **Apply** and that the Parameters tab shows the applied values
+  (`docs/USER_MANUAL.md:267-269`); no sentence describes what the toast reports. The rating stays with the owner's
+  first limb, which after Phase 13 decides this entry alone among the findings Phase 11 named (Phase 13, Matrix
+  effect and counts).
 - **Observed** (A-N2, `02_gaussian/03_set_params_caps.json`, 2026-09-23T19:38:06.747Z). The request set five
   params, and the answer was `{"applied": ["cn_training_iterations"]}`.
   - In the same second, canopy logged `Cascor params updated via WS: ['max_iterations', 'epochs_max',
@@ -11753,3 +11843,564 @@ New items:
     `agile-napping-popcorn`
     once its staged copies are confirmed to be the files juniper-ml#2196 merged. This phase could not reach that
     host.
+
+## Phase 13 — 2026-10-19: item 26's first step, every open finding checked against canopy's manual — five open P2s are P1 by the manual (F-CANOPY-012, -013, -018, -028 and -032), so the open P1 count rises from 4 to 9; four of the five have been fixed in code since canopy 0.7.0 and are owed their live re-drive, restored as item 30
+
+**Summary.**
+
+- **The check.** Phase 11's item 26 asks first, without waiting for the owner's §6.3 ruling (O17), that every open
+  finding be checked against canopy's manual, which plan §6.3 already counts as documentation ("P1 (breaks a
+  documented behaviour)", `JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360`). This phase
+  does that for all 20 open findings against `docs/USER_MANUAL.md` at canopy `main` `571743db` (2026-10-17T23:01:09Z,
+  the head after the v0.9.0 release), read through the GitHub API; the copy in this host's canopy checkout is
+  byte-identical. The precedents applied are the ledger's own: F-CANOPY-056 was P1 because the manual promised a
+  behaviour that did not exist; F-CANOPY-057 was P1 while the manual promised its weight stream and P2 once
+  canopy#684 corrected the manual; F-CANOPY-064's P1 rests on the manual's Training Metrics text.
+- **Five re-ratings, P2 to P1**, each on a sentence of the manual that states the behaviour the finding was
+  measured to break: **F-CANOPY-012** (Patch Weights lists `output_weights`, entered as separated floats; no entry
+  could pass), **F-CANOPY-013** (workflow step 6, "Use the API response shown in the status alert to confirm the
+  edit"; the alert reported `index None (now None hidden units)` on a success), **F-CANOPY-018** (Apply "enables
+  only when a value differs from the last applied set"; it stayed enabled after an apply until a reload),
+  **F-CANOPY-028** (the pin set "survives a reload"; the first pin after a reload discarded it) and **F-CANOPY-032**
+  (the "Worker data degraded" alert "when the upstream call fails"; it never rendered). The quotes, the measurements
+  they are set against and the counter-readings are under "The five re-ratings". F-CANOPY-028's is the narrowest,
+  and one round-1 lane dissents from it; F-CANOPY-012 carries a weaker counter-reading; both are recorded.
+- **Four of the five are fixed in code, and have been since canopy 0.7.0.** canopy#532 (F-CANOPY-013; `359e1bf7`,
+  2026-08-28T04:16:14Z), canopy#535 (F-CANOPY-012; `28da69f8`, 04:54:55Z) and canopy#533 (F-CANOPY-018 and
+  F-CANOPY-028; `6b55399d`, 05:09:29Z) are each an ancestor of the v0.7.0 tag (published 2026-09-09T07:15:13Z), so
+  every release from 0.7.0 on carries them; canopy's CHANGELOG at `571743db` names none of the three PRs and none of
+  the four findings (its only `#532` mentions, three, are in the 0.9.0 entry for F-CANOPY-059). Their entries stay
+  OPEN, as Phase 4 ruled, until each row is re-driven live; that re-drive was last listed in Phase 4's own prose,
+  no Still-owed list from Phase 5's (2026-08-28) on carried it, and it is restored here as **item 30**. **F-CANOPY-032 is the exception**: canopy#533 pinned its path with contract
+  tests and changed no behaviour, Phase 4 found the source correct end to end, and the entry's one sound arm
+  (cascor down) has not been re-driven; it is the one P1 this phase creates with no fix in code.
+- **The other fifteen open findings stand where they were.** Ten the manual does not reach (F-CANOPY-001, -033,
+  -034, -049, -051, -060, -063, -066, F-ML-002, and F-CANOPY-057, whose Replay Tab text says "Today no weight
+  sample reaches the page"). Two were already P1 on other grounds, and the manual bears on neither (F-CASCOR-001,
+  F-CASCOR-002). F-CANOPY-064's P1 already rests on the manual; the lines it cites have moved, not changed.
+  F-CANOPY-065 is not reached: no manual text describes the apply toast, so its rating stays with the owner's
+  first limb. F-CANOPY-067's rating stays "P2 pending a live drive", its own condition; the manual documents the
+  plots it would corrupt, so the live drive is all that is left to decide it, and one round-1 lane would rate it
+  P1 by source today (Consensus record).
+- **The CAN-015g/h design note is corrected**, as item 26 requires whatever the ruling: a dated note under its
+  status block records that g-3 never reached cascor `main`, with the merge targets re-derived from the GitHub
+  API, and its two g-3 rows are annotated
+  (`notes/JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`). F-CANOPY-057's defect was
+  re-confirmed at both current `main`s while doing it.
+- **The owner's question narrows.** Of the three findings Phase 11 placed within the first limb's reach
+  (F-CANOPY-057, -018, -012) and F-CANOPY-013, which it left unsettled, three (F-CANOPY-012, -013, -018) are P1 by
+  the manual without any ruling. F-CANOPY-057 was still recorded as shipped by two documents the design note's
+  correction does not touch: the V7 roadmap's §28.1 and CAN-015 row
+  (`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`, `:15146-15160` and `:5196`) (round 1, Lane 13-B, MAJOR), and the 2026-05-05 audit,
+  whose §5.2 says "both are **shipped end-to-end** on `main`" over the same per-PR table (`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md:124`
+  and `:132` at `c741351c`, before its correction) while its own §11.4 confirmed only g-1 and g-6 of CAN-015g on
+  cascor `main` (`:323` there), and whose §5.1 line reads "CAN-015g replay V2 wired" (`:112`) (round 1, Lane 13-B,
+  on `:112`; round 2, Lanes 13-R2A and 13-R2B, MAJOR, on §5.2). Rounds 1 and 2 gave §28.1 and §5.2 the same dated
+  correction and pointed the roadmap's CAN-015 row at it; round 3 pointed the audit's three restatements of its
+  claim (its §5.2 Status delta, its §8.1 row and its §11.7 row) at §5.2's note (Lane 13-R3B); the §5.1 line
+  describes canopy's consumers, which shipped, and stands. So the first limb decides F-CANOPY-065; F-CANOPY-057
+  is reached through no document this phase or its lanes read, every site that recorded the stream as shipped
+  now carrying the dated correction or a pointer to it. The second limb still decides F-CANOPY-068's
+  rating of record and moves no count. Item 26's second step, the CHANGELOG and the design plans for every open
+  finding, still waits on the ruling, with two leads recorded under "Still owed".
+- **Counts** (`e2e_finding_triage.py`): 79 findings, **56 fixed**, 1 accepted, 2 withdrawn, **20 open**; no open
+  P0, **9 open P1** and **11 open P2**. By ruling on the first limb: 9 and 11 as the triage counts them, or 8 and
+  12. The two recorded dissents would make it one P1 fewer (F-CANOPY-028) or one more (F-CANOPY-067); Matrix
+  effect and counts.
+
+### Who, and from what
+
+- **Who.** This phase was written in juniper-ml worktree `federated-stargazing-blanket` on the same host as
+  Phase 12 (no Juniper service listening, no reach to the trio), so it is a reading of documents, source and the
+  GitHub API, not a live phase. Nothing ran against a canopy. The owner granted merge approval for this phase's PR
+  in the session that wrote it.
+- **The instrument** is a reading of one file against twenty ledger entries. For each open finding the manual
+  section covering its surface was read in full (the Network Editor Tab for F-CANOPY-012 and -013; Configuration
+  Parameters and the Parameters Tab for -018, -028 and -065; the Workers Tab for -032; the Training Metrics Tab for
+  -064 and -067; the Replay and Network Evolution Tabs for -057; the Dataset View Tab and "A wider dataset needs
+  Start fresh" for -060; Status Indicators, Update Intervals, Troubleshooting 1 and 5 and WebSocket Real-Time
+  Updates for -049; Accessing the Dashboard and the Visualization Tabs preamble for -066), and the whole file was
+  then scanned, case-insensitively, for each finding's terms: dark, theme, toast, unsaved, applied, skipped,
+  declined, degraded, persist, local storage, truncat-, shortfall, network stats, network information, iteration,
+  optimizer, learning rate, restore, CUDA, out of memory, stalled, healthy, relay, `isolated_stack`,
+  `RESET_COMPONENT`, active tab, tab selection, pinned, cap. The instrument could have produced a different answer
+  wherever a sentence was missed; the term scan is the guard against that, and a validator with the file can
+  repeat both in minutes.
+- **"Reached"** means the manual states, as the product's behaviour, the thing the finding measured to be
+  otherwise. A sentence that only names a surface the finding touches does not reach it: the manual names the
+  Training Metrics store's one-second updates, and F-CANOPY-049's relay defect does not stop them. The manual also
+  documents two surfaces fed by the fields F-CANOPY-049's measurement found frozen through a live candidate phase,
+  the Phase Duration card ("Shows elapsed time from `phase_started_at` during active phases", `:328`) and the
+  Candidate Metrics tab's Phase and Candidate Epoch Progress (`:686-688`). Both are conditioned on the training
+  state carrying the fields, the entry measured neither surface, and the fault that froze them, cascor forgetting
+  a socket (F-CASCOR-004), is FIXED by cascor#674; F-CANOPY-049 is the relay's failure to notice, which no sentence
+  addresses, so it is not reached. A reader who takes the other view would count 10 open P1 and 10 open P2 (round 1,
+  Lanes 13-A and 13-B). A finding fixed in code is rated on the behaviour it measured, as the ledger has always
+  done; the disposition token changes on the live re-drive, the rating on the evidence.
+- **Sources read for the facts below**, all through `gh api` or `gh pr view`: canopy `main` `571743db`
+  (`docs/USER_MANUAL.md`, 1,606 lines; `CHANGELOG.md`, 5,887 lines; `src/frontend/components/network_editor_panel.py`;
+  `src/backend/cascor_service_adapter.py`); canopy PRs 532, 533 and 535 and the v0.7.0 and v0.9.0 Releases; cascor
+  `main` `4c26919f` (2026-10-16T09:33:36Z; `src/api/lifecycle/manager.py`); cascor PRs 187, 189 and 190 and the
+  compare of `main` with `dbc25277`. In this repo, after rounds 1 to 3: the V7 roadmap's §28.1 and CAN-015 row
+  and the 2026-05-05 audit's §5.1, §5.2, §8.1, §11.4 and §11.7 (named under "The design note's correction").
+
+### The sweep, finding by finding
+
+| finding | rating before | manual text at `571743db` | reached? | rating after |
+|---|---|---|---|---|
+| F-CANOPY-012 | P2 | § Network Editor Tab, Patch Weights: "Patches one parameter group: `output_weights` …"; "Values can be entered as comma-, semicolon-, or newline-separated floats." (`:493-501`) | **yes**: no entry for the listed group could pass | **P1** |
+| F-CANOPY-013 | P2 | § Network Editor Tab, Workflow 6: "Use the API response shown in the status alert to confirm the edit." (`:510`) | **yes**: the alert misreported a success | **P1** |
+| F-CANOPY-018 | P2 | § Configuration Parameters: "Edits are staged until you click **Apply** — the button enables only when a value differs from the last applied set" (`:267-268`) | **yes**: Apply stayed enabled with nothing differing | **P1** |
+| F-CANOPY-028 | P2 | § Parameters Tab: "the pin set lives in browser local storage, so it survives a reload" (`:754-755`) | **yes**, narrowly: the first pin after the reload discarded it | **P1** |
+| F-CANOPY-032 | P2 | § Workers Tab: "**Degradation alert** — "Worker data degraded: …" when the upstream call fails (dismissable)" (`:732`) | **yes**: never rendered with cascor down | **P1** |
+| F-CANOPY-064 | P1 | § Training Metrics Tab: "loss and accuracy curves" (`:311`), "Training & Validation Accuracy" (`:316`), "Accuracy increases steadily" (`:338`) | already the basis of its P1; the entry cites `:266`, `:271` and `:293`, where the text stood then | P1 |
+| F-CANOPY-065 | P1 if a shipped CHANGELOG or design-plan promise counts | § Configuration Parameters says only that edits are staged until Apply and that the Parameters tab shows the applied values (`:267-269`); nothing on what the toast reports | no | unchanged (the first limb) |
+| F-CANOPY-067 | P2 pending a live drive | § Training Metrics Tab documents the plots (`:311-316`) | the plots are documented; whether the zeros persist on a real page is the entry's own open question | unchanged |
+| F-CANOPY-057 | P2 | § Replay Tab: "Today no weight sample reaches the page" (`:820-822`); § Network Evolution Tab: "none do today" (`:714-715`) | no: the manual withdrew the promise in canopy#684 | P2 |
+| F-CANOPY-001 | P2 | no dark-mode or theme text anywhere in the file | no | P2 |
+| F-CANOPY-033 | P2 | nothing on component resets | no | P2 |
+| F-CANOPY-034 | P2 | nothing (an inert store) | no | P2 |
+| F-CANOPY-049 | P2 | § Status Indicators (`:155-171`) and § Update Intervals (`:173-176`) describe the browser's connection count and the one-second metrics updates; Troubleshooting 5 (`:1144`) is the browser's socket. The Phase Duration card (`:328`, "during active phases") and the Candidate Metrics tab's Phase and progress (`:686-688`) read the fields the entry found frozen, conditioned on the state carrying them. None describes the canopy-to-cascor relay, `/api/state`'s freshness, or recovery from an upstream drop | no, with the counter-reading under "Who, and from what" (round 1, Lanes 13-A and 13-B) | P2 |
+| F-CANOPY-051 | P2/P3 | nothing on the active tab's persistence | no | P2 |
+| F-CANOPY-060 | P2 | § "A wider dataset needs Start fresh" (`:225-244`) documents the other refusal; nothing on the shortfall prompt or the symbol cap | no | P2 |
+| F-CANOPY-063 | P2 | a test's comment; nothing in the manual bears on it | no | P2 |
+| F-CANOPY-066 | P2 | "Network Information Panel" is listed (`:121`); nothing says what it shows under the recurrence backend | no | P2 |
+| F-CASCOR-001 | P1 | nothing on how cascor classifies a CUDA OOM | not a canopy-manual question | P1 |
+| F-CASCOR-002 | P1 | § Snapshots Tab documents Restore (`:777`); nothing on optimizer state | not a canopy-manual question | P1 |
+| F-ML-002 | P2 | a juniper-ml script | not a canopy-manual question | P2 |
+
+### The five re-ratings
+
+Each is set against the measurement its entry records, and each entry now carries a dated RE-RATED blockquote
+with the same reasoning in brief.
+
+- **F-CANOPY-012.** The manual lists `output_weights` first among the four groups Patch Weights patches and says
+  values are "entered as comma-, semicolon-, or newline-separated floats"; the same words stood at canopy#535's
+  parent (`28da69f8^`, `:407-415`; Phase 11, round 4). Segment 7 measured every such entry rejected on the wire
+  for that group (`shape mismatch: output_weights expects (12, 2), got (24,)`), because the panel parsed a flat
+  list for a 2-D target with no reshape anywhere. The documented operation did not exist: P1 by the F-CANOPY-056
+  rule. The manual's "lets CasCor validate the exact target shape" does not change that; it says who checks a
+  shape, not that an entry form existed that could pass. The entry had weighed the failure's being "loud,
+  precise, and non-mutating", not the manual. **In code:** canopy#535's `_resolve_patch_values`
+  (`network_editor_panel.py:457-507` at `571743db`) accepts one row per line or per `;` for `output_weights`, or a
+  flat list reshaped `(I+H, output_size)` from the panel's topology store, and names what to type when it cannot.
+  A residue, dispositioned and not filed (round 1, Lane 13-B): `_parse_float_rows` (`:437-456`) makes newlines and
+  semicolons row separators, so the manual's semicolon- or newline-separated floats, entered for `output_weights`,
+  become one row per value, which cascor's shape check rejects wherever the network has more than one output,
+  loudly as before; only the comma form reaches the reshape. By source two of the manual's three forms still fail
+  for this group after the fix on such a network. It is this entry's
+  own surface and row, so it gets no new id: item 30 drives the three forms, and the manual's Patch Weights
+  sentence then needs the row idiom, or the parser a single-width rule.
+- **F-CANOPY-013.** Step 6 of the manual's workflow is the confirmation step, and the entry measured it giving
+  `Appended unit at index None (now None hidden units)` on an append that fully succeeded, with segment 7 then
+  seeing the remove path do the same (`Removed unit 9 (now None hidden units)`). A user following step 6 is told
+  nothing true about the edit, and is told it on the success path. Phase 11's round 5 lanes read the manual's
+  step 6 as documenting what this finding breaks (that phase's Matrix effect); this phase agrees. The entry's
+  "cosmetic only" weighed the unharmed state. **In code:** canopy#532's `_envelope_payload`
+  (`network_editor_panel.py:563-585` at `571743db`), called at both sites (`:731`, `:828`).
+- **F-CANOPY-018.** The manual's rule for the Apply button is that it "enables only when a value differs from the
+  last applied set". Segment 12 measured, after a successful apply, Apply enabled and `params-status` reading
+  `⚠️ Unsaved changes` until a page reload, with nothing differing; Phase 4 traced it to three keys the dirty
+  comparison read that the apply payload never wrote. That is the documented rule broken, P1. The toast the entry
+  is named for the manual does not describe; canopy's 0.6.0 CHANGELOG does (`CHANGELOG.md:2360-2365` at
+  `571743db`), which is the owner's first limb and is no longer needed for this rating. **In code:** canopy#533.
+- **F-CANOPY-028.** The manual says the pin set "lives in browser local storage, so it survives a reload".
+  Segment 15 measured it surviving the reload and being discarded by the first pin after it, because the writer
+  replaced the store with the state of every rendered checkbox (Phase 4: the writer, not the rehydration, and the
+  repro "was not reproduced from source", so the re-drive re-checks the symptom). **The counter-reading is
+  recorded**: the sentence promises survival of a reload, which the store did, and says nothing of the next pin;
+  by that reading the finding is P2. This phase rates on what a user following the manual sees, which is pins
+  that persist until the control they are described with is next used, and calls that the promise broken. It is
+  the narrowest of the five, and a validator who takes the other reading moves the P1 count from 9 to 8: in
+  round 1 Lane 13-B took it and rates this finding P2, Lane 13-A rated it P1, narrowly, and the orchestrator keeps
+  P1 and records the dissent (Consensus record). **In code:** canopy#533's `_merge_pinned_params` writes only what
+  it can observe.
+- **F-CANOPY-032.** The manual lists the degradation alert as a display element, shown "when the upstream call
+  fails". Segment 16 measured it absent for 60 s under each of two inductions, with canopy's own API carrying the
+  error under the cascor-down one. Phase 4's correction to the entry stands: the control-WS-only arm should not have counted, since
+  `list_workers()` succeeds there and no alert is right; the cascor-down arm is an upstream failure by any reading,
+  and one arm suffices. P1. **Not in code:** canopy#533 added four contract tests on the path and changed no
+  behaviour; Phase 4 traced the path end to end, found it correct in source, and suspected F-CANOPY-027's
+  filled-store / dead-render class, since FIXED. So M-WORKERS-02's re-drive decides this entry, and until it runs
+  this is the one open P1 of this phase that no code claims to fix.
+
+### The design note's correction
+
+`notes/JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md` said, in its "Revision
+2026-05-04 — sprint complete" note, that "every CAN-015g item has merged to `main`", and its delivery log and
+PR-breakdown tables carried g-3 (the replay weight emitter) as delivered. Re-derived with `gh` for this phase, as
+F-CANOPY-057's History first recorded in Phase 9's validation:
+
+- cascor#187 merged on 2026-05-03T07:31:04Z (`d85c9ddd`) into `feature/can-015g-2-replay-weight-cache`;
+- its retarget cascor#190 merged at 20:05:12Z (`dbc25277`) into `feature/can-015g-2-replay-weight-cache-v2`, 13
+  minutes after that branch's own PR, cascor#189, had landed on `main` as `b1d19948` (19:52:10Z);
+- at cascor `main` `4c26919f` (2026-10-16T09:33:36Z) the compare with `dbc25277` reads diverged, 3 ahead and 537
+  behind (Phase 10 measured 512 behind at `0e016a7c`);
+- `_ReplaySession._emit_frame` (`src/api/lifecycle/manager.py:1260-1297`) emits `epoch`, `loss`, `accuracy`,
+  `validation_loss`, `validation_accuracy`, `phase`, `replay` and `snapshot_id`, and no `weights`; `weights_at`
+  (`:1244`) has no caller in the file, and its own docstring still names "g-3's emitter" as the caller to come;
+- canopy `571743db`'s `_to_dashboard_metric` (`src/backend/cascor_service_adapter.py:1960-1991`) rebuilds each
+  row without a `weights` key, so the page would drop one if it came.
+
+The note now carries a dated correction under its status block, its header's Status points to it, its two g-3
+rows say the merges landed in a stacked base and not on `main`, and its "Last updated" is this date. Nothing else
+in the note was re-verified; the correction is scoped to g-3 and to the "decision-boundary animation with
+per-unit weight evolution" its summary describes, which has not shipped. With that, the note no longer records
+the weight stream as implemented, and F-CANOPY-057 is not within reach of the owner's first limb through it; its
+P2 rests on the manual's and the FAQ's current text, as since Phase 10 (the FAQ's status note of 2026-09-24 was
+re-read at `571743db` in round 1, Lane 13-B).
+
+Two other documents recorded g-3 as shipped (round 1, Lane 13-B, MAJOR; round 2, Lanes 13-R2A and 13-R2B, MAJOR):
+the V7 roadmap's §28.1, "CAN-015g + CAN-015h — Phase 6E deferred, shipped end-to-end", whose g-3 row read "cascor
+#190 (retarget of #187) | Sample-boundary weight emission | `dbc25277`" (`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md:15146-15160`), and
+its CAN-015 row, which counts "8 PRs for CAN-015g" as shipped end-to-end and points to §28.1 (`:5196`); and the
+2026-05-05 audit, whose §5.2, "Critical blind spot — CAN-015g and CAN-015h", says "As of 2026-05-05 both are
+**shipped end-to-end** on `main`" over the same eight-row table, g-3 row included (`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md:122-137` at
+`c741351c`, before its correction), while its own §11.4, "CAN-015g/h shipping verification", lists what it
+confirmed on cascor `main`, "#180 (g-1), #191 (g-6)", and never #189 or #190 (`:318-323` there); its §5.1
+per-repo table's "CAN-015g replay V2 wired" (`:112`) describes canopy's consumers (g-4, g-7), which shipped, and
+stands. Round 1 gave §28.1 the same dated correction, a note under its heading and the g-3 row annotated, having
+read the audit at `:112` alone and called it a snapshot of commit themes; round 2 read §5.2, pointed the CAN-015
+row at §28.1's note, and gave §5.2 the same note, citing §11.4, with its g-3 row annotated; round 3 pointed the
+audit's three restatements of the claim, its §5.2 Status delta and its §8.1 and §11.7 rows, at §5.2's note (Lane
+13-R3B). With every site that recorded the stream as shipped corrected or pointed at the correction, three
+sections corrected (the design note's status block, the roadmap's §28.1, the audit's §5.2) and four restatements
+pointed at them (the roadmap's CAN-015 row; the audit's §5.2 Status delta, §8.1 and §11.7 rows), no document this
+phase or its lanes read records the stream as shipped without it, and the first limb reaches F-CANOPY-057
+through none of them; the audit's theme lines (`:13`, `:21`, `:248`, `:353`), which name no sub-task, stand with
+its §5.1 line (round 4, Lanes 13-R4A and 13-R4B). A plan none of them read may still, which item 26's second step
+would find.
+
+### What this phase cannot support
+
+- Nothing was driven. Each re-rating rests on a measurement another phase made (segments 7, 12, 15 and 16) and on
+  the manual's text today; none of the five symptoms was re-observed, and four of them are expected to be gone on
+  any leg serving canopy 0.7.0 or later, which item 30 checks.
+- The manual was read at one commit. A sentence added or removed after `571743db` moves nothing here until read.
+- The sweep is a reading, not a proof of absence. "Not reached" means no sentence was found by section reading and
+  by the term scan; a sentence phrased in terms neither anticipated would be missed. Item 26's second step, the
+  CHANGELOG and the design plans, was not done: it waits on the ruling, and this phase read the CHANGELOG only for
+  the facts above (the 0.6.0 toast entry, and the absence of the fix-wave PRs).
+- Whether the four fixes work on a live page is not known to this ledger. Phase 4 brought up no stack, and no
+  later phase drove their rows. Their re-drive is item 30. The F-CANOPY-012 residue, two of the manual's forms read
+  as rows, is by source; no page has sent one.
+- The two CHANGELOG leads under "Still owed" are a lane's reading of two entries, not ratings; the second step
+  was not done.
+
+### Consensus record (§7 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`)
+
+- **Round 1**: three lanes on the frozen `566cb72a`, briefed separately with different entry points. Briefs are in
+  `reports/e2e-canopy-2026-09-02/drafts/lane13{A,B,C}_phase13_ledger_brief.md`, and the reports, verbatim, in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-19_validator_reports_phase13_round1.md`.
+  - Lane 13-A rated the twenty open findings from the manual first, with the entries read at `main` `ad6013f4` so
+    the phase's ratings could not leak, then compared, then re-derived every manual, GitHub, source, triage, matrix
+    and ledger fact. Its twenty ratings equal the phase's, and every fact held.
+  - Lane 13-B was adversarial on the re-ratings: each of the five, the ten not reached, the owner's question, the
+    counts, item 30, and what was stated that was inferred.
+  - Lane 13-C replayed the apply pass from `ad6013f4` (all six files byte-identical, no hand edit), checked the seven
+    files against each other, the rest of the ledger, the matrix, the repo's tests and conventions and GitHub, and
+    ran the handoff's verification commands.
+  - The lanes' own probes are in their scratch directories and were not archived: each was a reading of the manual,
+    a `gh` query or a run of the repo's own tools, and none produced a figure the ledger rests on that those do not
+    reproduce.
+- **Verdicts.** All three returned SOUND-WITH-FIXES. Lane 13-B's MAJOR changes an action and the ruling's alternative
+  counts (two other documents still recorded g-3 as shipped, so "the first limb now decides F-CANOPY-065 alone" did
+  not hold), its finding on canopy#535's row parser changes item 30, and a handoff verification command expected the
+  wrong number (Lanes 13-B and 13-C), so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`
+  requires round 2. No lane refuted a re-rating, the triage's counts or any entry's disposition; one lane dissents
+  on F-CANOPY-028 and on F-CANOPY-067 (below).
+- **What round 1 changed:**
+  - the owner's question: the V7 roadmap's §28.1 and CAN-015 row and the 2026-05-05 audit's activity line still
+    recorded g-3 as shipped (Lane 13-B, MAJOR). §28.1 now carries the same dated correction as the design note
+    (`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`: a note under
+    the heading and the g-3 row annotated), the audit is left as a dated snapshot (reversed in round 2), and the
+    reach statement is restated in all eight of the Summary, "The design note's correction", the Matrix effect,
+    F-CANOPY-057's and F-CANOPY-065's Status bullets, "Still owed", the handoff and the parent's O17, with the three
+    figures 9/11, 8/12 or 10/10 in four of them (the Summary, the Matrix effect, the handoff's Counts and the
+    parent's O17); the INDEX and the parent's item 4 name the corrected documents and the counts only (round 1
+    wrote "nine" and "the INDEX"; corrected in round 3);
+  - the F-CANOPY-012 residue: `_parse_float_rows` makes newlines and semicolons row separators, so two of the
+    manual's three forms are read as one row per value and rejected by source; "every form it names still parses"
+    is withdrawn, the residue is dispositioned in the entry and under "The five re-ratings", not filed, and item 30
+    drives all three forms (Lane 13-B);
+  - the handoff's `grep -c 'P1 '` expected 9 and prints 10, the triage's summary line matching too; it is now
+    anchored to the row prefix (Lanes 13-B and 13-C);
+  - F-CANOPY-049's row and the "Reached" paragraph name the Phase Duration card (`:328`) and the Candidate Metrics
+    tab's Phase and progress (`:686-688`), which read the fields the entry found frozen, and say why they do not
+    reach it: both are conditioned on the state carrying the fields, neither surface was measured, and the trigger,
+    F-CASCOR-004, is FIXED; the other reading would count 10 and 10 (Lanes 13-A and 13-B);
+  - "the four findings Phase 11 placed within the first limb's reach" now reads as Phase 11 wrote it: three within
+    reach and F-CANOPY-013 unsettled (Lane 13-C);
+  - the fix wave's re-drive was last listed in Phase 4's prose and carried by no Still-owed list from Phase 5's on,
+    not "since Phase 9 renumbered"; the Summary, item 30 and the handoff say so (Lanes 13-A and 13-C);
+  - item 26's second step records two CHANGELOG leads a lane found, unswept: `[0.8.0]`'s "survives to the modal"
+    for F-CANOPY-060 and `[0.6.0]`'s tab-persistence entry for F-CANOPY-051 (Lane 13-B; round 1 wrote `[0.5.0]`,
+    corrected in round 2);
+  - item 18 says F-CANOPY-067's drive also settles that entry's rating under the F-CANOPY-056 standard; "Sources
+    read" names the roadmap and the audit; "The design note's correction" notes the FAQ's status note re-read at
+    `571743db`; the handoff's PR-contents sentence names the roadmap and its verification block gains the roadmap
+    grep (listed by round 2, Lanes 13-R2A and 13-R2B);
+  - item 30: C2.9-05's own expectation is the toast, and the Apply-disabled check is an added expectation scored
+    separately; the demo-leg expectation rests on the manual for the Apply controls and on source for the pins
+    (Lane 13-B);
+  - wording: the manual's Apply sentence starts at `:267` (Lane 13-A); only M-PARAMETERS-05 carries "pending an
+    Apply", M-WORKERS-02 and C2.9-05 are whole-row FAILs and M-WORKERS-02's row names no id (Lane 13-A); the
+    CHANGELOG's `#532` appears three times in one entry (Lane 13-B); F-CANOPY-032's two inductions, the API carrying
+    the error under the cascor-down one (Lane 13-B); F-CANOPY-012's weaker counter-reading, recorded beside
+    F-CANOPY-028's (Lane 13-B); the plan, the matrix and the ledger named by filename in the handoff and the banner,
+    and the banner's "item 3's first half" (Lanes 13-B and 13-C); the apply script's header gains the `Retire when:`
+    and `Related:` lines `util/ad-hoc/README.md` asks for (Lane 13-C).
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-19_phase13_ledger_round1_corrections.py`,
+    24 substitutions in the ledger, 13 in the handoff and 7 across the
+    parent handoff, the INDEX, the Phase 12 handoff's banner, the apply script and the V7 roadmap.
+- **Re-derived by the orchestrator before applying:**
+  - the V7 roadmap's §28.1 heading, g-3 row (`:15156`) and CAN-015 row (`:5196`), the audit's line (`:112`), and
+    that the roadmap was last changed on 2026-07-04;
+  - `_parse_float_rows` (`network_editor_panel.py:437-456` at `571743db`): `text.replace(";", "\n").split("\n")`,
+    one row per line, and `_resolve_patch_values`' `len(rows) > 1` branch returning the rows unchanged;
+  - the manual's `:266` (the env-var line), `:267-269`, `:328`, `:686-688` and `:285`; the matrix's `:807` (FAIL, no
+    id) and `:822-824`; Phase 5's Still owed (F-039, F-037, F-038, F-036 and F-026 only); Phase 11's "three open
+    P2s are already known to be within reach" and "F-CANOPY-013 … unsettled";
+  - the `grep -c` figures, 10 and 9; F-CASCOR-004's header, FIXED by cascor#674; the CHANGELOG's `#532` at `:534`,
+    `:535` and `:541` and the two lead entries at `:1436-1437` and `:2909`; `util/ad-hoc/README.md:17-31`;
+    F-CANOPY-056's "Re-rated P1, on plan §6.3's rule" bullet, on source and a hand-built probe, "has not been driven
+    live".
+- **Not applied.** Lane 13-B's suggestion to correct the 2026-05-05 audit as well, declined in round 1 on a reading
+  of its `:112` line alone; round 2 found that its §5.2 makes the shipping claim outright and reversed this (round
+  2's record). Lanes 13-B's and 13-C's note that the handoff describes the landed
+  state (a PR, signed commits, archived reports) before it exists: checked at landing, as Phase 12 did. Lane 13-C's
+  note that the five headers name a second severity in prose: F-CANOPY-057's header is the precedent, and the triage
+  reads the first token.
+- **Unresolved dissent.**
+  - **F-CANOPY-028**: Lane 13-B rates it P2 (the manual's sentence promises survival of a reload, which the store did;
+    the discard is a writer defect no sentence describes; the ledger read the manual literally for F-CANOPY-057).
+    Lane 13-A rates it P1, narrowly. The orchestrator keeps P1, on what a user following the manual sees, and
+    records the dissent; by Lane 13-B's reading the counts are 8 and 12.
+  - **F-CANOPY-067**: Lane 13-B holds that "unchanged" applies a stricter standard than F-CANOPY-056's, which was
+    rated P1 on source and a hand-built probe before any live drive, so by that precedent F-CANOPY-067 is P1 by
+    source today (10 and 10), the live drive deciding the disposition. The orchestrator keeps Phase 10's "P2
+    pending a live drive": that condition was set after five rounds on whether a page shows the zeros, and this
+    phase's instrument, the manual, adds nothing to it; item 18's drive decides the rating under the F-CANOPY-056
+    standard.
+- **What the evidence cannot support** is unchanged from "What this phase cannot support", with the additions made
+  there. The instrument of this phase is a reading of one file and of the GitHub API; it could have produced a
+  different answer wherever a sentence was missed, and round 1's two independent readings of the manual (Lane 13-A's
+  twenty answers; Lane 13-B's attacks on the ten not reached) found one such place, F-CANOPY-049, recorded above.
+- **Slips.** None reported.
+- **Round 2**: two lanes on the frozen `c741351c`, briefed on round 1's corrections only, from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane13R2_phase13_ledger_brief.md`. The reports, verbatim, are in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-19_validator_reports_phase13_round2.md`.
+  - Lane 13-R2A replayed round 1's pass on `566cb72a`: `c741351c` byte for byte on all seven files, with no hand edit,
+    and re-derived every claim the pass introduced, executing canopy's two parsers on the manual's three forms.
+    Lane 13-R2B was adversarial on the pass, and replayed it too.
+  - Both found every count, header and disposition unchanged by the pass, the credits and the two dissents stated
+    as the lanes stated them, and the triage at 79 / 56 / 1 / 2 / 20, 9 and 11.
+- **Verdicts.** Both returned SOUND-WITH-FIXES, with the same MAJOR: round 1 had read the 2026-05-05 audit at its
+  `:112` line alone and called it "a dated snapshot of commit themes", and its §5.2 says outright "both are shipped
+  end-to-end on `main`" over the same eight-row table, while its §11.4 lists what it confirmed on cascor `main` and
+  names neither #189 nor #190. That changes an action (the audit is now corrected, not left) and how O17 is put, so
+  §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 3. Lane
+  13-R2B also found round 1's withdrawn sentence surviving in the handoff's item 8 (MAJOR). Neither lane moved a
+  count, a rating or a disposition.
+- **What round 2 changed:**
+  - the audit: its §5.2 now carries the same dated correction as the design note and §28.1, a note under its heading
+    citing its own §11.4, and its g-3 row is annotated (`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md`); its
+    §5.1 line, which describes canopy's consumers, stands. The roadmap's CAN-015 row (`:5196`) is annotated as well
+    (Lane 13-R2A's NIT). With the four sites corrected, the first limb decides F-CANOPY-065 alone among the findings
+    Phase 11 named, and "10 and 10 by the broadest reading" is withdrawn: 10 and 10 remains by the F-CANOPY-067
+    dissent and by the F-CANOPY-049 counter-reading. Stated so in the Summary, "The design note's correction", the
+    Matrix effect, F-CANOPY-057's and F-CANOPY-065's Status bullets, "Still owed", the handoff and the parent's O17,
+    and, as the list of corrected documents, in the parent's item 4 and the INDEX (Lanes 13-R2A and 13-R2B; round 2
+    wrote "only by the F-CANOPY-067 dissent" and listed item 4 and the INDEX with the rest, corrected in round 3);
+  - the handoff's item 8 no longer says the first limb "now decides F-CANOPY-065 alone" on round 1's wrong ground
+    (Lanes 13-R2A and 13-R2B);
+  - the F-CANOPY-051 lead is `[0.6.0]`'s entry, not `[0.5.0]`'s: `:2909` sits under `## [0.6.0]` (`:2171`), `## [0.5.0]`
+    starting at `:2919`; corrected in "Still owed" and in round 1's record (Lanes 13-R2A and 13-R2B);
+  - round 1's record: the three figures appeared in four places and the reach statement in eight, the INDEX and the
+    parent's item 4 carrying the corrected-document list and counts only; its change list gains the hunks it
+    omitted (the "Sources read" sentence, the FAQ re-read parenthetical, item 18's F-CANOPY-067 sentence, the
+    handoff's PR-contents sentence and roadmap grep); the F-CANOPY-056 bullet is labelled "Re-rated P1" (Lanes
+    13-R2A and 13-R2B);
+  - the F-CANOPY-012 residue: the one-value rows are rejected wherever the network has more than one output; with
+    one output they are the right shape (Lane 13-R2A, from executing the parsers);
+  - wording: the Candidate Metrics condition spans `:686-688` (Lane 13-R2B; Lane 13-A had cited it so); the Summary
+    names F-CANOPY-067's dissent beside F-CANOPY-028's (Lanes 13-R2A and 13-R2B); the handoff's "from Phase 5's on"
+    (Lane 13-R2A); and, listed by round 3 (Lanes 13-R3A and 13-R3B): the "Sources read" sentence (rounds 1 and 2;
+    §5.1, §5.2 and §11.4), round 1's "Not applied" bullet rewritten and its "(reversed in round 2)", the handoff's
+    PR-contents sentence, its audit grep, its two "Changed by this session" lines and item 4's `[0.8.0]` and
+    `[0.6.0]` tags.
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-19_phase13_ledger_round2_corrections.py`,
+    19 substitutions in the ledger, 9 in the handoff and 6 across the
+    parent handoff, the INDEX, the V7 roadmap and the audit.
+- **Re-derived by the orchestrator before applying:** the audit's §5.2 (`:122-134`: the sentence and the g-3 row)
+  and §11.4 (`:318-323`: "#180 (g-1), #191 (g-6)"), and that the audit was last changed on 2026-07-04; the
+  CHANGELOG's headings at `:2171` and `:2919`; the handoff's item 8; `_resolve_patch_values`' `len(rows) > 1` branch
+  against a one-output shape; the manual's `:688`.
+- **Not applied.** Nothing. Lane 13-R2B's note that cascor's validator was not fetched: "rejects the shape" is the
+  shape check that rejected the flat list in segment 7, applied by source to a body of another wrong shape, and the
+  residue is labelled by source.
+- **Unresolved dissent.** Unchanged: F-CANOPY-028 (one lane P2) and F-CANOPY-067 (one lane P1 by source).
+- **Slips.** None reported.
+- **Round 3**: two lanes on the frozen `10194b8c`, briefed on round 2's corrections only, from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane13R3_phase13_ledger_brief.md`. The reports, verbatim, are in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-19_validator_reports_phase13_round3.md`.
+  - Lane 13-R3A replayed round 2's pass on `c741351c`: `10194b8c` byte for byte on all six files, with no hand edit,
+    and re-derived every claim the pass introduced, the parsers executed again against one- and two-output shapes.
+    Lane 13-R3B was adversarial on the pass, and replayed it too.
+  - Both found every count, header, rating and disposition unchanged, the reach statement consistent where round 2
+    rewrote it, the credits and the two dissents as the lanes stated them, and the triage at 79 / 56 / 1 / 2 / 20,
+    9 and 11.
+- **Verdicts.** Both returned SOUND-WITH-FIXES. Neither moved a count, a rating or a disposition. Two findings change
+  an action: the audit restates its §5.2 claim in three rows round 2 did not touch (its §5.2 Status delta, its §8.1
+  row and its §11.7 row), so round 2's absolute "no document … still records the stream as shipped" overstated (Lane
+  13-R3B); and the handoff's landing trap named the apply script alone where the three correction passes must follow
+  it (Lane 13-R3B). So §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires
+  round 4. The rest is the records' description of themselves and wording.
+- **What round 3 changed:**
+  - the audit's three restatements now point at §5.2's note (`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md`,
+    the Status delta under §5.2, the §8.1 row and the §11.7 row) (Lane 13-R3B); the Summary and F-CANOPY-057's
+    Status bullet say that every site carries the correction or a pointer to it and that the CAN-015 row is pointed
+    at it, and "The design note's correction" and the Matrix effect said "four sites in three documents corrected
+    or pointed at the correction" (Lanes 13-R3A and 13-R3B; round 4 recounted the sites);
+  - the handoff's landing trap names the apply script and the three correction passes, in that order, and its
+    "Changed by this session" audit line names round 3's pointers (Lane 13-R3B);
+  - the F-CANOPY-012 qualifier, "on a network with more than one output", reaches item 30 and the handoff's item 2
+    (Lane 13-R3B);
+  - round 1's and round 2's records: the reach statement is in eight places, the INDEX and the parent's item 4 naming
+    the corrected documents and the counts only; 10 and 10 remains by the F-CANOPY-067 dissent and by the F-CANOPY-049
+    counter-reading (Lane 13-R3B); round 2's change list gains the hunks it omitted (the "Sources read" sentence,
+    round 1's rewritten "Not applied" and its parenthetical, the handoff's PR-contents sentence, audit grep and two
+    "Changed by this session" lines, item 4's release tags) (Lanes 13-R3A and 13-R3B);
+  - the audit's line cites in the Summary and "The design note's correction" are pinned to `c741351c`, before the
+    ten-line note moved them, and the table span is `:122-137` (Lanes 13-R3A and 13-R3B);
+  - the Phase 12 handoff's SUPERSEDED banner names the roadmap's and the audit's corrections beside the design note's
+    (Lane 13-R3B's note on the corrected-site lists);
+  - the handoff's item 4 says "four sites in three documents" (Lanes 13-R3A and 13-R3B).
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-19_phase13_ledger_round3_corrections.py`,
+    9 substitutions in the ledger, 4 in the handoff, 1 in the Phase 12
+    handoff's banner and 3 in the audit.
+- **Re-derived by the orchestrator before applying:** the audit's rows at `10194b8c` (`:168` "Status delta", `:225`
+  "CAN-015g/h shipped end-to-end without any roadmap delta", `:360` "§5 CAN-015g/h shipping claim | CONFIRMED"), and
+  that its §5.2 sentence, g-3 row and §11.4 now sit at `:134`, `:142` and `:328-333`; the INDEX's row and the parent's
+  item 4 carry no reach statement (0 hits for "first limb"); the handoff's trap sentence.
+- **Not applied.** Lane 13-R3B's note that the corrected-site list differs by file beyond the banner: the parent's
+  item 4 and the INDEX name documents, the ledger counts sites; both are true.
+- **Unresolved dissent.** Unchanged: F-CANOPY-028 (one lane P2) and F-CANOPY-067 (one lane P1 by source).
+- **Slips.** None reported.
+- **Round 4**: two lanes on the frozen `369863cf`, briefed on round 3's corrections only, from one brief,
+  `reports/e2e-canopy-2026-09-02/drafts/lane13R4_phase13_ledger_brief.md`. The reports, verbatim, are in
+  `reports/e2e-canopy-2026-09-02/consensus/2026-10-19_validator_reports_phase13_round4.md`.
+  - Lane 13-R4A replayed round 3's pass on `10194b8c`: `369863cf` byte for byte on all four files, with no hand edit,
+    and re-derived every claim the pass introduced, reading every `shipped`, `CAN-015g`, `g-3` and `#190` line of the
+    audit. Lane 13-R4B was adversarial on the pass, and replayed it too.
+  - Both found every count, header, rating and disposition unchanged, the dissents as the lanes stated them, and
+    the triage at 79 / 56 / 1 / 2 / 20, 9 and 11.
+- **Verdicts.** Both returned SOUND-WITH-FIXES. Neither found anything that changes a number, a disposition or an
+  action, so under §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` **the
+  review ends at round 4.**
+- **What round 4 changed**, wording and the records only:
+  - the site count: round 3 had written "four sites in three documents" after finding three more restatements in
+    the audit; the phase now counts three sections corrected (the design note's status block, the roadmap's §28.1,
+    the audit's §5.2) and four restatements pointed at them (the roadmap's CAN-015 row; the audit's §5.2 Status
+    delta, §8.1 and §11.7 rows), in "The design note's correction", the Matrix effect and the handoff's items 4 and 8
+    (Lanes 13-R4A and 13-R4B);
+  - the CAN-015 row "carries the correction" no longer in "Still owed", the handoff's Completed bullet and the
+    parent's O17, where round 3 had not reached; it points at it (Lanes 13-R4A and 13-R4B);
+  - the handoff's item 8 reads as its item 4 (Lane 13-R4B);
+  - "Sources read" names the audit's §8.1 and §11.7 and rounds 1 to 3 (Lane 13-R4A);
+  - the audit's theme lines (`:13`, `:21`, `:248`, `:353`), which name no sub-task, are recorded as standing with its
+    §5.1 line (Lanes 13-R4A and 13-R4B);
+  - round 3's record: its first bullet says what each of the four places says in its own words, its handoff bullet
+    gains the "Changed by this session" audit line it omitted, and the F-CANOPY-049 counter-reading is credited to
+    Lane 13-R3B alone (Lanes 13-R4A and 13-R4B);
+  - the handoff's landing trap names this round's pass too, and that each pass needs a whole-tree copy under
+    `--root` (Lane 13-R4B).
+  - The pass is replayable, this record included: `util/ad-hoc/2026-10-19_phase13_ledger_round4_corrections.py`,
+    6 substitutions in the ledger, 5 in the handoff and 1 in the parent
+    handoff. It also fills the handoff's `**Consensus**` line.
+- **Re-derived by the orchestrator before applying:** the roadmap's `:5196` (a pointer clause); the three places that
+  still said "carry"; the audit's four theme lines; the handoff's items 4 and 8.
+- **Not applied.** Lane 13-R4A's note that the audit's `:353` could take the same pointer: it names no sub-task and
+  holds with g-3 excepted.
+- **Unresolved dissent.** Unchanged: F-CANOPY-028 (one lane P2) and F-CANOPY-067 (one lane P1 by source).
+- **What the evidence cannot support** is unchanged from "What this phase cannot support" and round 1's record. The
+  instrument of this phase is a reading of one file and of the GitHub API; across four rounds its two independent
+  readings of the manual agreed with the phase's twenty ratings, and the rounds' corrections were to what the phase
+  said about other documents (the roadmap, the audit) and about itself.
+- **Slips.** None reported.
+
+### Matrix effect and counts
+
+- No matrix row changes: this phase drove no row. The rows whose FAIL, or FAIL half, rests on the five re-rated
+  findings are C2.9-05 (FAIL, F-CANOPY-018), M-WORKERS-02 (FAIL; the row names no id, and the F-CANOPY-032 entry
+  names the row), M-NETWORK-EDITOR-09 and -13 (FAIL half, F-CANOPY-013) and M-NETWORK-EDITOR-17 (FAIL half,
+  F-CANOPY-012); F-CANOPY-028's rows, M-PARAMETERS-04/-05/-06, read PASS, -05 with its value "pending an Apply",
+  and Phase 4 named them for its re-drive.
+- **Counts**, from `e2e_finding_triage.py`: **79 findings**, 56 fixed, 1 accepted, 2 withdrawn, **20 open**.
+  - **No open P0.**
+  - **9 open P1:** F-CANOPY-012, F-CANOPY-013, F-CANOPY-018, F-CANOPY-028, F-CANOPY-032, F-CANOPY-064,
+    F-CANOPY-065, F-CASCOR-001 and F-CASCOR-002. Four of the nine (012, 013, 018, 028) are fixed in code since
+    canopy 0.7.0 and owed their live re-drive (item 30); F-CANOPY-032 is owed its re-drive or re-diagnosis
+    (item 30); F-CANOPY-064 is item 18; F-CANOPY-065 is item 20 and the first limb; the two cascor findings are
+    not this arc's to fix.
+  - **11 open P2.**
+  - **The owner's question** (O17): the first limb decides F-CANOPY-065 alone among the findings Phase 11 named,
+    every site that recorded F-CANOPY-057's stream as shipped now corrected or pointed at the correction (three
+    sections corrected, four restatements pointed): 9 open P1
+    and 11 open P2 if a shipped CHANGELOG or design-plan promise counts as documented, as the triage counts them;
+    8 and 12 if not. The second limb decides F-CANOPY-068's rating of record and moves no count. The two recorded
+    dissents move those pairs the other way: F-CANOPY-028, the re-rating most exposed to a different reading of
+    the manual (one round-1 lane rates it P2; "The five re-ratings"), one P1 fewer; F-CANOPY-067, which one
+    round-1 lane rates P1 by source today, one P1 more, 10 and 10 by that reading alone. F-CANOPY-012's
+    counter-reading, that the manual's "lets CasCor validate the exact target shape" makes a shape rejection the
+    documented outcome, is weaker and no lane adopted it.
+- **Plan §6.3's Phase 2 exit criterion**, every P0 and P1 closed or explicitly deferred with owner sign-off, now
+  waits on nine P1s instead of four. Five of the nine can move without a design: four re-drives of merged fixes
+  and one re-drive that closes or re-diagnoses (item 30).
+
+### Still owed after this phase
+
+Phase 12's list stands, items 0 to 29, with these changes:
+
+- **Item 26's first step is DONE**: every open finding has been checked against canopy's manual. Its second step
+  stays: once the owner rules, check each open finding not yet rated on canopy's CHANGELOG and the design plans
+  for a promise, or, if the ruling counts it, a description of an internal mechanism, of the behaviour it breaks.
+  Of the findings Phase 11 named, F-CANOPY-065 is the one the ruling moves; the design note, the V7 roadmap's
+  §28.1 and the 2026-05-05 audit's §5.2 carry the dated correction, and the roadmap's CAN-015 row and the audit's
+  three restatements point at it, so F-CANOPY-057 is reached through none of them, and the step should say so for
+  any other plan it reads. Two leads a round-1 lane found
+  for that step, unswept (Lane 13-B): canopy's CHANGELOG `[0.8.0]` says the producer's own sentence "survives to
+  the modal" (`CHANGELOG.md:1436-1437` at `571743db`), which is what F-CANOPY-060 cuts; and `[0.6.0]`'s "one
+  tab-persistence system" (`:2909`, under the `## [0.6.0]` heading at `:2171`) for F-CANOPY-051, weaker.
+- **Item 18** is unchanged; F-CANOPY-064's P1 stands. Its F-CANOPY-067 drive also settles that entry's rating
+  under the F-CANOPY-056 standard: P1 if a page shows the zeros persisting, as source says (one round-1 lane would
+  rate it P1 by source today; Consensus record).
+- **Item 20**'s F-CANOPY-065 is P1 conditionally, as before; the manual does not reach it.
+
+New item:
+
+30. **The Phase 4 fix wave's live re-drive**, owed since 2026-08-28 (Phase 4, "Still owed (unchanged, plus)"), last
+    listed there and carried by no Still-owed list from Phase 5's on; now owed at P1 for four of its findings. On a
+    leg serving canopy 0.9.0 or later (every release from 0.7.0 carries the fixes), drive:
+    - **M-NETWORK-EDITOR-17** for F-CANOPY-012 (all four targets; `output_weights` in each of the manual's three
+      forms, comma-, semicolon- and newline-separated, as rows, and as a wrong-count flat list for the new message;
+      by source the semicolon and newline forms become one row per value and are rejected on a network with more
+      than one output) and
+      **M-NETWORK-EDITOR-09 and -13** for F-CANOPY-013 (the alert's index and count on a successful append and
+      remove): a service leg whose cascor can be restored into `Investigating`, so a writable cascor, never the trio;
+    - **C2.9-05** for F-CANOPY-018 (the row's own expectation, the toast; and, as an added expectation scored
+      separately, Apply disabled and `params-status` clean after a successful apply; the toast's ~900 ms life, which
+      the fix was not written for, read as it is) and **M-PARAMETERS-04/-05/-06** for F-CANOPY-028 (pin, reload, pin
+      again; the first set must survive): the sidebar's Apply controls work in both modes by the manual (`:285`),
+      and the pins and the dirty tracker are canopy-side by source, so a demo leg is expected to reach them, to be
+      confirmed on the drive;
+    - **M-WORKERS-02** for F-CANOPY-032, the cascor-down arm first (cascor stopped, canopy up, the Workers tab open
+      for 60 s): a service leg whose cascor may be stopped, never the trio. Phase 1 segment 16's `degraded`
+      induction (cascor restarted with `JUNIPER_CASCOR_WS_CONTROL_ALLOWED_ORIGINS` at a bogus origin) is the second
+      arm, and no alert there is correct;
+    - at P2, **C2.1-01/02** for F-CANOPY-001 on the same legs; **M-METRICS-03**, F-CANOPY-026's row, still reads
+      FAIL in the matrix though that entry is FIXED, and can be re-validated on the same drive; F-CANOPY-034 has no
+      row.
+    Each entry's header token changes only on its own row's result. F-CANOPY-032's result either closes the entry
+    or re-diagnoses it. The F-CANOPY-012 drive also settles the residue above: whether the manual's Patch Weights
+    sentence gets the row idiom, or the parser a single-width rule.

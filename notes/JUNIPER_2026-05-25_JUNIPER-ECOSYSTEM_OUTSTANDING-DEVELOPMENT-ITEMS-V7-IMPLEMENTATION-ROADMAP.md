@@ -5193,7 +5193,7 @@ S (< 1 hour)
 | CAN-012  | Meta Param Tuning | Number of top candidate nodes to select                                   | P3       | ✅ Implemented — `cn-top-candidates-input` + `selected_candidates` (`parameters_panel.py:75`, `dashboard_manager.py:1135`)                                              |
 | CAN-013  | Meta Param Tuning | Candidate node integration mode                                           | P3       | 🚧 **Blocked on cascor algorithm work** (re-classified 2026-04-28). Inspection during Phase-2 implementation showed the cascor training loop installs the single best candidate per grow iteration. The proposed `integration_mode: Literal["replace", "ensemble", "additive"]` is not a TrainingParams field + sidebar radio — each mode would require a different network-topology path in `CascadeCorrelationNetwork.grow_network()`. Same blocker bucket as CAN-010 / CAN-011: canopy can't ship a meaningful UI surface until cascor exposes the integration semantics. |
 | CAN-014  | Training Metrics  | Snapshot captures tuning values throughout training                       | P3       | ✅ Implemented (Phase 6E Sprint A-5) — juniper-cascor [#164](https://github.com/pcalnon/juniper-cascor/pull/164). `_save_configuration` persists 8 missing tunables (`epochs_max`, `max_iterations`, `output_epochs`, `candidate_patience`, `candidate_epochs`, `convergence_threshold`, `candidate_convergence_threshold`, `init_output_weights`); new `_load_config_to_network` restores them with legacy-snapshot tolerance; `POST /v1/snapshots/{id}/restore` response now includes `training_params`. |
-| CAN-015 ✅ | Training Metrics  | Snapshot operations: Restore / Replay / Resume / Retrain (was: replay with live tuning) | P3 | ✅ **Shipped end-to-end (v7.0.1, 2026-05-03 to 2026-05-05)**. Phase 6E Sprint B + g/h shipped — see new [§28.1](#281-can-015g--can-015h--phase-6e-deferred-shipped-end-to-end). 8 PRs for Sprint B (CAN-015a..f), 8 PRs for CAN-015g (Replay V2 with per-epoch weight history), 7 PRs for CAN-015h (Restore weight + topology editing endpoints), plus 5 hardening-pass follow-up PRs. Full design in [`JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md`](JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md) and [`JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`](JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md). |
+| CAN-015 ✅ | Training Metrics  | Snapshot operations: Restore / Replay / Resume / Retrain (was: replay with live tuning) | P3 | ✅ **Shipped end-to-end (v7.0.1, 2026-05-03 to 2026-05-05)**. Phase 6E Sprint B + g/h shipped — see new [§28.1](#281-can-015g--can-015h--phase-6e-deferred-shipped-end-to-end). 8 PRs for Sprint B (CAN-015a..f), 8 PRs for CAN-015g (Replay V2 with per-epoch weight history; **g-3 did not ship — see §28.1's correction of 2026-10-19**), 7 PRs for CAN-015h (Restore weight + topology editing endpoints), plus 5 hardening-pass follow-up PRs. Full design in [`JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md`](JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md) and [`JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`](JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md). |
 | CAN-016a | All               | Save/Load dashboard layout state                                          | P3       | 🔴 Open (M) — extend the existing `dcc.Store(id="dark-mode-store", storage_type="local")` pattern to tab/sidebar/theme persistence                                      |
 | CAN-016b | Dataset           | Import/Generate new dataset (file, URL, REST)                             | P3       | ✅ Implemented — juniper-canopy [#198](https://github.com/pcalnon/juniper-canopy/pull/198). Three tabs (Generate / Upload File / Fetch URL) in the dataset modal; CSV parser with header auto-detection + 10 MB / 50k rows / 100 features caps; `DemoMode.import_dataset` mirrors `regenerate_dataset`'s lock discipline. Demo-mode-only — service-mode follow-up needs cascor inline-dataset endpoint. |
 | CAN-017  | All               | Tooltips on all dashboard controls                                        | P3       | ✅ Implemented — `CONTROL_TOOLTIPS` dict in `frontend/tooltips.py` covers 20+ control IDs (Sprint 5, commit `9d92bfe`)                                                  |
@@ -15145,6 +15145,17 @@ This section catalogs the work that landed in the ~12-day window between v7.0.0 
 
 ### 28.1 CAN-015g + CAN-015h — Phase 6E deferred, shipped end-to-end
 
+> **Correction 2026-10-19** (the canopy E2E arc; ledger `JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`,
+> F-CANOPY-057 and Phase 13): **g-3 did not ship.** cascor #190, the retarget of #187, merged into
+> `feature/can-015g-2-replay-weight-cache-v2` (2026-05-03T20:05:12Z) thirteen minutes after that branch's own PR, #189,
+> had landed on `main` (19:52:10Z), so `dbc25277` is not on `main` (3 ahead, 537 behind at cascor `main` `4c26919f`,
+> 2026-10-16). cascor's replay frames carry no `weights` key (`src/api/lifecycle/manager.py`, `_emit_frame`), canopy's
+> relay would drop one (`src/backend/cascor_service_adapter.py`, `_to_dashboard_metric`), and no replay weight has ever
+> reached the page; canopy's `docs/USER_MANUAL.md` and `notes/development/REPLAY_V2_FAQ.md` have said so since
+> canopy#684 (2026-09-24). The g-3 row below is annotated. CAN-015g's write side shipped (g-1, g-2, g-6); its replay
+> side did not (g-3), and the canopy consumers g-4 and g-7 shipped with no live input. The same correction is in
+> `JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`.
+
 The original v7.0.0 roadmap (line ~5121, since updated to `✅ Shipped`) flagged these as **deferred to dedicated post-Phase-6E sprints**. Both shipped in full between 2026-05-03 and 2026-05-05.
 
 #### CAN-015g — Replay V2 with per-epoch weight history (8 PRs)
@@ -15153,7 +15164,7 @@ The original v7.0.0 roadmap (line ~5121, since updated to `✅ Shipped`) flagged
 |---|---|---|---|
 | g-1 | [cascor #180](https://github.com/pcalnon/juniper-cascor/pull/180) | Schema v2 + adaptive sampling | `e68f7fe3` |
 | g-2 | [cascor #189](https://github.com/pcalnon/juniper-cascor/pull/189) (retarget of #184) | Replay session weight cache | `b1d19948` |
-| g-3 | [cascor #190](https://github.com/pcalnon/juniper-cascor/pull/190) (retarget of #187) | Sample-boundary weight emission | `dbc25277` |
+| g-3 | [cascor #190](https://github.com/pcalnon/juniper-cascor/pull/190) (retarget of #187) | Sample-boundary weight emission — **not on `main`**: merged into a stacked base (correction 2026-10-19; F-CANOPY-057) | `dbc25277` (not an ancestor of `main`) |
 | g-4 | [canopy #220](https://github.com/pcalnon/juniper-canopy/pull/220) | Replay player V2 buffer + WS bridge | `e56b6c29` |
 | g-5a | [cascor #196](https://github.com/pcalnon/juniper-cascor/pull/196) | Schema-v2 migration FAQ | `8f90276f` |
 | g-5b | [canopy #221](https://github.com/pcalnon/juniper-canopy/pull/221) | V2 indicator badges + snap-to-sample FAQ | `0e777f7d` |

@@ -121,6 +121,16 @@ This is the section with the largest impact on user planning, so it warrants the
 
 ### 5.2 Critical blind spot — CAN-015g and CAN-015h
 
+> **Correction 2026-10-19** (the canopy E2E arc; ledger `JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`,
+> F-CANOPY-057 and Phase 13): **g-3 did not ship.** cascor #190, the retarget of #187, merged into
+> `feature/can-015g-2-replay-weight-cache-v2` (2026-05-03T20:05:12Z) thirteen minutes after that branch's own PR, #189,
+> had landed on `main` (19:52:10Z), so `dbc25277` is not on `main` (3 ahead, 537 behind at cascor `main` `4c26919f`,
+> 2026-10-16). This audit's own §11.4 lists what it confirmed on cascor `main`, "#180 (g-1), #191 (g-6)", and never
+> #189 or #190. cascor's replay frames carry no `weights` key and no replay weight has ever reached the page; canopy's
+> `docs/USER_MANUAL.md` and `notes/development/REPLAY_V2_FAQ.md` say so since canopy#684 (2026-09-24). The g-3 row
+> below is annotated. The same correction is in `JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`
+> and in §28.1 of `JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`.
+
 The roadmap (around line 5121) flags CAN-015g and CAN-015h as **"deferred to dedicated post-Phase-6E sprints"**. As of 2026-05-05 both are **shipped end-to-end** on `main`:
 
 **CAN-015g (Replay V2 — per-epoch weight history)** — 8 PRs:
@@ -129,7 +139,7 @@ The roadmap (around line 5121) flags CAN-015g and CAN-015h as **"deferred to ded
 |----------|--------------------------------|-------------------------------------------------|
 | g-1      | cascor #180                    | Schema v2 + adaptive sampling                   |
 | g-2      | cascor #189 (retarget of #184) | Replay session weight cache                     |
-| g-3      | cascor #190 (retarget of #187) | Sample-boundary weight emission                 |
+| g-3      | cascor #190 (retarget of #187) | Sample-boundary weight emission — **not on `main`**: merged into a stacked base (correction 2026-10-19; F-CANOPY-057) |
 | g-4      | canopy #220                    | Replay player V2 buffer + WS bridge             |
 | g-5a     | cascor #196                    | Schema-v2 migration FAQ                         |
 | g-5b     | canopy #221                    | V2 indicator badges + snap-to-sample FAQ        |
@@ -155,7 +165,7 @@ A separate hardening pass added 5 follow-up PRs after that:
 - cascor #225 — round-trip integration test
 - juniper-ml #212 — design plan annotated with delivery state
 
-**Status delta**: roadmap says "future deferred", code says "shipped, hardened, integration-tested".
+**Status delta**: roadmap says "future deferred", code says "shipped, hardened, integration-tested" (g-3 excepted: see the correction of 2026-10-19 above).
 
 ### 5.3 Other unmapped work
 
@@ -212,7 +222,7 @@ The audit checked but did **not** find active issues in:
 | Root cause                                                  | Symptom                                                                                   | Frequency                           |
 |-------------------------------------------------------------|-------------------------------------------------------------------------------------------|-------------------------------------|
 | **No roadmap-update step in PR template / merge protocol**  | Section 5 bugs silently fix without `✅` flip                                             | 9/11 sample = 82%                   |
-| **Major delivery sprints don't trigger a roadmap revision** | CAN-015g/h shipped end-to-end without any roadmap delta                                   | All 15 sub-tasks                    |
+| **Major delivery sprints don't trigger a roadmap revision** | CAN-015g/h shipped end-to-end without any roadmap delta (g-3 excepted: see §5.2's correction of 2026-10-19) | All 15 sub-tasks                    |
 | **Audit/hotfix work isn't pushed back into the roadmap**    | Observability phase, CVE-2026-3219, P-N hotfixes all unmapped                             | Multiple ecosystem-wide initiatives |
 | **Stacked-PR retargets aren't summarized at sprint close**  | g-2/g-3 and h-2/h-3 retargets only visible to readers of the design plan, not the roadmap | 4 retargets                         |
 
@@ -347,7 +357,7 @@ I'm comfortable with agent 4's verdict but note that the **absence of the regres
 | Finding category                       | Validation result                                                                            |
 |----------------------------------------|----------------------------------------------------------------------------------------------|
 | §4 STILL PRESENT bugs (2 items)        | Both CONFIRMED                                                                               |
-| §5 CAN-015g/h shipping claim           | CONFIRMED via git log + roadmap line 5121 quote                                              |
+| §5 CAN-015g/h shipping claim           | CONFIRMED via git log + roadmap line 5121 quote (g-3 excepted: §11.4's list never named #190; see §5.2's correction of 2026-10-19) |
 | §7 New issues, HIGH/MED tier (2 items) | Both CONFIRMED; N-1 re-graded HIGH→MED                                                       |
 | §7 New issues, LOW tier (4 items)      | Not re-validated; agent description internally consistent, suitable for cleanup-PR follow-up |
 | §6 cross-repo API contract verdict     | Agent 4's "no drift" verdict accepted; coverage gap noted in §9.1 / §9.4                     |
