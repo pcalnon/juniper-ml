@@ -134,6 +134,7 @@ class JobShapeTest(unittest.TestCase):
 
     def test_the_job_is_required_through_the_quality_gate(self) -> None:
         # Promoted 2026-10-20 after 12 consecutive green push runs (plan G4). A need with no arm gates nothing.
+        # It replaces test_the_job_is_advisory; the promotion's commits waive that loss (Allow-Symbol-Loss).
         gate = self.workflow["jobs"]["required-checks"]
         self.assertIn(JOB, gate["needs"])
         script = next(s for s in gate["steps"] if s.get("name") == "Check Quality Gate Status")["run"]

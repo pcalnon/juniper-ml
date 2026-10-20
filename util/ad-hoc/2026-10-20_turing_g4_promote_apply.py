@@ -130,6 +130,7 @@ def edits():
     g4_test_new = (
         "    def test_the_job_is_required_through_the_quality_gate(self) -> None:\n"
         "        # Promoted 2026-10-20 after 12 consecutive green push runs (plan G4). A need with no arm gates nothing.\n"
+        "        # It replaces test_the_job_is_advisory; the promotion's commits waive that loss (Allow-Symbol-Loss).\n"
         '        gate = self.workflow["jobs"]["required-checks"]\n'
         '        self.assertIn(JOB, gate["needs"])\n'
         '        script = next(s for s in gate["steps"] if s.get("name") == "Check Quality Gate Status")["run"]\n'
