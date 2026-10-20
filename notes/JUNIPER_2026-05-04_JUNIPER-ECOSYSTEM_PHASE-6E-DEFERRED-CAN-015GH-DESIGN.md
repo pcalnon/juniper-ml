@@ -1,6 +1,6 @@
 # Phase 6E Deferred Work: CAN-015g + CAN-015h Design
 
-**Owner**: Paul Calnon • **Status**: Implemented (h-6 in review) • **Created**: 2026-05-02 • **Last updated**: 2026-05-04
+**Owner**: Paul Calnon • **Status**: Implemented (h-6 in review) — **corrected 2026-10-19: g-3 never reached cascor `main`; see the status note** • **Created**: 2026-05-02 • **Last updated**: 2026-10-19
 **Tracks**: `CAN-015g` (Replay V2 — per-epoch weight history),
 `CAN-015h` (Restore editing — weight + topology modification)
 **Parent design**: [`JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md`](./JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md) §10
@@ -57,6 +57,25 @@ top of a stable serializer).
 > §"Delivery log" below; the original PR-breakdown tables retain
 > the as-designed sequencing for posterity but are now annotated
 > with merged-PR + commit-SHA columns.
+>
+> **Correction 2026-10-19** (the canopy E2E arc; ledger
+> `JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, F-CANOPY-057 and
+> Phase 13): "every CAN-015g item has merged to `main`" is wrong for **g-3**.
+> cascor #187 merged into `feature/can-015g-2-replay-weight-cache`
+> (2026-05-03T07:31:04Z, `d85c9ddd`) and its retarget #190 into
+> `feature/can-015g-2-replay-weight-cache-v2` (20:05:12Z, `dbc25277`), thirteen
+> minutes after that branch's own PR, #189, had landed on `main` as `b1d19948`
+> (19:52:10Z). Neither merge reached `main`: at cascor `main` `4c26919f`
+> (2026-10-16) `dbc25277` is 3 ahead and 537 behind, `_ReplaySession._emit_frame`
+> (`src/api/lifecycle/manager.py:1260`) emits no `weights` key, and `weights_at`
+> (`:1244`) has no caller outside its tests. canopy's relay would drop the key
+> anyway (`_to_dashboard_metric`, `src/backend/cascor_service_adapter.py:1960` at
+> canopy `571743db`). So no replay weight has ever reached the page, and the
+> "decision-boundary animation with per-unit weight evolution" the summary above
+> describes is not shipped; canopy's `docs/USER_MANUAL.md` and
+> `notes/development/REPLAY_V2_FAQ.md` have said so since canopy#684 (2026-09-24).
+> The two g-3 rows below are annotated. Nothing else in this note was re-verified
+> by this correction.
 
 ---
 
@@ -85,7 +104,7 @@ destructive-op modal + snapshot-first prompt (h-6, in review).
 |---|---|---|---|---|
 | g-1 | cascor [#180](https://github.com/pcalnon/juniper-cascor/pull/180) | 2026-05-03 | `e68f7fe3` | Schema v2 + adaptive sampling; per-unit bias written as length-1 array (h5py rejects compression on 0-d). |
 | g-2 | cascor [#184](https://github.com/pcalnon/juniper-cascor/pull/184) → [#189](https://github.com/pcalnon/juniper-cascor/pull/189) | 2026-05-03 | `f0bdbe38` (#184), `b1d19948` (#189 retarget) | Original landed into stacked parent branch; reopened against `main` as #189. |
-| g-3 | cascor [#187](https://github.com/pcalnon/juniper-cascor/pull/187) → [#190](https://github.com/pcalnon/juniper-cascor/pull/190) | 2026-05-03 | `d85c9ddd` (#187), `dbc25277` (#190 retarget) | Same stacked-branch issue as g-2; reopened as #190. |
+| g-3 | cascor [#187](https://github.com/pcalnon/juniper-cascor/pull/187) → [#190](https://github.com/pcalnon/juniper-cascor/pull/190) | 2026-05-03 | `d85c9ddd` (#187), `dbc25277` (#190 retarget) | Same stacked-branch issue as g-2; reopened as #190. **Correction 2026-10-19:** #190's base was `feature/can-015g-2-replay-weight-cache-v2`, which #189 had landed on `main` 13 minutes earlier, so `dbc25277` is not on `main` (3 ahead, 537 behind at `4c26919f`); g-3 is unshipped (F-CANOPY-057). |
 | g-4 | canopy [#220](https://github.com/pcalnon/juniper-canopy/pull/220) | 2026-05-03 | `e56b6c29` | Replay player V2 weight buffer + WS bridge. |
 | g-5a | cascor [#196](https://github.com/pcalnon/juniper-cascor/pull/196) | 2026-05-03 | `8f90276f` | docs: schema v2 migration + interpolation FAQ. |
 | g-5b | canopy [#221](https://github.com/pcalnon/juniper-canopy/pull/221) | 2026-05-03 | `0e777f7d` | docs: V2 indicator badges + snap-to-sample. |
@@ -442,7 +461,7 @@ hit a trigger.
 |---|---|---|---|---|
 | g-1 | cascor | `feat(snapshot): persist per-sample weights with adaptive sampling (CAN-015g)` | `snapshots/snapshot_serializer.py`, schema_version bump, fixture | cascor #180 ✅ |
 | g-2 | cascor | `feat(replay): wire weight cache into _ReplaySession + extend control response (CAN-015g)` | `lifecycle/manager.py`, `routes/snapshots.py`, route schemas | cascor #184 → #189 (retarget) ✅ |
-| g-3 | cascor | `feat(replay): emit weight payloads on sample-boundary events (CAN-015g)` | `lifecycle/monitor.py`, replay driver thread | cascor #187 → #190 (retarget) ✅ |
+| g-3 | cascor | `feat(replay): emit weight payloads on sample-boundary events (CAN-015g)` | `lifecycle/monitor.py`, replay driver thread | cascor #187 → #190 (retarget) ✅ into a stacked base — **not on `main`** (correction 2026-10-19; F-CANOPY-057) |
 | g-4 | canopy | `feat(replay): consume weight payloads in decision-boundary + network-evolution (CAN-015g)` | `replay_player_panel.py`, `decision_boundary.py`, `network_evolution.py`, dashboard wiring | canopy #220 (buffer/badge/snap) + canopy #222 (g-7: renderers) ✅ |
 | g-5 | both | `docs(snapshot): schema v2 migration notes + interpolation behaviour FAQ` | docs + small README updates | cascor #196 (g-5a) + canopy #221 (g-5b) ✅ |
 | g-6 | cascor | `feat(training): capture per-sample weight history during training (CAN-015g)` | `lifecycle/manager.py` training loop, `lifecycle/monitor.py` epoch hook, `cascade_correlation.py` cascade-add hook, `cascade_correlation_config.py` two new tunables | cascor #191 ✅ |
