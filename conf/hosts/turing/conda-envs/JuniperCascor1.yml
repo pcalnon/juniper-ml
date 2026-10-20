@@ -35,10 +35,10 @@
 # through a `python -m venv --system-site-packages` overlay on this env, so CI's `pip install -e ".[all]"` lands in
 # the overlay and this env stays exactly what the spec builds.
 #
-# STATUS 2026-10-20: CREATED on turing with MAMBA_SSL_VERIFY=true and mamba 2.1.1 (67 packages, the solve above;
-# torch.backends.mkl.is_available() is True). NOT yet validated: CI's pip steps need pypi.org from this env's
-# python3.14, which Little Snitch holds for an unanswered alert (plan §18.3 E-NET-3). Resume with
-# util/ad-hoc/2026-10-19_turing_e2_validate_envs.py cascor --phase install. Export: reports/2026-10-20_turing-e2-envs/.
+# STATUS 2026-10-20: VALIDATED on turing. Created with MAMBA_SSL_VERIFY=true and mamba 2.1.1 (67 packages, the
+# solve above; torch.backends.mkl.is_available() is True). juniper-cascor's CI lanes, run through
+# util/ad-hoc/2026-10-19_turing_e2_validate_envs.py cascor: unit 5777 of 5777 passed (coverage 96.55%, 297 s),
+# integration 172 of 172. Export, summary and the overlay's pip freeze: reports/2026-10-20_turing-e2-envs/.
 name: JuniperCascor1
 channels:
   - conda-forge

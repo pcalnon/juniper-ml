@@ -1,0 +1,26 @@
+{
+ "unit": {
+  "tests": 7959,
+  "failures": 2,
+  "errors": 0,
+  "skipped": 10,
+  "time": 557.903,
+  "passed": 7947,
+  "bad": [
+   "FAILURE src.tests.unit.frontend.test_internal_api_key_rules::test_a_key_requests_refuses_to_send_is_left_off_the_self_call[trailing-lf] :: Failed: DID NOT RAISE <class 'requests.exceptions.InvalidHeader'>",
+   "FAILURE src.tests.regression.test_blank_api_key_warning_boot::test_a_padded_key_never_reaches_a_log_record :: AssertionError: round 1: the self-calls must send no key that requests refuses to send assert True is False"
+  ],
+  "exit": 1,
+  "coverage_percent": 96.68
+ },
+ "integration": {
+  "tests": 602,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 79,
+  "time": 18.989,
+  "passed": 523,
+  "bad": [],
+  "exit": 0
+ }
+}

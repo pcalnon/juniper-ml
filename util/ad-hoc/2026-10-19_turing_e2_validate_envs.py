@@ -5,7 +5,7 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-19
-Status: ad-hoc — wip (the E2 validation runner; E2 waits on the owner's Little Snitch approval, see Why)
+Status: ad-hoc — one-off (the E2 validation runner; all three envs validated 2026-10-20, plan §18.2)
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 Related: conf/hosts/turing/conda-envs/{JuniperCascor1,JuniperData,JuniperCanopy1}.yml (the specs this validates);
          util/ad-hoc/2026-10-19_turing_e2_derive_conda_envs.py (derives them);
@@ -17,7 +17,7 @@ the same hosts. That is Little Snitch's per-app filtering. Once the owner allows
 binaries, and pypi.org and files.pythonhosted.org for the new envs' pythons, create each env from its spec, then run:
 
     python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py <cascor|data|canopy> [--phase prepare|install|test|all]
-        [--lane unit|integration|all] [--work DIR]
+        [--lane unit|integration|all] [--work DIR] [--env KEY=VALUE ...]
 
   prepare  rsync each repo checkout under ~/Development/python/Juniper (and juniper-data-client, which cascor and data
            install) into WORK/trees/, without .git. The owner's checkouts are only read.
@@ -26,6 +26,11 @@ binaries, and pypi.org and files.pythonhosted.org for the new envs' pythons, cre
   test     run the repo's ci.yml unit and integration lanes; write junit, logs and a summary JSON under WORK/logs/.
 
 WORK defaults to ~/.local/state/juniper/turing-e2 (not the session scratchpad, which dies with the session).
+
+--env (added 2026-10-20) puts one more variable into the child environment, for an experiment such as the
+OMP_NUM_THREADS run in plan §18.3 E-BLAS. It is repeatable. The summary JSON records the overrides under
+"env_overrides", and each lane log records them above the command, so an experiment's numbers cannot pass for a
+stock run's.
 
 Deviations from CI, on purpose (from the runner written in the 2026-10-19 session):
   - --maxfail is dropped, so every test runs and the counts are complete;
@@ -146,7 +151,14 @@ def main() -> int:
     ap.add_argument("--phase", choices=("prepare", "install", "test", "all"), default="all")
     ap.add_argument("--lane", choices=("unit", "integration", "all"), default="all")
     ap.add_argument("--work", type=pathlib.Path, default=pathlib.Path.home() / ".local" / "state" / "juniper" / "turing-e2")
+    ap.add_argument("--env", action="append", default=[], metavar="KEY=VALUE", help="add a variable to the child environment (repeatable)")
     args = ap.parse_args()
+    overrides = {}
+    for item in args.env:
+        key, sep, value = item.partition("=")
+        if not sep or not key:
+            ap.error(f"--env takes KEY=VALUE, not {item!r}")
+        overrides[key] = value
     cfg = CFG[args.key]
     conda_env = ENVS / cfg["env"]
     tree = args.work / "trees" / cfg["repo"]
@@ -155,6 +167,7 @@ def main() -> int:
     logs = args.work / "logs" / cfg["env"]
     logs.mkdir(parents=True, exist_ok=True)
     env = clean_env(venv, conda_env, cfg["extra_env"])
+    env.update(overrides)
 
     if args.phase in ("prepare", "all"):
         repos = [cfg["repo"]] + (["juniper-data-client"] if cfg["needs_data_client"] else [])
@@ -185,12 +198,15 @@ def main() -> int:
     if args.phase in ("test", "all"):
         for d in cfg["dirs"]:
             (tree / d).mkdir(parents=True, exist_ok=True)
-        summary = {}
+        summary = {"env_overrides": overrides} if overrides else {}
         for lane, lane_args in cfg["lanes"].items():
             if args.lane not in ("all", lane):
                 continue
             junit = logs / f"junit-{lane}.xml"
             junit.unlink(missing_ok=True)
+            if overrides:
+                with (logs / f"pytest-{lane}.log").open("a") as fh:
+                    fh.write(f"\n# env overrides: {json.dumps(overrides)}\n")
             rc = run([str(venv / "bin" / "python"), "-m", "pytest", *lane_args, f"--junitxml={junit}"], tree, env, logs / f"pytest-{lane}.log")
             res = junit_counts(junit) if junit.exists() else {"error": "no junit xml"}
             res["exit"] = rc
