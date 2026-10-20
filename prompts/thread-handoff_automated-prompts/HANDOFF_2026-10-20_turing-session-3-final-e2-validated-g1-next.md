@@ -48,13 +48,13 @@ All three envs were created with `MAMBA_SSL_VERIFY=true` and validated against t
 ## Owner steps
 
 1. ~~**Little Snitch**~~: done; the env pythons reach PyPI.
-2. **Install the C8 guard:** fast-forward the primary checkout (`git pull --ff-only origin main`), then `bash util/install_claude_agent_guard.bash --apply`.
+2. **Install the C8 guard, after juniper-ml#2281 merges:** #2281 is the "code signing" session's K12 (`claude_agent_guard` 1.1.0, which adds the signing-config rules). Once it is on `main`, fast-forward the primary checkout (`git pull --ff-only origin main`) and run `bash util/install_claude_agent_guard.bash --apply`, so that a single install carries those rules.
 3. **A1:** rewrite the juniper-k8s and juniper-recurrence remotes, then confirm `python3 util/git_remote_alias_check.py` exits 0. That is G6's turing acceptance. Opt in with `pre-commit install --hook-type pre-push`.
 4. **`~/.condarc`:** set `ssl_verify: true` (closes E-SSL) and trim the seven non-conda-forge channels.
 5. **JuniperPython's stray `PYTHONPATH`:** `conda env config vars unset PYTHONPATH -n JuniperPython`. mamba also warns that it cannot parse that env's `conda-meta/state`.
 6. **The network:** the open-security radio, roaming or `en7` (F2), and A6.
 7. **F3 node mode:** quit the desktop apps and Docker Desktop, with no VM running, then say so.
-8. **Commit signing (from §19):** K5 is applied, so the owner's own commits under `~/Development/python/Juniper/` fail closed until B2/B3. Do not insert a YubiKey into turing until C8 is installed, K12 is merged and re-installed, and K13 is done.
+8. **Commit signing (from §19):** K5 is applied, so the owner's own commits under `~/Development/python/Juniper/` fail closed until B2/B3. Do not insert a YubiKey into turing until the guard is installed with K12's rules (step 2) and K13, the IDE agent approvals, is done.
 9. **The rest of Owner block 1:** C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
 
 ## Agent next
