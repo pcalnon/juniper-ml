@@ -427,10 +427,13 @@ class TestUpdateBaseline(_Fixture):
                 self.assert_exit(self.run_check("--update-baseline"), 0)
                 self.assertEqual(self.baseline_files(), {"scripts/a.bash": 1, "util/b.py": 2})
 
-    def test_the_written_file_is_world_readable(self) -> None:
+    def test_the_written_file_takes_the_umask_and_leaves_no_temp_file(self) -> None:
         self.populate()
+        self.baseline_path.unlink()
         self.run_check("--update-baseline")
-        self.assertEqual(self.baseline_path.stat().st_mode & 0o777, 0o644)
+        umask = os.umask(0)
+        os.umask(umask)
+        self.assertEqual(self.baseline_path.stat().st_mode & 0o777, 0o666 & ~umask)
         self.assertEqual([p.name for p in self.baseline_path.parent.iterdir()], ["home_path_literal_baseline.json"])
 
 
