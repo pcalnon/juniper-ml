@@ -478,6 +478,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`[recurrence]` now floors `juniper-recurrence>=0.8.0`** (`<0.9.0`) **and `juniper-recurrence-model>=0.6.0` (`<0.7.0`)**, the
+  W5.2 release pair (P5 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  approved 2026-10-20 with the session's merge approval, the ruling 0.7.0 reopened). The pins were
+  `juniper-recurrence>=0.7.0,<0.8.0` and `juniper-recurrence-model>=0.5.0,<0.6.0`.
+  - **Why both move.** recurrence 0.8.0's `requires_dist` is `juniper-recurrence-model>=0.6.0,<0.7.0`:
+    its crossval pool is model 0.6.0's composed `trainval` view and its per-entity folds read the
+    `ticker_code` / `window_end_date` keys that 0.6.0 writes. Lifting the recurrence ceiling alone would
+    leave the extra unsatisfiable under the old model cap `<0.6.0`. The model range is the one 0.8.0
+    requires, not a wider one.
+  - **What 0.8.0 brings** to `pip install juniper-ml[recurrence]`: `POST /v1/crossval` selects over the
+    `trainval` pool, so the reserved `test` partition is never in a fold; a multi-ticker artifact's folds
+    are cut on the global date per entity with the embargo purged per entity; `embargo` defaults to the
+    look-back (an explicit smaller value is honoured and logged); the optional `embargo_days`; a `folding`
+    block on the response and on `GET /v1/crossval/status`; `dataset.split` reads `trainval`. The
+    `[torch]` extra resolves again (0.7.0's was disjoint from its base floor).
+  - **Pre-flighted against real PyPI** on 2026-10-20 with
+    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages on Python 3.12, 3.13 and 3.14, with recurrence 0.8.0, model
+    0.6.0, client 0.3.0, data-client 0.6.0, model-core 0.3.2 and service-core 0.7.1; `[all]` resolves in 76 on
+    each, the same versions plus canopy 0.9.0, cascor 0.11.0, cascor-worker 0.6.1 and juniper-data 0.17.0.
+  - The client floor `juniper-recurrence-client>=0.3.0,<0.4.0` stays (no client contract changed). The
+    release train cuts the version that carries this (0.11.0 in the plan). `docs/QUICK_START.md`'s sample
+    `pip list` block moves its two recurrence lines with the pins. Applied by
+    `util/ad-hoc/2026-10-20_raise_recurrence_floor_0_8_0.py`, which asserts each site's exact text and
+    requires exactly one match apiece.
+
 - **`[recurrence]` now floors `juniper-recurrence>=0.7.0`** (`<0.8.0`) **and `juniper-recurrence-model>=0.5.0` (`<0.6.0`)**, the
   P5 release pair (W5.8 (B), W5.9, W5.10 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
   approved 2026-10-19 with the session's merge approval, the ruling 0.7.0 reopened). The pins were
