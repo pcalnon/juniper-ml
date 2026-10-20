@@ -1,5 +1,11 @@
 # HANDOFF 2026-10-19 — P2 canopy Lane A: Phase 13 recorded. Item 26's first step is done: every open finding checked against canopy's manual; F-CANOPY-012, -013, -018, -028 and -032 are P1 by it (9 open P1, 11 open P2); four are fixed in code since canopy 0.7.0 and owed their live re-drive (item 30). Next are items 25, 27, 28 and 30.
 
+> **SUPERSEDED 2026-10-20** by `HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`.
+> Its item 1 (juniper-ml#2278 merged 2026-10-20T02:22:45Z) and item 2 (item 30, the fix wave's live re-drive, recorded
+> as Phase 14 of `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`: F-CANOPY-001, -012, -013, -018
+> and -032 FIXED, F-CANOPY-028 re-diagnosed and open, F-CANOPY-069 filed) are done; items 3 to 8 carry there as items
+> 25, 26, 27, 28 and 29 with new items 31 and 32.
+
 **Written**: 2026-10-19 by the session in juniper-ml worktree `.claude/worktrees/federated-stargazing-blanket` on host
 turing (macOS, no Juniper service, no reach to the trio), at a phase boundary, as its PR was opened.
 **Consensus**: four rounds on 2026-10-19 (three lanes, then two on each correction pass); round 4 changed no number,

@@ -1,0 +1,8 @@
+[t=     58ms] leg http://127.0.0.1:8064 serving {"ok": true, "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68", "build_date": "2026-10-20T12:03:46Z", "version": "0.9.0", "demo_mode": false, "read_at": "2026-10-20T12:20:43Z"}
+[t=   1716ms]   browser: chrome channel (installed Google Chrome)
+[t=   1716ms] STEP f032 -- M-WORKERS-02, cascor-down arm: Workers tab open; the 'Worker data degraded' alert (F-CANOPY-032)
+[t=   2321ms]   /api/v1/workers/list -> (200, {'workers': [], 'count': 0, 'local_reported': False, 'error': 'Upstream error', 'error_id': '4c7d6e4bcc5d'})
+[t=   2321ms]   /api/v1/workers/stats -> (200, {'total': 0, 'idle': 0, 'busy': 0, 'stale': 0, 'total_tasks_completed': 0, 'total_tasks_failed': 0, 'average_health_score': 0, 'error': 'Upstream error', 'error_id': 'fe1cd0ceb501'})
+[t=  33834ms]   modal cleared after 1 attempt(s)
+[t=  98624ms]   f032 verdicts: {"RENDERED": true, "rendered_first_t_s": 0.0, "alert_text": "Worker data degraded: Upstream error", "STORE": "FILLED", "store_error_seen": "Upstream error", "badges_seen": ["NO WORKERS"], "api_list_error_key": "Upstream error", "api_list_http": 200}
+[t= 108998ms] results -> reports/e2e-canopy-2026-09-02/item30-turing/service_leg_8064_dash441.json

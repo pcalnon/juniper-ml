@@ -1,0 +1,69 @@
+{
+  "repo": "pcalnon/juniper-canopy",
+  "ref": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+  "root": "/Users/pcalnon/.local/state/juniper/turing-e2/trees/juniper-canopy",
+  "checked_at": "2026-10-20T10:59:04Z",
+  "files": [
+    {
+      "path": "src/frontend/dashboard_manager.py",
+      "local": "90f73da9a937b050e2ed1cc0fdbc65fe09b92268",
+      "remote": "90f73da9a937b050e2ed1cc0fdbc65fe09b92268",
+      "match": true
+    },
+    {
+      "path": "src/frontend/components/network_editor_panel.py",
+      "local": "58610a071ab513e53631118cfb9d6de77f4b4acd",
+      "remote": "58610a071ab513e53631118cfb9d6de77f4b4acd",
+      "match": true
+    },
+    {
+      "path": "src/frontend/components/parameters_panel.py",
+      "local": "7a1d8705d08a97985a898d656273c765f14da853",
+      "remote": "7a1d8705d08a97985a898d656273c765f14da853",
+      "match": true
+    },
+    {
+      "path": "src/frontend/components/worker_panel.py",
+      "local": "24980def37d77a36c436369f6c59114cb61bbe7d",
+      "remote": "24980def37d77a36c436369f6c59114cb61bbe7d",
+      "match": true
+    },
+    {
+      "path": "src/frontend/components/metrics_panel.py",
+      "local": "f4e896cbf290f3d3e23b32855089680feb6a056c",
+      "remote": "f4e896cbf290f3d3e23b32855089680feb6a056c",
+      "match": true
+    },
+    {
+      "path": "src/main.py",
+      "local": "c0303e61f116abfc084352b37b898a5c0e1354e7",
+      "remote": "c0303e61f116abfc084352b37b898a5c0e1354e7",
+      "match": true
+    },
+    {
+      "path": "src/demo_mode.py",
+      "local": "3216737cb0b643d31f3606ec9a6bfaf784a4e668",
+      "remote": "3216737cb0b643d31f3606ec9a6bfaf784a4e668",
+      "match": true
+    },
+    {
+      "path": "src/settings.py",
+      "local": "d4a99ae598ce7206881d635f38dc6a45ed611c63",
+      "remote": "d4a99ae598ce7206881d635f38dc6a45ed611c63",
+      "match": true
+    },
+    {
+      "path": "pyproject.toml",
+      "local": "da84c4c86ae35dd9c483929a34a36c6109bb3fa7",
+      "remote": "da84c4c86ae35dd9c483929a34a36c6109bb3fa7",
+      "match": true
+    },
+    {
+      "path": "docs/USER_MANUAL.md",
+      "local": "8273a516d3558b0f23902fb7f30eb78952eae7c9",
+      "remote": "8273a516d3558b0f23902fb7f30eb78952eae7c9",
+      "match": true
+    }
+  ],
+  "all_match": true
+}
