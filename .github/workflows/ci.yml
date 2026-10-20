@@ -1379,6 +1379,19 @@ jobs:
           # key's mode by os.stat alone. Real git on temp repos, an ssh stub answering -G only; a
           # real pre-push hook in a linked worktree (git exports GIT_DIR) must read each own origin.
           python3 -m unittest -v tests/test_git_remote_alias_check.py
+          # tests/test_host_state_probe.py: turing bring-up G1. util/host_state_probe.bash collects the host
+          # state read-only, as raw captures (exit code, stdout, stderr) in a schema-1 JSON document. Every
+          # tool is a stub that refuses an unknown argv; output round-trips byte for byte (backslash, quote,
+          # tab, CR, UTF-8; C0 controls dropped). A hung command is killed at --timeout and a missing one is
+          # exit 127, under bash 3.2 too. Names and modes only: a canary in every key file is never printed.
+          python3 -m unittest -v tests/test_host_state_probe.py
+          # tests/test_host_state_check.py: turing bring-up G1 / R-G1 (the host gates of plan §9.3).
+          # util/host_state_check.py evaluates the probe against conf/hosts/<host>/expected.yaml: G-ALIAS,
+          # G-SIGN, G-SEC, G-TOOLS, G-ENV, G-NET and G-MEM, one condition at a time. R-G1: a VM larger than
+          # hw.memsize minus the reserve fails vm-fits (the X2 class). G-MEM prints util/macvm_ctl.bash's
+          # verdicts and text on the same fixtures. The committed expected.yaml is pinned to macvm_ctl's
+          # defaults, hosttools-environment.yml and the conda-env specs.
+          python3 -m unittest -v tests/test_host_state_check.py
           # tests/test_headless_signing_preflight.py: turing bring-up B7 / R-B7a, R-B7b.
           # util/headless_signing_preflight.bash runs non-credential checks only (plan D11) and
           # lists every failure: user.signingkey pinned with '!', commit.gpgsign true, a GUI
@@ -2384,14 +2397,15 @@ jobs:
       contents: read
     env:
       # The suites (tests/test_<name>.py) and the other paths whose change re-runs the job;
-      # tests/redacted_env.py and this workflow always count. G1's two suites join when it lands.
+      # tests/redacted_env.py and this workflow always count.
       HOST_TOOLING_SUITES: >-
         juniper_clone find_encryption_readme_notes macvm_ctl claude_agent_guard
-        git_remote_alias_check headless_signing_preflight juniper_repo_ssh_setup home_path_literal_check configure_commit_signing
+        git_remote_alias_check headless_signing_preflight juniper_repo_ssh_setup home_path_literal_check configure_commit_signing host_state_probe host_state_check
       HOST_TOOLING_PATHS: >-
         util/juniper_clone.bash util/find_encryption_readme_notes.bash util/macvm_ctl.bash
         util/claude_agent_guard.py util/install_claude_agent_guard.bash util/git_remote_alias_check.py
         util/headless_signing_preflight.bash util/juniper_repo_ssh_setup.bash util/home_path_literal_check.py util/configure_commit_signing.py
+        util/host_state_probe.bash util/host_state_check.py conf/hosts/turing/expected.yaml conf/hosts/turing/hosttools-environment.yml
         conf/home_path_literal_baseline.json .pre-commit-config.yaml
     steps:
       - name: Checkout Code (full history)

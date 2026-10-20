@@ -192,6 +192,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tests/test_ci_host_tooling_macos.py` (new) gates the job's shape and runs the detection shell under a
     stub `git`. It is wired into `ci.yml` and `docs/REFERENCE.md`.
 
+- **`util/host_state_probe.bash` and `util/host_state_check.py`: the turing host gates** (turing bring-up task G1 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; the gates of §9.3).
+  - The probe collects the host state read-only. Each capture is one command's raw exit code, stdout and stderr,
+    in twelve sections, as text or schema-1 JSON. Names and modes only. It graduates the 2026-10-15 ad-hoc probe.
+  - The checker evaluates the seven gates §9.3 gives it (G-ALIAS, G-SIGN, G-SEC, G-TOOLS, G-ENV, G-NET and G-MEM)
+    against `conf/hosts/turing/expected.yaml` (new). `--check` exits 1 when a gate fails (I-G1). R-G1: a VM
+    larger than `hw.memsize` minus the reserve fails G-MEM (the X2 class). On turing on 2026-10-20 none of the
+    seven passes: G-SIGN waits on owner-run checks, and the other six fail on the open owner steps.
+  - `tests/test_host_state_probe.py` and `tests/test_host_state_check.py` (new) are wired into `ci.yml`, its
+    `host-tooling-macos` job and `docs/REFERENCE.md`. `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` (new)
+    shows that the suites kill 42 of 42 mutants.
+
 - **The D11 item 4 agent guard for turing** (task C8, option (b) of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). Pattern rules alone cannot carry D11:
   `Read(~/.ssh/**)` does not bind Bash, and `gh api` takes its flags in any order. The macOS sandbox alternative,

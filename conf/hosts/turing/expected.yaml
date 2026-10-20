@@ -1,0 +1,71 @@
+---
+# turing's target state for the bring-up host gates (task G1 of
+# notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md; gates in §9.3, as revised by §16.3 E-D6
+# and §19.2 E-G-SIGN).
+#
+# util/host_state_check.py evaluates util/host_state_probe.bash's captures against this file:
+#   python3 util/host_state_check.py --check
+# The gate logic lives in the script; this file holds the values it compares against. Each value cites the decision
+# or task that sets it. A null is a value the owner has not recorded yet, and its condition fails until the named
+# task records it here. G-ALIAS, G-SIGN and G-SEC take no values: their targets are fixed by §9.3, G2 and the signing
+# plan's K2.
+schema: 1
+host: turing
+
+# G-MEM, and regression R-G1. Decision D1 option b: 4 vCPU / 6 GiB / 60 GB, node mode only. The four G-MEM numbers
+# equal util/macvm_ctl.bash's defaults (F5a); tests/test_host_state_check.py pins that.
+vm:
+  name: juniper-macvm
+  memory_gib: 6
+  vcpus: 4
+  reserve_gib: 4    # macOS keeps this much free + inactive memory on top of the VM
+  max_swap_gib: 2   # the most swap in use before the VM may start
+
+# G-TOOLS (E-D6: there is no Brewfile; conf/hosts/turing/hosttools-environment.yml is the record).
+tools:
+  # Each resolves from ~/.local/bin, as the PATH lookup `command -v` makes: the JuniperHostTools links (timeout
+  # through iperf3), the markdownlint-cli2 wrapper, the sops release binary and the ykman venv. The suite pins
+  # this list against that file.
+  local_bin:
+    - timeout
+    - shellcheck
+    - yamllint
+    - actionlint
+    - age
+    - age-keygen
+    - yq
+    - iperf3
+    - markdownlint-cli2
+    - sops
+    - ykman
+  # D6's one Homebrew exception, a bottle (B1). gpg-agent.conf names the same literal path.
+  homebrew:
+    pinentry-mac: /usr/local/bin/pinentry-mac
+  # The primer's cluster is k8s 1.36.x (§3); kubectl must be within one minor of it (D4).
+  kubectl:
+    cluster_minor: "1.36"
+    max_skew: 1
+
+# G-ENV. The envs the repos' AGENTS.md files name (JuniperCanopy1, JuniperCascor1, JuniperData; created by E2),
+# JuniperPython, which D8 keeps for juniper-ml, and JuniperHostTools (D6).
+conda_envs:
+  - JuniperCanopy1
+  - JuniperCascor1
+  - JuniperData
+  - JuniperPython
+  - JuniperHostTools
+
+# G-ENV, D9: the parent Juniper/AGENTS.md is yamaguchi's copy, checked by sha256. E4 (OWNER) copies the file and
+# records its hash here.
+parent_agents_md:
+  sha256: null
+
+# G-NET. F2 gives en7 a 1000baseT link; A6 (OWNER) records the address reserved for it. The throughput half of the
+# gate (iperf3 to yamaguchi) is operator-run.
+network:
+  bridge_nic:
+    device: en7
+    mac: "00:e0:4c:68:06:b1"  # the USB 10/100/1000 LAN dongle (§2.2)
+    media: 1000baseT
+  reserved_ip: null
+  iperf3_min_mbps: 800

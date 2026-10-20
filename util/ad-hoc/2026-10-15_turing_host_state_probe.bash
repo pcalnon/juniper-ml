@@ -6,8 +6,9 @@
 # Sub-Project: ad-hoc tooling
 # Author:     Paul Calnon (authored via Claude Code)
 # Created:    2026-10-15
-# Status:     ad-hoc — investigation (turing host bring-up evidence capture)
-# Retire when: util/host_state_probe.bash lands (plan task T1.1) and supersedes it
+# Status:     superseded on 2026-10-20 by util/host_state_probe.bash and util/host_state_check.py (plan task G1)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25); its output is
+#             the plan's Appendix A
 # Related:    notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (Appendix A is this script's output)
 #
 ########################################################################################################################################################################################################
