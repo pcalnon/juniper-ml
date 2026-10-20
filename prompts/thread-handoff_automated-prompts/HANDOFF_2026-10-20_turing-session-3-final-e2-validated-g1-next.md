@@ -48,7 +48,7 @@ All three envs were created with `MAMBA_SSL_VERIFY=true` and validated against t
 ## Owner steps
 
 1. ~~**Little Snitch**~~: done; the env pythons reach PyPI.
-2. **Install the C8 guard, after juniper-ml#2281 merges:** #2281 is the "code signing" session's K12 (`claude_agent_guard` 1.1.0, which adds the signing-config rules). Once it is on `main`, fast-forward the primary checkout (`git pull --ff-only origin main`) and run `bash util/install_claude_agent_guard.bash --apply`, so that a single install carries those rules.
+2. **Install the C8 guard, now that K12 is on `main`:** the "code signing" session's juniper-ml#2281 (`188e842e`, `claude_agent_guard` 1.1.0, which adds the signing-config rules) has merged. Fast-forward the primary checkout (`git pull --ff-only origin main`) and run `bash util/install_claude_agent_guard.bash --apply`, so that a single install carries those rules.
 3. **A1:** rewrite the juniper-k8s and juniper-recurrence remotes, then confirm `python3 util/git_remote_alias_check.py` exits 0. That is G6's turing acceptance. Opt in with `pre-commit install --hook-type pre-push`.
 4. **`~/.condarc`:** set `ssl_verify: true` (closes E-SSL) and trim the seven non-conda-forge channels.
 5. **JuniperPython's stray `PYTHONPATH`:** `conda env config vars unset PYTHONPATH -n JuniperPython`. mamba also warns that it cannot parse that env's `conda-meta/state`.
