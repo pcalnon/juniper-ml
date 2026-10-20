@@ -333,7 +333,7 @@ At the end of `~/.gitconfig`:
 	path = ~/.config/git/juniper-signing.gitconfig
 ```
 
-`~/.config/git/juniper-signing.gitconfig`, with the directory created at mode 0700 and the file at 0600. Git reads it as the owner. The K5 build created turing's copy at 0644 before CodeQL's `py/overly-permissive-file` rule flagged that mode (bring-up E-CQ2's class). `--check` accepts either mode, because it fails only group or other *write*:
+`~/.config/git/juniper-signing.gitconfig`, with the directory created at mode 0700 and the file at 0600. Git reads it as the owner. The K5 build created turing's copy at 0644, before CodeQL's `py/overly-permissive-file` rule flagged that mode (bring-up E-CQ2's class). It was tightened to 0600 the same day. `--check` accepts either mode, because it fails only group or other *write*:
 
 ```ini
 # Managed by util/configure_commit_signing.py (juniper-ml): the owner's commit signing for the Juniper tree.
@@ -784,7 +784,7 @@ The trust gate needs three values to agree: the owner's reading from the indepen
 |---|---|---|---|---|
 | round 2's reviewer, 2026-10-19 | the 21:14 suite | 40 | 39 | 39. S24 (a wired but missing include passes) survived: its pin checked the unsigned commit, not the `include` status |
 | this session, after the fix | the 21:46 suite, which adds the `include`-status assertion | 40 | 40 | 40 |
-| final, 2026-10-20 | v1.1.0's 57 tests, with the 17-probe list | 50: S1–S40, plus S41–S50 for round 2's classes | @FINAL_SUITE@ | @FINAL_PIN@ |
+| final, 2026-10-20 | v1.1.0's 57 tests, with the 17-probe list, after the CodeQL mode fix | 50: S1–S40, plus S41–S50 for round 2's classes | 50 | 50 |
 
 **Round 2's mutants:**
 
