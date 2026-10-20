@@ -42,6 +42,7 @@ touches docker or the network.
 
 from __future__ import annotations
 
+import contextlib
 import io
 import json
 import os
@@ -77,10 +78,9 @@ def _kill(pid: int) -> None:
     if Path("/proc").is_dir():
         force_kill(pid)
         return
-    try:
+    # Already gone (the listener exited or was reaped) is the outcome wanted, not an error.
+    with contextlib.suppress(ProcessLookupError):
         os.kill(pid, signal.SIGKILL)
-    except ProcessLookupError:
-        pass
 
 
 def _data_announce_line(stdout: str) -> str:
