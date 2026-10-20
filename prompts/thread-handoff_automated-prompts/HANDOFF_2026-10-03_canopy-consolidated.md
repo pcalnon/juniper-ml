@@ -122,8 +122,12 @@ Lane A (E2E):
    release, no injected failure, no training run, nothing live on the merged tree or the wheel). Triage: 79 findings /
    56 fixed / 1 accepted / 2 withdrawn / 20 open, 4 P1 (F-CANOPY-064, F-CANOPY-065, F-CASCOR-001, F-CASCOR-002), 16 P2.
    New ledger items 27 (F-055's Live Switch allow arm), 28 (first live run on the shipped pacer, plus one injected
-   failure) and 29 (worktree housekeeping on the Linux host). Current Lane A handoff:
-   `HANDOFF_2026-10-19_canopy-phase12-recorded-pacer-shipped-in-0-9-0-items-25-26-next.md`. The status as of 2026-10-08
+   failure) and 29 (worktree housekeeping on the Linux host). **Phase 13 (2026-10-19)** did item 26's first step:
+   every open finding checked against canopy's manual; F-CANOPY-012, -013, -018, -028 and -032 are P1 by it (triage
+   79/56/1/2/20, 9 open P1, 11 open P2); four are fixed in code since canopy 0.7.0 and owed their live re-drive, new
+   item 30; the CAN-015g/h design note, the V7 roadmap's §28.1 and the 2026-05-05 roadmap audit's §5.2 are corrected.
+   Current Lane A handoff:
+   `HANDOFF_2026-10-19_canopy-phase13-manual-sweep-five-p2s-now-p1-item-30-owed.md`. The status as of 2026-10-08
    follows, for context.
 
    **DONE IN CODE 2026-10-08: canopy#731** (branch `fix/f055-f058-f068-request-ack-pacer`, head `65ead946`).
@@ -455,7 +459,12 @@ limbs. First: does a CHANGELOG or design-plan promise count as "documented"? Tha
 -018 and -012. Second: if it does, does that extend to a CHANGELOG's description of an internal mechanism? That decides F-CANOPY-068.
 Moving 065 and 068 alone, the counts are 7/16, 6/17 or 5/18 open P1/P2 (since Phase 12, 2026-10-19, F-CANOPY-068 is FIXED, so the second limb
 decides its rating of record only and moves no count; the first limb alone gives 4/16 or 3/17). Phase 11's item 26 checks every open finding against canopy's
-manual without waiting for the ruling, then sweeps the rest once the owner rules.
+manual without waiting for the ruling, then sweeps the rest once the owner rules. **Since Phase 13 (2026-10-19) the manual
+check is done**: F-CANOPY-012, -013 and -018 are P1 by the manual without a ruling, and the corrected CAN-015g/h design note no
+longer promises F-CANOPY-057's stream (the V7 roadmap's §28.1 and the 2026-05-05 roadmap audit's §5.2 carry the same correction,
+and the roadmap's CAN-015 row and the audit's three restatements point at it), so the first limb decides F-CANOPY-065 alone among
+the findings Phase 11 named: 9/11 or 8/12 open P1/P2 (the ledger's two recorded dissents, F-CANOPY-028 and F-CANOPY-067, would
+move it one either way).
 
 ---
 

@@ -3,7 +3,7 @@
 - **Project**: Juniper ecosystem. The plan lives in juniper-ml; it touches juniper-ml, juniper-k8s and juniper-recurrence, plus the host's own configuration.
 - **Author**: Paul Calnon (investigation and drafting via a Claude Code session on turing)
 - **Date**: 2026-10-15 (round-1 reconciliation 2026-10-16)
-- **Version**: 1.2.0 — v1.1.1 plus the Session 2 record (§17, 2026-10-19). v1.1.1 closed task E6 and added erratum E-CQ; v1.1.0 added the Session 1 record and errata (§16). Where §16 or §17 disagrees with an earlier section, the later section wins.
+- **Version**: 1.4.1 — v1.4.0 plus E2's completion (§18.2's E2 row; errata E-BLAS and E-REQ in §18.3; 2026-10-20). v1.4.0 was v1.3.0 plus the commit-signing extension of arc B (§19, 2026-10-20). v1.3.0 was v1.2.0 plus the Session 3 record (§18, 2026-10-20). v1.2.0 added the Session 2 record (§17); v1.1.1 closed task E6 and added erratum E-CQ; v1.1.0 added the Session 1 record and errata (§16). Where §16, §17, §18 or §19 disagrees with an earlier section, the later section wins.
 - **Status**: VALIDATED. Consensus round 1 had 3 reviewers, all ACCEPT-WITH-CHANGES and no BLOCKER; all findings at MAJOR and above were applied; round 2 (§15.2) found 1 MAJOR, which was applied. The plan authorizes the tasks in §6. Tasks marked **OWNER** need the owner at the keyboard.
 - **Owner**: Paul Calnon
 - **Template**: `notes/templates/TEMPLATE_DEVELOPMENT_ROADMAP.md`, adapted to a single-host bring-up
@@ -918,6 +918,75 @@ Session 2 ran on turing on 2026-10-19. It continued from `prompts/thread-handoff
 - **E-C8 (the C8 install).** The primary checkout predates juniper-ml#2242, so it has no `util/install_claude_agent_guard.bash`; the owner must fast-forward it before installing. The hook's default interpreter, `/usr/bin/python3` (Xcode's 3.9.6), passes the guard's `--self-test` (32 of 32).
 - **E-LAND-2 (post-merge revert).** A concurrent session's whole-file upload can revert lines that another PR has just merged, and no check catches it. juniper-ml#2262 carried copies of `AGENTS.md` and `docs/REFERENCE.md` taken before #2259 merged, and so put back X10's six lines. After merging a change to a shared file, re-check `origin/main` later. Keep such edits in an idempotent script, so that a revert costs one re-run.
 - **E-ENV (JuniperPython's env vars).** `conda-meta/state` sets `PYTHONPATH` to the unexpanded literal `${CONDA_PREFIX}/lib/python3.9/site-packages`, a Python 3.9-era leftover that leaks into every shell. OWNER: `conda env config vars unset PYTHONPATH -n JuniperPython`.
+
+## 18. Session 3 record (v1.3.0, 2026-10-20)
+
+Session 3 ran on turing on 2026-10-19/20 (EDT; 2026-10-20 UTC). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-2-e6-d5-d6-h1-done-e2-blocked-on-little-snitch.md`. Its handoffs are `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-session-3-g5-g6-g4-landed-e2-two-envs-created-pypi-blocked.md`, written with the record PR (juniper-ml#2277), and `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-session-3-final-e2-validated-g1-next.md`, written after E2's validation (v1.4.1).
+
+### 18.1 Owner rulings
+
+- **Merging.** Approval is granted for every PR in the session's work arc, merging only after green, as in §16.1. It does not cover the `pypi` deployment gate.
+- No new decision ruling. The E2-first order of §17.1 stood. E2 went first, and the G-arc ran while E2 waited on the owner's Little Snitch approval.
+
+### 18.2 Task status after Session 3
+
+| Task | Status | Record |
+|---|---|---|
+| G5 | landed | juniper-ml#2272 (`a5311979`): `util/home_path_literal_check.py`, the G-PATH gate, with `conf/home_path_literal_baseline.json` (436 files and 651 lines when it landed; 427 of the files under `util/ad-hoc/`). It runs as the `home-path-literal` pre-commit hook and as a whole-scope step in ci.yml's Pre-commit job. 43 tests; `util/ad-hoc/2026-10-20_turing_g5_mutation_check.py` kills 22 of 22 mutants. A CodeQL thread blocked the first head (E-CQ2) |
+| G6 | landed | juniper-ml#2274 (`223d09a7`): the `git-remote-alias` pre-push hook (G2's `--check --if-configured`), with `default_stages: [pre-commit]` (E-G6) and `minimum_pre_commit_version` 3.2.0. CI runs the stage as a smoke test, and the hook skips there. **Acceptance on turing waits on A1:** the stage fails on exactly juniper-k8s and juniper-recurrence, 28 of 30 checks |
+| G4 | landed, advisory | juniper-ml#2276 (`3968ca04`), built after juniper-ml#2273 merged (E-LAND-3): the `host-tooling-macos` job runs the eight host-tooling suites on `macos-latest` under `/bin/bash` 3.2, behind in-job change detection. It joins the Quality Gate's `needs:` after 10 green runs. First run, on the PR: green on arm64 macOS 26 (`/bin/bash` 3.2.57, `/opt/homebrew`), 371 tests, 7 skipped, 2 m 13 s. On turing: 376 tests, 1 skipped |
+| E2 | **done** | All three envs were created on 2026-10-20 with `MAMBA_SSL_VERIFY=true` (E-SSL), then validated against their repos' CI lanes by `util/ad-hoc/2026-10-19_turing_e2_validate_envs.py`, through a `venv --system-site-packages` overlay so that each env stays what its spec builds. JuniperCascor1: unit 5777 of 5777 passed (coverage 96.55%), integration 172 of 172. JuniperData: unit 2201 passed and 3 skipped of 2204 (97.82%; the skips need GNU `base64` and `date`), integration 62 of 62. JuniperCanopy1, re-specified on MKL after its OpenBLAS build hung (E-BLAS): unit 7947 passed, 10 skipped and 2 failed of 7959 (96.68%), integration 523 passed and 79 skipped of 602; the 2 failures are E-REQ. Exports, summaries and pip freezes are in `reports/2026-10-20_turing-e2-envs/`. G-ENV's env half holds; its parent-AGENTS.md half still fails, because that file is not on turing |
+| G1 | not started | the next agent task |
+
+### 18.3 Errata
+
+- **E-SSL (D6's and E2's recipes).** mamba 2.x ignores `CONDA_SSL_VERIFY`. With `~/.condarc`'s `ssl_verify: false`, `CONDA_SSL_VERIFY=true mamba config list ssl_verify --sources` still reports `<false>`; `MAMBA_SSL_VERIFY=true` reports `<system>`.
+  - So every `CONDA_SSL_VERIFY=true mamba ...` in this plan's records ran without TLS verification. That covers JuniperHostTools (2026-10-17) and the 2026-10-19 dry runs.
+  - The recreate lines in `conf/hosts/turing/hosttools-environment.yml` and the three `conf/hosts/turing/conda-envs/*.yml` now say `MAMBA_SSL_VERIFY=true`. `CONDA_SSL_VERIFY` still governs `conda` itself.
+  - OWNER: owner step 4 (`ssl_verify: true` in `~/.condarc`) removes the trap for both tools. Whether to re-create JuniperHostTools with verification on is the owner's call; its packages were checked against repodata that itself arrived without TLS verification.
+- **E-NET-3 (E-NET-2 revisited, 2026-10-20).** Little Snitch's verdicts changed between the sessions.
+  - `mamba` now reaches conda.anaconda.org: a `mamba search` refreshed the osx-64 and noarch repodata, and both envs downloaded.
+  - Base `python3.13` now fails fast with `SSL: UNEXPECTED_EOF_WHILE_READING` in the handshake. That fits a deny verdict rather than a pending alert, and it no longer blocks E2, which uses mamba for the network.
+  - Each new env's `python3.14` (JuniperCascor1, JuniperData) hangs past its 15 s socket timeout toward pypi.org: a held connection, an alert nobody answered.
+  - `curl` and JuniperPython's `python3.14` reach every URL as before.
+  - OWNER: allow `pypi.org` and `files.pythonhosted.org` for `/usr/local/miniforge3/envs/JuniperCascor1/bin/python3.14`, `.../JuniperData/bin/python3.14` and, once created, `.../JuniperCanopy1/bin/python3.14`. Approving the alerts while a run waits also works.
+- **E-G6 (G6, pre-commit's stage semantics).** A hook with no `stages` runs at every stage. Without `default_stages`, the pre-push stage G6 needs would have re-run the whole commit suite on every push from an opted-in host. It would also have turned the CI smoke step into a whole-tree lint run, undoing the Pre-commit job's changed-files split.
+  - A manifest's own `stages` overrides `default_stages`, so `check-added-large-files` (pre-commit-hooks v6.0.0) and `isort` carry `stages: [pre-commit]` themselves.
+  - The smoke step names the hook (`pre-commit run --hook-stage pre-push git-remote-alias --all-files`), so a hook that later joins the stage cannot widen it.
+- **E-CQ2 (landing, after E-LAND).** CodeQL's `py/overly-permissive-file` flagged `os.chmod(tmp, 0o644)` in G5's baseline writer. Its review thread blocked juniper-ml#2272 with every check green, until the writer dropped the chmod for a sibling temp file under the process umask. `util/ad-hoc/2026-10-05_codeql_python_prescreen.py` does not predict that rule, so check new code for `chmod(` before landing.
+- **E-LAND-3 (concurrent PRs on the shared files).** Two concurrent PRs collide on update-branch (`mergeable: CONFLICTING`) when both insert at the top of CHANGELOG's `[Unreleased]` / `### Added`, or both change AGENTS.md's suite-count line. The PR that lands second must then rebuild those files on the new main. That was the case here for G6 (juniper-ml#2274) and the recurrence session's juniper-ml#2273, which reported it by cross-session message.
+  - G6's entry now anchors directly below G5's entry and G4's below G2's, and `git merge-tree` confirmed the branches merge cleanly. Merge order was agreed: #2273, then G6, then G4.
+  - The count line cannot be avoided, so a suite-adding PR (G4) is built from main after the other suite-adding PR merges.
+- **E-BLAS (E2, JuniperCanopy1's BLAS).** The first JuniperCanopy1 kept the Linux env's `libblas 3.11.0`. On osx-64 that is OpenBLAS 0.3.30 (the openmp build) under conda-forge's `cpu_generic` torch. juniper-canopy's unit lane hung in it twice, at results 4351 and 4353 of 7959 (`src/tests/unit/frontend/test_stage2_global_lane.py`), at about 300% CPU. pytest-timeout's 60 s limit never fired, because the main thread never returned to the interpreter.
+  - `sample` showed three threads spinning in OpenBLAS's `blas_memory_alloc`: the main thread (torch `linear` → `addmm` → `sgemm`) and two demo-mode `_training_loop` daemon threads that earlier tests had left running (`sgemv` under `goto_set_num_threads`, and `sgemm`). The same two threads, Thread-210 and Thread-257, were there in both runs.
+  - With `OMP_NUM_THREADS=6`, torch's intra-op default on turing, every thread's OpenMP count agrees, and the same lane ran to the end. That points at OpenBLAS resetting its thread count on each call from a thread whose OpenMP count differs. Without the variable, threads do differ: torch re-pins a thread's count to its own default only when that thread runs torch's per-thread lazy init (its first parallel region, or a `torch.get_num_threads()` call), as `util/thread_width.py` (hazard 1) and `notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md` §1.1 record. A synthetic three-thread script, `util/ad-hoc/2026-10-20_turing_e2_blas_concurrency_repro.py`, did not hang, so the trigger takes more than that.
+  - Fix: the spec takes the MKL variant (`libblas`, `libcblas` and `liblapack` 3.9.0 `20_osx64_mkl`, and `mkl` 2023.2.0, so the solver picks the `cpu_mkl` torch). On Linux canopy's torch is the PyPI wheel, which carries its own MKL, so canopy's CI never runs torch on OpenBLAS; JuniperCascor1 already ran this stack. Evidence: `reports/2026-10-20_turing-e2-envs/JuniperCanopy1.openblas-hang.txt`.
+  - Follow-up (juniper-canopy, not filed): the tests that leave demo mode's training thread running. Off OpenBLAS they cost only CPU.
+- **E-REQ (E2, juniper-canopy's `requests` floor).** Two canopy tests assume `requests` refuses a header value with a trailing LF: `src/tests/unit/frontend/test_internal_api_key_rules.py::test_a_key_requests_refuses_to_send_is_left_off_the_self_call[trailing-lf]` and `src/tests/regression/test_blank_api_key_warning_boot.py::test_a_padded_key_never_reaches_a_log_record`. requests refuses it from 2.33.1 on, while 2.33.0 and 2.32.5 accept it (checked with each wheel's `check_header_validity`). canopy floors `requests>=2.28.0`, and its CI resolves the newest, 2.34.2. JuniperCanopy1 keeps the Linux env's 2.32.5, so both tests fail here, as they would in the Linux env the spec was exported from.
+  - Not a turing defect. Follow-up (juniper-canopy, not filed): raise the floor to `requests>=2.33.1`, or derive the refused set from the installed requests.
+
+## 19. Commit signing for the terminal and the IDEs (v1.4.0, 2026-10-20)
+
+`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` (the signing plan; VALIDATED after two consensus rounds) extends arc B to the owner's IDE commits, from Cursor and VS Code. It also replaces the git-config half of B4. Where it and this plan disagree on B3, B4 or B5, the signing plan wins.
+
+### 19.1 Task changes
+
+| Task | Change |
+|---|---|
+| B4 | **Split.** **B4a (AGENT, at the owner's request on 2026-10-19):** `python3 util/configure_commit_signing.py --apply` writes the four signing values to `~/.config/git/juniper-signing.gitconfig`, and includes that file from `~/.gitconfig` with `[includeIf "gitdir/i:~/Development/python/Juniper/"]` rather than `git config --global` (signing plan S1). Applied on turing on 2026-10-20; every repo check passes. **B4b (OWNER):** the UID check, plus the touch policy as signing-plan S11 rules it |
+| B2, B3 | Any `gpg --card-status` writes the card's stubs, and signing is live once the public key (B2) is there too. So no card goes into turing until C8 is installed, the guard rules (K12) are merged and re-installed, and the IDE-agent approvals (K13) are done. The touch policy is set at that first insertion, before B2 and B3 (signing plan §1, §9, §13) |
+| B5 | Widened to the signing plan's I-SIGN matrix: the terminal, both Source Control views, both integrated terminals, an agent-session negative control, and IDE-agent prompt rows. It still depends on A3 |
+| new | **Signing plan K12:** guard rules that deny `-c include.path=`, `--config-env` in both forms, signing-key writes at any scope, and writes to `.git/hooks/`, a repository's config, `~/.gitconfig`, `~/.config/git/` and the system gitconfigs; also the tool's `--apply`. **Signing plan K13:** IDE-agent approvals |
+
+### 19.2 Errata
+
+- **E-B4-KEY.** B4's `user.signingkey 'BA18D1A733B1831A!'` becomes the full fingerprint `B5619F58FDA4D94E2D73D8BABA18D1A733B1831A!`. It is the same subkey and yamaguchi's exact value, as B4's acceptance asks.
+- **E-B4-SCOPE.** `git config --global` becomes the conditional include. Repositories outside the Juniper tree, and temp repositories under `$TMPDIR`, gain no signing requirement.
+- **E-B4-GPG.** `gpg.program` is the literal `/usr/local/bin/gpg`, which is what `$(brew --prefix)/bin/gpg` evaluates to. It is absolute because an IDE launched from the Dock does not get the shell's PATH, and on turing `gpg2` exists only under the demoted MacPorts path.
+- **E-G-SIGN.** Gate G-SIGN (§9.3) is evaluated inside the checkouts. It needs `util/configure_commit_signing.py --check` to exit 0 and I-SIGN T1–T5 to verify. `git config --global --get` cannot see an include.
+- **E-ACTIVE.** From 2026-10-20, an owner commit in the Juniper tree on turing fails closed ("gpg failed to sign the data") until B2 and B3 are done. Before, it would have landed unsigned and so been unmergeable. Agent sessions are unaffected (D11).
+- **E-D11-S.** D11's environment does not stop an explicit `-S`, `-c include.path=` or `--config-env=commit.gpgsign=…`, measured with a fake gpg. So no card goes into turing until C8 and K12 are in place, and D11 item 2's touch policy follows the S11 ruling.
+- **E-D5-LINE.** The §17.2 D5 row's `~/.bash_profile:87` is `:92` as of 2026-10-19.
 
 ## Appendix A — probe output excerpts (2026-10-15)
 

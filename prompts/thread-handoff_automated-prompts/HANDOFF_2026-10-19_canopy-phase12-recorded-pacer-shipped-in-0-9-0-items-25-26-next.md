@@ -1,5 +1,13 @@
 # HANDOFF 2026-10-19 — P2 canopy Lane A: Phase 12 recorded. canopy#731's pacer is merged and shipped in canopy 0.9.0; F-CANOPY-055, -058 and -068 are FIXED; 4 open P1 remain. Next are items 25, 26 and 27.
 
+> **SUPERSEDED 2026-10-19** by `HANDOFF_2026-10-19_canopy-phase13-manual-sweep-five-p2s-now-p1-item-30-owed.md`.
+> Its item 1 (juniper-ml#2263 merged 2026-10-19T08:49:20Z) and item 3's first half (item 26's first step, the manual
+> sweep, and the CAN-015g/h design note's correction, carried also into the V7 roadmap and the 2026-05-05 roadmap
+> audit, recorded as Phase 13 of
+> `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`) are done; item 3's second half (the CHANGELOG
+> and the design plans, after the ruling) and items 2, 4, 5, 6 and 7 carry there, with a new item 30 (the Phase 4 fix
+> wave's live re-drive, four of its findings now P1).
+
 **Written**: 2026-10-19 by the session in juniper-ml worktree `.claude/worktrees/squishy-growing-breeze` on host
 turing (macOS, no Juniper service, no reach to the trio), at a phase boundary, as its PR was opened.
 **Consensus**: two rounds on 2026-10-19 (three lanes, then two on the corrections); round 2 changed no number,

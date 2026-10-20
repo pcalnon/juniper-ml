@@ -7,44 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- **`[recurrence]` now floors `juniper-recurrence>=0.7.0`** (`<0.8.0`) **and `juniper-recurrence-model>=0.5.0` (`<0.6.0`)**, the
-  P5 release pair (W5.8 (B), W5.9, W5.10 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
-  approved 2026-10-19 with the session's merge approval, the ruling 0.7.0 reopened). The pins were
-  `juniper-recurrence>=0.6.1,<0.7.0` and `juniper-recurrence-model>=0.3.0,<0.5.0`.
-  - **Why both move.** recurrence 0.7.0's `requires_dist` is `juniper-recurrence-model>=0.5.0,<0.6.0`:
-    its `default_ridge` is `"gcv"`, which is safe only on model 0.5.0's train-fold standardisation of the
-    linear readout's memory block. Lifting the recurrence ceiling alone would leave the extra
-    unsatisfiable under the old model cap `<0.5.0`. The model range is the one 0.7.0 requires, not a
-    wider one: 0.7.0 refuses model 0.6.0, which is recurrence 0.8.0's floor (W5.2, on an open PR); the
-    next raise moves both again.
-  - **What 0.7.0 brings** to `pip install juniper-ml[recurrence]`: `POST /v1/crossval` on the equities
-    row no longer blows up under the default readout (the W5.1 note's −2.1e4 becomes −0.195 on the E-H
-    artifact), and every fit carries a `diagnostics` block (`readout`, `theta`, `ridge_mode` /
-    `ridge_selected`, `gamma`, `gcv_at_edge` / `null_model`).
-  - **0.7.0's own `[torch]` extra is unresolvable** (`juniper-recurrence-model[torch]>=0.4.0,<0.5.0`
-    against the base `>=0.5.0`); `[recurrence]` installs the base distribution and is unaffected. The
-    fix rides on juniper-recurrence#215 for 0.8.0.
-  - **Pre-flighted against real PyPI** on 2026-10-19 with
-    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages on Python 3.12, 3.13 and 3.14, with recurrence 0.7.0, model
-    0.5.0, client 0.3.0, data-client 0.6.0, model-core 0.3.2 and service-core 0.7.1; `[all]` resolves in 76 on
-    each, the same versions plus canopy 0.9.0, cascor 0.11.0, cascor-worker 0.6.1 and juniper-data 0.17.0.
-  - The client floor `juniper-recurrence-client>=0.3.0,<0.4.0` stays (no client contract changed). The
-    release train cuts the version that carries this (0.11.0 in the plan). Applied by
-    `util/ad-hoc/2026-10-19_raise_recurrence_floor_0_7_0.py`, which asserts each site's exact text and
-    requires exactly one match apiece.
-
-- **`util/experiments/run_experiment.py` omits `embargo` from the crossval request when the config
-  omits it** (W5.2 of
-  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`).
-  It used to send `embargo: 0`, which overrode the service's default; from juniper-recurrence 0.8.0
-  that default is one look-back per entity (the gap that keeps an eval window's history clear of
-  every train window), so a suite row that names no embargo now gets it. A config that names a value
-  -- the E-G scheme × embargo sweep -- still sends it, and on recurrence ≤ 0.7.0 an omitted value is
-  still the service's 0. `tests/test_run_experiment.py` pins the omission.
-
 ### Added
+
+- **The agent guard protects the owner's signing configuration (K12)** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, S9). With the YubiKey stubs
+  learned, an agent that could rewrite the owner's signing configuration could obtain the owner's signature. It could
+  point `gpg.program` or `core.hooksPath` at its own program, plant a repository-local key that outranks the include,
+  drop a `post-commit` hook inside a cached-touch window, or re-enable signing past D11 with `git -c include.path=` or
+  `--config-env`.
+  - `util/claude_agent_guard.py` 1.1.0 adds two rules:
+    - `GIT-SIGNING-CONFIG` (Bash) denies those forms. It also denies signing-key `git config` writes at any scope,
+      `git config --edit`, any mention of `~/.gitconfig`, `~/.config/git`, a system gitconfig or `.git/hooks`, and
+      `util/configure_commit_signing.py --apply` / `--remove` without `--dry-run`.
+    - `GIT-SIGNING-FILE` (the file writers) denies writes to the same files. Reads stay allowed.
+  - `tests/test_claude_agent_guard.py` pins 63 Bash cases (42 denied, 21 allowed) and 18 file cases (10 denied, 8
+    allowed), and the self-test runs 40 checks.
+  - `util/ad-hoc/2026-10-20_k12_guard_mutation_check.py` kills 18 of 18 mutants, each by its own pin test.
+  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install
+    the new copy. No YubiKey goes into turing until then: the first `gpg --card-status` writes the card stubs (plan §1).
+
+- **Commit signing for the terminal and the IDEs** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, VALIDATED after two consensus rounds; it extends arc B of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - **What the tool does.** `util/configure_commit_signing.py` installs and verifies the owner's signing for every checkout under
+    `~/Development/python/Juniper/` with one `includeIf "gitdir/i:~/Development/python/Juniper/"`, which points at
+    `~/.config/git/juniper-signing.gitconfig`. That file holds yamaguchi's values: `user.signingkey` pinned to the full
+    fingerprint with `!`, `commit.gpgsign` and `tag.gpgsign`, plus an absolute `gpg.program` in a known GnuPG install.
+  - **Why the IDEs need no setting.** Cursor's and VS Code's git extension adds `-S` only on request and never disables
+    signing. So both IDEs sign through git's config, without the shell's PATH or a TTY.
+  - **What is unchanged.** Repositories outside the root, and Claude Code sessions, which D11 keeps unsigned by
+    construction.
+  - **What `--check` covers.** It verifies the setup without credentials:
+    - planted repo-local signing keys and hooks;
+    - the include's integrity;
+    - IDE settings that would defeat the config;
+    - whether an IDE agent can commit, or bypass signing, without a prompt.
+  - **The other modes.** `--remove` undoes `--apply` exactly.
+  - **Tests and evidence.** `tests/test_configure_commit_signing.py` pins R-S1..R-S19, and `util/ad-hoc/2026-10-19_commit_signing_mutation_check.py` kills 50 of 50 mutants.
+  - **Doc changes.** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` gains §19 (v1.4.0). The AGENTS.md unsigned-commit hazard gains the IDE-agent rule.
+  - **Applied on turing (2026-10-20).** An owner commit in the tree now fails closed until the owner imports the public
+    key and learns the card stubs (bring-up B2/B3). The first `gpg --card-status` writes the stubs, so no card goes into
+    turing until the agent guard (C8) is installed, the guard rules (K12) are merged and re-installed, and the IDE-agent
+    approval rules (K13) are in place. The touch policy (S11) is set at that first insertion.
 
 - **`stats.json` / `summary.md` carry a per-split regression target summary** (W5.5 of
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; F-D8). The audited
@@ -90,6 +92,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ci.yml's Pre-commit job. `--update-baseline` recounts, and `--dry-run` writes nothing.
   - `tests/test_home_path_literal_check.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
   - `util/ad-hoc/2026-10-20_turing_g5_mutation_check.py` (new) shows that the suite kills 22 of 22 mutants.
+
+- **The `git-remote-alias` pre-push hook** (turing bring-up task G6, gate G-ALIAS of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - `.pre-commit-config.yaml` runs `util/git_remote_alias_check.py --check --if-configured` (task G2) at the
+    pre-push stage. On a host with the `github_juniper-*` aliases, a push is blocked while any of the 10
+    checkouts bypasses its alias, is missing, or has a key not at mode 600. A host without the aliases skips.
+  - Each host opts in with `pre-commit install --hook-type pre-push`. `minimum_pre_commit_version` rises from
+    3.0.0 to 3.2.0, the release that named the stage `pre-push`.
+  - `default_stages: [pre-commit]` keeps every other hook at commit time. Without it, a hook with no `stages`
+    runs at every stage: a push would re-run the whole commit suite, and the CI smoke step would lint the
+    whole tree, undoing the Pre-commit job's changed-files split. `check-added-large-files` and `isort` set
+    `stages: [pre-commit]` themselves, because their upstream manifests list pre-push and override
+    `default_stages`.
+  - ci.yml's Pre-commit job runs the pre-push stage as a smoke test, and `tests/test_git_remote_alias_check.py`
+    pins the hook's configuration.
 
 - **`util/experiments/run_suite.py` gains the `acceptance:` facility, and the E-H recurrence suite carries
   the R5 band** (W5.4 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
@@ -162,6 +179,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the G6 pre-push hook. Every git call drops the `GIT_DIR` that a hook inherits in a linked worktree.
   - `tests/test_git_remote_alias_check.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
   - `util/ad-hoc/2026-10-17_turing_g2_mutation_check.py` (new) shows that the suite kills 16 of 16 mutants.
+
+- **ci.yml's `host-tooling-macos` job, advisory** (turing bring-up task G4 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - It runs the eight turing host-tooling suites on `macos-latest`, under BSD userland and `/bin/bash` 3.2,
+    which the Linux regression step cannot show. A step asserts both, and that `brew --prefix` is not
+    turing's Intel `/usr/local`, so a green run also shows the scripts are prefix-independent.
+  - No workflow path filter: a detection step sets `relevant` from the pull request or merge-group diff,
+    and every later step is gated on it, so the job reports success when no host-tooling path changed.
+  - Absent from the Quality Gate `needs:` until 10 consecutive green runs; it then joins them, never as a
+    separate ruleset context.
+  - `tests/test_ci_host_tooling_macos.py` (new) gates the job's shape and runs the detection shell under a
+    stub `git`. It is wired into `ci.yml` and `docs/REFERENCE.md`.
 
 - **The D11 item 4 agent guard for turing** (task C8, option (b) of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). Pattern rules alone cannot carry D11:
@@ -432,6 +461,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     verbatim in `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md`.
 
 ### Changed
+
+- **`[recurrence]` now floors `juniper-recurrence>=0.7.0`** (`<0.8.0`) **and `juniper-recurrence-model>=0.5.0` (`<0.6.0`)**, the
+  P5 release pair (W5.8 (B), W5.9, W5.10 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  approved 2026-10-19 with the session's merge approval, the ruling 0.7.0 reopened). The pins were
+  `juniper-recurrence>=0.6.1,<0.7.0` and `juniper-recurrence-model>=0.3.0,<0.5.0`.
+  - **Why both move.** recurrence 0.7.0's `requires_dist` is `juniper-recurrence-model>=0.5.0,<0.6.0`:
+    its `default_ridge` is `"gcv"`, which is safe only on model 0.5.0's train-fold standardisation of the
+    linear readout's memory block. Lifting the recurrence ceiling alone would leave the extra
+    unsatisfiable under the old model cap `<0.5.0`. The model range is the one 0.7.0 requires, not a
+    wider one: 0.7.0 refuses model 0.6.0, which is recurrence 0.8.0's floor (W5.2, on an open PR); the
+    next raise moves both again.
+  - **What 0.7.0 brings** to `pip install juniper-ml[recurrence]`: `POST /v1/crossval` on the equities
+    row no longer blows up under the default readout (the W5.1 note's −2.1e4 becomes −0.195 on the E-H
+    artifact), and every fit carries a `diagnostics` block (`readout`, `theta`, `ridge_mode` /
+    `ridge_selected`, `gamma`, `gcv_at_edge` / `null_model`).
+  - **0.7.0's own `[torch]` extra is unresolvable** (`juniper-recurrence-model[torch]>=0.4.0,<0.5.0`
+    against the base `>=0.5.0`); `[recurrence]` installs the base distribution and is unaffected. The
+    fix rides on juniper-recurrence#215 for 0.8.0.
+  - **Pre-flighted against real PyPI** on 2026-10-19 with
+    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages on Python 3.12, 3.13 and 3.14, with recurrence 0.7.0, model
+    0.5.0, client 0.3.0, data-client 0.6.0, model-core 0.3.2 and service-core 0.7.1; `[all]` resolves in 76 on
+    each, the same versions plus canopy 0.9.0, cascor 0.11.0, cascor-worker 0.6.1 and juniper-data 0.17.0.
+  - The client floor `juniper-recurrence-client>=0.3.0,<0.4.0` stays (no client contract changed). The
+    release train cuts the version that carries this (0.11.0 in the plan). Applied by
+    `util/ad-hoc/2026-10-19_raise_recurrence_floor_0_7_0.py`, which asserts each site's exact text and
+    requires exactly one match apiece.
+
+- **`util/experiments/run_experiment.py` omits `embargo` from the crossval request when the config
+  omits it** (W5.2 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`).
+  It used to send `embargo: 0`, which overrode the service's default; from juniper-recurrence 0.8.0
+  that default is one look-back per entity (the gap that keeps an eval window's history clear of
+  every train window), so a suite row that names no embargo now gets it. A config that names a value
+  -- the E-G scheme × embargo sweep -- still sends it, and on recurrence ≤ 0.7.0 an omitted value is
+  still the service's 0. `tests/test_run_experiment.py` pins the omission.
 
 - **`[recurrence]` now floors `juniper-recurrence>=0.6.1`**, the release that carries the recurrence floors ruling
   (M1 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-18 UTC). The floor was `>=0.6.0`.

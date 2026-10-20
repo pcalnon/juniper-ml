@@ -1,0 +1,23 @@
+{
+ "unit": {
+  "tests": 2204,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 3,
+  "time": 170.451,
+  "passed": 2201,
+  "bad": [],
+  "exit": 0,
+  "coverage_percent": 97.82
+ },
+ "integration": {
+  "tests": 62,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "time": 5.566,
+  "passed": 62,
+  "bad": [],
+  "exit": 0
+ }
+}

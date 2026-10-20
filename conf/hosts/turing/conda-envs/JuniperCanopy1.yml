@@ -34,12 +34,21 @@
 #   juniper-data (pip)     0.4.0 -> 0.4.2          0.4.0 was never published to PyPI (the Linux env had it from a
 #                                                  local checkout); 0.4.2 is the oldest release there.
 #
-# Solve (mamba --dry-run against conda-forge osx-64 + noarch repodata of 2026-10-19), conda part: 223 packages,
-# ~260 MB; python 3.14.2, pytorch 2.10.0 cpu_generic_py314_he5833f4_3 on OpenBLAS 0.3.30 (libblas 3.11.0, the
-# Linux env's BLAS too), numpy 2.3.5. pip part: each pin has a pure or cp314 macosx x86_64 wheel on PyPI.
+# BLAS, changed 2026-10-20 (plan §18.3 E-BLAS): libblas, libcblas and liblapack 3.11.0 -> 3.9.0 (the 20_osx64_mkl
+# builds), libopenblas 0.3.30 dropped, mkl 2023.2.0 added (Intel's last macOS MKL). The solver then takes the cpu_mkl
+# pytorch and adds tbb 2021.13.0. On Linux this env's torch is the PyPI wheel, which carries its own MKL, while numpy
+# and scipy use the env's OpenBLAS. conda-forge's osx-64 pytorch links the env's libblas instead, so the first port
+# ran torch on OpenBLAS (the cpu_generic build). That env hung juniper-canopy's unit lane at the same test in two
+# runs, with three threads spinning in OpenBLAS's blas_memory_alloc. The MKL variant gives torch the BLAS it has on
+# Linux, the stack JuniperCascor1 runs. numpy and scipy move to MKL with it, because libblas is one choice per env.
+#
+# Solve (mamba --dry-run against conda-forge osx-64 + noarch repodata of 2026-10-20), conda part: 224 packages;
+# python 3.14.2, pytorch 2.10.0 cpu_mkl_py314_h7495620_103, mkl 2023.2.0, libblas 3.9.0 20_osx64_mkl, numpy 2.3.5,
+# scipy 1.16.3. pip part: each pin has a pure or cp314 macosx x86_64 wheel on PyPI.
 #
 # Recreate:
-#   CONDA_SSL_VERIFY=true mamba env create --override-channels -c conda-forge -f conf/hosts/turing/conda-envs/JuniperCanopy1.yml
+#   MAMBA_SSL_VERIFY=true mamba env create --override-channels -c conda-forge -f conf/hosts/turing/conda-envs/JuniperCanopy1.yml
+#   (mamba 2.x reads MAMBA_SSL_VERIFY; CONDA_SSL_VERIFY reaches only conda itself: plan §18.3 E-SSL.)
 #
 # Validate: juniper-canopy ci.yml's unit-tests and integration-tests lanes, run from a scratch copy of the repo
 # through a `python -m venv --system-site-packages` overlay on this env, so CI's
@@ -47,9 +56,14 @@
 # spec builds. That install upgrades packaging, coverage and anyio past this spec's Linux versions: the [test]
 # extra floors them at 26.3, 7.16.0 and 4.15.1.
 #
-# STATUS 2026-10-19: the spec solves; the env is NOT yet created or validated. On turing, outbound connections
-# from mamba and from every python interpreter time out while curl and gh connect (Little Snitch's network
-# extension is active), so no package could be downloaded.
+# STATUS 2026-10-20: VALIDATED on turing, on the MKL variant above. Created with MAMBA_SSL_VERIFY=true and mamba
+# 2.1.1 (224 conda packages, the solve above, plus the pip section; pip check is clean). juniper-canopy's CI lanes,
+# run through util/ad-hoc/2026-10-19_turing_e2_validate_envs.py canopy: unit 7947 passed, 10 skipped and 2 failed
+# of 7959 (coverage 96.68%, 558 s); integration 523 passed and 79 skipped of 602. Every skip is by design: these
+# lanes run without juniper-data-client, and the Cassandra, Redis and JuniperData E2E tests are opt-in. The 2
+# failures assume requests refuses a header value with a trailing LF, which it does from 2.33.1, while this spec
+# keeps the Linux env's requests 2.32.5 (plan §18.3 E-REQ). Export, summary, the overlay's pip freeze and the
+# OpenBLAS hang's evidence: reports/2026-10-20_turing-e2-envs/.
 name: JuniperCanopy1
 channels:
   - conda-forge
@@ -124,8 +138,8 @@ dependencies:
   - jinja2=3.1.6
   - krb5=1.21.3
   - libaec=1.1.5
-  - libblas=3.11.0
-  - libcblas=3.11.0
+  - libblas=3.9.0
+  - libcblas=3.9.0
   - libcurl=8.18.0
   - libedit=3.1.20250104
   - libev=4.33
@@ -137,11 +151,10 @@ dependencies:
   - libgfortran5=15.2.0
   - libglib=2.86.2
   - libiconv=1.18
-  - liblapack=3.11.0
+  - liblapack=3.9.0
   - liblzma=5.8.1
   - libmpdec=4.0.0
   - libnghttp2=1.67.0
-  - libopenblas=0.3.30
   - libpng=1.6.53
   - libsqlite=3.51.1
   - libssh2=1.11.1
@@ -156,6 +169,7 @@ dependencies:
   - markupsafe=3.0.3
   - mccabe=0.7.0
   - mdurl=0.1.2
+  - mkl=2023.2.0
   - mpc=1.3.1
   - mpfr=4.2.1
   - mpmath=1.3.0

@@ -219,6 +219,8 @@ SELF_BASH = "SELF-PROTECT-BASH"
 CRED_FILE = "CRED-PATH-FILE"
 SELF_FILE = "SELF-PROTECT-FILE"
 CRED_SEARCH = "CRED-PATH-SEARCH"
+GIT_SIGNING = "GIT-SIGNING-CONFIG"
+GIT_SIGNING_FILE = "GIT-SIGNING-FILE"
 
 # (command, the rule it must trip, or None for "passes silently")
 CRED_PATH_CASES = [
@@ -500,6 +502,74 @@ SELF_PROTECT_BASH_CASES = [
 ]
 
 
+# Commit-signing plan K12 (S9): the owner's signing configuration, git hooks, and the ways around D11.
+GIT_SIGNING_CASES = [
+    ("git -c include.path=/tmp/sign.inc commit -m x", GIT_SIGNING),
+    ("git -c includeIf.gitdir:/x/.path=/tmp/y commit -m x", GIT_SIGNING),
+    ("git -c gpg.program=/tmp/evil log -1", GIT_SIGNING),
+    ("git -c gpg.openpgp.program=/tmp/evil log -1", GIT_SIGNING),
+    ("git -c GPG.Program=/tmp/evil log -1", GIT_SIGNING),
+    ("git --config-env=commit.gpgsign=SIGN commit -m x", GIT_SIGNING),
+    ("git --config-env commit.gpgsign=SIGN commit -m x", GIT_SIGNING),
+    ("git --config-env=core.pager=PAGER log", GIT_SIGNING),
+    ("git config --local gpg.program /tmp/evil", GIT_SIGNING),
+    ("git config gpg.program /tmp/evil", GIT_SIGNING),
+    ("git config --global user.signingkey ABCDEF0123456789!", GIT_SIGNING),
+    ("git config --unset commit.gpgsign", GIT_SIGNING),
+    ("git config --unset-all tag.gpgsign", GIT_SIGNING),
+    ("git config --global --add includeIf.gitdir/i:/x/.path /tmp/y", GIT_SIGNING),
+    ("git config --replace-all include.path /tmp/y", GIT_SIGNING),
+    ("git config set core.hooksPath /tmp/hooks", GIT_SIGNING),
+    ("git config core.fsmonitor /tmp/monitor", GIT_SIGNING),
+    ("git config --worktree core.sshCommand 'ssh -i /tmp/k'", GIT_SIGNING),
+    ("git config --file /tmp/repo/.git/config gpg.format ssh", GIT_SIGNING),
+    ("git config --remove-section gpg", GIT_SIGNING),
+    ("git config --rename-section include old", GIT_SIGNING),
+    ("git config remove-section user", GIT_SIGNING),
+    ("git config -e", GIT_SIGNING),
+    ("git config --global --edit", GIT_SIGNING),
+    ("git config edit --local", GIT_SIGNING),
+    ("cat ~/.gitconfig", GIT_SIGNING),
+    ("echo '[gpg] program = /tmp/x' >> ~/.gitconfig", GIT_SIGNING),
+    ('cp /tmp/x "$HOME"/.config/git/juniper-signing.gitconfig', GIT_SIGNING),
+    ("rm -rf ${HOME}/.config/git", GIT_SIGNING),
+    ("ls .git/hooks", GIT_SIGNING),
+    ("cp hook .git/hooks/post-commit", GIT_SIGNING),
+    ("ln -s /tmp/h ../juniper-ml/.git/hooks/post-merge", GIT_SIGNING),
+    ("chmod +x .git//hooks/pre-push", GIT_SIGNING),
+    ("python3 util/configure_commit_signing.py --apply", GIT_SIGNING),
+    ("python3 -I util/configure_commit_signing.py --remove", GIT_SIGNING),
+    ("./util/configure_commit_signing.py --apply --gpg-program /usr/local/bin/gpg", GIT_SIGNING),
+    ("bash -c 'git config --local gpg.program /tmp/x'", GIT_SIGNING),
+    ("echo $(git -c include.path=/tmp/x commit -m y)", GIT_SIGNING),
+    ("true  # then edit ~/.gitconfig by hand", GIT_SIGNING),  # raw text, comments included (the guard's mention rule)
+    ("echo '[core] hooksPath = /tmp/h' >> /usr/local/etc/gitconfig", GIT_SIGNING),
+    ("cat /etc/gitconfig", GIT_SIGNING),
+    ("cp x /opt/homebrew/etc/gitconfig", GIT_SIGNING),
+    ("cat docs/etc/gitconfig.md", None),
+    ("git config --get user.signingkey", None),
+    ("git config --global --list --show-origin", None),
+    ("git config --show-scope --get-regexp '^gpg'", None),
+    ("git config --type=bool --get commit.gpgsign", None),
+    ("git config gpg.program", None),
+    ("git config get gpg.program", None),
+    ("git config list --show-origin", None),
+    ("git config user.email someone@example.invalid", None),
+    ("git config --local core.autocrlf false", None),
+    ("git config --rename-section old new", None),
+    ("git -c core.pager=cat log -1", None),
+    ("git -c user.name=x -c user.email=y@example.invalid commit -m z", None),
+    ("python3 -I util/configure_commit_signing.py --check", None),
+    ("python3 -I util/configure_commit_signing.py --check --json", None),
+    ("python3 util/configure_commit_signing.py --apply --dry-run", None),
+    ("python3 util/configure_commit_signing.py --remove --dry-run --json", None),
+    ("cat .gitconfig.example", None),
+    ("ls .github/hooks", None),
+    ("cat docs/git/hooks.md", None),
+    ("git log -1 --format=%H -- .githooks", None),
+]
+
+
 class PlanNegativeTests(GuardHarness):
     """The plan's H3 negative tests (section 6, rows C8 and H3): both must be denied, by name."""
 
@@ -519,6 +589,9 @@ class BashRuleTests(GuardHarness):
 
     def test_gpg_secret_and_signing(self) -> None:
         self.check_table("Bash", GPG_CASES)
+
+    def test_k12_owner_signing_configuration(self) -> None:
+        self.check_table("Bash", GIT_SIGNING_CASES)
 
     def test_gh_subcommands_and_keychain(self) -> None:
         self.check_table("Bash", GH_CASES)
@@ -578,6 +651,24 @@ FILE_CASES = [
     ("Write", {"file_path": "@HOME@/.claude/projects/x/memory/y.md", "content": "x"}, None),
     ("Edit", {"file_path": "@REPO@/README.md", "old_string": "x", "new_string": "disableAllHooks is documented here"}, None),
     ("MultiEdit", {"file_path": "@REPO@/.claude/settings.json", "edits": [{"old_string": '"disableAllHooks": true', "new_string": ""}]}, None),
+    ("Write", {"file_path": "@HOME@/.gitconfig", "content": "x"}, GIT_SIGNING_FILE),
+    ("Write", {"file_path": "@REAL@/.gitconfig", "content": "x"}, GIT_SIGNING_FILE),
+    ("Edit", {"file_path": "@HOME@/.config/git/juniper-signing.gitconfig", "old_string": "a", "new_string": "b"}, GIT_SIGNING_FILE),
+    ("Write", {"file_path": "~/.config/git/config", "content": "x"}, GIT_SIGNING_FILE),
+    ("Write", {"file_path": "@REPO@/.git/config", "content": "x"}, GIT_SIGNING_FILE),
+    ("Write", {"file_path": "@REPO@/.git/hooks/post-commit", "content": "x"}, GIT_SIGNING_FILE),
+    ("Write", {"file_path": ".git/hooks/pre-push", "content": "x"}, GIT_SIGNING_FILE),
+    ("MultiEdit", {"file_path": "@REPO@/.git/worktrees/wt/config.worktree", "edits": [{"old_string": "a", "new_string": "b"}]}, GIT_SIGNING_FILE),
+    ("Write", {"file_path": "/usr/local/etc/gitconfig", "content": "x"}, GIT_SIGNING_FILE),
+    ("Edit", {"file_path": "/etc/gitconfig", "old_string": "a", "new_string": "b"}, GIT_SIGNING_FILE),
+    ("Read", {"file_path": "/usr/local/etc/gitconfig"}, None),
+    ("Read", {"file_path": "@HOME@/.gitconfig"}, None),
+    ("Read", {"file_path": "@REPO@/.git/config"}, None),
+    ("Read", {"file_path": "@REPO@/.git/hooks/pre-commit"}, None),
+    ("Write", {"file_path": "@REPO@/.gitconfig", "content": "x"}, None),
+    ("Write", {"file_path": "@REPO@/docs/git/config", "content": "x"}, None),
+    ("Write", {"file_path": "@REPO@/.github/hooks/x", "content": "x"}, None),
+    ("Write", {"file_path": "@REPO@/.git/info/exclude", "content": "x"}, None),
 ]
 
 SEARCH_CASES = [
@@ -689,7 +780,7 @@ class ContractTests(GuardHarness):
 class RuleCoverageTest(unittest.TestCase):
     def test_every_rule_has_a_denied_case(self) -> None:
         ids = {rule.rule_id for rule in _load_guard().RULES}
-        covered = {rule for _, rule in CRED_PATH_CASES + SSH_PRIV_DEFAULTS_CASES + GPG_CASES + GH_CASES + SELF_PROTECT_BASH_CASES if rule}
+        covered = {rule for _, rule in CRED_PATH_CASES + SSH_PRIV_DEFAULTS_CASES + GPG_CASES + GH_CASES + SELF_PROTECT_BASH_CASES + GIT_SIGNING_CASES if rule}
         covered |= {rule for _, _, rule in FILE_CASES + SEARCH_CASES if rule}
         covered |= {GH_API}
         self.assertEqual(ids - covered, set(), "rules with no denied case in this suite")
