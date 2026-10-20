@@ -52,6 +52,7 @@ SUITES = {
     "headless_signing_preflight",
     "juniper_repo_ssh_setup",
     "home_path_literal_check",
+    "configure_commit_signing",  # commit-signing plan K2
 }
 
 
