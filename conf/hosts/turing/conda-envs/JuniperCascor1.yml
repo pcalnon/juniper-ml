@@ -28,15 +28,17 @@
 # python 3.14.2, pytorch 2.10.0 cpu_mkl_py314_hf7736a0_101, mkl 2023.2.0, libblas 3.9.0 20_osx64_mkl, numpy 2.4.1.
 #
 # Recreate:
-#   CONDA_SSL_VERIFY=true mamba env create --override-channels -c conda-forge -f conf/hosts/turing/conda-envs/JuniperCascor1.yml
+#   MAMBA_SSL_VERIFY=true mamba env create --override-channels -c conda-forge -f conf/hosts/turing/conda-envs/JuniperCascor1.yml
+#   (mamba 2.x reads MAMBA_SSL_VERIFY; CONDA_SSL_VERIFY reaches only conda itself: plan §18.3 E-SSL.)
 #
 # Validate: juniper-cascor ci.yml's unit-tests and integration-tests lanes, run from a scratch copy of the repo
 # through a `python -m venv --system-site-packages` overlay on this env, so CI's `pip install -e ".[all]"` lands in
 # the overlay and this env stays exactly what the spec builds.
 #
-# STATUS 2026-10-19: the spec solves; the env is NOT yet created or validated. On turing, outbound connections
-# from mamba and from every python interpreter time out while curl and gh connect (Little Snitch's network
-# extension is active), so no package could be downloaded.
+# STATUS 2026-10-20: CREATED on turing with MAMBA_SSL_VERIFY=true and mamba 2.1.1 (67 packages, the solve above;
+# torch.backends.mkl.is_available() is True). NOT yet validated: CI's pip steps need pypi.org from this env's
+# python3.14, which Little Snitch holds for an unanswered alert (plan §18.3 E-NET-3). Resume with
+# util/ad-hoc/2026-10-19_turing_e2_validate_envs.py cascor --phase install. Export: reports/2026-10-20_turing-e2-envs/.
 name: JuniperCascor1
 channels:
   - conda-forge

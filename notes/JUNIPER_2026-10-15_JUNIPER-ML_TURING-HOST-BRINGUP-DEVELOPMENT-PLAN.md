@@ -3,7 +3,7 @@
 - **Project**: Juniper ecosystem. The plan lives in juniper-ml; it touches juniper-ml, juniper-k8s and juniper-recurrence, plus the host's own configuration.
 - **Author**: Paul Calnon (investigation and drafting via a Claude Code session on turing)
 - **Date**: 2026-10-15 (round-1 reconciliation 2026-10-16)
-- **Version**: 1.2.0 — v1.1.1 plus the Session 2 record (§17, 2026-10-19). v1.1.1 closed task E6 and added erratum E-CQ; v1.1.0 added the Session 1 record and errata (§16). Where §16 or §17 disagrees with an earlier section, the later section wins.
+- **Version**: 1.3.0 — v1.2.0 plus the Session 3 record (§18, 2026-10-20). v1.2.0 added the Session 2 record (§17); v1.1.1 closed task E6 and added erratum E-CQ; v1.1.0 added the Session 1 record and errata (§16). Where §16, §17 or §18 disagrees with an earlier section, the later section wins.
 - **Status**: VALIDATED. Consensus round 1 had 3 reviewers, all ACCEPT-WITH-CHANGES and no BLOCKER; all findings at MAJOR and above were applied; round 2 (§15.2) found 1 MAJOR, which was applied. The plan authorizes the tasks in §6. Tasks marked **OWNER** need the owner at the keyboard.
 - **Owner**: Paul Calnon
 - **Template**: `notes/templates/TEMPLATE_DEVELOPMENT_ROADMAP.md`, adapted to a single-host bring-up
@@ -918,6 +918,45 @@ Session 2 ran on turing on 2026-10-19. It continued from `prompts/thread-handoff
 - **E-C8 (the C8 install).** The primary checkout predates juniper-ml#2242, so it has no `util/install_claude_agent_guard.bash`; the owner must fast-forward it before installing. The hook's default interpreter, `/usr/bin/python3` (Xcode's 3.9.6), passes the guard's `--self-test` (32 of 32).
 - **E-LAND-2 (post-merge revert).** A concurrent session's whole-file upload can revert lines that another PR has just merged, and no check catches it. juniper-ml#2262 carried copies of `AGENTS.md` and `docs/REFERENCE.md` taken before #2259 merged, and so put back X10's six lines. After merging a change to a shared file, re-check `origin/main` later. Keep such edits in an idempotent script, so that a revert costs one re-run.
 - **E-ENV (JuniperPython's env vars).** `conda-meta/state` sets `PYTHONPATH` to the unexpanded literal `${CONDA_PREFIX}/lib/python3.9/site-packages`, a Python 3.9-era leftover that leaks into every shell. OWNER: `conda env config vars unset PYTHONPATH -n JuniperPython`.
+
+## 18. Session 3 record (v1.3.0, 2026-10-20)
+
+Session 3 ran on turing on 2026-10-19/20 (EDT; 2026-10-20 UTC). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-2-e6-d5-d6-h1-done-e2-blocked-on-little-snitch.md`, and its own handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-session-3-g5-g6-g4-landed-e2-two-envs-created-pypi-blocked.md`.
+
+### 18.1 Owner rulings
+
+- **Merging.** Approval is granted for every PR in the session's work arc, merging only after green, as in §16.1. It does not cover the `pypi` deployment gate.
+- No new decision ruling. The E2-first order of §17.1 stood. E2 went first, and the G-arc ran while E2 waited on the owner's Little Snitch approval.
+
+### 18.2 Task status after Session 3
+
+| Task | Status | Record |
+|---|---|---|
+| G5 | landed | juniper-ml#2272 (`a5311979`): `util/home_path_literal_check.py`, the G-PATH gate, with `conf/home_path_literal_baseline.json` (436 files and 651 lines when it landed; 427 of the files under `util/ad-hoc/`). It runs as the `home-path-literal` pre-commit hook and as a whole-scope step in ci.yml's Pre-commit job. 43 tests; `util/ad-hoc/2026-10-20_turing_g5_mutation_check.py` kills 22 of 22 mutants. A CodeQL thread blocked the first head (E-CQ2) |
+| G6 | landed | juniper-ml#2274 (`223d09a7`): the `git-remote-alias` pre-push hook (G2's `--check --if-configured`), with `default_stages: [pre-commit]` (E-G6) and `minimum_pre_commit_version` 3.2.0. CI runs the stage as a smoke test, and the hook skips there. **Acceptance on turing waits on A1:** the stage fails on exactly juniper-k8s and juniper-recurrence, 28 of 30 checks |
+| G4 | landed, advisory | juniper-ml#2276 (`3968ca04`), built after juniper-ml#2273 merged (E-LAND-3): the `host-tooling-macos` job runs the eight host-tooling suites on `macos-latest` under `/bin/bash` 3.2, behind in-job change detection. It joins the Quality Gate's `needs:` after 10 green runs. First run, on the PR: green on arm64 macOS 26 (`/bin/bash` 3.2.57, `/opt/homebrew`), 371 tests, 7 skipped, 2 m 13 s. On turing: 376 tests, 1 skipped |
+| E2 | **partial (OWNER: Little Snitch for PyPI)** | JuniperCascor1 (67 packages) and JuniperData (91) were created on 2026-10-20 with `MAMBA_SSL_VERIFY=true` (E-SSL); their exports are in `reports/2026-10-20_turing-e2-envs/`. JuniperCanopy1 is not created: its pip section, and both validations, need `pypi.org` from each new env's `python3.14`, which Little Snitch holds for an unanswered alert (E-NET-3). The validation runner's `prepare` phase is done for cascor and data |
+| G1 | not started | next agent task, with E2's validation once PyPI is allowed |
+
+### 18.3 Errata
+
+- **E-SSL (D6's and E2's recipes).** mamba 2.x ignores `CONDA_SSL_VERIFY`. With `~/.condarc`'s `ssl_verify: false`, `CONDA_SSL_VERIFY=true mamba config list ssl_verify --sources` still reports `<false>`; `MAMBA_SSL_VERIFY=true` reports `<system>`.
+  - So every `CONDA_SSL_VERIFY=true mamba ...` in this plan's records ran without TLS verification. That covers JuniperHostTools (2026-10-17) and the 2026-10-19 dry runs.
+  - The recreate lines in `conf/hosts/turing/hosttools-environment.yml` and the three `conf/hosts/turing/conda-envs/*.yml` now say `MAMBA_SSL_VERIFY=true`. `CONDA_SSL_VERIFY` still governs `conda` itself.
+  - OWNER: owner step 4 (`ssl_verify: true` in `~/.condarc`) removes the trap for both tools. Whether to re-create JuniperHostTools with verification on is the owner's call; its packages were checked against repodata that itself arrived without TLS verification.
+- **E-NET-3 (E-NET-2 revisited, 2026-10-20).** Little Snitch's verdicts changed between the sessions.
+  - `mamba` now reaches conda.anaconda.org: a `mamba search` refreshed the osx-64 and noarch repodata, and both envs downloaded.
+  - Base `python3.13` now fails fast with `SSL: UNEXPECTED_EOF_WHILE_READING` in the handshake. That fits a deny verdict rather than a pending alert, and it no longer blocks E2, which uses mamba for the network.
+  - Each new env's `python3.14` (JuniperCascor1, JuniperData) hangs past its 15 s socket timeout toward pypi.org: a held connection, an alert nobody answered.
+  - `curl` and JuniperPython's `python3.14` reach every URL as before.
+  - OWNER: allow `pypi.org` and `files.pythonhosted.org` for `/usr/local/miniforge3/envs/JuniperCascor1/bin/python3.14`, `.../JuniperData/bin/python3.14` and, once created, `.../JuniperCanopy1/bin/python3.14`. Approving the alerts while a run waits also works.
+- **E-G6 (G6, pre-commit's stage semantics).** A hook with no `stages` runs at every stage. Without `default_stages`, the pre-push stage G6 needs would have re-run the whole commit suite on every push from an opted-in host. It would also have turned the CI smoke step into a whole-tree lint run, undoing the Pre-commit job's changed-files split.
+  - A manifest's own `stages` overrides `default_stages`, so `check-added-large-files` (pre-commit-hooks v6.0.0) and `isort` carry `stages: [pre-commit]` themselves.
+  - The smoke step names the hook (`pre-commit run --hook-stage pre-push git-remote-alias --all-files`), so a hook that later joins the stage cannot widen it.
+- **E-CQ2 (landing, after E-LAND).** CodeQL's `py/overly-permissive-file` flagged `os.chmod(tmp, 0o644)` in G5's baseline writer. Its review thread blocked juniper-ml#2272 with every check green, until the writer dropped the chmod for a sibling temp file under the process umask. `util/ad-hoc/2026-10-05_codeql_python_prescreen.py` does not predict that rule, so check new code for `chmod(` before landing.
+- **E-LAND-3 (concurrent PRs on the shared files).** Two concurrent PRs collide on update-branch (`mergeable: CONFLICTING`) when both insert at the top of CHANGELOG's `[Unreleased]` / `### Added`, or both change AGENTS.md's suite-count line. The PR that lands second must then rebuild those files on the new main. That was the case here for G6 (juniper-ml#2274) and the recurrence session's juniper-ml#2273, which reported it by cross-session message.
+  - G6's entry now anchors directly below G5's entry and G4's below G2's, and `git merge-tree` confirmed the branches merge cleanly. Merge order was agreed: #2273, then G6, then G4.
+  - The count line cannot be avoided, so a suite-adding PR (G4) is built from main after the other suite-adding PR merges.
 
 ## Appendix A — probe output excerpts (2026-10-15)
 

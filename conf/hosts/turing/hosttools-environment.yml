@@ -8,7 +8,8 @@
 # coreutils do not shadow the BSD userland.
 #
 # Recreate:
-#   CONDA_SSL_VERIFY=true mamba env create --override-channels -f conf/hosts/turing/hosttools-environment.yml
+#   MAMBA_SSL_VERIFY=true mamba env create --override-channels -f conf/hosts/turing/hosttools-environment.yml
+#   (mamba 2.x reads MAMBA_SSL_VERIFY; CONDA_SSL_VERIFY reaches only conda itself: plan §18.3 E-SSL.)
 #   for t in timeout shellcheck yamllint actionlint age age-keygen yq iperf3; do
 #     ln -sf "$(conda info --base)/envs/JuniperHostTools/bin/$t" ~/.local/bin/$t
 #   done
