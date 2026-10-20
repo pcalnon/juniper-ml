@@ -83,7 +83,6 @@ import json
 import os
 import subprocess  # nosec B404 -- runs `git ls-files` with a fixed argv
 import sys
-import tempfile
 from pathlib import Path
 
 NEEDLE = "/home/pcalnon"  # home-path-literal: allow -- the needle itself
@@ -187,11 +186,11 @@ def update_baseline(root: Path, baseline: Path, dry_run: bool) -> int:
     elif dry_run:
         print(f"DRY-RUN: would write {baseline} ({verdict})")
     else:
+        # A sibling temp file then a rename: a reader never sees half a file, and the new file takes the
+        # process umask like any other file written into the checkout.
         baseline.parent.mkdir(parents=True, exist_ok=True)
-        fd, tmp = tempfile.mkstemp(dir=baseline.parent, prefix=baseline.name + ".")
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            fh.write(text)
-        os.chmod(tmp, 0o644)
+        tmp = baseline.with_name(baseline.name + ".tmp")
+        tmp.write_text(text, encoding="utf-8")
         os.replace(tmp, baseline)
         print(f"baseline: wrote {baseline} ({verdict})")
     return 0
