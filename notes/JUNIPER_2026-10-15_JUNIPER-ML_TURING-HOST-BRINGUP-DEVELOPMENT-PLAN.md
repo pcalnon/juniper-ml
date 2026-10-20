@@ -3,7 +3,7 @@
 - **Project**: Juniper ecosystem. The plan lives in juniper-ml; it touches juniper-ml, juniper-k8s and juniper-recurrence, plus the host's own configuration.
 - **Author**: Paul Calnon (investigation and drafting via a Claude Code session on turing)
 - **Date**: 2026-10-15 (round-1 reconciliation 2026-10-16)
-- **Version**: 1.3.0 — v1.2.0 plus the Session 3 record (§18, 2026-10-20). v1.2.0 added the Session 2 record (§17); v1.1.1 closed task E6 and added erratum E-CQ; v1.1.0 added the Session 1 record and errata (§16). Where §16, §17 or §18 disagrees with an earlier section, the later section wins.
+- **Version**: 1.4.0 — v1.3.0 plus the commit-signing extension of arc B (§19, 2026-10-20). v1.3.0 was v1.2.0 plus the Session 3 record (§18, 2026-10-20). v1.2.0 added the Session 2 record (§17); v1.1.1 closed task E6 and added erratum E-CQ; v1.1.0 added the Session 1 record and errata (§16). Where §16, §17, §18 or §19 disagrees with an earlier section, the later section wins.
 - **Status**: VALIDATED. Consensus round 1 had 3 reviewers, all ACCEPT-WITH-CHANGES and no BLOCKER; all findings at MAJOR and above were applied; round 2 (§15.2) found 1 MAJOR, which was applied. The plan authorizes the tasks in §6. Tasks marked **OWNER** need the owner at the keyboard.
 - **Owner**: Paul Calnon
 - **Template**: `notes/templates/TEMPLATE_DEVELOPMENT_ROADMAP.md`, adapted to a single-host bring-up
@@ -957,6 +957,29 @@ Session 3 ran on turing on 2026-10-19/20 (EDT; 2026-10-20 UTC). It continued fro
 - **E-LAND-3 (concurrent PRs on the shared files).** Two concurrent PRs collide on update-branch (`mergeable: CONFLICTING`) when both insert at the top of CHANGELOG's `[Unreleased]` / `### Added`, or both change AGENTS.md's suite-count line. The PR that lands second must then rebuild those files on the new main. That was the case here for G6 (juniper-ml#2274) and the recurrence session's juniper-ml#2273, which reported it by cross-session message.
   - G6's entry now anchors directly below G5's entry and G4's below G2's, and `git merge-tree` confirmed the branches merge cleanly. Merge order was agreed: #2273, then G6, then G4.
   - The count line cannot be avoided, so a suite-adding PR (G4) is built from main after the other suite-adding PR merges.
+
+## 19. Commit signing for the terminal and the IDEs (v1.4.0, 2026-10-20)
+
+`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` (the signing plan; VALIDATED after two consensus rounds) extends arc B to the owner's IDE commits, from Cursor and VS Code. It also replaces the git-config half of B4. Where it and this plan disagree on B3, B4 or B5, the signing plan wins.
+
+### 19.1 Task changes
+
+| Task | Change |
+|---|---|
+| B4 | **Split.** **B4a (AGENT, at the owner's request on 2026-10-19):** `python3 util/configure_commit_signing.py --apply` writes the four signing values to `~/.config/git/juniper-signing.gitconfig`, and includes that file from `~/.gitconfig` with `[includeIf "gitdir/i:~/Development/python/Juniper/"]` rather than `git config --global` (signing plan S1). Applied on turing on 2026-10-20; every repo check passes. **B4b (OWNER):** the UID check, plus the touch policy as signing-plan S11 rules it |
+| B2, B3 | Any `gpg --card-status` writes the card's stubs, and signing is live once the public key (B2) is there too. So no card goes into turing until C8 is installed, the guard rules (K12) are merged and re-installed, and the IDE-agent approvals (K13) are done. The touch policy is set at that first insertion, before B2 and B3 (signing plan §1, §9, §13) |
+| B5 | Widened to the signing plan's I-SIGN matrix: the terminal, both Source Control views, both integrated terminals, an agent-session negative control, and IDE-agent prompt rows. It still depends on A3 |
+| new | **Signing plan K12:** guard rules that deny `-c include.path=`, `--config-env` in both forms, signing-key writes at any scope, and writes to `.git/hooks/`, a repository's config, `~/.gitconfig`, `~/.config/git/` and the system gitconfigs; also the tool's `--apply`. **Signing plan K13:** IDE-agent approvals |
+
+### 19.2 Errata
+
+- **E-B4-KEY.** B4's `user.signingkey 'BA18D1A733B1831A!'` becomes the full fingerprint `B5619F58FDA4D94E2D73D8BABA18D1A733B1831A!`. It is the same subkey and yamaguchi's exact value, as B4's acceptance asks.
+- **E-B4-SCOPE.** `git config --global` becomes the conditional include. Repositories outside the Juniper tree, and temp repositories under `$TMPDIR`, gain no signing requirement.
+- **E-B4-GPG.** `gpg.program` is the literal `/usr/local/bin/gpg`, which is what `$(brew --prefix)/bin/gpg` evaluates to. It is absolute because an IDE launched from the Dock does not get the shell's PATH, and on turing `gpg2` exists only under the demoted MacPorts path.
+- **E-G-SIGN.** Gate G-SIGN (§9.3) is evaluated inside the checkouts. It needs `util/configure_commit_signing.py --check` to exit 0 and I-SIGN T1–T5 to verify. `git config --global --get` cannot see an include.
+- **E-ACTIVE.** From 2026-10-20, an owner commit in the Juniper tree on turing fails closed ("gpg failed to sign the data") until B2 and B3 are done. Before, it would have landed unsigned and so been unmergeable. Agent sessions are unaffected (D11).
+- **E-D11-S.** D11's environment does not stop an explicit `-S`, `-c include.path=` or `--config-env=commit.gpgsign=…`, measured with a fake gpg. So no card goes into turing until C8 and K12 are in place, and D11 item 2's touch policy follows the S11 ruling.
+- **E-D5-LINE.** The §17.2 D5 row's `~/.bash_profile:87` is `:92` as of 2026-10-19.
 
 ## Appendix A — probe output excerpts (2026-10-15)
 
