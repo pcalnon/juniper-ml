@@ -1,0 +1,5 @@
+[t=     77ms] leg http://127.0.0.1:8064 serving {"ok": true, "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68", "build_date": "2026-10-20T12:03:46Z", "version": "0.9.0", "demo_mode": false, "read_at": "2026-10-20T12:05:29Z"}
+[t=   3128ms]   browser: chrome channel (installed Google Chrome)
+[t=   3128ms] STEP m03 -- M-METRICS-03: metrics-panel-phase-duration (observation on a demo leg; scored on a cascor-backed leg)
+[t= 108201ms]   phase-duration samples: ['', '', '', '', '', '', 'Phase Duration: 0m 47s', 'Phase Duration: 0m 59s', 'Phase Duration: 1m 3s', 'Phase Duration: 1m 9s', 'Phase Duration: 1m 15s', 'Phase Duration: 1m 19s', 'Phase Duration: 0m 1s', 'Phase Duration: 0m 5s', 'Phase Duration: 0m 5s']
+[t= 120922ms] results -> reports/e2e-canopy-2026-09-02/item30-turing/service_leg_8064_dash441.json

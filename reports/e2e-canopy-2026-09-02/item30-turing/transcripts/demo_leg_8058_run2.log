@@ -1,0 +1,25 @@
+[t=     54ms] leg http://127.0.0.1:8058 serving {"ok": true, "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68", "build_date": "2026-10-20T11:02:19Z", "version": "0.9.0", "demo_mode": true, "read_at": "2026-10-20T11:11:05Z"}
+[t=   1472ms]   browser: chrome channel (installed Google Chrome)
+[t=   1472ms] STEP f018 -- C2.9-05: Apply toast; added: Apply disabled + status clean after a successful apply (F-CANOPY-018)
+[t=   7178ms]   initial: {'apply_disabled': True, 'status': ''}
+[t=   8879ms]   !! option 'AdamW' not found for #nn-optimizer-type-dropdown (visible options=5)
+[t=  10400ms]   after dropdown change: {'dropdown_from': 'Adam', 'dropdown_to': 'AdamW', 'selected': False, 'apply_disabled': True, 'status': ''}
+[t=  27712ms]   !! option 'AdamW' not found for #nn-optimizer-type-dropdown (visible options=5)
+[t=  29724ms]   re-dirty: {'dropdown_from': 'Adam', 'dropdown_to': 'AdamW', 'selected': False, 'apply_disabled': True, 'status': ''}
+[t=  29724ms]   f018 verdicts: {"TOAST": false, "toast_text": null, "toast_first_t_s": null, "toast_visible_span_s": null, "CLEAN": true, "LATCHED": false, "unsaved_first_t_s": null, "RETRACK": false, "apply_landed": false}
+[t=  29743ms] STEP f028 -- M-PARAMETERS-04/-05/-06: pin learning_rate, reload, pin max_iterations; the first must survive (F-CANOPY-028)
+[t=  44524ms]   Parameters tab: 0 pin checkboxes; learning_rate before={'present': False}
+[t=  47532ms]   M-04 store=[] ; M-05 card display=none list=''
+[t=  56925ms]   after reload: store=[] card=none learning_rate checkbox={'present': False}
+[t=  60165ms]   after pinning max_iterations: store=[] list=''
+[t=  64479ms]   M-06 after unpin: store=[] card=none; after reload: store=[] card=none
+[t=  64479ms]   f028 verdicts: {"SURVIVES": false, "DISCARDED": false, "REHYDRATED": false, "M04": false, "M05": false, "M06": true}
+[t=  64487ms] STEP f001 -- C2.1-01/-02: theme toggle, reload, glyph synced from the store on mount (F-CANOPY-001)
+[t=  77287ms]   initial: {'glyph': '🌙', 'html_dark': False, 'html_class': '', 'store': 'false'}
+[t=  80298ms]   after click: {'glyph': '🌙', 'html_dark': False, 'html_class': '', 'store': 'false'}
+[t=  91763ms]   after reload: {'glyph': '🌙', 'html_dark': False, 'html_class': '', 'store': 'false'}
+[t=  94985ms]   after second click: {'glyph': '🌙', 'html_dark': False, 'html_class': '', 'store': 'false'}
+[t=  94985ms]   f001 verdicts: {"C2_1_01": false, "C2_1_02_theme_persists": true, "SYNCED": true, "STALE": false, "second_click_flips_back": true}
+[t=  95000ms] STEP m03 -- M-METRICS-03: metrics-panel-phase-duration (observation on a demo leg; scored on a cascor-backed leg)
+[t= 136988ms]   phase-duration samples: ['', '', '', '', '', '']
+[t= 148362ms] results -> reports/e2e-canopy-2026-09-02/item30-turing/demo_leg_8058.json

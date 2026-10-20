@@ -1,0 +1,9 @@
+[t=     68ms] leg http://127.0.0.1:8064 serving {"ok": true, "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68", "build_date": "2026-10-20T12:03:46Z", "version": "0.9.0", "demo_mode": false, "read_at": "2026-10-20T12:23:58Z"}
+[t=   2655ms]   browser: chrome channel (installed Google Chrome)
+[t=   2655ms] STEP f032 -- M-WORKERS-02, cascor-down arm: Workers tab open; the 'Worker data degraded' alert (F-CANOPY-032)
+[t=   3412ms]   stream_health -> [200, {"overall": "degraded", "relay": {"name": "training-relay", "connected": true, "status": "healthy", "last_activity_age_seconds": 6.9, "reconnect_count": 1, "last_disconnect_reason": "JuniperCascorConnectionError", "frames_forwarded_total": 2526, "frames_by_type": {"connection_established": 2,  ; cascor -> 200
+[t=   3412ms]   /api/v1/workers/list -> (200, {'workers': [], 'count': 0, 'local_reported': False})
+[t=   3412ms]   /api/v1/workers/stats -> (200, {'total': 0, 'idle': 0, 'busy': 0, 'stale': 0, 'total_tasks_completed': 0, 'total_tasks_failed': 0, 'average_health_score': 0.0, 'timestamp': 1792499041.95157})
+[t=  34055ms]   modal cleared after 1 attempt(s)
+[t=  99230ms]   f032 verdicts: {"RENDERED": false, "rendered_first_t_s": null, "alert_text": null, "STORE": "EMPTY", "store_error_seen": null, "badges_seen": ["NO WORKERS"], "api_list_error_key": null, "api_list_http": 200}
+[t= 113762ms] results -> reports/e2e-canopy-2026-09-02/item30-turing/service_leg_8064_dash441.json
