@@ -46,6 +46,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The agent guard protects the owner's signing configuration (K12)** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, S9). With the YubiKey stubs
+  learned, an agent that could rewrite the owner's signing configuration could obtain the owner's signature. It could
+  point `gpg.program` or `core.hooksPath` at its own program, plant a repository-local key that outranks the include,
+  drop a `post-commit` hook inside a cached-touch window, or re-enable signing past D11 with `git -c include.path=` or
+  `--config-env`.
+  - `util/claude_agent_guard.py` 1.1.0 adds two rules:
+    - `GIT-SIGNING-CONFIG` (Bash) denies those forms. It also denies signing-key `git config` writes at any scope,
+      `git config --edit`, any mention of `~/.gitconfig`, `~/.config/git`, a system gitconfig or `.git/hooks`, and
+      `util/configure_commit_signing.py --apply` / `--remove` without `--dry-run`.
+    - `GIT-SIGNING-FILE` (the file writers) denies writes to the same files. Reads stay allowed.
+  - `tests/test_claude_agent_guard.py` pins 63 Bash cases (42 denied, 21 allowed) and 18 file cases (10 denied, 8
+    allowed), and the self-test runs 40 checks.
+  - `util/ad-hoc/2026-10-20_k12_guard_mutation_check.py` kills 18 of 18 mutants, each by its own pin test.
+  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install
+    the new copy. No YubiKey goes into turing until then: the first `gpg --card-status` writes the card stubs (plan §1).
+
 - **Commit signing for the terminal and the IDEs** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, VALIDATED after two consensus rounds; it extends arc B of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
   - **What the tool does.** `util/configure_commit_signing.py` installs and verifies the owner's signing for every checkout under
