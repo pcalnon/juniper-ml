@@ -3099,7 +3099,7 @@ Related: [Relocation Completeness (G3)](#relocation-completeness-g3),
 
 ### Running every suite
 
-The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th), **169** on 2026-10-03 (`tests/test_juniper_backup_tier2_lane.py`), **198** on 2026-10-08 (173 on `main` that morning, plus the 25 suites harvested from the Cursor flood-3 PRs), **199** with W1.5's `tests/test_recurrence_operation_identity_and_dataset_budget.py`; the drift script above counts, so re-run it rather than trusting this figure. This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
+The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th), **169** on 2026-10-03 (`tests/test_juniper_backup_tier2_lane.py`), **198** on 2026-10-08 (173 on `main` that morning, plus the 25 suites harvested from the Cursor flood-3 PRs), **199** with W1.5's `tests/test_recurrence_operation_identity_and_dataset_budget.py`, **213** with W5.4's `tests/test_run_suite_acceptance.py`, **214** with G5's `tests/test_home_path_literal_check.py`, **216** on 2026-10-20 with W5.5 / W5.6's `tests/test_stats_summary_target_summary.py` and `tests/test_experiment_stack_shared_equities_cache.py`; the drift script above counts, so re-run it rather than trusting this figure. This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
 
 ci.yml is the authoritative list. `tests/test_ci_test_wiring_drift.py` gates that every `tests/test_*.py` on disk is invoked there; `util/ad-hoc/2026-09-10_agents_md_test_list_drift.py` reports any suite CI runs that this list does not name.
 
@@ -3212,6 +3212,7 @@ python3 -m unittest -v tests/test_juniper_plant_all.py
 python3 -m unittest -v tests/test_juniper_chop_all.py
 python3 -m unittest -v tests/test_isolated_stack_script.py
 python3 -m unittest -v tests/test_experiment_stack_script.py
+python3 -m unittest -v tests/test_experiment_stack_shared_equities_cache.py
 python3 -m unittest -v tests/test_recurrence_env_preflight.py
 python3 -m unittest -v tests/test_run_experiment.py
 python3 -m unittest -v tests/test_read_run_metrics.py
@@ -3252,6 +3253,7 @@ python3 -m unittest -v tests/test_list_runs_classify_guards.py
 python3 -m unittest -v tests/test_register_close_protocol.py
 python3 -m unittest -v tests/test_stats_summary_render.py
 python3 -m unittest -v tests/test_stats_summary_git_and_confirmed.py
+python3 -m unittest -v tests/test_stats_summary_target_summary.py
 python3 -m unittest -v tests/test_canopy_poller_inventory.py
 python3 -m unittest -v tests/test_cascor_freeze_tell.py
 python3 -m unittest -v tests/test_ruleset_context_audit.py
@@ -3319,6 +3321,7 @@ python3 -m unittest -v tests/test_git_remote_alias_check.py
 python3 -m unittest -v tests/test_headless_signing_preflight.py
 python3 -m unittest -v tests/test_juniper_repo_ssh_setup.py
 python3 -m unittest -v tests/test_run_suite_acceptance.py
+python3 -m unittest -v tests/test_home_path_literal_check.py
 bash scripts/test_resume_file_safety.bash
 # doc-link validator regression tests live in juniper-doc-tools/tests/
 # and run under the dedicated `CI -- juniper-doc-tools` workflow.
@@ -3542,6 +3545,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_register_close_protocol.py` -- The defect-register operator pair that #1648/#1717 cannot see: the close protocol itself, distinct from the open-set reader and the status crosscheck.
 - `tests/test_stats_summary_render.py` -- `summary.md` scrape-honesty line collection: which lines the renderer must emit, the conditional class-distribution line, the reason sub-bullet, and `present`/`written` key precedence.
 - `tests/test_stats_summary_git_and_confirmed.py` -- The `summary.md` scrape tri-state and git provenance the producer suite cannot see -- `confirmed` None-is-not-False, the N/A fallback, unavailable git, clean-head, and a decreasing count that must not mint a poll sample. Independent sibling of `test_stats_summary_render.py`; see its header for why both were kept.
+- `tests/test_stats_summary_target_summary.py` -- W5.5 (F-D8): the per-split regression target summary. The stdlib `regression_target_summary` (mean / population std / min / max / finite fraction; NaN and ±Inf count toward `n` and against `finite_fraction`; an empty split is `None`, not 0/0; train / val / test order); `build_stats` carries it as `dataset.target_summary` and turns an error into a degraded-mode note; `summary.md` prints one line per split; the driver's `_regression_target_summary` on the committed audited artifact (1346 / 176 / 176 windows, all finite, the numpy reference moments) and its silent / reasoned `None` branches (no `dataset_id`, no `y_reg_*`, fetch failure, unreadable body, numpy absent) -- none raises. Hermetic (`_http_bytes` replaced in-process).
 - `tests/test_canopy_poller_inventory.py` -- The canopy poller census that can certify a PARTIAL inventory -- a census counting the pollers it found, not the pollers that exist, reports completeness it cannot know.
 - `tests/test_cascor_freeze_tell.py` -- The cascor freeze tell that FALSE-FROZE siblings and missed the real one: both error directions of the same predicate, which a one-sided test cannot separate.
 - `tests/test_ruleset_context_audit.py` -- The ruleset context audit that can make `main` UNMERGEABLE -- promoting a context that never reports leaves every PR blocked forever, so the audit's failure mode is worse than its absence.
@@ -3618,6 +3622,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_git_remote_alias_check.py` -- Turing bring-up G2 and regressions R-G2a/b/c (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, gate G-ALIAS). `util/git_remote_alias_check.py` must name three cases: a `git@github.com:` origin (R-G2a), an `https://` origin (R-G2b), and an alias with no Host block or with `addkeystoagent true` (R-G2c). It must also name near-miss origins, a bypassing `pushurl`, a missing checkout or origin, a directory inside another repo, and a key that is missing, irregular or not mode 600. Real `git` runs on temp repos with every `GIT_*` variable scrubbed. `ssh` is a stub replaying recorded OpenSSH output. `--fix` rewrites only a same-repository origin, re-reads it and is idempotent; `--dry-run` writes nothing. An audit-hook run proves `--if-configured` is the only path that opens a file under `~/.ssh`. A real pre-push hook in a linked worktree, where git exports `GIT_DIR`, still reads each checkout's own origin. `util/ad-hoc/2026-10-17_turing_g2_mutation_check.py` kills 16 of 16 mutants.
 - `tests/test_headless_signing_preflight.py` -- Turing bring-up B7, regressions R-B7a and R-B7b (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). R-B7a: an unset `user.signingkey`, or one without the trailing `!`, fails, and the repo's own config wins. R-B7b: a `GETINFO flavor` of `curses`, `tty` or `emacs` fails. So do a curses fallback (`gtk-2:curses`), a missing, non-executable or relative program, and a hung one, which is killed at `--timeout`. The probe sends only `GETINFO flavor` and `BYE`. Also pinned: the socket, a commented `no-allow-external-cache`, `GNUPGHOME`, the D11 override, `--require-signed-head`, that every failure is listed, and exit 2 for every argument and environment error. Fixtures are stub `gpgconf` and pinentries, a real repo whose `gpg.program` only verifies, and a real AF_UNIX socket. Tripwire `gpg`, `ssh-add` and `ykman` must never run. Runs under `/bin/bash`. `util/ad-hoc/2026-10-17_turing_b7_mutation_check.py` kills 18 of 18 mutants. R-B8 (task B8): no file under `util/` or `scripts/` carries the superseded ed448 key id, and `util/test_gpg_signing.bash`, its last validator, stays deleted.
 - `tests/test_juniper_repo_ssh_setup.py` -- Turing bring-up A5 (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; D2, §13). Pins key creation (the exact `ssh-keygen` argv, then 600/644 whatever ssh-keygen left) and the byte-exact turing block with `AddKeysToAgent no`. Existing bytes and other Host blocks are kept. The config is replaced by rename (new inode, mode 600). A second run is a no-op: same bytes, mtime and inode. Existing non-compliance exits 1 with nothing written. UseKeychain appears only on Darwin. A candidate config that ssh rejects (exit 2) or that resolves wrongly (exit 1) is never installed. `--dry-run` runs no tools. Argument errors exit 2 before any tool runs. The real-tools tests, and a Linux-only `IgnoreUnknown` check, run against a scratch directory. Runs under `/bin/bash`. `util/ad-hoc/2026-10-17_turing_a5_mutation_check.py` kills 16 of 16 mutants.
+- `tests/test_home_path_literal_check.py` -- Turing bring-up G5, gate G-PATH (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, decision D12). `util/home_path_literal_check.py` must fail a tracked `.bash`/`.sh`/`.py`/`.yml` file under `util/`, `scripts/` or `.github/` that holds more lines carrying `/home/pcalnon` than `conf/home_path_literal_baseline.json` allows it, and must list each such line. The suite pins these rules. A line counts once, however many literals it holds, and a file's count does not depend on line numbers. A count equal to the baseline passes, and one over it fails. Every scope directory and suffix is checked, and nothing else is (`.yaml`, `docs/util/`, `tests/`). `# home-path-literal: allow` exempts only its own line. Whole-scope mode skips untracked files and symlinks. A named file is checked whether or not it is tracked. Naming the baseline re-checks the whole scope. A count below its baseline, or a baseline entry for a deleted file, is a NOTE. A missing or malformed baseline, a root that is not a git checkout, and a missing git each exit 2. `--update-baseline` writes sorted per-file counts, one per line, and leaves a current file untouched; `--dry-run` writes nothing. Real `git` runs on temp repos with every `GIT_*` variable scrubbed. Against this checkout, the suite also asserts these points. The committed baseline matches the tree and is in rendered form, and the script holds no literal line of its own. The pre-commit hook's `files` pattern selects exactly the scope, and ci.yml runs the whole-scope step. `util/ad-hoc/2026-10-20_turing_g5_mutation_check.py` kills 22 of 22 mutants.
 - `scripts/test.bash` -- Manual end-to-end harness for session create/resume launcher flows
 - `scripts/test_resume_file_safety.bash` -- Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 
@@ -3793,6 +3798,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - `util/git_remote_alias_check.py` -- Gate G-ALIAS: `python3 util/git_remote_alias_check.py [--root DIR] [--repo NAME]... [--json] [--check | --fix [--dry-run]] [--if-configured [--ssh-config FILE]]`. For each of the 10 active repos it checks the persisted origin and `pushurl`, the alias's `ssh -G` view (github.com, the repo's key as the only identity file, `identitiesonly yes`, `addkeystoagent false`) and the key at mode 600. `--fix` only runs `remote set-url` for the same repository. Every other failure prints the owner's step: `bash util/juniper_repo_ssh_setup.bash <repo>`, `chmod 600 <key>` or `AddKeysToAgent no`. G6 runs `--check --if-configured`, which exits 0 on a host whose ssh config has no `github_juniper-*` alias. Exit 0 / 1 / 2. The JSON schema is in the docstring. `GIT`, `SSH` and `JUNIPER_ROOT` are overridable. Turing bring-up G2. Tests: `tests/test_git_remote_alias_check.py`.
 - `util/headless_signing_preflight.bash` -- Non-credential signing readiness: `bash util/headless_signing_preflight.bash [--repo DIR] [--require-signed-head] [--timeout SECONDS]`. It checks a `!`-pinned `user.signingkey`, `commit.gpgsign`, a GUI pinentry (never searched for on `PATH`), the agent socket and `no-allow-external-cache`, and reports `tag.gpgsign` and HEAD's `%G?`. The D11 override fails as "signing disabled by construction (D11)", so an agent session on turing exits 1 by design; run it from an owner terminal to judge the host. Exit 0 / 1 / 2. Turing bring-up B7; the `--card-timeout` card checks of the original design stay owner-run. `GIT`, `GPGCONF` and `PINENTRY` are overridable. Tests: `tests/test_headless_signing_preflight.py`.
 - `util/juniper_repo_ssh_setup.bash` -- Provisions one repo's deploy key and ssh alias: `bash util/juniper_repo_ssh_setup.bash [--owner OWNER] [--title TITLE] [--ssh-dir DIR] [--dry-run] <repo>`. It creates the deploy key when absent; the title defaults to `Deploy Key - <Host>`. It appends the canonical `Host github_juniper-<repo>` block when absent. It prints the web-UI step: URL, title, "Allow write access", fingerprint, and why never `gh repo deploy-key add`. Then it requires `ssh -G` to resolve github.com, exactly that identity file, and `identitiesonly yes`. Existing state is reported, never fixed. Exit 0 / 1 / 2. Turing bring-up A5. `SSH_KEYGEN`, `SSH` and `UNAME` are overridable. It never reads private-key contents. Tests: `tests/test_juniper_repo_ssh_setup.py`.
+- `util/home_path_literal_check.py` -- Gate G-PATH: `python3 util/home_path_literal_check.py [--root DIR] [--baseline FILE] [FILE ...]`, or the same with `--update-baseline [--dry-run]`. A tracked `.bash`/`.sh`/`.py`/`.yml` file under `util/`, `scripts/` or `.github/` may hold no more lines carrying `/home/pcalnon` than `conf/home_path_literal_baseline.json` allows it. When the gate landed that was 436 files and 651 lines, 427 of the files under `util/ad-hoc/`. A line ending in `# home-path-literal: allow` is not counted. With FILE arguments it checks those files, or the whole scope when the baseline is one of them; that is the `home-path-literal` pre-commit hook. Without arguments it checks every tracked file in scope; that is the whole-scope step in ci.yml's Pre-commit job. A count below its baseline is a NOTE: lower the baseline with `--update-baseline`. Exit 0 / 1 / 2. `GIT` is overridable. Turing bring-up G5, decision D12. Tests: `tests/test_home_path_literal_check.py`.
 - `util/wait_for_checks.py` -- Waits for a PR's **required** status checks to finish, then reports honestly. The shared replacement for the hand-rolled "wait for CI" loops that sessions keep re-writing and keep getting wrong the same two ways. Read-only (only `gh pr view` / `gh api .../rules/...` reads — never merges, updates a branch, pushes, or comments), so any session can run it at any time.
   - `python util/wait_for_checks.py --pr N [--repo juniper-cascor] [--owner pcalnon] [--anchor required|observed] [--fail-fast] [--timeout SECONDS] [--interval 20] [--json] [--verbose]`. Exit **0** all required green / **1** a required check failed (named) / **2** timeout with the still-running and never-reported contexts named / **3** hard error.
   - **Omit `--timeout` and it waits the repo's CI budget** — `timeout_for` in `util/safe_merge.py`, read at call time — and prints `wait budget: <s> (<source>)` on stderr; `--json` carries `timeout` and `timeout_source`. The source names a measured `REPO_TIMEOUTS` row, `safe_merge`'s own default for a repo with no measured budget, or `FALLBACK` to a flat 1800 s when that table cannot be read at all. The flat 1800 s used to be the default outright and sat **below eight of the nine budgets**, so a direct invocation on a healthy canopy / cascor / ml PR could exit **2** while every required context was still running. `safe_merge` always passes `--timeout`, so the merge path was never affected. `TimeoutResolutionTest` pins every row.
@@ -4232,6 +4238,7 @@ Configured hooks (`.pre-commit-config.yaml`):
 | yamllint           | v1.35.1   | YAML files                                       | YAML linting (relaxed mode)                                                                                                   |
 | no-unencrypted-env | local     | `.env`, `.env.secrets`                           | Blocks unencrypted env files from commit                                                                                      |
 | gitleaks           | v8.24.3   | The staged diff (`--staged`; scans nothing in CI) | Secret detection before commit, with `.gitleaks.toml` (default ruleset + `juniper-secret-assignment`); `rev` must equal `ci.yml`'s `GITLEAKS_VERSION` |
+| home-path-literal  | local     | `.bash`/`.sh`/`.py`/`.yml` under `util/`, `scripts/`, `.github/`; the baseline | No new `/home/pcalnon` line beyond `conf/home_path_literal_baseline.json` (turing bring-up G5, gate G-PATH, decision D12) |
 
 ---
 
@@ -4749,12 +4756,49 @@ Optional flags on `--up`:
 - `--config PATH` — copy YAML to `$RUN_DIR/config/experiment.yaml` and export **both** `JUNIPER_CASCOR_CONFIG_FILE` and `JUNIPER_RECURRENCE_CONFIG_FILE`; each app's Wave-3 `ExperimentYamlSettingsSource` projects the `service:` block (activation is by env var only, so the export is the threading mechanism).
 - `--experiment NAME` — Prometheus `experiment` label (default: config basename).
 - `--grafana-bridge` — **opt-in** socat relays + Prometheus target file under `JUNIPER_EXP_DEPLOY_DIR/prometheus/targets/<RUN_ID>.json`. Without it, `--status` reports UNSCRAPED.
+- `--shared-equities-cache DIR` — **opt-in** (W5.6, plan H-9): launch the data leg with `JUNIPER_DATA_EQUITIES_CACHE_DIR=DIR`, a cache that outlives the run, instead of the per-run `$RUN_DIR/equities-cache`. Absolute path; created if absent; never removed by teardown; env equivalent `JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR`. See [Shared equities cache](#shared-equities-cache-w56-opt-in).
 
 #### RUN_DIR contract (§6.4)
 
 `RUN_ID=<UTC yyyymmddThhmmssZ>-<4 hex>` under `JUNIPER_EXP_RUN_ROOT` (default `~/.local/state/juniper-experiments` — under `$HOME`, **not** `/tmp`, so a reaped sandbox cannot destroy results). Everything for the run lives inside `$RUN_DIR`: pidfiles + recorded cmdlines, `logs/`, `relays/`, `config/`, `env/launch.env`, `data/`, `equities-cache/`, `snapshots/`, `artifacts/{plots,results}/`, `ports.json`, `teardown.json`.
 
 Port locks use atomic `mkdir "$LOCK_ROOT/<port>.lock"` (`JUNIPER_EXP_LOCK_ROOT`, default `${XDG_RUNTIME_DIR:-/tmp}/juniper-experiments`) plus an `ss` probe. The lockdir serializes experiment launchers against each other; a foreign binder can still race — that surfaces as the service's own bind failure through the health gate.
+
+#### Shared equities cache (W5.6, opt-in)
+
+Operator runbook for `--shared-equities-cache DIR` (W5.6 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, closing F-D6; the opt-in the experimentation plan's H-9 promised).
+
+**What the default does.** The data leg launches with `JUNIPER_DATA_EQUITIES_CACHE_DIR=$RUN_DIR/equities-cache`, so juniper-data's equities cache -- the Yahoo OHLCV frames (`ohlcv/<TICKER>_<start>_<end>.csv`), SEC's ticker map (`company_tickers.json`) and the point-in-time share counts (`shares/v<n>/<cik>.json`) -- is created empty for every run and reaped with it. That is H-9's isolation choice, and its cost is F-D6: every cell of an equities suite pays the cold Yahoo / SEC fetch again, inside the dataset-create budget (W1.5) and the service's inner data-client timeout (F-S9).
+
+**The opt-in.** `--shared-equities-cache DIR` (or `JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR`, for a caller that cannot pass the flag) launches the data leg with `JUNIPER_DATA_EQUITIES_CACHE_DIR=DIR` instead -- a directory that outlives the run. Nothing else moves: `JUNIPER_DATA_STORAGE_PATH` stays `$RUN_DIR/data` (H-8), the `dataset_id` is unchanged (it hashes the request, not the cache), and a suite's cell ids and `config_sha256` are unchanged (it is a launcher flag, not a suite key, for the same reason as the Grafana bridge).
+
+```bash
+# One launcher
+util/experiment_stack.bash --up --recurrence --config path/to/experiment.yaml --shared-equities-cache "$HOME/.cache/juniper-experiments/equities"
+# Every cell of a suite (the suite passes the flag to each --up and records it)
+python util/experiments/run_suite.py --suite util/experiments/suites/p4/e-h-recurrence-real-data.yaml --shared-equities-cache "$HOME/.cache/juniper-experiments/equities"
+# The same, for a caller that cannot pass the flag
+JUNIPER_EXP_SHARED_EQUITIES_CACHE="$HOME/.cache/juniper-experiments/equities" python util/experiments/run_suite.py --suite path/to/suite.yaml
+```
+
+| Rule | Why |
+|------|-----|
+| Absolute path, or exit `2` before any port is allocated | the data leg launches from `cd $RUN_DIR`, so a relative path would resolve under the run dir and silently be per-run again |
+| Created if absent (live mode; `--dry-run` prints the `mkdir -p` and creates nothing) | a mistyped path is a cold cache, never a failed run |
+| Never removed by `--down` | teardown knows nothing about the cache: it kills recorded pids, releases locks and keeps `artifacts/` |
+| Inert with `--shared-data URL` | that instance's cache is its own; the launcher logs `NOTE: --shared-equities-cache … is inert with --shared-data` |
+| The flag wins over the env knob | a suite's explicit flag cannot be overridden by an exported value |
+
+**Evidence.** The data leg's announce line, `$RUN_DIR/env/launch.env` (the exact env the service was launched with) and `$RUN_DIR/ports.json` (`equities_cache_dir`, `equities_cache_shared: true | false`) all carry the directory; the suite's `registry.jsonl` rows and `suite_manifest.json` carry `shared_equities_cache`.
+
+```bash
+jq '{equities_cache_dir, equities_cache_shared}' "$RUN_DIR/ports.json"
+grep JUNIPER_DATA_EQUITIES_CACHE_DIR "$RUN_DIR/env/launch.env"
+```
+
+**Sharing is read-mostly, not race-free.** juniper-data looks a key up before fetching and writes a cache file with a plain `to_csv` / `write_text` (not temp-and-rename), and reads an unreadable file as a miss. Sequential cells (the default `execution.mode`) never overlap. Two launchers that reach the same *cold* key at the same moment can expose a partially written file to each other -- a short CSV that still parses is the hazard, not a crash -- so share a cache between runs that are sequential or that do not overlap on cold symbols, and keep `mode: parallel` suites on the per-run default. The OHLCV key is `<TICKER>_<start>_<end>`, so a changed date range is a new fetch either way, and the share-count files expire after their own TTL regardless of the cache's age. When a producer release changes a cache layout, start a new directory.
+
+Gate: `tests/test_experiment_stack_shared_equities_cache.py`.
 
 #### Concurrency (Wave 5)
 
@@ -5126,6 +5170,9 @@ python util/experiments/run_suite.py --suite util/experiments/suites/perf/pf1-ca
 python util/experiments/run_suite.py --suite path/to/suite.yaml
 python util/experiments/run_suite.py --suite path/to/suite.yaml --resume <SUITE_ID>
 python util/experiments/run_suite.py --suite path/to/suite.yaml --only c000-deadbeef
+
+# Share one equities cache across every cell (W5.6; see the launcher's Shared equities cache section)
+python util/experiments/run_suite.py --suite util/experiments/suites/p4/e-h-recurrence-real-data.yaml --shared-equities-cache "$HOME/.cache/juniper-experiments/equities"
 ```
 
 | Exit | Meaning |
@@ -5135,6 +5182,8 @@ python util/experiments/run_suite.py --suite path/to/suite.yaml --only c000-dead
 | `2` | Misuse / suite-validation (`SuiteError`, unknown `--only` id, `--resume` dir missing) |
 
 `--compare-baseline TAG` pastes a standalone comparator verdict into `REPORT.md` and **never** changes this exit code. Use `util/experiments/compare_baseline.py` when you want the comparator's own 0/1/2.
+
+`--shared-equities-cache DIR` (W5.6) is passed to every cell's `--up` and recorded on each registry row and in `suite_manifest.json`; `JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR` is honoured the same way and passed explicitly. Absolute path, or exit `2` before the suite dir exists. It is a launcher flag, not a suite key, so cell ids and `config_sha256` are unchanged -- see [Shared equities cache](#shared-equities-cache-w56-opt-in).
 
 #### Suite YAML
 
@@ -6293,13 +6342,41 @@ jq '.stats_error' "$RUN_DIR/manifest.json"
 |-------|--------|------------------|
 | `identity` | manifest | `run_id`, experiment name/description, `config_sha256`, seeds, git SHAs + dirty flags, package versions |
 | `dataset.shapes` | dataset `meta` | `kind: tabular` **or** `kind: sequence`. Sequence `n_windows` is `meta.n_samples` (input size, not work done) |
+| `dataset.target_summary` | the artifact's `y_reg_<split>` arrays (W5.5) | Per split: `n`, `n_finite`, `finite_fraction`, `mean`, `std` (population, ddof=0), `min`, `max`, plus a `basis` string. `null` for an artifact without `y_reg_*` (a classification generator) or when the driver could not read the artifact -- then `provenance.degraded_notes` says why. See [Regression target summary](#regression-target-summary-w55) |
 | `outcome.wall_seconds` | `timings.total` | **De-ratified.** Absorbs plot render + stack bring-up. Not the SPEED half |
 | `outcome.timings` | driver `_phase` | The honest duration map. Cascor keys include `health_wait` / `dataset_create` / `stage` / `start` / `drive`. Recurrence keys include `train` / `crossval` (driver-measured; `/v1/train` is synchronous) |
 | `cascor.training_step_duration` | last-row histogram + per-poll deltas from `metrics_series.csv` | Gateable **work** is `total_steps`. `p50_seconds` / `p95_seconds` are **per-poll means** (`delta-sum / delta-count`); true per-step quantiles are not recoverable from a sum/count exposition — `basis` says so |
 | `cascor.candidate_correlation` | same CSV | Best sampled correlation **per growth round** (round = a `current_hidden_units` increment). Sole source — `/v1/metrics/history` does not carry it |
 | `recurrence.*` | train / crossval payloads + YAML `train` | `n_epochs`, `stopped_reason`, `theta` (explicit vs data-driven), readout rung, CV folds. **No duration field in this block** — train/crossval seconds live under `outcome.timings` |
 | `provenance.metrics_scraped` | driver `_metrics_scraped` | Two facts, never collapsed — see below |
-| `provenance.degraded_notes` | manifest | G-3 sampling errors, collect failures, plot skips, eval-disabled, G-6 mismatch |
+| `provenance.degraded_notes` | manifest | G-3 sampling errors, collect failures, plot skips, eval-disabled, G-6 mismatch, a target summary the driver could not produce (W5.5) |
+
+### Regression target summary (W5.5)
+
+F-D8 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`: the audited `stats.json` reported the sequence dimensions and a `class_distribution` of `null`, and nothing about the regression target the fit predicts. After the dataset phase the driver now fetches the artifact once (`GET /v1/datasets/<id>/artifact`, the body the plot set reads), flattens every `y_reg_<split>` array and hands it to the stdlib `stats_summary.regression_target_summary`. numpy decodes the artifact and is imported lazily; the driver stays importable without it.
+
+```bash
+jq '.dataset.target_summary' "$RUN_DIR/artifacts/results/stats.json"
+jq -r '.provenance.degraded_notes[] | select(startswith("regression target summary"))' "$RUN_DIR/artifacts/results/stats.json"
+```
+
+| Field | Meaning |
+|-------|---------|
+| `splits.<split>.n` / `n_finite` / `finite_fraction` | every value / the finite ones / their ratio. NaN and ±Inf count toward `n` and against the fraction; an empty split has `finite_fraction: null` (0/0 is unknown, not 0) |
+| `splits.<split>.mean` / `std` / `min` / `max` | over the finite values only; `std` is the population std (ddof=0, numpy's default). `null` when a split has no finite value |
+| `basis` | that sentence, in the file, so a reader never has to guess the ddof |
+| `null` block + a degraded note `regression target summary unavailable: …` | numpy missing on the driver host, the fetch failed, or the body did not decode. The run is unaffected |
+| `null` block, no note | the artifact carries no `y_reg_*` key (a classification generator), or the dataset phase never completed |
+
+On the audited artifact (`equities_seq-6.0.0-15505731cba5b86d`, AAPL log-returns, the mint the −18,081 was solved on):
+
+| split | n | finite | mean | std | min | max |
+|-------|---|--------|------|-----|-----|-----|
+| train | 1346 | 100 % | 0.000929 | 0.01824 | −0.1377 | 0.1132 |
+| val | 176 | 100 % | 0.001043 | 0.02276 | −0.0834 | 0.0616 |
+| test | 176 | 100 % | 0.001641 | 0.01372 | −0.0401 | 0.0348 |
+
+`summary.md` prints one line per split under the dataset block, and "moments unavailable (no finite values)" for a split with none. Gate: `tests/test_stats_summary_target_summary.py` (the audited artifact is committed under `reports/2026-10-05_recurrence-equities-cv-consensus/laneA3-rerun/data/`).
 
 ### Step-duration honesty (cascor)
 

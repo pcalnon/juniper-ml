@@ -45,6 +45,14 @@ run's metrics are scraped into Prometheus (socat relay + file_sd target). Off by
 without it a run is UNSCRAPED and ``metrics_scraped.scrape_confirmed`` is ``false``.
 It is an env toggle rather than a suite key on purpose — see ``execute_cell``.
 
+``--shared-equities-cache DIR`` (W5.6, plan H-9) goes to every cell's ``--up``, so the per-cell
+juniper-data instances share one equities cache that outlives the suite instead of each paying
+the cold Yahoo / SEC fetch (F-D6). ``JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR`` in the environment is
+honoured the same way and passed explicitly, so the registry row and ``suite_manifest.json``
+record it either way. Absolute path, or exit 2 before any launch. Like the bridge it is not a
+suite key: it changes where fetches land, not the experiment, so cell ids and ``config_sha256``
+are unchanged.
+
 ``execution.dataset_create_timeout_seconds`` (W1.5) forwards ``--dataset-create-timeout-seconds``
 to the driver. A recurrence cell's dataset budget -- that key, else the cell's own
 ``outputs.dataset_create_timeout_seconds`` -- also reaches ``--up`` as
@@ -897,8 +905,12 @@ def execute_cell(
     runtime_env: "dict[str, str] | None" = None,
     dataset_create_timeout_seconds: "float | None" = None,
     service_env: "dict[str, str] | None" = None,
+    shared_equities_cache: "str | None" = None,
 ) -> dict:
     """--up → driver → --down for one cell; never raises for a cell-level failure.
+
+    ``shared_equities_cache`` (W5.6) is passed through as ``--shared-equities-cache DIR`` on the
+    ``--up`` and recorded on the row; ``main`` resolves it from the flag or the launcher's env knob.
 
     ``stall_seconds`` forwards ``execution.stall_seconds`` to the driver's Q-2 stall
     detector. It matters because the detector watches ``current_epoch``, which only
@@ -964,8 +976,12 @@ def execute_cell(
     up_args = ["/bin/bash", str(launcher), "--up", f"--{app}", "--config", str(cell_yaml), "--experiment", cell["cell_id"]]
     if bridge:
         up_args.append("--grafana-bridge")
+    # W5.6 (F-D6): the shared equities cache is a launcher flag, not a suite key, for the same reason as
+    # the bridge -- it changes where juniper-data's fetches land, never the experiment or its cell id.
+    if shared_equities_cache:
+        up_args += ["--shared-equities-cache", shared_equities_cache]
 
-    row = {"cell_id": cell["cell_id"], "name": cell["name"], "overrides": cell["overrides"], "config_sha256": hashlib.sha256(cell_yaml.read_bytes()).hexdigest(), "run_id": None, "outcome": "failed", "exit_code": None, "error": None, "thread_budget": dict(extra_env) if extra_env else None, "runtime_env": dict(runtime_env) if runtime_env else None, "service_env": dict(service_env) if service_env else None, "grafana_bridge": bridge}
+    row = {"cell_id": cell["cell_id"], "name": cell["name"], "overrides": cell["overrides"], "config_sha256": hashlib.sha256(cell_yaml.read_bytes()).hexdigest(), "run_id": None, "outcome": "failed", "exit_code": None, "error": None, "thread_budget": dict(extra_env) if extra_env else None, "runtime_env": dict(runtime_env) if runtime_env else None, "service_env": dict(service_env) if service_env else None, "grafana_bridge": bridge, "shared_equities_cache": shared_equities_cache or None}
     up = subprocess.run(up_args, capture_output=True, text=True, timeout=max(timeout, 300), env=env)
     match = RUN_ID_BANNER.search(up.stdout + up.stderr)
     if up.returncode != 0 or not match:
@@ -1224,7 +1240,24 @@ def main(argv: "list[str] | None" = None) -> int:
         help="After aggregating, compare against this Q-8 baseline and record the verdict in REPORT.md. "
         "REPORTING ONLY: the suite's exit code is unchanged by the verdict (whether the run tier gates is a separate owner decision).",
     )
+    parser.add_argument(
+        "--shared-equities-cache",
+        metavar="DIR",
+        default=None,
+        help="OPT-IN (W5.6, plan H-9): pass --shared-equities-cache DIR to every cell's --up, so the per-cell juniper-data instances "
+        "share one equities cache that outlives the suite (absolute path; created if absent). Default: each cell's own RUN_DIR/equities-cache, "
+        "a cold Yahoo / SEC fetch per cell. JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR in the environment is honoured the same way. "
+        "Cell ids and config_sha256 are unchanged: the cache changes where fetches land, not the experiment.",
+    )
     args = parser.parse_args(argv)
+
+    # W5.6: resolve the shared cache from the flag or the launcher's own env knob HERE, so the registry row
+    # and suite_manifest.json record what every --up was given either way, and a bad value refuses the
+    # suite before anything is written or launched.
+    shared_cache = (args.shared_equities_cache or os.environ.get("JUNIPER_EXP_SHARED_EQUITIES_CACHE", "")).strip() or None
+    if shared_cache is not None and not os.path.isabs(shared_cache):
+        print(f"suite error: --shared-equities-cache needs an absolute path (got {shared_cache!r}): the launcher's data leg starts from the run dir, so a relative path would be per-run again", file=sys.stderr)
+        return 2
 
     try:
         doc = load_suite(args.suite)
@@ -1263,9 +1296,10 @@ def main(argv: "list[str] | None" = None) -> int:
         # W1.5: only the suite-level budget is known here -- a cell's own outputs.dataset_create_timeout_seconds
         # is read from its materialised YAML, which a dry run does not write.
         up_env = "".join(f"{key}={value} " for key, value in recurrence_data_timeout_env(suite["app"], {}, dataset_create_timeout_seconds).items())
+        cache_flag = f" --shared-equities-cache {shared_cache}" if shared_cache else ""
         for cell in cells:
             print(f"  {cell['cell_id']}  config={Path(cell['config_path']).name}  overrides={json.dumps(cell['overrides'], sort_keys=True)}" + (f"  name={cell['name']}" if cell["name"] else "") + (f"  acceptance={json.dumps(cell['acceptance'], sort_keys=True)}" if cell.get("acceptance") else ""))
-            print(f"    $ {up_env}{launcher} --up --{suite['app']} --config {suite_dir}/cells/{cell['cell_id']}/experiment.yaml --experiment {cell['cell_id']}")
+            print(f"    $ {up_env}{launcher} --up --{suite['app']} --config {suite_dir}/cells/{cell['cell_id']}/experiment.yaml --experiment {cell['cell_id']}{cache_flag}")
             stall_flag = f" --stall-seconds {stall_seconds}" if stall_seconds is not None else ""
             wall_flag = f" --max-wall-seconds {max_wall_seconds}" if max_wall_seconds is not None else ""
             dataset_flag = f" --dataset-create-timeout-seconds {dataset_create_timeout_seconds}" if dataset_create_timeout_seconds is not None else ""
@@ -1286,7 +1320,7 @@ def main(argv: "list[str] | None" = None) -> int:
         return 2
 
     (suite_dir / "suite_manifest.json").write_text(
-        json.dumps({"schema": "juniper-experiment-suite/1", "suite_id": suite_id, "suite": suite, "execution": execution, "cells": [{k: c[k] for k in ("cell_id", "index", "name", "config_path", "overrides", "acceptance")} for c in cells], "suite_yaml_sha256": hashlib.sha256(args.suite.read_bytes()).hexdigest()}, indent=2, sort_keys=True)
+        json.dumps({"schema": "juniper-experiment-suite/1", "suite_id": suite_id, "suite": suite, "execution": execution, "cells": [{k: c[k] for k in ("cell_id", "index", "name", "config_path", "overrides", "acceptance")} for c in cells], "suite_yaml_sha256": hashlib.sha256(args.suite.read_bytes()).hexdigest(), "shared_equities_cache": shared_cache}, indent=2, sort_keys=True)
         + "\n"
     )
 
@@ -1357,7 +1391,7 @@ def main(argv: "list[str] | None" = None) -> int:
                 if stop.is_set():
                     break
                 print(f"[suite] {cell['cell_id']}: submitted ({json.dumps(cell['overrides'], sort_keys=True)})", flush=True)
-                futures[pool.submit(execute_cell, cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]], dataset_create_timeout_seconds=dataset_create_timeout_seconds, service_env=service_envs[cell["cell_id"]])] = cell
+                futures[pool.submit(execute_cell, cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]], dataset_create_timeout_seconds=dataset_create_timeout_seconds, service_env=service_envs[cell["cell_id"]], shared_equities_cache=shared_cache)] = cell
             for future in as_completed(futures):
                 cell = futures[future]
                 row = future.result()
@@ -1369,7 +1403,7 @@ def main(argv: "list[str] | None" = None) -> int:
     else:
         for cell in runnable:
             print(f"[suite] {cell['cell_id']}: running ({json.dumps(cell['overrides'], sort_keys=True)})", flush=True)
-            row = execute_cell(cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]], dataset_create_timeout_seconds=dataset_create_timeout_seconds, service_env=service_envs[cell["cell_id"]])
+            row = execute_cell(cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]], dataset_create_timeout_seconds=dataset_create_timeout_seconds, service_env=service_envs[cell["cell_id"]], shared_equities_cache=shared_cache)
             _record(cell, row)
             if row["outcome"] not in COMPLETE_OUTCOMES:
                 any_failed = True

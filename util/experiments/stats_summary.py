@@ -25,6 +25,11 @@ Honesty notes baked into the output:
   hidden-unit increment.
 * Degraded-mode notes (SS8.3 provenance/health) surface metrics-sampling errors,
   collection errors, per-plot skips, and disabled eval metrics instead of hiding them.
+* The regression target summary (W5.5, F-D8 of the equities end-to-end plan) is per split
+  over the finite values of the artifact's ``y_reg_<split>`` arrays -- population std
+  (ddof=0), and ``finite_fraction`` counts NaN / ±Inf against the split instead of dropping
+  them silently. The driver reads the arrays from the dataset artifact (lazy numpy); when it
+  cannot, the stats say why in a degraded-mode note rather than omitting the block.
 
 Stdlib only (loaded by ``run_experiment.py`` through the same sibling-module file-path
 loader as the plot modules, but with no matplotlib/numpy dependency, so stats render on
@@ -34,9 +39,14 @@ any host the driver runs on). ``util/`` is not pre-commit-lint-gated;
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Mapping, Optional
+import math
+from typing import Any, Dict, Iterable, List, Mapping, Optional
 
 STATS_SCHEMA = "juniper-experiment-stats/1"
+
+#: W5.5 (F-D8): the canonical split order of the target summary; other splits follow, sorted.
+TARGET_SPLIT_ORDER = ("train", "val", "test")
+TARGET_SUMMARY_BASIS = "per split over the finite values of y_reg_<split>; std is the population std (ddof=0); finite_fraction = n_finite / n; NaN and ±Inf count toward n and are excluded from the moments"
 
 CORRELATION_COLUMN = "juniper_cascor_candidate_correlation"
 HIDDEN_COLUMN = "current_hidden_units"
@@ -68,6 +78,43 @@ def percentile(values: List[float], q: float) -> Optional[float]:
     high = min(low + 1, len(ordered) - 1)
     frac = rank - low
     return ordered[low] * (1.0 - frac) + ordered[high] * frac
+
+
+def _split_order(names: Iterable[str]) -> List[str]:
+    known = list(names)
+    return [name for name in TARGET_SPLIT_ORDER if name in known] + sorted(name for name in known if name not in TARGET_SPLIT_ORDER)
+
+
+def regression_target_summary(targets_by_split: Mapping[str, Iterable[Any]]) -> Optional[Dict[str, Any]]:
+    """W5.5 (F-D8): mean / std / min / max / finite fraction of a regression target, per split.
+
+    ``targets_by_split`` maps a split name to its target values -- any iterable of numbers; the
+    driver hands over each ``y_reg_<split>`` array of the dataset artifact flattened to one value
+    per window. Per split: ``n`` counts every value, ``n_finite`` the finite ones, and the moments
+    are over the finite ones only (population std, ddof=0), so NaN / ±Inf lower
+    ``finite_fraction`` instead of poisoning the mean. A split with no finite values keeps its
+    ``n`` and reports ``None`` moments; an empty split reports ``finite_fraction`` ``None`` (0/0 is
+    not 0). Splits are ordered train / val / test, then the rest sorted. Returns ``None`` when
+    there are no splits at all, so a caller can tell "no regression target" from "a target with
+    no finite values". Stdlib only.
+    """
+    if not targets_by_split:
+        return None
+    splits: Dict[str, Any] = {}
+    for split in _split_order(targets_by_split):
+        n = 0
+        finite: List[float] = []
+        for raw in targets_by_split[split]:
+            n += 1
+            value = raw if isinstance(raw, float) else _to_float(raw)
+            if value is not None and math.isfinite(value):
+                finite.append(value)
+        block: Dict[str, Any] = {"n": n, "n_finite": len(finite), "finite_fraction": (len(finite) / n) if n else None, "mean": None, "std": None, "min": None, "max": None}
+        if finite:
+            mean = math.fsum(finite) / len(finite)
+            block.update(mean=mean, std=math.sqrt(math.fsum((value - mean) ** 2 for value in finite) / len(finite)), min=min(finite), max=max(finite))
+        splits[split] = block
+    return {"basis": TARGET_SUMMARY_BASIS, "splits": splits}
 
 
 def correlation_per_round(series_rows: List[Mapping[str, Any]]) -> Dict[str, Any]:
@@ -121,7 +168,7 @@ def step_duration_stats(series_rows: List[Mapping[str, Any]]) -> Dict[str, Any]:
     }
 
 
-def _dataset_block(manifest: Mapping[str, Any]) -> Dict[str, Any]:
+def _dataset_block(manifest: Mapping[str, Any], target_summary: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
     dataset = manifest.get("dataset") if isinstance(manifest.get("dataset"), Mapping) else {}
     meta = dataset.get("meta") if isinstance(dataset.get("meta"), Mapping) else {}
     if meta.get("sequence"):
@@ -150,10 +197,14 @@ def _dataset_block(manifest: Mapping[str, Any]) -> Dict[str, Any]:
         "task_type": meta.get("task_type"),
         "shapes": shapes,
         "class_distribution": meta.get("class_distribution"),
+        # W5.5 (F-D8): the regression counterpart of class_distribution -- None when the artifact
+        # carries no y_reg_* arrays (every classification generator) or the driver could not read
+        # them (then provenance.degraded_notes says why).
+        "target_summary": dict(target_summary) if isinstance(target_summary, Mapping) else None,
     }
 
 
-def _degraded_notes(manifest: Mapping[str, Any], kind: str, metrics_final: Optional[Mapping[str, Any]]) -> List[str]:
+def _degraded_notes(manifest: Mapping[str, Any], kind: str, metrics_final: Optional[Mapping[str, Any]], target_summary_error: Optional[str] = None) -> List[str]:
     notes: List[str] = []
     drive_loop = manifest.get("drive_loop") if isinstance(manifest.get("drive_loop"), Mapping) else {}
     sampling_errors = drive_loop.get("metrics_sampling_errors")
@@ -174,6 +225,8 @@ def _degraded_notes(manifest: Mapping[str, Any], kind: str, metrics_final: Optio
     g6 = manifest.get("g6_shape_check")
     if isinstance(g6, Mapping) and not g6.get("ok"):
         notes.append("G-6 shape check FAILED: loaded network input width does not match the requested dataset")
+    if target_summary_error:
+        notes.append(f"regression target summary unavailable: {target_summary_error}")
     return notes
 
 
@@ -185,8 +238,15 @@ def build_stats(
     train_summary: Optional[Mapping[str, Any]] = None,
     crossval: Optional[Mapping[str, Any]] = None,
     train_config: Optional[Mapping[str, Any]] = None,
+    target_summary: Optional[Mapping[str, Any]] = None,
+    target_summary_error: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Assemble the SS8.3 stats dict from the manifest + kind-specific collected payloads."""
+    """Assemble the SS8.3 stats dict from the manifest + kind-specific collected payloads.
+
+    ``target_summary`` is :func:`regression_target_summary`'s result for the run's dataset artifact
+    (W5.5) and lands under ``dataset.target_summary``; ``target_summary_error`` is the driver's
+    reason when it could not produce one and becomes a degraded-mode note.
+    """
     git_block = {}
     for repo, info in (manifest.get("git") or {}).items():
         if isinstance(info, Mapping):
@@ -204,7 +264,7 @@ def build_stats(
             "git": git_block,
             "packages": packages,
         },
-        "dataset": _dataset_block(manifest),
+        "dataset": _dataset_block(manifest, target_summary),
         "outcome": {
             "outcome": manifest.get("outcome"),
             "acceptance": manifest.get("acceptance"),
@@ -213,7 +273,7 @@ def build_stats(
         },
         "provenance": {
             "metrics_scraped": manifest.get("metrics_scraped"),
-            "degraded_notes": _degraded_notes(manifest, kind, metrics_final),
+            "degraded_notes": _degraded_notes(manifest, kind, metrics_final, target_summary_error),
         },
     }
 
@@ -291,6 +351,18 @@ def render_summary_md(stats: Mapping[str, Any]) -> str:
     ]
     if dataset.get("class_distribution"):
         lines.append(f"- class distribution: {dataset.get('class_distribution')}")
+    # W5.5 (F-D8): one line per split; a split with no finite values says so instead of printing None moments.
+    target = dataset.get("target_summary")
+    if isinstance(target, Mapping) and isinstance(target.get("splits"), Mapping):
+        lines.append("- regression target (y_reg) per split:")
+        for split, block in target["splits"].items():
+            block = block if isinstance(block, Mapping) else {}
+            head = f"  - {split}: n={_fmt(block.get('n'))}, finite={_fmt(block.get('n_finite'))} (fraction {_fmt(block.get('finite_fraction'))})"
+            if block.get("n_finite"):
+                lines.append(head + f", mean={_fmt(block.get('mean'))}, std={_fmt(block.get('std'))}, min={_fmt(block.get('min'))}, max={_fmt(block.get('max'))}")
+            else:
+                lines.append(head + ", moments unavailable (no finite values)")
+        lines.append(f"  - basis: {target.get('basis')}")
     lines += ["", "## Timings", ""]
     lines += [f"- {phase}: {_fmt(seconds)}s" for phase, seconds in sorted((outcome.get("timings") or {}).items())]
 
