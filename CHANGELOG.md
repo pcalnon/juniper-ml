@@ -46,6 +46,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Commit signing for the terminal and the IDEs** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, VALIDATED after two consensus rounds; it extends arc B of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - **What the tool does.** `util/configure_commit_signing.py` installs and verifies the owner's signing for every checkout under
+    `~/Development/python/Juniper/` with one `includeIf "gitdir/i:~/Development/python/Juniper/"`, which points at
+    `~/.config/git/juniper-signing.gitconfig`. That file holds yamaguchi's values: `user.signingkey` pinned to the full
+    fingerprint with `!`, `commit.gpgsign` and `tag.gpgsign`, plus an absolute `gpg.program` in a known GnuPG install.
+  - **Why the IDEs need no setting.** Cursor's and VS Code's git extension adds `-S` only on request and never disables
+    signing. So both IDEs sign through git's config, without the shell's PATH or a TTY.
+  - **What is unchanged.** Repositories outside the root, and Claude Code sessions, which D11 keeps unsigned by
+    construction.
+  - **What `--check` covers.** It verifies the setup without credentials:
+    - planted repo-local signing keys and hooks;
+    - the include's integrity;
+    - IDE settings that would defeat the config;
+    - whether an IDE agent can commit, or bypass signing, without a prompt.
+  - **The other modes.** `--remove` undoes `--apply` exactly.
+  - **Tests and evidence.** `tests/test_configure_commit_signing.py` pins R-S1..R-S19, and `util/ad-hoc/2026-10-19_commit_signing_mutation_check.py` kills 50 of 50 mutants.
+  - **Doc changes.** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` gains §19 (v1.4.0). The AGENTS.md unsigned-commit hazard gains the IDE-agent rule.
+  - **Applied on turing (2026-10-20).** An owner commit in the tree now fails closed until the owner imports the public
+    key and learns the card stubs (bring-up B2/B3). The first `gpg --card-status` writes the stubs, so no card goes into
+    turing until the agent guard (C8) is installed, the guard rules (K12) are merged and re-installed, and the IDE-agent
+    approval rules (K13) are in place. The touch policy (S11) is set at that first insertion.
+
 - **`stats.json` / `summary.md` carry a per-split regression target summary** (W5.5 of
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; F-D8). The audited
   `stats.json` reported the sequence dimensions and a `class_distribution` of `null`, and nothing about the target the

@@ -470,6 +470,7 @@ jobs:
           python3 -m unittest -v tests/test_juniper_chop_all.py
           python3 -m unittest -v tests/test_isolated_stack_script.py
           python3 -m unittest -v tests/test_check_conda_env_torch.py
+          python3 -m unittest -v tests/test_configure_commit_signing.py
 
       - name: Run bash regression tests
         if: steps.changes.outputs.run == 'true'

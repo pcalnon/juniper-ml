@@ -1385,6 +1385,16 @@ jobs:
           # by construction". Stub gpgconf/pinentries, a real repo and AF_UNIX socket; tripwire
           # gpg, ssh-add and ykman on PATH must never run.
           python3 -m unittest -v tests/test_headless_signing_preflight.py
+          # tests/test_configure_commit_signing.py: commit-signing plan R-S1..R-S19 (bring-up B4a, gate G-SIGN).
+          # util/configure_commit_signing.py installs the owner's signing for the Juniper tree as one includeIf
+          # (gitdir/i: on the root, rendered from realpaths) plus an include file, and checks it without
+          # credentials. Real git on temp checkouts under a temp HOME with every GIT_* scrubbed and a
+          # Homebrew-shaped recording fake gpg: terminal, IDE-argv, merge, cherry-pick and annotated-tag
+          # commits sign with the pinned key; D11's env keeps a plain agent commit unsigned, while -S,
+          # -c include.path= and --config-env still sign (the gap the C8 guard and K12 close). Also pinned:
+          # planted local keys, include integrity, IDE settings (JSONC), agent auto-approve verdicts, an exact
+          # --remove, and an audit hook proving no ~/.gnupg or ~/.ssh open, no gpg run, no stray write.
+          python3 -m unittest -v tests/test_configure_commit_signing.py
           # tests/test_juniper_repo_ssh_setup.py: turing bring-up A5. util/juniper_repo_ssh_setup.bash
           # creates id_ed25519_github_juniper-<repo> when absent (600/644) and appends the canonical Host
           # block via a same-dir temp file, an ssh -F <temp> -G pre-check and mv; a second run is
@@ -2374,11 +2384,11 @@ jobs:
       # tests/redacted_env.py and this workflow always count. G1's two suites join when it lands.
       HOST_TOOLING_SUITES: >-
         juniper_clone find_encryption_readme_notes macvm_ctl claude_agent_guard
-        git_remote_alias_check headless_signing_preflight juniper_repo_ssh_setup home_path_literal_check
+        git_remote_alias_check headless_signing_preflight juniper_repo_ssh_setup home_path_literal_check configure_commit_signing
       HOST_TOOLING_PATHS: >-
         util/juniper_clone.bash util/find_encryption_readme_notes.bash util/macvm_ctl.bash
         util/claude_agent_guard.py util/install_claude_agent_guard.bash util/git_remote_alias_check.py
-        util/headless_signing_preflight.bash util/juniper_repo_ssh_setup.bash util/home_path_literal_check.py
+        util/headless_signing_preflight.bash util/juniper_repo_ssh_setup.bash util/home_path_literal_check.py util/configure_commit_signing.py
         conf/home_path_literal_baseline.json .pre-commit-config.yaml
     steps:
       - name: Checkout Code (full history)

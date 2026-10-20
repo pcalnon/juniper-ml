@@ -48,8 +48,12 @@ PR rather than waiving the budget gate.
   `required_signatures` (all 9 as of 2026-08-12), and squash does not rescue it. A
   host without signing configured (turing, as of 2026-10-15) must land work through
   `util/open_signed_pr.py`, not a local commit + push. Check with
-  `git log -1 --format=%G?` (`N` = unsigned). Plan:
-  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`.
+  `git log -1 --format=%G?` (`N` = unsigned). An IDE agent (Cursor, Copilot, Amp) must
+  never answer a signing failure with `--no-gpg-sign` or `-c commit.gpgsign=false`: stop
+  and ask the owner, who approves the run and touches the key. Owner signing for the
+  Juniper tree: `util/configure_commit_signing.py`. Plans:
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`,
+  `notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`.
 
 ---
 
@@ -72,7 +76,7 @@ pip install -e ".[tools]"      # ci-tools + doc-tools + observability
 pip install -e ".[doc-tools]"  # markdown link validator (back-compat alias)
 pip install -e ".[all]"        # everything (multi-GB; pulls torch via worker)
 
-# Run all tests -- the full ordered list of 217 `python3 -m unittest`
+# Run all tests -- the full ordered list of 218 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
 # § Test Suite Reference. It is generated from ci.yml's regression step, which is
 # the authoritative list; tests/test_ci_test_wiring_drift.py gates that every suite
