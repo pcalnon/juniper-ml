@@ -3099,7 +3099,7 @@ Related: [Relocation Completeness (G3)](#relocation-completeness-g3),
 
 ### Running every suite
 
-The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th), **169** on 2026-10-03 (`tests/test_juniper_backup_tier2_lane.py`), **198** on 2026-10-08 (173 on `main` that morning, plus the 25 suites harvested from the Cursor flood-3 PRs), **199** with W1.5's `tests/test_recurrence_operation_identity_and_dataset_budget.py`; the drift script above counts, so re-run it rather than trusting this figure. This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
+The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th), **169** on 2026-10-03 (`tests/test_juniper_backup_tier2_lane.py`), **198** on 2026-10-08 (173 on `main` that morning, plus the 25 suites harvested from the Cursor flood-3 PRs), **199** with W1.5's `tests/test_recurrence_operation_identity_and_dataset_budget.py`, **213** with W5.4's `tests/test_run_suite_acceptance.py`, **214** with G5's `tests/test_home_path_literal_check.py`, **216** on 2026-10-20 with W5.5 / W5.6's `tests/test_stats_summary_target_summary.py` and `tests/test_experiment_stack_shared_equities_cache.py`; the drift script above counts, so re-run it rather than trusting this figure. This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
 
 ci.yml is the authoritative list. `tests/test_ci_test_wiring_drift.py` gates that every `tests/test_*.py` on disk is invoked there; `util/ad-hoc/2026-09-10_agents_md_test_list_drift.py` reports any suite CI runs that this list does not name.
 
@@ -3212,6 +3212,7 @@ python3 -m unittest -v tests/test_juniper_plant_all.py
 python3 -m unittest -v tests/test_juniper_chop_all.py
 python3 -m unittest -v tests/test_isolated_stack_script.py
 python3 -m unittest -v tests/test_experiment_stack_script.py
+python3 -m unittest -v tests/test_experiment_stack_shared_equities_cache.py
 python3 -m unittest -v tests/test_recurrence_env_preflight.py
 python3 -m unittest -v tests/test_run_experiment.py
 python3 -m unittest -v tests/test_read_run_metrics.py
@@ -3252,6 +3253,7 @@ python3 -m unittest -v tests/test_list_runs_classify_guards.py
 python3 -m unittest -v tests/test_register_close_protocol.py
 python3 -m unittest -v tests/test_stats_summary_render.py
 python3 -m unittest -v tests/test_stats_summary_git_and_confirmed.py
+python3 -m unittest -v tests/test_stats_summary_target_summary.py
 python3 -m unittest -v tests/test_canopy_poller_inventory.py
 python3 -m unittest -v tests/test_cascor_freeze_tell.py
 python3 -m unittest -v tests/test_ruleset_context_audit.py
@@ -3543,6 +3545,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_register_close_protocol.py` -- The defect-register operator pair that #1648/#1717 cannot see: the close protocol itself, distinct from the open-set reader and the status crosscheck.
 - `tests/test_stats_summary_render.py` -- `summary.md` scrape-honesty line collection: which lines the renderer must emit, the conditional class-distribution line, the reason sub-bullet, and `present`/`written` key precedence.
 - `tests/test_stats_summary_git_and_confirmed.py` -- The `summary.md` scrape tri-state and git provenance the producer suite cannot see -- `confirmed` None-is-not-False, the N/A fallback, unavailable git, clean-head, and a decreasing count that must not mint a poll sample. Independent sibling of `test_stats_summary_render.py`; see its header for why both were kept.
+- `tests/test_stats_summary_target_summary.py` -- W5.5 (F-D8): the per-split regression target summary. The stdlib `regression_target_summary` (mean / population std / min / max / finite fraction; NaN and ±Inf count toward `n` and against `finite_fraction`; an empty split is `None`, not 0/0; train / val / test order); `build_stats` carries it as `dataset.target_summary` and turns an error into a degraded-mode note; `summary.md` prints one line per split; the driver's `_regression_target_summary` on the committed audited artifact (1346 / 176 / 176 windows, all finite, the numpy reference moments) and its silent / reasoned `None` branches (no `dataset_id`, no `y_reg_*`, fetch failure, unreadable body, numpy absent) -- none raises. Hermetic (`_http_bytes` replaced in-process).
 - `tests/test_canopy_poller_inventory.py` -- The canopy poller census that can certify a PARTIAL inventory -- a census counting the pollers it found, not the pollers that exist, reports completeness it cannot know.
 - `tests/test_cascor_freeze_tell.py` -- The cascor freeze tell that FALSE-FROZE siblings and missed the real one: both error directions of the same predicate, which a one-sided test cannot separate.
 - `tests/test_ruleset_context_audit.py` -- The ruleset context audit that can make `main` UNMERGEABLE -- promoting a context that never reports leaves every PR blocked forever, so the audit's failure mode is worse than its absence.
@@ -4755,12 +4758,49 @@ Optional flags on `--up`:
 - `--config PATH` — copy YAML to `$RUN_DIR/config/experiment.yaml` and export **both** `JUNIPER_CASCOR_CONFIG_FILE` and `JUNIPER_RECURRENCE_CONFIG_FILE`; each app's Wave-3 `ExperimentYamlSettingsSource` projects the `service:` block (activation is by env var only, so the export is the threading mechanism).
 - `--experiment NAME` — Prometheus `experiment` label (default: config basename).
 - `--grafana-bridge` — **opt-in** socat relays + Prometheus target file under `JUNIPER_EXP_DEPLOY_DIR/prometheus/targets/<RUN_ID>.json`. Without it, `--status` reports UNSCRAPED.
+- `--shared-equities-cache DIR` — **opt-in** (W5.6, plan H-9): launch the data leg with `JUNIPER_DATA_EQUITIES_CACHE_DIR=DIR`, a cache that outlives the run, instead of the per-run `$RUN_DIR/equities-cache`. Absolute path; created if absent; never removed by teardown; env equivalent `JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR`. See [Shared equities cache](#shared-equities-cache-w56-opt-in).
 
 #### RUN_DIR contract (§6.4)
 
 `RUN_ID=<UTC yyyymmddThhmmssZ>-<4 hex>` under `JUNIPER_EXP_RUN_ROOT` (default `~/.local/state/juniper-experiments` — under `$HOME`, **not** `/tmp`, so a reaped sandbox cannot destroy results). Everything for the run lives inside `$RUN_DIR`: pidfiles + recorded cmdlines, `logs/`, `relays/`, `config/`, `env/launch.env`, `data/`, `equities-cache/`, `snapshots/`, `artifacts/{plots,results}/`, `ports.json`, `teardown.json`.
 
 Port locks use atomic `mkdir "$LOCK_ROOT/<port>.lock"` (`JUNIPER_EXP_LOCK_ROOT`, default `${XDG_RUNTIME_DIR:-/tmp}/juniper-experiments`) plus an `ss` probe. The lockdir serializes experiment launchers against each other; a foreign binder can still race — that surfaces as the service's own bind failure through the health gate.
+
+#### Shared equities cache (W5.6, opt-in)
+
+Operator runbook for `--shared-equities-cache DIR` (W5.6 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, closing F-D6; the opt-in the experimentation plan's H-9 promised).
+
+**What the default does.** The data leg launches with `JUNIPER_DATA_EQUITIES_CACHE_DIR=$RUN_DIR/equities-cache`, so juniper-data's equities cache -- the Yahoo OHLCV frames (`ohlcv/<TICKER>_<start>_<end>.csv`), SEC's ticker map (`company_tickers.json`) and the point-in-time share counts (`shares/v<n>/<cik>.json`) -- is created empty for every run and reaped with it. That is H-9's isolation choice, and its cost is F-D6: every cell of an equities suite pays the cold Yahoo / SEC fetch again, inside the dataset-create budget (W1.5) and the service's inner data-client timeout (F-S9).
+
+**The opt-in.** `--shared-equities-cache DIR` (or `JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR`, for a caller that cannot pass the flag) launches the data leg with `JUNIPER_DATA_EQUITIES_CACHE_DIR=DIR` instead -- a directory that outlives the run. Nothing else moves: `JUNIPER_DATA_STORAGE_PATH` stays `$RUN_DIR/data` (H-8), the `dataset_id` is unchanged (it hashes the request, not the cache), and a suite's cell ids and `config_sha256` are unchanged (it is a launcher flag, not a suite key, for the same reason as the Grafana bridge).
+
+```bash
+# One launcher
+util/experiment_stack.bash --up --recurrence --config path/to/experiment.yaml --shared-equities-cache "$HOME/.cache/juniper-experiments/equities"
+# Every cell of a suite (the suite passes the flag to each --up and records it)
+python util/experiments/run_suite.py --suite util/experiments/suites/p4/e-h-recurrence-real-data.yaml --shared-equities-cache "$HOME/.cache/juniper-experiments/equities"
+# The same, for a caller that cannot pass the flag
+JUNIPER_EXP_SHARED_EQUITIES_CACHE="$HOME/.cache/juniper-experiments/equities" python util/experiments/run_suite.py --suite path/to/suite.yaml
+```
+
+| Rule | Why |
+|------|-----|
+| Absolute path, or exit `2` before any port is allocated | the data leg launches from `cd $RUN_DIR`, so a relative path would resolve under the run dir and silently be per-run again |
+| Created if absent (live mode; `--dry-run` prints the `mkdir -p` and creates nothing) | a mistyped path is a cold cache, never a failed run |
+| Never removed by `--down` | teardown knows nothing about the cache: it kills recorded pids, releases locks and keeps `artifacts/` |
+| Inert with `--shared-data URL` | that instance's cache is its own; the launcher logs `NOTE: --shared-equities-cache … is inert with --shared-data` |
+| The flag wins over the env knob | a suite's explicit flag cannot be overridden by an exported value |
+
+**Evidence.** The data leg's announce line, `$RUN_DIR/env/launch.env` (the exact env the service was launched with) and `$RUN_DIR/ports.json` (`equities_cache_dir`, `equities_cache_shared: true | false`) all carry the directory; the suite's `registry.jsonl` rows and `suite_manifest.json` carry `shared_equities_cache`.
+
+```bash
+jq '{equities_cache_dir, equities_cache_shared}' "$RUN_DIR/ports.json"
+grep JUNIPER_DATA_EQUITIES_CACHE_DIR "$RUN_DIR/env/launch.env"
+```
+
+**Sharing is read-mostly, not race-free.** juniper-data looks a key up before fetching and writes a cache file with a plain `to_csv` / `write_text` (not temp-and-rename), and reads an unreadable file as a miss. Sequential cells (the default `execution.mode`) never overlap. Two launchers that reach the same *cold* key at the same moment can expose a partially written file to each other -- a short CSV that still parses is the hazard, not a crash -- so share a cache between runs that are sequential or that do not overlap on cold symbols, and keep `mode: parallel` suites on the per-run default. The OHLCV key is `<TICKER>_<start>_<end>`, so a changed date range is a new fetch either way, and the share-count files expire after their own TTL regardless of the cache's age. When a producer release changes a cache layout, start a new directory.
+
+Gate: `tests/test_experiment_stack_shared_equities_cache.py`.
 
 #### Concurrency (Wave 5)
 
@@ -5132,6 +5172,9 @@ python util/experiments/run_suite.py --suite util/experiments/suites/perf/pf1-ca
 python util/experiments/run_suite.py --suite path/to/suite.yaml
 python util/experiments/run_suite.py --suite path/to/suite.yaml --resume <SUITE_ID>
 python util/experiments/run_suite.py --suite path/to/suite.yaml --only c000-deadbeef
+
+# Share one equities cache across every cell (W5.6; see the launcher's Shared equities cache section)
+python util/experiments/run_suite.py --suite util/experiments/suites/p4/e-h-recurrence-real-data.yaml --shared-equities-cache "$HOME/.cache/juniper-experiments/equities"
 ```
 
 | Exit | Meaning |
@@ -5141,6 +5184,8 @@ python util/experiments/run_suite.py --suite path/to/suite.yaml --only c000-dead
 | `2` | Misuse / suite-validation (`SuiteError`, unknown `--only` id, `--resume` dir missing) |
 
 `--compare-baseline TAG` pastes a standalone comparator verdict into `REPORT.md` and **never** changes this exit code. Use `util/experiments/compare_baseline.py` when you want the comparator's own 0/1/2.
+
+`--shared-equities-cache DIR` (W5.6) is passed to every cell's `--up` and recorded on each registry row and in `suite_manifest.json`; `JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR` is honoured the same way and passed explicitly. Absolute path, or exit `2` before the suite dir exists. It is a launcher flag, not a suite key, so cell ids and `config_sha256` are unchanged -- see [Shared equities cache](#shared-equities-cache-w56-opt-in).
 
 #### Suite YAML
 
@@ -6299,13 +6344,41 @@ jq '.stats_error' "$RUN_DIR/manifest.json"
 |-------|--------|------------------|
 | `identity` | manifest | `run_id`, experiment name/description, `config_sha256`, seeds, git SHAs + dirty flags, package versions |
 | `dataset.shapes` | dataset `meta` | `kind: tabular` **or** `kind: sequence`. Sequence `n_windows` is `meta.n_samples` (input size, not work done) |
+| `dataset.target_summary` | the artifact's `y_reg_<split>` arrays (W5.5) | Per split: `n`, `n_finite`, `finite_fraction`, `mean`, `std` (population, ddof=0), `min`, `max`, plus a `basis` string. `null` for an artifact without `y_reg_*` (a classification generator) or when the driver could not read the artifact -- then `provenance.degraded_notes` says why. See [Regression target summary](#regression-target-summary-w55) |
 | `outcome.wall_seconds` | `timings.total` | **De-ratified.** Absorbs plot render + stack bring-up. Not the SPEED half |
 | `outcome.timings` | driver `_phase` | The honest duration map. Cascor keys include `health_wait` / `dataset_create` / `stage` / `start` / `drive`. Recurrence keys include `train` / `crossval` (driver-measured; `/v1/train` is synchronous) |
 | `cascor.training_step_duration` | last-row histogram + per-poll deltas from `metrics_series.csv` | Gateable **work** is `total_steps`. `p50_seconds` / `p95_seconds` are **per-poll means** (`delta-sum / delta-count`); true per-step quantiles are not recoverable from a sum/count exposition — `basis` says so |
 | `cascor.candidate_correlation` | same CSV | Best sampled correlation **per growth round** (round = a `current_hidden_units` increment). Sole source — `/v1/metrics/history` does not carry it |
 | `recurrence.*` | train / crossval payloads + YAML `train` | `n_epochs`, `stopped_reason`, `theta` (explicit vs data-driven), readout rung, CV folds. **No duration field in this block** — train/crossval seconds live under `outcome.timings` |
 | `provenance.metrics_scraped` | driver `_metrics_scraped` | Two facts, never collapsed — see below |
-| `provenance.degraded_notes` | manifest | G-3 sampling errors, collect failures, plot skips, eval-disabled, G-6 mismatch |
+| `provenance.degraded_notes` | manifest | G-3 sampling errors, collect failures, plot skips, eval-disabled, G-6 mismatch, a target summary the driver could not produce (W5.5) |
+
+### Regression target summary (W5.5)
+
+F-D8 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`: the audited `stats.json` reported the sequence dimensions and a `class_distribution` of `null`, and nothing about the regression target the fit predicts. After the dataset phase the driver now fetches the artifact once (`GET /v1/datasets/<id>/artifact`, the body the plot set reads), flattens every `y_reg_<split>` array and hands it to the stdlib `stats_summary.regression_target_summary`. numpy decodes the artifact and is imported lazily; the driver stays importable without it.
+
+```bash
+jq '.dataset.target_summary' "$RUN_DIR/artifacts/results/stats.json"
+jq -r '.provenance.degraded_notes[] | select(startswith("regression target summary"))' "$RUN_DIR/artifacts/results/stats.json"
+```
+
+| Field | Meaning |
+|-------|---------|
+| `splits.<split>.n` / `n_finite` / `finite_fraction` | every value / the finite ones / their ratio. NaN and ±Inf count toward `n` and against the fraction; an empty split has `finite_fraction: null` (0/0 is unknown, not 0) |
+| `splits.<split>.mean` / `std` / `min` / `max` | over the finite values only; `std` is the population std (ddof=0, numpy's default). `null` when a split has no finite value |
+| `basis` | that sentence, in the file, so a reader never has to guess the ddof |
+| `null` block + a degraded note `regression target summary unavailable: …` | numpy missing on the driver host, the fetch failed, or the body did not decode. The run is unaffected |
+| `null` block, no note | the artifact carries no `y_reg_*` key (a classification generator), or the dataset phase never completed |
+
+On the audited artifact (`equities_seq-6.0.0-15505731cba5b86d`, AAPL log-returns, the mint the −18,081 was solved on):
+
+| split | n | finite | mean | std | min | max |
+|-------|---|--------|------|-----|-----|-----|
+| train | 1346 | 100 % | 0.000929 | 0.01824 | −0.1377 | 0.1132 |
+| val | 176 | 100 % | 0.001043 | 0.02276 | −0.0834 | 0.0616 |
+| test | 176 | 100 % | 0.001641 | 0.01372 | −0.0401 | 0.0348 |
+
+`summary.md` prints one line per split under the dataset block, and "moments unavailable (no finite values)" for a split with none. Gate: `tests/test_stats_summary_target_summary.py` (the audited artifact is committed under `reports/2026-10-05_recurrence-equities-cv-consensus/laneA3-rerun/data/`).
 
 ### Step-duration honesty (cascor)
 
