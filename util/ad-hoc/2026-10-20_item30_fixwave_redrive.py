@@ -1008,6 +1008,8 @@ def main() -> int:
             with open(OUT_PATH, encoding="utf-8") as fh:
                 RESULTS.update(json.load(fh))
         except (OSError, ValueError):
+            # A missing, partial or corrupt prior record only means this run starts fresh: there is
+            # nothing to merge and nothing to raise. The verdicts a run writes are its own.
             pass
     RESULTS["_run"] = {"base": BASE, "steps": wanted, "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "serving": serving(), "host": os.uname().nodename, "external_css": (f"fulfilled from {LOCAL_CSS}" if LOCAL_CSS else "aborted (cdn.jsdelivr.net unreachable from Chrome on this host)")}
     log(f"leg {BASE} serving {json.dumps(RESULTS['_run']['serving'])}")
