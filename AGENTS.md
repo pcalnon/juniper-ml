@@ -76,7 +76,7 @@ pip install -e ".[tools]"      # ci-tools + doc-tools + observability
 pip install -e ".[doc-tools]"  # markdown link validator (back-compat alias)
 pip install -e ".[all]"        # everything (multi-GB; pulls torch via worker)
 
-# Run all tests -- the full ordered list of 218 `python3 -m unittest`
+# Run all tests -- the full ordered list of 220 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
 # § Test Suite Reference. It is generated from ci.yml's regression step, which is
 # the authoritative list; tests/test_ci_test_wiring_drift.py gates that every suite
@@ -224,6 +224,7 @@ Per-workflow reference for every file in `.github/workflows/`, including the con
 - `.gitattributes` -- Git LFS tracking for image files (jpg, png, ico, xcf, svg, etc.)
 - `.github/CODEOWNERS` -- Code ownership: @pcalnon for all files
 - `.github/dependabot.yml` -- Automated dependency updates: pip (weekly) and github-actions (weekly)
+- `conf/hosts/<host>/` -- Per-host target state and records: `expected.yaml`, which `util/host_state_check.py` judges `util/host_state_probe.bash`'s captures against (the host gates; turing bring-up G1), and turing's conda-env specs and `hosttools-environment.yml`
 
 ## CI/CD Pipelines
 

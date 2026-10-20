@@ -1,0 +1,103 @@
+---
+# turing's target state: what util/host_state_check.py evaluates util/host_state_probe.bash's output against
+# (turing bring-up task G1; the host gates of plan §9.3). Plan:
+# notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md.
+#
+# Run it from a terminal, or from an agent session (it is read-only and runs no credential probe):
+#   python3 util/host_state_check.py            # the readiness report; exit 0 unless it cannot evaluate
+#   python3 util/host_state_check.py --check    # exit 1 while any gate fails (I-G1 wants it all-green)
+#
+# The file is validated before anything runs, and an inconsistent one exits 2. That covers a VM that cannot
+# fit: vm.mem_gib plus G-MEM's reserve_gib must not exceed identity.memsize_bytes, and vm.vcpus must not
+# exceed identity.physicalcpu. Those are regression R-G1, the X2 class: the primer's "8 vCPU and 44 GB" on a
+# 6-core, 16 GiB machine.
+#
+# A null below is a record that does not exist yet. Its gate fails, and the check names the task that
+# fills it in. Record the result here, with the evidence under reports/, in the PR that closes that task.
+schema: 1
+host: turing
+
+# The machine itself, measured 2026-10-15 (plan §2.1; Appendix A). The probe's sysctl and uname values must
+# match, or the check refuses to evaluate: this file then describes a different machine.
+identity:
+  arch: x86_64
+  memsize_bytes: 17179869184   # 16 GiB, soldered
+  physicalcpu: 6
+  ncpu: 12
+
+# Decision D1: the gated small worker, node mode only. util/macvm_ctl.bash has the same name and size.
+vm:
+  name: juniper-macvm
+  mem_gib: 6
+  vcpus: 4
+
+gates:
+  # 10/10 alias-form origins, keys at 600, AddKeysToAgent no: util/git_remote_alias_check.py (task G2).
+  G-ALIAS: {}
+
+  # Erratum E-G-SIGN (§19.2): util/configure_commit_signing.py --check passes in every checkout, and
+  # util/headless_signing_preflight.bash finds a GUI pinentry, the agent socket and no-allow-external-cache.
+  # Signing itself is owner-run: integration is the record of the I-SIGN matrix, T1-T5 verified (signing
+  # plan task K10, which is B5 widened). Task K11 records it, e.g.
+  #   integration: {date: 2026-10-27, record: reports/2026-10-27_turing-signing-probe/README.md}
+  # The check confirms the record file exists in this repository.
+  G-SIGN:
+    integration: null   # signing plan K10 (owner), recorded by K11
+
+  # SIP and authenticated root enabled; the application firewall on; FileVault on; no *.asc or *recovery*
+  # file under ~/.ssh or ~/.gnupg (task C3); no non-public file in ~/.ssh open to group or others (task C4).
+  G-SEC: {}
+
+  G-TOOLS:
+    # Erratum E-D6: every tool conf/hosts/turing/hosttools-environment.yml links into ~/.local/bin must
+    # resolve from there (`command -v`). pinentry-mac is that file's Homebrew exception: it lives in
+    # /usr/local/bin, and G-SIGN's pinentry check covers it.
+    local_bin:
+      - timeout
+      - shellcheck
+      - yamllint
+      - actionlint
+      - age
+      - age-keygen
+      - yq
+      - iperf3
+      - markdownlint-cli2
+      - sops
+      - ykman
+    # kubectl within one minor of the cluster (primer: Kubernetes 1.36.x). Task D4 replaces turing's 1.22.4,
+    # and needs re-planning under the D6 ruling.
+    kubectl:
+      cluster: "1.36"
+      max_minor_skew: 1
+
+  G-ENV:
+    # Decision D8 and task E2: JuniperPython serves juniper-ml, JuniperHostTools carries the D6 tools, and the
+    # three repo envs are specified in conf/hosts/turing/conda-envs/.
+    conda_envs:
+      - JuniperPython
+      - JuniperHostTools
+      - JuniperCascor1
+      - JuniperData
+      - JuniperCanopy1
+    # Decision D9 and task E4: the parent AGENTS.md is copied from yamaguchi, and its sha256 is recorded here
+    # and in HOST.md. The check reads <root>/AGENTS.md, where <root> is the Juniper root.
+    parent_agents_md:
+      sha256: null   # task E4 (owner)
+
+  G-NET:
+    # Task F2: the USB dongle at 1000baseT. The interface is matched by name and then checked against the
+    # MAC, so a renumbered dongle is reported as such.
+    interface: en7
+    mac: "00:e0:4c:68:06:b1"
+    media: 1000baseT
+    reserved_ip: null   # task A6 (owner): the DHCP reservation
+    min_mbps: 800
+    # iperf3 to yamaguchi, run by hand and recorded here, e.g.
+    #   throughput: {date: 2026-10-27, mbps: 941, record: reports/2026-10-27_turing-bringup/iperf3.txt}
+    throughput: null   # task F2 (owner)
+
+  # The thresholds util/macvm_ctl.bash applies before `start` (task F5a): free + inactive >= the VM's memory
+  # + reserve_gib, swap used <= max_swap_gib, and Docker Desktop not running.
+  G-MEM:
+    reserve_gib: 4
+    max_swap_gib: 2
