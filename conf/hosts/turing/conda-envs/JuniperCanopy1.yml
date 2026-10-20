@@ -39,7 +39,8 @@
 # Linux env's BLAS too), numpy 2.3.5. pip part: each pin has a pure or cp314 macosx x86_64 wheel on PyPI.
 #
 # Recreate:
-#   CONDA_SSL_VERIFY=true mamba env create --override-channels -c conda-forge -f conf/hosts/turing/conda-envs/JuniperCanopy1.yml
+#   MAMBA_SSL_VERIFY=true mamba env create --override-channels -c conda-forge -f conf/hosts/turing/conda-envs/JuniperCanopy1.yml
+#   (mamba 2.x reads MAMBA_SSL_VERIFY; CONDA_SSL_VERIFY reaches only conda itself: plan §18.3 E-SSL.)
 #
 # Validate: juniper-canopy ci.yml's unit-tests and integration-tests lanes, run from a scratch copy of the repo
 # through a `python -m venv --system-site-packages` overlay on this env, so CI's
@@ -47,9 +48,10 @@
 # spec builds. That install upgrades packaging, coverage and anyio past this spec's Linux versions: the [test]
 # extra floors them at 26.3, 7.16.0 and 4.15.1.
 #
-# STATUS 2026-10-19: the spec solves; the env is NOT yet created or validated. On turing, outbound connections
-# from mamba and from every python interpreter time out while curl and gh connect (Little Snitch's network
-# extension is active), so no package could be downloaded.
+# STATUS 2026-10-20: the spec still solves (223 conda packages, 189 MB); the env is NOT yet created. mamba now
+# reaches conda.anaconda.org, but the pip section runs the new env's python3.14 against pypi.org, which Little
+# Snitch holds for an unanswered alert (plan §18.3 E-NET-3). Create it once the owner allows pypi.org and
+# files.pythonhosted.org for the env interpreters.
 name: JuniperCanopy1
 channels:
   - conda-forge
