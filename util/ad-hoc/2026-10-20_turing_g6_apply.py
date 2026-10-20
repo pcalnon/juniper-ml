@@ -28,7 +28,8 @@ The edits:
   alias, so the hook must skip there.
 - docs/REFERENCE.md: the hook's row in § Pre-commit Hook Reference, the opt-in install command in its
   setup block, and a sentence on the hook-config pins in the G2 suite's Test Suite Reference entry.
-- CHANGELOG.md: an [Unreleased] / Added entry.
+- CHANGELOG.md: an [Unreleased] / Added entry, directly below G5's entry rather than at the top of the list,
+  where juniper-ml#2273's entries go (two insertions at one spot conflict on update-branch).
 
 Each edit has a marker. When the marker is already present the edit is skipped; otherwise its anchor
 must occur exactly once. A re-run on a newer main therefore applies cleanly or stops loudly.
@@ -48,6 +49,7 @@ CI = ".github/workflows/ci.yml"
 PRE_COMMIT = ".pre-commit-config.yaml"
 REFERENCE = "docs/REFERENCE.md"
 STAGE_RUN = "pre-commit run --hook-stage pre-push git-remote-alias --all-files"
+G5_CHANGELOG_TAIL = "  - `util/ad-hoc/2026-10-20_turing_g5_mutation_check.py` (new) shows that the suite kills 22 of 22 mutants.\n\n"
 
 
 def edits():
@@ -133,7 +135,9 @@ def edits():
         (REFERENCE, "| git-remote-alias   |", gitleaks_row, gitleaks_row + hook_row),
         (REFERENCE, "Task G6's hook is pinned too.", g2_end, g2_end + g6_pins),
         (REFERENCE, "pre-commit install --hook-type pre-push   # opt-in", setup, setup_new),
-        ("CHANGELOG.md", "**The `git-remote-alias` pre-push hook**", None, changelog),
+        # Directly below G5's entry, not at the top of [Unreleased] / ### Added: juniper-ml#2273 inserts its entries
+        # there, and two insertions at one spot conflict on update-branch (the recurrence session's report).
+        ("CHANGELOG.md", "**The `git-remote-alias` pre-push hook**", G5_CHANGELOG_TAIL, G5_CHANGELOG_TAIL + changelog),
     ]
 
 
