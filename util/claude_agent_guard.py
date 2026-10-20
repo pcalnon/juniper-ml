@@ -9,8 +9,11 @@ Created: 2026-10-17
 Status: permanent utility. util/install_claude_agent_guard.bash (owner-run) installs it as a COPY,
         ~/.claude/hooks/juniper_agent_guard.py, so a branch switch in a checkout cannot change it.
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (D11 item 4,
-         enforcement option (b); task C8; the H3 negative tests); tests/test_claude_agent_guard.py;
-         util/ad-hoc/2026-10-17_turing_c8_guard_mutation_check.py
+         enforcement option (b); task C8; the H3 negative tests);
+         notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md (S9, task K12: the
+         GIT-SIGNING-* rules); tests/test_claude_agent_guard.py;
+         util/ad-hoc/2026-10-17_turing_c8_guard_mutation_check.py,
+         util/ad-hoc/2026-10-20_k12_guard_mutation_check.py
 
 Why a hook
 ----------
@@ -37,9 +40,16 @@ Contract
 Rules (``RULES`` below is the table; ``--list-rules`` prints it)
 -----------------------------------------------------------------
 Bash: CRED-PATH-BASH, SSH-PROBE, PRIV-ESCALATION, MACOS-DEFAULTS-WRITE, GPG-SECRET, GPG-SIGN,
-GH-PR-WRITE, GH-KEY-ADMIN, GH-AUTH, GH-API-WRITE, KEYCHAIN-DUMP, SELF-PROTECT-BASH.
-Read, Write, Edit, MultiEdit, NotebookEdit: CRED-PATH-FILE, and for the writers SELF-PROTECT-FILE.
+GH-PR-WRITE, GH-KEY-ADMIN, GH-AUTH, GH-API-WRITE, KEYCHAIN-DUMP, SELF-PROTECT-BASH, GIT-SIGNING-CONFIG.
+Read, Write, Edit, MultiEdit, NotebookEdit: CRED-PATH-FILE, and for the writers SELF-PROTECT-FILE and
+GIT-SIGNING-FILE.
 Grep and Glob: CRED-PATH-SEARCH.
+
+The two GIT-SIGNING rules (commit-signing plan S9, task K12) guard the owner's signing configuration.
+Once the owner's YubiKey stubs are learned, an agent that could rewrite that configuration could get the
+owner's signature. It could point ``gpg.program`` or ``core.hooksPath`` at its own program, plant a
+local key that outranks the owner's include, drop a ``post-commit`` hook inside a cached-touch window,
+or re-enable signing past D11 with ``git -c include.path=`` or ``--config-env``.
 
 The ``.ssh`` / ``.gnupg`` boundary
 ----------------------------------
@@ -96,6 +106,9 @@ A command-text hook sees only the text of the call. Known gaps:
    denies writing or naming that key, but not a file holding it copied into place, nor a nested
    ``claude --setting-sources project``. Managed settings (owner, sudo) close this fully.
 8. Names, not contents: ``ls -R ~``, ``tree ~`` and ``du -a ~`` list file names under ``~/.ssh``.
+9. A shell edit of a repository's own ``.git/config`` (``sed -i``, ``echo >>``, ``tee``). Reading that file
+   is too common to deny by mention, so only ``git config`` writes and the file tools are guarded.
+   ``util/configure_commit_signing.py --check`` fails a planted local signing key instead.
 
 Home directory
 --------------
@@ -124,7 +137,7 @@ import os
 import re
 import sys
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 GUARD_NAME = "juniper-agent-guard"
 PLAN_DOC = "notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md"
 HOME_OVERRIDE_ENV = "JUNIPER_GUARD_HOME"
@@ -161,8 +174,19 @@ RULES = (
     Rule("GH-API-WRITE", "Bash", "gh api with a write or field flag (-X / --method, -f / -F / --field / --raw-field, --input, a method-override header), or a gh alias that could hide one", "Agents use gh api for read-only GETs only; drop the flag (a plain gh api call is a GET). This also blocks a read-only gh api graphql -f query=..., which D11 accepts"),
     Rule("KEYCHAIN-DUMP", "Bash", "a macOS keychain read: security find-generic-password, find-internet-password, dump-keychain or export", "Keychain contents are credentials"),
     Rule("SELF-PROTECT-BASH", "Bash", "the command references the user-level Claude settings or hooks (~/.claude/settings.json, ~/.claude/settings.local.json, ~/.claude/hooks/), moves, removes or re-permissions ~/.claude itself, sets disableAllHooks, or runs util/install_claude_agent_guard.bash other than with --dry-run or --help", "The guard and its settings are changed only by the owner"),
+    Rule(
+        "GIT-SIGNING-CONFIG",
+        "Bash",
+        "a change to the owner's signing configuration or a way around D11: git -c include.* / includeIf.* / gpg.program / gpg.<format>.program, git --config-env (any key), "
+        "a git config write at any scope of gpg.*, user.signingkey, commit.gpgsign, tag.gpgsign, include.*, includeIf.*, core.hooksPath, core.fsmonitor or core.sshCommand, "
+        "git config --edit, removing or renaming those sections, a command that names ~/.gitconfig, ~/.config/git, git's system gitconfig or a .git/hooks path, "
+        "or util/configure_commit_signing.py --apply / --remove without --dry-run",
+        "The owner's signing configuration and git hooks are changed only by the owner (commit-signing plan S9, task K12); agent commits stay unsigned (D11) "
+        "and land through util/open_signed_pr.py. Read config with git config --get / --list, and the files with the Read tool",
+    ),
     Rule("CRED-PATH-FILE", "Read|Write|Edit|MultiEdit|NotebookEdit", "the target path, or the path a symlink resolves to, is inside ~/.ssh or ~/.gnupg (or has a .ssh or .gnupg component)", "Agents never read or change SSH or GnuPG material on turing"),
     Rule("SELF-PROTECT-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude/settings.json, ~/.claude/settings.local.json or ~/.claude/hooks/, or a .claude/settings*.json write that sets disableAllHooks", "The guard and its settings are changed only by the owner. Reading them is allowed"),
+    Rule("GIT-SIGNING-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.gitconfig, anything under ~/.config/git, git's system gitconfig (/usr/local/etc, /opt/homebrew/etc, /etc), a repository's .git/config or config.worktree, or anything under a .git/hooks directory", "The owner's signing configuration and git hooks are changed only by the owner (commit-signing plan S9, task K12). Reading them is allowed"),
     Rule("CRED-PATH-SEARCH", "Grep|Glob", "the search root or path pattern reaches into ~/.ssh or ~/.gnupg, or the search root is home or above it (a recursive search would descend into them)", "Agents never read or list SSH or GnuPG material on turing; narrow the search root"),
 )
 RULE_BY_ID = {rule.rule_id: rule for rule in RULES}
@@ -196,6 +220,23 @@ GPG_AGENT_COMMANDS = ("gpg-connect-agent",)
 GPG_AGENT_DENIED = ("learn", "scd")
 GIT_SIGN_SUBCOMMANDS = ("commit", "merge", "rebase", "cherry-pick", "revert", "am", "pull", "commit-tree")
 GIT_OPTS_WITH_ARG = ("-C", "-c", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--config-env")
+# Commit-signing plan K12. Keys a `git -c` may not set: an include re-enables signing past D11's
+# command scope, and a program key swaps the signer.
+GIT_DASH_C_SIGNING_RE = re.compile(r"^(?:include\..*|includeif\..*|gpg\.(?:[^.]+\.)?program)$", re.IGNORECASE)
+# Keys a `git config` may not write, at any scope: they outrank or replace the owner's signing include.
+GIT_SIGNING_KEY_RE = re.compile(r"^(?:gpg\..+|user\.signingkey|commit\.gpgsign|tag\.gpgsign|include\..+|includeif\..+|core\.hookspath|core\.fsmonitor|core\.sshcommand)$", re.IGNORECASE)
+GIT_SIGNING_SECTION_RE = re.compile(r"^(?:gpg|include|includeif|user|commit|tag)(?:\..*)?$", re.IGNORECASE)
+GIT_CONFIG_READ_FLAGS = ("--get", "--get-all", "--get-regexp", "--get-urlmatch", "--get-color", "--get-colorbool", "-l", "--list")
+GIT_CONFIG_WRITE_FLAGS = ("--add", "--replace-all", "--unset", "--unset-all", "--append")
+GIT_CONFIG_SECTION_OPS = ("--remove-section", "--rename-section")
+GIT_CONFIG_EDIT_FLAGS = ("-e", "--edit")
+GIT_CONFIG_OPTS_WITH_ARG = ("-f", "--file", "--blob", "-t", "--type", "--default", "--comment", "--value", "--url")
+# git 2.46+ spells the same operations as subcommands.
+GIT_CONFIG_VERBS = {"get": "read", "list": "read", "set": "write", "unset": "write", "edit": "edit", "remove-section": "section", "rename-section": "section"}
+# git's system config: Homebrew's (owner-writable on an Intel Mac) and the distribution's.
+SYSTEM_GITCONFIGS = ("/usr/local/etc/gitconfig", "/opt/homebrew/etc/gitconfig", "/etc/gitconfig")
+SIGNING_TOOL = "configure_commit_signing.py"
+SIGNING_TOOL_WRITES = ("--apply", "--remove")
 DEFAULTS_VERBS = ("write", "delete", "rename", "import")
 SECURITY_VERBS = ("find-generic-password", "find-internet-password", "dump-keychain", "export")
 GH_API_LONG = ("method", "field", "raw-field", "input")
@@ -958,6 +999,9 @@ class BashAnalyzer(object):
         m = _GIT_ENV_CHANGE_RE.search(text)
         if m:
             self.hit("GPG-SIGN", m.group(0).strip())
+        m = self.ctx.signing_re().search(text)
+        if m:
+            self.hit("GIT-SIGNING-CONFIG", m.group(0))
 
     def _segment(self, seg: Segment, segments: list, depth: int, bases: list) -> None:
         args = seg.args()
@@ -966,6 +1010,10 @@ class BashAnalyzer(object):
         for word in seg.words:
             self.all_words.append(word.text)
             self._path_word(word.text, bases, mutating or word.kind == "target")
+            # The lexed word has its quotes removed, so "$HOME"/.gitconfig reads as $HOME/.gitconfig here.
+            m = self.ctx.signing_re().search(word.text)
+            if m:
+                self.hit("GIT-SIGNING-CONFIG", m.group(0))
         for extra in res.strings:
             self._scan(extra, depth + 1, bases)
         if res.index is not None:
@@ -973,6 +1021,8 @@ class BashAnalyzer(object):
         for k, word in enumerate(args):
             if k != res.index and _basename(word.text) == "gh":
                 self._check_gh(args[k + 1 :], seg, segments, res)
+            if _basename(word.text) == SIGNING_TOOL:
+                self._check_signing_tool(args[k + 1 :])
 
     def _command(self, word: Word, rest: list, res: Resolved, seg: Segment, segments: list, depth: int, bases: list) -> None:
         names = _unique([_basename(alt) for alt in brace_expand(word.text)])
@@ -1106,13 +1156,21 @@ class BashAnalyzer(object):
                     key, _, value = rest[i].text.partition("=")
                     if "gpgsign" in key.casefold() and value.strip().casefold() not in ("false", "no", "off", "0"):
                         self.hit("GPG-SIGN", "git -c " + rest[i].text)
+                    if GIT_DASH_C_SIGNING_RE.match(key.strip()):
+                        self.hit("GIT-SIGNING-CONFIG", "git -c " + rest[i].text)
                     i += 1
+                elif text == "--config-env" or text.startswith("--config-env="):
+                    self.hit("GIT-SIGNING-CONFIG", "git " + (text if "=" in text or i >= len(rest) else text + " " + rest[i].text))
+                    i += 0 if "=" in text else 1
                 elif text in GIT_OPTS_WITH_ARG:
                     i += 1
                 elif not text.startswith("-"):
                     sub = text.casefold()
                     if env_cleared and sub in GIT_SIGN_SUBCOMMANDS + ("tag",):
                         self.hit("GPG-SIGN", "env -i git " + sub)
+                    if sub == "config":
+                        self._check_git_config(rest[i:])
+                        return
                 continue
             short = text[1:] if text.startswith("-") and not text.startswith("--") else ""
             if sub in GIT_SIGN_SUBCOMMANDS:
@@ -1123,6 +1181,45 @@ class BashAnalyzer(object):
                     self.hit("GPG-SIGN", "git tag " + text)
             elif sub == "push" and (text == "--signed" or (text.startswith("--signed=") and text.split("=", 1)[1].casefold() not in ("false", "no", "off", "0"))):
                 self.hit("GPG-SIGN", "git push " + text)
+
+    def _check_git_config(self, rest: list) -> None:
+        """A ``git config`` that writes a signing key, edits the file, or drops a signing section (K12)."""
+        mode = "implicit"
+        positionals = []
+        i = 0
+        while i < len(rest):
+            text = rest[i].text
+            lowered = text.casefold()
+            i += 1
+            if lowered in GIT_CONFIG_EDIT_FLAGS:
+                self.hit("GIT-SIGNING-CONFIG", "git config " + text)
+                return
+            if lowered in GIT_CONFIG_READ_FLAGS:
+                mode = "read" if mode == "implicit" else mode
+            elif lowered in GIT_CONFIG_WRITE_FLAGS:
+                mode = "write"
+            elif lowered in GIT_CONFIG_SECTION_OPS:
+                mode = "section"
+            elif lowered in GIT_CONFIG_OPTS_WITH_ARG:
+                i += 1
+            elif not text.startswith("-"):
+                positionals.append(text)
+        if positionals and mode == "implicit" and positionals[0].casefold() in GIT_CONFIG_VERBS:
+            mode = GIT_CONFIG_VERBS[positionals.pop(0).casefold()]
+        if mode == "edit":
+            self.hit("GIT-SIGNING-CONFIG", "git config edit")
+        elif mode == "section":
+            if positionals and GIT_SIGNING_SECTION_RE.match(positionals[0]):
+                self.hit("GIT-SIGNING-CONFIG", "git config section " + positionals[0])
+        elif positionals and GIT_SIGNING_KEY_RE.match(positionals[0]) and (mode == "write" or (mode == "implicit" and len(positionals) >= 2)):
+            self.hit("GIT-SIGNING-CONFIG", "git config " + " ".join(positionals[:2]))
+
+    def _check_signing_tool(self, rest: list) -> None:
+        """util/configure_commit_signing.py writes the owner's signing configuration unless --dry-run (K12)."""
+        texts = [w.text for w in rest]
+        writes = [t for t in texts if t in SIGNING_TOOL_WRITES]
+        if writes and "--dry-run" not in texts:
+            self.hit("GIT-SIGNING-CONFIG", "%s %s" % (SIGNING_TOOL, writes[0]))
 
     def _check_verbs(self, rest: list, verbs: tuple, rule_id: str, name: str) -> None:
         for word in rest:
@@ -1406,15 +1503,42 @@ class Context(object):
         claude_dirs = _with_real([os.path.join(h, CLAUDE_DIR_NAME) for h in self.home_variants])
         self.protected_files = _with_real([os.path.join(d, name) for d in claude_dirs for name in CLAUDE_SETTINGS_FILES])
         self.protected_dirs = _with_real([os.path.join(d, "hooks") for d in claude_dirs])
+        self.signing_files = _with_real([os.path.join(h, ".gitconfig") for h in self.home_variants] + list(SYSTEM_GITCONFIGS))
+        self.signing_dirs = _with_real([os.path.join(h, ".config", "git") for h in self.home_variants])
         self._self_re = None
+        self._signing_re = None
+
+    def _home_spellings(self) -> str:
+        literal = "".join("|" + re.escape(h.rstrip("/")) for h in sorted(self.home_variants, key=len, reverse=True) if h.rstrip("/"))
+        return r"~[A-Za-z0-9._-]*|\$HOME(?![A-Za-z0-9_])|\$\{HOME[^}]*\}|/(?:Users|home)/[^/\s'\"]+" + literal
 
     def self_protect_re(self):
         """Raw-text spellings of ~/.claude, its settings files and hooks/ under any home spelling."""
         if self._self_re is None:
-            literal = "".join("|" + re.escape(h.rstrip("/")) for h in sorted(self.home_variants, key=len, reverse=True) if h.rstrip("/"))
-            spellings = r"~[A-Za-z0-9._-]*|\$HOME(?![A-Za-z0-9_])|\$\{HOME[^}]*\}|/(?:Users|home)/[^/\s'\"]+" + literal
-            self._self_re = re.compile(r"(?:%s)/+\.claude/+(?:settings(?:\.local)?\.json|hooks)(?![A-Za-z0-9._-])" % spellings, re.IGNORECASE)
+            self._self_re = re.compile(r"(?:%s)/+\.claude/+(?:settings(?:\.local)?\.json|hooks)(?![A-Za-z0-9._-])" % self._home_spellings(), re.IGNORECASE)
         return self._self_re
+
+    def signing_re(self):
+        """Raw-text spellings of ~/.gitconfig and ~/.config/git under any home spelling, and any .git/hooks path."""
+        if self._signing_re is None:
+            home = r"(?:%s)/+(?:\.gitconfig|\.config/+git)(?![A-Za-z0-9._-])" % self._home_spellings()
+            hooks = r"(?<![A-Za-z0-9._-])\.git/+hooks(?![A-Za-z0-9._-])"
+            system = r"(?<![A-Za-z0-9._/-])(?:/usr/local|/opt/homebrew)?/+etc/+gitconfig(?![A-Za-z0-9._-])"
+            self._signing_re = re.compile(r"%s|%s|%s" % (home, hooks, system), re.IGNORECASE)
+        return self._signing_re
+
+    def is_signing_config(self, candidates: list) -> bool:
+        """~/.gitconfig, anything under ~/.config/git, a repository's .git/config or config.worktree, or .git/hooks/."""
+        files = [f.casefold() for f in self.signing_files]
+        for c in candidates:
+            if c.casefold() in files or any(_inside(c, d) for d in self.signing_dirs):
+                return True
+            parts = [p.casefold() for p in c.split("/")]
+            if ".git" in parts:
+                after = parts[parts.index(".git") + 1 :]
+                if after[:1] == ["hooks"] or after in (["config"], ["config.worktree"]) or (len(after) == 3 and after[0] == "worktrees" and after[2] == "config.worktree"):
+                    return True
+        return False
 
     def in_cred_dir(self, candidates: list) -> bool:
         return any(_has_cred_component(c) or any(_inside(c, d) for d in self.cred_dirs) for c in candidates)
@@ -1489,6 +1613,8 @@ def check_file_tool(tool: str, tool_input: dict, ctx: Context) -> list:
         settings_like = any(os.path.basename(c).casefold() in CLAUDE_SETTINGS_FILES and os.path.basename(os.path.dirname(c)).casefold() == CLAUDE_DIR_NAME for c in candidates)
         if settings_like and DISABLE_HOOKS_KEY in _new_content(tool, tool_input).casefold():
             hits.append(Hit("SELF-PROTECT-FILE", "disableAllHooks in " + path))
+        if ctx.is_signing_config(candidates):
+            hits.append(Hit("GIT-SIGNING-FILE", path))
     return hits
 
 
@@ -1641,6 +1767,14 @@ def self_test() -> int:
             ("Bash", {"command": "ssh -G github_juniper-ml"}, None),
             ("Bash", {"command": "ls .sshrc_backup foo.ssh.txt; echo $GIT_SSH_COMMAND"}, None),
             ("Bash", {"command": "cat .claude/settings.json"}, None),
+            ("Bash", {"command": "git -c include.path=/tmp/sign.inc commit -m x"}, "GIT-SIGNING-CONFIG"),
+            ("Bash", {"command": "git --config-env=commit.gpgsign=V commit -m x"}, "GIT-SIGNING-CONFIG"),
+            ("Bash", {"command": "git config --local gpg.program /tmp/x"}, "GIT-SIGNING-CONFIG"),
+            ("Bash", {"command": "cp hook .git/hooks/post-commit"}, "GIT-SIGNING-CONFIG"),
+            ("Bash", {"command": "git config --get user.signingkey"}, None),
+            ("Write", {"file_path": os.path.join(repo, ".git", "hooks", "post-commit"), "content": "#!/bin/sh\n"}, "GIT-SIGNING-FILE"),
+            ("Edit", {"file_path": os.path.join(home, ".gitconfig"), "old_string": "a", "new_string": "b"}, "GIT-SIGNING-FILE"),
+            ("Read", {"file_path": os.path.join(home, ".gitconfig")}, None),
             ("Read", {"file_path": os.path.join(home, ".ssh", "config")}, "CRED-PATH-FILE"),
             ("Read", {"file_path": os.path.join(link, "config")}, "CRED-PATH-FILE"),
             ("Read", {"file_path": os.path.join(home, ".claude", "settings.json")}, None),
