@@ -15,9 +15,9 @@ fixed by the plan:
   it, so the job reports success when nothing relevant changed. It fires on ``merge_group`` too;
 - the suites themselves call ``/bin/bash``, and a step asserts that the runner's ``/bin/bash`` is 3.x and that
   ``brew --prefix`` is not turing's Intel ``/usr/local``, so a green run shows prefix independence;
-- advisory first. After 10 green runs it becomes required by joining the Quality Gate's
-  ``required-checks.needs``, never as a separate ruleset context. ``test_the_job_is_advisory`` pins today's
-  state, and the promotion changes it on purpose.
+- required through the Quality Gate. It was advisory until 2026-10-20, when, after 12 consecutive green push
+  runs on main, it joined ``required-checks.needs`` with its own ``!= success`` arm, never as a separate
+  ruleset context. ``test_the_job_is_required_through_the_quality_gate`` pins that.
 
 Neither the workflow YAML nor the detection shell is otherwise gated, so this suite is the gate. The detection
 step is extracted from ci.yml and run under a stub ``git``, the idiom of ``tests/test_ci_precommit_g4.py``.
@@ -132,10 +132,13 @@ class JobShapeTest(unittest.TestCase):
         self.assertIn('python3 -m unittest -v "tests/test_${suite}.py"', step["run"])
         self.assertIn('failed="$failed $suite"', step["run"])
 
-    def test_the_job_is_advisory(self) -> None:
-        # The promotion (plan G4: after 10 green runs) adds the job here and flips this assertion.
-        needs = self.workflow["jobs"]["required-checks"]["needs"]
-        self.assertNotIn(JOB, needs)
+    def test_the_job_is_required_through_the_quality_gate(self) -> None:
+        # Promoted 2026-10-20 after 12 consecutive green push runs (plan G4). A need with no arm gates nothing.
+        # It replaces test_the_job_is_advisory; the promotion's commits waive that loss (Allow-Symbol-Loss).
+        gate = self.workflow["jobs"]["required-checks"]
+        self.assertIn(JOB, gate["needs"])
+        script = next(s for s in gate["steps"] if s.get("name") == "Check Quality Gate Status")["run"]
+        self.assertIn('if [[ "${{ needs.host-tooling-macos.result }}" != "success" ]]; then', script)
 
 
 class DetectionRehearsalTest(unittest.TestCase):
