@@ -1,5 +1,8 @@
 # Handoff — turing Session 3: G5, G6 and G4 landed; E2 has two envs created, PyPI blocked by Little Snitch; G1 next
 
+> **Superseded** by `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-session-3-final-e2-validated-g1-next.md`.
+> E2 finished after this handoff was written (plan v1.4.1); start from that file.
+
 - **From:** the 2026-10-19/20 session on turing named "mac dev env". It continues
   `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-2-e6-d5-d6-h1-done-e2-blocked-on-little-snitch.md`.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.3.0. This session's

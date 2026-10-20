@@ -29,10 +29,11 @@
 # through a `python -m venv --system-site-packages` overlay on this env, so CI's `pip install ".[all]"` lands in
 # the overlay and this env stays exactly what the spec builds.
 #
-# STATUS 2026-10-20: CREATED on turing with MAMBA_SSL_VERIFY=true and mamba 2.1.1 (91 packages, the solve above).
-# NOT yet validated: CI's pip steps need pypi.org from this env's python3.14, which Little Snitch holds for an
-# unanswered alert (plan §18.3 E-NET-3). Resume with util/ad-hoc/2026-10-19_turing_e2_validate_envs.py data
-# --phase install. Export: reports/2026-10-20_turing-e2-envs/.
+# STATUS 2026-10-20: VALIDATED on turing. Created with MAMBA_SSL_VERIFY=true and mamba 2.1.1 (91 packages, the
+# solve above). juniper-data's CI lanes, run through util/ad-hoc/2026-10-19_turing_e2_validate_envs.py data: unit
+# 2201 passed and 3 skipped of 2204 (coverage 97.82%, 170 s), integration 62 of 62. The 3 skips are by design: the
+# workflow steps they test use GNU `base64 -w0` and `date -d`, which macOS lacks. Export, summary and the overlay's
+# pip freeze: reports/2026-10-20_turing-e2-envs/.
 name: JuniperData
 channels:
   - conda-forge
