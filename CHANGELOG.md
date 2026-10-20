@@ -647,6 +647,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The session handoff is
     `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_perf-lane-helper-binds-axis3-run-d6-control-micro-cut.md`.
 
+- **ci.yml's `host-tooling-macos` job is required** (turing bring-up task G4's promotion step, per
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - It joins the Quality Gate's `needs:` after 12 consecutive green push runs on main (3968ca04 to e3ba1936), each of which ran the suites;
+    the last ran all eleven, G1's two included. It has its own `!= success` arm, because the gate tests each
+    need's result itself.
+  - It never reads skipped: it has no job-level `if` and no path filter, and on a pull request with no host-tooling
+    change it reports success.
+  - `tests/test_ci_quality_gate.py` pins the need and its success predicate, and rehearses its failure and skip;
+    `tests/test_ci_host_tooling_macos.py` flips its advisory pin.
+
 ### Fixed
 
 - **The release-train ceremony can archive notes larger than about 97 KB, and it HALTs before any write

@@ -1416,10 +1416,10 @@ jobs:
           # conf/home_path_literal_baseline.json allows it; "# home-path-literal: allow" exempts a
           # line. Real git on temp repos; the committed baseline must match this checkout.
           python3 -m unittest -v tests/test_home_path_literal_check.py
-          # tests/test_ci_host_tooling_macos.py: turing bring-up G4. ci.yml's advisory host-tooling-macos
+          # tests/test_ci_host_tooling_macos.py: turing bring-up G4. ci.yml's required host-tooling-macos
           # job: macos-latest, no path filter, every step after detection gated on its `relevant` output,
           # the suite list equal to the turing host-tooling set, /bin/bash 3.x and a non-/usr/local brew
-          # prefix asserted, absent from the Quality Gate needs. The detection shell runs under a stub git.
+          # prefix asserted, a hard Quality Gate need since 2026-10-20. The detection shell runs under a stub git.
           python3 -m unittest -v tests/test_ci_host_tooling_macos.py
           # tests/test_host_state_probe.py: turing bring-up G1. util/host_state_probe.bash captures a macOS
           # host's state (argv, rc, stdout, stderr per command) as one JSON object: a missing, failing or
@@ -2376,16 +2376,16 @@ jobs:
           exit $exit_code
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
-  # Host Tooling (macOS) -- ADVISORY (turing bring-up G4). The host-tooling suites run here under
+  # Host Tooling (macOS) -- REQUIRED (turing bring-up G4). The host-tooling suites run here under
   # BSD userland and /bin/bash 3.2, which the Linux regression step cannot show: each suite calls
   # /bin/bash itself, and on macos-latest that is 3.2. A step asserts it, and that `brew --prefix`
   # is not turing's Intel /usr/local, so a green run also shows the scripts are prefix-independent.
   #
   # No on.paths filter (it would skip all of ci.yml). The detection step sets `relevant`, and every
   # later step is gated on it, so the job reports success when no host-tooling path changed; it
-  # always runs on push and dispatch. It is absent from the Quality Gate `needs:`. After 10
-  # consecutive green runs it becomes required by joining required-checks.needs, never as a
-  # separate ruleset context. Gate: tests/test_ci_host_tooling_macos.py, which also runs the
+  # always runs on push and dispatch. It joined the Quality Gate `needs:` on 2026-10-20, after
+  # 12 consecutive green push runs on main (3968ca04 to e3ba1936), never as a separate ruleset context.
+  # Gate: tests/test_ci_host_tooling_macos.py, which also runs the
   # detection shell under a stub git.
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   host-tooling-macos:
@@ -2501,7 +2501,7 @@ jobs:
     name: Quality Gate
     runs-on: ubuntu-latest
     if: always()
-    needs: [pre-commit, tests, build, docs, security, claude-yaml-audit, ruleset-scope-guard, dependency-docs, sops-validation]
+    needs: [pre-commit, tests, build, docs, security, claude-yaml-audit, ruleset-scope-guard, dependency-docs, sops-validation, host-tooling-macos]
     steps:
       - name: Check Quality Gate Status
         run: |
@@ -2518,6 +2518,7 @@ jobs:
           echo "Ruleset Scope Guard:  ${{ needs.ruleset-scope-guard.result }}"
           echo "Dependency Docs:      ${{ needs.dependency-docs.result }}"
           echo "SOPS Validation:      ${{ needs.sops-validation.result }}"
+          echo "Host Tooling (macOS): ${{ needs.host-tooling-macos.result }}"
           echo ""
 
           if [[ "${{ needs.pre-commit.result }}" != "success" ]]; then
@@ -2563,6 +2564,11 @@ jobs:
 
           if [[ "${{ needs.sops-validation.result }}" != "success" ]]; then
             echo "::error::SOPS structural validation failed"
+            exit 1
+          fi
+
+          if [[ "${{ needs.host-tooling-macos.result }}" != "success" ]]; then
+            echo "::error::Host tooling suites failed under macOS (BSD userland, /bin/bash 3.2)"
             exit 1
           fi
 
