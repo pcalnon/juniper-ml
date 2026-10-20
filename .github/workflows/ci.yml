@@ -1365,8 +1365,11 @@ jobs:
           # tests/test_claude_agent_guard.py: turing bring-up C8 (D11 item 4, option (b)). The
           # PreToolUse hook util/claude_agent_guard.py denies ~/.ssh / ~/.gnupg in any spelling,
           # ssh -T / ssh-add, sudo, defaults write, gpg card/secret/sign ops, gh pr create|merge,
-          # gh auth, deploy keys, gh api write/field flags in any position, keychain dumps and
-          # user-level .claude settings edits. Payloads pipe through it with a temp
+          # gh auth, deploy keys, gh api write/field flags in any position, keychain dumps,
+          # user-level .claude settings edits, and (commit-signing K12) changes to the owner's signing
+          # configuration and git hooks: -c include.path= / gpg.program, --config-env, signing-key
+          # git config writes, ~/.gitconfig, ~/.config/git, the system gitconfigs and .git/hooks. Payloads pipe
+          # through it with a temp
           # JUNIPER_GUARD_HOME: allowed calls print nothing (never "allow"); bad input exits 2.
           # Also drives util/install_claude_agent_guard.bash against a temp settings file.
           python3 -m unittest -v tests/test_claude_agent_guard.py

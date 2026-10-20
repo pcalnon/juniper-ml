@@ -285,7 +285,7 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
 - **This session runs `--apply` once (K5)**, because the owner asked for the change to be implemented. That moves B4's git half from OWNER to AGENT, and K4 records the actor change. The dry-run plan is recorded verbatim in the PR, and `--remove` undoes the change exactly.
 - **The C8 guard covers neither file today.** As written, it does not cover `~/.gitconfig` or `~/.config/git/`. A Claude Code agent able to write them could set `gpg.program`, `core.sshCommand`, `core.fsmonitor` or `core.hooksPath` to a program that later runs in owner sessions.
 - **The same agent can outrank the include.** It can write repo-local config or `.git/hooks/` directly. A `post-commit` hook runs right after the owner's touched signature, inside a `cached` touch window.
-- **D11's environment can be overridden** with `git -c include.path=<file>` or `git --config-env=commit.gpgsign=…`. The guard checks only `-c *gpgsign*` (`util/claude_agent_guard.py:1105-1111`).
+- **D11's environment can be overridden** with `git -c include.path=<file>` or `git --config-env=commit.gpgsign=…`. Before K12 the guard checked only `-c *gpgsign*` (`util/claude_agent_guard.py:1105-1111` in 1.0.0). In 1.1.0, GIT-SIGNING-CONFIG denies both forms (:1155-1164).
 - **K12 (AGENT) extends the guard to deny the following.** It is a follow-up PR, and it must be merged and re-installed before any card goes into turing (§1).
   - `git -c include.path=…`, `-c includeIf.*…` and `-c gpg.*program=…`;
   - `--config-env` with any key, in both forms: `--config-env=<key>=<var>`, and `--config-env <key>=<var>`, which git 2.51.0 also accepts (round 2, N12);
@@ -800,7 +800,7 @@ The trust gate needs three values to agree: the owner's reading from the indepen
 
 Round 2's tool changes moved the anchors of S23, S26 and S29. The defects those mutants re-introduce are unchanged.
 
-The K12 guard rules carry their own evidence, recorded with that PR.
+**K12.** `util/ad-hoc/2026-10-20_k12_guard_mutation_check.py` re-introduces one defect per mutant into a copy of the guard, as above. It kills 18 of 18 mutants (K1–K18), each by its own pin. The guard's `--self-test` runs 40 of 40 checks under JuniperPython and `/usr/bin/python3` 3.9.6.
 
 ## 15. References
 
@@ -808,7 +808,7 @@ The K12 guard rules carry their own evidence, recorded with that PR.
 - `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_HEADLESS-SIGNING-AND-SERENA-HARNESS-AUDIT.md` (the audit): §3.1 (:76-87), A1-F2 (:169), §3.3 (:241-254), A1-F4 (:256-304) including the card status (:276-286), A1-F5 (:308-329), A1-F9 (:390-406), A1-F11 (:419-423)
 - `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md:952`: the master fingerprint
 - `util/headless_signing_preflight.bash` (B7): the D11 override detection (:253-273) and the commit-gpgsign check (:288-299)
-- `util/claude_agent_guard.py`: CRED-PATH-BASH (:152), GPG-SIGN (:157), the `-c`/`--config-env` handling (:1105-1111)
+- `util/claude_agent_guard.py` 1.1.0: CRED-PATH-BASH (:165), GPG-SIGN (:170), K12's GIT-SIGNING-CONFIG (:177-186) and GIT-SIGNING-FILE (:189), the `-c`/`--config-env` handling (:1155-1164)
 - `util/git_remote_alias_check.py`: the repository-local environment scrub this tool copies (:193-211, :386-395)
 - `util/worktree_cleanup.bash:372`: the owner tool's `git merge`
 - `util/juniper-backup.bash:211-214`: the 3c and 3a recipient UIDs
