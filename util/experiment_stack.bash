@@ -40,6 +40,13 @@
 #                        With --recurrence: still run the recurrence env preflight (see
 #                        RECURRENCE ENV PREFLIGHT below), but report its findings as WARNINGs
 #                        instead of refusing the leg. Emergencies only.
+#     --shared-equities-cache DIR
+#                        OPT-IN (W5.6, plan H-9): launch this run's juniper-data with an equities
+#                        cache that OUTLIVES the run (JUNIPER_DATA_EQUITIES_CACHE_DIR=DIR) instead
+#                        of the per-run ${RUN_DIR}/equities-cache, so repeated equities cells reuse
+#                        their Yahoo / SEC fetches (F-D6). Absolute path; created if absent; never
+#                        removed by teardown. Inert with --shared-data (that instance's cache is
+#                        its own). See SHARED EQUITIES CACHE below.
 #   --down RUN_ID        Tear the run down (pidfile-first), release its port locks,
 #                        remove its relays + target file. Keeps artifacts/.
 #     --all-mine         With --down: tear down EVERY run under the run root.
@@ -77,6 +84,9 @@
 #   JUNIPER_EXP_SKIP_ENV_PREFLIGHT
 #                               — 1 = --skip-env-preflight, for a caller that cannot pass the flag
 #                                 (run_suite.py invokes --up with a fixed argv)
+#   JUNIPER_EXP_SHARED_EQUITIES_CACHE
+#                               — DIR = --shared-equities-cache DIR (W5.6), for the same callers;
+#                                 empty (the default) keeps the per-run ${RUN_DIR}/equities-cache
 #
 # CONDA: services are launched through direct env-bin paths
 # (${JUNIPER_EXP_CONDA_DIR}/envs/<env>/bin/...), which is what the P0 evidence run used and
@@ -199,6 +209,15 @@ CONDA_ACTIVATE="${JUNIPER_EXP_CONDA_ACTIVATE:-0}"
 ENV_PREFLIGHT="${SCRIPT_DIR}/recurrence_env_preflight.bash"
 SKIP_ENV_PREFLIGHT="${JUNIPER_EXP_SKIP_ENV_PREFLIGHT:-0}"
 
+# SHARED EQUITIES CACHE (W5.6; plan H-9, audit F-D6). juniper-data caches its Yahoo OHLCV and
+# SEC fetches under JUNIPER_DATA_EQUITIES_CACHE_DIR. The per-run default (${RUN_DIR}/equities-cache,
+# H-9's isolation choice) means every cell of an equities suite pays the cold fetch again. The
+# opt-in points the data leg at a directory that outlives the run; --shared-equities-cache DIR or
+# JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR (for a caller that cannot pass the flag, e.g. a run_suite
+# cell). Empty = per-run. Absolute paths only: the data leg launches from `cd ${RUN_DIR}`, so a
+# relative path would resolve under the run dir and silently be per-run again.
+SHARED_EQUITIES_CACHE="${JUNIPER_EXP_SHARED_EQUITIES_CACHE:-}"
+
 
 ###########################################################################################################################################################################################################
 # Mutable run state
@@ -224,6 +243,8 @@ DATA_URL=""
 GATEWAY_IP=""
 # W1.9: the "recurrence_launch" object, set by recurrence_up and rendered by write_ports_json.
 RECURRENCE_LAUNCH_JSON=""
+# W5.6: the equities cache the data leg launches with (prepare_equities_cache resolves it).
+EQUITIES_CACHE_DIR=""
 
 HELD_LOCK_PORTS=()
 SCRAPE_TARGETS=()
@@ -236,7 +257,7 @@ usage() {
     cat <<USAGE
 ${SCRIPT_NAME} — per-run experiment stack (data ${DATA_PORT_MIN}-${DATA_PORT_MAX} / cascor ${CASCOR_PORT_MIN}-${CASCOR_PORT_MAX} / recurrence ${RECURRENCE_PORT_MIN}-${RECURRENCE_PORT_MAX})
 
-Usage: ${SCRIPT_NAME} --up (--cascor | --recurrence) [--shared-data URL] [--config PATH] [--experiment NAME] [--grafana-bridge] [--skip-env-preflight] [--dry-run]
+Usage: ${SCRIPT_NAME} --up (--cascor | --recurrence) [--shared-data URL] [--config PATH] [--experiment NAME] [--grafana-bridge] [--skip-env-preflight] [--shared-equities-cache DIR] [--dry-run]
        ${SCRIPT_NAME} --down (RUN_ID | --all-mine) [--dry-run]
        ${SCRIPT_NAME} --status [RUN_ID] [--dry-run]
        ${SCRIPT_NAME} --help
@@ -251,6 +272,10 @@ Usage: ${SCRIPT_NAME} --up (--cascor | --recurrence) [--shared-data URL] [--conf
   --skip-env-preflight
                      With --recurrence: run the recurrence env preflight but only WARN (stdout + logs/launch.log) instead of refusing a stale env.
                      Env equivalent: JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1. Emergencies only.
+  --shared-equities-cache DIR
+                     OPT-IN (W5.6, plan H-9): launch this run's juniper-data with JUNIPER_DATA_EQUITIES_CACHE_DIR=DIR, a cache that
+                     outlives the run, instead of the per-run RUN_DIR/equities-cache (a cold Yahoo / SEC fetch per run). Absolute
+                     path; created if absent; never removed by teardown. Env equivalent: JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR.
   --down RUN_ID      Tear down a run (pidfile-first); --all-mine tears down every run.
   --status [RUN_ID]  Probe a run, or list every run under the run root.
   --dry-run          Print every command without executing it (creates/kills nothing).
@@ -635,6 +660,27 @@ stage_config() {
     cp "${CONFIG_PATH}" "${RUN_DIR}/config/experiment.yaml"
 }
 
+# W5.6 (plan H-9, F-D6): resolve the equities cache the data leg launches with. Per-run by default
+# (${RUN_DIR}/equities-cache, reaped with the run, so every cell pays the cold Yahoo / SEC fetch);
+# --shared-equities-cache DIR / JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR is the explicit opt-in that
+# points it at a directory that OUTLIVES the run, so repeated equities cells reuse the fetches.
+# Runs after create_run_dir and before write_ports_json so ports.json records the choice; creates
+# the shared dir when absent (live mode only); teardown never removes it. With --shared-data the
+# data leg is not ours, so the opt-in is inert and says so.
+prepare_equities_cache() {
+    EQUITIES_CACHE_DIR="${RUN_DIR}/equities-cache"
+    [[ -n "${SHARED_EQUITIES_CACHE}" ]] || return 0
+    EQUITIES_CACHE_DIR="${SHARED_EQUITIES_CACHE}"
+    if [[ -n "${SHARED_DATA_URL}" ]]; then
+        log "NOTE: --shared-equities-cache ${EQUITIES_CACHE_DIR} is inert with --shared-data (that instance's cache is its own)"
+        return 0
+    fi
+    announce "mkdir -p ${EQUITIES_CACHE_DIR}   # --shared-equities-cache (W5.6): juniper-data's equities cache outlives this run"
+    if is_dry; then return 0; fi
+    ensure_dir "${EQUITIES_CACHE_DIR}" || return 1
+    log "equities cache: SHARED at ${EQUITIES_CACHE_DIR} (opt-in; the per-run ${RUN_DIR}/equities-cache stays unused)"
+}
+
 json_number_or_null() {
     local value="$1"
     if [[ -n "${value}" ]]; then printf '%s' "${value}"; else printf 'null'; fi
@@ -709,6 +755,9 @@ render_ports_json() {
     printf '  "recurrence": %s,\n' "$(json_number_or_null "${RECURRENCE_PORT}")"
     printf '  "data_url": "%s",\n' "${DATA_URL}"
     printf '  "experiment": "%s",\n' "${EXPERIMENT:-}"
+    # W5.6: which equities cache the data leg launched with, and whether it is the shared opt-in.
+    printf '  "equities_cache_dir": %s,\n' "$(json_string_or_null "${EQUITIES_CACHE_DIR:-${RUN_DIR:-}/equities-cache}")"
+    printf '  "equities_cache_shared": %s,\n' "$(if [[ -n "${SHARED_EQUITIES_CACHE:-}" ]]; then printf 'true'; else printf 'false'; fi)"
     printf '  "grafana_bridge": %s%s\n' "${bridge}" "${launch_member}"
     printf '}\n'
 }
@@ -745,10 +794,12 @@ record_launch_env() {
 # Bring-up: juniper-data (dedicated per-run instance, plan §6.1)
 ###########################################################################################################################################################################################################
 data_up() {
-    local python_bin
+    local python_bin cache_dir
     python_bin="$(env_bin "${DATA_CONDA}" python)"
+    # W5.6: per-run by default; prepare_equities_cache points it at the --shared-equities-cache dir.
+    cache_dir="${EQUITIES_CACHE_DIR:-${RUN_DIR}/equities-cache}"
     banner "juniper-data  ->  http://127.0.0.1:${DATA_PORT}  (${DATA_CONDA}, per-run instance)"
-    announce "cd ${RUN_DIR} && JUNIPER_DATA_STORAGE_PATH=${RUN_DIR}/data JUNIPER_DATA_METRICS_ENABLED=true JUNIPER_DATA_EQUITIES_CACHE_DIR=${RUN_DIR}/equities-cache PYTHON_GIL=0 ${python_bin} -m juniper_data --host 127.0.0.1 --port ${DATA_PORT}   # nohup -> ${LOG_DIR}/juniper-data.log (+PYTHON_GIL=0 iff the run's python is a free-threaded build)"
+    announce "cd ${RUN_DIR} && JUNIPER_DATA_STORAGE_PATH=${RUN_DIR}/data JUNIPER_DATA_METRICS_ENABLED=true JUNIPER_DATA_EQUITIES_CACHE_DIR=${cache_dir} PYTHON_GIL=0 ${python_bin} -m juniper_data --host 127.0.0.1 --port ${DATA_PORT}   # nohup -> ${LOG_DIR}/juniper-data.log (+PYTHON_GIL=0 iff the run's python is a free-threaded build)"
     if is_dry; then return 0; fi
 
     # Explicit ``|| return 1``: do_up invokes this as ``data_up || failed=1``, which
@@ -774,14 +825,14 @@ data_up() {
     record_launch_env "juniper-data" \
         "JUNIPER_DATA_STORAGE_PATH=${RUN_DIR}/data" \
         "JUNIPER_DATA_METRICS_ENABLED=true" \
-        "JUNIPER_DATA_EQUITIES_CACHE_DIR=${RUN_DIR}/equities-cache" \
+        "JUNIPER_DATA_EQUITIES_CACHE_DIR=${cache_dir}" \
         "${gil_record}"
     if [[ "${CONDA_ACTIVATE}" == "1" ]]; then activate_conda "${DATA_CONDA}" || return 1; fi
     (
         cd "${RUN_DIR}" || exit 1
         JUNIPER_DATA_STORAGE_PATH="${RUN_DIR}/data" \
             JUNIPER_DATA_METRICS_ENABLED=true \
-            JUNIPER_DATA_EQUITIES_CACHE_DIR="${RUN_DIR}/equities-cache" \
+            JUNIPER_DATA_EQUITIES_CACHE_DIR="${cache_dir}" \
             nohup env "${gil_env[@]}" "${python_bin}" -m juniper_data --host 127.0.0.1 --port "${DATA_PORT}" >"${LOG_DIR}/juniper-data.log" 2>&1 &
     )
     # No `$!` here on purpose — F-6. The pid is resolved from the listener below.
@@ -1166,6 +1217,10 @@ do_up() {
         release_held_locks
         return 1
     }
+    prepare_equities_cache || {
+        release_held_locks
+        return 1
+    }
     stage_config || {
         release_held_locks
         return 1
@@ -1461,6 +1516,11 @@ while [[ $# -gt 0 ]]; do
             TARGET_RUN_ID="$2"
             shift
             ;;
+        --shared-equities-cache)
+            need_value "--shared-equities-cache" "${2-}"
+            SHARED_EQUITIES_CACHE="$2"
+            shift
+            ;;
         --help | -h) usage; exit 0 ;;
         -*)
             log "ERROR: unknown argument '$1'"
@@ -1493,6 +1553,11 @@ if [[ "${ACTION}" == "up" ]]; then
     fi
     if [[ -n "${TARGET_RUN_ID}" ]]; then
         log "ERROR: --up allocates its own run id; '${TARGET_RUN_ID}' is not accepted"
+        usage
+        exit 2
+    fi
+    if [[ -n "${SHARED_EQUITIES_CACHE}" && "${SHARED_EQUITIES_CACHE}" != /* ]]; then
+        log "ERROR: --shared-equities-cache needs an absolute path (got '${SHARED_EQUITIES_CACHE}'): the data leg launches from the run dir, so a relative path would be per-run again"
         usage
         exit 2
     fi
