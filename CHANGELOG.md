@@ -178,6 +178,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tests/test_git_remote_alias_check.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
   - `util/ad-hoc/2026-10-17_turing_g2_mutation_check.py` (new) shows that the suite kills 16 of 16 mutants.
 
+- **ci.yml's `host-tooling-macos` job, advisory** (turing bring-up task G4 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - It runs the eight turing host-tooling suites on `macos-latest`, under BSD userland and `/bin/bash` 3.2,
+    which the Linux regression step cannot show. A step asserts both, and that `brew --prefix` is not
+    turing's Intel `/usr/local`, so a green run also shows the scripts are prefix-independent.
+  - No workflow path filter: a detection step sets `relevant` from the pull request or merge-group diff,
+    and every later step is gated on it, so the job reports success when no host-tooling path changed.
+  - Absent from the Quality Gate `needs:` until 10 consecutive green runs; it then joins them, never as a
+    separate ruleset context.
+  - `tests/test_ci_host_tooling_macos.py` (new) gates the job's shape and runs the detection shell under a
+    stub `git`. It is wired into `ci.yml` and `docs/REFERENCE.md`.
+
 - **The D11 item 4 agent guard for turing** (task C8, option (b) of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). Pattern rules alone cannot carry D11:
   `Read(~/.ssh/**)` does not bind Bash, and `gh api` takes its flags in any order. The macOS sandbox alternative,

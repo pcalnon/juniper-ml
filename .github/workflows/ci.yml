@@ -1403,6 +1403,11 @@ jobs:
           # conf/home_path_literal_baseline.json allows it; "# home-path-literal: allow" exempts a
           # line. Real git on temp repos; the committed baseline must match this checkout.
           python3 -m unittest -v tests/test_home_path_literal_check.py
+          # tests/test_ci_host_tooling_macos.py: turing bring-up G4. ci.yml's advisory host-tooling-macos
+          # job: macos-latest, no path filter, every step after detection gated on its `relevant` output,
+          # the suite list equal to the turing host-tooling set, /bin/bash 3.x and a non-/usr/local brew
+          # prefix asserted, absent from the Quality Gate needs. The detection shell runs under a stub git.
+          python3 -m unittest -v tests/test_ci_host_tooling_macos.py
 
       - name: Run bash regression tests
         run: |
@@ -2344,6 +2349,120 @@ jobs:
             fi
           done
           exit $exit_code
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # Host Tooling (macOS) -- ADVISORY (turing bring-up G4). The host-tooling suites run here under
+  # BSD userland and /bin/bash 3.2, which the Linux regression step cannot show: each suite calls
+  # /bin/bash itself, and on macos-latest that is 3.2. A step asserts it, and that `brew --prefix`
+  # is not turing's Intel /usr/local, so a green run also shows the scripts are prefix-independent.
+  #
+  # No on.paths filter (it would skip all of ci.yml). The detection step sets `relevant`, and every
+  # later step is gated on it, so the job reports success when no host-tooling path changed; it
+  # always runs on push and dispatch. It is absent from the Quality Gate `needs:`. After 10
+  # consecutive green runs it becomes required by joining required-checks.needs, never as a
+  # separate ruleset context. Gate: tests/test_ci_host_tooling_macos.py, which also runs the
+  # detection shell under a stub git.
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  host-tooling-macos:
+    name: Host Tooling (macOS)
+    runs-on: macos-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      # The suites (tests/test_<name>.py) and the other paths whose change re-runs the job;
+      # tests/redacted_env.py and this workflow always count. G1's two suites join when it lands.
+      HOST_TOOLING_SUITES: >-
+        juniper_clone find_encryption_readme_notes macvm_ctl claude_agent_guard
+        git_remote_alias_check headless_signing_preflight juniper_repo_ssh_setup home_path_literal_check
+      HOST_TOOLING_PATHS: >-
+        util/juniper_clone.bash util/find_encryption_readme_notes.bash util/macvm_ctl.bash
+        util/claude_agent_guard.py util/install_claude_agent_guard.bash util/git_remote_alias_check.py
+        util/headless_signing_preflight.bash util/juniper_repo_ssh_setup.bash util/home_path_literal_check.py
+        conf/home_path_literal_baseline.json .pre-commit-config.yaml
+    steps:
+      - name: Checkout Code (full history)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Detect host-tooling changes
+        id: changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          MG_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+        run: |
+          set -euo pipefail
+          case "$EVENT_NAME" in
+            pull_request) base="$PR_BASE_SHA" ;;
+            merge_group) base="$MG_BASE_SHA" ;;
+            *)
+              echo "relevant=true" >> "$GITHUB_OUTPUT"
+              echo "${EVENT_NAME}: the suites always run"
+              exit 0
+              ;;
+          esac
+          if ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$base"
+          fi
+          changed="$(git diff --name-only "$base" HEAD)"
+          watched="$(mktemp)"
+          for suite in $HOST_TOOLING_SUITES; do echo "tests/test_${suite}.py"; done > "$watched"
+          for path in $HOST_TOOLING_PATHS tests/redacted_env.py .github/workflows/ci.yml; do echo "$path"; done >> "$watched"
+          hits="$(printf '%s\n' "$changed" | grep -F -x -f "$watched" || true)"
+          rm -f "$watched"
+          if [ -n "$hits" ]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            echo "host-tooling paths changed:"
+            printf '%s\n' "$hits" | sed 's/^/  /'
+          else
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+            echo "no host-tooling path changed; the suites are skipped and the job passes"
+          fi
+
+      - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
+        if: steps.changes.outputs.relevant == 'true'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_TEST_VERSION }}
+
+      - name: Install test dependencies
+        if: steps.changes.outputs.relevant == 'true'
+        run: |
+          python -m pip install --upgrade "pip>=26.1.1"
+          # PyYAML: the G5 and G6 cases read .pre-commit-config.yaml and ci.yml.
+          pip install "pyyaml>=6.0"
+
+      - name: Assert the macOS userland under test
+        if: steps.changes.outputs.relevant == 'true'
+        run: |
+          set -euo pipefail
+          bash_major="$(/bin/bash -c 'echo "${BASH_VERSINFO[0]}"')"
+          echo "/bin/bash: $(/bin/bash --version | head -1)"
+          [ "$bash_major" = 3 ] || { echo "::error::/bin/bash is bash ${bash_major}: this job no longer tests bash 3.2"; exit 1; }
+          prefix="$(brew --prefix)"
+          echo "brew --prefix: ${prefix} ($(uname -m))"
+          [ "$prefix" != /usr/local ] || { echo "::error::brew --prefix is turing's Intel /usr/local, so a green run no longer shows prefix independence"; exit 1; }
+
+      - name: Run the host-tooling suites
+        if: steps.changes.outputs.relevant == 'true'
+        run: |
+          set -uo pipefail
+          failed=""
+          for suite in $HOST_TOOLING_SUITES; do
+            echo "::group::tests/test_${suite}.py"
+            python3 -m unittest -v "tests/test_${suite}.py" || failed="$failed $suite"
+            echo "::endgroup::"
+          done
+          if [ -n "$failed" ]; then
+            echo "::error::host-tooling suites failed under macOS:${failed}"
+            exit 1
+          fi
+
+      - name: No host-tooling change
+        if: steps.changes.outputs.relevant != 'true'
+        run: echo "No host-tooling path changed; the suites are skipped and the job passes."
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Quality Gate: All required checks must pass
