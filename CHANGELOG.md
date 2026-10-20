@@ -46,6 +46,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`stats.json` / `summary.md` carry a per-split regression target summary** (W5.5 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; F-D8). The audited
+  `stats.json` reported the sequence dimensions and a `class_distribution` of `null`, and nothing about the target the
+  equities fit predicts.
+  - `util/experiments/stats_summary.py` gains the stdlib `regression_target_summary`: per split, `n`, `n_finite`,
+    `finite_fraction`, `mean`, `std` (population, ddof=0), `min`, `max`, plus a `basis` string; NaN and ±Inf count
+    toward `n` and against the fraction and stay out of the moments; an empty split reports `finite_fraction: null`.
+    `build_stats` writes it as `dataset.target_summary` (`null` when absent) and turns a reader error into a
+    `provenance.degraded_notes` entry; `summary.md` prints one line per split.
+  - `util/experiments/run_experiment.py` fetches the dataset artifact once after the dataset phase (the body the plot
+    set already reads) and summarises every `y_reg_<split>` array; numpy is imported lazily, and a host without it, a
+    failed fetch or an unreadable body is a degraded note, never a run failure. Both kinds pass it to `build_stats`.
+  - `tests/test_stats_summary_target_summary.py` (new, 22 tests) pins the arithmetic, the carriage, the rendering and
+    the driver reader on the committed audited artifact (1346 / 176 / 176 windows, every one finite); wired into
+    `ci.yml` and `docs/REFERENCE.md`.
+
+- **`util/experiment_stack.bash --shared-equities-cache DIR`, the experimentation plan's H-9 opt-in** (W5.6 of the same
+  plan; F-D6), with a `run_suite.py` passthrough. The data leg launched with
+  `JUNIPER_DATA_EQUITIES_CACHE_DIR=$RUN_DIR/equities-cache` and nothing else, so every cell of an equities suite paid the
+  cold Yahoo / SEC fetch again.
+  - The flag (or `JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR`) launches the data leg with that directory instead -- one that
+    outlives the run. Absolute paths only (exit 2 before any port is allocated: the leg launches from the run dir, so a
+    relative path would be per-run again); created if absent; never removed by teardown; inert with `--shared-data`. The
+    default stays per-run, storage stays `$RUN_DIR/data`, and `dataset_id`s are unchanged.
+  - Evidence: the announce line, `env/launch.env`, and `ports.json`'s new `equities_cache_dir` / `equities_cache_shared`.
+  - `util/experiments/run_suite.py --shared-equities-cache DIR` passes it to every cell's `--up` (the env knob is honoured
+    and passed explicitly) and records it on each registry row and in `suite_manifest.json`; cell ids and
+    `config_sha256` are unchanged, as with the Grafana bridge.
+  - `docs/REFERENCE.md` gains the runbook subsection (sharing is read-mostly, not race-free: juniper-data's cache writes
+    are plain writes, so keep sharing to runs that do not overlap on cold symbols).
+  - `tests/test_experiment_stack_shared_equities_cache.py` (new, 25 tests): the contract text, the misuse matrix, dry
+    run, live `data_up` (PATH stubs), the `ports.json` record and the suite passthrough; wired into `ci.yml` and
+    `docs/REFERENCE.md` (215 suites).
+
 - **`util/experiments/run_suite.py` gains the `acceptance:` facility, and the E-H recurrence suite carries
   the R5 band** (W5.4 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
   F-D3 / F-SCI4; rulings R5 and R6). Before this the audited E-H cell scored `cv_r2 = -18081` and the suite

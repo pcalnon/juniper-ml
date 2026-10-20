@@ -2558,9 +2558,12 @@ class TestPortsJsonRender(unittest.TestCase):
         return subprocess.run(["/bin/bash", "-c", harness], capture_output=True, text=True, check=True, env=RedactedEnv(os.environ), timeout=SCRIPT_TIMEOUT_SECONDS).stdout
 
     def test_without_a_record_the_text_is_exactly_the_pre_w1_9_document(self) -> None:
+        # W5.6 added the two equities_cache_* lines between "experiment" and "grafana_bridge"; with the
+        # globals unset the dir is the per-run default. Every pre-W1.9 line is byte-identical.
         with tempfile.TemporaryDirectory() as tmp:
             text = self._write(Path(tmp))
-        self.assertEqual(text, '{\n  "run_id": "20261005T000000Z-ab12",\n  "data": 8110,\n  "cascor": null,\n  "recurrence": 8260,\n  "data_url": "http://127.0.0.1:8110",\n  "experiment": "cell-01",\n  "grafana_bridge": false\n}\n')
+            expected = '{\n  "run_id": "20261005T000000Z-ab12",\n  "data": 8110,\n  "cascor": null,\n  "recurrence": 8260,\n  "data_url": "http://127.0.0.1:8110",\n  "experiment": "cell-01",\n' f'  "equities_cache_dir": "{tmp}/equities-cache",\n  "equities_cache_shared": false,\n' '  "grafana_bridge": false\n}\n'
+        self.assertEqual(text, expected)
 
     def test_with_a_record_every_text_reader_still_reads_the_top_level(self) -> None:
         odd = '/opt/my envs/a"b\\c/bin/python3'  # a space, a double quote and a backslash, all escaped
