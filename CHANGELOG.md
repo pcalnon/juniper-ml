@@ -192,6 +192,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tests/test_ci_host_tooling_macos.py` (new) gates the job's shape and runs the detection shell under a
     stub `git`. It is wired into `ci.yml` and `docs/REFERENCE.md`.
 
+- **`util/host_state_probe.bash` and `util/host_state_check.py`, the host gates** (turing bring-up task G1 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; the gates of §9.3).
+  - The probe collects a macOS host's state, read-only, as raw command captures in one JSON object. Under
+    `~/.ssh` and `~/.gnupg` it tests names and permission bits only, and it runs no credential probe. It
+    graduates `util/ad-hoc/2026-10-15_turing_host_state_probe.bash`.
+  - The check judges those captures against `conf/hosts/<host>/expected.yaml`, new for turing. It evaluates
+    G-ALIAS, G-SIGN, G-SEC, G-TOOLS, G-ENV, G-NET and G-MEM condition by condition, and names the plan task
+    behind each failure. `--check` exits 1 while a gate fails.
+  - expected.yaml is validated before anything runs. A VM that cannot fit the machine is regression R-G1,
+    the X2 class (the primer's 44 GB VM on a 16 GiB host), and exits 2.
+  - Turing's readiness on 2026-10-20 was 0 of 7. Each failure is an open plan task: A1; C1, C2 and C3;
+    D4; E4; A6 and F2; node mode (F3); and the I-SIGN record (signing plan K10).
+  - `tests/test_host_state_probe.py` and `tests/test_host_state_check.py` (new) are wired into `ci.yml`,
+    the advisory `host-tooling-macos` job and `docs/REFERENCE.md` (220 suites).
+  - `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` (new) shows that they kill 57 of 57 mutants.
+
 - **The D11 item 4 agent guard for turing** (task C8, option (b) of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). Pattern rules alone cannot carry D11:
   `Read(~/.ssh/**)` does not bind Bash, and `gh api` takes its flags in any order. The macOS sandbox alternative,

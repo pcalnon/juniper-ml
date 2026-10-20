@@ -42,7 +42,7 @@ JOB = "host-tooling-macos"
 DETECT_STEP = "Detect host-tooling changes"
 TIMEOUT_SECONDS = 60
 
-# The turing bring-up suites whose scripts run on the host (plan §8). G1's two suites join when it lands.
+# The turing bring-up suites whose scripts run on the host (plan §8).
 SUITES = {
     "juniper_clone",
     "find_encryption_readme_notes",
@@ -53,6 +53,8 @@ SUITES = {
     "juniper_repo_ssh_setup",
     "home_path_literal_check",
     "configure_commit_signing",  # commit-signing plan K2
+    "host_state_probe",  # G1
+    "host_state_check",  # G1
 }
 
 

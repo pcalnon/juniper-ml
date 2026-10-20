@@ -1421,6 +1421,18 @@ jobs:
           # the suite list equal to the turing host-tooling set, /bin/bash 3.x and a non-/usr/local brew
           # prefix asserted, absent from the Quality Gate needs. The detection shell runs under a stub git.
           python3 -m unittest -v tests/test_ci_host_tooling_macos.py
+          # tests/test_host_state_probe.py: turing bring-up G1. util/host_state_probe.bash captures a macOS
+          # host's state (argv, rc, stdout, stderr per command) as one JSON object: a missing, failing or
+          # hung command is recorded (killed at --timeout), sections come in canonical order, ~/.ssh and
+          # ~/.gnupg get name and permission tests only (mode-000 fixtures), and no credential program
+          # runs. Stub tools answer from a response table; the real find runs on a temp HOME; /bin/bash.
+          python3 -m unittest -v tests/test_host_state_probe.py
+          # tests/test_host_state_check.py: turing bring-up G1, regression R-G1. util/host_state_check.py
+          # judges those captures against conf/hosts/<host>/expected.yaml: G-ALIAS, G-SIGN, G-SEC, G-TOOLS,
+          # G-ENV, G-NET and G-MEM, each condition failing or erroring on its own. A VM that cannot fit
+          # (R-G1, the X2 class) exits 2; G-MEM's verdicts equal util/macvm_ctl.bash status's; the real
+          # probe feeds the check; the committed turing file agrees with macvm_ctl, hosttools and conda-envs.
+          python3 -m unittest -v tests/test_host_state_check.py
 
       - name: Run bash regression tests
         run: |
@@ -2384,15 +2396,20 @@ jobs:
       contents: read
     env:
       # The suites (tests/test_<name>.py) and the other paths whose change re-runs the job;
-      # tests/redacted_env.py and this workflow always count. G1's two suites join when it lands.
+      # tests/redacted_env.py and this workflow always count. G1's check suite pins the conf/hosts/turing/
+      # files listed here against each other.
       HOST_TOOLING_SUITES: >-
         juniper_clone find_encryption_readme_notes macvm_ctl claude_agent_guard
         git_remote_alias_check headless_signing_preflight juniper_repo_ssh_setup home_path_literal_check configure_commit_signing
+        host_state_probe host_state_check
       HOST_TOOLING_PATHS: >-
         util/juniper_clone.bash util/find_encryption_readme_notes.bash util/macvm_ctl.bash
         util/claude_agent_guard.py util/install_claude_agent_guard.bash util/git_remote_alias_check.py
         util/headless_signing_preflight.bash util/juniper_repo_ssh_setup.bash util/home_path_literal_check.py util/configure_commit_signing.py
+        util/host_state_probe.bash util/host_state_check.py
         conf/home_path_literal_baseline.json .pre-commit-config.yaml
+        conf/hosts/turing/expected.yaml conf/hosts/turing/hosttools-environment.yml conf/hosts/turing/conda-envs/JuniperCanopy1.yml
+        conf/hosts/turing/conda-envs/JuniperCascor1.yml conf/hosts/turing/conda-envs/JuniperData.yml
     steps:
       - name: Checkout Code (full history)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -2444,7 +2461,7 @@ jobs:
         if: steps.changes.outputs.relevant == 'true'
         run: |
           python -m pip install --upgrade "pip>=26.1.1"
-          # PyYAML: the G5 and G6 cases read .pre-commit-config.yaml and ci.yml.
+          # PyYAML: the G5 and G6 cases read .pre-commit-config.yaml and ci.yml; G1's check reads expected.yaml.
           pip install "pyyaml>=6.0"
 
       - name: Assert the macOS userland under test
