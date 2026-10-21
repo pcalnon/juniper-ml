@@ -783,6 +783,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     commit-scoped entries grouped by class. The full-history scan of every branch and tag now
     reports nothing.
 
+- **The R-S9 audit in `tests/test_configure_commit_signing.py` no longer charges the interpreter's bytecode-cache
+  writes to the script.**
+  - Post-merge main verification failed `test_r_s9_never_opens_credentials_never_runs_gpg_and_writes_only_its_files`
+    on four of the five heads from `036e53e2` to `398c5f5d` (2026-10-21).
+  - The cause: on a runner whose Python 3.12.15 toolcache had no cached `encodings/__pycache__/utf_8_sig` bytecode,
+    the audited child wrote one while importing that codec for the VS Code settings read, and the audit hook counted
+    it as the script's write.
+  - The fix: the child runs with `-B`. Every write the script itself makes is still audited.
+  - Forcing an empty bytecode cache (`-X pycache_prefix=`) reproduces the failure without `-B` and passes with it.
+
 - **Four defects from the Cursor flood-3 evaluation**
   (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §4):
   - **`juniper-service-core`: `FailedAuthThrottle.check()` no longer grows its table by one entry per

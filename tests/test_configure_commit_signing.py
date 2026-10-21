@@ -909,7 +909,10 @@ class ContractTest(SigningHarness):
         wrapper = self.tmp / "audit_wrapper.py"
         wrapper.write_text(AUDIT_WRAPPER, encoding="utf-8")
         out = self.tmp / "audit.json"
-        proc = subprocess.run([sys.executable, "-I", str(wrapper), str(out), str(SCRIPT_PATH), "--root", str(self.root), *args], env=self.env, capture_output=True, text=True, timeout=TIMEOUT_SECONDS, check=False)
+        # -B: the interpreter's own bytecode-cache writes are not the script's. On a runner whose Python toolcache
+        # lacks a module's .pyc, the import writes one (encodings/__pycache__/utf_8_sig...pyc.<id> on 3.12.15,
+        # main verification, 2026-10-21), and the audit hook would charge it to the script.
+        proc = subprocess.run([sys.executable, "-I", "-B", str(wrapper), str(out), str(SCRIPT_PATH), "--root", str(self.root), *args], env=self.env, capture_output=True, text=True, timeout=TIMEOUT_SECONDS, check=False)
         return proc.returncode, json.loads(out.read_text(encoding="utf-8"))
 
     def test_r_s9_never_opens_credentials_never_runs_gpg_and_writes_only_its_files(self):
