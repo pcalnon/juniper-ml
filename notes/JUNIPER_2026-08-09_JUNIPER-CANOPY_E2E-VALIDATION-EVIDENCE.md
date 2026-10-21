@@ -3101,7 +3101,7 @@ investigations. Reproduce with `util/ad-hoc/e2e_f027_redux_actions.py`.
 > next to a storm of "reset to layout defaults"): **0 of 40 resets target the graph or any ancestor of
 > it**, so F-033 is *not* F-039's cause and the two stay separate findings.
 
-**F-CANOPY-028 — pinned params are silently discarded on the first pin after any reload (P1 since 2026-10-19, Phase 13, by the manual's pin-persistence sentence, the narrowest of that phase's five re-ratings; P2 before that; code change canopy#533, merged 2026-08-28, in canopy 0.7.0; M-PARAMETERS-04/-05/-06 re-driven 2026-10-20 on canopy 571743db, Phase 14, item 30: a pin was lost in 1 of 8 drives on the record, run 1 unrecorded, and the mechanism is re-diagnosed, a table re-render from a stale pin set that the store writer then persists; OPEN; segment 15).**
+**F-CANOPY-028 — pinned params are silently discarded on the first pin after any reload (P1 since 2026-10-19, Phase 13, by the manual's pin-persistence sentence, the narrowest of that phase's five re-ratings; P2 before that; code change canopy#533, merged 2026-08-28, in canopy 0.7.0; M-PARAMETERS-04/-05/-06 re-driven 2026-10-20 on canopy 571743db, Phase 14, item 30: a pin was lost in 1 of 8 drives on the record, run 1 unrecorded, and the mechanism re-diagnosed, a table re-render from a stale pin set that the store writer then persists; fixed by canopy#761, merged 2026-10-20 as `aeeaf29b`: the writer persists a user's toggle only and a rebuilt table writes nothing; re-driven on a leg of the fix, the forced arm included, Phase 15, item 31; FIXED; segment 15).**
 `pinned-params-store` is `storage_type="local"` and survives reload correctly, but the `{"type":"param-pin"}` checkboxes in the Parameters tables **do not rehydrate from it** — after a reload they all render unchecked while the store and the sidebar card still show the pinned set. Because the single pattern-matched writer (`dashboard_manager.py:3948-3952`) *collects the state of every checkbox*, the next pin action writes a list built from the un-rehydrated DOM, dropping everything pinned before the reload. Reproduced end-to-end: pinned `learning_rate` → `pinned-params-store` `["learning_rate"]`, sidebar card `display:block` showing "Learning Rate" → full page reload → `localStorage["pinned-params-store"]` still `["learning_rate"]`, card still shown, **but the `learning_rate` checkbox reads `checked:false`** → pinning `max_iterations` → store and localStorage both become `["max_iterations"]`, `learning_rate` gone with no warning. Matrix rows M-PARAMETERS-04/-05/-06 still **PASS** on their own stated expectations (the store write, the card reveal, and persistence all work); this is the cross-cutting defect those rows sit on top of.
 
 > **CORRECTED + FIX AUTHORED (2026-08-27, `juniper-canopy#533`; CI green, NOT merged — entry stays OPEN).**
@@ -3204,6 +3204,66 @@ investigations. Reproduce with `util/ad-hoc/e2e_f027_redux_actions.py`.
 > where the band begins is not measured. The driver's arms are fixed delays after the reload, so a re-drive
 > needs a pin-delay knob, or reads each pin's position from `pin_requests_after_reload` and repeats until the
 > window is sampled, with enough hits to put a rate on it.
+
+> **FIXED (2026-10-20, Phase 15, item 31; canopy#761, merged as `aeeaf29b`).** The writer now persists a user's toggle
+> only. `update_pinned_params_store` reads which pin inputs fired the call through
+> `CallbackContextAdapter.get_triggered_prop_ids()` (canopy's own seam, F-CANOPY-029's idiom; `dash.ctx.triggered_prop_ids`
+> underneath, the pattern-matching ids as dicts) and hands them to `_apply_pin_toggle`, which replaces
+> `_merge_pinned_params`: not exactly one `param-pin` id triggered → `no_update` (a rebuilt table arrives with every
+> checkbox triggered at once; the mount render too); the toggled key's rendered value decides it alone, appended to the
+> stored list if checked and absent, removed if unchecked and present, every other key carried through untouched in
+> its stored order whatever its checkbox shows; a toggle the store already reflects → `no_update`. On the stale input
+> Phase 14 recorded (`early#2`'s third body: 22 boxes triggered, `learning_rate` checked and `max_iterations` not,
+> State `["max_iterations", "learning_rate"]`) the old handler returns `['learning_rate']`, the pin gone; the new one
+> writes nothing (the unit test pins a four-key analogue). One visible change: a new pin is appended, so the sidebar lists pins in the order
+> they were made (the old merge wrote render order, `max_iterations` before `learning_rate`). Pinned by
+> `test_p2_wave_batch_b.py` (`TestF028PinnedParamsPreserved`: the stale rebuild after a toggle leaves the store as the
+> toggle left it; the mount render writes nothing even with an empty store; the toggle cases re-stated) and
+> `test_dashboard_manager_gate_coverage_inner1.py` (the raw callback through the adapter: one trigger writes, every
+> trigger writes nothing). The manual's Patch Weights sentence states the row idiom (item 31b, below).
+>
+> **Driven** on dash 4.4.1 demo legs from this host with `2026-10-20_item30_fixwave_redrive.py --step f028` (pin
+> `learning_rate`, read store and card, reload, pin `max_iterations`, read the store), which gained arms for item 31:
+> `delay<N>` waits N seconds after the reload before its pin step, and the forced arms write the params store 150 ms
+> after the click (`dash_clientside.set_props`, payload `{}`), requesting a table rebuild on purpose: `forcedearly` at
+> the early timing (pass 1, `2026-10-20_item31_f028_drives.bash`; the arm was named `forced` when it ran, so its
+> records' labels read `forced#N`) and `forced` at the settled timing (pass 2,
+> `2026-10-20_item31_f028_drives_pass2.bash`). Records: `reports/e2e-canopy-2026-09-02/item31-turing/` (JSON, `logs/`).
+> **The recorded delay is the driver's pin step, not the click**: `second_pin_at_s_after_reload` is taken before three
+> page evaluates, a log line and a screenshot of a page still loading, and on the parent the click's writer went out 5.4–8.1 s
+> after that log line in the 2 s, 4 s and early forced arms (1.3–3.4 s in the settled forced arms, nothing pending;
+> on the fix 6.2–8.7 s and 1.2–3.5 s). **On the
+> parent `571743db`**, delays of 2, 4, 6, 8, 10, 12 and 14 s, twice each: 0 of 14 lost
+> (`parent_8062_dash441_delay_sweep.json`). Every arm shows the same three writer firings: the mount render, the
+> second render 6.6–9.0 s after it, and the click's, 0.6–9.5 s after the second render, both keys checked, State
+> `["learning_rate"]`, the store `["max_iterations", "learning_rate"]`. **Every click landed after the second
+> render**: that render re-created every box with `max_iterations` unchecked, and a render landing after a click
+> resets the box (`early#2`'s third body), yet each click's writer read it checked. So the band before the second
+> render, which the Phase 14 entry asked this phase to sample, was not sampled; nothing here shows it unreachable. The
+> forced arms lost nothing either: 0 of 6 at the early timing (`parent_8062_dash441_forced.json`) and 0 of 6 at the
+> settled one, the pin step 26.6–29.9 s after the reload (`parent_8062_dash441_forced_settled.json`), with no fourth
+> writer firing in any of the twelve. They cannot stage `early#2`'s order: the renderer holds the render a store write
+> requests behind the click's writer, the pin store being the writer's Output and the render's Input (dash 4.4.1
+> `getReadyCallbacks`), whereas `early#2`'s stale render was requested before the click's writer and answered after
+> it. A params-store write just before the click, or a click timed to the params-store fill, could stage that order,
+> and no drive here tried either. So no instrument reproduced the race on this host: Phase 14's one hit in eight
+> stands as the only live loss on the record, and its request bodies, not a re-creation, are what the fix was derived
+> from.
+> **On the fix** (the item 31 tree, `+f069+f028-fix-unlanded`): the forced arms 0 of 6 at each timing
+> (`fix_8066_dash441_forced.json`, `fix_8066_dash441_forced_settled.json`), `early,mid` ×3 0 of 6
+> (`fix_8066_dash441_early_mid.json`; the pin step 2.3–2.9 s and 9.4–10.8 s after the reload), the delays 0 of 7
+> (`fix_8066_dash441_delay_sweep.json`), the store settling at `["learning_rate", "max_iterations"]` in every arm and
+> the same three firings per arm, the rebuilds' now writing nothing by construction. These 25 cannot discriminate:
+> the same instrument lost nothing on the parent, so they show that a toggle still persists, not that the race is
+> closed; the closure rests on the unit test and on `early#2`'s third body mapping to `no_update`. M-PARAMETERS-04
+> and -05 pass on their own expectations in every drive; -06 runs only in the driver's `settled` arm, which no Phase
+> 15 drive used. **Not measured:** the natural race at a rate (the one live loss on the record stays Phase 14's); a
+> click timed before the second render; the Linux host's dash 4.2.0. **A residual the fix leaves** (from the
+> renderer source, not driven; round 2, Lane 15-B): if a stale render lands while the click's writer is in flight,
+> dash evicts the older in-flight call (in 4.4.1 it sits in `watched`; the duplicate removal is dispatched at
+> `dash_renderer.dev.js:3379` and its response is dropped at `:2884-2890`), so the click's write is discarded and
+> the rebuild's call writes nothing; the new pin does not register (its box re-renders unchecked, as the user sees)
+> and no earlier pin can be lost.
 
 **F-CANOPY-029 — the Dataset View "Generate Dataset" modal can never open: its callback 500s on every click (P1; FIXED juniper-canopy#504, `041eb69`; found segment 16).**
 `toggle_generate_modal` (`dashboard_manager.py:3869-3870`) does `ctx = get_callback_context()` and then reads **`ctx.triggered_id`**. `get_callback_context()` returns canopy's **own** `CallbackContextAdapter` (`frontend/callback_context.py:53`), whose only accessor is **`get_triggered_id()`** (`:78`) — there is no `triggered_id` property. Every click therefore raises `AttributeError: 'CallbackContextAdapter' object has no attribute 'triggered_id'. Did you mean: 'get_triggered_id'?` and Dash returns **HTTP 500**; the browser console shows `Callback error updating dataset-plotter-generate-modal.is_open`, and the canopy log carries the full traceback. Deterministic — reproduced on every attempt. The other three production `.triggered_id` reads (`dashboard_manager.py:2411`, `:2429`, `callback_context.py:92`) are on the genuine `dash.callback_context`, which is why the model-selection modal (C2.6-18) still passes; this one call site mixes the adapter object with the raw-dash attribute name. Fix: `ctx.get_triggered_id()`.
@@ -12596,8 +12656,8 @@ New item:
     phase change of a real cascor run on a UTC−4 host, no offset inflation. **PASS.**
 - **F-CANOPY-069 (P0, new).** The first leg stood up here, canopy `571743db` on turing's E2 env (dash 3.3.0 from
   `conda_environment.yaml`), was inert: no welcome modal, empty Parameters tables, no `_dash-update-component`
-  POST from the page on any click. Cause: three callback pairs claim one
-  `allow_duplicate` output with identical inputs, so their ids collide (`<id>.<prop>@sha256(inputs)`,
+  POST from the page on any click. Cause: two callback pairs (Phase 14 said three; erratum, Phase 15) claim the same
+  `allow_duplicate` outputs with identical inputs, so three output ids collide (`<id>.<prop>@sha256(inputs)`,
   `dash/_utils.py:138-162`, the same code in every dash from 3.0.4 to 4.4.1); dash 3's renderer validates the
   dependency list unconditionally, logs `Duplicate callback outputs` three times and leaves the callback graph
   empty; dash 4 runs that validation only behind `config.validate_callbacks`, so the same list passes and the
@@ -12674,9 +12734,10 @@ one leg per dash, the same tree and the same ids on every one:
 The Python side is the same everywhere: `create_callback_id` (`dash/_utils.py:138-166` in 3.0.4, 3.2.0, 3.3.0 and
 3.4.0, `:146-188` in 4.4.1, which adds a branch for callbacks with no output and no inputs that does not touch
 this) suffixes an `allow_duplicate` output with `@sha256(".".join(str(x) for x in inputs))`, so two callbacks
-with the same output and the same inputs get the same id, and the server registers both (`callback_map` keyed by
-that id, `dash/_callback.py:311` in 3.3.0 and `:338` in 4.4.1, the second overwriting the first's entry; the dependency list served to the
-renderer keeps both). The renderer differs in one line: dash 3's `computeGraphs` calls `validateDependencies`
+with the same output and the same inputs get the same id, and the server registers both (`callback_map`,
+`dash/_callback.py:311` in 3.3.0 and `:338` in 4.4.1, is keyed by each callback's whole output string, which
+differs between the two members, so both entries stand, and the dependency list served to the renderer keeps
+both; erratum, Phase 15: this said the second overwrote the first's entry). The renderer differs in one line: dash 3's `computeGraphs` calls `validateDependencies`
 unconditionally (`dash_renderer.dev.js:77452` in 3.3.0) and, on any error, returns the empty graphs ("leave the
 graphs empty if we found an error, so we don't try to execute the broken callbacks", `:77488-77492`); dash 4.4.1
 calls it only `if (config.validate_callbacks)` (`:6810-6812`), a dev-tools flag that defaults to `debug`
@@ -12716,7 +12777,7 @@ accept nor the restart confirm is an item 30 row); every earlier drive in this l
 
 ### F-CANOPY-069
 
-**F-CANOPY-069 — under every dash 3.x release canopy's dashboard is inert in the browser: three callback pairs claim one `allow_duplicate` output with identical inputs, their ids collide, and the dash 3 renderer drops the whole callback graph; canopy's own `conda_environment.yaml` pins dash 3.3.0 (P0 in any environment resolving dash 3.x, which the floor `dash>=3.0.0` admits; not reached from `requirements.lock`, CI or a fresh pip resolve, all dash 4.x; found 2026-10-20, Phase 14, on turing's E2 env; OPEN).**
+**F-CANOPY-069 — under every dash 3.x release canopy's dashboard is inert in the browser: two callback pairs claim the same `allow_duplicate` outputs with identical inputs, three output ids collide, and the dash 3 renderer drops the whole callback graph; canopy's own `conda_environment.yaml` pins dash 3.3.0 (P0 in any environment resolving dash 3.x, which the floor `dash>=3.0.0` admitted; not reached from `requirements.lock`, CI or a fresh pip resolve, all dash 4.x; found 2026-10-20, Phase 14, on turing's E2 env; fixed by canopy#760, merged 2026-10-20 as `fbf01dff`: the progress alerts are the working callbacks' `running=` specs, the two openers are gone, the floor is `dash>=4.0.0` and the conda file pins 4.4.1; a leg of the fix is ALIVE under dash 3.3.0 and 4.4.1, Phase 15, item 32; FIXED).**
 Measured on canopy `main` `571743db` on five legs from one tree, one per dash release
 (`reports/e2e-canopy-2026-09-02/item30-turing/dash_version_matrix.json`; `util/ad-hoc/2026-10-20_canopy_dash_duplicate_outputs_probe.py`): under
 dash 3.0.4, 3.2.0, 3.3.0 and 3.4.0 the page loads, the renderer logs `Duplicate callback outputs` three times, the
@@ -12738,8 +12799,9 @@ flag whose default is `debug` (`dash/dash.py:2062-2066`), and canopy runs with d
 every leg's log), so the pairs go unchecked.
 **Why it is green everywhere:** no Python-side check exists for an output claimed by two callbacks (the only
 server-side duplicate validation, `_validate.validate_duplicate_output`, enforces `prevent_initial_call`; the
-callback registry is a dict keyed by the id, `_callback.py:311` in 3.3.0 and `:338` in 4.4.1, and the second registration overwrites the
-first's entry while the dependency list keeps both); canopy's unit and integration suites (7,947 and 523 passed on turing under dash
+callback registry is a dict keyed by each callback's whole output string, `_callback.py:311` in 3.3.0 and `:338` in
+4.4.1, so both members of a pair register and the dependency list keeps both; erratum, Phase 15: this said the
+second registration overwrites the first's entry); canopy's unit and integration suites (7,947 and 523 passed on turing under dash
 3.3.0, E2) never render; the UI sub-suite runs in CI under dash 4.4.1 (`conda_environment_ci.yaml:126` pins 4.1.0
 for the conda lane; `requirements_ci.txt:169` is `dash>=3.0` and resolves to 4.4.1) where the validation is off;
 and every live drive this ledger records ran on the Linux host's `JuniperCanopy1`, dash 4.2.0 (canopy
@@ -12761,6 +12823,65 @@ the lock and CI already use if dash 3 is not to be supported, and correct `conda
 pin it with a test that computes the ids as `create_callback_id` does over `app.callback_map` and asserts no two
 callbacks share one, which fails on this tree under every dash. Blast radius on dash 3.x: every row of the
 matrix; on dash 4.x: unknown for the two surfaces named.
+
+> **FIXED (2026-10-20, Phase 15, item 32; canopy#760, merged as `fbf01dff`).** The dash 4 behaviour was
+> measured first, as the entry asked, on a dash 4.4.1 demo leg of `571743db` with
+> `util/ad-hoc/2026-10-20_f069_pair_members_probe.py`, which fires each pair's Input from the page with the
+> renderer's own `dash_clientside.set_props` (it reaches a button inside a closed modal, which a click cannot) and
+> records every `_dash-update-component` POST and the progress alert's DOM life
+> (`reports/e2e-canopy-2026-09-02/item32-turing/pair_members.json`, label `dash-4.4.1-571743db`). **Both members of
+> each pair ran on one firing.** Restart: the opener's request at +0.28 s answered at +0.64 s, `execute_restart`'s
+> at +0.28 s answered at +2.61 s, the alert added when the opener's answer landed and gone 1.9 s later, with the worker's. Live Switch: `accept_live_switch`
+> at +0.17 s answered at +0.93 s, the opener at +0.17 s answered at +0.71 s, the alert added and gone within 0.16 s.
+> The spinner's fate was the order of the two responses: on this run the opener answered first in both pairs, so
+> its `True` landed before the worker's `False`. **The other order happens, and then the spinner sticks.** Round 1's
+> Lane 15-A, re-creating the read on its own dash 4.4.1 leg of `571743db` (two runs; its record landed as
+> `reports/e2e-canopy-2026-09-02/item32-turing/lane15A_pair_members.json`, labels `lane15A-dash-4.4.1-parent` and
+> `lane15A-dash-4.4.1-parent-run2`), saw the Live Switch worker answer 1 ms BEFORE the opener both times (+0.155 s
+> against +0.156 s, and +0.286 s against +0.287 s: the demo backend answers the swap in about 40 ms), and the
+> progress alert was still open when each probe ended, `Swapping dataset…` with its Cancel button, class `show`.
+> Nothing else closes it: the alert is not dismissable, and its only writers were the two members of the pair, so
+> it stays up until a later accept or a reload. The restart worker (1.25 s and 1.31 s on Lane 15-A's runs, 2.61 s
+> on this one) never outran its opener. So under dash 4 the defect was live on one surface: whenever the swap POST
+> came back before the opener's, the Live Switch spinner outlived the swap. That is the dash 4 behaviour Phase 14
+> left unmeasured.
+>
+> **The fix.** `accept_live_switch` and `execute_restart` carry their progress alerts (and the live-swap in-flight
+> store) as `running=`: the renderer sets the props the moment the request leaves and resets them when the response
+> lands (`handleServerside`'s `completeJob()` runs `runningOff` before `finishLine`, in dash 3.3.0 and 4.4.1 alike,
+> so the callback's own `False` lands after it), with no second callback and no round trip. The two openers and
+> `_open_progress_alert_on_accept_handler` are gone. Not F-CANOPY-058's shape: that guard wrote an Interval's
+> `disabled` and its release on an evicted request un-gated a poll lane; here an eviction can only close a spinner
+> the user re-clicked. `src/tests/unit/frontend/test_f069_duplicate_callback_outputs.py` (9 tests; 7 fail on
+> `571743db` under both dash lines) asserts no output id is claimed by two callbacks, with the ids computed as
+> `create_callback_id` does over the served dependency list and parsed exactly, that the scan catches the shape that
+> bit canopy on a scratch app, that each progress alert has one writer, that each of the two Inputs runs one
+> callback, and the two `running` specs; `test_poll_gating.py`'s "no `running=` spec at all" pin became "none on a
+> poll lane", with the three props enumerated. **The floor** is `dash>=4.0.0` (`pyproject.toml`;
+> `conf/requirements_ci.txt`, the one real requirements file: `requirements.txt`, `requirements_ci.txt` and
+> `conf/requirements.txt` are git symlinks into it, as root `conda_environment.yaml` is into `conf/`), and
+> `conf/conda_environment.yaml` pins `dash=4.4.1=pyhd8ed1ab_0` with the two of the 4.4.1 build's new
+> run dependencies the file lacked, `comm=0.2.3` and `janus=2.0.0`, at the lock's versions (the third, `pydantic>=2.10`,
+> is pinned there at 2.12.5). Everything canopy tests ran dash 4.x already; the conda
+> file was the one environment on 3.x and the one nobody drove, and a floor nothing tests is how this stayed
+> invisible. The counter-position (canopy#760's body names half of it): the fix is ALIVE on 3.3.0, so the floor is a
+> policy choice, and 4.0.0 is itself untested (CI pins 4.1.0 in its conda lane and resolves 4.4.1 in its pip lane), so
+> `>=4.1.0` or a CI lane at the floor would make it a tested one (round 2, Lane 15-B). The lockfile workflow re-resolved `requirements.lock` on the branch (certifi, fastapi, pydantic-settings,
+> setuptools, starlette, websockets), a signed commit of its own.
+>
+> **Verified** on demo legs of the fix tree from this host (`util/ad-hoc/2026-10-20_f069_fix_leg.bash`, the tree
+> built from `571743db` by `util/ad-hoc/2026-10-20_f069_apply_fix.py`, stamped `+f069-fix-unlanded`), with the
+> probes Phase 14 used (`reports/e2e-canopy-2026-09-02/item32-turing/dash_version_matrix_fix.json`): **dash 3.3.0,
+> ALIVE** — 179 callbacks served, 0 colliding ids, 0 renderer errors, the welcome modal open, 9 Parameters rows,
+> the theme click's POST at +0.5 s; **dash 4.4.1, ALIVE** — the same, the POST at +0.8 s. The pair-members probe
+> on both: one POST per firing, the alert added when the request left and removed when the response landed
+> (the responses at +1.0–1.2 s for the restart and +0.3–0.7 s for the Live Switch), nothing left open. CI's unit-lane selector on the tree under dash
+> 4.4.1: 7954 passed, 10 skipped, 2 failed, the two being turing's `requests` 2.32.5 against a floor the tests
+> assume (E-REQ, juniper-ml#2282), failing identically on `571743db`. canopy#760's 21 required contexts green,
+> Sequence Safety through six `Allow-Symbol-Loss` trailers; main-verify green on `fbf01dff`. **Not measured:** the
+> two surfaces clicked through their gated modals (the probe fires the Input directly); a real cascor swap or restart behind the POSTs (the demo backend answered); dash 4.2.0, the Linux
+> host's; the UI sub-suite under 3.x, moot at the new floor. Blast radius on a dash 3.x environment: gone; the E2
+> env this phase found it in (`JuniperCanopy1`, dash 3.3.0) is now below canopy's floor, item 33.
 
 ### What this phase cannot support
 
@@ -12940,3 +13061,227 @@ New items:
     the lock and CI are on 4.4.1), `conda_environment.yaml` (dash 3.3.0 today), and a test over
     `app.callback_map` that fails on this tree. Re-run `2026-10-20_canopy_dash_duplicate_outputs_probe.py` on a
     dash 3.3.0 leg of the fix: ALIVE closes it.
+
+## Phase 15 — 2026-10-20: items 32 and 31 — F-CANOPY-069 is FIXED (canopy#760) and F-CANOPY-028 is FIXED (canopy#761); the dash floor is 4.0.0; the open P0 count returns to 0 and the open P1 count falls from 5 to 4
+
+### Who, and from what
+
+The session in juniper-ml worktree `sequential-coalescing-boot` on turing (macOS; Chrome 145 headless under
+Playwright's `chrome` channel; the CDN stylesheet aborted in the browser, so every page unstyled; no trio), from
+`HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`, with the owner's merge approval for the
+session. Every leg served the E2 tree or a copy of it. The E2 tree was proved byte-identical to canopy `main` `571743db`
+for the files the item 32 script touches by `util/ad-hoc/2026-10-20_e2_tree_blob_sha_check.py` (git blob ids against
+the contents API), on 2026-10-20 before that script ran
+(`reports/e2e-canopy-2026-09-02/item32-turing/blob_check_e2_tree_vs_571743db_run{1,2}.json`, the second a retry of
+the first's three network errors; `requirements.txt` and `requirements_ci.txt` read as mismatches there because they
+are git symlinks, whose API sha is the link's own, so their target `conf/requirements_ci.txt` was checked instead,
+with `test_poll_gating.py`, in a check the same day that kept no record, by the session's account; the first record
+of either is `…_run3.json`, 2026-10-21, against the same unchanged tree, with three of the files the item 31 script
+touches). Item 31's base, the
+item 32 tree it was copied from, was proved equal to `fbf01dff` after #760 merged
+(`blob_check_f069_tree_vs_fbf01dff.json`), and each script's exact-match anchors were the check when it ran. Legs of
+the fix trees were stamped `+f069-fix-unlanded` or `+f069+f028-fix-unlanded` on
+`/v1/health` so no leg of an uncommitted tree reads as a commit. Both fixes landed from this host through the API
+as GitHub-signed commits (`util/push_signed_commit.py`, one branch each, the files uploaded whole from the fix
+trees), each built by a replayable exact-match script in `util/ad-hoc/` (`2026-10-20_f069_apply_fix.py`,
+`2026-10-20_f028_apply_fix.py`) that refuses anything but the expected text. Legs: one at a time (16 GiB),
+`util/ad-hoc/2026-10-20_turing_canopy_leg.bash` for the parent and `2026-10-20_f069_fix_leg.bash` for the fix
+trees, demo mode, cascor and juniper-data pointed at a closed port. canopy `main` did not move between
+`571743db` and canopy#760; canopy#761 was cut from #760's squash.
+
+### Item 32: F-CANOPY-069
+
+What the entry asked for first, which member of each colliding pair dash 4 runs, was measured on a dash 4.4.1 leg
+of `571743db` before anything was changed: **both**, with the spinner's fate decided by response order (the F-CANOPY-069
+entry's FIXED blockquote has the figures). The fix, the test, the floor and the verification are in that
+blockquote; in brief, the two opener callbacks are gone and the two working callbacks carry their alerts as
+`running=`, the floor is `dash>=4.0.0`, the conda file pins 4.4.1, and legs of the fix are ALIVE under dash 3.3.0
+and 4.4.1 with one callback per Input. canopy#760 merged 2026-10-20T18:58Z as `fbf01dff`.
+
+Two facts about the repo found on the way, recorded here because they cost time: `requirements.txt`,
+`requirements_ci.txt` and `conf/requirements.txt` are git symlinks resolving to `conf/requirements_ci.txt`, and root
+`conda_environment.yaml` is one into `conf/`; the contents API reports each as a `file` whose `sha` is the LINK's own
+blob (sha1 of the target path), serving the target's content. A whole-file upload to a symlink's path would replace
+the link with a file. And canopy's `addopts` already carries `-q`, so a second `-q` hides pytest's summary line
+(the unit-lane count in the F-CANOPY-069 blockquote was read from the progress dots).
+
+### Item 31: F-CANOPY-028
+
+The fix is in the F-CANOPY-028 entry's FIXED blockquote: the pin-store writer persists a user's toggle only, read
+through `CallbackContextAdapter.get_triggered_prop_ids`, and a rebuilt table writes nothing; `_merge_pinned_params`
+became `_apply_pin_toggle`; the stale-rebuild case is a unit test. What this phase adds to Phase 14's record of the
+race is a negative result and its limit: **at the driver's timings every click landed after the second render**
+(0 of 14 lost at driver delays of 2–14 s on the parent; the driver clicks seconds after its recorded delay, behind a
+screenshot), so the loss band the entry asked for was not sampled, and the table render a synthetic params-store
+write 150 ms after the click requests is held behind the click's writer, so it cannot stage `early#2`'s order (0 of
+6 at the early timing, 0 of 6
+at the settled one, no fourth writer firing in any of the twelve). The fix's tree lost nothing in 25 drives (forced
+12, early/mid 6, delays 7) with the same three writer firings per arm, the rebuild firings now inert by
+construction; those 25 cannot discriminate, since the same instrument lost nothing on the parent. The closure rests
+on the unit test and on `early#2`'s third body mapping to `no_update`, not on a live re-creation. canopy#761 merged 2026-10-20T19:34Z as `aeeaf29b`, cut from #760's squash, two signed commits, 21
+required contexts green.
+
+**Item 31b, the manual.** `docs/USER_MANUAL.md`'s Patch Weights sentence said values could be "comma-, semicolon-,
+or newline-separated floats". For `output_weights`, `_parse_float_rows` reads semicolons and newlines as ROW
+separators and `_resolve_patch_values` reshapes only a flat comma list (from the topology), so a flat list broken up
+by either was refused on any network with more than one output (F-CANOPY-012's cases B and C, Phase 14). The sentence
+now states the row idiom and the flat-list reshape for `output_weights`; the parser is unchanged. **Its first clause
+is wrong** (round 2, Lane 15-B; re-derived on the item 31 tree): "Values are floats separated by commas or spaces"
+(`aeeaf29b` `docs/USER_MANUAL.md:500`) fails the other three targets, which `_parse_float_list`
+(`network_editor_panel.py:418-434`) splits on commas, semicolons and newlines only, so `0.1 0.2` for `output_bias` is
+refused (`could not convert string to float: '0.1 0.2'`), and the forms those targets do accept are no longer
+documented. Owed as item 34, before the release that ships canopy#761.
+
+### What this phase cannot support
+
+- **One host, one browser, no trio, unstyled pages, demo backends.** Every figure is turing's; the POSTs behind
+  the Live Switch accept and the restart confirm reached the demo backend or a closed port, not cascor; no VIS half
+  of any row was scored.
+- **The two F-CANOPY-069 surfaces were fired, not clicked.** `set_props` reaches the buttons inside their closed
+  modals; the modals' gates (the experimental flag, a running training) were not exercised. Item 27's drive samples
+  only the Live Switch button's gate; clicking through either modal is owed (item 27, extended).
+- **dash 4.2.0 (the Linux host's) was not run.** The inverted response order under dash 4 was observed by round
+  1's Lane 15-A on its own leg, not by this phase's run (F-CANOPY-069's FIXED blockquote cites its record).
+- **F-CANOPY-028's race was not reproduced live.** 0 of 14 at driver delays and 0 of 12 on the forced arms on the
+  parent: every click landed after the second render, and the forced write produced no fourth writer firing at
+  either timing. The one live loss on the record is Phase 14's `early#2`; the fix is derived from its request bodies
+  and pinned by the unit test, and the live drives on the fix (25) show no loss, which cannot discriminate: the same
+  instrument lost nothing on the parent. The rate at which real use hits the race is
+  what Phase 14 measured, once in eight, and nothing here refines it.
+- **The unit lane's two red tests are the environment's** (E-REQ), on the parent and the fix alike.
+
+### Consensus record (§7 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`)
+
+- **Round 1** (2026-10-20): three lanes on the frozen local commit `6f933d07`, briefed separately with different
+  entry points (`reports/e2e-canopy-2026-09-02/drafts/lane15{A,B,C}_phase15_ledger_brief.md`). The reports, verbatim,
+  are in `reports/e2e-canopy-2026-09-02/consensus/2026-10-20_validator_reports_phase15_round1.md`. An API
+  usage-credit error stopped two of the three lanes mid-run.
+  - **Lane 15-C** (replay, consistency, conventions) finished: SOUND-WITH-FIXES. The apply pass replayed from
+    `origin/main` byte-identical for all six files; every count, and every other item 31 and item 32 figure, matched its
+    record. One MAJOR (a created script missing from the handoff's Changed list) and nine MINORs (a wrong package
+    in the lock re-resolve; a range stated for twelve drives from six; the canopy apply script's `--check` false on
+    a later `main`; an unrecorded provenance claim; wordings in F-CANOPY-028's header, the handoff's Completed list
+    and the SUPERSEDED banner; statements true only at landing; a verification comment).
+  - **Lane 15-A** (measurement re-creation) ran all five steps; the error cut it off before its report. Its interim
+    status (steps 1, 2 and 5) and its own checkpoint notes are archived; the reconciler read its step 3 and 4
+    records, landed as `reports/e2e-canopy-2026-09-02/item31-turing/lane15A_*.json`. Step 1: the fix ALIVE under
+    dash 3.3.0 and 4.4.1, 179 callbacks, 0 colliding ids, two `running` entries, one POST per firing. Step 2: on the
+    parent under dash 4.4.1 both members of each pair ran, as the phase says, and **the Live Switch pair's order
+    inverted in both of its runs, the spinner left open**, the case the phase had predicted and not driven. Step 3:
+    6 of 6 on the fix survive (early, mid and forced, twice each). Step 4: 3 of 3 on the parent's forced arm survive.
+    Step 5: the old handler drops the pin on the stale input; the new one writes nothing. The lane reported steps 1, 2
+    and 5 as agreeing; the reconciler found steps 3 and 4 agreeing within run-to-run timing.
+  - **Lane 15-B** (adversarial analysis) wrote nothing before the error; it is re-run as round 2.
+  - **Corrections** (`util/ad-hoc/2026-10-21_phase15_ledger_round1_corrections.py`; each re-derived from the record,
+    the commit or the source before it was applied): the inversion recorded in F-CANOPY-069's FIXED blockquote and
+    struck from "not measured" and "cannot support"; `websockets`, not `uvloop`; 18.3–23.6 s over the twelve drives;
+    "the forced arm included", not "race", in F-CANOPY-028's header; the blob-check records landed and cited; item
+    27's leg must serve canopy `main`, not the E2 tree; the canopy apply script's `--check` recognises its CHANGELOG
+    block when a later change lands inside it (`util/ad-hoc/2026-10-20_f069_apply_fix.py`, verified `done` on every
+    step against `fbf01dff` and `aeeaf29b`, and a fresh apply still reproduces the landed tree); the handoff renamed
+    to its writing date and brought to the state at landing, the missing script listed and the banner's item mapping
+    corrected. **Round 1 changed one action's parameter** (item 27's tree, the reconciler's consequence of Lane 15-A's step
+    2, which no lane reported), and its corrections alone require a second round (procedure §4), so the review
+    continued.
+
+- **Round 2** (2026-10-21): Lane 15-B, the adversarial lane round 1 lost, re-run alone on the round-2 freeze
+  `f65541a5` with its brief revised in place (`reports/e2e-canopy-2026-09-02/drafts/lane15B_phase15_ledger_brief.md`:
+  the handoff added as a review target, its remaining tasks and its verification commands with it). Its report,
+  verbatim, is in `reports/e2e-canopy-2026-09-02/consensus/2026-10-21_validator_reports_phase15_round2.md`:
+  SOUND-WITH-FIXES, the dispositions and the counts standing, five MAJORs and fifteen MINORs.
+  - MAJOR: F-CANOPY-028's account of why the race was not re-created contradicted the records (the driver's clicks
+    land after the second render, behind a screenshot; nothing holds the writer); item 31b's new manual sentence is
+    wrong for the three 1-D patch targets; the handoff omitted ledger items 18–21, two of the four open P1s among
+    them; item 33's recipe would not upgrade dash; item 27's drive never opens the Live Switch modal, so F-CANOPY-069's
+    gated click-through had no owner, and the recipe's leg would have stamped `571743db`.
+  - MINOR: wordings in F-CANOPY-069's blockquote (the alert's add time; response times read as alert lives; two of
+    three new run dependencies; the floor's counter-position); F-CANOPY-028's stale-input example (a four-key analogue,
+    not `early#2`'s 22-box body) and its M-PARAMETERS-06 claim (that row runs only in the `settled` arm); the eviction
+    residual the fix leaves; the provenance sentence; the round-1 record's wording; statements true only at landing;
+    `--expected-head`'s owner; the screenshots; the driver's forced arm, whose timing changed between the passes;
+    M-PARAMETERS-04's Expected cell; and an erratum to Phase 14's F-CANOPY-069 text: two callback pairs and three ids,
+    not three pairs, and no registration overwritten (`callback_map` is keyed by each callback's whole output
+    string; canopy#760's own `test_callback_map_and_served_list_agree` passes on `571743db`).
+  - **Corrections** (`util/ad-hoc/2026-10-21_phase15_ledger_round2_corrections.py`; each re-derived by the reconciler
+    from the logs, the request bodies, the parser on the item 31 tree, the venv layout or the drive script before it
+    was applied): all five MAJORs and fifteen MINORs as proposed, except MINOR 8, whose "(at landing)" marks were not
+    added (its replay list was fixed, and MEMORY.md was updated before the landing), and MINOR 10, where the
+    provenance sentence kept the session's unrecorded same-day check (marked as the session's account in round 3);
+    the click gaps recomputed from the logs for the parent's arms (5.4–8.1 s early, 1.3–3.4 s settled; round 2's
+    settled 1.2–3.6 s spanned both trees); new item 34; the driver's arms split (`forcedearly`, `forced`) and pass 1's script
+    pointed at `forcedearly`; the fix leg's wrapper takes a base sha; canopy#761's drive comment corrected by a
+    follow-up comment. MINOR 6's counter-position is recorded with its second half credited to the lane. **Round 2
+    changed actions and items** (new item 34; items 18–21 into the handoff; item 33's recipe; item 27's scope), so a
+    third round was run.
+
+- **Round 3** (2026-10-21): one lane, Lane 15-R3, on the round-3 freeze `71417d33`, scoped to round 2's corrections
+  and the handoff (`reports/e2e-canopy-2026-09-02/drafts/lane15R3_phase15_ledger_brief.md`). Its report, verbatim, is
+  in `reports/e2e-canopy-2026-09-02/consensus/2026-10-21_validator_reports_phase15_round3.md`: SOUND-WITH-FIXES, and
+  **it changes no number, disposition or action**. The five MAJOR corrections are true against the evidence round 2
+  cited; thirteen MINORs are true as applied, MINOR 8 in part (no "(at landing)" marks; what it left is landing-time
+  by design) and MINOR 10 with a deviation the record had not disclosed; the verification block prints what its
+  comments say; every remaining task is present; the replay prints MATCH for every shared file.
+  - It raised fourteen MINORs: a verification comment naming item 7 for item 8; the Completed list's matrix cells;
+    the driver's forced-write comment, which still stated the refuted premise; the click gaps' scope (the parent's
+    arms; on the fix 6.2–8.7 s and 1.2–3.5 s); the provenance sentence's unrecorded check, now marked as the session's
+    account; the round-2 record's "all … as proposed"; item 18's three drives; item 33's one-run route; item 27's
+    interpreter and where the chrome channel and the CDN abort live; the eviction residual's precision; the
+    serving-commit file's stale sha; the arc's memory note; item 23, done but never marked; and "the render it
+    requests is held", not "the write".
+  - **Corrections** (`util/ad-hoc/2026-10-21_phase15_ledger_round3_corrections.py`, each re-derived first: the fix
+    tree's gaps from its logs, item 18's drives from Phase 10, the E2 validation script's phases and extras, the
+    driver's functions, the serving-commit file): all fourteen; D3 in the driver and D12 in auto-memory directly.
+  - Housekeeping: the brief's `pip show juniper-canopy` printed the package's author e-mail field in the lane's own
+    output; the lane kept it out of its report and nothing was sent anywhere. Future briefs filter that output.
+  - **The review ended at round 3** (§4 of the procedure).
+
+### Matrix effect and counts
+
+- `notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md`: M-PARAMETERS-06's cell no longer
+  says F-CANOPY-028 stands, and M-PARAMETERS-04's Expected cell describes the writer as canopy#761 left it (round 2). No row maps to F-CANOPY-069 (on dash 3.x it blocked every row; the matrix was never
+  driven on dash 3.x, and the floor now excludes it).
+- Triage (`util/ad-hoc/e2e_finding_triage.py`): 80 findings, **63 fixed**, 1 accepted, 2 withdrawn, **14 open: 0 P0,
+  4 P1** (F-CANOPY-064, -065, F-CASCOR-001, -002), **10 P2**. F-CANOPY-069's and F-CANOPY-028's tails carry FIXED.
+
+### Still owed after this phase
+
+Phase 14's list stands, items 0 to 32, with these changes:
+
+- **Item 32 is DONE** (canopy#760). **Item 31 is DONE** (canopy#761) except (b)'s first clause: the new sentence is
+  wrong for the 1-D targets (new item 34); (a)'s ask to time a pin before the second render was not met (the
+  driver's clicks land after it) and is dropped now that the fix is merged.
+- **Items 18–21** (canopy code: F-CANOPY-064, -067, -060, -063, -065, -066) stand as Phase 10 wrote them and Phase 13
+  re-stated them; no handoff carried them until this phase's.
+- **Item 23 is DONE**: the defect-register arc was told on 2026-10-08, under its item 11 (the INDEX's P2 ↔ P3 row); no
+  Still-owed list had marked it.
+- **Items 25 and 28** are unchanged (the trio, the Linux host). **Item 27** is extended: a demo leg on this host
+  serves it, from a tree proved equal to canopy `main` (`aeeaf29b` or later; the E2 tree is still `571743db`, which
+  predates both fixes, and on it the Live Switch spinner sticks open whenever the swap POST outruns the opener),
+  launched with `2026-10-20_f069_fix_leg.bash`, whose sixth argument is the base sha its stamp carries. Its drive,
+  `2026-09-23_f055_f025_allow_arm_demo_drive.py`, samples only the switch button's gate (F-CANOPY-025/-055); extend
+  it to click the enabled switch, Accept, and read `live-switch-progress-alert` (it must close after the swap), and
+  drive the restart confirm likewise: that closes F-CANOPY-069's "fired, not clicked". **Item 29** is unchanged. **Item 26's second step** is unchanged (O17).
+- **Every leg runs dash 4.x by the floor now**; a dash 3.x venv is below it and is not a canopy environment.
+
+New items:
+
+33. **turing's E2 canopy env is below canopy's floor.** `JuniperCanopy1` (conda, dash 3.3.0, built from a
+    re-specified `conf/conda_environment.yaml` for osx-64, juniper-ml#2282) no longer satisfies `dash>=4.0.0`; the
+    scratch venvs over it that pin a dash (`JuniperCanopy1-dash304/-dash32/-dash34`) are throwaways and can go.
+    Owner: re-sync the E2 tree to canopy `main` (`fbf01dff` or later; at `571743db` its floor
+    is met by 3.3.0), then `pip install -e <tree>` with the E2 venv's interpreter
+    (`~/.local/state/juniper/turing-e2/venvs/JuniperCanopy1`, a system-site venv over the conda env, holds the
+    editable canopy, pointing at the E2 tree); pip takes the newest dash 4.x (4.4.1 today) with `comm` and `janus`. Once the owner has pulled the canopy primary to `main`,
+    `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py canopy --phase all` does the re-sync, that install
+    (with the `[test,juniper-cascor,observability]` extras) and the lanes the E2 record cites in one run; on this
+    route the conda env itself keeps dash 3.3.0, shadowed by the venv.
+    Or rebuild the conda env from a copy of the corrected `conf/conda_environment.yaml` re-specified for osx-64 as
+    juniper-ml#2282 did (the file is a linux-64 `conda create --file` export with `=pypi_0` lines); then re-run the canopy lanes the E2 record cites and
+    record an erratum in the bring-up plan's E2 section. Until then a leg from that env's own interpreter is a leg
+    on dash 3.3.0 of a tree whose floor excludes it.
+
+34. **canopy's Patch Weights sentence for the 1-D targets.** `docs/USER_MANUAL.md:500` at `aeeaf29b` says values are
+    floats separated by commas or spaces; `output_bias`, `hidden_unit_weights` and `hidden_unit_bias` refuse spaces
+    and accept semicolons and newlines (`_parse_float_list`). Either say so (one sentence) or have `_parse_float_list`
+    split on whitespace, as its own docstring claims; a canopy PR with a test, before the release that ships
+    canopy#761. If it ships unfixed, file it (Phase 13's manual rule).
