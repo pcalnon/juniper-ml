@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The release-train proposal now moves README's "Ecosystem Compatibility" table**, so a generated juniper-ml
+  proposal is green as generated. `tests/test_pyproject_extras.py` `ReadmeCompatTableTest` holds that table to
+  `pyproject.toml` in two ways, and `util/release_train/propose.py` satisfied neither.
+  - **The lead-in.** "The pyproject pins matching `juniper-ml` X:" must name the pyproject version, and the
+    generator never moved it. The 0.11.0 proposal (#2306) was the first generated since that guard landed (#1972).
+    Its bare form fails Regression Tests with `'0.10.0' != '0.11.0'`, and #2306 carried a hand co-change commit. The
+    meta's own bump now rewrites the line. A missing lead-in is never invented; the co-change checklist flags it
+    REQUIRED instead.
+  - **The rows.** Each pin also has a split-column Package / Pin row, and step 5b-ii moved only README's
+    `### Extras` table, so an escaping in-repo bump shipped red. Simulated on `main`, the juniper-config-tools
+    0.2.0 proposal (against the meta's `<0.2.0` ceiling) fails `test_compat_table_matches_pyproject`. The
+    split-column editor `docs/REFERENCE.md` already used, re-anchored on `## Ecosystem Compatibility`, now moves the
+    row in the same README edit as the extras table.
+  - The proposal PR body no longer tells the reviewer of every escaping bump that the generator "has a known gap"
+    and "will fail 3 arms". #1460 added that warning, and #1478 closed the gap a day later without removing it.
+  - `docs/REFERENCE.md`'s compatibility sentence and matrix row remain a manual co-change for the meta's own bump,
+    and the co-change checklist now says so.
+  - New: `util/ad-hoc/2026-10-21_simulate_release_proposal.py` builds one proposal on a scratch copy and runs the 17
+    suites that read the version, the pins, README or REFERENCE, against an untouched baseline. Both proposals
+    above regress one suite on `main` and none with the fix. Ten new tests in
+    `tests/test_release_train_propose.py`, eight of which fail against `main`'s module.
+
 ## [0.11.0] - 2026-10-21
 
 ### Added
