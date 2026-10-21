@@ -1,5 +1,7 @@
 # Handoff — turing bring-up: H2 and H4 landed; C9 next (H4's live check waits on a Rust toolchain)
 
+> **Superseded** by `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md`, which was written after H5 (#2300), plan v1.4.4 (#2302) and the R-S9 fix (#2304). Start from that file. This one is kept because plan v1.4.3 cites it.
+
 - **From:** the 2026-10-20/21 session on turing named "code signing" (ae687e; worktree `.claude/worktrees/linked-floating-sprout`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-g1-landed-g4-promoted-h2-next.md`.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.3. This session's record is in §18.1 (two owner rulings), §18.2 (the H2, H4, C9 and H5 rows) and §18.3 (errata E-SPLIT, E-H4-WHEEL and E-SERENA-EDIT). Task IDs below are the plan's.
 - **Standing approval:** the owner granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
