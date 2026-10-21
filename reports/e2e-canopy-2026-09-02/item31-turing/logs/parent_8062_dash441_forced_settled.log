@@ -1,0 +1,64 @@
+[t=     54ms] leg http://127.0.0.1:8062 serving {"ok": true, "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68", "build_date": "2026-10-20T19:34:05Z", "version": "0.9.0", "demo_mode": true, "read_at": "2026-10-20T19:34:15Z"}
+[t=   1420ms]   browser: chrome channel (installed Google Chrome)
+[t=   1425ms] STEP f028/forced#1 -- M-PARAMETERS-04/-05/-06: pin learning_rate, reload, pin max_iterations (forced); the first must survive (F-CANOPY-028)
+[t=  33769ms]   modal cleared after 1 attempt(s)
+[t=  38602ms]   Parameters tab: 22 pin checkboxes after 0.2s, values after 0.8s; learning_rate before={'checked': False, 'present': True}
+[t=  45354ms]   M-04 store=['learning_rate'] after 2.3s ; M-05 card display=block after 0.9s list='Learning Rate\n0.01'
+[t=  83280ms]   after reload: store=['learning_rate'] card=block tables after 0.9s values after 1.1s; learning_rate checkbox={'checked': True, 'present': True}
+[t=  93290ms]   after pinning max_iterations: store ['learning_rate'] -> ['max_iterations', 'learning_rate'] after 1.3s, settled ['max_iterations', 'learning_rate']; list='Maximum Growth Iterations\n—\nLearning Rate\n—'
+[t=  95454ms]     pin writer fired t=54298ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t=  95454ms]     pin writer fired t=62955ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t=  95454ms]     pin writer fired t=86602ms rendered=22 checked=['learning_rate', 'max_iterations'] state=['learning_rate'] raw=''
+[t=  95454ms]   f028/forced: {"SURVIVES": true, "DISCARDED": false, "LOST_B": false, "REHYDRATED": true, "M04": true, "M05": true, "second_pin_at_s_after_reload": 29.9}
+[t=  95472ms] STEP f028/forced#2 -- M-PARAMETERS-04/-05/-06: pin learning_rate, reload, pin max_iterations (forced); the first must survive (F-CANOPY-028)
+[t= 129144ms]   modal cleared after 1 attempt(s)
+[t= 134817ms]   Parameters tab: 22 pin checkboxes after 0.9s, values after 1.1s; learning_rate before={'checked': False, 'present': True}
+[t= 142301ms]   M-04 store=['learning_rate'] after 2.5s ; M-05 card display=block after 0.6s list='Learning Rate\n0.01'
+[t= 178690ms]   after reload: store=['learning_rate'] card=block tables after 0.8s values after 0.9s; learning_rate checkbox={'checked': True, 'present': True}
+[t= 188483ms]   after pinning max_iterations: store ['learning_rate'] -> ['max_iterations', 'learning_rate'] after 0.5s, settled ['max_iterations', 'learning_rate']; list='Maximum Growth Iterations\n—\nLearning Rate\n—'
+[t= 190366ms]     pin writer fired t=151476ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 190366ms]     pin writer fired t=161010ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 190366ms]     pin writer fired t=180772ms rendered=22 checked=['learning_rate', 'max_iterations'] state=['learning_rate'] raw=''
+[t= 190366ms]   f028/forced: {"SURVIVES": true, "DISCARDED": false, "LOST_B": false, "REHYDRATED": true, "M04": true, "M05": true, "second_pin_at_s_after_reload": 27.8}
+[t= 190378ms] STEP f028/forced#3 -- M-PARAMETERS-04/-05/-06: pin learning_rate, reload, pin max_iterations (forced); the first must survive (F-CANOPY-028)
+[t= 223874ms]   modal cleared after 1 attempt(s)
+[t= 228629ms]   Parameters tab: 22 pin checkboxes after 0.6s, values after 0.2s; learning_rate before={'checked': False, 'present': True}
+[t= 233530ms]   M-04 store=['learning_rate'] after 1.1s ; M-05 card display=block after 0.9s list='Learning Rate\n0.01'
+[t= 269459ms]   after reload: store=['learning_rate'] card=block tables after 0.2s values after 1.2s; learning_rate checkbox={'checked': True, 'present': True}
+[t= 278238ms]   after pinning max_iterations: store ['learning_rate'] -> ['max_iterations', 'learning_rate'] after 1.2s, settled ['max_iterations', 'learning_rate']; list='Maximum Growth Iterations\n—\nLearning Rate\n—'
+[t= 280516ms]     pin writer fired t=243051ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 280516ms]     pin writer fired t=252319ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 280516ms]     pin writer fired t=270739ms rendered=22 checked=['learning_rate', 'max_iterations'] state=['learning_rate'] raw=''
+[t= 280516ms]   f028/forced: {"SURVIVES": true, "DISCARDED": false, "LOST_B": false, "REHYDRATED": true, "M04": true, "M05": true, "second_pin_at_s_after_reload": 27.1}
+[t= 280535ms] STEP f028/forced#4 -- M-PARAMETERS-04/-05/-06: pin learning_rate, reload, pin max_iterations (forced); the first must survive (F-CANOPY-028)
+[t= 313883ms]   modal cleared after 1 attempt(s)
+[t= 316630ms]   Parameters tab: 22 pin checkboxes after 0.1s, values after 0.1s; learning_rate before={'checked': False, 'present': True}
+[t= 322431ms]   M-04 store=['learning_rate'] after 1.6s ; M-05 card display=block after 0.6s list='Learning Rate\n0.01'
+[t= 356530ms]   after reload: store=['learning_rate'] card=block tables after 0.2s values after 0.3s; learning_rate checkbox={'checked': True, 'present': True}
+[t= 366164ms]   after pinning max_iterations: store ['learning_rate'] -> ['max_iterations', 'learning_rate'] after 0.8s, settled ['max_iterations', 'learning_rate']; list='Maximum Growth Iterations\n—\nLearning Rate\n—'
+[t= 368360ms]     pin writer fired t=331337ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 368360ms]     pin writer fired t=340043ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 368360ms]     pin writer fired t=359044ms rendered=22 checked=['learning_rate', 'max_iterations'] state=['learning_rate'] raw=''
+[t= 368360ms]   f028/forced: {"SURVIVES": true, "DISCARDED": false, "LOST_B": false, "REHYDRATED": true, "M04": true, "M05": true, "second_pin_at_s_after_reload": 26.7}
+[t= 368374ms] STEP f028/forced#5 -- M-PARAMETERS-04/-05/-06: pin learning_rate, reload, pin max_iterations (forced); the first must survive (F-CANOPY-028)
+[t= 401280ms]   modal cleared after 1 attempt(s)
+[t= 405459ms]   Parameters tab: 22 pin checkboxes after 0.3s, values after 0.9s; learning_rate before={'checked': False, 'present': True}
+[t= 411002ms]   M-04 store=['learning_rate'] after 1.4s ; M-05 card display=block after 0.9s list='Learning Rate\n0.01'
+[t= 446304ms]   after reload: store=['learning_rate'] card=block tables after 0.4s values after 0.2s; learning_rate checkbox={'checked': True, 'present': True}
+[t= 454921ms]   after pinning max_iterations: store ['learning_rate'] -> ['max_iterations', 'learning_rate'] after 1.0s, settled ['max_iterations', 'learning_rate']; list='Maximum Growth Iterations\n—\nLearning Rate\n—'
+[t= 456909ms]     pin writer fired t=419912ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 456909ms]     pin writer fired t=428943ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 456909ms]     pin writer fired t=448646ms rendered=22 checked=['learning_rate', 'max_iterations'] state=['learning_rate'] raw=''
+[t= 456909ms]   f028/forced: {"SURVIVES": true, "DISCARDED": false, "LOST_B": false, "REHYDRATED": true, "M04": true, "M05": true, "second_pin_at_s_after_reload": 26.6}
+[t= 456923ms] STEP f028/forced#6 -- M-PARAMETERS-04/-05/-06: pin learning_rate, reload, pin max_iterations (forced); the first must survive (F-CANOPY-028)
+[t= 489840ms]   modal cleared after 1 attempt(s)
+[t= 493645ms]   Parameters tab: 22 pin checkboxes after 0.5s, values after 0.5s; learning_rate before={'checked': False, 'present': True}
+[t= 500927ms]   M-04 store=['learning_rate'] after 1.4s ; M-05 card display=block after 0.9s list='Learning Rate\n0.01'
+[t= 539854ms]   after reload: store=['learning_rate'] card=block tables after 1.3s values after 1.1s; learning_rate checkbox={'checked': True, 'present': True}
+[t= 548945ms]   after pinning max_iterations: store ['learning_rate'] -> ['max_iterations', 'learning_rate'] after 0.4s, settled ['max_iterations', 'learning_rate']; list='Maximum Growth Iterations\n—\nLearning Rate\n—'
+[t= 550775ms]     pin writer fired t=510701ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 550775ms]     pin writer fired t=521027ms rendered=22 checked=['learning_rate'] state=['learning_rate'] raw=''
+[t= 550775ms]     pin writer fired t=543204ms rendered=22 checked=['learning_rate', 'max_iterations'] state=['learning_rate'] raw=''
+[t= 550775ms]   f028/forced: {"SURVIVES": true, "DISCARDED": false, "LOST_B": false, "REHYDRATED": true, "M04": true, "M05": true, "second_pin_at_s_after_reload": 29.9}
+[t= 550796ms]   f028 summary: {"arms_driven": 6, "survives": 6, "discarded": 0}
+[t= 551192ms] results -> /Users/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/sequential-coalescing-boot/reports/e2e-canopy-2026-09-02/item31-turing/parent_8062_dash441_forced_settled.json

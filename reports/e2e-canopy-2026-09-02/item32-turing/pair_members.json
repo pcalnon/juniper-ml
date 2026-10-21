@@ -1,0 +1,674 @@
+{
+  "dash-4.4.1-571743db": {
+    "label": "dash-4.4.1-571743db",
+    "base": "http://127.0.0.1:8062",
+    "probed_at": "2026-10-20T18:16:31Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "demo_mode": true
+    },
+    "callbacks": 181,
+    "pairs": {
+      "restart": {
+        "input": "restart-confirm-button.n_clicks",
+        "served_callbacks": [
+          {
+            "output": "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+            "outputs": [
+              "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+            ],
+            "inputs": [
+              "restart-confirm-button.n_clicks"
+            ],
+            "running": null
+          },
+          {
+            "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f",
+            "outputs": [
+              "restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+              "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+              "restart-outcome-alert.children",
+              "pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+            ],
+            "inputs": [
+              "restart-confirm-button.n_clicks"
+            ],
+            "running": null
+          }
+        ],
+        "alert_before": {
+          "present": false
+        },
+        "fired": true,
+        "posts": [
+          {
+            "request_order": 1,
+            "request_at_s": 0.283,
+            "output": "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+            "outputs": [
+              "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+            ],
+            "status": 200,
+            "response_order": 182,
+            "response_at_s": 0.638,
+            "wrote": {
+              "restart-progress-alert": [
+                "is_open"
+              ]
+            }
+          },
+          {
+            "request_order": 2,
+            "request_at_s": 0.284,
+            "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f",
+            "outputs": [
+              "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f"
+            ],
+            "status": 200,
+            "response_order": 198,
+            "response_at_s": 2.61,
+            "wrote": {
+              "restart-confirm-modal": [
+                "is_open"
+              ],
+              "restart-progress-alert": [
+                "is_open"
+              ],
+              "restart-outcome-alert": [
+                "children"
+              ],
+              "pending-dataset-banner": [
+                "is_open"
+              ]
+            }
+          }
+        ],
+        "other_posts_in_window": 45,
+        "alert_dom_events": [
+          {
+            "at_ms": 24747.6,
+            "kind": "added",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 24747.6,
+            "kind": "class",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 26493.2,
+            "kind": "class",
+            "cls": "fade alert alert-info"
+          },
+          {
+            "at_ms": 26653.5,
+            "kind": "removed",
+            "cls": "fade alert alert-info"
+          }
+        ],
+        "alert_after": {
+          "present": false
+        },
+        "outcome_text": "Restart succeeded. Restart complete. Stopped the running model, then continued the current model.",
+        "reading": {
+          "members_posted": 2,
+          "served": 2,
+          "alert_opened": true,
+          "alert_closed_at_end": true,
+          "members": [
+            "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef808729",
+            "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef80872"
+          ]
+        }
+      },
+      "live_switch": {
+        "input": "live-switch-accept-button.n_clicks",
+        "served_callbacks": [
+          {
+            "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7",
+            "outputs": [
+              "live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+              "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+              "live-switch-outcome-alert.children",
+              "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e"
+            ],
+            "inputs": [
+              "live-switch-accept-button.n_clicks"
+            ],
+            "running": null
+          },
+          {
+            "output": "..live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e..",
+            "outputs": [
+              "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+              "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e"
+            ],
+            "inputs": [
+              "live-switch-accept-button.n_clicks"
+            ],
+            "running": null
+          }
+        ],
+        "alert_before": {
+          "present": false
+        },
+        "fired": true,
+        "posts": [
+          {
+            "request_order": 1,
+            "request_at_s": 0.173,
+            "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7",
+            "outputs": [
+              "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7"
+            ],
+            "status": 200,
+            "response_order": 245,
+            "response_at_s": 0.926,
+            "wrote": {
+              "live-switch-modal": [
+                "is_open"
+              ],
+              "live-switch-progress-alert": [
+                "is_open"
+              ],
+              "live-switch-outcome-alert": [
+                "children"
+              ],
+              "live-swap-in-flight-store": [
+                "data"
+              ]
+            }
+          },
+          {
+            "request_order": 2,
+            "request_at_s": 0.174,
+            "output": "..live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e..",
+            "outputs": [
+              "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+              "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e"
+            ],
+            "status": 200,
+            "response_order": 243,
+            "response_at_s": 0.708,
+            "wrote": {
+              "live-switch-progress-alert": [
+                "is_open"
+              ],
+              "live-swap-in-flight-store": [
+                "data"
+              ]
+            }
+          }
+        ],
+        "other_posts_in_window": 29,
+        "alert_dom_events": [
+          {
+            "at_ms": 31443,
+            "kind": "added",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 31443.1,
+            "kind": "class",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 31491.7,
+            "kind": "class",
+            "cls": "fade alert alert-info"
+          },
+          {
+            "at_ms": 31597.6,
+            "kind": "removed",
+            "cls": "fade alert alert-info"
+          }
+        ],
+        "alert_after": {
+          "present": false
+        },
+        "outcome_text": "Live dataset swap complete. Pre-swap snapshot: demo_snapshot_pre_000",
+        "reading": {
+          "members_posted": 2,
+          "served": 2,
+          "alert_opened": true,
+          "alert_closed_at_end": true,
+          "members": [
+            "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c77",
+            "..live-switch-progress-alert.is_open@fc8c1589a7af34b72919066"
+          ]
+        }
+      }
+    },
+    "duplicate_callback_errors_at_load": 0,
+    "update_posts_at_settle": 162,
+    "observer": "installed",
+    "set_props_available": true,
+    "console_errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "page_seconds": 36.5
+  },
+  "dash-3.3.0-f069fix": {
+    "label": "dash-3.3.0-f069fix",
+    "base": "http://127.0.0.1:8063",
+    "probed_at": "2026-10-20T18:29:42Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68+f069-fix-unlanded",
+      "demo_mode": true
+    },
+    "callbacks": 179,
+    "pairs": {
+      "restart": {
+        "input": "restart-confirm-button.n_clicks",
+        "served_callbacks": [
+          {
+            "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f",
+            "outputs": [
+              "restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+              "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+              "restart-outcome-alert.children",
+              "pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+            ],
+            "inputs": [
+              "restart-confirm-button.n_clicks"
+            ],
+            "running": {
+              "running": {
+                "restart-progress-alert.is_open": true
+              },
+              "runningOff": {
+                "restart-progress-alert.is_open": false
+              }
+            }
+          }
+        ],
+        "alert_before": {
+          "present": false
+        },
+        "fired": true,
+        "posts": [
+          {
+            "request_order": 1,
+            "request_at_s": 0.026,
+            "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f",
+            "outputs": [
+              "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f"
+            ],
+            "status": 200,
+            "response_order": 244,
+            "response_at_s": 1.043,
+            "wrote": {
+              "restart-confirm-modal": [
+                "is_open"
+              ],
+              "restart-progress-alert": [
+                "is_open"
+              ],
+              "restart-outcome-alert": [
+                "children"
+              ],
+              "pending-dataset-banner": [
+                "is_open"
+              ]
+            }
+          }
+        ],
+        "other_posts_in_window": 37,
+        "alert_dom_events": [
+          {
+            "at_ms": 22447.2,
+            "kind": "added",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 22447.2,
+            "kind": "class",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 23499.8,
+            "kind": "class",
+            "cls": "fade alert alert-info"
+          },
+          {
+            "at_ms": 24086.4,
+            "kind": "removed",
+            "cls": "fade alert alert-info"
+          }
+        ],
+        "alert_after": {
+          "present": false
+        },
+        "outcome_text": "Restart succeeded. Restart complete. Stopped the running model, then continued the current model.",
+        "reading": {
+          "members_posted": 1,
+          "served": 1,
+          "alert_opened": true,
+          "alert_closed_at_end": true,
+          "members": [
+            "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef80872"
+          ]
+        }
+      },
+      "live_switch": {
+        "input": "live-switch-accept-button.n_clicks",
+        "served_callbacks": [
+          {
+            "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7",
+            "outputs": [
+              "live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+              "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+              "live-switch-outcome-alert.children",
+              "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e"
+            ],
+            "inputs": [
+              "live-switch-accept-button.n_clicks"
+            ],
+            "running": {
+              "running": {
+                "live-switch-progress-alert.is_open": true,
+                "live-swap-in-flight-store.data": {
+                  "in_flight": true
+                }
+              },
+              "runningOff": {
+                "live-switch-progress-alert.is_open": false,
+                "live-swap-in-flight-store.data": {
+                  "in_flight": false
+                }
+              }
+            }
+          }
+        ],
+        "alert_before": {
+          "present": false
+        },
+        "fired": true,
+        "posts": [
+          {
+            "request_order": 1,
+            "request_at_s": 0.266,
+            "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7",
+            "outputs": [
+              "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7"
+            ],
+            "status": 200,
+            "response_order": 307,
+            "response_at_s": 0.705,
+            "wrote": {
+              "live-switch-modal": [
+                "is_open"
+              ],
+              "live-switch-progress-alert": [
+                "is_open"
+              ],
+              "live-switch-outcome-alert": [
+                "children"
+              ],
+              "live-swap-in-flight-store": [
+                "data"
+              ]
+            }
+          }
+        ],
+        "other_posts_in_window": 50,
+        "alert_dom_events": [
+          {
+            "at_ms": 28368.6,
+            "kind": "added",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 28368.7,
+            "kind": "class",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 29114.7,
+            "kind": "class",
+            "cls": "fade alert alert-info"
+          },
+          {
+            "at_ms": 29443.5,
+            "kind": "removed",
+            "cls": "fade alert alert-info"
+          }
+        ],
+        "alert_after": {
+          "present": false
+        },
+        "outcome_text": "Live dataset swap complete. Pre-swap snapshot: demo_snapshot_pre_000",
+        "reading": {
+          "members_posted": 1,
+          "served": 1,
+          "alert_opened": true,
+          "alert_closed_at_end": true,
+          "members": [
+            "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c77"
+          ]
+        }
+      }
+    },
+    "duplicate_callback_errors_at_load": 0,
+    "update_posts_at_settle": 211,
+    "observer": "installed",
+    "set_props_available": true,
+    "console_errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "page_seconds": 34.4
+  },
+  "dash-4.4.1-f069fix": {
+    "label": "dash-4.4.1-f069fix",
+    "base": "http://127.0.0.1:8064",
+    "probed_at": "2026-10-20T18:32:10Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68+f069-fix-unlanded",
+      "demo_mode": true
+    },
+    "callbacks": 179,
+    "pairs": {
+      "restart": {
+        "input": "restart-confirm-button.n_clicks",
+        "served_callbacks": [
+          {
+            "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f",
+            "outputs": [
+              "restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+              "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+              "restart-outcome-alert.children",
+              "pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+            ],
+            "inputs": [
+              "restart-confirm-button.n_clicks"
+            ],
+            "running": {
+              "running": {
+                "restart-progress-alert.is_open": true
+              },
+              "runningOff": {
+                "restart-progress-alert.is_open": false
+              }
+            }
+          }
+        ],
+        "alert_before": {
+          "present": false
+        },
+        "fired": true,
+        "posts": [
+          {
+            "request_order": 1,
+            "request_at_s": 0.275,
+            "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f",
+            "outputs": [
+              "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-dataset-banner.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f"
+            ],
+            "status": 200,
+            "response_order": 205,
+            "response_at_s": 1.205,
+            "wrote": {
+              "restart-confirm-modal": [
+                "is_open"
+              ],
+              "restart-progress-alert": [
+                "is_open"
+              ],
+              "restart-outcome-alert": [
+                "children"
+              ],
+              "pending-dataset-banner": [
+                "is_open"
+              ]
+            }
+          }
+        ],
+        "other_posts_in_window": 37,
+        "alert_dom_events": [
+          {
+            "at_ms": 23818.9,
+            "kind": "added",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 23818.9,
+            "kind": "class",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 25166.7,
+            "kind": "class",
+            "cls": "fade alert alert-info"
+          },
+          {
+            "at_ms": 25367.7,
+            "kind": "removed",
+            "cls": "fade alert alert-info"
+          }
+        ],
+        "alert_after": {
+          "present": false
+        },
+        "outcome_text": "Restart succeeded. Restart complete. Stopped the running model, then continued the current model.",
+        "reading": {
+          "members_posted": 1,
+          "served": 1,
+          "alert_opened": true,
+          "alert_closed_at_end": true,
+          "members": [
+            "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef80872"
+          ]
+        }
+      },
+      "live_switch": {
+        "input": "live-switch-accept-button.n_clicks",
+        "served_callbacks": [
+          {
+            "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7",
+            "outputs": [
+              "live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+              "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+              "live-switch-outcome-alert.children",
+              "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e"
+            ],
+            "inputs": [
+              "live-switch-accept-button.n_clicks"
+            ],
+            "running": {
+              "running": {
+                "live-switch-progress-alert.is_open": true,
+                "live-swap-in-flight-store.data": {
+                  "in_flight": true
+                }
+              },
+              "runningOff": {
+                "live-switch-progress-alert.is_open": false,
+                "live-swap-in-flight-store.data": {
+                  "in_flight": false
+                }
+              }
+            }
+          }
+        ],
+        "alert_before": {
+          "present": false
+        },
+        "fired": true,
+        "posts": [
+          {
+            "request_order": 1,
+            "request_at_s": 0.067,
+            "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7",
+            "outputs": [
+              "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7"
+            ],
+            "status": 200,
+            "response_order": 250,
+            "response_at_s": 0.262,
+            "wrote": {
+              "live-switch-modal": [
+                "is_open"
+              ],
+              "live-switch-progress-alert": [
+                "is_open"
+              ],
+              "live-switch-outcome-alert": [
+                "children"
+              ],
+              "live-swap-in-flight-store": [
+                "data"
+              ]
+            }
+          }
+        ],
+        "other_posts_in_window": 40,
+        "alert_dom_events": [
+          {
+            "at_ms": 29721.4,
+            "kind": "added",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 29721.5,
+            "kind": "class",
+            "cls": "fade alert alert-info show"
+          },
+          {
+            "at_ms": 30301.8,
+            "kind": "class",
+            "cls": "fade alert alert-info"
+          },
+          {
+            "at_ms": 30477.1,
+            "kind": "removed",
+            "cls": "fade alert alert-info"
+          }
+        ],
+        "alert_after": {
+          "present": false
+        },
+        "outcome_text": "Live dataset swap complete. Pre-swap snapshot: demo_snapshot_pre_000",
+        "reading": {
+          "members_posted": 1,
+          "served": 1,
+          "alert_opened": true,
+          "alert_closed_at_end": true,
+          "members": [
+            "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c77"
+          ]
+        }
+      }
+    },
+    "duplicate_callback_errors_at_load": 0,
+    "update_posts_at_settle": 169,
+    "observer": "installed",
+    "set_props_available": true,
+    "console_errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "page_seconds": 36.4
+  }
+}

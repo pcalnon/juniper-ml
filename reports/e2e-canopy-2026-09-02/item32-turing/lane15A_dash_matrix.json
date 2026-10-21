@@ -1,0 +1,48 @@
+{
+  "lane15A-dash-3.3.0-fix": {
+    "label": "lane15A-dash-3.3.0-fix",
+    "base": "http://127.0.0.1:8080",
+    "probed_at": "2026-10-20T19:59:53Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68+f069+f028-fix-unlanded",
+      "demo_mode": true
+    },
+    "callbacks": 179,
+    "duplicate_output_ids": [],
+    "duplicate_owners": [],
+    "dash_renderer_bundle": "3.3.0",
+    "duplicate_errors_logged": 0,
+    "duplicate_errors": [],
+    "welcome_modal_opened": true,
+    "update_posts_before_click": 216,
+    "parameters_network_table_rows": 9,
+    "click_posted_after_s": 0.1,
+    "theme_store_after_click": "true",
+    "page_seconds": 31.2,
+    "verdict": "ALIVE"
+  },
+  "lane15A-dash-4.4.1-fix": {
+    "label": "lane15A-dash-4.4.1-fix",
+    "base": "http://127.0.0.1:8081",
+    "probed_at": "2026-10-20T20:04:56Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68+f069+f028-fix-unlanded",
+      "demo_mode": true
+    },
+    "callbacks": 179,
+    "duplicate_output_ids": [],
+    "duplicate_owners": [],
+    "dash_renderer_bundle": "4.4.1",
+    "duplicate_errors_logged": 0,
+    "duplicate_errors": [],
+    "welcome_modal_opened": true,
+    "update_posts_before_click": 143,
+    "parameters_network_table_rows": 9,
+    "click_posted_after_s": 0.4,
+    "theme_store_after_click": "true",
+    "page_seconds": 31.7,
+    "verdict": "ALIVE"
+  }
+}
