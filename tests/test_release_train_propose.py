@@ -2480,5 +2480,52 @@ class ExecuteProposalSeamTest(unittest.TestCase):
         self.assertEqual(calls["pr"], [])
 
 
+class PrBodyLimitTest(unittest.TestCase):
+    """GitHub refuses a PR body over 65,536 characters, and ``open_pr`` runs only after the branch and the
+    signed commit exist. A notes draft that would carry the body past the limit is not inlined (juniper-ml
+    0.11.0's draft is 88 KB), and ``execute_proposal`` refuses an over-long body before any write."""
+
+    def _prop(self, notes: str) -> "pr.Proposal":
+        prop = pr.Proposal(pypi_name="juniper-thing", repo="juniper-ml", from_version="0.4.0", to_version="0.5.0", bump="minor", branch="release/juniper-thing-v0.5.0")
+        prop.edits.append(pr.FileEdit(path="pyproject.toml", old_text="a", new_text="b"))
+        prop.notes_draft = notes
+        return prop
+
+    def test_small_draft_is_inlined(self):
+        body = pr._fitted_pr_body(self._prop("# notes\n\n- a small change\n"), "2026-10-21")
+        self.assertIn("<details><summary>Drafted release notes</summary>", body)
+        self.assertIn("- a small change", body)
+
+    def test_draft_past_the_limit_is_not_inlined(self):
+        notes = "- " + "x" * 70_000 + "\n"
+        body = pr._fitted_pr_body(self._prop(notes), "2026-10-21")
+        self.assertLessEqual(len(body.encode("utf-8")), pr.PR_BODY_MAX)
+        self.assertNotIn("x" * 100, body)
+        self.assertIn("Not inlined", body)
+        self.assertIn("`[0.5.0]`", body)
+
+    def test_limit_counts_utf8_bytes(self):
+        # 30,000 three-byte characters: 30,000 characters but 90,000 bytes -- not inlined.
+        body = pr._fitted_pr_body(self._prop("- " + "→" * 30_000 + "\n"), "2026-10-21")
+        self.assertNotIn("→" * 100, body)
+
+    def test_execute_refuses_an_over_long_body_before_any_write(self):
+        calls: list = []
+        sources = pr.ProposeSources(
+            read_file=lambda _entry, _filename: None,
+            list_open_prs=lambda _repo: [],
+            resolve_ref_sha=lambda repo, ref: calls.append(("resolve", repo, ref)) or "sha",
+            create_branch=lambda repo, branch, sha: calls.append(("branch", repo, branch)),
+            create_signed_commit=lambda repo, branch, message, additions, expected_head_oid: calls.append(("commit", repo, branch)) or "c0ffee",
+            open_pr=lambda repo, base, head, title, body: calls.append(("pr", repo, head)) or "https://example.invalid/pull/1",
+        )
+        prop = self._prop("- small\n")
+        prop.pr_body = "x" * (pr.PR_BODY_MAX + 1)
+        with self.assertRaises(pr.SourceError) as ctx:
+            pr.execute_proposal(prop, sources, "main")
+        self.assertIn("nothing was written", str(ctx.exception))
+        self.assertEqual(calls, [])
+
+
 if __name__ == "__main__":
     unittest.main()
