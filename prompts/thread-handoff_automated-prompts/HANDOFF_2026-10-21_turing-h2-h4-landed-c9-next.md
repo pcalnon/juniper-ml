@@ -56,7 +56,10 @@
    - `python3 -I util/ad-hoc/2026-10-21_turing_h4_apply.py --dry-run`;
    - `python3 -I util/ad-hoc/2026-10-21_turing_h2_h4_record.py --dry-run`.
 
-   G1's, G4's and the v1.4.2 record's apply scripts still report every edit present too: H4 kept their markers. On a later UTC day, an apply script that touches AGENTS.md also reports `would change ... AGENTS.md`. That is only its **Last Updated** date, not a revert.
+   G1's and G4's apply scripts still report every edit present too: H4 kept their markers. Two expected deviations, neither of them a revert:
+
+   - The v1.4.2 record script, `util/ad-hoc/2026-10-20_turing_g1_g4_record.py`, reports its Version-line edit `MISSING` ("the plan is at neither 1.4.1 nor 1.4.2"). That is by design: v1.4.3 replaced the line. Its other edits stay `present`.
+   - On a later UTC day, an apply script that touches AGENTS.md also reports `would change ... AGENTS.md`. That is only the **Last Updated** date.
 
 ## Verify the starting state
 
