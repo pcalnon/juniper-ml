@@ -1,7 +1,7 @@
 # Handoff — turing bring-up: H2, H4 and H5 landed (plan v1.4.4), main's R-S9 flake fixed; C9 next, owner decisions pending
 
 - **From:** the 2026-10-20/21 session on turing named "code signing" (ae687e; worktree `.claude/worktrees/linked-floating-sprout`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-g1-landed-g4-promoted-h2-next.md`.
-- **This file supersedes** this session's earlier `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-landed-c9-next.md`. That one was written before H5, plan v1.4.4 and the R-S9 fix. The "mac dev" session's `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-audit-landed-owner-decides.md` stays the authority on H5's state and the removal commands.
+- **This file supersedes** this session's earlier `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-landed-c9-next.md`. That one was written before H5, plan v1.4.4 and the R-S9 fix. The "mac dev" session's `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-audit-landed-owner-decides.md` stays the authority on H5's state and the removal commands. **Since plan v1.4.5** the owner has chosen H5's option B (keep, hardened), and the authority on H5 is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md`.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.4.
   - §18.1 holds the owner's two rulings of 2026-10-21: the split, and Serena's edit tools leading to C9.
   - §18.2 holds the H2, H4, C9 and H5 rows.
@@ -66,6 +66,7 @@
    - **Tests and install.** Add cases in `tests/test_claude_agent_guard.py`, plus a mutation check on the C8 and K12 pattern. The owner re-installs the guard.
    - **H5 found** that neither unvetted server has file-writing tools, so C9 does not cover them. Their DB and network tools would need `permissions.deny` rules instead (H5-X1).
    - C9 can be built and landed before C8 is installed. Only its installation is the owner's.
+   - **Widened by plan v1.4.5 (owner, RR-10):** C9 also denies MCP registration: the `mcp add*` subcommands whatever the command word, writes to `~/.claude.json` and any `.mcp.json` (H4's `util/mcp_setup.bash` must keep working), and settings writes that set `enabledMcpjsonServers` or `enableAllProjectMcpServers`. The plan's §18.2 C9 row has the detail.
 2. **H3**, after C8 is installed, C9 has landed and H2's agents are installed. Each agent runs one scripted task on turing, compared with a `util/host_state_probe.bash --json` run taken within ±10 minutes, plus one negative test. The task prompts go through `prompt-validator`.
 3. **H4's live check**, once E-H4-WHEEL is resolved:
    - `bash util/mcp_setup.bash` in the primary checkout;

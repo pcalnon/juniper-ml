@@ -1,5 +1,7 @@
 # Handoff — turing bring-up: H5's audit landed; the trees were removed, restored and risk-analysed; the owner decides
 
+- **Superseded (2026-10-21, plan v1.4.5).** The owner chose option B: keep both trees, dormant and hardened. B.1 to B.3 are applied. H5's current state, the owner's B.4 and B.5, and the check are in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md`. What follows is this file's state before the decision.
+
 - **From:** the 2026-10-21 session on turing named "mac dev". It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-g1-landed-g4-promoted-h2-next.md`, and took H5 under the owner's split (plan erratum E-SPLIT).
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.4.
   - §18.2's H5 row says "the owner's decision is pending", and §18.3 carries erratum E-H5.
