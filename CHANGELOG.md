@@ -720,6 +720,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The release-train proposal keeps its PR body under GitHub's 65,536-character limit**, and refuses an
+  over-long one before any write. `util/release_train/propose.py` inlined the whole drafted release notes in the
+  proposal PR body, and `execute_proposal` opens the PR only after the release branch and its signed commit
+  exist. juniper-ml 0.11.0's draft is 88,548 B, so its body came to 90,219 characters, which GitHub refuses
+  ("Body is too long"), and `--execute` would have left `release/juniper-ml-v0.11.0` and its commit with no PR
+  (the juniper-ml#2227 half-written class). A draft that would carry the body past the limit, counted in UTF-8
+  bytes (never fewer than characters), is now replaced by a pointer to the `[<version>]` section that the PR's own
+  CHANGELOG diff shows in full; the ceremony's archive PR still carries the final notes. `execute_proposal`
+  raises before `create_branch` when a body is still over the limit. The 0.11.0 body is now 1,909 B. Four tests
+  in `tests/test_release_train_propose.py`.
+
 - **The release-train detector no longer discounts a `pyproject.toml` hunk whose table its context does not name**,
   so juniper-ml reads UNRELEASED_CHANGES (0.11.0) instead of UP_TO_DATE. `util/release_train/detect.py`'s
   `classify_pyproject_patch` took a hunk's TOML table only from a `[table]` line inside the hunk or from its `@@`
