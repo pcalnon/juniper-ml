@@ -1230,7 +1230,25 @@ def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, a
     return items
 
 
-def _pr_body(prop: Proposal, date: str) -> str:
+# GitHub refuses an issue or PR body over 65,536 characters ("Body is too long"), and open_pr runs only after the
+# release branch and its signed commit exist, so an over-long body would leave a proposal branch with no PR (the
+# juniper-ml#2227 half-written class). The drafted notes are the one unbounded part of the body -- juniper-ml
+# 0.11.0's draft alone is 88 KB -- and the PR's own CHANGELOG diff shows the same section, so a draft that would
+# carry the body past the limit is not inlined. Measured in UTF-8 bytes, which are never fewer than characters.
+PR_BODY_MAX = 65_536
+
+
+def _body_size(body: "str | None") -> int:
+    return len((body or "").encode("utf-8"))
+
+
+def _fitted_pr_body(prop: Proposal, date: str) -> str:
+    """The proposal PR body, without the inlined notes draft when the draft would carry it past PR_BODY_MAX."""
+    body = _pr_body(prop, date)
+    return body if _body_size(body) <= PR_BODY_MAX else _pr_body(prop, date, inline_notes=False)
+
+
+def _pr_body(prop: Proposal, date: str, *, inline_notes: bool = True) -> str:
     lines: list = []
     lines.append(f"## Release proposal: `{prop.pypi_name}` v{prop.from_version} -> v{prop.to_version}")
     lines.append("")
@@ -1249,13 +1267,16 @@ def _pr_body(prop: Proposal, date: str) -> str:
     lines.append("### Drafted release notes (NOT archived here)")
     lines.append(f"Archival to the central `{prop.notes_relpath}` is the later **exempt** ceremony step (plan S10.2); this PR only drafts the notes for review.")
     lines.append("")
-    lines.append("<details><summary>Drafted release notes</summary>")
-    lines.append("")
-    lines.append("```markdown")
-    lines.append((prop.notes_draft or "").rstrip("\n"))
-    lines.append("```")
-    lines.append("")
-    lines.append("</details>")
+    if inline_notes:
+        lines.append("<details><summary>Drafted release notes</summary>")
+        lines.append("")
+        lines.append("```markdown")
+        lines.append((prop.notes_draft or "").rstrip("\n"))
+        lines.append("```")
+        lines.append("")
+        lines.append("</details>")
+    else:
+        lines.append(f"Not inlined: the draft is {_body_size(prop.notes_draft):,} B, which would carry this body past GitHub's {PR_BODY_MAX:,}-character limit. It renders from the `[{prop.to_version}]` section this PR's CHANGELOG diff shows in full, and the ceremony's archive PR carries the final notes.")
     lines.append("")
     if prop.ship_evidence:
         lines.append("### Ship evidence (from the detector)")
@@ -1544,7 +1565,7 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
     prop.branch = release_branch(entry.pypi_name, to_version)
     prop.commit_message = f"chore(release): {entry.pypi_name} v{to_version} -- version bump + CHANGELOG move"
     prop.pr_title = f"release: {entry.pypi_name} v{to_version} (proposal)"
-    prop.pr_body = _pr_body(prop, date)
+    prop.pr_body = _fitted_pr_body(prop, date)
     return prop
 
 
@@ -1678,6 +1699,8 @@ def execute_proposal(prop: Proposal, sources: ProposeSources, base_branch: str =
     # sibling's edits into the wrong repo / open a doomed PR without the capability (plan S9.2).
     if cross_repo_skip_reason(prop.repo, cross_repo_capable=cross_repo, ecosystem_root=ecosystem_root) is not None:
         return ""
+    if _body_size(prop.pr_body) > PR_BODY_MAX:  # refuse BEFORE the branch exists, never after (PR_BODY_MAX)
+        raise SourceError(f"the {prop.pypi_name} proposal PR body is {_body_size(prop.pr_body):,} B, over GitHub's {PR_BODY_MAX:,}-character limit -- nothing was written")
     _execute_signed_pr(prop.repo, prop.branch, prop.edits, prop.commit_message or f"release: {prop.pypi_name}", base_branch, sources)
     return sources.open_pr(prop.repo, base_branch, prop.branch, prop.pr_title or "", prop.pr_body or "")
 
