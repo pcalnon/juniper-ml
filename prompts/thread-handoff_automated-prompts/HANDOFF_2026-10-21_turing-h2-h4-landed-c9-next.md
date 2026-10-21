@@ -4,7 +4,7 @@
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.3. This session's record is in §18.1 (two owner rulings), §18.2 (the H2, H4, C9 and H5 rows) and §18.3 (errata E-SPLIT, E-H4-WHEEL and E-SERENA-EDIT). Task IDs below are the plan's.
 - **Standing approval:** the owner granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
 - **Coordination.** The owner gave H2 and H4 to this session and H5 to the "mac dev" session (37a935). "mac dev" later received a different answer, all three for itself. Both sessions kept the first split, and the owner was told (E-SPLIT).
-  - "mac dev" is doing H5, one `notes/` audit. It will send the PR number, the merge sha and the owner's enable-or-remove decision, to be folded into the next record revision.
+  - "mac dev" is doing H5, one `notes/` audit. It will write H5's record itself, as plan v1.4.4, after checking for an open turing plan PR. It will also message any next session on this arc, so H5 is not recorded twice. The audit marks any server it would enable that has file-writing tools as falling under C9.
   - Run `ListAgents` and `gh pr list --repo pcalnon/juniper-ml --state all --search "<task>"` before starting any task here.
 
 ## Landed (squash-merged to `main` after green)
@@ -49,14 +49,17 @@
    - `bash util/mcp_setup.bash` in the primary checkout;
    - pre-warm with `uvx --from git+https://github.com/oraios/serena@949a27ef1e5fda1a6e7b561e777bcece345c6ffd serena --version`;
    - then `timeout 30 claude mcp list`.
-4. **The next record revision** folds in H5 when "mac dev" reports.
+4. **H5's record is "mac dev"'s:** it writes v1.4.4. Number any later revision after that one lands, and check for an open turing plan PR first.
 5. F3 node mode follows owner step 6. E5 waits on A6. D2-upg and D4 still need re-planning under the D6 ruling.
 6. **Post-merge check (E-LAND-2).** About an hour after the last merge, re-run each of these against `main`. Each should report every edit `present`:
    - `python3 -I util/ad-hoc/2026-10-20_turing_h2_apply.py --dry-run`;
    - `python3 -I util/ad-hoc/2026-10-21_turing_h4_apply.py --dry-run`;
    - `python3 -I util/ad-hoc/2026-10-21_turing_h2_h4_record.py --dry-run`.
 
-   G1's, G4's and the v1.4.2 record's apply scripts still report every edit present too: H4 kept their markers. On a later UTC day, an apply script that touches AGENTS.md also reports `would change ... AGENTS.md`. That is only its **Last Updated** date, not a revert.
+   G1's and G4's apply scripts still report every edit present too: H4 kept their markers. Two expected deviations, neither of them a revert:
+
+   - The v1.4.2 record script, `util/ad-hoc/2026-10-20_turing_g1_g4_record.py`, reports its Version-line edit `MISSING` ("the plan is at neither 1.4.1 nor 1.4.2"). That is by design: v1.4.3 replaced the line. Its other edits stay `present`.
+   - On a later UTC day, an apply script that touches AGENTS.md also reports `would change ... AGENTS.md`. That is only the **Last Updated** date.
 
 ## Verify the starting state
 
