@@ -1,5 +1,12 @@
 # HANDOFF 2026-10-20 — P2 canopy Lane A: Phase 14 recorded. Item 30 is DONE: F-CANOPY-001, -012, -013, -018 and -032 are FIXED on canopy 571743db; F-CANOPY-028 reproduced (1 of 8 on the record) and is re-diagnosed; F-CANOPY-069 (P0) is filed: canopy's dashboard is inert under every dash 3.x. 1 open P0, 5 open P1, 10 open P2. Next are items 32, 31, 27, 25 and 28
 
+> **SUPERSEDED 2026-10-21** by `HANDOFF_2026-10-21_canopy-phase15-items-31-32-done-f069-f028-fixed.md`.
+> Its item 1 (juniper-ml#2291 merged 2026-10-20T13:59:34Z), item 2 (item 32: canopy#760, F-CANOPY-069 FIXED, the dash
+> floor 4.0.0) and item 3 (item 31: canopy#761, F-CANOPY-028 FIXED, the manual's row idiom) are done, recorded as
+> Phase 15 of `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`; its items 4 to 6 carry there as
+> items 27, 25, 28, 29 and 26's second step, and its item 7 (the parent's items 5 and 7, the owner batch) as that
+> handoff's last remaining item; new items 33 and 34.
+
 **Written**: 2026-10-20 by the session in juniper-ml worktree `.claude/worktrees/serialized-noodling-cray` on host
 turing (macOS; no trio; throwaway legs from the E2 tree), at a phase boundary, as its PR was opened.
 **Consensus**: round 1 on 2026-10-20, three lanes (measurement re-creation, adversarial analysis, replay and
