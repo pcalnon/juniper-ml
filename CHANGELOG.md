@@ -702,6 +702,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The release-train detector no longer discounts a `pyproject.toml` hunk whose table its context does not name**,
+  so juniper-ml reads UNRELEASED_CHANGES (0.11.0) instead of UP_TO_DATE. `util/release_train/detect.py`'s
+  `classify_pyproject_patch` took a hunk's TOML table only from a `[table]` line inside the hunk or from its `@@`
+  trailer, and git's default trailer is the nearest line that starts with a letter
+  (`@@ -81,9 +81,9 @@ doc-tools = [`), never a `[table]`. Every changed line of a hunk more than three lines below
+  its header therefore fell to the NON-SHIP default, and a later hunk inherited the previous hunk's table. Since
+  v0.10.0 the `[servers]` canopy and data floors and the `[recurrence]` recurrence and model ranges have moved
+  (published 0.10.0 still pins `juniper-recurrence>=0.5.0,<0.6.0`), yet the meta-package, which ships nothing but
+  `pyproject.toml` (`ship_paths: []`), read UP_TO_DATE with a CHANGELOG conflict, and `propose.py` had nothing to
+  propose.
+  - Each hunk now takes its table and extra from the HEAD file when the hunk's new-side lines sit at its stated
+    position there (the cumulative tag..HEAD patch aligns with the checkout, as for the `.py` substantive check).
+    A changed line whose table stays unknown (no aligned HEAD file, or a stale checkout) is UNCERTAIN, never
+    NON-SHIP, and a `[[array.of.tables]]` header now ends the table before it.
+  - Measured on the seven in-repo packages against `main`'s detector: juniper-ml moves UP_TO_DATE →
+    UNRELEASED_CHANGES (0.11.0) and juniper-config-tools UP_TO_DATE → UNRELEASED_CHANGES (its `Typing :: Typed`
+    classifier in `[project]`, unreleased since 0.1.0; its `[Unreleased]` is empty, so the manifest flags it
+    under-documented); the other five are unchanged. The daily `release-train.yml` run is in report mode, so
+    nothing is proposed by itself.
+  - Nine new tests in `tests/test_release_train_detect.py`, one of them on real `git diff` output; all nine fail on
+    `main`'s detector.
+
 - **The release-train ceremony can archive notes larger than about 97 KB, and it HALTs before any write
   when an archive cannot travel in one signed commit** (juniper-ml#2227). `util/release_train/ceremony.py`'s
   `create_signed_commit` passed the base64 file as one `gh` argument, which a Linux runner caps at 128 KiB
