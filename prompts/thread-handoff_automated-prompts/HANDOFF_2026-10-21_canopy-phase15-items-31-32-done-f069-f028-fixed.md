@@ -1,5 +1,10 @@
 # HANDOFF 2026-10-21 — P2 canopy Lane A: Phase 15 recorded. Items 32 and 31 are DONE: F-CANOPY-069 is FIXED (canopy#760; the dash floor is 4.0.0) and F-CANOPY-028 is FIXED (canopy#761). 0 open P0, 4 open P1, 10 open P2. Next are item 34 and items 18–21 (canopy fixes), item 27, the Linux host's items 25, 28 and 29, item 26's second step and the owner's item 33
 
+> **SUPERSEDED 2026-10-21** by `HANDOFF_2026-10-21_canopy-items-34-20-done-canopy762-763-phase16-owed.md`.
+> Its item 1 (juniper-ml#2303 merged 2026-10-21T07:30:02Z, re-checked past the hour), item 2 (item 34: canopy#762,
+> the 1-D Patch Weights parse takes spaces) and item 20 of the ledger's Phase 10 list (canopy#763, F-CANOPY-065) are
+> done in canopy; recording them is Phase 16, owed. Its items 3 to 10 carry there.
+
 **Written**: 2026-10-21 by the session in juniper-ml worktree `.claude/worktrees/sequential-coalescing-boot` on host
 turing (macOS; no trio; throwaway legs from copies of the E2 tree), at a phase boundary, as its PR was opened. The
 work ran on 2026-10-20; the consensus and the landing on 2026-10-21.

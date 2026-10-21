@@ -134,8 +134,11 @@ Lane A (E2E):
    F-CANOPY-028 is FIXED (canopy#761, merged as `aeeaf29b`: the pin writer persists a user's toggle only); triage
    80/63/1/2/14, 0 open P0, 4 open P1, 10 open P2; new items 33 (turing's E2 canopy env is below the floor) and 34
    (canopy's Patch Weights sentence for the 1-D targets).
+   On 2026-10-21 (on turing) item 34 was done in canopy#762 (the 1-D parse takes spaces, as the manual says) and
+   the ledger's item 20 in canopy#763 (F-CANOPY-065: the WS leg's partition reaches the apply toast, verified live);
+   Phase 16, recording both, is owed.
    Current Lane A handoff:
-   `HANDOFF_2026-10-21_canopy-phase15-items-31-32-done-f069-f028-fixed.md`. The status as of 2026-10-08
+   `HANDOFF_2026-10-21_canopy-items-34-20-done-canopy762-763-phase16-owed.md`. The status as of 2026-10-08
    follows, for context.
 
    **DONE IN CODE 2026-10-08: canopy#731** (branch `fix/f055-f058-f068-request-ack-pacer`, head `65ead946`).
