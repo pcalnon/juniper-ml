@@ -55,6 +55,7 @@ SUITES = {
     "configure_commit_signing",  # commit-signing plan K2
     "host_state_probe",  # G1
     "host_state_check",  # G1
+    "mcp_setup",  # H4
 }
 
 

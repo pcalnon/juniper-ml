@@ -226,6 +226,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `util/ad-hoc/2026-10-20_turing_h2_mutation_check.py` (new) shows that they kill 28 of 28 mutants, six of
     them in the guard.
 
+- **`util/mcp_setup.bash`: each checkout's Serena entry, pinned and bound** (turing bring-up task H4 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; decision D10).
+  - It writes `<checkout>/.mcp.json`'s `serena` entry: `uvx --from git+https://github.com/oraios/serena@<commit>
+    serena start-mcp-server --context <context> --project <checkout> --open-web-dashboard False`. Other
+    servers are kept, a changed file is backed up first, and a second run writes nothing. `--check` and
+    `--remove` complete it.
+  - `--project` fixes audit A2-F1 (Serena started with no active project), and running it per checkout fixes
+    A2-F4 (no worktree had a `.mcp.json`), both from `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_HEADLESS-SIGNING-AND-SERENA-HARNESS-AUDIT.md`.
+  - The pin comes from `conf/hosts/<host>/mcp.json` (new for turing): Serena v1.7.0 at its full commit, on the
+    claude-code context, whose `excluded_tools` hold `execute_shell_command`. `.serena/project.yml` now
+    excludes it too, and `.gitignore` covers the script's `.mcp.json.bak-*` backups.
+  - On turing the pinned Serena does not start yet: its exact `cryptography==50.0.0` pin ships no Intel-macOS
+    wheel, and building it needs Rust 1.83 (the host has 1.71). The live `claude mcp list` check waits on
+    that.
+  - `tests/test_mcp_setup.py` (new) is wired into `ci.yml`, the `host-tooling-macos` job and
+    `docs/REFERENCE.md` (224 suites). `util/ad-hoc/2026-10-21_turing_h4_mutation_check.py` (new) shows that it
+    kills 20 of 20 mutants.
+
 - **The D11 item 4 agent guard for turing** (task C8, option (b) of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). Pattern rules alone cannot carry D11:
   `Read(~/.ssh/**)` does not bind Bash, and `gh api` takes its flags in any order. The macOS sandbox alternative,

@@ -1442,6 +1442,12 @@ jobs:
           # (R-G1, the X2 class) exits 2; G-MEM's verdicts equal util/macvm_ctl.bash status's; the real
           # probe feeds the check; the committed turing file agrees with macvm_ctl, hosttools and conda-envs.
           python3 -m unittest -v tests/test_host_state_check.py
+          # tests/test_mcp_setup.py: turing bring-up H4. util/mcp_setup.bash writes a checkout's .mcp.json Serena
+          # entry: pinned to a full commit from conf/hosts/<host>/mcp.json (D10), bound with --project (audit
+          # A2-F1), on a context whose excluded_tools hold the shell tool. Other servers are kept, a changed file
+          # is backed up, a second run writes nothing; --check fails on an unpinned, unbound or rebound entry, and
+          # every refusal writes nothing. Stdlib plus PyYAML (it reads .serena/project.yml); runs /bin/bash.
+          python3 -m unittest -v tests/test_mcp_setup.py
 
       - name: Run bash regression tests
         run: |
@@ -2411,11 +2417,13 @@ jobs:
         juniper_clone find_encryption_readme_notes macvm_ctl claude_agent_guard
         git_remote_alias_check headless_signing_preflight juniper_repo_ssh_setup home_path_literal_check configure_commit_signing
         host_state_probe host_state_check
+        mcp_setup
       HOST_TOOLING_PATHS: >-
         util/juniper_clone.bash util/find_encryption_readme_notes.bash util/macvm_ctl.bash
         util/claude_agent_guard.py util/install_claude_agent_guard.bash util/git_remote_alias_check.py
         util/headless_signing_preflight.bash util/juniper_repo_ssh_setup.bash util/home_path_literal_check.py util/configure_commit_signing.py
         util/host_state_probe.bash util/host_state_check.py
+        util/mcp_setup.bash conf/hosts/turing/mcp.json .serena/project.yml .gitignore
         conf/home_path_literal_baseline.json .pre-commit-config.yaml
         conf/hosts/turing/expected.yaml conf/hosts/turing/hosttools-environment.yml conf/hosts/turing/conda-envs/JuniperCanopy1.yml
         conf/hosts/turing/conda-envs/JuniperCascor1.yml conf/hosts/turing/conda-envs/JuniperData.yml
@@ -2470,7 +2478,7 @@ jobs:
         if: steps.changes.outputs.relevant == 'true'
         run: |
           python -m pip install --upgrade "pip>=26.1.1"
-          # PyYAML: the G5 and G6 cases read .pre-commit-config.yaml and ci.yml; G1's check reads expected.yaml.
+          # PyYAML: the G5 and G6 cases read .pre-commit-config.yaml and ci.yml; G1's check reads expected.yaml; H4's suite reads .serena/project.yml.
           pip install "pyyaml>=6.0"
 
       - name: Assert the macOS userland under test

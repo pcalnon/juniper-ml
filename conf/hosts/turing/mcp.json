@@ -1,0 +1,11 @@
+{
+  "host": "turing",
+  "serena": {
+    "source": "git+https://github.com/oraios/serena",
+    "release": "v1.7.0",
+    "published": "2026-08-09",
+    "commit": "949a27ef1e5fda1a6e7b561e777bcece345c6ffd",
+    "context": "claude-code",
+    "verified": "2026-10-21: at this commit, src/serena/resources/config/contexts/claude-code.yml lists execute_shell_command in excluded_tools, and start-mcp-server has no code-executing agent interface (2.x adds --agent-interface REPL). Plan task H4, decision D10."
+  }
+}
