@@ -109,8 +109,9 @@ Releases up to and including **0.7.0** compare `str` and still return a 500 on s
 ## Status
 
 **Live** on PyPI (Beta). The current version is shown by the badge above; see
-[`CHANGELOG.md`](./CHANGELOG.md) for history. Pin with `juniper-service-core>=0.2.0,<0.8.0` —
-the range the `juniper-ml` meta-package uses for its `tools` / `all` extras.
+[`CHANGELOG.md`](./CHANGELOG.md) for history. Pin with `juniper-service-core>=0.7.1,<0.8.0` —
+the range the `juniper-ml` meta-package uses for its `tools` / `all` extras. 0.7.1 is the security
+patch: a non-ASCII `X-API-Key` is a 401, not a 500, and `FailedAuthThrottle.check()` is bounded.
 
 ### Compatibility policy — pinning, not deprecation cycles
 
