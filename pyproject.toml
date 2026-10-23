@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "juniper-ml"
-version = "0.10.0"
+version = "0.11.0"
 description = "Juniper - Cascade Correlation Neural Network Research Platform"
 readme = "README.md"
 license = "MIT"
@@ -101,8 +101,8 @@ tools = [
 # [servers] and the model/client into [tools]/[clients]) keeps those aggregates'
 # semantics intact and lets `pip install juniper-ml[recurrence]` pull the whole stack.
 recurrence = [
-    "juniper-recurrence-model>=0.5.0,<0.6.0",
-    "juniper-recurrence>=0.7.0,<0.8.0",
+    "juniper-recurrence-model>=0.6.0,<0.7.0",
+    "juniper-recurrence>=0.8.0,<0.9.0",
     "juniper-recurrence-client>=0.3.0,<0.4.0",
 ]
 all = [

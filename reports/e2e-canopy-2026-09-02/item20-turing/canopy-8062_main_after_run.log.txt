@@ -1,0 +1,6 @@
+2026-10-21 05:02:16,474 [INFO] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor started (use_websocket_set_params=True)
+2026-10-21 05:02:16,483 [INFO] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor connected to ws://127.0.0.1:8230
+2026-10-21 05:02:17,192 [DEBUG] websockets.client: > TEXT '{"type": "command", "command": "set_params", "c... "output_epochs": 100}}' [196 bytes]
+2026-10-21 05:02:17,194 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via WS: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs']
+2026-10-21 05:02:17,198 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via REST: ['candidate_epochs']
+2026-10-21 05:02:17,202 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs', 'candidate_epochs']

@@ -4,8 +4,8 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.10.0
-**Last Updated**: 2026-10-20
+**Version**: 0.11.0
+**Last Updated**: 2026-10-21
 
 ---
 
@@ -76,7 +76,7 @@ pip install -e ".[tools]"      # ci-tools + doc-tools + observability
 pip install -e ".[doc-tools]"  # markdown link validator (back-compat alias)
 pip install -e ".[all]"        # everything (multi-GB; pulls torch via worker)
 
-# Run all tests -- the full ordered list of 218 `python3 -m unittest`
+# Run all tests -- the full ordered list of 224 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
 # § Test Suite Reference. It is generated from ci.yml's regression step, which is
 # the authoritative list; tests/test_ci_test_wiring_drift.py gates that every suite
@@ -224,6 +224,7 @@ Per-workflow reference for every file in `.github/workflows/`, including the con
 - `.gitattributes` -- Git LFS tracking for image files (jpg, png, ico, xcf, svg, etc.)
 - `.github/CODEOWNERS` -- Code ownership: @pcalnon for all files
 - `.github/dependabot.yml` -- Automated dependency updates: pip (weekly) and github-actions (weekly)
+- `conf/hosts/<host>/` -- Per-host target state and records: `expected.yaml`, which `util/host_state_check.py` judges `util/host_state_probe.bash`'s captures against (the host gates; turing bring-up G1), turing's conda-env specs and `hosttools-environment.yml`, and `mcp.json`, the Serena pin `util/mcp_setup.bash` reads (H4)
 
 ## CI/CD Pipelines
 
@@ -266,7 +267,7 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 | `servers`    | `juniper-canopy>=0.9.0`, `juniper-cascor>=0.11.0`, `juniper-data>=0.17.0`                                                                                                                                      |
 | `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.2.0`, `juniper-service-core>=0.2.0,<0.8.0` |
 | `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)                                                                                                                     |
-| `recurrence` | `juniper-recurrence-model>=0.5.0,<0.6.0`, `juniper-recurrence>=0.7.0,<0.8.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
+| `recurrence` | `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
 | `all`        | All of the above                                                                                                                                                                                             |
 
 ## Conventions

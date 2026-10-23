@@ -1,0 +1,63 @@
+{
+  "repo": "pcalnon/juniper-canopy",
+  "ref": "main",
+  "root": "/Users/pcalnon/.local/state/juniper/turing-e2/trees/juniper-canopy-f069",
+  "checked_at": "2026-10-20T18:58:58Z",
+  "files": [
+    {
+      "path": "src/frontend/dashboard_manager.py",
+      "local": "031099977d45c5ddce14c818477b7f14d5f3753b",
+      "remote": "031099977d45c5ddce14c818477b7f14d5f3753b",
+      "match": true
+    },
+    {
+      "path": "CHANGELOG.md",
+      "local": "507b31c9f71015f6c3dbcc2e66c63d330edb101b",
+      "remote": "507b31c9f71015f6c3dbcc2e66c63d330edb101b",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_p2_wave_batch_b.py",
+      "local": "9193b29ace677d72543fe6e531486a06ad556c7d",
+      "remote": "9193b29ace677d72543fe6e531486a06ad556c7d",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner1.py",
+      "local": "63252e1026d76471dabfc4be035cb5d590982240",
+      "remote": "63252e1026d76471dabfc4be035cb5d590982240",
+      "match": true
+    },
+    {
+      "path": "docs/USER_MANUAL.md",
+      "local": "8273a516d3558b0f23902fb7f30eb78952eae7c9",
+      "remote": "8273a516d3558b0f23902fb7f30eb78952eae7c9",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_f069_duplicate_callback_outputs.py",
+      "local": "9dd02cec9486f5da4c70796c2c445144b3a0a324",
+      "remote": "9dd02cec9486f5da4c70796c2c445144b3a0a324",
+      "match": true
+    },
+    {
+      "path": "pyproject.toml",
+      "local": "16065c32ec3a02c8d15791ea7698426c2831208c",
+      "remote": "16065c32ec3a02c8d15791ea7698426c2831208c",
+      "match": true
+    },
+    {
+      "path": "conf/conda_environment.yaml",
+      "local": "a584722fad78db09e0958acea411fc66c6b4e80b",
+      "remote": "a584722fad78db09e0958acea411fc66c6b4e80b",
+      "match": true
+    },
+    {
+      "path": "conf/requirements_ci.txt",
+      "local": "08ba6a1de4f060006cbf5683eabf679e5ea47ca4",
+      "remote": "08ba6a1de4f060006cbf5683eabf679e5ea47ca4",
+      "match": true
+    }
+  ],
+  "all_match": true
+}

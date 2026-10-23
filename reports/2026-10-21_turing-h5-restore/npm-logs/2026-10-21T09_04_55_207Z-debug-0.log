@@ -1,0 +1,376 @@
+0 verbose cli /usr/local/Cellar/node/25.8.1_1/bin/node /usr/local/bin/npm
+1 info using npm@11.11.0
+2 info using node@v25.8.1
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/pcalnon/.claude/mcp-servers/agi-mcp-server/.npmrc
+5 silly config load:file:/Users/pcalnon/.npmrc
+6 silly config load:file:/Users/pcalnon/.claude/mcp-servers/agi-mcp-server/etc/npmrc
+7 verbose title npm ci
+8 verbose argv "ci" "--offline" "--ignore-scripts" "--no-audit" "--no-fund" "--prefix" "/Users/pcalnon/.claude/mcp-servers/agi-mcp-server"
+9 verbose logfile logs-max:10 dir:/Users/pcalnon/.npm/_logs/2026-10-21T09_04_55_207Z-
+10 verbose logfile /Users/pcalnon/.npm/_logs/2026-10-21T09_04_55_207Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly logfile done cleaning log files
+14 silly idealTree buildDeps
+15 silly reify moves {}
+16 http cache zod-to-json-schema@https://registry.npmjs.org/zod-to-json-schema/-/zod-to-json-schema-3.25.1.tgz 0ms (cache hit)
+17 http cache zod@https://registry.npmjs.org/zod/-/zod-4.3.6.tgz 0ms (cache hit)
+18 http cache why-is-node-running@https://registry.npmjs.org/why-is-node-running/-/why-is-node-running-2.3.0.tgz 0ms (cache hit)
+19 http cache wrappy@https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz 0ms (cache hit)
+20 http cache xtend@https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz 0ms (cache hit)
+21 http cache vitest@https://registry.npmjs.org/vitest/-/vitest-4.0.0-beta.1.tgz 0ms (cache hit)
+22 http cache vite-node@https://registry.npmjs.org/vite-node/-/vite-node-4.0.0-beta.1.tgz 0ms (cache hit)
+23 http cache which@https://registry.npmjs.org/which/-/which-2.0.2.tgz 0ms (cache hit)
+24 http cache vite@https://registry.npmjs.org/vite/-/vite-7.3.1.tgz 0ms (cache hit)
+25 http cache unpipe@https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz 0ms (cache hit)
+26 http cache undici-types@https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz 0ms (cache hit)
+27 http cache toidentifier@https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz 0ms (cache hit)
+28 http cache type-is@https://registry.npmjs.org/type-is/-/type-is-2.0.1.tgz 0ms (cache hit)
+29 http cache tinyrainbow@https://registry.npmjs.org/tinyrainbow/-/tinyrainbow-2.0.0.tgz 0ms (cache hit)
+30 http cache vary@https://registry.npmjs.org/vary/-/vary-1.1.2.tgz 0ms (cache hit)
+31 http cache tinypool@https://registry.npmjs.org/tinypool/-/tinypool-1.1.1.tgz 0ms (cache hit)
+32 http cache tinyspy@https://registry.npmjs.org/tinyspy/-/tinyspy-4.0.4.tgz 0ms (cache hit)
+33 http cache tinyglobby@https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.15.tgz 0ms (cache hit)
+34 http cache tinybench@https://registry.npmjs.org/tinybench/-/tinybench-2.9.0.tgz 0ms (cache hit)
+35 http cache std-env@https://registry.npmjs.org/std-env/-/std-env-3.10.0.tgz 0ms (cache hit)
+36 http cache statuses@https://registry.npmjs.org/statuses/-/statuses-2.0.2.tgz 0ms (cache hit)
+37 http cache tinyexec@https://registry.npmjs.org/tinyexec/-/tinyexec-0.3.2.tgz 0ms (cache hit)
+38 http cache strip-literal@https://registry.npmjs.org/strip-literal/-/strip-literal-3.1.0.tgz 0ms (cache hit)
+39 http cache split2@https://registry.npmjs.org/split2/-/split2-4.2.0.tgz 0ms (cache hit)
+40 http cache stackback@https://registry.npmjs.org/stackback/-/stackback-0.0.2.tgz 0ms (cache hit)
+41 http cache source-map-support@https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz 1ms (cache hit)
+42 http cache source-map@https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz 0ms (cache hit)
+43 http cache side-channel-weakmap@https://registry.npmjs.org/side-channel-weakmap/-/side-channel-weakmap-1.0.2.tgz 0ms (cache hit)
+44 http cache side-channel-map@https://registry.npmjs.org/side-channel-map/-/side-channel-map-1.0.1.tgz 0ms (cache hit)
+45 http cache source-map-js@https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz 0ms (cache hit)
+46 http cache siginfo@https://registry.npmjs.org/siginfo/-/siginfo-2.0.0.tgz 0ms (cache hit)
+47 http cache side-channel-list@https://registry.npmjs.org/side-channel-list/-/side-channel-list-1.0.0.tgz 0ms (cache hit)
+48 http cache side-channel@https://registry.npmjs.org/side-channel/-/side-channel-1.1.0.tgz 0ms (cache hit)
+49 http cache setprototypeof@https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz 0ms (cache hit)
+50 http cache shebang-command@https://registry.npmjs.org/shebang-command/-/shebang-command-2.0.0.tgz 0ms (cache hit)
+51 http cache serve-static@https://registry.npmjs.org/serve-static/-/serve-static-2.2.1.tgz 0ms (cache hit)
+52 http cache shebang-regex@https://registry.npmjs.org/shebang-regex/-/shebang-regex-3.0.0.tgz 0ms (cache hit)
+53 http cache send@https://registry.npmjs.org/send/-/send-1.2.1.tgz 0ms (cache hit)
+54 http cache router@https://registry.npmjs.org/router/-/router-2.2.0.tgz 0ms (cache hit)
+55 http cache safer-buffer@https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz 0ms (cache hit)
+56 http cache resolve-pkg-maps@https://registry.npmjs.org/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz 0ms (cache hit)
+57 http cache rollup@https://registry.npmjs.org/rollup/-/rollup-4.59.0.tgz 0ms (cache hit)
+58 http cache require-from-string@https://registry.npmjs.org/require-from-string/-/require-from-string-2.0.2.tgz 0ms (cache hit)
+59 http cache qs@https://registry.npmjs.org/qs/-/qs-6.15.0.tgz 0ms (cache hit)
+60 http cache raw-body@https://registry.npmjs.org/raw-body/-/raw-body-3.0.2.tgz 0ms (cache hit)
+61 http cache proxy-addr@https://registry.npmjs.org/proxy-addr/-/proxy-addr-2.0.7.tgz 0ms (cache hit)
+62 http cache range-parser@https://registry.npmjs.org/range-parser/-/range-parser-1.2.1.tgz 0ms (cache hit)
+63 http cache postgres-interval@https://registry.npmjs.org/postgres-interval/-/postgres-interval-1.2.0.tgz 0ms (cache hit)
+64 http cache postgres-bytea@https://registry.npmjs.org/postgres-bytea/-/postgres-bytea-1.0.1.tgz 0ms (cache hit)
+65 http cache postcss@https://registry.npmjs.org/postcss/-/postcss-8.5.6.tgz 0ms (cache hit)
+66 http cache postgres-date@https://registry.npmjs.org/postgres-date/-/postgres-date-1.0.7.tgz 0ms (cache hit)
+67 http cache pkce-challenge@https://registry.npmjs.org/pkce-challenge/-/pkce-challenge-5.0.1.tgz 0ms (cache hit)
+68 http cache postgres-array@https://registry.npmjs.org/postgres-array/-/postgres-array-2.0.0.tgz 0ms (cache hit)
+69 http cache picomatch@https://registry.npmjs.org/picomatch/-/picomatch-4.0.3.tgz 0ms (cache hit)
+70 http cache pgpass@https://registry.npmjs.org/pgpass/-/pgpass-1.0.5.tgz 0ms (cache hit)
+71 http cache picocolors@https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz 0ms (cache hit)
+72 http cache pg-types@https://registry.npmjs.org/pg-types/-/pg-types-2.2.0.tgz 0ms (cache hit)
+73 http cache pg-int8@https://registry.npmjs.org/pg-int8/-/pg-int8-1.0.1.tgz 0ms (cache hit)
+74 http cache pg-pool@https://registry.npmjs.org/pg-pool/-/pg-pool-3.12.0.tgz 0ms (cache hit)
+75 http cache pg-connection-string@https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.11.0.tgz 0ms (cache hit)
+76 http cache pg-cloudflare@https://registry.npmjs.org/pg-cloudflare/-/pg-cloudflare-1.3.0.tgz 0ms (cache hit)
+77 http cache pathe@https://registry.npmjs.org/pathe/-/pathe-2.0.3.tgz 0ms (cache hit)
+78 http cache pathval@https://registry.npmjs.org/pathval/-/pathval-2.0.1.tgz 0ms (cache hit)
+79 http cache pg@https://registry.npmjs.org/pg/-/pg-8.19.0.tgz 0ms (cache hit)
+80 http cache path-to-regexp@https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-8.3.0.tgz 0ms (cache hit)
+81 http cache path-key@https://registry.npmjs.org/path-key/-/path-key-3.1.1.tgz 0ms (cache hit)
+82 http cache once@https://registry.npmjs.org/once/-/once-1.4.0.tgz 0ms (cache hit)
+83 http cache parseurl@https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz 0ms (cache hit)
+84 http cache object-inspect@https://registry.npmjs.org/object-inspect/-/object-inspect-1.13.4.tgz 0ms (cache hit)
+85 http cache on-finished@https://registry.npmjs.org/on-finished/-/on-finished-2.4.1.tgz 0ms (cache hit)
+86 http cache negotiator@https://registry.npmjs.org/negotiator/-/negotiator-1.0.0.tgz 0ms (cache hit)
+87 http cache object-assign@https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz 0ms (cache hit)
+88 http cache nanoid@https://registry.npmjs.org/nanoid/-/nanoid-3.3.11.tgz 0ms (cache hit)
+89 http cache ms@https://registry.npmjs.org/ms/-/ms-2.1.3.tgz 0ms (cache hit)
+90 http cache mime-types@https://registry.npmjs.org/mime-types/-/mime-types-3.0.2.tgz 0ms (cache hit)
+91 http cache merge-descriptors@https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-2.0.0.tgz 0ms (cache hit)
+92 http cache mime-db@https://registry.npmjs.org/mime-db/-/mime-db-1.54.0.tgz 0ms (cache hit)
+93 http cache math-intrinsics@https://registry.npmjs.org/math-intrinsics/-/math-intrinsics-1.1.0.tgz 0ms (cache hit)
+94 http cache loupe@https://registry.npmjs.org/loupe/-/loupe-3.2.1.tgz 0ms (cache hit)
+95 http cache media-typer@https://registry.npmjs.org/media-typer/-/media-typer-1.1.0.tgz 0ms (cache hit)
+96 http cache magic-string@https://registry.npmjs.org/magic-string/-/magic-string-0.30.21.tgz 0ms (cache hit)
+97 http cache js-tokens@https://registry.npmjs.org/js-tokens/-/js-tokens-9.0.1.tgz 0ms (cache hit)
+98 http cache json-schema-typed@https://registry.npmjs.org/json-schema-typed/-/json-schema-typed-8.0.2.tgz 0ms (cache hit)
+99 http cache json-schema-traverse@https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz 0ms (cache hit)
+100 http cache jose@https://registry.npmjs.org/jose/-/jose-6.1.3.tgz 0ms (cache hit)
+101 http cache isexe@https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz 0ms (cache hit)
+102 http cache ipaddr.js@https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-1.9.1.tgz 0ms (cache hit)
+103 http cache is-promise@https://registry.npmjs.org/is-promise/-/is-promise-4.0.0.tgz 0ms (cache hit)
+104 http cache inherits@https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz 0ms (cache hit)
+105 http cache ip-address@https://registry.npmjs.org/ip-address/-/ip-address-10.0.1.tgz 0ms (cache hit)
+106 http cache iconv-lite@https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.7.2.tgz 0ms (cache hit)
+107 http cache http-errors@https://registry.npmjs.org/http-errors/-/http-errors-2.0.1.tgz 0ms (cache hit)
+108 http cache hono@https://registry.npmjs.org/hono/-/hono-4.12.3.tgz 0ms (cache hit)
+109 http cache has-symbols@https://registry.npmjs.org/has-symbols/-/has-symbols-1.1.0.tgz 0ms (cache hit)
+110 http cache hasown@https://registry.npmjs.org/hasown/-/hasown-2.0.2.tgz 0ms (cache hit)
+111 http cache get-tsconfig@https://registry.npmjs.org/get-tsconfig/-/get-tsconfig-4.13.6.tgz 0ms (cache hit)
+112 http cache gopd@https://registry.npmjs.org/gopd/-/gopd-1.2.0.tgz 0ms (cache hit)
+113 http cache get-proto@https://registry.npmjs.org/get-proto/-/get-proto-1.0.1.tgz 0ms (cache hit)
+114 http cache get-intrinsic@https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.3.0.tgz 0ms (cache hit)
+115 http cache function-bind@https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz 0ms (cache hit)
+116 http cache fresh@https://registry.npmjs.org/fresh/-/fresh-2.0.0.tgz 0ms (cache hit)
+117 http cache fsevents@https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz 0ms (cache hit)
+118 http cache finalhandler@https://registry.npmjs.org/finalhandler/-/finalhandler-2.1.1.tgz 0ms (cache hit)
+119 http cache forwarded@https://registry.npmjs.org/forwarded/-/forwarded-0.2.0.tgz 0ms (cache hit)
+120 http cache fast-uri@https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.0.tgz 0ms (cache hit)
+121 http cache fdir@https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz 0ms (cache hit)
+122 http cache express@https://registry.npmjs.org/express/-/express-5.2.1.tgz 0ms (cache hit)
+123 http cache express-rate-limit@https://registry.npmjs.org/express-rate-limit/-/express-rate-limit-8.2.1.tgz 0ms (cache hit)
+124 http cache fast-deep-equal@https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz 0ms (cache hit)
+125 http cache expect-type@https://registry.npmjs.org/expect-type/-/expect-type-1.3.0.tgz 0ms (cache hit)
+126 http cache eventsource-parser@https://registry.npmjs.org/eventsource-parser/-/eventsource-parser-3.0.6.tgz 0ms (cache hit)
+127 http cache etag@https://registry.npmjs.org/etag/-/etag-1.8.1.tgz 0ms (cache hit)
+128 http cache eventsource@https://registry.npmjs.org/eventsource/-/eventsource-3.0.7.tgz 0ms (cache hit)
+129 http cache esbuild-register@https://registry.npmjs.org/esbuild-register/-/esbuild-register-3.6.0.tgz 0ms (cache hit)
+130 http cache estree-walker@https://registry.npmjs.org/estree-walker/-/estree-walker-3.0.3.tgz 0ms (cache hit)
+131 http cache escape-html@https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz 0ms (cache hit)
+132 http cache esbuild@https://registry.npmjs.org/esbuild/-/esbuild-0.25.12.tgz 0ms (cache hit)
+133 http cache es-object-atoms@https://registry.npmjs.org/es-object-atoms/-/es-object-atoms-1.1.1.tgz 0ms (cache hit)
+134 http cache es-errors@https://registry.npmjs.org/es-errors/-/es-errors-1.3.0.tgz 0ms (cache hit)
+135 http cache es-module-lexer@https://registry.npmjs.org/es-module-lexer/-/es-module-lexer-1.7.0.tgz 0ms (cache hit)
+136 http cache es-define-property@https://registry.npmjs.org/es-define-property/-/es-define-property-1.0.1.tgz 0ms (cache hit)
+137 http cache encodeurl@https://registry.npmjs.org/encodeurl/-/encodeurl-2.0.0.tgz 0ms (cache hit)
+138 http cache ee-first@https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz 0ms (cache hit)
+139 http cache drizzle-orm@https://registry.npmjs.org/drizzle-orm/-/drizzle-orm-0.44.7.tgz 0ms (cache hit)
+140 http cache dunder-proto@https://registry.npmjs.org/dunder-proto/-/dunder-proto-1.0.1.tgz 0ms (cache hit)
+141 http cache dotenv@https://registry.npmjs.org/dotenv/-/dotenv-16.6.1.tgz 0ms (cache hit)
+142 http cache drizzle-kit@https://registry.npmjs.org/drizzle-kit/-/drizzle-kit-0.31.9.tgz 0ms (cache hit)
+143 http cache depd@https://registry.npmjs.org/depd/-/depd-2.0.0.tgz 0ms (cache hit)
+144 http cache deep-eql@https://registry.npmjs.org/deep-eql/-/deep-eql-5.0.2.tgz 0ms (cache hit)
+145 http cache debug@https://registry.npmjs.org/debug/-/debug-4.4.3.tgz 0ms (cache hit)
+146 http cache cross-spawn@https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz 0ms (cache hit)
+147 http cache cors@https://registry.npmjs.org/cors/-/cors-2.8.6.tgz 0ms (cache hit)
+148 http cache content-type@https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz 0ms (cache hit)
+149 http cache cookie-signature@https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.2.2.tgz 0ms (cache hit)
+150 http cache cookie@https://registry.npmjs.org/cookie/-/cookie-0.7.2.tgz 0ms (cache hit)
+151 http cache content-disposition@https://registry.npmjs.org/content-disposition/-/content-disposition-1.0.1.tgz 0ms (cache hit)
+152 http cache call-bound@https://registry.npmjs.org/call-bound/-/call-bound-1.0.4.tgz 0ms (cache hit)
+153 http cache chai@https://registry.npmjs.org/chai/-/chai-5.3.3.tgz 0ms (cache hit)
+154 http cache check-error@https://registry.npmjs.org/check-error/-/check-error-2.1.3.tgz 0ms (cache hit)
+155 http cache call-bind-apply-helpers@https://registry.npmjs.org/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz 0ms (cache hit)
+156 http cache cac@https://registry.npmjs.org/cac/-/cac-6.7.14.tgz 0ms (cache hit)
+157 http cache bytes@https://registry.npmjs.org/bytes/-/bytes-3.1.2.tgz 0ms (cache hit)
+158 http cache buffer-from@https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz 0ms (cache hit)
+159 http cache ajv-formats@https://registry.npmjs.org/ajv-formats/-/ajv-formats-3.0.1.tgz 0ms (cache hit)
+160 http cache assertion-error@https://registry.npmjs.org/assertion-error/-/assertion-error-2.0.1.tgz 0ms (cache hit)
+161 http cache body-parser@https://registry.npmjs.org/body-parser/-/body-parser-2.2.2.tgz 0ms (cache hit)
+162 http cache ajv@https://registry.npmjs.org/ajv/-/ajv-8.18.0.tgz 0ms (cache hit)
+163 http cache @vitest/utils@https://registry.npmjs.org/@vitest/utils/-/utils-4.0.0-beta.1.tgz 0ms (cache hit)
+164 http cache accepts@https://registry.npmjs.org/accepts/-/accepts-2.0.0.tgz 0ms (cache hit)
+165 http cache @vitest/spy@https://registry.npmjs.org/@vitest/spy/-/spy-4.0.0-beta.1.tgz 0ms (cache hit)
+166 http cache @vitest/pretty-format@https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-4.0.18.tgz 0ms (cache hit)
+167 http cache @vitest/snapshot@https://registry.npmjs.org/@vitest/snapshot/-/snapshot-4.0.0-beta.1.tgz 0ms (cache hit)
+168 http cache @vitest/runner@https://registry.npmjs.org/@vitest/runner/-/runner-4.0.0-beta.1.tgz 0ms (cache hit)
+169 http cache @vitest/mocker@https://registry.npmjs.org/@vitest/mocker/-/mocker-4.0.0-beta.1.tgz 0ms (cache hit)
+170 http cache @vitest/expect@https://registry.npmjs.org/@vitest/expect/-/expect-4.0.0-beta.1.tgz 0ms (cache hit)
+171 http cache @types/node@https://registry.npmjs.org/@types/node/-/node-25.3.3.tgz 0ms (cache hit)
+172 http cache @types/pg@https://registry.npmjs.org/@types/pg/-/pg-8.18.0.tgz 0ms (cache hit)
+173 http cache @types/estree@https://registry.npmjs.org/@types/estree/-/estree-1.0.8.tgz 0ms (cache hit)
+174 http cache pg-protocol@https://registry.npmjs.org/pg-protocol/-/pg-protocol-1.12.0.tgz 0ms (cache hit)
+175 http cache @types/deep-eql@https://registry.npmjs.org/@types/deep-eql/-/deep-eql-4.0.2.tgz 0ms (cache hit)
+176 http cache @types/chai@https://registry.npmjs.org/@types/chai/-/chai-5.2.3.tgz 0ms (cache hit)
+177 http cache @rollup/rollup-darwin-x64@https://registry.npmjs.org/@rollup/rollup-darwin-x64/-/rollup-darwin-x64-4.59.0.tgz 0ms (cache hit)
+178 http cache @jridgewell/sourcemap-codec@https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz 0ms (cache hit)
+179 http cache @hono/node-server@https://registry.npmjs.org/@hono/node-server/-/node-server-1.19.9.tgz 0ms (cache hit)
+180 http cache @modelcontextprotocol/sdk@https://registry.npmjs.org/@modelcontextprotocol/sdk/-/sdk-1.27.1.tgz 0ms (cache hit)
+181 http cache @esbuild/darwin-x64@https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.25.12.tgz 0ms (cache hit)
+182 http cache @esbuild-kit/esm-loader@https://registry.npmjs.org/@esbuild-kit/esm-loader/-/esm-loader-2.6.5.tgz 0ms (cache hit)
+183 http cache @esbuild-kit/core-utils@https://registry.npmjs.org/@esbuild-kit/core-utils/-/core-utils-3.3.2.tgz 0ms (cache hit)
+184 http cache esbuild@https://registry.npmjs.org/esbuild/-/esbuild-0.27.3.tgz 0ms (cache hit)
+185 http cache @drizzle-team/brocli@https://registry.npmjs.org/@drizzle-team/brocli/-/brocli-0.10.2.tgz 0ms (cache hit)
+186 http cache @esbuild/darwin-x64@https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.27.3.tgz 0ms (cache hit)
+187 http cache @vitest/pretty-format@https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-4.0.0-beta.1.tgz 0ms (cache hit)
+188 http cache @vitest/pretty-format@https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-4.0.0-beta.1.tgz 0ms (cache hit)
+189 http cache tinyrainbow@https://registry.npmjs.org/tinyrainbow/-/tinyrainbow-3.0.3.tgz 0ms (cache hit)
+190 http cache esbuild@https://registry.npmjs.org/esbuild/-/esbuild-0.18.20.tgz 0ms (cache hit)
+191 http cache @esbuild/darwin-x64@https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.18.20.tgz 0ms (cache hit)
+192 warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+193 warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+194 silly ADD node_modules/zod-to-json-schema
+195 silly ADD node_modules/zod
+196 silly ADD node_modules/xtend
+197 silly ADD node_modules/wrappy
+198 silly ADD node_modules/why-is-node-running
+199 silly ADD node_modules/which
+200 silly ADD node_modules/vitest
+201 silly ADD node_modules/vite-node
+202 silly ADD node_modules/vite
+203 silly ADD node_modules/vite/node_modules/esbuild
+204 silly ADD node_modules/vite/node_modules/@esbuild/darwin-x64
+205 silly ADD node_modules/vary
+206 silly ADD node_modules/unpipe
+207 silly ADD node_modules/undici-types
+208 silly ADD node_modules/type-is
+209 silly ADD node_modules/toidentifier
+210 silly ADD node_modules/tinyspy
+211 silly ADD node_modules/tinyrainbow
+212 silly ADD node_modules/tinypool
+213 silly ADD node_modules/tinyglobby
+214 silly ADD node_modules/tinyexec
+215 silly ADD node_modules/tinybench
+216 silly ADD node_modules/strip-literal
+217 silly ADD node_modules/std-env
+218 silly ADD node_modules/statuses
+219 silly ADD node_modules/stackback
+220 silly ADD node_modules/split2
+221 silly ADD node_modules/source-map-support
+222 silly ADD node_modules/source-map-js
+223 silly ADD node_modules/source-map
+224 silly ADD node_modules/siginfo
+225 silly ADD node_modules/side-channel-weakmap
+226 silly ADD node_modules/side-channel-map
+227 silly ADD node_modules/side-channel-list
+228 silly ADD node_modules/side-channel
+229 silly ADD node_modules/shebang-regex
+230 silly ADD node_modules/shebang-command
+231 silly ADD node_modules/setprototypeof
+232 silly ADD node_modules/serve-static
+233 silly ADD node_modules/send
+234 silly ADD node_modules/safer-buffer
+235 silly ADD node_modules/router
+236 silly ADD node_modules/rollup
+237 silly ADD node_modules/resolve-pkg-maps
+238 silly ADD node_modules/require-from-string
+239 silly ADD node_modules/raw-body
+240 silly ADD node_modules/range-parser
+241 silly ADD node_modules/qs
+242 silly ADD node_modules/proxy-addr
+243 silly ADD node_modules/postgres-interval
+244 silly ADD node_modules/postgres-date
+245 silly ADD node_modules/postgres-bytea
+246 silly ADD node_modules/postgres-array
+247 silly ADD node_modules/postcss
+248 silly ADD node_modules/pkce-challenge
+249 silly ADD node_modules/picomatch
+250 silly ADD node_modules/picocolors
+251 silly ADD node_modules/pgpass
+252 silly ADD node_modules/pg-types
+253 silly ADD node_modules/pg-protocol
+254 silly ADD node_modules/pg-pool
+255 silly ADD node_modules/pg-int8
+256 silly ADD node_modules/pg-connection-string
+257 silly ADD node_modules/pg-cloudflare
+258 silly ADD node_modules/pg
+259 silly ADD node_modules/pathval
+260 silly ADD node_modules/pathe
+261 silly ADD node_modules/path-to-regexp
+262 silly ADD node_modules/path-key
+263 silly ADD node_modules/parseurl
+264 silly ADD node_modules/once
+265 silly ADD node_modules/on-finished
+266 silly ADD node_modules/object-inspect
+267 silly ADD node_modules/object-assign
+268 silly ADD node_modules/negotiator
+269 silly ADD node_modules/nanoid
+270 silly ADD node_modules/ms
+271 silly ADD node_modules/mime-types
+272 silly ADD node_modules/mime-db
+273 silly ADD node_modules/merge-descriptors
+274 silly ADD node_modules/media-typer
+275 silly ADD node_modules/math-intrinsics
+276 silly ADD node_modules/magic-string
+277 silly ADD node_modules/loupe
+278 silly ADD node_modules/json-schema-typed
+279 silly ADD node_modules/json-schema-traverse
+280 silly ADD node_modules/js-tokens
+281 silly ADD node_modules/jose
+282 silly ADD node_modules/isexe
+283 silly ADD node_modules/is-promise
+284 silly ADD node_modules/ipaddr.js
+285 silly ADD node_modules/ip-address
+286 silly ADD node_modules/inherits
+287 silly ADD node_modules/iconv-lite
+288 silly ADD node_modules/http-errors
+289 silly ADD node_modules/hono
+290 silly ADD node_modules/hasown
+291 silly ADD node_modules/has-symbols
+292 silly ADD node_modules/gopd
+293 silly ADD node_modules/get-tsconfig
+294 silly ADD node_modules/get-proto
+295 silly ADD node_modules/get-intrinsic
+296 silly ADD node_modules/function-bind
+297 silly ADD node_modules/fsevents
+298 silly ADD node_modules/fresh
+299 silly ADD node_modules/forwarded
+300 silly ADD node_modules/finalhandler
+301 silly ADD node_modules/fdir
+302 silly ADD node_modules/fast-uri
+303 silly ADD node_modules/fast-deep-equal
+304 silly ADD node_modules/express-rate-limit
+305 silly ADD node_modules/express
+306 silly ADD node_modules/expect-type
+307 silly ADD node_modules/eventsource-parser
+308 silly ADD node_modules/eventsource
+309 silly ADD node_modules/etag
+310 silly ADD node_modules/estree-walker
+311 silly ADD node_modules/escape-html
+312 silly ADD node_modules/esbuild-register
+313 silly ADD node_modules/esbuild
+314 silly ADD node_modules/es-object-atoms
+315 silly ADD node_modules/es-module-lexer
+316 silly ADD node_modules/es-errors
+317 silly ADD node_modules/es-define-property
+318 silly ADD node_modules/encodeurl
+319 silly ADD node_modules/ee-first
+320 silly ADD node_modules/dunder-proto
+321 silly ADD node_modules/drizzle-orm
+322 silly ADD node_modules/drizzle-kit
+323 silly ADD node_modules/dotenv
+324 silly ADD node_modules/depd
+325 silly ADD node_modules/deep-eql
+326 silly ADD node_modules/debug
+327 silly ADD node_modules/cross-spawn
+328 silly ADD node_modules/cors
+329 silly ADD node_modules/cookie-signature
+330 silly ADD node_modules/cookie
+331 silly ADD node_modules/content-type
+332 silly ADD node_modules/content-disposition
+333 silly ADD node_modules/check-error
+334 silly ADD node_modules/chai
+335 silly ADD node_modules/call-bound
+336 silly ADD node_modules/call-bind-apply-helpers
+337 silly ADD node_modules/cac
+338 silly ADD node_modules/bytes
+339 silly ADD node_modules/buffer-from
+340 silly ADD node_modules/body-parser
+341 silly ADD node_modules/assertion-error
+342 silly ADD node_modules/ajv-formats
+343 silly ADD node_modules/ajv
+344 silly ADD node_modules/accepts
+345 silly ADD node_modules/@vitest/utils
+346 silly ADD node_modules/@vitest/utils/node_modules/@vitest/pretty-format
+347 silly ADD node_modules/@vitest/spy
+348 silly ADD node_modules/@vitest/snapshot
+349 silly ADD node_modules/@vitest/snapshot/node_modules/@vitest/pretty-format
+350 silly ADD node_modules/@vitest/runner
+351 silly ADD node_modules/@vitest/pretty-format
+352 silly ADD node_modules/@vitest/pretty-format/node_modules/tinyrainbow
+353 silly ADD node_modules/@vitest/mocker
+354 silly ADD node_modules/@vitest/expect
+355 silly ADD node_modules/@types/pg
+356 silly ADD node_modules/@types/node
+357 silly ADD node_modules/@types/estree
+358 silly ADD node_modules/@types/deep-eql
+359 silly ADD node_modules/@types/chai
+360 silly ADD node_modules/@rollup/rollup-darwin-x64
+361 silly ADD node_modules/@modelcontextprotocol/sdk
+362 silly ADD node_modules/@jridgewell/sourcemap-codec
+363 silly ADD node_modules/@hono/node-server
+364 silly ADD node_modules/@esbuild/darwin-x64
+365 silly ADD node_modules/@esbuild-kit/esm-loader
+366 silly ADD node_modules/@esbuild-kit/core-utils
+367 silly ADD node_modules/@esbuild-kit/core-utils/node_modules/esbuild
+368 silly ADD node_modules/@esbuild-kit/core-utils/node_modules/@esbuild/darwin-x64
+369 silly ADD node_modules/@drizzle-team/brocli
+370 verbose cwd /Users/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/zippy-drifting-kettle
+371 verbose os Darwin 24.6.0
+372 verbose node v25.8.1
+373 verbose npm  v11.11.0
+374 verbose exit 0
+375 info ok

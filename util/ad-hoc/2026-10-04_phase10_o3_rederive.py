@@ -30,9 +30,17 @@ Arms: WS only, WS then REST (the A-N2 case), REST only (control), and a mutation
 ``data.result`` (shows the extractor's answer depends on where it looks, so a different answer was
 possible).
 
+The four arms above copy ``apply_params``' merge, so on any tree they still measure 1b2dd438's merge.
+A fifth arm, added 2026-10-21 for the ledger's item 20 (F-CANOPY-065's fix), drives the tree's REAL
+``apply_params`` with the same two frames: a connected control supervisor answering the WS leg with
+``ws_frame``, a mock REST client answering ``rest_envelope``, and the roundtrip verify stubbed out.
+On an unfixed tree it prints A-N2's answer; on a fixed one, both legs' partitions.
+
 Usage (canopy env, LIBTORCH cleared):
     env -u LD_LIBRARY_PATH -u LIBTORCH -u LIBTORCH_LIB /opt/miniforge3/envs/JuniperCanopy1/bin/python \\
         util/ad-hoc/2026-10-04_phase10_o3_rederive.py --canopy-src <canopy tree at 1b2dd438>/src
+    # turing (2026-10-21): ~/.local/state/juniper/turing-e2/venvs/JuniperCanopy1-dash44/bin/python -I \\
+    #     util/ad-hoc/2026-10-04_phase10_o3_rederive.py --canopy-src <tree>/src
 """
 
 from __future__ import annotations
@@ -91,7 +99,29 @@ def main() -> int:
     for label, data, mutate in arms:
         applied, skipped = extract(data, mutate)
         print(f"{label:<55} applied={applied}  skipped={skipped}")
+    applied, skipped = real_apply_params(A, ws, rest)
+    print(f"{'REAL apply_params, WS then REST (this tree)':<55} applied={applied}  skipped={skipped}")
     return 0
+
+
+def real_apply_params(A, ws: dict, rest: dict) -> tuple:
+    """Drive the tree's real ``apply_params``: the WS leg answers ``ws``, the REST leg ``rest``.
+
+    The A-N2 keys: four hot (WS) and one cold (REST), in canopy's namespace.
+    """
+    from types import SimpleNamespace
+    from unittest.mock import MagicMock, patch
+
+    client = MagicMock()
+    client.update_params.return_value = rest
+    adapter = A(service_url="http://localhost:8200", client=client)
+    adapter._control_supervisor = MagicMock(is_connected=True, loop=MagicMock())
+    future = MagicMock()
+    future.result.return_value = ws
+    settings = SimpleNamespace(use_websocket_set_params=True, ws_set_params_timeout=1.0)
+    with patch("settings.get_settings", return_value=settings), patch("backend.cascor_service_adapter.asyncio.run_coroutine_threadsafe", return_value=future), patch.object(adapter, "_verify_apply_roundtrip", return_value=None):
+        out = adapter.apply_params(nn_max_iterations=5, nn_max_total_epochs=5000, nn_max_hidden_units=12, nn_output_epochs=500, cn_training_iterations=50)
+    return out.get("applied"), out.get("skipped_detail")
 
 
 if __name__ == "__main__":

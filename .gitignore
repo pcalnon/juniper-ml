@@ -168,6 +168,8 @@ scripts/sessions/nohup.out
 
 # MCP server config (contains API tokens)
 .mcp.json
+# util/mcp_setup.bash's backups of it, which hold the same tokens
+.mcp.json.bak-*
 
 # === Custom Agent Suite (D-6): version-control .claude/skills and .claude/agents ===
 # .claude/ is fully ignored above; re-include ONLY these two subtrees as the suite's

@@ -1,0 +1,45 @@
+{
+  "repo": "pcalnon/juniper-canopy",
+  "ref": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+  "root": "/Users/pcalnon/.local/state/juniper/turing-e2/trees/juniper-canopy",
+  "checked_at": "2026-10-21T05:23:58Z",
+  "files": [
+    {
+      "path": "src/tests/unit/frontend/test_poll_gating.py",
+      "local": "53927d184824bbe54082a46de50fb4feec49b76c",
+      "remote": "53927d184824bbe54082a46de50fb4feec49b76c",
+      "match": true
+    },
+    {
+      "path": "conf/requirements_ci.txt",
+      "local": "485ceab60175b3f59ec4bb2333a934abf70de5b5",
+      "remote": "485ceab60175b3f59ec4bb2333a934abf70de5b5",
+      "match": true
+    },
+    {
+      "path": "conf/conda_environment.yaml",
+      "local": "e402df53ab34ec77014dc446eb350c7b554df84f",
+      "remote": "e402df53ab34ec77014dc446eb350c7b554df84f",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_p2_wave_batch_b.py",
+      "local": "9193b29ace677d72543fe6e531486a06ad556c7d",
+      "remote": "9193b29ace677d72543fe6e531486a06ad556c7d",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner1.py",
+      "local": "63252e1026d76471dabfc4be035cb5d590982240",
+      "remote": "63252e1026d76471dabfc4be035cb5d590982240",
+      "match": true
+    },
+    {
+      "path": "docs/USER_MANUAL.md",
+      "local": "8273a516d3558b0f23902fb7f30eb78952eae7c9",
+      "remote": "8273a516d3558b0f23902fb7f30eb78952eae7c9",
+      "match": true
+    }
+  ],
+  "all_match": true
+}

@@ -1,0 +1,69 @@
+{
+  "repo": "pcalnon/juniper-canopy",
+  "ref": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+  "root": "/Users/pcalnon/.local/state/juniper/turing-e2/trees/juniper-canopy",
+  "checked_at": "2026-10-20T18:12:35Z",
+  "files": [
+    {
+      "path": "src/frontend/dashboard_manager.py",
+      "local": "90f73da9a937b050e2ed1cc0fdbc65fe09b92268",
+      "remote": "ERROR: Get \"https://api.github.com/repos/pcalnon/juniper-canopy/contents/src/frontend/dashboard_manager.py?ref=571743dba37fa39ac70dbd94fa5822d0822d5e68\": EOF",
+      "match": false
+    },
+    {
+      "path": "src/tests/unit/frontend/test_live_dataset_switch_handlers.py",
+      "local": "09f8ab95a88f9b52b327daebd36548aa7e066bf7",
+      "remote": "09f8ab95a88f9b52b327daebd36548aa7e066bf7",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner2.py",
+      "local": "77d6abb5df79463b45b5b69828e54c8a28f9f18b",
+      "remote": "ERROR: Get \"https://api.github.com/repos/pcalnon/juniper-canopy/contents/src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner2.py?ref=571743dba37fa39ac70dbd94fa5822d0822d5e68\": EOF",
+      "match": false
+    },
+    {
+      "path": "src/tests/unit/frontend/test_restart_orchestration_handlers.py",
+      "local": "a91b872a452921cdea65396d112e6f4d8de7bb74",
+      "remote": "ERROR: Get \"https://api.github.com/repos/pcalnon/juniper-canopy/contents/src/tests/unit/frontend/test_restart_orchestration_handlers.py?ref=571743dba37fa39ac70dbd94fa5822d0822d5e68\": EOF",
+      "match": false
+    },
+    {
+      "path": "pyproject.toml",
+      "local": "da84c4c86ae35dd9c483929a34a36c6109bb3fa7",
+      "remote": "da84c4c86ae35dd9c483929a34a36c6109bb3fa7",
+      "match": true
+    },
+    {
+      "path": "requirements.txt",
+      "local": "485ceab60175b3f59ec4bb2333a934abf70de5b5",
+      "remote": "dea8025a645f13907e9c29a77aa0846fb4b10d5a",
+      "match": false
+    },
+    {
+      "path": "requirements_ci.txt",
+      "local": "485ceab60175b3f59ec4bb2333a934abf70de5b5",
+      "remote": "7e0c9c234eb571757eaa8c086e6ded3561451281",
+      "match": false
+    },
+    {
+      "path": "conf/conda_environment.yaml",
+      "local": "e402df53ab34ec77014dc446eb350c7b554df84f",
+      "remote": "e402df53ab34ec77014dc446eb350c7b554df84f",
+      "match": true
+    },
+    {
+      "path": "CHANGELOG.md",
+      "local": "e7298d29f35c42368ea39d281f7b7d16c7f61d18",
+      "remote": "e7298d29f35c42368ea39d281f7b7d16c7f61d18",
+      "match": true
+    },
+    {
+      "path": "docs/ENVIRONMENT_SETUP.md",
+      "local": "0ea0b6a529f8daed8380d32462c89752e98201a8",
+      "remote": "0ea0b6a529f8daed8380d32462c89752e98201a8",
+      "match": true
+    }
+  ],
+  "all_match": false
+}
