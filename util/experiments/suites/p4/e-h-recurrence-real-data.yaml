@@ -10,5 +10,19 @@ suite:
   seed_policy: fixed
 execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 1200}
 include:
-  - {name: equities-seq-aapl, overrides: {dataset.generator: equities_seq, dataset.params: {symbols: [AAPL], start_date: "2015-01-01", end_date: "2022-01-01", lookback: 64, regression_target: log_return, seed: 20260807}}}
+  # R5 (W5.4): the acceptance band for the equities row, both keys `gate` -- the owner accepted the
+  # W5.1 note's amended recommendation on 2026-10-18 (plan § R5; investigation note §3.4). It catches
+  # the two defect classes the note measured, not skill: the sane configurations sit in [-0.28, 0.00]
+  # per fold, the audited blow-up was -18081, the nearest non-sane aggregate -4.52; `cv_r2_std`
+  # closes the single-fold window the five-fold mean dilutes (one fold at -22 gives std 8.75). The
+  # band is ROW-scoped: the irregular-sine control's cv_r2 0.975 would fail +0.5 under a suite-level
+  # band. Re-measured 2026-10-19 on W5.2's trainval population (1,522 windows, embargo = look-back 64):
+  # the bare 0.7.0 default scores cv_r2 -0.298 / std 0.281, the recommended RFF / ridge 1.0 / 256 /
+  # median configuration -0.111 / 0.041; both inside. A miss makes this cell `failed` and the suite
+  # exit non-zero (R6); a cell that produced no cv_r2 at all is `failed (cv_r2 absent (gate))`.
+  - name: equities-seq-aapl
+    overrides: {dataset.generator: equities_seq, dataset.params: {symbols: [AAPL], start_date: "2015-01-01", end_date: "2022-01-01", lookback: 64, regression_target: log_return, seed: 20260807}}
+    acceptance:
+      - {metric: cv_r2, min: -1.0, max: 0.5, mode: gate}
+      - {metric: cv_r2_std, max: 0.5, mode: gate}
 outputs: {suite_dir: null, aggregate: [csv, markdown]}

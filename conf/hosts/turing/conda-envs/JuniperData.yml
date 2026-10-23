@@ -1,0 +1,107 @@
+---
+# turing conda env JuniperData: plan task E2 (decision D8), juniper-data's own env spec ported to osx-64.
+#
+# Source: pcalnon/juniper-data conf/conda_environment.yaml at main 7465d5a4f479f9e5ae626dbbde1f231c29745c31
+# (blob 6a60a671), a hand-kept YAML env spec that pins only python=3.14, with channels conda-forge, pytorch,
+# nvidia, plotly, RMG, numba, jasonb857, ehmoussi and konstantin-orangeqs. The owner's checkout
+# (~/Development/python/Juniper/juniper-data) was at that same commit, its tracked files identical.
+#
+# Derivation rules (2026-10-19):
+#   - channels: conda-forge only; every package kept below is on conda-forge.
+#   - pins: the source pins nothing but python=3.14, so there is no Linux version to keep and nothing else is
+#     pinned here either.
+#   - dropped as Linux-only: _libgcc_mutex, _openmp_mutex, keyutils, ld_impl_linux-64, libgcc, libgcc-ng,
+#     libgomp, libstdcxx, libstdcxx-ng, libuuid.
+#   - de-duplicated: the source lists numpy, pip and python twice each.
+#   - the source has no CUDA package and no pip section.
+#
+# Relaxations: none.
+#
+# Solve (mamba --dry-run against conda-forge osx-64 + noarch repodata of 2026-10-19): 91 packages, ~125 MB;
+# python 3.14.8, numpy 2.5.4, scipy 1.18.1, h5py 3.16.0 (nompi), hdf5 2.2.0, OpenBLAS 0.3.34 (libblas 3.11.0).
+# Unpinned, so a later solve may pick newer builds.
+#
+# Recreate:
+#   MAMBA_SSL_VERIFY=true mamba env create --override-channels -c conda-forge -f conf/hosts/turing/conda-envs/JuniperData.yml
+#   (mamba 2.x reads MAMBA_SSL_VERIFY; CONDA_SSL_VERIFY reaches only conda itself: plan §18.3 E-SSL.)
+#
+# Validate: juniper-data ci.yml's unit-tests and integration-tests lanes, run from a scratch copy of the repo
+# through a `python -m venv --system-site-packages` overlay on this env, so CI's `pip install ".[all]"` lands in
+# the overlay and this env stays exactly what the spec builds.
+#
+# STATUS 2026-10-20: VALIDATED on turing. Created with MAMBA_SSL_VERIFY=true and mamba 2.1.1 (91 packages, the
+# solve above). juniper-data's CI lanes, run through util/ad-hoc/2026-10-19_turing_e2_validate_envs.py data: unit
+# 2201 passed and 3 skipped of 2204 (coverage 97.82%, 170 s), integration 62 of 62. The 3 skips are by design: the
+# workflow steps they test use GNU `base64 -w0` and `date -d`, which macOS lacks. Export, summary and the overlay's
+# pip freeze: reports/2026-10-20_turing-e2-envs/.
+name: JuniperData
+channels:
+  - conda-forge
+dependencies:
+  - black
+  - bzip2
+  - c-ares
+  - ca-certificates
+  - cached-property
+  - cached_property
+  - click
+  - colorama
+  - coverage
+  - dill
+  - exceptiongroup
+  - h5py
+  - hdf5
+  - icu
+  - importlib-metadata
+  - iniconfig
+  - isort
+  - krb5
+  - libaec
+  - libblas
+  - libcblas
+  - libcurl
+  - libedit
+  - libev
+  - libexpat
+  - libffi
+  - libgfortran
+  - libgfortran5
+  - liblapack
+  - liblzma
+  - libmpdec
+  - libnghttp2
+  - libopenblas
+  - libsqlite
+  - libssh2
+  - libzlib
+  - mpmath
+  - mypy
+  - mypy_extensions
+  - ncurses
+  - networkx
+  - numpy
+  - openssl
+  - packaging
+  - pathspec
+  - pip
+  - platformdirs
+  - pluggy
+  - psutil
+  - pygments
+  - pytest
+  - pytest-cov
+  - python=3.14
+  - python-librt
+  - python_abi
+  - pytokens
+  - readline
+  - scipy
+  - shellcheck
+  - sympy
+  - tk
+  - tomli
+  - typing_extensions
+  - tzdata
+  - uv
+  - zipp
+  - zstd

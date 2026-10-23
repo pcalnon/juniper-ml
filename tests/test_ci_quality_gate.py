@@ -64,6 +64,11 @@ ADVISORY_EXCLUDED = frozenset(
 # Membership here is NOT decorative: the QG runs ``if: always()`` and tests each
 # ``needs.<job>.result`` explicitly, so a job in ``needs:`` with no ``if`` arm in the
 # script gates NOTHING. The rehearsal arm below is what proves this one bites.
+#
+# ``host-tooling-macos`` joined 2026-10-20 (turing bring-up G4's promotion, after 12 consecutive green
+# push runs on main). It has no job-level ``if`` and no path filter: on a pull request with no host-tooling
+# change it reports success, and on push it always runs the suites, so it never reads skipped. A hard need,
+# with its own ``!= success`` arm.
 REQUIRED_NEEDS = (
     "pre-commit",
     "tests",
@@ -74,6 +79,7 @@ REQUIRED_NEEDS = (
     "ruleset-scope-guard",
     "dependency-docs",
     "sops-validation",
+    "host-tooling-macos",
 )
 
 
@@ -169,7 +175,7 @@ class QualityGateStructuralTest(unittest.TestCase):
         )
 
     def test_hard_jobs_use_success_predicate(self) -> None:
-        for job in ("pre-commit", "tests", "build", "docs", "claude-yaml-audit", "dependency-docs"):
+        for job in ("pre-commit", "tests", "build", "docs", "claude-yaml-audit", "dependency-docs", "host-tooling-macos"):
             with self.subTest(job=job):
                 self.assertRegex(
                     self.script,
@@ -255,6 +261,20 @@ class QualityGateRehearsalTest(unittest.TestCase):
     def test_ruleset_scope_guard_skipped_fails_gate(self) -> None:
         results = self._all_success()
         results["ruleset-scope-guard"] = "skipped"
+        proc = self._run(results)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+
+    def test_host_tooling_macos_failure_fails_gate(self) -> None:
+        """Negative control for the arm added with G4's promotion (2026-10-20)."""
+        results = self._all_success()
+        results["host-tooling-macos"] = "failure"
+        proc = self._run(results)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("Host tooling suites failed under macOS", proc.stdout + proc.stderr)
+
+    def test_host_tooling_macos_skipped_fails_gate(self) -> None:
+        results = self._all_success()
+        results["host-tooling-macos"] = "skipped"
         proc = self._run(results)
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
 

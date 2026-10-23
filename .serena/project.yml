@@ -19,8 +19,11 @@ ignored_paths:
 # whether the project is in read-only mode
 read_only: false
 
-# list of tool names to exclude
-excluded_tools: []
+# list of tool names to exclude. execute_shell_command would let Serena run commands outside Claude Code's
+# Bash permission rules (turing bring-up plan, decision D10); the claude-code context excludes it too, but
+# only for as long as the pinned release keeps it there (util/mcp_setup.bash, conf/hosts/<host>/mcp.json).
+excluded_tools:
+  - execute_shell_command
 
 # list of tools to include that would otherwise be disabled
 included_optional_tools: []

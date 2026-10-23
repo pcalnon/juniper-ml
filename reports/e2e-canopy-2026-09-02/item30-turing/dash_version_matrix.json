@@ -1,0 +1,278 @@
+{
+  "dash-3.0.4": {
+    "label": "dash-3.0.4",
+    "base": "http://127.0.0.1:8063",
+    "probed_at": "2026-10-20T11:32:58Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "demo_mode": true
+    },
+    "callbacks": 181,
+    "duplicate_output_ids": [
+      "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+    ],
+    "duplicate_owners": [
+      {
+        "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-s",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e..",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-da",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      }
+    ],
+    "dash_renderer_bundle": "3.0.4",
+    "duplicate_errors_logged": 3,
+    "duplicate_errors": [
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  live-switch-progr\u2026er\nby using `dash.callback_context` if necessary.}",
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  live-switch-progr\u2026er\nby using `dash.callback_context` if necessary.}",
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  restart-confirm-m\u2026er\nby using `dash.callback_context` if necessary.}"
+    ],
+    "welcome_modal_opened": false,
+    "update_posts_before_click": 0,
+    "parameters_network_table_rows": 0,
+    "click_posted_after_s": null,
+    "theme_store_after_click": "false",
+    "page_seconds": 60.1,
+    "verdict": "INERT"
+  },
+  "dash-4.4.1": {
+    "label": "dash-4.4.1",
+    "base": "http://127.0.0.1:8062",
+    "probed_at": "2026-10-20T11:34:11Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "demo_mode": true
+    },
+    "callbacks": 181,
+    "duplicate_output_ids": [
+      "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+    ],
+    "duplicate_owners": [
+      {
+        "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-s",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e..",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-da",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      }
+    ],
+    "dash_renderer_bundle": "4.4.1",
+    "duplicate_errors_logged": 0,
+    "duplicate_errors": [],
+    "welcome_modal_opened": true,
+    "update_posts_before_click": 55,
+    "parameters_network_table_rows": 9,
+    "click_posted_after_s": 0.3,
+    "theme_store_after_click": "false",
+    "page_seconds": 33.0,
+    "verdict": "ALIVE"
+  },
+  "dash-3.3.0": {
+    "label": "dash-3.3.0",
+    "base": "http://127.0.0.1:8058",
+    "probed_at": "2026-10-20T12:10:41Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "demo_mode": true
+    },
+    "callbacks": 181,
+    "duplicate_output_ids": [
+      "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+    ],
+    "duplicate_owners": [
+      {
+        "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-s",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e..",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-da",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      }
+    ],
+    "dash_renderer_bundle": "3.3.0",
+    "duplicate_errors_logged": 3,
+    "duplicate_errors": [
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  live-switch-progr\u2026er\nby using `dash.callback_context` if necessary.}",
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  live-switch-progr\u2026er\nby using `dash.callback_context` if necessary.}",
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  restart-confirm-m\u2026er\nby using `dash.callback_context` if necessary.}"
+    ],
+    "welcome_modal_opened": false,
+    "update_posts_before_click": 0,
+    "parameters_network_table_rows": 0,
+    "click_posted_after_s": null,
+    "theme_store_after_click": "false",
+    "page_seconds": 60.6,
+    "verdict": "INERT"
+  },
+  "dash-3.4.0": {
+    "label": "dash-3.4.0",
+    "base": "http://127.0.0.1:8060",
+    "probed_at": "2026-10-20T12:12:18Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "demo_mode": true
+    },
+    "callbacks": 181,
+    "duplicate_output_ids": [
+      "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+    ],
+    "duplicate_owners": [
+      {
+        "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-s",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e..",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-da",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      }
+    ],
+    "dash_renderer_bundle": "3.4.0",
+    "duplicate_errors_logged": 3,
+    "duplicate_errors": [
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  live-switch-progr\u2026er\nby using `dash.callback_context` if necessary.}",
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  live-switch-progr\u2026er\nby using `dash.callback_context` if necessary.}",
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  restart-confirm-m\u2026er\nby using `dash.callback_context` if necessary.}"
+    ],
+    "welcome_modal_opened": false,
+    "update_posts_before_click": 0,
+    "parameters_network_table_rows": 0,
+    "click_posted_after_s": null,
+    "theme_store_after_click": "false",
+    "page_seconds": 60.4,
+    "verdict": "INERT"
+  },
+  "dash-3.2.0": {
+    "label": "dash-3.2.0",
+    "base": "http://127.0.0.1:8061",
+    "probed_at": "2026-10-20T12:13:52Z",
+    "serving": {
+      "version": "0.9.0",
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "demo_mode": true
+    },
+    "callbacks": 181,
+    "duplicate_output_ids": [
+      "live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e",
+      "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11"
+    ],
+    "duplicate_owners": [
+      {
+        "output": "..live-switch-modal.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-switch-outcome-alert.children...live-s",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..live-switch-progress-alert.is_open@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e...live-swap-in-flight-store.data@fc8c1589a7af34b7291906639c094c778b7143bdffc33dd9210846bb9b5a685e..",
+        "inputs": [
+          "live-switch-accept-button.n_clicks"
+        ]
+      },
+      {
+        "output": "restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      },
+      {
+        "output": "..restart-confirm-modal.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-progress-alert.is_open@b7e1c13fffb26c0e3c6d9ef8087293422be578f0f164228045adbddff0472f11...restart-outcome-alert.children...pending-da",
+        "inputs": [
+          "restart-confirm-button.n_clicks"
+        ]
+      }
+    ],
+    "dash_renderer_bundle": "3.2.0",
+    "duplicate_errors_logged": 3,
+    "duplicate_errors": [
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  live-switch-progr\u2026er\nby using `dash.callback_context` if necessary.}",
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  live-switch-progr\u2026er\nby using `dash.callback_context` if necessary.}",
+      "{message: Duplicate callback outputs, html: In the callback for output(s):\n  restart-confirm-m\u2026er\nby using `dash.callback_context` if necessary.}"
+    ],
+    "welcome_modal_opened": false,
+    "update_posts_before_click": 0,
+    "parameters_network_table_rows": 0,
+    "click_posted_after_s": null,
+    "theme_store_after_click": "false",
+    "page_seconds": 60.8,
+    "verdict": "INERT"
+  }
+}

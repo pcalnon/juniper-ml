@@ -1,0 +1,523 @@
+{
+  "cascor": "http://127.0.0.1:8222",
+  "started": "2026-10-20T12:05:25Z",
+  "health": [
+    200,
+    {
+      "status": "ok",
+      "version": "0.12.0",
+      "service": "juniper-cascor",
+      "git_sha": null,
+      "build_date": null
+    }
+  ],
+  "start_body": {
+    "dataset": {
+      "generator": "spiral",
+      "params": {
+        "n_points_per_spiral": 60,
+        "n_rotations": 1.0,
+        "noise": 0.0,
+        "seed": 7
+      }
+    },
+    "params": {
+      "max_hidden_units": 4,
+      "max_iterations": 4,
+      "output_epochs": 1500,
+      "candidate_epochs": 1500,
+      "max_epochs": 1500,
+      "patience": 25,
+      "candidate_patience": 25
+    },
+    "start_fresh": true
+  },
+  "start": [
+    200,
+    {
+      "status": "success",
+      "data": {
+        "status": "training_started",
+        "timestamp": 1792497926.7326488
+      },
+      "meta": {
+        "timestamp": 1792497926.7326899,
+        "version": "0.12.0"
+      }
+    }
+  ],
+  "status_after_training": [
+    200,
+    {
+      "status": "success",
+      "data": {
+        "state_machine": {
+          "status": "COMPLETED",
+          "phase": "OUTPUT",
+          "paused_phase": null,
+          "has_candidate_state": false
+        },
+        "monitor": {
+          "is_training": false,
+          "current_epoch": 5,
+          "current_hidden_units": 4,
+          "current_phase": "output",
+          "total_metrics": 310
+        },
+        "training_state": {
+          "status": "Completed",
+          "phase": "Idle",
+          "learning_rate": 0.1,
+          "max_hidden_units": 4,
+          "max_epochs": 13500,
+          "max_iterations": 1000000,
+          "current_epoch": 5,
+          "current_step": 5,
+          "network_name": "CasCor-2x2",
+          "dataset_name": "",
+          "threshold_function": "",
+          "optimizer_name": "",
+          "timestamp": 1792498480.205497,
+          "phase_detail": "",
+          "grow_iteration": 3,
+          "grow_max": 4,
+          "best_correlation": 0.3084227642981427,
+          "candidates_trained": 40,
+          "candidates_total": 40,
+          "phase_started_at": "2026-10-20T12:06:47.298270+00:00",
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0,
+          "output_epoch": 0,
+          "output_total_epochs": 0,
+          "best_candidate_id": 5,
+          "best_candidate_uuid": "d9f3ab3a-7d2d-4327-baac-d60520eb7e65",
+          "second_candidate_id": 12,
+          "second_candidate_correlation": 0.30838580652692965,
+          "all_correlations": [
+            0.3084227642981427,
+            0.30838580652692965,
+            0.30835206593430786,
+            0.3082737072735508,
+            0.30818892454016306,
+            0.308082779642727,
+            0.30799415245606526,
+            0.3079903352454771,
+            0.30761396008858116,
+            0.30759959761419153,
+            0.3075377758286148,
+            0.3074854596121375,
+            0.3074358651617308,
+            0.3069306580191745,
+            0.30686762712446536,
+            0.2973272713871859,
+            0.2972787619714612,
+            0.2972655550786232,
+            0.2972547846059096,
+            0.29713191611526046,
+            0.2971189175425982,
+            0.29703105358800913,
+            0.29695732808897385,
+            0.29693570432411415,
+            0.29692843072910136,
+            0.29692572952087254,
+            0.2968278778226408,
+            0.2967834881825007,
+            0.29677216642032545,
+            0.29673689908850764,
+            0.2967126732543287,
+            0.2966934810275003,
+            0.2966342487947343,
+            0.29660504680951605,
+            0.2883704178735225,
+            0.2745063351863469,
+            0.2720761746728172,
+            0.27177779259271606,
+            0.271026693554792,
+            0.2708153019010833
+          ],
+          "input_size": 2,
+          "output_size": 2
+        },
+        "network_loaded": true,
+        "training_active": false,
+        "pending_dataset": null,
+        "completion_reason": "early_stopped",
+        "metrics_clear_undo_available": false,
+        "dataset_shortfall": null,
+        "auto_start_failure": null,
+        "current_dataset": {
+          "dataset_type": "spiral",
+          "n_points_per_spiral": 60,
+          "n_rotations": 1.0,
+          "noise": 0.0,
+          "seed": 7
+        },
+        "snapshot_seq": 2517,
+        "server_instance_id": "8d736bfe-7201-41e6-88e3-edbd28e401e4"
+      },
+      "meta": {
+        "timestamp": 1792498481.883884,
+        "version": "0.12.0"
+      }
+    }
+  ],
+  "topology_before": [
+    200,
+    {
+      "status": "success",
+      "data": {
+        "input_size": 2,
+        "output_size": 2,
+        "hidden_units": [
+          {
+            "id": 0,
+            "weights": [
+              0.8658309578895569,
+              -1.3262518644332886
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ],
+        "output_weights": [
+          [
+            0.05261047184467316,
+            -0.05261046439409256
+          ],
+          [
+            -0.1810334026813507,
+            0.1810334175825119
+          ],
+          [
+            -0.4796043038368225,
+            0.4796042740345001
+          ],
+          [
+            0.3053225874900818,
+            -0.3053226172924042
+          ],
+          [
+            0.3846413791179657,
+            -0.3846413493156433
+          ],
+          [
+            -0.22142089903354645,
+            0.22142091393470764
+          ]
+        ],
+        "output_bias": [
+          0.4994340240955353,
+          0.5005661845207214
+        ]
+      },
+      "meta": {
+        "timestamp": 1792498481.887011,
+        "version": "0.12.0"
+      }
+    }
+  ],
+  "snapshot": [
+    200,
+    {
+      "status": "success",
+      "data": {
+        "id": "snapshot_20261020T121441Z",
+        "path": "/Users/pcalnon/.local/state/juniper/turing-e2/legs/cascor-snapshots-8222/snapshot_20261020T121441Z.h5",
+        "timestamp": "20261020T121441Z",
+        "description": "item 30 re-drive entry network (turing, 2026-10-20)"
+      },
+      "meta": {
+        "timestamp": 1792498481.953242,
+        "version": "0.12.0"
+      }
+    }
+  ],
+  "snapshot_id": "snapshot_20261020T121441Z",
+  "restore": [
+    200,
+    {
+      "status": "success",
+      "data": {
+        "snapshot_id": "snapshot_20261020T121441Z",
+        "operation": "restore",
+        "fsm_state": "INVESTIGATING",
+        "time_index": {
+          "default": "end",
+          "snapshot_window": {
+            "start_epoch": 0,
+            "end_epoch": 5
+          }
+        },
+        "training_params": {
+          "learning_rate": 0.1,
+          "candidate_learning_rate": 0.1,
+          "max_hidden_units": 4,
+          "epochs_max": 13500,
+          "max_iterations": 1000000,
+          "patience": 25,
+          "candidate_pool_size": 40,
+          "correlation_threshold": 0.01,
+          "convergence_threshold": 0.001,
+          "candidate_patience": 25,
+          "candidate_convergence_threshold": 0.001,
+          "candidate_epochs": 1500,
+          "output_epochs": 1500,
+          "init_output_weights": "zero",
+          "optimizer_type": "Adam",
+          "activation_function_name": "Tanh",
+          "auto_snap_best": false,
+          "auto_snap_min_epochs": 50,
+          "multi_candidate": false,
+          "candidate_selection": "top",
+          "selected_candidates": 1,
+          "top_candidates": 1,
+          "random_candidates": 0
+        },
+        "status": "restored"
+      },
+      "meta": {
+        "timestamp": 1792498482.090473,
+        "version": "0.12.0"
+      }
+    }
+  ],
+  "status_after_restore": [
+    200,
+    {
+      "status": "success",
+      "data": {
+        "state_machine": {
+          "status": "INVESTIGATING",
+          "phase": "IDLE",
+          "paused_phase": null,
+          "has_candidate_state": false
+        },
+        "monitor": {
+          "is_training": false,
+          "current_epoch": 5,
+          "current_hidden_units": 4,
+          "current_phase": "output",
+          "total_metrics": 310
+        },
+        "training_state": {
+          "status": "Stopped",
+          "phase": "Idle",
+          "learning_rate": 0.1,
+          "max_hidden_units": 4,
+          "max_epochs": 13500,
+          "max_iterations": 1000000,
+          "current_epoch": 5,
+          "current_step": 5,
+          "network_name": "CasCor-2x2",
+          "dataset_name": "",
+          "threshold_function": "",
+          "optimizer_name": "",
+          "timestamp": 1792498482.0887208,
+          "phase_detail": "",
+          "grow_iteration": 3,
+          "grow_max": 4,
+          "best_correlation": 0.3084227642981427,
+          "candidates_trained": 40,
+          "candidates_total": 40,
+          "phase_started_at": "2026-10-20T12:06:47.298270+00:00",
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0,
+          "output_epoch": 0,
+          "output_total_epochs": 0,
+          "best_candidate_id": 5,
+          "best_candidate_uuid": "d9f3ab3a-7d2d-4327-baac-d60520eb7e65",
+          "second_candidate_id": 12,
+          "second_candidate_correlation": 0.30838580652692965,
+          "all_correlations": [
+            0.3084227642981427,
+            0.30838580652692965,
+            0.30835206593430786,
+            0.3082737072735508,
+            0.30818892454016306,
+            0.308082779642727,
+            0.30799415245606526,
+            0.3079903352454771,
+            0.30761396008858116,
+            0.30759959761419153,
+            0.3075377758286148,
+            0.3074854596121375,
+            0.3074358651617308,
+            0.3069306580191745,
+            0.30686762712446536,
+            0.2973272713871859,
+            0.2972787619714612,
+            0.2972655550786232,
+            0.2972547846059096,
+            0.29713191611526046,
+            0.2971189175425982,
+            0.29703105358800913,
+            0.29695732808897385,
+            0.29693570432411415,
+            0.29692843072910136,
+            0.29692572952087254,
+            0.2968278778226408,
+            0.2967834881825007,
+            0.29677216642032545,
+            0.29673689908850764,
+            0.2967126732543287,
+            0.2966934810275003,
+            0.2966342487947343,
+            0.29660504680951605,
+            0.2883704178735225,
+            0.2745063351863469,
+            0.2720761746728172,
+            0.27177779259271606,
+            0.271026693554792,
+            0.2708153019010833
+          ],
+          "input_size": 2,
+          "output_size": 2
+        },
+        "network_loaded": true,
+        "training_active": false,
+        "pending_dataset": null,
+        "completion_reason": null,
+        "metrics_clear_undo_available": false,
+        "dataset_shortfall": null,
+        "auto_start_failure": null,
+        "current_dataset": {
+          "dataset_type": "spiral",
+          "n_points_per_spiral": 60,
+          "n_rotations": 1.0,
+          "noise": 0.0,
+          "seed": 7
+        },
+        "snapshot_seq": 2518,
+        "server_instance_id": "8d736bfe-7201-41e6-88e3-edbd28e401e4"
+      },
+      "meta": {
+        "timestamp": 1792498482.094868,
+        "version": "0.12.0"
+      }
+    }
+  ],
+  "fsm_after_restore": "INVESTIGATING",
+  "topology_after": [
+    200,
+    {
+      "status": "success",
+      "data": {
+        "input_size": 2,
+        "output_size": 2,
+        "hidden_units": [
+          {
+            "id": 0,
+            "weights": [
+              0.8658309578895569,
+              -1.3262518644332886
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ],
+        "output_weights": [
+          [
+            0.05261047184467316,
+            -0.05261046439409256
+          ],
+          [
+            -0.1810334026813507,
+            0.1810334175825119
+          ],
+          [
+            -0.4796043038368225,
+            0.4796042740345001
+          ],
+          [
+            0.3053225874900818,
+            -0.3053226172924042
+          ],
+          [
+            0.3846413791179657,
+            -0.3846413493156433
+          ],
+          [
+            -0.22142089903354645,
+            0.22142091393470764
+          ]
+        ],
+        "output_bias": [
+          0.4994340240955353,
+          0.5005661845207214
+        ]
+      },
+      "meta": {
+        "timestamp": 1792498482.100186,
+        "version": "0.12.0"
+      }
+    }
+  ],
+  "ok": true,
+  "finished": "2026-10-20T12:14:42Z"
+}

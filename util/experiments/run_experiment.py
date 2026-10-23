@@ -101,7 +101,12 @@ blocks from the manifest, the cascor candidate-correlation-per-round and step-du
 from the driver's own ``metrics_series.csv`` (the sole source; the duration quantiles are honestly
 labeled per-poll means -- true per-step quantiles are not recoverable from a sum/count exposition),
 the recurrence train/CV/theta/readout block, and the degraded-mode notes. Written for every outcome;
-a stats failure is recorded on the manifest (``stats_error``), never fatal.
+a stats failure is recorded on the manifest (``stats_error``), never fatal. W5.5 (F-D8 of the equities
+end-to-end plan) adds ``dataset.target_summary``: after the dataset phase the driver fetches the artifact
+once (``GET /v1/datasets/<id>/artifact``, the body the plot set reads) and summarises every
+``y_reg_<split>`` array per split (mean / population std / min / max / finite fraction, computed by the
+stdlib ``stats_summary``); numpy is imported lazily for the decode, and a host without it, a failed fetch
+or an unreadable artifact becomes a degraded-mode note, never a run failure.
 
 Wave boundaries (SS14): the ``docs/REFERENCE.md`` operator section is Wave 2.7.
 
@@ -1288,6 +1293,46 @@ def _read_series_rows(series_path: Path) -> List[Dict[str, str]]:
         return []
 
 
+#: W5.5: the artifact keys that carry a regression target, one per split (``y_reg_train`` ...).
+TARGET_KEY_PREFIX = "y_reg_"
+
+
+def _regression_target_summary(data_url: str, dataset_response: Mapping[str, Any]) -> Dict[str, Any]:
+    """W5.5 (F-D8): the two ``build_stats`` inputs for the per-split regression target summary.
+
+    Fetches the run's dataset artifact (``GET /v1/datasets/<id>/artifact``, the same body the plot
+    set reads) and summarises every ``y_reg_<split>`` array through the stdlib
+    ``stats_summary.regression_target_summary``. numpy is imported lazily, so the driver stays
+    importable without it. Returns ``{"target_summary": <dict | None>, "target_summary_error": <str | None>}``:
+
+    * no ``dataset_id`` (the create phase did not run, or failed): ``None`` / ``None`` -- there is no
+      dataset to describe, and the failed phase is already on the manifest;
+    * an artifact without ``y_reg_*`` keys (every classification generator): ``None`` / ``None``;
+    * numpy missing, the fetch failing, or an unreadable body: ``None`` plus the reason, which
+      ``build_stats`` surfaces as a degraded-mode note.
+
+    The summary is evidence about the data; losing it must never cost the run, so nothing here raises.
+    """
+    dataset_id = dataset_response.get("dataset_id") if isinstance(dataset_response, Mapping) else None
+    if not dataset_id:
+        return {"target_summary": None, "target_summary_error": None}
+    try:
+        import io
+
+        import numpy as np
+    except ImportError as exc:
+        return {"target_summary": None, "target_summary_error": f"numpy unavailable: {exc}"}
+    try:
+        raw = _http_bytes(f"{data_url}/v1/datasets/{dataset_id}/artifact")
+        with np.load(io.BytesIO(raw), allow_pickle=False) as bundle:
+            targets = {key[len(TARGET_KEY_PREFIX) :]: np.asarray(bundle[key], dtype=float).ravel().tolist() for key in bundle.files if key.startswith(TARGET_KEY_PREFIX)}
+    except Exception as exc:  # noqa: BLE001 - evidence about the data, never a run failure
+        return {"target_summary": None, "target_summary_error": f"{type(exc).__name__}: {exc}"}
+    if not targets:
+        return {"target_summary": None, "target_summary_error": None}
+    return {"target_summary": _load_sibling("stats_summary.py").regression_target_summary(targets), "target_summary_error": None}
+
+
 def _emit_stats(manifest: Dict[str, Any], results_dir: Path, run_dir: Path, artifacts: List[Path], kind: str, **stats_inputs: Any) -> None:
     """SS8.3 (Wave 2.6): build + write ``stats.json`` / ``summary.md`` beside the results and
     fold them into the manifest's artifact list. Stats are stdlib-only and deterministic, so
@@ -1715,6 +1760,8 @@ def _run_cascor(args: argparse.Namespace, config: Dict[str, Any], config_path: P
     g6: Optional[Dict[str, Any]] = None
     teardown_preempt: Dict[str, Any] = {"attempted": False, "settled": None}
     plots_record: Dict[str, Any] = {"requested": list(config["outputs"]["plots"]), "rendered": [], "skipped": []}
+    # W5.5: filled after the dataset phase; stays None / None when that phase never completes.
+    target_inputs: Dict[str, Any] = {"target_summary": None, "target_summary_error": None}
     exit_code = EXIT_ACCEPTANCE
     series_path = results_dir / "metrics_series.csv"
 
@@ -1737,6 +1784,7 @@ def _run_cascor(args: argparse.Namespace, config: Dict[str, Any], config_path: P
             raise
         _phase("dataset_create", t0)
         log.info("dataset ready: dataset_id=%s (generator %s v%s)", dataset_response.get("dataset_id"), generator, generator_entry.get("version"))
+        target_inputs = _regression_target_summary(data_url, dataset_response)
 
         t0 = time.monotonic()
         stage_dataset(cascor_url, config["dataset"])
@@ -1891,7 +1939,7 @@ def _run_cascor(args: argparse.Namespace, config: Dict[str, Any], config_path: P
                 "plots": plots_record,
             },
         }
-        _emit_stats(manifest, results_dir, run_dir, artifacts, "cascor", series_rows=_read_series_rows(series_path) if series_path.is_file() else [], metrics_final=extras.get("metrics_final"))
+        _emit_stats(manifest, results_dir, run_dir, artifacts, "cascor", series_rows=_read_series_rows(series_path) if series_path.is_file() else [], metrics_final=extras.get("metrics_final"), **target_inputs)
         # Q-1: the resolved-config artifact, written unconditionally alongside the manifest.
         resolved_path = write_resolved_config(config_dir, config, run_id, "cascor", cascor_url)
         if resolved_path is not None:
@@ -2247,6 +2295,8 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
     crossval_full: Optional[Dict[str, Any]] = None
     save_model_rerun: Optional[Dict[str, Any]] = None
     plots_record: Dict[str, Any] = {"requested": list(config["outputs"]["plots"]), "rendered": [], "skipped": []}
+    # W5.5: filled after the dataset phase; stays None / None when that phase never completes.
+    target_inputs: Dict[str, Any] = {"target_summary": None, "target_summary_error": None}
     exit_code = EXIT_ACCEPTANCE
     # W0.3 (F-D1): one record per phase, carried on the manifest as `phases`. The outcome is
     # derived from these records (derive_recurrence_outcome), never from `acceptance_reasons`.
@@ -2312,6 +2362,7 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
         _phase("dataset_create", t0)
         dataset_id = dataset_response.get("dataset_id")
         log.info("dataset ready: dataset_id=%s (generator %s v%s)", dataset_id, generator, generator_entry.get("version"))
+        target_inputs = _regression_target_summary(data_url, dataset_response)
 
         hyper = _lmu_hyperparams(config["train"])
         train_ok = False
@@ -2505,7 +2556,7 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
                 "plots": plots_record,
             },
         }
-        _emit_stats(manifest, results_dir, run_dir, artifacts, "recurrence", train_summary=train_summary, crossval=crossval_full, train_config=config["train"])
+        _emit_stats(manifest, results_dir, run_dir, artifacts, "recurrence", train_summary=train_summary, crossval=crossval_full, train_config=config["train"], **target_inputs)
         # Q-1: same artifact on this path. The service half is recorded as unavailable with
         # a reason rather than omitted -- recurrence exposes no training-parameters
         # endpoint, and "there is nothing to read" must be legible as a fact, not a gap.

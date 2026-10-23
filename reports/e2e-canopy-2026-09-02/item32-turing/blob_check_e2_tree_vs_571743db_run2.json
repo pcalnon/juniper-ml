@@ -1,0 +1,27 @@
+{
+  "repo": "pcalnon/juniper-canopy",
+  "ref": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+  "root": "/Users/pcalnon/.local/state/juniper/turing-e2/trees/juniper-canopy",
+  "checked_at": "2026-10-20T18:14:58Z",
+  "files": [
+    {
+      "path": "src/frontend/dashboard_manager.py",
+      "local": "90f73da9a937b050e2ed1cc0fdbc65fe09b92268",
+      "remote": "90f73da9a937b050e2ed1cc0fdbc65fe09b92268",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner2.py",
+      "local": "77d6abb5df79463b45b5b69828e54c8a28f9f18b",
+      "remote": "77d6abb5df79463b45b5b69828e54c8a28f9f18b",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_restart_orchestration_handlers.py",
+      "local": "a91b872a452921cdea65396d112e6f4d8de7bb74",
+      "remote": "a91b872a452921cdea65396d112e6f4d8de7bb74",
+      "match": true
+    }
+  ],
+  "all_match": true
+}

@@ -1,0 +1,22 @@
+[t=     76ms] leg http://127.0.0.1:8064 serving {"ok": true, "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68", "build_date": "2026-10-20T12:03:46Z", "version": "0.9.0", "demo_mode": false, "read_at": "2026-10-20T12:15:32Z"}
+[t=   1589ms]   browser: chrome channel (installed Google Chrome)
+[t=   1589ms] STEP f012 -- M-NETWORK-EDITOR-17: Patch Weights, all four targets; output_weights in the manual's three forms, as rows, and wrong-count (F-CANOPY-012)
+[t=  33673ms]   modal cleared after 1 attempt(s)
+[t=  36059ms]   editor: {"active_after_s": 0.0, "readout_after_s": 0.0, "badge": "FSM: Investigating", "readout": "Inputs: 2 Outputs: 2 Hidden units: 4"}
+[t=  36061ms]   cascor topology I=2 H=4 O=2: output_weights is (6, 2) = 12 values
+[t=  38512ms]   [A_comma_flat] output_weights idx=None -> 'Patched output.weights (12 values, 6x2).' after 0.5s; landed=True
+[t=  42146ms]   [B_semicolon_flat] output_weights idx=None -> 'Patch failed: patch_weights failed: shape mismatch: output_weights expects (6, 2), got (12, 1)' after 0.4s; landed=False
+[t=  75250ms]   [C_newline_flat] output_weights idx=None -> 'Patch failed: patch_weights failed: shape mismatch: output_weights expects (6, 2), got (12, 1)' after Nones; landed=False
+[t=  78508ms]   [D_rows_newline] output_weights idx=None -> 'Patched output.weights (12 values, 6x2).' after 0.4s; landed=True
+[t= 111820ms]   [E_rows_semicolon] output_weights idx=None -> 'Patched output.weights (12 values, 6x2).' after Nones; landed=True
+[t= 114583ms]   [F_wrong_count_flat] output_weights idx=None -> 'output_weights expects (6, 2) = 12 values for this network; got 11.' after 0.5s; landed=False
+[t= 117504ms]   [G_output_bias] output_bias idx=None -> 'Patched output.bias (2 values).' after 0.5s; landed=True
+[t= 120571ms]   [H_hidden_unit_weights_0] hidden_unit_weights idx=0 -> 'Patched hidden_unit.weights (2 values).' after 0.4s; landed=True
+[t= 124115ms]   [I_hidden_unit_bias_0] hidden_unit_bias idx=0 -> 'Patched hidden_unit.bias (1 values).' after 0.4s; landed=True
+[t= 124514ms]   f012 verdicts: {"A_comma_flat_patched": true, "D_rows_patched": true, "E_rows_semicolon_patched": true, "B_semicolon_flat_rejected": true, "C_newline_flat_rejected": true, "F_wrong_count_message": "output_weights expects (6, 2) = 12 values for this network; got 11.", "G_output_bias_patched": true, "H_hidden_unit_weights_patched": true, "I_hidden_unit_bias_patched": true, "targets_patched": 4}
+[t= 124535ms] STEP f013 -- M-NETWORK-EDITOR-09 and -13: the status alert's index and count on a successful append and remove (F-CANOPY-013)
+[t= 169422ms]   modal cleared after 1 attempt(s)
+[t= 175833ms]   M-09 append: 'Add failed: add_hidden_unit failed: network is at max_hidden_units cap (4)' after 2.8s; cascor hidden 4 -> 4
+[t= 179525ms]   M-13 remove idx=3: modal='Delete hidden unit #3? Subsequent units shift down by one and the cascade is rebuilt so the forward-pass shape invariant still holds. The optimizer is dropped — fresh training will rebuild it.' snapshot_first=None -> 'Snapshot taken; Removed unit 3 (now 3 hidden units).' after 0.7s; cascor hidden 4 -> 3
+[t= 179978ms]   f013 verdicts: {"M09_appended_in_cascor": false, "M09_message_index": null, "M09_message_count": null, "M09_message_true": false, "M09_message_none": false, "M13_removed_in_cascor": false, "M13_message_index": "3", "M13_message_count": "3", "M13_message_true": false, "M13_message_none": false, "M13_snapshot_first_sequence": [null, null, null]}
+[t= 193449ms] results -> reports/e2e-canopy-2026-09-02/item30-turing/service_leg_8064_dash441.json

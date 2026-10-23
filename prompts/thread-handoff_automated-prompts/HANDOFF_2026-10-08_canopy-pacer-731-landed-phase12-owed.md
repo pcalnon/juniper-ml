@@ -1,5 +1,9 @@
 # HANDOFF 2026-10-08 — P2 canopy Lane A: item 4 done. One request/ack pacer fixes F-CANOPY-055, -058 and -068 (canopy#731), after three review rounds and four live census runs. The ledger's Phase 12 is owed, with its own consensus rounds.
 
+> **SUPERSEDED 2026-10-19** by `HANDOFF_2026-10-19_canopy-phase12-recorded-pacer-shipped-in-0-9-0-items-25-26-next.md`.
+> Its items 1 (canopy#731 merged 2026-10-09 as `25c5c887`, shipped in canopy 0.9.0), 2 (juniper-ml#2196 merged) and 3
+> (the ledger's Phase 12) are done; items 4–6 carry there.
+
 **Written**: 2026-10-08 (2026-10-09Z) by the session in juniper-ml worktree `.claude/worktrees/agile-napping-popcorn`,
 at a phase boundary. **Not consensus-validated.**
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, which is

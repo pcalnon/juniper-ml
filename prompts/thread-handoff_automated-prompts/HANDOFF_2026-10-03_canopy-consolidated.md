@@ -115,7 +115,33 @@ Lane A (E2E):
    files and a results note are outside the repo, in `/home/pcalnon/Development/python/Juniper/backups/2026-10-05_f058_census_v2_final/`.
    Owed: move them under `util/ad-hoc/2026-10-04_f058_census_v2_*` and record the run as the ledger's Phase 11, with
    its own consensus rounds.
-4. **DONE IN CODE 2026-10-08: canopy#731** (branch `fix/f055-f058-f068-request-ack-pacer`, head `65ead946`).
+4. **DONE 2026-10-19 — this item is closed.** canopy#731 (branch `fix/f055-f058-f068-request-ack-pacer`) merged on
+   2026-10-09 as `25c5c887` and shipped in **canopy 0.9.0** (Release published 2026-10-17; on PyPI). The ledger's
+   Phase 12 (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, 2026-10-19) records it: F-CANOPY-055,
+   -058 and -068 are FIXED, verified live on the branch at `2689a207` within stated limits (no mid-request Apply
+   release, no injected failure, no training run, nothing live on the merged tree or the wheel). Triage: 79 findings /
+   56 fixed / 1 accepted / 2 withdrawn / 20 open, 4 P1 (F-CANOPY-064, F-CANOPY-065, F-CASCOR-001, F-CASCOR-002), 16 P2.
+   New ledger items 27 (F-055's Live Switch allow arm), 28 (first live run on the shipped pacer, plus one injected
+   failure) and 29 (worktree housekeeping on the Linux host). **Phase 13 (2026-10-19)** did item 26's first step:
+   every open finding checked against canopy's manual; F-CANOPY-012, -013, -018, -028 and -032 are P1 by it (triage
+   79/56/1/2/20, 9 open P1, 11 open P2); four are fixed in code since canopy 0.7.0 and owed their live re-drive, new
+   item 30; the CAN-015g/h design note, the V7 roadmap's §28.1 and the 2026-05-05 roadmap audit's §5.2 are corrected.
+   Phase 14 (2026-10-20, on turing) did item 30: F-CANOPY-001, -012, -013, -018 and -032 are FIXED on canopy
+   `571743db`, F-CANOPY-028 reproduced (1 of 8 drives on the record) and is re-diagnosed, and F-CANOPY-069 (P0) is filed: the
+   dashboard is inert under every dash 3.x (triage 80/61/1/2/16, 1 open P0, 5 open P1, 10 open P2).
+   Phase 15 (2026-10-20, on turing) did items 32 and 31: F-CANOPY-069 is FIXED (canopy#760, merged as
+   `fbf01dff`: the progress alerts are `running=` specs, the two opener callbacks are gone, the dash floor is 4.0.0) and
+   F-CANOPY-028 is FIXED (canopy#761, merged as `aeeaf29b`: the pin writer persists a user's toggle only); triage
+   80/63/1/2/14, 0 open P0, 4 open P1, 10 open P2; new items 33 (turing's E2 canopy env is below the floor) and 34
+   (canopy's Patch Weights sentence for the 1-D targets).
+   On 2026-10-21 (on turing) item 34 was done in canopy#762 (the 1-D parse takes spaces, as the manual says) and
+   the ledger's item 20 in canopy#763 (F-CANOPY-065: the WS leg's partition reaches the apply toast, verified live);
+   Phase 16, recording both, is owed.
+   Current Lane A handoff:
+   `HANDOFF_2026-10-21_canopy-items-34-20-done-canopy762-763-phase16-owed.md`. The status as of 2026-10-08
+   follows, for context.
+
+   **DONE IN CODE 2026-10-08: canopy#731** (branch `fix/f055-f058-f068-request-ack-pacer`, head `65ead946`).
    - It went through three independent review rounds: `reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_canopy731_pacer_rounds1-3.md`.
    - Live: 0 of 912 requests evicted across four census runs, and F-055's census APPLIES on `2689a207`
      (`reports/e2e-canopy-2026-09-02/pacer-live/README.md`).
@@ -442,8 +468,14 @@ consensus round (the 09-24 request "the combined handoff should be validated by 
 archiving it with predecessors A and B. O17 (added 2026-10-08, ledger Phase 11's Matrix effect and counts) asks the §6.3 question in two
 limbs. First: does a CHANGELOG or design-plan promise count as "documented"? That decides F-CANOPY-065, and may also reach F-CANOPY-057,
 -018 and -012. Second: if it does, does that extend to a CHANGELOG's description of an internal mechanism? That decides F-CANOPY-068.
-Moving 065 and 068 alone, the counts are 7/16, 6/17 or 5/18 open P1/P2. Phase 11's item 26 checks every open finding against canopy's
-manual without waiting for the ruling, then sweeps the rest once the owner rules.
+Moving 065 and 068 alone, the counts are 7/16, 6/17 or 5/18 open P1/P2 (since Phase 12, 2026-10-19, F-CANOPY-068 is FIXED, so the second limb
+decides its rating of record only and moves no count; the first limb alone gives 4/16 or 3/17). Phase 11's item 26 checks every open finding against canopy's
+manual without waiting for the ruling, then sweeps the rest once the owner rules. **Since Phase 13 (2026-10-19) the manual
+check is done**: F-CANOPY-012, -013 and -018 are P1 by the manual without a ruling, and the corrected CAN-015g/h design note no
+longer promises F-CANOPY-057's stream (the V7 roadmap's §28.1 and the 2026-05-05 roadmap audit's §5.2 carry the same correction,
+and the roadmap's CAN-015 row and the audit's three restatements point at it), so the first limb decides F-CANOPY-065 alone among
+the findings Phase 11 named: 9/11 or 8/12 open P1/P2 (the ledger's two recorded dissents, F-CANOPY-028 and F-CANOPY-067, would
+move it one either way).
 
 ---
 

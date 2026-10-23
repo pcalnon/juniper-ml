@@ -40,12 +40,15 @@ import ast
 import importlib.util
 import json
 import os
+import shlex
 import shutil
 import subprocess  # nosec B404 - drives the checker and real git on temp repos
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+import yaml
 
 from tests.redacted_env import RedactedEnv
 
@@ -892,6 +895,59 @@ class PrePushHookTest(_Fixture):
         self.assertEqual(proc.returncode, 0, proc.stderr + out)
         self.assertEqual(out, f"skipped: no github_juniper-* Host alias in {self.ssh_config}\n")
         self.assertTrue(self.pushed())
+
+
+class PreCommitHookConfigTest(unittest.TestCase):
+    """Task G6's wiring: .pre-commit-config.yaml runs the check at the pre-push stage, and ci.yml runs that stage."""
+
+    config: dict
+    hooks: list
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.config = yaml.safe_load((REPO_ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8"))
+        cls.hooks = [hook for repo in cls.config["repos"] for hook in repo["hooks"] if hook["id"] == "git-remote-alias"]
+
+    def test_one_hook_runs_the_check_at_the_pre_push_stage_only(self) -> None:
+        self.assertEqual(len(self.hooks), 1)
+        hook = self.hooks[0]
+        self.assertEqual(hook["entry"], "python3 util/git_remote_alias_check.py --check --if-configured")
+        self.assertEqual(hook["language"], "system")
+        self.assertEqual(hook["stages"], ["pre-push"])
+        self.assertIs(hook["pass_filenames"], False)
+        self.assertIs(hook["always_run"], True, "a push that changes no file must still be checked")
+        self.assertNotIn("files", hook)
+
+    def test_only_the_alias_hook_runs_at_the_pre_push_stage(self) -> None:
+        # A hook with no `stages` runs at every stage unless `default_stages` narrows it. Then a push would re-run the
+        # whole commit suite, and ci.yml's pre-push smoke step would lint the whole tree.
+        default = self.config.get("default_stages")
+        self.assertEqual(default, ["pre-commit"])
+        # default_stages cannot narrow a hook whose upstream manifest declares `stages`; these two list pre-push
+        # (pre-commit-hooks v6.0.0, isort), so the config narrows them itself.
+        manifest_staged = {"check-added-large-files", "isort"}
+        at_push = sorted(hook["id"] for repo in self.config["repos"] for hook in repo["hooks"] if "pre-push" in hook.get("stages", ["pre-push"] if hook["id"] in manifest_staged else default))
+        self.assertEqual(at_push, ["git-remote-alias"])
+
+    def test_the_minimum_pre_commit_version_knows_the_pre_push_stage(self) -> None:
+        # pre-commit 3.2.0 renamed the stages (push became pre-push); an older release rejects this config.
+        version = tuple(int(part) for part in str(self.config["minimum_pre_commit_version"]).split("."))
+        self.assertGreaterEqual(version, (3, 2, 0))
+
+    def test_the_configured_entry_skips_on_a_host_without_aliases(self) -> None:
+        argv = shlex.split(self.hooks[0]["entry"])
+        self.assertEqual(argv[:2], ["python3", "util/git_remote_alias_check.py"])
+        with tempfile.TemporaryDirectory() as raw:
+            env = RedactedEnv({k: v for k, v in os.environ.items() if not k.startswith("GIT_") and k not in ("JUNIPER_ROOT", "SSH")}, HOME=raw)
+            proc = subprocess.run([sys.executable, str(REPO_ROOT / argv[1]), *argv[2:]], cwd=REPO_ROOT, env=env, capture_output=True, text=True, timeout=TIMEOUT_SECONDS)
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertTrue(proc.stdout.startswith("skipped: no github_juniper-* Host alias in "), proc.stdout)
+        self.assertTrue(proc.stdout.rstrip("\n").endswith(os.path.join(".ssh", "config")), proc.stdout)
+
+    def test_ci_runs_the_pre_push_stage(self) -> None:
+        workflow = yaml.safe_load((REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8"))
+        runs = [step.get("run", "") for step in workflow["jobs"]["pre-commit"]["steps"]]
+        self.assertEqual(sum("pre-commit run --hook-stage pre-push git-remote-alias --all-files" in run for run in runs), 1)
 
 
 class IfConfiguredTest(_Fixture):

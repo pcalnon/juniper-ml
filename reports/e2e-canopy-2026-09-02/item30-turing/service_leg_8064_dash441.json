@@ -1,0 +1,2773 @@
+{
+  "_run": {
+    "base": "http://127.0.0.1:8064",
+    "steps": [
+      "f032"
+    ],
+    "started": "2026-10-20T12:23:58Z",
+    "serving": {
+      "ok": true,
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "build_date": "2026-10-20T12:03:46Z",
+      "version": "0.9.0",
+      "demo_mode": false,
+      "read_at": "2026-10-20T12:23:58Z"
+    },
+    "host": "turing.midcoip.net",
+    "external_css": "aborted (cdn.jsdelivr.net unreachable from Chrome on this host)",
+    "finished": "2026-10-20T12:25:52Z"
+  },
+  "m03": {
+    "serving": {
+      "ok": true,
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "build_date": "2026-10-20T12:03:46Z",
+      "version": "0.9.0",
+      "demo_mode": false,
+      "read_at": "2026-10-20T12:05:33Z"
+    },
+    "status": {
+      "is_training": true,
+      "is_running": true,
+      "is_paused": false,
+      "completed": false,
+      "failed": false,
+      "fsm_status": "STARTED",
+      "phase": "output",
+      "current_epoch": 0,
+      "hidden_units": 0,
+      "network_connected": true,
+      "monitoring_active": true,
+      "input_size": 2,
+      "output_size": 2,
+      "learning_rate": 0.1,
+      "max_hidden_units": 4,
+      "max_epochs": 13500,
+      "current_step": 0,
+      "grow_iteration": 0,
+      "grow_max": 0,
+      "output_epoch": 1500,
+      "output_total_epochs": 1500,
+      "candidate_epoch": 51,
+      "candidate_total_epochs": 1500,
+      "pending_dataset": null,
+      "dataset_shortfall": null,
+      "completion_reason": null,
+      "current_dataset": {
+        "dataset_type": "spiral",
+        "n_points_per_spiral": 60,
+        "n_rotations": 1.0,
+        "noise": 0.0,
+        "seed": 7
+      },
+      "status_class": "ok",
+      "stale": false,
+      "age_seconds": 0.373
+    },
+    "samples": [
+      {
+        "t_s": 0.0,
+        "phase_duration": "",
+        "status_pill": "Status: Idle"
+      },
+      {
+        "t_s": 5.0,
+        "phase_duration": "",
+        "status_pill": "Status: Idle"
+      },
+      {
+        "t_s": 13.4,
+        "phase_duration": "",
+        "status_pill": "Status: Idle"
+      },
+      {
+        "t_s": 19.1,
+        "phase_duration": "",
+        "status_pill": "Status: Idle"
+      },
+      {
+        "t_s": 25.1,
+        "phase_duration": "",
+        "status_pill": "Status: Idle"
+      },
+      {
+        "t_s": 32.2,
+        "phase_duration": "",
+        "status_pill": "Status: Output"
+      },
+      {
+        "t_s": 37.9,
+        "phase_duration": "Phase Duration: 0m 47s",
+        "status_pill": "Status: Output"
+      },
+      {
+        "t_s": 44.0,
+        "phase_duration": "Phase Duration: 0m 59s",
+        "status_pill": "Status: Output"
+      },
+      {
+        "t_s": 49.8,
+        "phase_duration": "Phase Duration: 1m 3s",
+        "status_pill": "Status: Output"
+      },
+      {
+        "t_s": 54.8,
+        "phase_duration": "Phase Duration: 1m 9s",
+        "status_pill": "Status: Output"
+      },
+      {
+        "t_s": 59.8,
+        "phase_duration": "Phase Duration: 1m 15s",
+        "status_pill": "Status: Output"
+      },
+      {
+        "t_s": 64.8,
+        "phase_duration": "Phase Duration: 1m 19s",
+        "status_pill": "Status: Candidate"
+      },
+      {
+        "t_s": 69.9,
+        "phase_duration": "Phase Duration: 0m 1s",
+        "status_pill": "Status: Candidate"
+      },
+      {
+        "t_s": 76.5,
+        "phase_duration": "Phase Duration: 0m 5s",
+        "status_pill": "Status: Candidate"
+      },
+      {
+        "t_s": 83.5,
+        "phase_duration": "Phase Duration: 0m 5s",
+        "status_pill": "Status: Candidate"
+      }
+    ],
+    "status_after": {
+      "is_training": true,
+      "is_running": true,
+      "is_paused": false,
+      "completed": false,
+      "failed": false,
+      "fsm_status": "STARTED",
+      "phase": "candidate",
+      "current_epoch": 1,
+      "hidden_units": 1,
+      "network_connected": true,
+      "monitoring_active": true,
+      "input_size": 2,
+      "output_size": 2,
+      "learning_rate": 0.1,
+      "max_hidden_units": 4,
+      "max_epochs": 13500,
+      "current_step": 1,
+      "grow_iteration": 0,
+      "grow_max": 4,
+      "output_epoch": 1500,
+      "output_total_epochs": 1500,
+      "candidate_epoch": 151,
+      "candidate_total_epochs": 1500,
+      "pending_dataset": null,
+      "dataset_shortfall": null,
+      "completion_reason": null,
+      "current_dataset": {
+        "dataset_type": "spiral",
+        "n_points_per_spiral": 60,
+        "n_rotations": 1.0,
+        "noise": 0.0,
+        "seed": 7
+      },
+      "status_class": "ok",
+      "stale": false,
+      "age_seconds": 0.973
+    }
+  },
+  "f012": {
+    "serving": {
+      "ok": true,
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "build_date": "2026-10-20T12:03:46Z",
+      "version": "0.9.0",
+      "demo_mode": false,
+      "read_at": "2026-10-20T12:15:34Z"
+    },
+    "cascor": "http://127.0.0.1:8222",
+    "cascor_health": {
+      "status": "ok",
+      "version": "0.12.0",
+      "service": "juniper-cascor",
+      "git_sha": null,
+      "build_date": null
+    },
+    "editor": {
+      "active_after_s": 0.0,
+      "readout_after_s": 0.0,
+      "badge": "FSM: Investigating",
+      "readout": "Inputs: 2 Outputs: 2 Hidden units: 4",
+      "idle": {
+        "present": true,
+        "display": "none",
+        "inline": "none",
+        "w": 0,
+        "h": 0,
+        "text": "Editor disabledRestore a snapshot from the Snapshots tab to enter the Investigating state. Once the FSM is in Investigating the editor will unlock automatically.FSM: Investigating",
+        "children": 1
+      },
+      "active": {
+        "present": true,
+        "display": "block",
+        "inline": "block",
+        "w": 1530,
+        "h": 539,
+        "text": "Topology\nInputs: 2 Outputs: 2 Hidden units: 4\nAppend hidden unit\n\nAppends one unit at the cascade tail. The weight vector length must equal input_size + num_existing_hidden_units. The new unit's outpu",
+        "children": 1
+      }
+    },
+    "dims": {
+      "I": 2,
+      "H": 4,
+      "O": 2
+    },
+    "patch_target_options": {
+      "value": "output_weights",
+      "n": 5,
+      "options": [
+        "",
+        "output_weights",
+        "output_bias",
+        "hidden_unit_weights",
+        "hidden_unit_bias"
+      ]
+    },
+    "cases": [
+      {
+        "name": "A_comma_flat",
+        "target": "output_weights",
+        "idx": null,
+        "text": "0.101, 0.102, 0.103, 0.104, 0.105, 0.106, 0.107, 0.108, 0.109, 0.11, 0.111, 0.112",
+        "expect": "PATCHED",
+        "status_after_s": 0.5,
+        "status": "Patched output.weights (12 values, 6x2).",
+        "landed_in_cascor": true,
+        "output_weights_after": [
+          [
+            0.10100000351667404,
+            0.10199999809265137
+          ],
+          [
+            0.10300000011920929,
+            0.10400000214576721
+          ],
+          [
+            0.10499999672174454,
+            0.10599999874830246
+          ],
+          [
+            0.10700000077486038,
+            0.1080000028014183
+          ],
+          [
+            0.10899999737739563,
+            0.10999999940395355
+          ],
+          [
+            0.11100000143051147,
+            0.1120000034570694
+          ]
+        ],
+        "output_bias_after": [
+          0.4994340240955353,
+          0.5005661845207214
+        ],
+        "hidden_units_after": [
+          {
+            "id": 0,
+            "weights": [
+              0.8658309578895569,
+              -1.3262518644332886
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ]
+      },
+      {
+        "name": "B_semicolon_flat",
+        "target": "output_weights",
+        "idx": null,
+        "text": "0.201; 0.202; 0.203; 0.204; 0.205; 0.206; 0.207; 0.208; 0.209; 0.21; 0.211; 0.212",
+        "expect": "REJECTED by source (rows of width 1)",
+        "status_after_s": 0.4,
+        "status": "Patch failed: patch_weights failed: shape mismatch: output_weights expects (6, 2), got (12, 1)",
+        "landed_in_cascor": false,
+        "output_weights_after": [
+          [
+            0.10100000351667404,
+            0.10199999809265137
+          ],
+          [
+            0.10300000011920929,
+            0.10400000214576721
+          ],
+          [
+            0.10499999672174454,
+            0.10599999874830246
+          ],
+          [
+            0.10700000077486038,
+            0.1080000028014183
+          ],
+          [
+            0.10899999737739563,
+            0.10999999940395355
+          ],
+          [
+            0.11100000143051147,
+            0.1120000034570694
+          ]
+        ],
+        "output_bias_after": [
+          0.4994340240955353,
+          0.5005661845207214
+        ],
+        "hidden_units_after": [
+          {
+            "id": 0,
+            "weights": [
+              0.8658309578895569,
+              -1.3262518644332886
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ]
+      },
+      {
+        "name": "C_newline_flat",
+        "target": "output_weights",
+        "idx": null,
+        "text": "0.301\\n0.302\\n0.303\\n0.304\\n0.305\\n0.306\\n0.307\\n0.308\\n0.309\\n0.31\\n0.311\\n0.312",
+        "expect": "REJECTED by source (rows of width 1)",
+        "status_after_s": null,
+        "status": "Patch failed: patch_weights failed: shape mismatch: output_weights expects (6, 2), got (12, 1)",
+        "landed_in_cascor": false,
+        "output_weights_after": [
+          [
+            0.10100000351667404,
+            0.10199999809265137
+          ],
+          [
+            0.10300000011920929,
+            0.10400000214576721
+          ],
+          [
+            0.10499999672174454,
+            0.10599999874830246
+          ],
+          [
+            0.10700000077486038,
+            0.1080000028014183
+          ],
+          [
+            0.10899999737739563,
+            0.10999999940395355
+          ],
+          [
+            0.11100000143051147,
+            0.1120000034570694
+          ]
+        ],
+        "output_bias_after": [
+          0.4994340240955353,
+          0.5005661845207214
+        ],
+        "hidden_units_after": [
+          {
+            "id": 0,
+            "weights": [
+              0.8658309578895569,
+              -1.3262518644332886
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ]
+      },
+      {
+        "name": "D_rows_newline",
+        "target": "output_weights",
+        "idx": null,
+        "text": "0.401, 0.402\\n0.403, 0.404\\n0.405, 0.406\\n0.407, 0.408\\n0.409, 0.41\\n0.411, 0.412",
+        "expect": "PATCHED",
+        "status_after_s": 0.4,
+        "status": "Patched output.weights (12 values, 6x2).",
+        "landed_in_cascor": true,
+        "output_weights_after": [
+          [
+            0.4009999930858612,
+            0.4020000100135803
+          ],
+          [
+            0.40299999713897705,
+            0.40400001406669617
+          ],
+          [
+            0.4050000011920929,
+            0.4059999883174896
+          ],
+          [
+            0.40700000524520874,
+            0.40799999237060547
+          ],
+          [
+            0.4090000092983246,
+            0.4099999964237213
+          ],
+          [
+            0.41100001335144043,
+            0.41200000047683716
+          ]
+        ],
+        "output_bias_after": [
+          0.4994340240955353,
+          0.5005661845207214
+        ],
+        "hidden_units_after": [
+          {
+            "id": 0,
+            "weights": [
+              0.8658309578895569,
+              -1.3262518644332886
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ]
+      },
+      {
+        "name": "E_rows_semicolon",
+        "target": "output_weights",
+        "idx": null,
+        "text": "0.501, 0.502; 0.503, 0.504; 0.505, 0.506; 0.507, 0.508; 0.509, 0.51; 0.511, 0.512",
+        "expect": "PATCHED",
+        "status_after_s": null,
+        "status": "Patched output.weights (12 values, 6x2).",
+        "landed_in_cascor": true,
+        "output_weights_after": [
+          [
+            0.5009999871253967,
+            0.5019999742507935
+          ],
+          [
+            0.503000020980835,
+            0.5040000081062317
+          ],
+          [
+            0.5049999952316284,
+            0.5059999823570251
+          ],
+          [
+            0.5070000290870667,
+            0.5080000162124634
+          ],
+          [
+            0.5090000033378601,
+            0.5099999904632568
+          ],
+          [
+            0.5109999775886536,
+            0.5120000243186951
+          ]
+        ],
+        "output_bias_after": [
+          0.4994340240955353,
+          0.5005661845207214
+        ],
+        "hidden_units_after": [
+          {
+            "id": 0,
+            "weights": [
+              0.8658309578895569,
+              -1.3262518644332886
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ]
+      },
+      {
+        "name": "F_wrong_count_flat",
+        "target": "output_weights",
+        "idx": null,
+        "text": "0.601, 0.602, 0.603, 0.604, 0.605, 0.606, 0.607, 0.608, 0.609, 0.61, 0.611",
+        "expect": "REJECTED by the panel (count)",
+        "status_after_s": 0.5,
+        "status": "output_weights expects (6, 2) = 12 values for this network; got 11.",
+        "landed_in_cascor": false,
+        "output_weights_after": [
+          [
+            0.5009999871253967,
+            0.5019999742507935
+          ],
+          [
+            0.503000020980835,
+            0.5040000081062317
+          ],
+          [
+            0.5049999952316284,
+            0.5059999823570251
+          ],
+          [
+            0.5070000290870667,
+            0.5080000162124634
+          ],
+          [
+            0.5090000033378601,
+            0.5099999904632568
+          ],
+          [
+            0.5109999775886536,
+            0.5120000243186951
+          ]
+        ],
+        "output_bias_after": [
+          0.4994340240955353,
+          0.5005661845207214
+        ],
+        "hidden_units_after": [
+          {
+            "id": 0,
+            "weights": [
+              0.8658309578895569,
+              -1.3262518644332886
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ]
+      },
+      {
+        "name": "G_output_bias",
+        "target": "output_bias",
+        "idx": null,
+        "text": "0.701, 0.702",
+        "expect": "PATCHED",
+        "status_after_s": 0.5,
+        "status": "Patched output.bias (2 values).",
+        "landed_in_cascor": true,
+        "output_weights_after": [
+          [
+            0.5009999871253967,
+            0.5019999742507935
+          ],
+          [
+            0.503000020980835,
+            0.5040000081062317
+          ],
+          [
+            0.5049999952316284,
+            0.5059999823570251
+          ],
+          [
+            0.5070000290870667,
+            0.5080000162124634
+          ],
+          [
+            0.5090000033378601,
+            0.5099999904632568
+          ],
+          [
+            0.5109999775886536,
+            0.5120000243186951
+          ]
+        ],
+        "output_bias_after": [
+          0.7009999752044678,
+          0.7020000219345093
+        ],
+        "hidden_units_after": [
+          {
+            "id": 0,
+            "weights": [
+              0.8658309578895569,
+              -1.3262518644332886
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ]
+      },
+      {
+        "name": "H_hidden_unit_weights_0",
+        "target": "hidden_unit_weights",
+        "idx": 0,
+        "text": "0.801, 0.802",
+        "expect": "PATCHED",
+        "status_after_s": 0.4,
+        "status": "Patched hidden_unit.weights (2 values).",
+        "landed_in_cascor": true,
+        "output_weights_after": [
+          [
+            0.5009999871253967,
+            0.5019999742507935
+          ],
+          [
+            0.503000020980835,
+            0.5040000081062317
+          ],
+          [
+            0.5049999952316284,
+            0.5059999823570251
+          ],
+          [
+            0.5070000290870667,
+            0.5080000162124634
+          ],
+          [
+            0.5090000033378601,
+            0.5099999904632568
+          ],
+          [
+            0.5109999775886536,
+            0.5120000243186951
+          ]
+        ],
+        "output_bias_after": [
+          0.7009999752044678,
+          0.7020000219345093
+        ],
+        "hidden_units_after": [
+          {
+            "id": 0,
+            "weights": [
+              0.8009999990463257,
+              0.8019999861717224
+            ],
+            "bias": -0.004044916946440935,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ]
+      },
+      {
+        "name": "I_hidden_unit_bias_0",
+        "target": "hidden_unit_bias",
+        "idx": 0,
+        "text": "0.9",
+        "expect": "PATCHED",
+        "status_after_s": 0.4,
+        "status": "Patched hidden_unit.bias (1 values).",
+        "landed_in_cascor": true,
+        "output_weights_after": [
+          [
+            0.5009999871253967,
+            0.5019999742507935
+          ],
+          [
+            0.503000020980835,
+            0.5040000081062317
+          ],
+          [
+            0.5049999952316284,
+            0.5059999823570251
+          ],
+          [
+            0.5070000290870667,
+            0.5080000162124634
+          ],
+          [
+            0.5090000033378601,
+            0.5099999904632568
+          ],
+          [
+            0.5109999775886536,
+            0.5120000243186951
+          ]
+        ],
+        "output_bias_after": [
+          0.7009999752044678,
+          0.7020000219345093
+        ],
+        "hidden_units_after": [
+          {
+            "id": 0,
+            "weights": [
+              0.8009999990463257,
+              0.8019999861717224
+            ],
+            "bias": 0.8999999761581421,
+            "activation": "Tanh"
+          },
+          {
+            "id": 1,
+            "weights": [
+              1.2663179636001587,
+              2.596423864364624,
+              -0.6101415753364563
+            ],
+            "bias": -0.005838876124471426,
+            "activation": "Tanh"
+          },
+          {
+            "id": 2,
+            "weights": [
+              -1.3326338529586792,
+              0.7074378132820129,
+              3.259990930557251,
+              2.108546733856201
+            ],
+            "bias": 0.005997956730425358,
+            "activation": "Tanh"
+          },
+          {
+            "id": 3,
+            "weights": [
+              -0.807860791683197,
+              1.8275470733642578,
+              5.094738006591797,
+              0.6719146370887756,
+              -1.2070008516311646
+            ],
+            "bias": 0.004232901614159346,
+            "activation": "Tanh"
+          }
+        ]
+      }
+    ],
+    "verdicts": {
+      "A_comma_flat_patched": true,
+      "D_rows_patched": true,
+      "E_rows_semicolon_patched": true,
+      "B_semicolon_flat_rejected": true,
+      "C_newline_flat_rejected": true,
+      "F_wrong_count_message": "output_weights expects (6, 2) = 12 values for this network; got 11.",
+      "G_output_bias_patched": true,
+      "H_hidden_unit_weights_patched": true,
+      "I_hidden_unit_bias_patched": true,
+      "targets_patched": 4
+    },
+    "console": [
+      {
+        "t_ms": 2511,
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED"
+      }
+    ]
+  },
+  "f013": {
+    "serving": {
+      "ok": true,
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "build_date": "2026-10-20T12:03:46Z",
+      "version": "0.9.0",
+      "demo_mode": false,
+      "read_at": "2026-10-20T12:19:51Z"
+    },
+    "cascor": "http://127.0.0.1:8222",
+    "editor": {
+      "active_after_s": 0.4,
+      "readout_after_s": 0.5,
+      "badge": "FSM: Investigating",
+      "readout": "Inputs: 2 Outputs: 2 Hidden units: 3",
+      "idle": {
+        "present": true,
+        "display": "none",
+        "inline": "none",
+        "w": 0,
+        "h": 0,
+        "text": "Editor disabledRestore a snapshot from the Snapshots tab to enter the Investigating state. Once the FSM is in Investigating the editor will unlock automatically.FSM: Investigating",
+        "children": 1
+      },
+      "active": {
+        "present": true,
+        "display": "block",
+        "inline": "block",
+        "w": 1530,
+        "h": 539,
+        "text": "Topology\nInputs: 2 Outputs: 2 Hidden units: 3\nAppend hidden unit\n\nAppends one unit at the cascade tail. The weight vector length must equal input_size + num_existing_hidden_units. The new unit's outpu",
+        "children": 1
+      }
+    },
+    "dims_before": {
+      "I": 2,
+      "H": 3,
+      "O": 2
+    },
+    "snapshots_total_before": 7,
+    "append": {
+      "weights": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
+      "status_after_s": 0.4,
+      "status": "Appended unit at index 3 (now 4 hidden units).",
+      "index_reported": "3",
+      "count_reported": "4",
+      "hidden_after_in_cascor": 4,
+      "new_unit": {
+        "id": 3,
+        "weights": [
+          0.10000000149011612,
+          0.20000000298023224,
+          0.30000001192092896,
+          0.4000000059604645,
+          0.5
+        ],
+        "bias": 0.05000000074505806,
+        "activation": "Tanh"
+      }
+    },
+    "remove_options": {
+      "after_s": 0.2,
+      "options": {
+        "n": 5,
+        "options": [
+          "",
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      }
+    },
+    "remove": {
+      "idx": "3",
+      "modal_after_s": 0.7,
+      "modal_body": "Delete hidden unit #3? Subsequent units shift down by one and the cascade is rebuilt so the forward-pass shape invariant still holds. The optimizer is dropped \u2014 fresh training will rebuild it.",
+      "snapshot_first_checked": null,
+      "status_after_s": 0.6,
+      "status": "Snapshot taken; Removed unit 3 (now 3 hidden units).",
+      "index_reported": "3",
+      "count_reported": "3",
+      "hidden_after_in_cascor": 3,
+      "snapshots_total_after": 8
+    },
+    "verdicts": {
+      "M09_appended_in_cascor": true,
+      "M09_message_index": "3",
+      "M09_message_count": "4",
+      "M09_message_true": true,
+      "M09_message_none": false,
+      "M13_removed_in_cascor": true,
+      "M13_message_index": "3",
+      "M13_message_count": "3",
+      "M13_message_true": true,
+      "M13_message_none": false,
+      "M13_snapshot_first_sequence": {
+        "checkbox": null,
+        "snapshots_before": 7,
+        "snapshots_after": 8,
+        "status_says_snapshot_taken": true
+      }
+    },
+    "console": [
+      {
+        "t_ms": 2392,
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED"
+      }
+    ]
+  },
+  "f032": {
+    "serving": {
+      "ok": true,
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "build_date": "2026-10-20T12:03:46Z",
+      "version": "0.9.0",
+      "demo_mode": false,
+      "read_at": "2026-10-20T12:20:45Z"
+    },
+    "api_list_before": [
+      200,
+      {
+        "workers": [],
+        "count": 0,
+        "local_reported": false,
+        "error": "Upstream error",
+        "error_id": "4c7d6e4bcc5d"
+      }
+    ],
+    "api_stats_before": [
+      200,
+      {
+        "total": 0,
+        "idle": 0,
+        "busy": 0,
+        "stale": 0,
+        "total_tasks_completed": 0,
+        "total_tasks_failed": 0,
+        "average_health_score": 0,
+        "error": "Upstream error",
+        "error_id": "fe1cd0ceb501"
+      }
+    ],
+    "tab_opened": true,
+    "samples": [
+      {
+        "t_s": 0.0,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 2.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 4.6,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 6.6,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 8.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 10.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 12.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 14.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 16.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 18.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 20.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 22.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 24.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 26.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 28.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 30.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 32.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 34.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 36.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 38.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 40.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 42.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 44.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 46.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 48.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 50.9,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 52.9,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 54.9,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 56.9,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 58.9,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 18,
+          "text": "Worker data degraded: Upstream error",
+          "children": 1
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      }
+    ],
+    "api_list_after": [
+      200,
+      {
+        "workers": [],
+        "count": 0,
+        "local_reported": false,
+        "error": "Upstream error",
+        "error_id": "4dc0faadac76"
+      }
+    ],
+    "store_payloads": [
+      {
+        "t_ms": 35303,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "7aa6fae79bbd"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 39729,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "0e893e5392e5"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 44728,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "602081f6dc2a"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 49704,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "95fdc2bd5ad4"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 54725,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "1b3291303d72"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 59704,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "b4a6675407f4"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 64782,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "9d7e9b7f11fb"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 71252,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "a9b26bb40b5e"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 74756,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "3dfbcd73f846"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 90176,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "87dc96d5d7f1"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 90700,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "a435a7896544"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 90701,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "adcd4a45c22c"
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 94731,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": "Upstream error",
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0,
+            "error": "Upstream error",
+            "error_id": "9b95cc9ba58e"
+          }
+        },
+        "raw_head": null
+      }
+    ],
+    "verdicts": {
+      "RENDERED": true,
+      "rendered_first_t_s": 0.0,
+      "alert_text": "Worker data degraded: Upstream error",
+      "STORE": "FILLED",
+      "store_error_seen": "Upstream error",
+      "badges_seen": [
+        "NO WORKERS"
+      ],
+      "api_list_error_key": "Upstream error",
+      "api_list_http": 200
+    },
+    "console": [
+      {
+        "t_ms": 2577,
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED"
+      }
+    ]
+  },
+  "f032_degraded": {
+    "serving": {
+      "ok": true,
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "build_date": "2026-10-20T12:03:46Z",
+      "version": "0.9.0",
+      "demo_mode": false,
+      "read_at": "2026-10-20T12:24:01Z"
+    },
+    "api_list_before": [
+      200,
+      {
+        "workers": [],
+        "count": 0,
+        "local_reported": false
+      }
+    ],
+    "api_stats_before": [
+      200,
+      {
+        "total": 0,
+        "idle": 0,
+        "busy": 0,
+        "stale": 0,
+        "total_tasks_completed": 0,
+        "total_tasks_failed": 0,
+        "average_health_score": 0.0,
+        "timestamp": 1792499041.95157
+      }
+    ],
+    "stream_health_before": [
+      200,
+      {
+        "overall": "degraded",
+        "relay": {
+          "name": "training-relay",
+          "connected": true,
+          "status": "healthy",
+          "last_activity_age_seconds": 6.9,
+          "reconnect_count": 1,
+          "last_disconnect_reason": "JuniperCascorConnectionError",
+          "frames_forwarded_total": 2526,
+          "frames_by_type": {
+            "connection_established": 2,
+            "initial_status": 2,
+            "state": 311,
+            "initial_metrics": 2,
+            "metrics": 310,
+            "candidate_progress": 1893,
+            "cascade_add": 4,
+            "topology": 1,
+            "event": 1
+          }
+        },
+        "control": {
+          "name": "control",
+          "connected": false,
+          "status": "reconnecting",
+          "last_activity_age_seconds": 214.8,
+          "reconnect_count": 0,
+          "last_disconnect_reason": "JuniperCascorConnectionError",
+          "frames_forwarded_total": 0,
+          "frames_by_type": {},
+          "enabled": true
+        },
+        "mode": "service"
+      }
+    ],
+    "cascor_health_before": [
+      200,
+      {
+        "status": "ok",
+        "version": "0.12.0",
+        "service": "juniper-cascor",
+        "git_sha": null,
+        "build_date": null
+      }
+    ],
+    "tab_opened": true,
+    "samples": [
+      {
+        "t_s": 0.0,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 2.0,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 4.0,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 6.0,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 8.0,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 10.2,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 12.2,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 14.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 16.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 18.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 20.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 22.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 24.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 26.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 28.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 30.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 32.7,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 34.8,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 37.1,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 39.1,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 41.2,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 43.2,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 45.3,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 47.3,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 49.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 51.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 53.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 55.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 57.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      },
+      {
+        "t_s": 59.4,
+        "error_display": {
+          "present": true,
+          "display": "block",
+          "inline": null,
+          "w": 900,
+          "h": 0,
+          "text": "",
+          "children": 0
+        },
+        "badge": "NO WORKERS",
+        "total": "0",
+        "list": "No workers connected\nLocal in-process workers are not individually reported by the CasCor API; only remote registered wo"
+      }
+    ],
+    "api_list_after": [
+      200,
+      {
+        "workers": [],
+        "count": 0,
+        "local_reported": false
+      }
+    ],
+    "store_payloads": [
+      {
+        "t_ms": 34771,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499072.851825
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 39348,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499077.869099
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 44348,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499082.8697972
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 49347,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499087.8682659
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 54341,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499092.8636181
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 59340,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499097.862387
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 64342,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499102.864694
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 71500,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499109.8822248
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 74349,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499112.870216
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 79359,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499117.872538
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 84354,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499122.8726559
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 89352,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499127.8723881
+          }
+        },
+        "raw_head": null
+      },
+      {
+        "t_ms": 94350,
+        "status": 200,
+        "store_data": {
+          "workers": [],
+          "count": 0,
+          "local_reported": false,
+          "error": null,
+          "stats": {
+            "total": 0,
+            "idle": 0,
+            "busy": 0,
+            "stale": 0,
+            "total_tasks_completed": 0,
+            "total_tasks_failed": 0,
+            "average_health_score": 0.0,
+            "timestamp": 1792499132.86975
+          }
+        },
+        "raw_head": null
+      }
+    ],
+    "verdicts": {
+      "RENDERED": false,
+      "rendered_first_t_s": null,
+      "alert_text": null,
+      "STORE": "EMPTY",
+      "store_error_seen": null,
+      "badges_seen": [
+        "NO WORKERS"
+      ],
+      "api_list_error_key": null,
+      "api_list_http": 200
+    },
+    "console": [
+      {
+        "t_ms": 3849,
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED"
+      }
+    ]
+  }
+}

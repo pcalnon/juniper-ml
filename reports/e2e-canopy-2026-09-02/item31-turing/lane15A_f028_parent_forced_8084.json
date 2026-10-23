@@ -1,0 +1,753 @@
+{
+  "_run": {
+    "base": "http://127.0.0.1:8084",
+    "steps": [
+      "f028"
+    ],
+    "started": "2026-10-20T20:19:42Z",
+    "serving": {
+      "ok": true,
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "build_date": "2026-10-20T20:19:08Z",
+      "version": "0.9.0",
+      "demo_mode": true,
+      "read_at": "2026-10-20T20:19:42Z"
+    },
+    "host": "turing.midcoip.net",
+    "external_css": "aborted (cdn.jsdelivr.net unreachable from Chrome on this host)",
+    "finished": "2026-10-20T20:24:20Z"
+  },
+  "f028": {
+    "serving": {
+      "ok": true,
+      "git_sha": "571743dba37fa39ac70dbd94fa5822d0822d5e68",
+      "build_date": "2026-10-20T20:19:08Z",
+      "version": "0.9.0",
+      "demo_mode": true,
+      "read_at": "2026-10-20T20:19:45Z"
+    },
+    "key_a": "learning_rate",
+    "key_b": "max_iterations",
+    "arms": {
+      "forced#1": {
+        "arm": "forced",
+        "store_fresh": [],
+        "checkboxes_rendered": {
+          "after_s": 0.2,
+          "count": 22,
+          "values_after_s": 0.3
+        },
+        "a_before": {
+          "checked": false,
+          "present": true
+        },
+        "m04": {
+          "store": [
+            "learning_rate"
+          ],
+          "store_after_s": 1.9,
+          "a_checked": {
+            "checked": true,
+            "present": true
+          }
+        },
+        "m05": {
+          "card": {
+            "present": true,
+            "display": "block",
+            "inline": "block",
+            "w": 1584,
+            "h": 64,
+            "text": "Pinned Parameters\nLearning Rate\n0.01",
+            "children": 1
+          },
+          "card_after_s": 0.4,
+          "list_text": "Learning Rate\n0.01"
+        },
+        "pin_requests_before_reload": [
+          {
+            "t_ms": 10504,
+            "checked": [],
+            "rendered": 22,
+            "state_store": []
+          },
+          {
+            "t_ms": 16793,
+            "checked": [],
+            "rendered": 22,
+            "state_store": []
+          },
+          {
+            "t_ms": 40639,
+            "checked": [
+              "learning_rate"
+            ],
+            "rendered": 22,
+            "state_store": []
+          }
+        ],
+        "after_reload": {
+          "store_immediately": [
+            "learning_rate"
+          ],
+          "store_after_wait": [
+            "learning_rate"
+          ],
+          "card": {
+            "present": true,
+            "display": "block",
+            "inline": "block",
+            "w": 1584,
+            "h": 64,
+            "text": "Pinned Parameters\nLearning Rate\n0.01",
+            "children": 1
+          },
+          "tables_after_s": 1.3,
+          "values_after_s": 0.4,
+          "second_pin_at_s_after_reload": 28.6,
+          "a_checkbox": {
+            "checked": true,
+            "present": true
+          },
+          "store_before_second_pin": [
+            "learning_rate"
+          ],
+          "list_text": "Learning Rate\n0.01"
+        },
+        "forced_rebuild": "params store set to {} at +38753ms",
+        "after_second_pin": {
+          "store_first_change": [
+            "max_iterations",
+            "learning_rate"
+          ],
+          "store_changed_after_s": 0.8,
+          "store_settled": [
+            "max_iterations",
+            "learning_rate"
+          ],
+          "a_checked": {
+            "checked": true,
+            "present": true
+          },
+          "b_checked": {
+            "checked": true,
+            "present": true
+          },
+          "card": {
+            "present": true,
+            "display": "block",
+            "inline": "block",
+            "w": 1584,
+            "h": 91,
+            "text": "Pinned Parameters\nMaximum Growth Iterations\n\u2014\nLearning Rate\n\u2014",
+            "children": 1
+          },
+          "list_text": "Maximum Growth Iterations\n\u2014\nLearning Rate\n\u2014"
+        },
+        "pin_requests_after_reload": [
+          {
+            "t_ms": 54328,
+            "checked": [
+              "learning_rate"
+            ],
+            "rendered": 22,
+            "state_store": [
+              "learning_rate"
+            ]
+          },
+          {
+            "t_ms": 62227,
+            "checked": [
+              "learning_rate"
+            ],
+            "rendered": 22,
+            "state_store": [
+              "learning_rate"
+            ]
+          },
+          {
+            "t_ms": 86409,
+            "checked": [
+              "learning_rate",
+              "max_iterations"
+            ],
+            "rendered": 22,
+            "state_store": [
+              "learning_rate"
+            ]
+          }
+        ],
+        "pin_request_bodies_after_reload": [
+          "{\"output\":\"..sidebar-pinned-list.children...sidebar-pinned-card.style..\",\"outputs\":[{\"id\":\"sidebar-pinned-list\",\"property\":\"children\"},{\"id\":\"sidebar-pinned-card\",\"property\":\"style\"}],\"inputs\":[{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]},{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{}}],\"changedPropIds\":[\"pinned-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\"]}",
+          "{\"output\":\"..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..\",\"outputs\":[{\"id\":\"parameters-panel-network-table\",\"property\":\"children\"},{\"id\":\"parameters-panel-dataset-table\",\"property\":\"children\"},{\"id\":\"parameters-panel-candidate-table\",\"property\":\"children\"}],\"inputs\":[{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{}},{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]}],\"changedPropIds\":[\"pinned-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\"]}",
+          "{\"output\":\"pinned-params-store.data\",\"outputs\":{\"id\":\"pinned-params-store\",\"property\":\"data\"},\"inputs\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":true},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false}]],\"changedPropIds\":[\"{\\\"key\\\":\\\"max_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_total_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"learning_rate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_hidden_units\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_node_layers\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_trigger\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_preset_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_rotations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_number\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_elements\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_noise\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"pool_size\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"correlation_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"selected_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_complete\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_candidate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"candidate_selection\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"top_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"random_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\"],\"parsedChangedPropsIds\":[{\"key\":\"max_iterations\",\"type\":\"param-pin\"},{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},{\"key\":\"learning_rate\",\"type\":\"param-pin\"},{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},{\"key\":\"spiral_number\",\"type\":\"param-pin\"},{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},{\"key\":\"pool_size\",\"type\":\"param-pin\"},{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},{\"key\":\"training_complete\",\"type\":\"param-pin\"},{\"key\":\"training_iterations\",\"type\":\"param-pin\"},{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},{\"key\":\"top_candidates\",\"type\":\"param-pin\"},{\"key\":\"random_candidates\",\"type\":\"param-pin\"}],\"state\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_iterations\"}},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_total_epochs\"}},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"learning_rate\"}},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_hidden_units\"}},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_node_layers\"}},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_trigger\"}},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_preset_epochs\"}},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_convergence_threshold\"}},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_rotations\"}},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_number\"}},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_elements\"}},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_noise\"}},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"pool_size\"}},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"correlation_threshold\"}},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"selected_candidates\"}},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_complete\"}},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_iterations\"}},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_convergence_threshold\"}},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_candidate\"}},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"candidate_selection\"}},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"top_candidates\"}},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"random_candidates\"}}],{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]}]}",
+          "{\"output\":\"..sidebar-pinned-list.children...sidebar-pinned-card.style..\",\"outputs\":[{\"id\":\"sidebar-pinned-list\",\"property\":\"children\"},{\"id\":\"sidebar-pinned-card\",\"property\":\"style\"}],\"inputs\":[{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]},{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{\"max_iterations\":1000,\"max_total_epochs\":1000000,\"learning_rate\":0.01,\"max_hidden_units\":1000,\"multi_node_layers\":false,\"growth_trigger\":\"convergence\",\"growth_preset_epochs\":50,\"growth_convergence_threshold\":0.001,\"patience\":30,\"spiral_rotations\":1.5,\"spiral_number\":2,\"dataset_elements\":1000,\"dataset_noise\":0.25,\"pool_size\":100,\"correlation_threshold\":0.001,\"selected_candidates\":1,\"training_complete\":\"preset_epochs\",\"training_iterations\":500,\"training_convergence_threshold\":0.0001,\"multi_candidate\":false,\"candidate_selection\":\"top\",\"top_candidates\":1,\"random_candidates\":0,\"output_epochs\":25,\"optimizer_type\":\"Adam\",\"activation_function_name\":\"Tanh\",\"init_output_weights\":\"zero\"}}],\"changedPropIds\":[\"pinned-params-store.data\",\"parameters-panel-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\",\"parameters-panel-params-store.data\"]}",
+          "{\"output\":\"pinned-params-store.data\",\"outputs\":{\"id\":\"pinned-params-store\",\"property\":\"data\"},\"inputs\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":true},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false}]],\"changedPropIds\":[\"{\\\"key\\\":\\\"max_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_total_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"learning_rate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_hidden_units\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_node_layers\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_trigger\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_preset_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_rotations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_number\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_elements\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_noise\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"pool_size\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"correlation_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"selected_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_complete\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_candidate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"candidate_selection\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"top_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"random_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\"],\"parsedChangedPropsIds\":[{\"key\":\"max_iterations\",\"type\":\"param-pin\"},{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},{\"key\":\"learning_rate\",\"type\":\"param-pin\"},{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},{\"key\":\"spiral_number\",\"type\":\"param-pin\"},{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},{\"key\":\"pool_size\",\"type\":\"param-pin\"},{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},{\"key\":\"training_complete\",\"type\":\"param-pin\"},{\"key\":\"training_iterations\",\"type\":\"param-pin\"},{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},{\"key\":\"top_candidates\",\"type\":\"param-pin\"},{\"key\":\"random_candidates\",\"type\":\"param-pin\"}],\"state\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_iterations\"}},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_total_epochs\"}},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"learning_rate\"}},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_hidden_units\"}},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_node_layers\"}},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_trigger\"}},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_preset_epochs\"}},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_convergence_threshold\"}},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_rotations\"}},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_number\"}},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_elements\"}},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_noise\"}},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"pool_size\"}},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"correlation_threshold\"}},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"selected_candidates\"}},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_complete\"}},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_iterations\"}},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_convergence_threshold\"}},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_candidate\"}},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"candidate_selection\"}},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"top_candidates\"}},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"random_candidates\"}}],{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]}]}",
+          "{\"output\":\"..sidebar-pinned-list.children...sidebar-pinned-card.style..\",\"outputs\":[{\"id\":\"sidebar-pinned-list\",\"property\":\"children\"},{\"id\":\"sidebar-pinned-card\",\"property\":\"style\"}],\"inputs\":[{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]},{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{\"max_iterations\":1000,\"max_total_epochs\":1000000,\"learning_rate\":0.01,\"max_hidden_units\":1000,\"multi_node_layers\":false,\"growth_trigger\":\"convergence\",\"growth_preset_epochs\":50,\"growth_convergence_threshold\":0.001,\"patience\":30,\"spiral_rotations\":1.5,\"spiral_number\":2,\"dataset_elements\":1000,\"dataset_noise\":0.25,\"pool_size\":100,\"correlation_threshold\":0.001,\"selected_candidates\":1,\"training_complete\":\"preset_epochs\",\"training_iterations\":500,\"training_convergence_threshold\":0.0001,\"multi_candidate\":false,\"candidate_selection\":\"top\",\"top_candidates\":1,\"random_candidates\":0,\"output_epochs\":25,\"optimizer_type\":\"Adam\",\"activation_function_name\":\"Tanh\",\"init_output_weights\":\"zero\"}}],\"changedPropIds\":[\"pinned-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\"]}"
+        ],
+        "verdicts": {
+          "SURVIVES": true,
+          "DISCARDED": false,
+          "LOST_B": false,
+          "REHYDRATED": true,
+          "M04": true,
+          "M05": true,
+          "second_pin_at_s_after_reload": 28.6
+        },
+        "console": [
+          {
+            "t_ms": 3878,
+            "type": "error",
+            "text": "Failed to load resource: net::ERR_FAILED"
+          },
+          {
+            "t_ms": 48159,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 48159,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 48160,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 48160,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 48160,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 48206,
+            "type": "error",
+            "text": "Failed to load resource: net::ERR_FAILED"
+          }
+        ],
+        "dash_responses_pinned_store": [
+          {
+            "t_ms": 11256,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[]}}}"
+          },
+          {
+            "t_ms": 18254,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[]}}}"
+          },
+          {
+            "t_ms": 42307,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"learning_rate\"]}}}"
+          },
+          {
+            "t_ms": 55375,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"learning_rate\"]}}}"
+          },
+          {
+            "t_ms": 64556,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"learning_rate\"]}}}"
+          },
+          {
+            "t_ms": 87627,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"max_iterations\",\"learning_rate\"]}}}"
+          }
+        ]
+      },
+      "forced#2": {
+        "arm": "forced",
+        "store_fresh": [],
+        "checkboxes_rendered": {
+          "after_s": 1.3,
+          "count": 22,
+          "values_after_s": 0.4
+        },
+        "a_before": {
+          "checked": false,
+          "present": true
+        },
+        "m04": {
+          "store": [
+            "learning_rate"
+          ],
+          "store_after_s": 1.0,
+          "a_checked": {
+            "checked": true,
+            "present": true
+          }
+        },
+        "m05": {
+          "card": {
+            "present": true,
+            "display": "block",
+            "inline": "block",
+            "w": 1584,
+            "h": 64,
+            "text": "Pinned Parameters\nLearning Rate\n0.01",
+            "children": 1
+          },
+          "card_after_s": 0.6,
+          "list_text": "Learning Rate\n0.01"
+        },
+        "pin_requests_before_reload": [
+          {
+            "t_ms": 102268,
+            "checked": [],
+            "rendered": 22,
+            "state_store": []
+          },
+          {
+            "t_ms": 109390,
+            "checked": [],
+            "rendered": 22,
+            "state_store": []
+          },
+          {
+            "t_ms": 134373,
+            "checked": [
+              "learning_rate"
+            ],
+            "rendered": 22,
+            "state_store": []
+          }
+        ],
+        "after_reload": {
+          "store_immediately": [
+            "learning_rate"
+          ],
+          "store_after_wait": [
+            "learning_rate"
+          ],
+          "card": {
+            "present": true,
+            "display": "block",
+            "inline": "block",
+            "w": 1584,
+            "h": 64,
+            "text": "Pinned Parameters\nLearning Rate\n0.01",
+            "children": 1
+          },
+          "tables_after_s": 1.4,
+          "values_after_s": 0.9,
+          "second_pin_at_s_after_reload": 29.4,
+          "a_checkbox": {
+            "checked": true,
+            "present": true
+          },
+          "store_before_second_pin": [
+            "learning_rate"
+          ],
+          "list_text": "Learning Rate\n0.01"
+        },
+        "forced_rebuild": "params store set to {} at +37767ms",
+        "after_second_pin": {
+          "store_first_change": [
+            "max_iterations",
+            "learning_rate"
+          ],
+          "store_changed_after_s": 0.5,
+          "store_settled": [
+            "max_iterations",
+            "learning_rate"
+          ],
+          "a_checked": {
+            "checked": true,
+            "present": true
+          },
+          "b_checked": {
+            "checked": true,
+            "present": true
+          },
+          "card": {
+            "present": true,
+            "display": "block",
+            "inline": "block",
+            "w": 1584,
+            "h": 91,
+            "text": "Pinned Parameters\nMaximum Growth Iterations\n\u2014\nLearning Rate\n\u2014",
+            "children": 1
+          },
+          "list_text": "Maximum Growth Iterations\n\u2014\nLearning Rate\n\u2014"
+        },
+        "pin_requests_after_reload": [
+          {
+            "t_ms": 148457,
+            "checked": [
+              "learning_rate"
+            ],
+            "rendered": 22,
+            "state_store": [
+              "learning_rate"
+            ]
+          },
+          {
+            "t_ms": 158369,
+            "checked": [
+              "learning_rate"
+            ],
+            "rendered": 22,
+            "state_store": [
+              "learning_rate"
+            ]
+          },
+          {
+            "t_ms": 178014,
+            "checked": [
+              "learning_rate",
+              "max_iterations"
+            ],
+            "rendered": 22,
+            "state_store": [
+              "learning_rate"
+            ]
+          }
+        ],
+        "pin_request_bodies_after_reload": [
+          "{\"output\":\"..sidebar-pinned-list.children...sidebar-pinned-card.style..\",\"outputs\":[{\"id\":\"sidebar-pinned-list\",\"property\":\"children\"},{\"id\":\"sidebar-pinned-card\",\"property\":\"style\"}],\"inputs\":[{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]},{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{}}],\"changedPropIds\":[\"pinned-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\"]}",
+          "{\"output\":\"..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..\",\"outputs\":[{\"id\":\"parameters-panel-network-table\",\"property\":\"children\"},{\"id\":\"parameters-panel-dataset-table\",\"property\":\"children\"},{\"id\":\"parameters-panel-candidate-table\",\"property\":\"children\"}],\"inputs\":[{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{}},{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]}],\"changedPropIds\":[\"pinned-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\"]}",
+          "{\"output\":\"pinned-params-store.data\",\"outputs\":{\"id\":\"pinned-params-store\",\"property\":\"data\"},\"inputs\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":true},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false}]],\"changedPropIds\":[\"{\\\"key\\\":\\\"max_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_total_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"learning_rate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_hidden_units\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_node_layers\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_trigger\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_preset_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_rotations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_number\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_elements\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_noise\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"pool_size\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"correlation_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"selected_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_complete\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_candidate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"candidate_selection\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"top_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"random_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\"],\"parsedChangedPropsIds\":[{\"key\":\"max_iterations\",\"type\":\"param-pin\"},{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},{\"key\":\"learning_rate\",\"type\":\"param-pin\"},{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},{\"key\":\"spiral_number\",\"type\":\"param-pin\"},{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},{\"key\":\"pool_size\",\"type\":\"param-pin\"},{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},{\"key\":\"training_complete\",\"type\":\"param-pin\"},{\"key\":\"training_iterations\",\"type\":\"param-pin\"},{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},{\"key\":\"top_candidates\",\"type\":\"param-pin\"},{\"key\":\"random_candidates\",\"type\":\"param-pin\"}],\"state\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_iterations\"}},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_total_epochs\"}},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"learning_rate\"}},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_hidden_units\"}},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_node_layers\"}},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_trigger\"}},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_preset_epochs\"}},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_convergence_threshold\"}},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_rotations\"}},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_number\"}},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_elements\"}},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_noise\"}},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"pool_size\"}},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"correlation_threshold\"}},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"selected_candidates\"}},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_complete\"}},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_iterations\"}},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_convergence_threshold\"}},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_candidate\"}},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"candidate_selection\"}},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"top_candidates\"}},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"random_candidates\"}}],{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]}]}",
+          "{\"output\":\"..sidebar-pinned-list.children...sidebar-pinned-card.style..\",\"outputs\":[{\"id\":\"sidebar-pinned-list\",\"property\":\"children\"},{\"id\":\"sidebar-pinned-card\",\"property\":\"style\"}],\"inputs\":[{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]},{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{\"max_iterations\":1000,\"max_total_epochs\":1000000,\"learning_rate\":0.01,\"max_hidden_units\":1000,\"multi_node_layers\":false,\"growth_trigger\":\"convergence\",\"growth_preset_epochs\":50,\"growth_convergence_threshold\":0.001,\"patience\":30,\"spiral_rotations\":1.5,\"spiral_number\":2,\"dataset_elements\":1000,\"dataset_noise\":0.25,\"pool_size\":100,\"correlation_threshold\":0.001,\"selected_candidates\":1,\"training_complete\":\"preset_epochs\",\"training_iterations\":500,\"training_convergence_threshold\":0.0001,\"multi_candidate\":false,\"candidate_selection\":\"top\",\"top_candidates\":1,\"random_candidates\":0,\"output_epochs\":25,\"optimizer_type\":\"Adam\",\"activation_function_name\":\"Tanh\",\"init_output_weights\":\"zero\"}}],\"changedPropIds\":[\"pinned-params-store.data\",\"parameters-panel-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\",\"parameters-panel-params-store.data\"]}",
+          "{\"output\":\"pinned-params-store.data\",\"outputs\":{\"id\":\"pinned-params-store\",\"property\":\"data\"},\"inputs\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":true},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false}]],\"changedPropIds\":[\"{\\\"key\\\":\\\"max_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_total_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"learning_rate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_hidden_units\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_node_layers\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_trigger\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_preset_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_rotations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_number\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_elements\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_noise\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"pool_size\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"correlation_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"selected_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_complete\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_candidate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"candidate_selection\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"top_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"random_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\"],\"parsedChangedPropsIds\":[{\"key\":\"max_iterations\",\"type\":\"param-pin\"},{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},{\"key\":\"learning_rate\",\"type\":\"param-pin\"},{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},{\"key\":\"spiral_number\",\"type\":\"param-pin\"},{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},{\"key\":\"pool_size\",\"type\":\"param-pin\"},{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},{\"key\":\"training_complete\",\"type\":\"param-pin\"},{\"key\":\"training_iterations\",\"type\":\"param-pin\"},{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},{\"key\":\"top_candidates\",\"type\":\"param-pin\"},{\"key\":\"random_candidates\",\"type\":\"param-pin\"}],\"state\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_iterations\"}},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_total_epochs\"}},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"learning_rate\"}},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_hidden_units\"}},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_node_layers\"}},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_trigger\"}},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_preset_epochs\"}},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_convergence_threshold\"}},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_rotations\"}},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_number\"}},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_elements\"}},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_noise\"}},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"pool_size\"}},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"correlation_threshold\"}},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"selected_candidates\"}},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_complete\"}},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_iterations\"}},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_convergence_threshold\"}},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_candidate\"}},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"candidate_selection\"}},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"top_candidates\"}},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"random_candidates\"}}],{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]}]}",
+          "{\"output\":\"..sidebar-pinned-list.children...sidebar-pinned-card.style..\",\"outputs\":[{\"id\":\"sidebar-pinned-list\",\"property\":\"children\"},{\"id\":\"sidebar-pinned-card\",\"property\":\"style\"}],\"inputs\":[{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]},{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{\"max_iterations\":1000,\"max_total_epochs\":1000000,\"learning_rate\":0.01,\"max_hidden_units\":1000,\"multi_node_layers\":false,\"growth_trigger\":\"convergence\",\"growth_preset_epochs\":50,\"growth_convergence_threshold\":0.001,\"patience\":30,\"spiral_rotations\":1.5,\"spiral_number\":2,\"dataset_elements\":1000,\"dataset_noise\":0.25,\"pool_size\":100,\"correlation_threshold\":0.001,\"selected_candidates\":1,\"training_complete\":\"preset_epochs\",\"training_iterations\":500,\"training_convergence_threshold\":0.0001,\"multi_candidate\":false,\"candidate_selection\":\"top\",\"top_candidates\":1,\"random_candidates\":0,\"output_epochs\":25,\"optimizer_type\":\"Adam\",\"activation_function_name\":\"Tanh\",\"init_output_weights\":\"zero\"}}],\"changedPropIds\":[\"pinned-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\"]}"
+        ],
+        "verdicts": {
+          "SURVIVES": true,
+          "DISCARDED": false,
+          "LOST_B": false,
+          "REHYDRATED": true,
+          "M04": true,
+          "M05": true,
+          "second_pin_at_s_after_reload": 29.4
+        },
+        "console": [
+          {
+            "t_ms": 96046,
+            "type": "error",
+            "text": "Failed to load resource: net::ERR_FAILED"
+          },
+          {
+            "t_ms": 141708,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 141708,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 141709,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 141709,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 141709,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 141747,
+            "type": "error",
+            "text": "Failed to load resource: net::ERR_FAILED"
+          }
+        ],
+        "dash_responses_pinned_store": [
+          {
+            "t_ms": 103352,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[]}}}"
+          },
+          {
+            "t_ms": 111333,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[]}}}"
+          },
+          {
+            "t_ms": 135044,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"learning_rate\"]}}}"
+          },
+          {
+            "t_ms": 149415,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"learning_rate\"]}}}"
+          },
+          {
+            "t_ms": 159732,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"learning_rate\"]}}}"
+          },
+          {
+            "t_ms": 179912,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"max_iterations\",\"learning_rate\"]}}}"
+          }
+        ]
+      },
+      "forced#3": {
+        "arm": "forced",
+        "store_fresh": [],
+        "checkboxes_rendered": {
+          "after_s": 0.8,
+          "count": 22,
+          "values_after_s": 0.9
+        },
+        "a_before": {
+          "checked": false,
+          "present": true
+        },
+        "m04": {
+          "store": [
+            "learning_rate"
+          ],
+          "store_after_s": 1.8,
+          "a_checked": {
+            "checked": true,
+            "present": true
+          }
+        },
+        "m05": {
+          "card": {
+            "present": true,
+            "display": "block",
+            "inline": "block",
+            "w": 1584,
+            "h": 64,
+            "text": "Pinned Parameters\nLearning Rate\n0.01",
+            "children": 1
+          },
+          "card_after_s": 2.6,
+          "list_text": "Learning Rate\n0.01"
+        },
+        "pin_requests_before_reload": [
+          {
+            "t_ms": 193561,
+            "checked": [],
+            "rendered": 22,
+            "state_store": []
+          },
+          {
+            "t_ms": 200335,
+            "checked": [],
+            "rendered": 22,
+            "state_store": []
+          },
+          {
+            "t_ms": 223554,
+            "checked": [
+              "learning_rate"
+            ],
+            "rendered": 22,
+            "state_store": []
+          }
+        ],
+        "after_reload": {
+          "store_immediately": [
+            "learning_rate"
+          ],
+          "store_after_wait": [
+            "learning_rate"
+          ],
+          "card": {
+            "present": true,
+            "display": "block",
+            "inline": "block",
+            "w": 1584,
+            "h": 64,
+            "text": "Pinned Parameters\nLearning Rate\n0.01",
+            "children": 1
+          },
+          "tables_after_s": 0.2,
+          "values_after_s": 1.8,
+          "second_pin_at_s_after_reload": 28.5,
+          "a_checkbox": {
+            "checked": true,
+            "present": true
+          },
+          "store_before_second_pin": [
+            "learning_rate"
+          ],
+          "list_text": "Learning Rate\n0.01"
+        },
+        "forced_rebuild": "params store set to {} at +37043ms",
+        "after_second_pin": {
+          "store_first_change": [
+            "max_iterations",
+            "learning_rate"
+          ],
+          "store_changed_after_s": 0.9,
+          "store_settled": [
+            "max_iterations",
+            "learning_rate"
+          ],
+          "a_checked": {
+            "checked": true,
+            "present": true
+          },
+          "b_checked": {
+            "checked": true,
+            "present": true
+          },
+          "card": {
+            "present": true,
+            "display": "block",
+            "inline": "block",
+            "w": 1584,
+            "h": 91,
+            "text": "Pinned Parameters\nMaximum Growth Iterations\n\u2014\nLearning Rate\n\u2014",
+            "children": 1
+          },
+          "list_text": "Maximum Growth Iterations\n\u2014\nLearning Rate\n\u2014"
+        },
+        "pin_requests_after_reload": [
+          {
+            "t_ms": 240058,
+            "checked": [
+              "learning_rate"
+            ],
+            "rendered": 22,
+            "state_store": [
+              "learning_rate"
+            ]
+          },
+          {
+            "t_ms": 250196,
+            "checked": [
+              "learning_rate"
+            ],
+            "rendered": 22,
+            "state_store": [
+              "learning_rate"
+            ]
+          },
+          {
+            "t_ms": 269244,
+            "checked": [
+              "learning_rate",
+              "max_iterations"
+            ],
+            "rendered": 22,
+            "state_store": [
+              "learning_rate"
+            ]
+          }
+        ],
+        "pin_request_bodies_after_reload": [
+          "{\"output\":\"..sidebar-pinned-list.children...sidebar-pinned-card.style..\",\"outputs\":[{\"id\":\"sidebar-pinned-list\",\"property\":\"children\"},{\"id\":\"sidebar-pinned-card\",\"property\":\"style\"}],\"inputs\":[{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]},{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{}}],\"changedPropIds\":[\"pinned-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\"]}",
+          "{\"output\":\"..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..\",\"outputs\":[{\"id\":\"parameters-panel-network-table\",\"property\":\"children\"},{\"id\":\"parameters-panel-dataset-table\",\"property\":\"children\"},{\"id\":\"parameters-panel-candidate-table\",\"property\":\"children\"}],\"inputs\":[{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{}},{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]}],\"changedPropIds\":[\"pinned-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\"]}",
+          "{\"output\":\"pinned-params-store.data\",\"outputs\":{\"id\":\"pinned-params-store\",\"property\":\"data\"},\"inputs\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":true},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false}]],\"changedPropIds\":[\"{\\\"key\\\":\\\"max_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_total_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"learning_rate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_hidden_units\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_node_layers\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_trigger\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_preset_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_rotations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_number\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_elements\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_noise\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"pool_size\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"correlation_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"selected_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_complete\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_candidate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"candidate_selection\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"top_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"random_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\"],\"parsedChangedPropsIds\":[{\"key\":\"max_iterations\",\"type\":\"param-pin\"},{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},{\"key\":\"learning_rate\",\"type\":\"param-pin\"},{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},{\"key\":\"spiral_number\",\"type\":\"param-pin\"},{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},{\"key\":\"pool_size\",\"type\":\"param-pin\"},{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},{\"key\":\"training_complete\",\"type\":\"param-pin\"},{\"key\":\"training_iterations\",\"type\":\"param-pin\"},{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},{\"key\":\"top_candidates\",\"type\":\"param-pin\"},{\"key\":\"random_candidates\",\"type\":\"param-pin\"}],\"state\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_iterations\"}},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_total_epochs\"}},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"learning_rate\"}},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_hidden_units\"}},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_node_layers\"}},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_trigger\"}},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_preset_epochs\"}},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_convergence_threshold\"}},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_rotations\"}},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_number\"}},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_elements\"}},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_noise\"}},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"pool_size\"}},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"correlation_threshold\"}},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"selected_candidates\"}},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_complete\"}},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_iterations\"}},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_convergence_threshold\"}},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_candidate\"}},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"candidate_selection\"}},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"top_candidates\"}},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"random_candidates\"}}],{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]}]}",
+          "{\"output\":\"..sidebar-pinned-list.children...sidebar-pinned-card.style..\",\"outputs\":[{\"id\":\"sidebar-pinned-list\",\"property\":\"children\"},{\"id\":\"sidebar-pinned-card\",\"property\":\"style\"}],\"inputs\":[{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]},{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{\"max_iterations\":1000,\"max_total_epochs\":1000000,\"learning_rate\":0.01,\"max_hidden_units\":1000,\"multi_node_layers\":false,\"growth_trigger\":\"convergence\",\"growth_preset_epochs\":50,\"growth_convergence_threshold\":0.001,\"patience\":30,\"spiral_rotations\":1.5,\"spiral_number\":2,\"dataset_elements\":1000,\"dataset_noise\":0.25,\"pool_size\":100,\"correlation_threshold\":0.001,\"selected_candidates\":1,\"training_complete\":\"preset_epochs\",\"training_iterations\":500,\"training_convergence_threshold\":0.0001,\"multi_candidate\":false,\"candidate_selection\":\"top\",\"top_candidates\":1,\"random_candidates\":0,\"output_epochs\":25,\"optimizer_type\":\"Adam\",\"activation_function_name\":\"Tanh\",\"init_output_weights\":\"zero\"}}],\"changedPropIds\":[\"pinned-params-store.data\",\"parameters-panel-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\",\"parameters-panel-params-store.data\"]}",
+          "{\"output\":\"pinned-params-store.data\",\"outputs\":{\"id\":\"pinned-params-store\",\"property\":\"data\"},\"inputs\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":true},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"value\",\"value\":false}]],\"changedPropIds\":[\"{\\\"key\\\":\\\"max_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_total_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"learning_rate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"max_hidden_units\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_node_layers\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_trigger\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_preset_epochs\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"growth_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_rotations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"spiral_number\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_elements\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"dataset_noise\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"pool_size\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"correlation_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"selected_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_complete\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_iterations\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"training_convergence_threshold\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"multi_candidate\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"candidate_selection\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"top_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\",\"{\\\"key\\\":\\\"random_candidates\\\",\\\"type\\\":\\\"param-pin\\\"}.value\"],\"parsedChangedPropsIds\":[{\"key\":\"max_iterations\",\"type\":\"param-pin\"},{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},{\"key\":\"learning_rate\",\"type\":\"param-pin\"},{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},{\"key\":\"spiral_number\",\"type\":\"param-pin\"},{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},{\"key\":\"pool_size\",\"type\":\"param-pin\"},{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},{\"key\":\"training_complete\",\"type\":\"param-pin\"},{\"key\":\"training_iterations\",\"type\":\"param-pin\"},{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},{\"key\":\"top_candidates\",\"type\":\"param-pin\"},{\"key\":\"random_candidates\",\"type\":\"param-pin\"}],\"state\":[[{\"id\":{\"key\":\"max_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_iterations\"}},{\"id\":{\"key\":\"max_total_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_total_epochs\"}},{\"id\":{\"key\":\"learning_rate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"learning_rate\"}},{\"id\":{\"key\":\"max_hidden_units\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"max_hidden_units\"}},{\"id\":{\"key\":\"multi_node_layers\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_node_layers\"}},{\"id\":{\"key\":\"growth_trigger\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_trigger\"}},{\"id\":{\"key\":\"growth_preset_epochs\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_preset_epochs\"}},{\"id\":{\"key\":\"growth_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"growth_convergence_threshold\"}},{\"id\":{\"key\":\"spiral_rotations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_rotations\"}},{\"id\":{\"key\":\"spiral_number\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"spiral_number\"}},{\"id\":{\"key\":\"dataset_elements\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_elements\"}},{\"id\":{\"key\":\"dataset_noise\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"dataset_noise\"}},{\"id\":{\"key\":\"pool_size\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"pool_size\"}},{\"id\":{\"key\":\"correlation_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"correlation_threshold\"}},{\"id\":{\"key\":\"selected_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"selected_candidates\"}},{\"id\":{\"key\":\"training_complete\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_complete\"}},{\"id\":{\"key\":\"training_iterations\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_iterations\"}},{\"id\":{\"key\":\"training_convergence_threshold\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"training_convergence_threshold\"}},{\"id\":{\"key\":\"multi_candidate\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"multi_candidate\"}},{\"id\":{\"key\":\"candidate_selection\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"candidate_selection\"}},{\"id\":{\"key\":\"top_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"top_candidates\"}},{\"id\":{\"key\":\"random_candidates\",\"type\":\"param-pin\"},\"property\":\"id\",\"value\":{\"type\":\"param-pin\",\"key\":\"random_candidates\"}}],{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]}]}",
+          "{\"output\":\"..sidebar-pinned-list.children...sidebar-pinned-card.style..\",\"outputs\":[{\"id\":\"sidebar-pinned-list\",\"property\":\"children\"},{\"id\":\"sidebar-pinned-card\",\"property\":\"style\"}],\"inputs\":[{\"id\":\"pinned-params-store\",\"property\":\"data\",\"value\":[\"learning_rate\"]},{\"id\":\"parameters-panel-params-store\",\"property\":\"data\",\"value\":{\"max_iterations\":1000,\"max_total_epochs\":1000000,\"learning_rate\":0.01,\"max_hidden_units\":1000,\"multi_node_layers\":false,\"growth_trigger\":\"convergence\",\"growth_preset_epochs\":50,\"growth_convergence_threshold\":0.001,\"patience\":30,\"spiral_rotations\":1.5,\"spiral_number\":2,\"dataset_elements\":1000,\"dataset_noise\":0.25,\"pool_size\":100,\"correlation_threshold\":0.001,\"selected_candidates\":1,\"training_complete\":\"preset_epochs\",\"training_iterations\":500,\"training_convergence_threshold\":0.0001,\"multi_candidate\":false,\"candidate_selection\":\"top\",\"top_candidates\":1,\"random_candidates\":0,\"output_epochs\":25,\"optimizer_type\":\"Adam\",\"activation_function_name\":\"Tanh\",\"init_output_weights\":\"zero\"}}],\"changedPropIds\":[\"pinned-params-store.data\"],\"parsedChangedPropsIds\":[\"pinned-params-store.data\"]}"
+        ],
+        "verdicts": {
+          "SURVIVES": true,
+          "DISCARDED": false,
+          "LOST_B": false,
+          "REHYDRATED": true,
+          "M04": true,
+          "M05": true,
+          "second_pin_at_s_after_reload": 28.5
+        },
+        "console": [
+          {
+            "t_ms": 187219,
+            "type": "error",
+            "text": "Failed to load resource: net::ERR_FAILED"
+          },
+          {
+            "t_ms": 232507,
+            "type": "error",
+            "text": "Error: Callback failed: the server did not respond.\n    at v (http://127.0.0.1:8084/dashboard/_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_4_1m1792495586.min.js:2:163513)"
+          },
+          {
+            "t_ms": 232569,
+            "type": "error",
+            "text": "Failed to load resource: net::ERR_FAILED"
+          }
+        ],
+        "dash_responses_pinned_store": [
+          {
+            "t_ms": 194397,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[]}}}"
+          },
+          {
+            "t_ms": 202101,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[]}}}"
+          },
+          {
+            "t_ms": 225181,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"learning_rate\"]}}}"
+          },
+          {
+            "t_ms": 241170,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"learning_rate\"]}}}"
+          },
+          {
+            "t_ms": 251354,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"learning_rate\"]}}}"
+          },
+          {
+            "t_ms": 269868,
+            "status": 200,
+            "body": "{\"multi\":true,\"response\":{\"pinned-params-store\":{\"data\":[\"max_iterations\",\"learning_rate\"]}}}"
+          }
+        ]
+      }
+    },
+    "verdicts": {
+      "forced#1": {
+        "SURVIVES": true,
+        "DISCARDED": false,
+        "LOST_B": false,
+        "REHYDRATED": true,
+        "M04": true,
+        "M05": true,
+        "second_pin_at_s_after_reload": 28.6
+      },
+      "forced#2": {
+        "SURVIVES": true,
+        "DISCARDED": false,
+        "LOST_B": false,
+        "REHYDRATED": true,
+        "M04": true,
+        "M05": true,
+        "second_pin_at_s_after_reload": 29.4
+      },
+      "forced#3": {
+        "SURVIVES": true,
+        "DISCARDED": false,
+        "LOST_B": false,
+        "REHYDRATED": true,
+        "M04": true,
+        "M05": true,
+        "second_pin_at_s_after_reload": 28.5
+      }
+    },
+    "summary": {
+      "arms_driven": 3,
+      "survives": 3,
+      "discarded": 0
+    }
+  }
+}

@@ -7,44 +7,167 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+### Fixed
 
-- **`[recurrence]` now floors `juniper-recurrence>=0.7.0`** (`<0.8.0`) **and `juniper-recurrence-model>=0.5.0` (`<0.6.0`)**, the
-  P5 release pair (W5.8 (B), W5.9, W5.10 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
-  approved 2026-10-19 with the session's merge approval, the ruling 0.7.0 reopened). The pins were
-  `juniper-recurrence>=0.6.1,<0.7.0` and `juniper-recurrence-model>=0.3.0,<0.5.0`.
-  - **Why both move.** recurrence 0.7.0's `requires_dist` is `juniper-recurrence-model>=0.5.0,<0.6.0`:
-    its `default_ridge` is `"gcv"`, which is safe only on model 0.5.0's train-fold standardisation of the
-    linear readout's memory block. Lifting the recurrence ceiling alone would leave the extra
-    unsatisfiable under the old model cap `<0.5.0`. The model range is the one 0.7.0 requires, not a
-    wider one: 0.7.0 refuses model 0.6.0, which is recurrence 0.8.0's floor (W5.2, on an open PR); the
-    next raise moves both again.
-  - **What 0.7.0 brings** to `pip install juniper-ml[recurrence]`: `POST /v1/crossval` on the equities
-    row no longer blows up under the default readout (the W5.1 note's −2.1e4 becomes −0.195 on the E-H
-    artifact), and every fit carries a `diagnostics` block (`readout`, `theta`, `ridge_mode` /
-    `ridge_selected`, `gamma`, `gcv_at_edge` / `null_model`).
-  - **0.7.0's own `[torch]` extra is unresolvable** (`juniper-recurrence-model[torch]>=0.4.0,<0.5.0`
-    against the base `>=0.5.0`); `[recurrence]` installs the base distribution and is unaffected. The
-    fix rides on juniper-recurrence#215 for 0.8.0.
-  - **Pre-flighted against real PyPI** on 2026-10-19 with
-    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages on Python 3.12, 3.13 and 3.14, with recurrence 0.7.0, model
-    0.5.0, client 0.3.0, data-client 0.6.0, model-core 0.3.2 and service-core 0.7.1; `[all]` resolves in 76 on
-    each, the same versions plus canopy 0.9.0, cascor 0.11.0, cascor-worker 0.6.1 and juniper-data 0.17.0.
-  - The client floor `juniper-recurrence-client>=0.3.0,<0.4.0` stays (no client contract changed). The
-    release train cuts the version that carries this (0.11.0 in the plan). Applied by
-    `util/ad-hoc/2026-10-19_raise_recurrence_floor_0_7_0.py`, which asserts each site's exact text and
-    requires exactly one match apiece.
+- **The release-train proposal now moves README's "Ecosystem Compatibility" table**, so a generated juniper-ml
+  proposal is green as generated. `tests/test_pyproject_extras.py` `ReadmeCompatTableTest` holds that table to
+  `pyproject.toml` in two ways, and `util/release_train/propose.py` satisfied neither.
+  - **The lead-in.** "The pyproject pins matching `juniper-ml` X:" must name the pyproject version, and the
+    generator never moved it. The 0.11.0 proposal (#2306) was the first generated since that guard landed (#1972).
+    Its bare form fails Regression Tests with `'0.10.0' != '0.11.0'`, and #2306 carried a hand co-change commit. The
+    meta's own bump now rewrites the line. A missing lead-in is never invented; the co-change checklist flags it
+    REQUIRED instead.
+  - **The rows.** Each pin also has a split-column Package / Pin row, and step 5b-ii moved only README's
+    `### Extras` table, so an escaping in-repo bump shipped red. Simulated on `main`, the juniper-config-tools
+    0.2.0 proposal (against the meta's `<0.2.0` ceiling) fails `test_compat_table_matches_pyproject`. The
+    split-column editor `docs/REFERENCE.md` already used, re-anchored on `## Ecosystem Compatibility`, now moves the
+    row in the same README edit as the extras table.
+  - The proposal PR body no longer tells the reviewer of every escaping bump that the generator "has a known gap"
+    and "will fail 3 arms". #1460 added that warning, and #1478 closed the gap a day later without removing it.
+  - `docs/REFERENCE.md`'s compatibility sentence and matrix row remain a manual co-change for the meta's own bump,
+    and the co-change checklist now says so.
+  - New: `util/ad-hoc/2026-10-21_simulate_release_proposal.py` builds one proposal on a scratch copy and runs the 17
+    suites that read the version, the pins, README or REFERENCE, against an untouched baseline. Both proposals
+    above regress one suite on `main` and none with the fix. Ten new tests in
+    `tests/test_release_train_propose.py`, eight of which fail against `main`'s module.
 
-- **`util/experiments/run_experiment.py` omits `embargo` from the crossval request when the config
-  omits it** (W5.2 of
-  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`).
-  It used to send `embargo: 0`, which overrode the service's default; from juniper-recurrence 0.8.0
-  that default is one look-back per entity (the gap that keeps an eval window's history clear of
-  every train window), so a suite row that names no embargo now gets it. A config that names a value
-  -- the E-G scheme × embargo sweep -- still sends it, and on recurrence ≤ 0.7.0 an omitted value is
-  still the service's 0. `tests/test_run_experiment.py` pins the omission.
+## [0.11.0] - 2026-10-21
 
 ### Added
+
+- **The agent guard protects the owner's signing configuration (K12)** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, S9). With the YubiKey stubs
+  learned, an agent that could rewrite the owner's signing configuration could obtain the owner's signature. It could
+  point `gpg.program` or `core.hooksPath` at its own program, plant a repository-local key that outranks the include,
+  drop a `post-commit` hook inside a cached-touch window, or re-enable signing past D11 with `git -c include.path=` or
+  `--config-env`.
+  - `util/claude_agent_guard.py` 1.1.0 adds two rules:
+    - `GIT-SIGNING-CONFIG` (Bash) denies those forms. It also denies signing-key `git config` writes at any scope,
+      `git config --edit`, any mention of `~/.gitconfig`, `~/.config/git`, a system gitconfig or `.git/hooks`, and
+      `util/configure_commit_signing.py --apply` / `--remove` without `--dry-run`.
+    - `GIT-SIGNING-FILE` (the file writers) denies writes to the same files. Reads stay allowed.
+  - `tests/test_claude_agent_guard.py` pins 63 Bash cases (42 denied, 21 allowed) and 18 file cases (10 denied, 8
+    allowed), and the self-test runs 40 checks.
+  - `util/ad-hoc/2026-10-20_k12_guard_mutation_check.py` kills 18 of 18 mutants, each by its own pin test.
+  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install
+    the new copy. No YubiKey goes into turing until then: the first `gpg --card-status` writes the card stubs (plan §1).
+
+- **Commit signing for the terminal and the IDEs** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, VALIDATED after two consensus rounds; it extends arc B of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - **What the tool does.** `util/configure_commit_signing.py` installs and verifies the owner's signing for every checkout under
+    `~/Development/python/Juniper/` with one `includeIf "gitdir/i:~/Development/python/Juniper/"`, which points at
+    `~/.config/git/juniper-signing.gitconfig`. That file holds yamaguchi's values: `user.signingkey` pinned to the full
+    fingerprint with `!`, `commit.gpgsign` and `tag.gpgsign`, plus an absolute `gpg.program` in a known GnuPG install.
+  - **Why the IDEs need no setting.** Cursor's and VS Code's git extension adds `-S` only on request and never disables
+    signing. So both IDEs sign through git's config, without the shell's PATH or a TTY.
+  - **What is unchanged.** Repositories outside the root, and Claude Code sessions, which D11 keeps unsigned by
+    construction.
+  - **What `--check` covers.** It verifies the setup without credentials:
+    - planted repo-local signing keys and hooks;
+    - the include's integrity;
+    - IDE settings that would defeat the config;
+    - whether an IDE agent can commit, or bypass signing, without a prompt.
+  - **The other modes.** `--remove` undoes `--apply` exactly.
+  - **Tests and evidence.** `tests/test_configure_commit_signing.py` pins R-S1..R-S19, and `util/ad-hoc/2026-10-19_commit_signing_mutation_check.py` kills 50 of 50 mutants.
+  - **Doc changes.** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` gains §19 (v1.4.0). The AGENTS.md unsigned-commit hazard gains the IDE-agent rule.
+  - **Applied on turing (2026-10-20).** An owner commit in the tree now fails closed until the owner imports the public
+    key and learns the card stubs (bring-up B2/B3). The first `gpg --card-status` writes the stubs, so no card goes into
+    turing until the agent guard (C8) is installed, the guard rules (K12) are merged and re-installed, and the IDE-agent
+    approval rules (K13) are in place. The touch policy (S11) is set at that first insertion.
+
+- **`stats.json` / `summary.md` carry a per-split regression target summary** (W5.5 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; F-D8). The audited
+  `stats.json` reported the sequence dimensions and a `class_distribution` of `null`, and nothing about the target the
+  equities fit predicts.
+  - `util/experiments/stats_summary.py` gains the stdlib `regression_target_summary`: per split, `n`, `n_finite`,
+    `finite_fraction`, `mean`, `std` (population, ddof=0), `min`, `max`, plus a `basis` string; NaN and ±Inf count
+    toward `n` and against the fraction and stay out of the moments; an empty split reports `finite_fraction: null`.
+    `build_stats` writes it as `dataset.target_summary` (`null` when absent) and turns a reader error into a
+    `provenance.degraded_notes` entry; `summary.md` prints one line per split.
+  - `util/experiments/run_experiment.py` fetches the dataset artifact once after the dataset phase (the body the plot
+    set already reads) and summarises every `y_reg_<split>` array; numpy is imported lazily, and a host without it, a
+    failed fetch or an unreadable body is a degraded note, never a run failure. Both kinds pass it to `build_stats`.
+  - `tests/test_stats_summary_target_summary.py` (new, 22 tests) pins the arithmetic, the carriage, the rendering and
+    the driver reader on the committed audited artifact (1346 / 176 / 176 windows, every one finite); wired into
+    `ci.yml` and `docs/REFERENCE.md`.
+
+- **`util/experiment_stack.bash --shared-equities-cache DIR`, the experimentation plan's H-9 opt-in** (W5.6 of the same
+  plan; F-D6), with a `run_suite.py` passthrough. The data leg launched with
+  `JUNIPER_DATA_EQUITIES_CACHE_DIR=$RUN_DIR/equities-cache` and nothing else, so every cell of an equities suite paid the
+  cold Yahoo / SEC fetch again.
+  - The flag (or `JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR`) launches the data leg with that directory instead -- one that
+    outlives the run. Absolute paths only (exit 2 before any port is allocated: the leg launches from the run dir, so a
+    relative path would be per-run again); created if absent; never removed by teardown; inert with `--shared-data`. The
+    default stays per-run, storage stays `$RUN_DIR/data`, and `dataset_id`s are unchanged.
+  - Evidence: the announce line, `env/launch.env`, and `ports.json`'s new `equities_cache_dir` / `equities_cache_shared`.
+  - `util/experiments/run_suite.py --shared-equities-cache DIR` passes it to every cell's `--up` (the env knob is honoured
+    and passed explicitly) and records it on each registry row and in `suite_manifest.json`; cell ids and
+    `config_sha256` are unchanged, as with the Grafana bridge.
+  - `docs/REFERENCE.md` gains the runbook subsection (sharing is read-mostly, not race-free: juniper-data's cache writes
+    are plain writes, so keep sharing to runs that do not overlap on cold symbols).
+  - `tests/test_experiment_stack_shared_equities_cache.py` (new, 25 tests): the contract text, the misuse matrix, dry
+    run, live `data_up` (PATH stubs), the `ports.json` record and the suite passthrough; wired into `ci.yml` and
+    `docs/REFERENCE.md` (216 suites).
+
+- **`util/home_path_literal_check.py`, the G-PATH gate** (turing bring-up task G5, decision D12 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - A tracked `.bash`, `.sh`, `.py` or `.yml` file under `util/`, `scripts/` or `.github/` may hold no more
+    lines carrying `/home/pcalnon` than `conf/home_path_literal_baseline.json` (new) allows it. The baseline
+    holds the 436 files and 651 lines in scope when the gate landed; 427 of the files are under `util/ad-hoc/`.
+    A line ending in `# home-path-literal: allow` is not counted.
+  - It runs as the `home-path-literal` pre-commit hook on staged files, and as a whole-scope step in
+    ci.yml's Pre-commit job. `--update-baseline` recounts, and `--dry-run` writes nothing.
+  - `tests/test_home_path_literal_check.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
+  - `util/ad-hoc/2026-10-20_turing_g5_mutation_check.py` (new) shows that the suite kills 22 of 22 mutants.
+
+- **The `git-remote-alias` pre-push hook** (turing bring-up task G6, gate G-ALIAS of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - `.pre-commit-config.yaml` runs `util/git_remote_alias_check.py --check --if-configured` (task G2) at the
+    pre-push stage. On a host with the `github_juniper-*` aliases, a push is blocked while any of the 10
+    checkouts bypasses its alias, is missing, or has a key not at mode 600. A host without the aliases skips.
+  - Each host opts in with `pre-commit install --hook-type pre-push`. `minimum_pre_commit_version` rises from
+    3.0.0 to 3.2.0, the release that named the stage `pre-push`.
+  - `default_stages: [pre-commit]` keeps every other hook at commit time. Without it, a hook with no `stages`
+    runs at every stage: a push would re-run the whole commit suite, and the CI smoke step would lint the
+    whole tree, undoing the Pre-commit job's changed-files split. `check-added-large-files` and `isort` set
+    `stages: [pre-commit]` themselves, because their upstream manifests list pre-push and override
+    `default_stages`.
+  - ci.yml's Pre-commit job runs the pre-push stage as a smoke test, and `tests/test_git_remote_alias_check.py`
+    pins the hook's configuration.
+
+- **`util/experiments/run_suite.py` gains the `acceptance:` facility, and the E-H recurrence suite carries
+  the R5 band** (W5.4 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  F-D3 / F-SCI4; rulings R5 and R6). Before this the audited E-H cell scored `cv_r2 = -18081` and the suite
+  called it `succeeded` -- a number the suite produced correctly, which nothing judged.
+  - **Schema.** `acceptance:` is a list of bands `{metric, min, max, mode}` on the suite (every cell) or on an
+    `include` row (that row only). `metric` is one of the headline columns `aggregate.csv` carries (`train_r2`,
+    `cv_r2`, `cv_r2_std`, `n_windows`, `final_accuracy`, `test_accuracy`, `val_accuracy`); `min` / `max` are
+    inclusive finite numbers, at least one present, `min <= max`; `mode` is `gate` or `report` and is required.
+    A malformed band refuses the suite at load (exit 2), before any cell launches. Bands do not enter the cell
+    id -- they judge the result, they do not change the experiment.
+  - **Outcomes (R6).** A `gate` miss makes a succeeded cell `failed`, with `error` naming the miss
+    (`acceptance: cv_r2=-18081.0 outside [-1.0, 0.5] (gate)`), and the suite exits non-zero; a `report` miss
+    makes it **`flagged`** (new outcome; `TERMINAL_OUTCOMES`) with the same note and the exit code unchanged.
+    A metric the band names that the cell did not produce follows the mode (`cv_r2 absent (gate)`) and is
+    distinct from `degraded`, which says an enabled phase did not run; a cell already `failed` / `degraded` /
+    `stalled` / `timed_out` keeps that outcome with its bands recorded. `flagged` is complete: `--resume` skips
+    it and the exit code counts it with `succeeded` (`COMPLETE_OUTCOMES`).
+  - **Surface.** The registry row carries `acceptance` (per band: `value`, `result` in `pass` / `fail` /
+    `absent`); `aggregate.csv` gains an `acceptance` column, placed **last** so no existing column moves; the
+    REPORT table gains the same column when any cell has bands, plus a `## Acceptance bands` section, and the
+    summary line counts `flagged` cells when there are any; `--dry-run` prints each banded cell's bands;
+    `suite_manifest.json` records them.
+  - **The R5 band**, on `util/experiments/suites/p4/e-h-recurrence-real-data.yaml`'s equities row only:
+    `cv_r2 ∈ [-1.0, +0.5]` and `cv_r2_std ≤ 0.5`, both `gate` (the owner accepted the W5.1 note's amended
+    recommendation on 2026-10-18). Row-scoped because the irregular-sine control's `cv_r2 0.975` would fail
+    `+0.5` under a suite-level band. Re-measured on W5.2's trainval population on 2026-10-19 before encoding
+    (1,522 windows, five expanding folds, embargo = look-back 64): the bare 0.7.0 default scores `-0.298` /
+    `0.281`, the recommended RFF / ridge 1.0 / 256 / median configuration `-0.111` / `0.041`; both inside.
+    Round 3 of the CV-blowup note's consensus review (Lane A1-r3, 45 checks) was already recorded complete in
+    `notes/JUNIPER_2026-10-05_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-CONSENSUS-VALIDATION.md`, so the plan's
+    "round 3 first" precondition was met.
+  - `tests/test_run_suite_acceptance.py` (20 tests, hermetic through the `JUNIPER_SUITE_*` seams) pins the
+    schema, the comparator, the outcomes, the row scoping, the resume and exit behaviour, the columns and the
+    shipped band; wired into `ci.yml` and `docs/REFERENCE.md`'s run list (213 suites).
 
 - **`util/juniper_repo_ssh_setup.bash`: one repo's deploy key and Host alias, idempotently** (turing bring-up
   task A5, `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
@@ -82,6 +205,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the G6 pre-push hook. Every git call drops the `GIT_DIR` that a hook inherits in a linked worktree.
   - `tests/test_git_remote_alias_check.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
   - `util/ad-hoc/2026-10-17_turing_g2_mutation_check.py` (new) shows that the suite kills 16 of 16 mutants.
+
+- **ci.yml's `host-tooling-macos` job, advisory** (turing bring-up task G4 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - It runs the eight turing host-tooling suites on `macos-latest`, under BSD userland and `/bin/bash` 3.2,
+    which the Linux regression step cannot show. A step asserts both, and that `brew --prefix` is not
+    turing's Intel `/usr/local`, so a green run also shows the scripts are prefix-independent.
+  - No workflow path filter: a detection step sets `relevant` from the pull request or merge-group diff,
+    and every later step is gated on it, so the job reports success when no host-tooling path changed.
+  - Absent from the Quality Gate `needs:` until 10 consecutive green runs; it then joins them, never as a
+    separate ruleset context.
+  - `tests/test_ci_host_tooling_macos.py` (new) gates the job's shape and runs the detection shell under a
+    stub `git`. It is wired into `ci.yml` and `docs/REFERENCE.md`.
+
+- **`util/host_state_probe.bash` and `util/host_state_check.py`, the host gates** (turing bring-up task G1 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; the gates of §9.3).
+  - The probe collects a macOS host's state, read-only, as raw command captures in one JSON object. Under
+    `~/.ssh` and `~/.gnupg` it tests names and permission bits only, and it runs no credential probe. It
+    graduates `util/ad-hoc/2026-10-15_turing_host_state_probe.bash`.
+  - The check judges those captures against `conf/hosts/<host>/expected.yaml`, new for turing. It evaluates
+    G-ALIAS, G-SIGN, G-SEC, G-TOOLS, G-ENV, G-NET and G-MEM condition by condition, and names the plan task
+    behind each failure. `--check` exits 1 while a gate fails.
+  - expected.yaml is validated before anything runs. A VM that cannot fit the machine is regression R-G1,
+    the X2 class (the primer's 44 GB VM on a 16 GiB host), and exits 2.
+  - Turing's readiness on 2026-10-20 was 0 of 7. Each failure is an open plan task: A1; C1, C2 and C3;
+    D4; E4; A6 and F2; node mode (F3); and the I-SIGN record (signing plan K10).
+  - `tests/test_host_state_probe.py` and `tests/test_host_state_check.py` (new) are wired into `ci.yml`,
+    the advisory `host-tooling-macos` job and `docs/REFERENCE.md` (220 suites).
+  - `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` (new) shows that they kill 57 of 57 mutants.
+
+- **Turing bring-up H2: the three SME agents of plan §11** (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - `.claude/agents/macos-host-sme.md` (new) measures a macOS host against `conf/hosts/<host>/expected.yaml`
+    with `util/host_state_check.py --json`, and explains each failing gate condition with its plan task, actor
+    and remediation. It writes one `reports/` file and changes nothing on the host.
+  - `.claude/agents/signing-auth-sme.md` (new) diagnoses git transport and commit signing from the repo's
+    non-credential checkers and read-only `gh api` GETs. Its one `reports/` file ends with the OWNER command
+    list: every check an agent may not run.
+  - `.claude/agents/k8s-node-sme.md` (new) reviews the Mac worker VM (sizing, kubelet reservations, taints,
+    join steps) against the juniper-k8s primer and decision D1, and reconciles errata X1-X5, in one `notes/`
+    audit. It holds WebFetch and no Bash.
+  - `tests/test_macos_host_sme_contract.py`, `tests/test_signing_auth_sme_contract.py` and
+    `tests/test_k8s_node_sme_contract.py` (new) share `tests/agent_contract_support.py` (new). Each pins its
+    agent's exact tool set and Must-never items, and runs `util/claude_agent_guard.py` to show that the guard
+    denies each item under the rule the agent cites while passing the agent's own procedure. They are wired
+    into `ci.yml` and `docs/REFERENCE.md` (223 suites).
+  - `util/ad-hoc/2026-10-20_turing_h2_mutation_check.py` (new) shows that they kill 28 of 28 mutants, six of
+    them in the guard.
+
+- **`util/mcp_setup.bash`: each checkout's Serena entry, pinned and bound** (turing bring-up task H4 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; decision D10).
+  - It writes `<checkout>/.mcp.json`'s `serena` entry: `uvx --from git+https://github.com/oraios/serena@<commit>
+    serena start-mcp-server --context <context> --project <checkout> --open-web-dashboard False`. Other
+    servers are kept, a changed file is backed up first, and a second run writes nothing. `--check` and
+    `--remove` complete it.
+  - `--project` fixes audit A2-F1 (Serena started with no active project), and running it per checkout fixes
+    A2-F4 (no worktree had a `.mcp.json`), both from `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_HEADLESS-SIGNING-AND-SERENA-HARNESS-AUDIT.md`.
+  - The pin comes from `conf/hosts/<host>/mcp.json` (new for turing): Serena v1.7.0 at its full commit, on the
+    claude-code context, whose `excluded_tools` hold `execute_shell_command`. `.serena/project.yml` now
+    excludes it too, and `.gitignore` covers the script's `.mcp.json.bak-*` backups.
+  - On turing the pinned Serena does not start yet: its exact `cryptography==50.0.0` pin ships no Intel-macOS
+    wheel, and building it needs Rust 1.83 (the host has 1.71). The live `claude mcp list` check waits on
+    that.
+  - `tests/test_mcp_setup.py` (new) is wired into `ci.yml`, the `host-tooling-macos` job and
+    `docs/REFERENCE.md` (224 suites). `util/ad-hoc/2026-10-21_turing_h4_mutation_check.py` (new) shows that it
+    kills 20 of 20 mutants.
 
 - **The D11 item 4 agent guard for turing** (task C8, option (b) of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`). Pattern rules alone cannot carry D11:
@@ -353,6 +540,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`[recurrence]` now floors `juniper-recurrence>=0.8.0`** (`<0.9.0`) **and `juniper-recurrence-model>=0.6.0` (`<0.7.0`)**, the
+  W5.2 release pair (P5 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  approved 2026-10-20 with the session's merge approval, the ruling 0.7.0 reopened). The pins were
+  `juniper-recurrence>=0.7.0,<0.8.0` and `juniper-recurrence-model>=0.5.0,<0.6.0`.
+  - **Why both move.** recurrence 0.8.0's `requires_dist` is `juniper-recurrence-model>=0.6.0,<0.7.0`:
+    its crossval pool is model 0.6.0's composed `trainval` view and its per-entity folds read the
+    `ticker_code` / `window_end_date` keys that 0.6.0 writes. Lifting the recurrence ceiling alone would
+    leave the extra unsatisfiable under the old model cap `<0.6.0`. The model range is the one 0.8.0
+    requires, not a wider one.
+  - **What 0.8.0 brings** to `pip install juniper-ml[recurrence]`: `POST /v1/crossval` selects over the
+    `trainval` pool, so the reserved `test` partition is never in a fold; a multi-ticker artifact's folds
+    are cut on the global date per entity with the embargo purged per entity; `embargo` defaults to the
+    look-back (an explicit smaller value is honoured and logged); the optional `embargo_days`; a `folding`
+    block on the response and on `GET /v1/crossval/status`; `dataset.split` reads `trainval`. The
+    `[torch]` extra resolves again (0.7.0's was disjoint from its base floor).
+  - **Pre-flighted against real PyPI** on 2026-10-20 with
+    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages on Python 3.12, 3.13 and 3.14, with recurrence 0.8.0, model
+    0.6.0, client 0.3.0, data-client 0.6.0, model-core 0.3.2 and service-core 0.7.1; `[all]` resolves in 76 on
+    each, the same versions plus canopy 0.9.0, cascor 0.11.0, cascor-worker 0.6.1 and juniper-data 0.17.0.
+  - The client floor `juniper-recurrence-client>=0.3.0,<0.4.0` stays (no client contract changed). The
+    release train cuts the version that carries this (0.11.0 in the plan). `docs/QUICK_START.md`'s sample
+    `pip list` block moves its two recurrence lines with the pins. Applied by
+    `util/ad-hoc/2026-10-20_raise_recurrence_floor_0_8_0.py`, which asserts each site's exact text and
+    requires exactly one match apiece.
+
+- **`[recurrence]` now floors `juniper-recurrence>=0.7.0`** (`<0.8.0`) **and `juniper-recurrence-model>=0.5.0` (`<0.6.0`)**, the
+  P5 release pair (W5.8 (B), W5.9, W5.10 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
+  approved 2026-10-19 with the session's merge approval, the ruling 0.7.0 reopened). The pins were
+  `juniper-recurrence>=0.6.1,<0.7.0` and `juniper-recurrence-model>=0.3.0,<0.5.0`.
+  - **Why both move.** recurrence 0.7.0's `requires_dist` is `juniper-recurrence-model>=0.5.0,<0.6.0`:
+    its `default_ridge` is `"gcv"`, which is safe only on model 0.5.0's train-fold standardisation of the
+    linear readout's memory block. Lifting the recurrence ceiling alone would leave the extra
+    unsatisfiable under the old model cap `<0.5.0`. The model range is the one 0.7.0 requires, not a
+    wider one: 0.7.0 refuses model 0.6.0, which is recurrence 0.8.0's floor (W5.2, on an open PR); the
+    next raise moves both again.
+  - **What 0.7.0 brings** to `pip install juniper-ml[recurrence]`: `POST /v1/crossval` on the equities
+    row no longer blows up under the default readout (the W5.1 note's −2.1e4 becomes −0.195 on the E-H
+    artifact), and every fit carries a `diagnostics` block (`readout`, `theta`, `ridge_mode` /
+    `ridge_selected`, `gamma`, `gcv_at_edge` / `null_model`).
+  - **0.7.0's own `[torch]` extra is unresolvable** (`juniper-recurrence-model[torch]>=0.4.0,<0.5.0`
+    against the base `>=0.5.0`); `[recurrence]` installs the base distribution and is unaffected. The
+    fix rides on juniper-recurrence#215 for 0.8.0.
+  - **Pre-flighted against real PyPI** on 2026-10-19 with
+    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages on Python 3.12, 3.13 and 3.14, with recurrence 0.7.0, model
+    0.5.0, client 0.3.0, data-client 0.6.0, model-core 0.3.2 and service-core 0.7.1; `[all]` resolves in 76 on
+    each, the same versions plus canopy 0.9.0, cascor 0.11.0, cascor-worker 0.6.1 and juniper-data 0.17.0.
+  - The client floor `juniper-recurrence-client>=0.3.0,<0.4.0` stays (no client contract changed). The
+    release train cuts the version that carries this (0.11.0 in the plan). Applied by
+    `util/ad-hoc/2026-10-19_raise_recurrence_floor_0_7_0.py`, which asserts each site's exact text and
+    requires exactly one match apiece.
+
+- **`util/experiments/run_experiment.py` omits `embargo` from the crossval request when the config
+  omits it** (W5.2 of
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`).
+  It used to send `embargo: 0`, which overrode the service's default; from juniper-recurrence 0.8.0
+  that default is one look-back per entity (the gap that keeps an eval window's history clear of
+  every train window), so a suite row that names no embargo now gets it. A config that names a value
+  -- the E-G scheme × embargo sweep -- still sends it, and on recurrence ≤ 0.7.0 an omitted value is
+  still the service's 0. `tests/test_run_experiment.py` pins the omission.
+
 - **`[recurrence]` now floors `juniper-recurrence>=0.6.1`**, the release that carries the recurrence floors ruling
   (M1 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-18 UTC). The floor was `>=0.6.0`.
   - **Why 0.6.0 was not enough.** 0.6.0 shipped without the owner's 2026-10-10 floors ruling: it still
@@ -487,7 +734,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The session handoff is
     `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_perf-lane-helper-binds-axis3-run-d6-control-micro-cut.md`.
 
+- **ci.yml's `host-tooling-macos` job is required** (turing bring-up task G4's promotion step, per
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  - It joins the Quality Gate's `needs:` after 12 consecutive green push runs on main (3968ca04 to e3ba1936), each of which ran the suites;
+    the last ran all eleven, G1's two included. It has its own `!= success` arm, because the gate tests each
+    need's result itself.
+  - It never reads skipped: it has no job-level `if` and no path filter, and on a pull request with no host-tooling
+    change it reports success.
+  - `tests/test_ci_quality_gate.py` pins the need and its success predicate, and rehearses its failure and skip;
+    `tests/test_ci_host_tooling_macos.py` flips its advisory pin.
+
 ### Fixed
+
+- **The release-train proposal keeps its PR body under GitHub's 65,536-character limit**, and refuses an
+  over-long one before any write. `util/release_train/propose.py` inlined the whole drafted release notes in the
+  proposal PR body, and `execute_proposal` opens the PR only after the release branch and its signed commit
+  exist. juniper-ml 0.11.0's draft is 88,548 B, so its body came to 90,219 characters, which GitHub refuses
+  ("Body is too long"), and `--execute` would have left `release/juniper-ml-v0.11.0` and its commit with no PR
+  (the juniper-ml#2227 half-written class). A draft that would carry the body past the limit, counted in UTF-8
+  bytes (never fewer than characters), is now replaced by a pointer to the `[<version>]` section that the PR's own
+  CHANGELOG diff shows in full; the ceremony's archive PR still carries the final notes. `execute_proposal`
+  raises before `create_branch` when a body is still over the limit. The 0.11.0 body is now 1,909 B. Four tests
+  in `tests/test_release_train_propose.py`.
+
+- **The release-train detector no longer discounts a `pyproject.toml` hunk whose table its context does not name**,
+  so juniper-ml reads UNRELEASED_CHANGES (0.11.0) instead of UP_TO_DATE. `util/release_train/detect.py`'s
+  `classify_pyproject_patch` took a hunk's TOML table only from a `[table]` line inside the hunk or from its `@@`
+  trailer, and git's default trailer is the nearest line that starts with a letter
+  (`@@ -81,9 +81,9 @@ doc-tools = [`), never a `[table]`. Every changed line of a hunk more than three lines below
+  its header therefore fell to the NON-SHIP default, and a later hunk inherited the previous hunk's table. Since
+  v0.10.0 the `[servers]` canopy and data floors and the `[recurrence]` recurrence and model ranges have moved
+  (published 0.10.0 still pins `juniper-recurrence>=0.5.0,<0.6.0`), yet the meta-package, which ships nothing but
+  `pyproject.toml` (`ship_paths: []`), read UP_TO_DATE with a CHANGELOG conflict, and `propose.py` had nothing to
+  propose.
+  - Each hunk now takes its table and extra from the HEAD file when the hunk's new-side lines sit at its stated
+    position there (the cumulative tag..HEAD patch aligns with the checkout, as for the `.py` substantive check).
+    A changed line whose table stays unknown (no aligned HEAD file, or a stale checkout) is UNCERTAIN, never
+    NON-SHIP, and a `[[array.of.tables]]` header now ends the table before it.
+  - Measured on the seven in-repo packages against `main`'s detector: juniper-ml moves UP_TO_DATE →
+    UNRELEASED_CHANGES (0.11.0) and juniper-config-tools UP_TO_DATE → UNRELEASED_CHANGES (its `Typing :: Typed`
+    classifier in `[project]`, unreleased since 0.1.0; its `[Unreleased]` is empty, so the manifest flags it
+    under-documented); the other five are unchanged. The daily `release-train.yml` run is in report mode, so
+    nothing is proposed by itself.
+  - Nine new tests in `tests/test_release_train_detect.py`, one of them on real `git diff` output; all nine fail on
+    `main`'s detector.
 
 - **The release-train ceremony can archive notes larger than about 97 KB, and it HALTs before any write
   when an archive cannot travel in one signed commit** (juniper-ml#2227). `util/release_train/ceremony.py`'s
@@ -518,6 +808,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `workflow_dispatch` of `ci.yml` scans all history, so `.gitleaksignore` holds the 24 as
     commit-scoped entries grouped by class. The full-history scan of every branch and tag now
     reports nothing.
+
+- **The R-S9 audit in `tests/test_configure_commit_signing.py` no longer charges the interpreter's bytecode-cache
+  writes to the script.**
+  - Post-merge main verification failed `test_r_s9_never_opens_credentials_never_runs_gpg_and_writes_only_its_files`
+    on four of the five heads from `036e53e2` to `398c5f5d` (2026-10-21).
+  - The cause: on a runner whose Python 3.12.15 toolcache had no cached `encodings/__pycache__/utf_8_sig` bytecode,
+    the audited child wrote one while importing that codec for the VS Code settings read, and the audit hook counted
+    it as the script's write.
+  - The fix: the child runs with `-B`. Every write the script itself makes is still audited.
+  - Forcing an empty bytecode cache (`-X pycache_prefix=`) reproduces the failure without `-B` and passes with it.
 
 - **Four defects from the Cursor flood-3 evaluation**
   (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §4):

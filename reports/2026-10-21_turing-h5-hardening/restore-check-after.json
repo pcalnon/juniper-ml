@@ -1,0 +1,873 @@
+{
+  "checks": {
+    "advisories": {
+      "active": 92,
+      "advisories": {
+        "GHSA-22jm-h49p-29qw": {
+          "cve": "CVE-2026-111767",
+          "packages": [
+            "@modelcontextprotocol/sdk"
+          ],
+          "severity": "high",
+          "summary": "MCP TypeScript SDK: Experimental tasks were not tied to the session that created them"
+        },
+        "GHSA-26pp-8wgv-hjvm": {
+          "cve": "CVE-2026-56762",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono missing validation of cookie name on write path in setCookie()"
+        },
+        "GHSA-27v5-c462-wpq7": {
+          "cve": "CVE-2026-4923",
+          "packages": [
+            "path-to-regexp"
+          ],
+          "severity": "medium",
+          "summary": "path-to-regexp vulnerable to Regular Expression Denial of Service via multiple wildcards"
+        },
+        "GHSA-28wg-ghj8-5hjv": {
+          "cve": "CVE-2026-67214",
+          "packages": [
+            "nanoid"
+          ],
+          "severity": "high",
+          "summary": "nanoid: non-secure generators can loop indefinitely with negative size"
+        },
+        "GHSA-2gcr-mfcq-wcc3": {
+          "cve": "CVE-2026-47676",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: app.mount() strips mount prefix using undecoded path, causing incorrect routing for percent-encoded paths"
+        },
+        "GHSA-2v37-7h3g-55p8": {
+          "cve": "CVE-2026-67213",
+          "packages": [
+            "nanoid"
+          ],
+          "severity": "high",
+          "summary": "nanoid: custom generators can loop indefinitely when size is zero"
+        },
+        "GHSA-3hrh-pfw6-9m5x": {
+          "cve": "CVE-2026-47675",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: Cookie helper does not sanitize sameSite and priority, allowing Set-Cookie injection"
+        },
+        "GHSA-3v7f-55p6-f55p": {
+          "cve": "CVE-2026-33672",
+          "packages": [
+            "picomatch"
+          ],
+          "severity": "medium",
+          "summary": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching"
+        },
+        "GHSA-458j-xx4x-4375": {
+          "cve": "CVE-2026-56761",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "hono Improperly Handles JSX Attribute Names Allows HTML Injection in hono/jsx SSR"
+        },
+        "GHSA-46jr-4wx8-v453": {
+          "cve": "CVE-2026-111768",
+          "packages": [
+            "@modelcontextprotocol/sdk"
+          ],
+          "severity": "high",
+          "summary": "MCP TypeScript SDK: One HTTP request within the default size limit could exhaust server memory during validation"
+        },
+        "GHSA-46wh-pxpv-q5gq": {
+          "cve": "CVE-2026-30827",
+          "packages": [
+            "express-rate-limit"
+          ],
+          "severity": "high",
+          "summary": "express-rate-limit: IPv4-mapped IPv6 addresses bypass per-client rate limiting on servers with dual-stack network"
+        },
+        "GHSA-4c8g-83qw-93j6": {
+          "cve": "CVE-2026-13676",
+          "packages": [
+            "fast-uri"
+          ],
+          "severity": "high",
+          "summary": "fast-uri vulnerable to host confusion via failed IDN canonicalization"
+        },
+        "GHSA-4mjr-xmp4-gh2g": {
+          "cve": "CVE-2026-82417",
+          "packages": [
+            "qs"
+          ],
+          "severity": "medium",
+          "summary": "qs: Denial of Service via Attacker Controlled isBuffer"
+        },
+        "GHSA-4w7w-66w2-5vf9": {
+          "cve": "CVE-2026-39365",
+          "packages": [
+            "vite"
+          ],
+          "severity": "medium",
+          "summary": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling"
+        },
+        "GHSA-54fx-42gc-7vw4": {
+          "cve": "CVE-2026-71848",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: Algorithmic Complexity DoS in Language Middleware"
+        },
+        "GHSA-587h-7wmj-h5pm": {
+          "cve": "CVE-2026-112942",
+          "packages": [
+            "vite"
+          ],
+          "severity": "high",
+          "summary": "launch-editor: `fs.existsSync()` existence check can be bypassed on Windows"
+        },
+        "GHSA-5gmw-xhrv-c9v3": {
+          "cve": "CVE-2026-104848",
+          "packages": [
+            "tinypool"
+          ],
+          "severity": "critical",
+          "summary": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution"
+        },
+        "GHSA-5pq2-9x2x-5p6w": {
+          "cve": "CVE-2026-29086",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono Vulnerable to Cookie Attribute Injection via Unsanitized domain and path in setCookie()"
+        },
+        "GHSA-67mh-4wv8-2f99": {
+          "cve": null,
+          "packages": [
+            "esbuild"
+          ],
+          "severity": "medium",
+          "summary": "esbuild enables any website to send any requests to the development server and read the response"
+        },
+        "GHSA-68fv-2mgg-jv7q": {
+          "cve": "CVE-2026-93749",
+          "packages": [
+            "source-map-js"
+          ],
+          "severity": "high",
+          "summary": "source-map-js allows event-loop denial of service through indexed source-map section offsets"
+        },
+        "GHSA-698v-4r3x-3vcv": {
+          "cve": "CVE-2026-112943",
+          "packages": [
+            "vite"
+          ],
+          "severity": "medium",
+          "summary": "launch-editor: escapeCmdArgs() omits % escaping on Windows"
+        },
+        "GHSA-69xw-7hcm-h432": {
+          "cve": "CVE-2026-44455",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "hono/jsx has Unvalidated JSX Tag Names that May Allow HTML Injection"
+        },
+        "GHSA-6g55-p6wh-862q": {
+          "cve": "CVE-2026-45623",
+          "packages": [
+            "postcss"
+          ],
+          "severity": "high",
+          "summary": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments"
+        },
+        "GHSA-6prh-2h8m-c8cw": {
+          "cve": "CVE-2026-111769",
+          "packages": [
+            "@modelcontextprotocol/sdk"
+          ],
+          "severity": "medium",
+          "summary": "MCP TypeScript client SDK: HTTP client transports and OAuth requests followed cross-origin redirects and re-sent custom "
+        },
+        "GHSA-6qxp-vccf-f47h": {
+          "cve": "CVE-2026-104850",
+          "packages": [
+            "@modelcontextprotocol/sdk"
+          ],
+          "severity": "high",
+          "summary": "MCP TypeScript SDK: OAuth client could send credentials to an authorization server chosen by the MCP server"
+        },
+        "GHSA-79qm-7rj5-m7r9": {
+          "cve": "CVE-2026-71849",
+          "packages": [
+            "hono"
+          ],
+          "severity": "low",
+          "summary": "Hono: Proxy Helper does not remove response headers listed in the `Connection` header"
+        },
+        "GHSA-7p8r-x3mc-p8w7": {
+          "cve": "CVE-2026-18446",
+          "packages": [
+            "fast-uri"
+          ],
+          "severity": "high",
+          "summary": "fast-uri vulnerable to host confusion via backslash authority introducer"
+        },
+        "GHSA-82fw-gwwq-j7x9": {
+          "cve": "CVE-2026-84373",
+          "packages": [
+            "@vitest/mocker",
+            "vitest"
+          ],
+          "severity": "medium",
+          "summary": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock"
+        },
+        "GHSA-85c8-ppgw-ccpr": {
+          "cve": "CVE-2026-104849",
+          "packages": [
+            "tinypool"
+          ],
+          "severity": "critical",
+          "summary": "Tinypool: Prototype Pollution Gadget to RCE in run() options"
+        },
+        "GHSA-88fw-hqm2-52qc": {
+          "cve": "CVE-2026-54290",
+          "packages": [
+            "hono"
+          ],
+          "severity": "high",
+          "summary": "hono: CORS Middleware reflects any Origin with credentials when `origin` defaults to the wildcard"
+        },
+        "GHSA-8j4g-w8fx-2239": {
+          "cve": "CVE-2026-69207",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: ReDoS in CORS middleware via Access-Control-Request-Headers"
+        },
+        "GHSA-92pp-h63x-v22m": {
+          "cve": "CVE-2026-39406",
+          "packages": [
+            "@hono/node-server"
+          ],
+          "severity": "medium",
+          "summary": "@hono/node-server: Middleware bypass via repeated slashes in serveStatic"
+        },
+        "GHSA-9jrq-w75r-8gcw": {
+          "cve": "CVE-2026-112945",
+          "packages": [
+            "vite"
+          ],
+          "severity": "low",
+          "summary": "Vite: Cross origin script execution through Vite custom middleware"
+        },
+        "GHSA-9vqf-7f2p-gf9v": {
+          "cve": "CVE-2026-44456",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: bodyLimit() can be bypassed for chunked / unknown-length requests"
+        },
+        "GHSA-c2c7-rcm5-vvqj": {
+          "cve": "CVE-2026-33671",
+          "packages": [
+            "picomatch"
+          ],
+          "severity": "high",
+          "summary": "Picomatch has a ReDoS vulnerability via extglob quantifiers"
+        },
+        "GHSA-crvj-82cr-hjcx": {
+          "cve": "CVE-2026-84363",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: Query parser reads parameters after the URL fragment, causing cache-key and proxy interpretation differentials"
+        },
+        "GHSA-f23p-vx2j-j53r": {
+          "cve": "CVE-2026-71850",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: `memo()` retains SSR output across requests, leading to cross-user data disclosure"
+        },
+        "GHSA-f577-qrjj-4474": {
+          "cve": "CVE-2026-47673",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: JWT middleware accepts any Authorization scheme, not only Bearer"
+        },
+        "GHSA-f65p-4m7j-42xc": {
+          "cve": "CVE-2026-75975",
+          "packages": [
+            "fast-uri"
+          ],
+          "severity": "high",
+          "summary": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization"
+        },
+        "GHSA-frvp-7c67-39w9": {
+          "cve": null,
+          "packages": [
+            "@hono/node-server"
+          ],
+          "severity": "medium",
+          "summary": "Node.js Adapter for Hono: Path traversal in `serve-static` on Windows via encoded backslash (`%5C`)"
+        },
+        "GHSA-fx2h-pf6j-xcff": {
+          "cve": "CVE-2026-53571",
+          "packages": [
+            "vite"
+          ],
+          "severity": "high",
+          "summary": "vite: `server.fs.deny` bypass on Windows alternate paths"
+        },
+        "GHSA-fxqj-rqcc-2cmp": {
+          "cve": "CVE-2026-69153",
+          "packages": [
+            "postcss"
+          ],
+          "severity": "medium",
+          "summary": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q \u2014 attacker-controlled sourceMappingURL reads arbitrary .map files when `f"
+        },
+        "GHSA-g6gw-c38x-mqfc": {
+          "cve": "CVE-2026-84364",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: Unbounded dot-notation nesting in `parseBody()` can cause memory exhaustion"
+        },
+        "GHSA-g7r4-m6w7-qqqr": {
+          "cve": null,
+          "packages": [
+            "esbuild"
+          ],
+          "severity": "low",
+          "summary": "esbuild allows arbitrary file read when running the development server on Windows"
+        },
+        "GHSA-gpj5-g38j-94v9": {
+          "cve": "CVE-2026-39356",
+          "packages": [
+            "drizzle-orm"
+          ],
+          "severity": "high",
+          "summary": "Drizzle ORM has SQL injection via improperly escaped SQL identifiers"
+        },
+        "GHSA-gqvv-2mrq-wpjv": {
+          "cve": "CVE-2026-84365",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: Incomplete fix for CVE-2026-39408: `toSSG()` still writes files outside the output directory"
+        },
+        "GHSA-h3mg-xc3c-68pw": {
+          "cve": "CVE-2026-101911",
+          "packages": [
+            "ip-address"
+          ],
+          "severity": "medium",
+          "summary": "ip-address: Address6 builds a parse diagnostic proportional to the input with no length bound, allowing a single long st"
+        },
+        "GHSA-hm8q-7f3q-5f36": {
+          "cve": "CVE-2026-44459",
+          "packages": [
+            "hono"
+          ],
+          "severity": "low",
+          "summary": "Hono has improper validation of NumericDate claims (exp, nbf, iat) in JWT verify()"
+        },
+        "GHSA-hrr3-gc8f-f4qj": {
+          "cve": "CVE-2026-86472",
+          "packages": [
+            "fast-uri"
+          ],
+          "severity": "medium",
+          "summary": "fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets"
+        },
+        "GHSA-hvrm-45r6-mjfj": {
+          "cve": "CVE-2026-59896",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "hono/jsx does not isolate context per request, leading to cross-request data disclosure"
+        },
+        "GHSA-hxh3-vqpv-xpqv": {
+          "cve": "CVE-2026-93981",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "hono/jsx renders plain strings unescaped in boundary components, leading to XSS"
+        },
+        "GHSA-j3q9-mxjg-w52f": {
+          "cve": "CVE-2026-4926",
+          "packages": [
+            "path-to-regexp"
+          ],
+          "severity": "high",
+          "summary": "path-to-regexp vulnerable to Denial of Service via sequential optional groups"
+        },
+        "GHSA-j6c9-x7qj-28xf": {
+          "cve": "CVE-2026-54287",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "hono: AWS Lambda adapter merges multiple `Set-Cookie` headers into one value, dropping cookies on ALB single-header and "
+        },
+        "GHSA-j6r3-76f7-8jcv": {
+          "cve": "CVE-2026-101912",
+          "packages": [
+            "ip-address"
+          ],
+          "severity": "medium",
+          "summary": "ip-address: isInSubnet() and isHostInSubnet() compare addresses of different families as if they shared an address space"
+        },
+        "GHSA-jqcg-44mw-7w3h": {
+          "cve": "CVE-2026-90711",
+          "packages": [
+            "proxy-addr"
+          ],
+          "severity": "critical",
+          "summary": "proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet"
+        },
+        "GHSA-jqff-g426-hqxp": {
+          "cve": "CVE-2026-76172",
+          "packages": [
+            "fast-uri"
+          ],
+          "severity": "high",
+          "summary": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization"
+        },
+        "GHSA-mwp4-54f8-5fhr": {
+          "cve": "CVE-2026-69192",
+          "packages": [
+            "ip-address"
+          ],
+          "severity": "high",
+          "summary": "ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trus"
+        },
+        "GHSA-p6xx-57qc-3wxr": {
+          "cve": "CVE-2026-29085",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono Vulnerable to SSE Control Field Injection via CR/LF in writeSSE()"
+        },
+        "GHSA-p77w-8qqv-26rm": {
+          "cve": "CVE-2026-44457",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono's Cache Middleware ignores Vary: Authorization / Vary: Cookie leading to cross-user cache leakage"
+        },
+        "GHSA-p9ff-h696-f583": {
+          "cve": "CVE-2026-39363",
+          "packages": [
+            "vite"
+          ],
+          "severity": "high",
+          "summary": "Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket"
+        },
+        "GHSA-q3j6-qgpj-74h6": {
+          "cve": "CVE-2026-6321",
+          "packages": [
+            "fast-uri"
+          ],
+          "severity": "high",
+          "summary": "fast-uri vulnerable to path traversal via percent-encoded dot segments"
+        },
+        "GHSA-q5qw-h33p-qvwr": {
+          "cve": "CVE-2026-29045",
+          "packages": [
+            "hono"
+          ],
+          "severity": "high",
+          "summary": "Hono vulnerable to arbitrary file access via serveStatic vulnerability "
+        },
+        "GHSA-q8mj-m7cp-5q26": {
+          "cve": "CVE-2026-8723",
+          "packages": [
+            "qs"
+          ],
+          "severity": "medium",
+          "summary": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays "
+        },
+        "GHSA-qp7p-654g-cw7p": {
+          "cve": "CVE-2026-44458",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono has CSS Declaration Injection via Style Object Values in JSX SSR"
+        },
+        "GHSA-qw65-cvwx-89v3": {
+          "cve": "CVE-2026-84292",
+          "packages": [
+            "fast-uri"
+          ],
+          "severity": "high",
+          "summary": "fast-uri vulnerable to authority injection via an unvalidated port in serialize"
+        },
+        "GHSA-qx2v-qp2m-jg93": {
+          "cve": "CVE-2026-41305",
+          "packages": [
+            "postcss"
+          ],
+          "severity": "medium",
+          "summary": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output"
+        },
+        "GHSA-qxg6-89mg-rqv8": {
+          "cve": "CVE-2026-112949",
+          "packages": [
+            "@vitest/mocker"
+          ],
+          "severity": "medium",
+          "summary": "Vitest: Code injection via unauthenticated manual mock registration"
+        },
+        "GHSA-r28c-9q8g-f849": {
+          "cve": "CVE-2026-73646",
+          "packages": [
+            "postcss"
+          ],
+          "severity": "high",
+          "summary": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure"
+        },
+        "GHSA-r5rp-j6wh-rvv4": {
+          "cve": "CVE-2026-39410",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: Non-breaking space prefix bypass in cookie name handling in getCookie()"
+        },
+        "GHSA-r825-w8mm-5pxw": {
+          "cve": "CVE-2026-112944",
+          "packages": [
+            "vite"
+          ],
+          "severity": "medium",
+          "summary": "launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors"
+        },
+        "GHSA-rpw4-54j3-4h4q": {
+          "cve": "CVE-2026-101913",
+          "packages": [
+            "ip-address"
+          ],
+          "severity": "medium",
+          "summary": "ip-address: Address6.isLinkLocal() recognizes fe80::/64 rather than fe80::/10, allowing SSRF and trust-boundary bypass t"
+        },
+        "GHSA-rq7h-c2jc-7f22": {
+          "cve": "CVE-2026-112946",
+          "packages": [
+            "vite"
+          ],
+          "severity": "medium",
+          "summary": "Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine"
+        },
+        "GHSA-rv63-4mwf-qqc2": {
+          "cve": "CVE-2026-54288",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "hono: Body Limit Middleware can be bypassed on AWS Lambda by understating `Content-Length`"
+        },
+        "GHSA-rvq5-wwqv-78pq": {
+          "cve": "CVE-2026-111771",
+          "packages": [
+            "@modelcontextprotocol/sdk"
+          ],
+          "severity": "medium",
+          "summary": "MCP TypeScript SDK: Server bearer authentication accepted tokens issued for another service"
+        },
+        "GHSA-v2hh-gcrm-f6hx": {
+          "cve": "CVE-2026-16221",
+          "packages": [
+            "fast-uri"
+          ],
+          "severity": "high",
+          "summary": "fast-uri vulnerable to host confusion via literal backslash authority delimiter"
+        },
+        "GHSA-v2v4-37r5-5v8g": {
+          "cve": "CVE-2026-42338",
+          "packages": [
+            "ip-address"
+          ],
+          "severity": "medium",
+          "summary": "ip-address has XSS in Address6 HTML-emitting methods"
+        },
+        "GHSA-v2wj-q39q-566r": {
+          "cve": "CVE-2026-39364",
+          "packages": [
+            "vite"
+          ],
+          "severity": "high",
+          "summary": "Vite: `server.fs.deny` bypassed with queries"
+        },
+        "GHSA-v39h-62p7-jpjc": {
+          "cve": "CVE-2026-6322",
+          "packages": [
+            "fast-uri"
+          ],
+          "severity": "high",
+          "summary": "fast-uri vulnerable to host confusion via percent-encoded authority delimiters"
+        },
+        "GHSA-v422-hmwv-36x6": {
+          "cve": "CVE-2026-12590",
+          "packages": [
+            "body-parser"
+          ],
+          "severity": "low",
+          "summary": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement"
+        },
+        "GHSA-v6wh-96g9-6wx3": {
+          "cve": "CVE-2026-53632",
+          "packages": [
+            "vite"
+          ],
+          "severity": "medium",
+          "summary": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows"
+        },
+        "GHSA-v8w9-8mx6-g223": {
+          "cve": "CVE-2026-56763",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono vulnerable to Prototype Pollution possible through __proto__ key allowed in parseBody({ dot: true })"
+        },
+        "GHSA-w62v-xxxg-mg59": {
+          "cve": "CVE-2026-59895",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: Server-Side XSS via JSX Escaping Bypass in cx() Utility"
+        },
+        "GHSA-wc8c-qw6v-h7f6": {
+          "cve": "CVE-2026-29087",
+          "packages": [
+            "@hono/node-server"
+          ],
+          "severity": "high",
+          "summary": "@hono/node-server has authorization bypass for protected static paths via encoded slashes in Serve Static Middleware"
+        },
+        "GHSA-wgpf-jwqj-8h8p": {
+          "cve": "CVE-2026-54289",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "hono: Lambda@Edge adapter keeps only the last value of a repeated request header, dropping the rest"
+        },
+        "GHSA-wmmm-f939-6g9c": {
+          "cve": "CVE-2026-39407",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: Middleware bypass via repeated slashes in serveStatic"
+        },
+        "GHSA-wwfh-h76j-fc44": {
+          "cve": "CVE-2026-54286",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "hono: Path traversal in `serve-static` on Windows via encoded backslash (`%5C`)"
+        },
+        "GHSA-x5fp-wj9c-mxmx": {
+          "cve": "CVE-2026-82562",
+          "packages": [
+            "qs"
+          ],
+          "severity": "medium",
+          "summary": "qs array-limit bypass via bracket-key comma parsing"
+        },
+        "GHSA-xf4j-xp2r-rqqx": {
+          "cve": "CVE-2026-39408",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: Path traversal in toSSG() allows writing files outside the output directory"
+        },
+        "GHSA-xgm2-5f3f-mvvc": {
+          "cve": "CVE-2026-59897",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: API Gateway v1 adapter can drop a distinct repeated request header value during de-duplication"
+        },
+        "GHSA-xpcf-pg52-r92g": {
+          "cve": "CVE-2026-39409",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono has incorrect IP matching in ipRestriction() for IPv4-mapped IPv6 addresses"
+        },
+        "GHSA-xrhx-7g5j-rcj5": {
+          "cve": "CVE-2026-47674",
+          "packages": [
+            "hono"
+          ],
+          "severity": "medium",
+          "summary": "Hono: IP Restriction bypasses static deny rules for non-canonical IPv6 "
+        },
+        "GHSA-xwg4-73v4-xw9w": {
+          "cve": "CVE-2026-73086",
+          "packages": [
+            "nanoid"
+          ],
+          "severity": "high",
+          "summary": "nanoid: Integer Overflow or Wraparound"
+        }
+      },
+      "by_severity": {
+        "critical": 3,
+        "high": 29,
+        "low": 5,
+        "medium": 55
+      },
+      "withdrawn_excluded": 4
+    },
+    "agot-claude": {
+      "parsed": false,
+      "present": false
+    },
+    "configured": {
+      "configs": [
+        {
+          "config": "claude-code ~/.claude.json",
+          "exists": true,
+          "matches": [],
+          "parsed": true,
+          "server_keys": 0,
+          "server_tables": 0
+        },
+        {
+          "config": "claude-desktop config",
+          "exists": false
+        },
+        {
+          "config": "vscode user mcp.json",
+          "exists": true,
+          "matches": [],
+          "parsed": true,
+          "server_keys": 4,
+          "server_tables": 1
+        },
+        {
+          "config": "cursor ~/.cursor/mcp.json",
+          "exists": false
+        },
+        {
+          "config": "claude-desktop extensions dir",
+          "entries": [],
+          "exists": false
+        }
+      ],
+      "matched": [],
+      "ok": true,
+      "project_mcp_json_scope": "/Users/pcalnon/Development/python/Juniper",
+      "unparsed": []
+    },
+    "no-scripts": {
+      "esbuild_native": [],
+      "esbuild_shims": [
+        "node_modules/@esbuild-kit/core-utils/node_modules/esbuild/bin/esbuild",
+        "node_modules/esbuild/bin/esbuild",
+        "node_modules/vite/node_modules/esbuild/bin/esbuild"
+      ],
+      "node_gyp_builds": [],
+      "ok": true
+    },
+    "npm-lock": {
+      "extra": [],
+      "missing": [],
+      "ok": true
+    },
+    "npm-tree": {
+      "distinct": 174,
+      "extra": [],
+      "missing": [],
+      "ok": true,
+      "package_dirs": 175
+    },
+    "processes": {
+      "command_lines": [],
+      "ok": true,
+      "open_files": []
+    },
+    "provenance": {
+      "adaptive-graph-of-thoughts": {
+        "exec_config_keys": [],
+        "head": "1f7c6cee241aa387399848e323e66c665e82b7df",
+        "head_ref": null,
+        "live_hooks": [],
+        "ok": false,
+        "origin": "https://github.com/SaptaDey/Adaptive-Graph-of-Thoughts-MCP-server.git",
+        "present": true,
+        "tree_compare": {
+          "identical": 300,
+          "local_only": [
+            ".claude/settings.local.json.h5-disabled",
+            "Adaptive-Graph-of-Thoughts-MCP-server.dxt.h5-disabled",
+            "adaptive-graph-of-thoughts-dxt-v1.0.0-production.zip.h5-disabled",
+            "adaptive-graph-of-thoughts-v1.0.1-submission.dxt.h5-disabled",
+            "adaptive-graph-of-thoughts-v1.0.2-final.dxt.h5-disabled"
+          ],
+          "missing_locally": [
+            ".claude/settings.local.json",
+            "Adaptive-Graph-of-Thoughts-MCP-server.dxt",
+            "adaptive-graph-of-thoughts-dxt-v1.0.0-production.zip",
+            "adaptive-graph-of-thoughts-v1.0.1-submission.dxt",
+            "adaptive-graph-of-thoughts-v1.0.2-final.dxt"
+          ],
+          "modified": []
+        },
+        "tree_compared": true
+      },
+      "agi-mcp-server": {
+        "exec_config_keys": [],
+        "head": "9eceac9e214896c3af0ba5d3f4b7bd1770cda07a",
+        "head_ref": null,
+        "live_hooks": [],
+        "ok": false,
+        "origin": "https://github.com/QuixiAI/agi-mcp-server.git",
+        "present": true,
+        "tree_compare": {
+          "identical": 33,
+          "local_only": [
+            ".npmrc",
+            "package-lock.json"
+          ],
+          "missing_locally": [],
+          "modified": []
+        },
+        "tree_compared": true
+      }
+    }
+  },
+  "collected": "2026-10-21T21:01:00Z",
+  "ok": false,
+  "root": "/Users/pcalnon/.claude/mcp-servers"
+}
