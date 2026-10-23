@@ -129,8 +129,16 @@ Lane A (E2E):
    Phase 14 (2026-10-20, on turing) did item 30: F-CANOPY-001, -012, -013, -018 and -032 are FIXED on canopy
    `571743db`, F-CANOPY-028 reproduced (1 of 8 drives on the record) and is re-diagnosed, and F-CANOPY-069 (P0) is filed: the
    dashboard is inert under every dash 3.x (triage 80/61/1/2/16, 1 open P0, 5 open P1, 10 open P2).
+   Phase 15 (2026-10-20, on turing) did items 32 and 31: F-CANOPY-069 is FIXED (canopy#760, merged as
+   `fbf01dff`: the progress alerts are `running=` specs, the two opener callbacks are gone, the dash floor is 4.0.0) and
+   F-CANOPY-028 is FIXED (canopy#761, merged as `aeeaf29b`: the pin writer persists a user's toggle only); triage
+   80/63/1/2/14, 0 open P0, 4 open P1, 10 open P2; new items 33 (turing's E2 canopy env is below the floor) and 34
+   (canopy's Patch Weights sentence for the 1-D targets).
+   On 2026-10-21 (on turing) item 34 was done in canopy#762 (the 1-D parse takes spaces, as the manual says) and
+   the ledger's item 20 in canopy#763 (F-CANOPY-065: the WS leg's partition reaches the apply toast, verified live);
+   Phase 16, recording both, is owed.
    Current Lane A handoff:
-   `HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`. The status as of 2026-10-08
+   `HANDOFF_2026-10-21_canopy-items-34-20-done-canopy762-763-phase16-owed.md`. The status as of 2026-10-08
    follows, for context.
 
    **DONE IN CODE 2026-10-08: canopy#731** (branch `fix/f055-f058-f068-request-ack-pacer`, head `65ead946`).

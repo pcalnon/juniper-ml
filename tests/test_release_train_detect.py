@@ -12,6 +12,9 @@ Covers (task acceptance list):
   * diff-base tag resolution preferring the tag equal to the released version
   * the substantive-hunk filter -- discount a comment-only and a docstring/link-only
     ``.py`` edit; catch a real code hunk
+  * pyproject.toml table resolution -- a hunk whose context names no [table] takes it from
+    the aligned HEAD file (unresolved => uncertain, never NON-SHIP); the meta-package's
+    changed extras SHIP, end to end on real git output
   * path-scoping -- subdir package vs the cascor "repo minus the two subpkg dirs" app
   * CHANGELOG [Unreleased] corroboration-conflict surfacing
   * SemVer proposal derivation (pre-1.0: breaking/feature => MINOR, fix => PATCH)
@@ -130,6 +133,63 @@ def _fc(filename: str, patch: "str | None", status: str = "modified") -> d.FileC
 _COMMENT_ONLY_PATCH = "@@ -84,3 +84,3 @@\n # aligned comment context\n-# see notes/OLD.md\n+# see notes/NEW.md"
 _DOCSTRING_PATCH = "@@ -12,3 +12,3 @@\n prose line\n-Reference: OLD_NOTE.md section 6.\n+Reference: NEW_NOTE.md section 6.\n more prose"
 _REAL_CODE_PATCH = "@@ -10,2 +10,2 @@\n def handler():\n-    return old()\n+    return new_validation()"
+
+# A pyproject hunk deep inside a table has no [table] line in its context, and git's default @@
+# trailer is the nearest line that starts with a letter -- the juniper-ml v0.10.0..main shape
+# (`@@ -81,9 +81,9 @@ doc-tools = [`) that read the meta's [servers] / [recurrence] range
+# changes as tooling-only, so juniper-ml stayed UP_TO_DATE. Line numbers align with _META_HEAD.
+_META_HEAD_LINES = [
+    "[project]",
+    'name = "juniper-thing"',
+    'version = "0.4.0"',
+    "",
+    "[project.optional-dependencies]",
+    "doc-tools = [",
+    '    "juniper-doc-tools>=0.1.0,<0.2.0",',
+    "]",
+    "servers = [",
+    '    "juniper-canopy>=0.9.0",',
+    '    "juniper-cascor>=0.11.0",',
+    '    "juniper-data>=0.17.0",',
+    "]",
+    "test = [",
+    '    "pytest>=8",',
+    '    "coverage>=7.6",',
+    "]",
+    "",
+    "[tool.ruff]",
+    "line-length = 512",
+]
+_META_HEAD = "\n".join(_META_HEAD_LINES) + "\n"
+_META_SERVERS_PATCH = "\n".join(
+    [
+        "@@ -7,9 +7,9 @@ doc-tools = [",
+        '     "juniper-doc-tools>=0.1.0,<0.2.0",',
+        " ]",
+        " servers = [",
+        '-    "juniper-canopy>=0.8.1",',
+        '+    "juniper-canopy>=0.9.0",',
+        '     "juniper-cascor>=0.11.0",',
+        '-    "juniper-data>=0.15.0",',
+        '+    "juniper-data>=0.17.0",',
+        " ]",
+        " test = [",
+        '     "pytest>=8",',
+    ]
+)
+_META_TEST_EXTRA_PATCH = "\n".join(
+    [
+        "@@ -13,7 +13,7 @@ servers = [",
+        " ]",
+        " test = [",
+        '     "pytest>=8",',
+        '-    "coverage>=7",',
+        '+    "coverage>=7.6",',
+        " ]",
+        " ",
+        " [tool.ruff]",
+    ]
+)
 
 
 # ── pure-function unit tests ─────────────────────────────────────────────────
@@ -345,6 +405,82 @@ class PyprojectClassifierTest(unittest.TestCase):
         patch = "@@ -1,2 +1,2 @@ [build-system]\n" '-requires = ["setuptools>=61"]\n' '+requires = ["hatchling"]\n'
         self.assertEqual(d.classify_pyproject_patch(patch)[0], "ship")
 
+    def test_extra_change_below_its_table_header_is_ship_with_head_file(self):
+        kind, reason = d.classify_pyproject_patch(_META_SERVERS_PATCH, _META_HEAD)
+        self.assertEqual(kind, "ship", reason)
+
+    def test_extra_change_below_its_table_header_is_uncertain_without_head_file(self):
+        # The table is unknown, so the verdict is UNCERTAIN -- never the NON-SHIP that hid the
+        # meta-package's range changes.
+        self.assertEqual(d.classify_pyproject_patch(_META_SERVERS_PATCH)[0], "uncertain")
+
+    def test_test_extra_below_its_table_header_is_nonship_with_head_file(self):
+        # The HEAD file gives the hunk its table and the `servers` extra; the context line
+        # `test = [` then moves it to the test extra, which stays NON-SHIP.
+        self.assertEqual(d.classify_pyproject_patch(_META_TEST_EXTRA_PATCH, _META_HEAD)[0], "nonship")
+
+    def test_misaligned_head_file_is_uncertain(self):
+        # A checkout that is not the compared head (one line inserted above the hunk) must not
+        # lend the hunk a table.
+        stale = "\n".join(_META_HEAD_LINES[:2] + ['description = "x"'] + _META_HEAD_LINES[2:]) + "\n"
+        self.assertEqual(d.classify_pyproject_patch(_META_SERVERS_PATCH, stale)[0], "uncertain")
+
+    def test_hunk_does_not_inherit_the_previous_hunks_table(self):
+        # Hunk 1 names [tool.setuptools.packages.find]; hunk 2 sits in
+        # [project.optional-dependencies] with no header in view. Carrying hunk 1's table over
+        # called the range change tooling.
+        head_lines = [
+            "[project]",
+            'name = "juniper-thing"',
+            'version = "0.4.0"',
+            "",
+            "[tool.setuptools.packages.find]",
+            'include = ["juniper_thing*"]',
+            'exclude = ["tests*"]',
+            "namespaces = false",
+            'where = ["."]',
+            "",
+            "[project.optional-dependencies]",
+            "doc-tools = [",
+            '    "juniper-doc-tools>=0.1.0,<0.2.0",',
+            "]",
+            "clients = [",
+            '    "juniper-data-client>=0.5.0",',
+            "]",
+            "servers = [",
+            '    "juniper-data>=0.17.0",',
+            "]",
+        ]
+        patch = "\n".join(
+            [
+                '@@ -3,7 +3,7 @@ name = "juniper-thing"',
+                ' version = "0.4.0"',
+                " ",
+                " [tool.setuptools.packages.find]",
+                '-include = ["juniper_thing"]',
+                '+include = ["juniper_thing*"]',
+                ' exclude = ["tests*"]',
+                " namespaces = false",
+                ' where = ["."]',
+                "@@ -16,5 +16,5 @@ clients = [",
+                '     "juniper-data-client>=0.5.0",',
+                " ]",
+                " servers = [",
+                '-    "juniper-data>=0.15.0",',
+                '+    "juniper-data>=0.17.0",',
+                " ]",
+            ]
+        )
+        self.assertEqual(d.classify_pyproject_patch(patch, "\n".join(head_lines) + "\n")[0], "ship")
+        self.assertEqual(d.classify_pyproject_patch(patch)[0], "uncertain")
+
+    def test_array_of_tables_header_ends_the_previous_table(self):
+        # A [[tool.*]] header right after the `servers` extra, outside the hunk's context: unless
+        # it ends [project.optional-dependencies], the tooling change reads as a `servers` SHIP.
+        head = "\n".join(_META_HEAD_LINES[:13] + ["", "[[tool.mypy.overrides]]", 'module = ["yaml"]', "ignore_missing_imports = true", "follow_imports = 'skip'", "disallow_untyped_defs = false"]) + "\n"
+        patch = "\n".join(["@@ -16,4 +16,4 @@ servers = [", ' module = ["yaml"]', " ignore_missing_imports = true", " follow_imports = 'skip'", "-warn_unused_ignores = false", "+disallow_untyped_defs = false"])
+        self.assertEqual(d.classify_pyproject_patch(patch, head)[0], "nonship")
+
 
 class PathScopingTest(unittest.TestCase):
     def test_subdir_package_scope(self):
@@ -551,6 +687,29 @@ class ClassificationTest(unittest.TestCase):
         rec = self._classify(e)
         self.assertEqual(rec.classification, d.SHIP_UNCERTAIN)
         self.assertEqual(len(rec.ship_uncertain), 1)
+
+    def _meta(self, pyproject: str) -> d.PackageEntry:
+        """A meta-shaped package (path ".", ship_paths []): only its pyproject.toml ships."""
+        (self.repo_root / "pyproject.toml").write_text(pyproject)
+        (self.repo_root / "CHANGELOG.md").write_text("## [Unreleased]\n### Changed\n- [servers] floors raised\n")
+        self.fake.pypi["juniper-thing"] = _pypi("0.4.0")
+        self.fake.tags["juniper-ml"] = ["v0.4.0"]
+        self.fake.compares[("juniper-ml", "v0.4.0", "main")] = d.CompareResult(files=[_fc("pyproject.toml", _META_SERVERS_PATCH)], commits=["deps: raise the [servers] floors"])
+        return _entry(path=".", tag_pattern="v*", archive_name="RELEASE_NOTES_v{version}.md", ship_paths=[])
+
+    def test_meta_extras_change_is_unreleased_changes(self):
+        # juniper-ml 0.10.0 read UP_TO_DATE with every [servers] / [recurrence] range moved.
+        rec = self._classify(self._meta(_META_HEAD))
+        self.assertEqual(rec.classification, d.UNRELEASED_CHANGES)
+        self.assertEqual([x["file"] for x in rec.ship_evidence], ["pyproject.toml"])
+        self.assertEqual(rec.proposed_version, "0.5.0")
+        self.assertIsNone(rec.changelog_conflict)
+
+    def test_meta_extras_change_on_a_stale_checkout_is_ship_uncertain(self):
+        stale = "\n".join(_META_HEAD_LINES[:2] + ['description = "x"'] + _META_HEAD_LINES[2:]) + "\n"
+        rec = self._classify(self._meta(stale))
+        self.assertEqual(rec.classification, d.SHIP_UNCERTAIN)
+        self.assertEqual([x["file"] for x in rec.ship_uncertain], ["pyproject.toml"])
 
     def test_ship_uncertain_when_no_matching_tag(self):
         e = self._pkg("0.4.0")
@@ -919,6 +1078,41 @@ class LocalGitCompareTest(unittest.TestCase):
         comp = d.local_git_compare(_entry(), "juniper-thing-v9.9.9", "main", work, fetch=False)
         self.assertFalse(comp.ok)
         self.assertIn("failed", (comp.error or "").lower())
+
+
+class MetaPyprojectLocalGitTest(unittest.TestCase):
+    """End to end on real git output: a [servers] floor raise below its table header in a
+    meta-shaped pyproject must SHIP through ``local_git_compare`` + ``classify_change``."""
+
+    def _git(self, cwd: Path, *args: str) -> None:
+        subprocess.run(["git", "-C", str(cwd), *args], check=True, capture_output=True, text=True)  # nosec B603,B607
+
+    def test_floor_raise_below_the_table_header_ships(self):
+        root = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: shutil.rmtree(root, ignore_errors=True))
+        bare, work = root / "bare.git", root / "work"
+        subprocess.run(["git", "init", "--bare", "-q", str(bare)], check=True, capture_output=True)  # nosec B603,B607
+        subprocess.run(["git", "clone", "-q", str(bare), str(work)], check=True, capture_output=True)  # nosec B603,B607
+        for key, value in (("user.email", "tests@example.invalid"), ("user.name", "Test User"), ("commit.gpgsign", "false"), ("tag.gpgSign", "false")):
+            self._git(work, "config", key, value)
+        base = _META_HEAD.replace('"juniper-canopy>=0.9.0"', '"juniper-canopy>=0.8.1"').replace('"juniper-data>=0.17.0"', '"juniper-data>=0.15.0"')
+        (work / "pyproject.toml").write_text(base, encoding="utf-8")
+        self._git(work, "add", "-A")
+        self._git(work, "commit", "-q", "-m", "base")
+        self._git(work, "tag", "v0.4.0")
+        self._git(work, "push", "-q", "origin", "HEAD:main")
+        (work / "pyproject.toml").write_text(_META_HEAD, encoding="utf-8")
+        self._git(work, "commit", "-q", "-am", "deps: raise the [servers] floors")
+        self._git(work, "push", "-q", "origin", "HEAD:main")
+
+        entry = _entry(path=".", tag_pattern="v*", archive_name="RELEASE_NOTES_v{version}.md", ship_paths=[])
+        comp = d.local_git_compare(entry, "v0.4.0", "main", work, fetch=False)
+        self.assertTrue(comp.ok, comp.error)
+        (fc,) = comp.files
+        self.assertEqual(fc.filename, "pyproject.toml")
+        self.assertEqual(d.classify_change(fc, entry, _META_HEAD)[0], "ship")
+        # Without the HEAD file the table is unknown under git's default trailer: never NON-SHIP.
+        self.assertNotEqual(d.classify_change(fc, entry, None)[0], "nonship")
 
 
 class CliExitCodeTest(unittest.TestCase):

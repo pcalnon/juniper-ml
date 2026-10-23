@@ -1,0 +1,5 @@
+WS leg only                                             applied=[]  skipped=[]
+WS leg then REST leg (the A-N2 case)                    applied=['cn_training_iterations']  skipped=[]
+REST leg only (control)                                 applied=['cn_training_iterations']  skipped=[]
+MUTATION: WS only, extractor also scans data.result     applied=['nn_max_iterations', 'nn_max_hidden_units', 'nn_output_epochs']  skipped=[{'key': 'nn_max_total_epochs', 'reason': 'not-updatable'}]
+REAL apply_params, WS then REST (this tree)             applied=['nn_max_iterations', 'nn_max_hidden_units', 'nn_output_epochs', 'cn_training_iterations']  skipped=[{'key': 'nn_max_total_epochs', 'reason': 'not-updatable'}]

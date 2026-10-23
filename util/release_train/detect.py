@@ -27,6 +27,8 @@ Algorithm per package (plan S4.2, in order):
      SUBSTANTIVE, non-comment hunk in a SHIP-path file. Pure comment/docstring/link
      edits are discounted (this guards the 2026-07-04 notes-rename false-positive class
      that misclassified UP_TO_DATE packages). Patch-unavailable => SHIP_UNCERTAIN.
+     A pyproject.toml hunk takes its [table] from the aligned HEAD file when its own
+     context names none; a changed line whose table stays unknown => SHIP_UNCERTAIN.
   6. CHANGELOG [Unreleased] corroboration -- corroborating, NOT authoritative; the
      commit-diff signal wins on conflict, and any conflict is surfaced in the manifest.
   7. SemVer proposal (plan S6, pre-1.0: breaking-or-feature => MINOR, fix => PATCH).
@@ -686,53 +688,107 @@ def _is_test_path(fn: str) -> bool:
     return base == "conftest.py" or base.startswith("test_") or base.endswith("_test.py")
 
 
-def classify_pyproject_patch(patch: "str | None") -> tuple:
-    """Classify a pyproject.toml change: SHIP for runtime deps/version/non-test extras;
-    NON-SHIP for [tool.*] / pytest config / test-or-dev extras (audit S7.5)."""
-    if patch is None:
-        return ("uncertain", "pyproject patch unavailable")
-    section = None
-    extra = None
-    found_ship = False
-    found_nonship = False
-    for raw in patch.splitlines():
-        if raw.startswith("@@"):
-            trailer = raw.split("@@")[-1].strip() if "@@" in raw else ""
-            sm = re.match(r"\[([^\]]+)\]", trailer)
-            if sm:
-                section, extra = sm.group(1), None
-            continue
-        if raw.startswith("+++") or raw.startswith("---"):
-            continue
-        marker = raw[:1]
-        if marker not in ("+", "-", " "):
-            continue
-        content = raw[1:]
-        stripped = content.strip()
-        hm = re.match(r"\[([^\]]+)\]\s*$", stripped)
+_TOML_TABLE_RE = re.compile(r"\[\[?([^\[\]]+)\]\]?\s*(?:#.*)?$")  # a [table] or [[array.of.tables]] header line
+_TOML_KEY_RE = re.compile(r"([A-Za-z0-9_.-]+)\s*=\s*\[?")  # `name = [` -- an optional-dependencies extra
+_HUNK_NEW_SIDE_RE = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@")
+
+
+def _toml_table_before(file_lines: list, upto: int) -> tuple:
+    """(table, extra) in force after the first ``upto`` lines of a TOML file: the last table
+    header among them and, inside an optional-dependencies table, the last ``name =`` key.
+    (None, None) when no header precedes that point."""
+    section = extra = None
+    for raw in file_lines[:upto]:
+        stripped = raw.strip()
+        hm = _TOML_TABLE_RE.match(stripped)
         if hm:
-            section, extra = hm.group(1), None
+            section, extra = hm.group(1).strip(), None
             continue
         if section and section.endswith("optional-dependencies"):
-            em = re.match(r"([A-Za-z0-9_.-]+)\s*=\s*\[?", stripped)
+            em = _TOML_KEY_RE.match(stripped)
             if em:
                 extra = em.group(1).lower()
-        if marker not in ("+", "-"):
-            continue
-        if not stripped or stripped.startswith("#"):
-            continue
-        sec = (section or "").lower()
-        if sec.startswith("project"):
-            if section.endswith("optional-dependencies") and extra in TEST_EXTRAS:
-                found_nonship = True
-            else:
-                found_ship = True
-        elif sec.startswith("build-system"):
-            found_ship = True
+    return section, extra
+
+
+def _hunk_table(header: str, body: list, file_lines: "list | None") -> tuple:
+    """(table, extra) in force at a hunk's first line. A patch names a hunk's table only when
+    the header line falls inside its context: git's default ``@@`` trailer is the nearest line
+    that starts with a letter (``doc-tools = [``), never a ``[table]``. So the table comes from
+    the HEAD file when the hunk's new-side lines (context + additions) sit at its stated
+    position there; else from a ``[table]`` trailer (a TOML-aware diff driver); else unknown."""
+    m = _HUNK_NEW_SIDE_RE.match(header)
+    if file_lines is not None and m:
+        start = int(m.group(1))
+        count = int(m.group(2)) if m.group(2) is not None else 1
+        new_side = [ln[1:] for ln in body if ln[:1] in (" ", "+")]
+        if start >= 1 and new_side and len(new_side) == count and file_lines[start - 1 : start - 1 + count] == new_side:
+            return _toml_table_before(file_lines, start - 1)
+    sm = re.match(r"\[([^\]]+)\]", header.split("@@")[-1].strip())
+    if sm:
+        return sm.group(1), None
+    return None, None
+
+
+def classify_pyproject_patch(patch: "str | None", file_text: "str | None" = None) -> tuple:
+    """Classify a pyproject.toml change: SHIP for runtime deps/version/non-test extras;
+    NON-SHIP for [tool.*] / pytest config / test-or-dev extras (audit S7.5); UNCERTAIN for a
+    changed line whose table neither its hunk nor ``file_text`` determines.
+
+    ``file_text`` is the HEAD file a cumulative patch's new-side line numbers align with
+    (``_hunk_table``). An unresolved table is UNCERTAIN, never NON-SHIP: defaulting it to
+    NON-SHIP read every juniper-ml [servers] / [recurrence] range change since v0.10.0 as
+    UP_TO_DATE, and the meta-package ships nothing but this file."""
+    if patch is None:
+        return ("uncertain", "pyproject patch unavailable")
+    file_lines = file_text.splitlines() if file_text is not None else None
+    hunks: list = [("", [])]  # lines before the first @@ (diff/index/---/+++ headers) form a headerless hunk
+    for raw in patch.splitlines():
+        if raw.startswith("@@"):
+            hunks.append((raw, []))
         else:
-            found_nonship = True
+            hunks[-1][1].append(raw)
+    found_ship = False
+    found_nonship = False
+    found_uncertain = False
+    for header, body in hunks:
+        section, extra = _hunk_table(header, body, file_lines) if header else (None, None)
+        for raw in body:
+            if raw.startswith("+++") or raw.startswith("---"):
+                continue
+            marker = raw[:1]
+            if marker not in ("+", "-", " "):
+                continue
+            content = raw[1:]
+            stripped = content.strip()
+            hm = _TOML_TABLE_RE.match(stripped)
+            if hm:
+                section, extra = hm.group(1).strip(), None
+                continue
+            if section and section.endswith("optional-dependencies"):
+                em = _TOML_KEY_RE.match(stripped)
+                if em:
+                    extra = em.group(1).lower()
+            if marker not in ("+", "-"):
+                continue
+            if not stripped or stripped.startswith("#"):
+                continue
+            sec = (section or "").lower()
+            if section is None:
+                found_uncertain = True
+            elif sec.startswith("project"):
+                if section.endswith("optional-dependencies") and extra in TEST_EXTRAS:
+                    found_nonship = True
+                else:
+                    found_ship = True
+            elif sec.startswith("build-system"):
+                found_ship = True
+            else:
+                found_nonship = True
     if found_ship:
         return ("ship", "pyproject runtime/deps/version/extras")
+    if found_uncertain:
+        return ("uncertain", "pyproject change in a table neither its hunk nor an aligned HEAD file names")
     if found_nonship:
         return ("nonship", "pyproject tooling/test-config/test-extra only")
     return ("nonship", "pyproject no decisive change")
@@ -754,7 +810,7 @@ def classify_change(fc: FileChange, entry: PackageEntry, file_text: "str | None"
     """-> (kind, reason) with kind in {'ship','nonship','uncertain'}."""
     fn = fc.filename
     if fn == entry.pyproject_rel:
-        return classify_pyproject_patch(fc.patch)
+        return classify_pyproject_patch(fc.patch, file_text)
     if _is_test_path(fn):
         return ("nonship", "tests")
     base = fn.split("/")[-1]
@@ -956,9 +1012,10 @@ def classify_package(entry: PackageEntry, sources: Sources, repo_root: Path, eco
     for fc in comp.files:
         if not in_scope(fc.filename, entry):
             continue
-        # Only trust the HEAD-tokenize substantive check for CUMULATIVE tag..HEAD patches
-        # (their line numbers align with the on-disk HEAD file); per-commit patches use patch-only.
-        file_text = sources.read_file(entry, fc.filename) if (fc.filename.endswith((".py", ".pyi")) and fc.cumulative) else None
+        # Only trust the HEAD-tokenize substantive check (and the pyproject table resolution) for
+        # CUMULATIVE tag..HEAD patches (their line numbers align with the on-disk HEAD file);
+        # per-commit patches use patch-only.
+        file_text = sources.read_file(entry, fc.filename) if ((fc.filename.endswith((".py", ".pyi")) or fc.filename == entry.pyproject_rel) and fc.cumulative) else None
         kind, reason = classify_change(fc, entry, file_text)
         prev = verdicts.get(fc.filename)
         if prev is None or rank[kind] > rank[prev[0]]:

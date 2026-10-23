@@ -1,0 +1,123 @@
+{
+  "repo": "pcalnon/juniper-canopy",
+  "ref": "e30010c92c0763788c2095c03e23ea66b7d657f3",
+  "root": "/Users/pcalnon/.local/state/juniper/turing-e2/trees/juniper-canopy-main-e30010c9",
+  "checked_at": "2026-10-21T09:28:43Z",
+  "files": [
+    {
+      "path": "src/frontend/dashboard_manager.py",
+      "local": "5bd4993273634a1760dddd7003c4b35cd15ee449",
+      "remote": "5bd4993273634a1760dddd7003c4b35cd15ee449",
+      "match": true
+    },
+    {
+      "path": "pyproject.toml",
+      "local": "16065c32ec3a02c8d15791ea7698426c2831208c",
+      "remote": "16065c32ec3a02c8d15791ea7698426c2831208c",
+      "match": true
+    },
+    {
+      "path": "conf/requirements_ci.txt",
+      "local": "08ba6a1de4f060006cbf5683eabf679e5ea47ca4",
+      "remote": "08ba6a1de4f060006cbf5683eabf679e5ea47ca4",
+      "match": true
+    },
+    {
+      "path": "conf/conda_environment.yaml",
+      "local": "a584722fad78db09e0958acea411fc66c6b4e80b",
+      "remote": "a584722fad78db09e0958acea411fc66c6b4e80b",
+      "match": true
+    },
+    {
+      "path": "CHANGELOG.md",
+      "local": "f561bd3739ae41eefb3f72585ab161e8594d6c0a",
+      "remote": "f561bd3739ae41eefb3f72585ab161e8594d6c0a",
+      "match": true
+    },
+    {
+      "path": "docs/USER_MANUAL.md",
+      "local": "372a82cd8b1317ad831b4eb7491a65e84647091c",
+      "remote": "372a82cd8b1317ad831b4eb7491a65e84647091c",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_f069_duplicate_callback_outputs.py",
+      "local": "9dd02cec9486f5da4c70796c2c445144b3a0a324",
+      "remote": "9dd02cec9486f5da4c70796c2c445144b3a0a324",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_live_dataset_switch_handlers.py",
+      "local": "6b94cbbeb8d4a677fc6adeae768f6d4830ca43ce",
+      "remote": "6b94cbbeb8d4a677fc6adeae768f6d4830ca43ce",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner1.py",
+      "local": "7e8b940a1d79b16d8f2f08848da7f1f6395f5536",
+      "remote": "7e8b940a1d79b16d8f2f08848da7f1f6395f5536",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner2.py",
+      "local": "ac9de89f7c16c72aff387bc884a0e6fd29d8009f",
+      "remote": "ac9de89f7c16c72aff387bc884a0e6fd29d8009f",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_poll_gating.py",
+      "local": "708c509d9eae2ab404d4cf39effea563316a9a3e",
+      "remote": "708c509d9eae2ab404d4cf39effea563316a9a3e",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_p2_wave_batch_b.py",
+      "local": "dbe8ac5bc80353f3fb3198996f8bb9fcf9bf5103",
+      "remote": "dbe8ac5bc80353f3fb3198996f8bb9fcf9bf5103",
+      "match": true
+    },
+    {
+      "path": "src/frontend/components/network_editor_panel.py",
+      "local": "dce43f0a661058e50e72d8813cf81afc91a7a596",
+      "remote": "dce43f0a661058e50e72d8813cf81afc91a7a596",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_network_editor_panel.py",
+      "local": "bbfa9484b1e671cd149c3d5deeb758dddd5072a9",
+      "remote": "bbfa9484b1e671cd149c3d5deeb758dddd5072a9",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/frontend/test_patch_values_manual_separators.py",
+      "local": "2ddd019d88bcee13ad49852c27c930be893604fc",
+      "remote": "2ddd019d88bcee13ad49852c27c930be893604fc",
+      "match": true
+    },
+    {
+      "path": "src/backend/cascor_service_adapter.py",
+      "local": "0b42444e5a22618d93b2397068259774472f60b8",
+      "remote": "0b42444e5a22618d93b2397068259774472f60b8",
+      "match": true
+    },
+    {
+      "path": "src/settings.py",
+      "local": "11c7bbefa7054c1ecc4545cd30838c070099e7ea",
+      "remote": "11c7bbefa7054c1ecc4545cd30838c070099e7ea",
+      "match": true
+    },
+    {
+      "path": "src/tests/integration/test_n5_apply_params_ux.py",
+      "local": "2bba6ba31800d173798aa92ae7814acd1144c6e0",
+      "remote": "2bba6ba31800d173798aa92ae7814acd1144c6e0",
+      "match": true
+    },
+    {
+      "path": "src/tests/unit/test_phase_c_set_params_adapter.py",
+      "local": "b491c4b217a35f4035b769b4349e6c8b34add630",
+      "remote": "b491c4b217a35f4035b769b4349e6c8b34add630",
+      "match": true
+    }
+  ],
+  "all_match": true
+}
