@@ -500,19 +500,36 @@ def _f028_arm(browser, args, arm: str, key_a: str, key_b: str) -> dict:
         ensure_no_modal(page)
         rec["after_reload"] = {"store_immediately": ls_get(page, "pinned-params-store")}
         t_reload = time.time()
-        if arm == "settled":
+        if arm == "settled" or arm == "forced":
+            # ``forced`` pins at the SETTLED timing (item 31, second pass); ``forcedearly`` is the first pass's
+            # arm, the same forced write at the early timing. Neither can stage early#2's order: the renderer
+            # holds the table render a params-store write requests behind the click's writer (the pin store is
+            # the writer's Output and the render's Input), whereas early#2's stale render was requested BEFORE
+            # the click's writer (ledger Phase 15, round 2, Lane 15-B). Both lost nothing on the parent.
             page.wait_for_timeout(MOUNT_MS)
             ensure_no_modal(page)
         elif arm == "mid":
             # run 1's timing (2026-10-20): 4 s after the reload, the tab opened with a 5 s settle, the pin at ~10 s
             page.wait_for_timeout(1000)
             ensure_no_modal(page)
+        # item 31 (F-CANOPY-028): a ``delay<N>`` arm waits N seconds after the reload before the PIN STEP, the tab
+        # opened as early as the ``early`` arm opens it. The recorded ``second_pin_at_s_after_reload`` is that step,
+        # not the click: three evaluates, a log line and a screenshot of a page still loading come first, and the
+        # click's writer went out 5.4-8.1 s after the log line on the parent's early arms (ledger Phase 15, round 2),
+        # so every click landed after the second table render and the window before it was never sampled. A click
+        # timed before that render needs the click moved ahead of the screenshot.
+        fixed_delay = float(arm[5:]) if arm.startswith("delay") and arm[5:].replace(".", "", 1).isdigit() else None
         rec["after_reload"]["store_after_wait"] = ls_get(page, "pinned-params-store")
         rec["after_reload"]["card"] = vis(page, "sidebar-pinned-card")
-        open_tab(page, "Parameters", {"early": 500, "mid": 5000}.get(arm, 2000))
-        t_tab2, _ = wait_for(page, lambda p: p.evaluate("""(k) => !!document.getElementById(k)""", pin_id(key_a)), budget, every_ms=100 if arm == "early" else 500)
+        early_like = arm == "early" or arm.startswith("forced") or fixed_delay is not None
+        open_tab(page, "Parameters", {"mid": 5000}.get(arm, 500 if early_like else 2000))
+        t_tab2, _ = wait_for(page, lambda p: p.evaluate("""(k) => !!document.getElementById(k)""", pin_id(key_a)), budget, every_ms=100 if early_like else 500)
+        if fixed_delay is not None:
+            remaining = fixed_delay - (time.time() - t_reload)
+            if remaining > 0:
+                page.wait_for_timeout(int(remaining * 1000))
         t_val2 = None
-        if arm == "settled":
+        if arm in ("settled", "forced"):
             t_val2, _ = wait_for(page, lambda p: (p.evaluate("""() => { const t = document.getElementById('parameters-panel-network-table'); return t && t.innerText.includes('0.01'); }""")), budget)
         rec["after_reload"]["tables_after_s"] = t_tab2
         rec["after_reload"]["values_after_s"] = t_val2
@@ -525,6 +542,14 @@ def _f028_arm(browser, args, arm: str, key_a: str, key_b: str) -> dict:
         # second pin: the store must CHANGE (poll for any change, then settle)
         before2 = ls_get(page, "pinned-params-store")
         pin_click(page, key_b)
+        if arm.startswith("forced"):
+            # item 31 (F-CANOPY-028): the forced write, written to reproduce early#2's order. It cannot: the table
+            # render a params-store write requests is held behind the click's in-flight writer (the pin store is the
+            # writer's Output and the render's Input), so the rebuild reads the post-click pin set, whereas early#2's
+            # stale render was requested BEFORE the click's writer (ledger Phase 15, rounds 2 and 3). The payload is
+            # {} (the tables render their defaults until the next poll); only the checkbox column takes part.
+            page.wait_for_timeout(args.f028_forced_gap_ms)
+            rec["forced_rebuild"] = page.evaluate("""() => { if (!(window.dash_clientside && window.dash_clientside.set_props)) return 'no set_props'; window.dash_clientside.set_props('parameters-panel-params-store', {data: {}}); return 'params store set to {} at +' + Math.round(performance.now()) + 'ms'; }""")
         t_b, store_b = wait_store(page, "pinned-params-store", lambda v: v != before2, budget)
         page.wait_for_timeout(3000)
         store_b_settled = ls_get(page, "pinned-params-store")
@@ -539,6 +564,7 @@ def _f028_arm(browser, args, arm: str, key_a: str, key_b: str) -> dict:
         rec["verdicts"] = {
             "SURVIVES": key_a in store2 and key_b in store2,
             "DISCARDED": store2 == [key_b],
+            "LOST_B": store2 == [key_a],
             "REHYDRATED": bool((rec["after_reload"]["a_checkbox"] or {}).get("checked")),
             "M04": store_a == [key_a],
             "M05": (rec["m05"]["card"].get("display") not in (None, "none")) and bool(rec["m05"]["list_text"]),
@@ -983,8 +1009,9 @@ def main() -> int:
     ap.add_argument("--workers-seconds", type=float, default=60.0)
     ap.add_argument("--m03-seconds", type=float, default=30.0)
     ap.add_argument("--pin-keys", default="learning_rate,max_iterations")
-    ap.add_argument("--f028-arms", default="settled,early", help="comma-separated arms for f028: settled (pin after the mount settle), early (pin as soon as the checkbox renders), mid (run 1's ~10 s timing)")
+    ap.add_argument("--f028-arms", default="settled,early", help="comma-separated arms for f028: settled (pin after the mount settle), early (pin as soon as the checkbox renders), mid (run 1's ~10 s timing), delay<N> (item 31: the pin step N seconds after the reload, e.g. delay6; the click follows seconds later), forced (item 31, pass 2: the settled timing, then a params-store write --f028-forced-gap-ms after the click), forcedearly (item 31, pass 1: the same write at the early timing). Neither forced arm stages early#2's order: the renderer holds the requested render behind the click's writer")
     ap.add_argument("--f028-repeat", type=int, default=1, help="drive each f028 arm this many times (labels arm#n)")
+    ap.add_argument("--f028-forced-gap-ms", type=int, default=150, help="item 31: the ``forced`` (settled timing) and ``forcedearly`` (early timing) arms write the params store this many ms after the click, requesting a table rebuild; the renderer holds that render behind the click's writer, so it cannot stage early#2's order (ledger Phase 15, round 2)")
     ap.add_argument("--local-bootstrap", default="", help="serve this local Bootstrap 5 CSS to the page in place of the CDN (see _route_cdn)")
     ap.add_argument("--mount-seconds", type=float, default=25.0, help="settle after each page load before the first interaction (see MOUNT_MS)")
     ap.add_argument("--poll-seconds", type=float, default=30.0, help="budget when polling for a transition (an interaction's render lands in 1-16 s under F-CANOPY-004's contract)")

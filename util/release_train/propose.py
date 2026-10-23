@@ -22,13 +22,18 @@ single **standard-gated release-proposal PR** (plan S5.4):
     rows against ``_version.py`` with a repo-local ``version-drift`` hook, so a header-only proposal
     shipped red there (recurrence#92 / #93). The table is per-PACKAGE where the header is per-REPO, so
     a sub-package bumps its own row without ever touching the host repo's primary-tracking header;
+  * the meta-package's ``README.md`` "Ecosystem Compatibility" lead-in ("The pyproject pins matching
+    `juniper-ml` X:"), which ``ReadmeCompatTableTest`` requires to name the ``pyproject.toml`` version.
+    The 0.11.0 proposal (ml#2306) was the first one generated since that guard landed (ml#1972), and
+    it needed the line by hand;
   * for an **in-repo** package (the meta-package or one of its six co-located sub-packages), the
     meta-package's own **consumer-pin co-changes** (plan S5.4): a pre-1.0 MINOR bump that escapes a
-    ``[project.optional-dependencies]`` ``<next-minor`` ceiling moves that pin AND its FIVE lockstep
-    artifacts -- the exact-string membership contract in ``tests/test_pyproject_extras.py``, plus the
+    ``[project.optional-dependencies]`` ``<next-minor`` ceiling moves that pin AND its SIX lockstep
+    artifacts -- the exact-string membership contract in ``tests/test_pyproject_extras.py``, the
     four documented extras tables that ``ExtrasDocsLockstepTest`` asserts against ``pyproject.toml``
     (``AGENTS.md``, ``README.md``, ``docs/QUICK_START.md`` inline; ``docs/REFERENCE.md``
-    split-column) -- IN THE SAME PR. This is the ml#657 RK-11 failure class (a
+    split-column), and the package's row in README's flat "Ecosystem Compatibility" table, which
+    ``ReadmeCompatTableTest`` asserts -- IN THE SAME PR. This is the ml#657 RK-11 failure class (a
     service-core 0.5.0 proposal that bumped the sub-package but not the ``<0.5.0`` meta ceiling, so
     ``tests/test_service_core_drift.py`` failed and the proposal shipped red);
 
@@ -467,6 +472,25 @@ def set_agents_last_updated(text: str, date: str) -> tuple:
     return new_text, old
 
 
+# README.md's "Ecosystem Compatibility" lead-in, which names the meta-package's own version: one line, the
+# shape of ``_COMPAT_LEAD_RE`` in tests/test_pyproject_extras.py (``ReadmeCompatTableTest``).
+_README_COMPAT_LEAD = re.compile(r"^(The pyproject pins matching `juniper-ml` )([0-9][^:\n]*)(:)$", re.MULTILINE)
+
+
+def set_readme_compat_version(text: str, new_version: str) -> tuple:
+    """Replace the version README.md's "Ecosystem Compatibility" lead-in names. -> (new_text, old|None).
+
+    ``ReadmeCompatTableTest`` requires that lead-in to name the ``pyproject.toml`` version, so the
+    meta-package's own bump must move it. The juniper-ml 0.11.0 proposal (ml#2306) was the first one
+    generated since that guard landed (ml#1972): the bare proposal fails Regression Tests with
+    ``'0.10.0' != '0.11.0'``, and #2306 carried a hand co-change commit for it. Same honesty contract as
+    ``set_agents_version``: a README without the lead-in is returned untouched with ``old=None``."""
+    m = _README_COMPAT_LEAD.search(text)
+    if not m:
+        return text, None
+    return text[: m.start(2)] + new_version + text[m.end(2):], m.group(2)
+
+
 # A markdown-table cell that is a STANDALONE version (optionally backtick-wrapped) and nothing else --
 # ``0.3.0`` / ``` `0.2.0` ``` / ``0.4.0rc1``. Deliberately NOT a substring match: an extras-reference
 # cell (``` `juniper-doc-tools>=0.1.0,<0.2.0` ```) or a prose cell that merely mentions a version is not
@@ -683,12 +707,17 @@ _INLINE_EXTRAS_TABLES = (
 )
 _REFERENCE_EXTRAS_REL = "docs/REFERENCE.md"
 _REFERENCE_EXTRAS_HEADING = re.compile(r"^#{2,4}\s+Available Extras\s*$", re.IGNORECASE)
+# README.md's flat "Ecosystem Compatibility" table: one ``| `pkg` | `spec` |`` row per extras pin, which
+# ``ReadmeCompatTableTest`` asserts against pyproject.toml. It is split-column like REFERENCE's table, so
+# it takes that editor re-anchored; the inline editor matches nothing there.
+_README_REL = "README.md"
+_README_COMPAT_HEADING = re.compile(r"^#{2,4}\s+Ecosystem Compatibility\s*$", re.IGNORECASE)
 # A ``| ... | `pkg` | `>=x,<y` |`` version cell: backticked and OPERATOR-led, which is what separates
 # it from the package-name cell beside it and from the ``all`` row's bare ``--``.
 _REFERENCE_SPEC_CELL = re.compile(r"^`[<>=!~][^`]*`$")
 
 
-def apply_pin_edits_reference_table(text: str, pypi_name: str, new_req: str) -> str:
+def apply_pin_edits_reference_table(text: str, pypi_name: str, new_req: str, heading: "re.Pattern" = _REFERENCE_EXTRAS_HEADING) -> str:
     """True up ``docs/REFERENCE.md``'s "Available Extras" table, whose shape defeats the inline editor.
 
     That table is SPLIT-COLUMN: the distribution sits in one cell (``\\`juniper-doc-tools\\```, bare)
@@ -701,7 +730,13 @@ def apply_pin_edits_reference_table(text: str, pypi_name: str, new_req: str) -> 
     (``\\`tools\\```, ``\\`doc-tools\\```) can never match a distribution. Every row naming the package
     is updated -- ``juniper-doc-tools`` appears under both ``[tools]`` and ``[doc-tools]``. The cell's
     original width is preserved where the new specifier fits, so the table stays aligned and the diff
-    stays one cell wide."""
+    stays one cell wide.
+
+    ``heading`` re-anchors the editor onto README's "Ecosystem Compatibility" table
+    (``_README_COMPAT_HEADING``), the other split-column surface. Without it an escaping bump moved
+    README's extras table and left its compatibility row behind, so the juniper-config-tools 0.2.0
+    proposal failed ``ReadmeCompatTableTest`` (simulated 2026-10-21). The REFERENCE default keeps every
+    existing caller unchanged."""
     if not new_req.startswith(pypi_name):
         return text
     spec = new_req[len(pypi_name) :]
@@ -712,7 +747,7 @@ def apply_pin_edits_reference_table(text: str, pypi_name: str, new_req: str) -> 
     in_section = False
     for line in text.splitlines(keepends=True):
         stripped = line.strip()
-        if _REFERENCE_EXTRAS_HEADING.match(stripped):
+        if heading.match(stripped):
             in_section = True
             out.append(line)
             continue
@@ -1200,7 +1235,7 @@ def _changelog_rel(entry: "detect.PackageEntry") -> str:
     return os.path.normpath(os.path.join(entry.path, "CHANGELOG.md")).replace(os.sep, "/")
 
 
-def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, agents_edited: bool, cochanges: list, dunder_rel: "str | None" = None, dunder_edited: bool = False, *, agents_surface: bool = True, agents_table_status: str = "absent") -> list:
+def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, agents_edited: bool, cochanges: list, dunder_rel: "str | None" = None, dunder_edited: bool = False, *, agents_surface: bool = True, agents_table_status: str = "absent", readme_lead_status: "str | None" = None) -> list:
     items: list = []
     if dunder_rel is not None:
         state = "included in this PR" if dunder_edited else "REQUIRED (``__version__`` assignment not found -- edit manually)"
@@ -1219,9 +1254,17 @@ def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, a
         items.append(f"AGENTS.md per-package version-table row bump for `{entry.pypi_name}` (included in this PR); a repo-local version-drift hook pins that row against the package version, so a header-only proposal ships red there (ml#851; the juniper-recurrence#92 / #93 class).")
     elif agents_table_status == "unexpected":
         items.append(f"AGENTS.md per-package version-table row bump for `{entry.pypi_name}` (REQUIRED -- a row names the package but its version cell is not at the expected from-version, or the row is ambiguous; verify and edit manually, the train never guesses at a cell); a repo-local version-drift hook pins that row against the package version (ml#851).")
+    # The meta's README "Ecosystem Compatibility" lead-in: None = not the meta; "current" (already at
+    # to_version) is the same silent success as an AGENTS.md header already at target.
+    if readme_lead_status == "edited":
+        items.append("README.md \"Ecosystem Compatibility\" lead-in names the release (included in this PR); guarded by tests/test_pyproject_extras.py (ReadmeCompatTableTest), which requires it to name the pyproject version.")
+    elif readme_lead_status == "required":
+        items.append("README.md \"Ecosystem Compatibility\" lead-in (REQUIRED -- README.md or its 'The pyproject pins matching `juniper-ml` X:' line was not found; the train never invents one, so edit it by hand); guarded by tests/test_pyproject_extras.py (ReadmeCompatTableTest).")
+    if readme_lead_status is not None:
+        items.append("docs/REFERENCE.md \"Ecosystem Compatibility\": the sentence naming the release and the compatibility matrix (one row per minor) are NOT edited by the train, and no test guards them -- for a minor, update the sentence and add the `0.N.x` row by hand on this branch (util/ad-hoc/2026-10-21_juniper_ml_0_11_0_cut_cochanges.py is the 0.11.0 pattern).")
     if cochanges:
         extras_touched = ", ".join(sorted({f"[{cc.extra}]" for cc in cochanges}))
-        items.append(f"In-repo meta consumer pin (included in this PR): raised the {extras_touched} ceiling for {entry.pypi_name} to {cochanges[0].new_req} -- root pyproject.toml + tests/test_pyproject_extras.py membership + all four documented extras tables (AGENTS.md, README.md, docs/QUICK_START.md, docs/REFERENCE.md), moved together in THIS PR (closes the ml#657 RK-11 gap and the ml#1458 docs-lockstep gap; guarded by tests/test_pyproject_extras.py + the per-package RK-11 drift gate).")
+        items.append(f"In-repo meta consumer pin (included in this PR): raised the {extras_touched} ceiling for {entry.pypi_name} to {cochanges[0].new_req} -- root pyproject.toml + tests/test_pyproject_extras.py membership + all four documented extras tables (AGENTS.md, README.md, docs/QUICK_START.md, docs/REFERENCE.md) + README.md's \"Ecosystem Compatibility\" row, moved together in THIS PR (closes the ml#657 RK-11 gap and the ml#1458 docs-lockstep gap; guarded by tests/test_pyproject_extras.py + the per-package RK-11 drift gate).")
         items.append(f"If `{entry.pypi_name}` is ALSO pinned in `.github/workflows/` by a drift lint (juniper-doc-tools / juniper-ci-tools carry one via test_*_drift.py::test_juniper_ml_own_workflows_pin_current_version, which does NOT skip in per-PR mode) or in `.pre-commit-config.yaml`, those pins are NOT edited by the train -- move them by hand in THIS PR or the bump ships red.")
     items.append("If this bump raises a runtime dependency floor, regenerate the lockfile (requirements.lock) in this PR (memory: 'regen on floor bump or gate fails').")
     items.append("Version+pin+lint atomicity: if a consumer pins this package behind a drift-lint contract (tests/test_*_drift.py), move the pin + the lint bound in the same change set (model-core precedent).")
@@ -1230,7 +1273,25 @@ def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, a
     return items
 
 
-def _pr_body(prop: Proposal, date: str) -> str:
+# GitHub refuses an issue or PR body over 65,536 characters ("Body is too long"), and open_pr runs only after the
+# release branch and its signed commit exist, so an over-long body would leave a proposal branch with no PR (the
+# juniper-ml#2227 half-written class). The drafted notes are the one unbounded part of the body -- juniper-ml
+# 0.11.0's draft alone is 88 KB -- and the PR's own CHANGELOG diff shows the same section, so a draft that would
+# carry the body past the limit is not inlined. Measured in UTF-8 bytes, which are never fewer than characters.
+PR_BODY_MAX = 65_536
+
+
+def _body_size(body: "str | None") -> int:
+    return len((body or "").encode("utf-8"))
+
+
+def _fitted_pr_body(prop: Proposal, date: str) -> str:
+    """The proposal PR body, without the inlined notes draft when the draft would carry it past PR_BODY_MAX."""
+    body = _pr_body(prop, date)
+    return body if _body_size(body) <= PR_BODY_MAX else _pr_body(prop, date, inline_notes=False)
+
+
+def _pr_body(prop: Proposal, date: str, *, inline_notes: bool = True) -> str:
     lines: list = []
     lines.append(f"## Release proposal: `{prop.pypi_name}` v{prop.from_version} -> v{prop.to_version}")
     lines.append("")
@@ -1249,13 +1310,16 @@ def _pr_body(prop: Proposal, date: str) -> str:
     lines.append("### Drafted release notes (NOT archived here)")
     lines.append(f"Archival to the central `{prop.notes_relpath}` is the later **exempt** ceremony step (plan S10.2); this PR only drafts the notes for review.")
     lines.append("")
-    lines.append("<details><summary>Drafted release notes</summary>")
-    lines.append("")
-    lines.append("```markdown")
-    lines.append((prop.notes_draft or "").rstrip("\n"))
-    lines.append("```")
-    lines.append("")
-    lines.append("</details>")
+    if inline_notes:
+        lines.append("<details><summary>Drafted release notes</summary>")
+        lines.append("")
+        lines.append("```markdown")
+        lines.append((prop.notes_draft or "").rstrip("\n"))
+        lines.append("```")
+        lines.append("")
+        lines.append("</details>")
+    else:
+        lines.append(f"Not inlined: the draft is {_body_size(prop.notes_draft):,} B, which would carry this body past GitHub's {PR_BODY_MAX:,}-character limit. It renders from the `[{prop.to_version}]` section this PR's CHANGELOG diff shows in full, and the ceremony's archive PR carries the final notes.")
     lines.append("")
     if prop.ship_evidence:
         lines.append("### Ship evidence (from the detector)")
@@ -1265,9 +1329,7 @@ def _pr_body(prop: Proposal, date: str) -> str:
     if prop.repo == detect.META_REPO:
         lines.append("### Consumer-pin co-changes (in-repo meta extras, plan S5.4)")
         if prop.consumer_pin_cochanges:
-            lines.append("This escaping bump exceeds the meta-package's own `[project.optional-dependencies]` ceiling, so the pin + its two lockstep artifacts (`tests/test_pyproject_extras.py` membership and the `AGENTS.md` extras table) are moved IN THIS PR (closes the ml#657 RK-11 gap):")
-            lines.append("")
-            lines.append("> **Reviewer action required -- this generator has a known gap.** `tests/test_pyproject_extras.py` also asserts the extras tables in `README.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` against `pyproject.toml`, and none of the three is in the edit set above, so this PR will fail 3 arms until they are co-updated by hand. `docs/REFERENCE.md` needs **two** edits -- the inline table, and the separate \"Extras Reference\" table whose distribution and specifier sit in different columns, which a combined-string substitution misses. Found on the service-core 0.6.0 cut (ml#1458).")
+            lines.append("This escaping bump exceeds the meta-package's own `[project.optional-dependencies]` ceiling, so the pin moves IN THIS PR with every surface `tests/test_pyproject_extras.py` holds it to: the `EXPECTED_EXTRAS` membership, the extras tables in `AGENTS.md`, `README.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md`, and README's \"Ecosystem Compatibility\" row (closes the ml#657 RK-11 gap):")
             for cc in prop.consumer_pin_cochanges:
                 lines.append(f"- `[{cc.extra}]`: `{cc.old_req}` -> `{cc.new_req}`")
         else:
@@ -1466,10 +1528,18 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
 
     # 5b. in-repo meta-package consumer-pin co-changes (plan S5.4; closes the ml#657 RK-11 gap).
     # For an in-repo bump whose new version escapes a meta ``[extras]`` ``<next-minor`` ceiling, move
-    # the pin AND its two lockstep artifacts (the test_pyproject_extras membership + the AGENTS.md
-    # extras table) in THIS PR. Empty co-change list => the new version is within every ceiling (the
-    # proposal body then states "none needed"). Cross-repo consumers stay as propagation edges (D6).
+    # the pin AND every surface tests/test_pyproject_extras.py holds it to (the membership contract
+    # and the AGENTS.md extras table here, the rest in 5b-ii / 5b-iii) in THIS PR. Empty co-change
+    # list => the new version is within every ceiling (the proposal body then states "none needed").
+    # Cross-repo consumers stay as propagation edges (D6).
+    #
+    # README.md is read ONCE and composed like AGENTS.md (see the step-5 note): its extras table
+    # (5b-ii), its compatibility row (5b-iii) and the meta's compatibility lead-in (5b-iv) all land in
+    # the single README FileEdit appended at the end of 5b-iv.
+    readme_lead_status = None
     if entry.repo == detect.META_REPO:
+        readme_text = sources.read_file(entry, _README_REL)
+        readme_new = readme_text
         root_pyproject = sources.read_file(entry, "pyproject.toml")
         if root_pyproject is not None:
             cochanges = compute_consumer_pin_cochanges(root_pyproject, entry.pypi_name, to_version)
@@ -1492,9 +1562,19 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
                 # and docs/REFERENCE.md with a separate split-column one -- so all three fail the
                 # moment the pin escapes and only AGENTS.md moves (the ml#1458 service-core 0.6.0
                 # class: 3 arms red on all three Python versions, repaired by hand). AGENTS.md is
-                # excluded here because step 5b already composed it into the single 5d FileEdit.
+                # excluded here because step 5b already composed it into the single 5d FileEdit, and
+                # README.md composes into the single 5b-iv one.
                 for doc_rel, doc_heading in _INLINE_EXTRAS_TABLES:
                     if doc_rel == "AGENTS.md":
+                        continue
+                    if doc_rel == _README_REL:
+                        if readme_new is not None:
+                            readme_new = apply_pin_edits_agents_table(readme_new, entry.pypi_name, cochanges[0].new_req, doc_heading)
+                            # 5b-iii. README's flat "Ecosystem Compatibility" row. ``ReadmeCompatTableTest``
+                            # asserts it against pyproject.toml as well, and it is split-column, so only the
+                            # REFERENCE editor re-anchored moves it. Without this the juniper-config-tools
+                            # 0.2.0 proposal failed test_compat_table_matches_pyproject (simulated 2026-10-21).
+                            readme_new = apply_pin_edits_reference_table(readme_new, entry.pypi_name, cochanges[0].new_req, _README_COMPAT_HEADING)
                         continue
                     doc_text = sources.read_file(entry, doc_rel)
                     if doc_text is None:
@@ -1507,6 +1587,18 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
                     ref_new = apply_pin_edits_reference_table(ref_text, entry.pypi_name, cochanges[0].new_req)
                     if ref_new != ref_text:
                         prop.edits.append(FileEdit(path=_REFERENCE_EXTRAS_REL, old_text=ref_text, new_text=ref_new))
+        # 5b-iv. the meta-package's own bump: README's compatibility lead-in names the release
+        # (``ReadmeCompatTableTest``). A lead-in already at to_version is silent success; a missing
+        # README or lead-in is REQUIRED-manual, never invented (the ``set_agents_version`` contract).
+        if entry.pypi_name == notes_render.META_PACKAGE:
+            readme_lead_status = "required"
+            if readme_new is not None:
+                candidate, rold = set_readme_compat_version(readme_new, to_version)
+                if rold is not None:
+                    readme_lead_status = "edited" if candidate != readme_new else "current"
+                    readme_new = candidate
+        if readme_text is not None and readme_new != readme_text:
+            prop.edits.append(FileEdit(path=_README_REL, old_text=readme_text, new_text=readme_new))
 
     # 5c. **Last Updated** true-up. Runs ONLY when a previous composer actually changed AGENTS.md --
     # the date-check workflow is path-filtered to AGENTS.md, so a proposal that does not touch the file
@@ -1538,13 +1630,13 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
         trigger_title=f"release: {entry.pypi_name} v{to_version} (proposal)",
         date=date,
     )
-    prop.co_change_checklist = _co_change_checklist(entry, bump, prop.propagation_edges, agents_edited, prop.consumer_pin_cochanges, dunder_rel=dunder_rel, dunder_edited=dunder_edited, agents_surface=agents_surface, agents_table_status=agents_table_status)
+    prop.co_change_checklist = _co_change_checklist(entry, bump, prop.propagation_edges, agents_edited, prop.consumer_pin_cochanges, dunder_rel=dunder_rel, dunder_edited=dunder_edited, agents_surface=agents_surface, agents_table_status=agents_table_status, readme_lead_status=readme_lead_status)
 
     # 8. branch / commit / PR metadata.
     prop.branch = release_branch(entry.pypi_name, to_version)
     prop.commit_message = f"chore(release): {entry.pypi_name} v{to_version} -- version bump + CHANGELOG move"
     prop.pr_title = f"release: {entry.pypi_name} v{to_version} (proposal)"
-    prop.pr_body = _pr_body(prop, date)
+    prop.pr_body = _fitted_pr_body(prop, date)
     return prop
 
 
@@ -1678,6 +1770,8 @@ def execute_proposal(prop: Proposal, sources: ProposeSources, base_branch: str =
     # sibling's edits into the wrong repo / open a doomed PR without the capability (plan S9.2).
     if cross_repo_skip_reason(prop.repo, cross_repo_capable=cross_repo, ecosystem_root=ecosystem_root) is not None:
         return ""
+    if _body_size(prop.pr_body) > PR_BODY_MAX:  # refuse BEFORE the branch exists, never after (PR_BODY_MAX)
+        raise SourceError(f"the {prop.pypi_name} proposal PR body is {_body_size(prop.pr_body):,} B, over GitHub's {PR_BODY_MAX:,}-character limit -- nothing was written")
     _execute_signed_pr(prop.repo, prop.branch, prop.edits, prop.commit_message or f"release: {prop.pypi_name}", base_branch, sources)
     return sources.open_pr(prop.repo, base_branch, prop.branch, prop.pr_title or "", prop.pr_body or "")
 

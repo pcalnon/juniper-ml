@@ -24,6 +24,10 @@ Covers (task acceptance list):
     edit round-trips byte-identically (only the ceiling moves); the AGENTS true-up is scoped to the
     extras table (prose / minimum-pin mentions never move) and fixes a drifted row; the meta itself
     yields no self-pin co-change; dry-run with a co-change scenario still writes nothing
+  * README.md's "Ecosystem Compatibility" table (``ReadmeCompatTableTest``): the meta's own bump moves
+    its lead-in (the ml#2306 class), an escaping in-repo bump moves the package's split-column row in
+    the SAME README edit as the extras table, and both editors are read back through the gate's own
+    parsers on the live README
 
 ``util/`` is not pre-commit-lint-gated, so this unittest IS the gate (the ``env_floor_drift_check``
 precedent, shared with ``detect.py``). Imported via the house ``sys.path.insert`` idiom.
@@ -235,8 +239,22 @@ _SIBLING_TABLE_AGENTS = textwrap.dedent("""\
 
 # The other two INLINE extras surfaces `ExtrasDocsLockstepTest` asserts against pyproject.toml. Same
 # row shape as AGENTS.md, different heading -- which is the whole reason the editor is re-anchorable.
+# README also carries, ABOVE its extras table as the real one does, the flat "Ecosystem Compatibility"
+# table `ReadmeCompatTableTest` asserts: a lead-in naming the meta's own version, then one SPLIT-column
+# row per pin (the rows mirror `_META_PYPROJECT`).
 _META_README = textwrap.dedent("""\
     # juniper-ml
+
+    ## Ecosystem Compatibility
+
+    The pyproject pins matching `juniper-ml` 0.6.0:
+
+    | Package                 | Pin              |
+    |-------------------------|------------------|
+    | `juniper-doc-tools`     | `>=0.1.0,<0.2.0` |
+    | `juniper-model-core`    | `>=0.1.0,<0.4.0` |
+    | `juniper-observability` | `>=0.2.0`        |
+    | `juniper-service-core`  | `>=0.2.0,<0.5.0` |
 
     ### Extras
 
@@ -1505,6 +1523,81 @@ class ExtrasDocsSurfaceTest(unittest.TestCase):
         self.assertNotEqual(ref_out, ref, "docs/REFERENCE.md: split-column editor was a no-op on the live file")
 
 
+class ReadmeCompatSurfaceTest(unittest.TestCase):
+    """README.md's "Ecosystem Compatibility" table, which ``ReadmeCompatTableTest`` asserts: its lead-in
+    and its flat split-column rows.
+
+    The meta's own bump must move the lead-in: the 0.11.0 proposal (ml#2306) was red as generated and
+    carried a hand co-change commit. An escaping in-repo bump must move the package's row: the
+    juniper-config-tools 0.2.0 proposal failed ``test_compat_table_matches_pyproject`` (simulated
+    2026-10-21 with ``util/ad-hoc/2026-10-21_simulate_release_proposal.py``). On the live README both
+    editors are read back through the GATE's own parsers, so the generator cannot drift from what CI
+    asserts."""
+
+    @staticmethod
+    def _gate():
+        # Loaded by PATH, as in ExtrasDocsSurfaceTest.test_generator_surface_matches_the_gate_surface.
+        import importlib.util  # noqa: PLC0415
+
+        spec = importlib.util.spec_from_file_location("_gate_extras", Path(__file__).resolve().parent / "test_pyproject_extras.py")
+        gate = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(gate)
+        return gate
+
+    @staticmethod
+    def _changed_lines(old: str, new: str) -> list:
+        return [ln for ln in difflib.ndiff(old.splitlines(), new.splitlines()) if ln.startswith(("- ", "+ "))]
+
+    def test_lead_in_editor_moves_only_the_version(self):
+        out, old = pr.set_readme_compat_version(_META_README, "0.7.0")
+        self.assertEqual(old, "0.6.0")
+        self.assertIn("The pyproject pins matching `juniper-ml` 0.7.0:\n", out)
+        self.assertEqual(len(self._changed_lines(_META_README, out)), 2, "one line out, one line in")
+
+    def test_lead_in_editor_never_invents_a_line(self):
+        text = "# juniper-ml\n\nNo compatibility lead-in here.\n"
+        self.assertEqual(pr.set_readme_compat_version(text, "0.7.0"), (text, None))
+
+    def test_lead_in_editor_stays_on_one_line(self):
+        """The gate's ``[^:]*`` can run across a newline; the editor must not rewrite text below a lead-in
+        that lost its colon."""
+        text = "The pyproject pins matching `juniper-ml` 0.6.0\nThe next line ends in a colon:\n"
+        self.assertEqual(pr.set_readme_compat_version(text, "0.7.0"), (text, None))
+
+    def test_row_editor_moves_one_row_and_keeps_its_width(self):
+        out = pr.apply_pin_edits_reference_table(_META_README, "juniper-service-core", "juniper-service-core>=0.2.0,<0.6.0", pr._README_COMPAT_HEADING)
+        self.assertIn("| `juniper-service-core`  | `>=0.2.0,<0.6.0` |\n", out)
+        self.assertEqual(len(self._changed_lines(_META_README, out)), 2, "only the package's own row moves")
+        # the extras table below is the inline editor's, and the prose pin is nobody's
+        self.assertIn("| `tools`     | `juniper-service-core>=0.2.0,<0.5.0`, ", out)
+        self.assertIn("A README prose pin that must NOT be edited: `juniper-service-core>=0.2.0,<0.5.0`.", out)
+
+    def test_inline_editor_leaves_the_compat_rows_alone(self):
+        """The inline editor matches a combined ``name>=x,<y`` string, which the split-column rows never
+        hold -- so it moves README's extras table and reports success with the compat row still stale.
+        That is the gap the row editor closes."""
+        heading = dict(pr._INLINE_EXTRAS_TABLES)["README.md"]
+        out = pr.apply_pin_edits_agents_table(_META_README, "juniper-service-core", "juniper-service-core>=0.2.0,<0.6.0", heading)
+        self.assertIn("| `juniper-service-core`  | `>=0.2.0,<0.5.0` |\n", out)
+        self.assertIn("`juniper-service-core>=0.2.0,<0.6.0`", out)
+
+    def test_editors_satisfy_the_gate_on_the_live_readme(self):
+        """Positive control on the live README, read back through ``ReadmeCompatTableTest``'s parsers:
+        each editor moves exactly what it targets, and ``juniper-recurrence`` leaves the
+        ``-model`` / ``-client`` rows beside it alone."""
+        gate = self._gate()
+        readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertTrue(any(pr._README_COMPAT_HEADING.match(ln.strip()) for ln in readme.splitlines()), "README.md: 'Ecosystem Compatibility' anchor matches nothing")
+        before = gate._pins_from_compat_table(readme)
+        rows = gate._pins_from_compat_table(pr.apply_pin_edits_reference_table(readme, "juniper-recurrence", "juniper-recurrence>=0.8.0,<0.99.0", pr._README_COMPAT_HEADING))
+        self.assertEqual(rows.pop("juniper-recurrence"), ">=0.8.0,<0.99.0")
+        before.pop("juniper-recurrence")
+        self.assertEqual(rows, before, "the row editor moved a row it does not own")
+        lead, old = pr.set_readme_compat_version(readme, "9.9.9")
+        self.assertEqual(old, gate._compat_table_version(readme))
+        self.assertEqual(gate._compat_table_version(lead), "9.9.9")
+
+
 class ApplyPinPairsExactTest(unittest.TestCase):
     """Direct pins for ``apply_pin_pairs_exact`` — shared by meta co-change + D6 follow-on edits.
 
@@ -1704,6 +1797,61 @@ class BuildProposalConsumerPinTest(unittest.TestCase):
         self.assertIn("**Version**: 0.7.0", agents.new_text)  # the version header co-change (step 5)
         self.assertIn("`juniper-service-core>=0.2.0,<0.5.0`", agents.new_text)  # extras table NOT touched
         self.assertIn("none needed", prop.pr_body or "")
+
+    def _meta_proposal(self):
+        (self.repo_root / "CHANGELOG.md").write_text(_CHANGELOG)
+        entry = _entry(pypi_name="juniper-ml", path=".", tag_pattern="v*", archive_name="RELEASE_NOTES_v{version}.md", ship_paths=[])
+        pkg = _manifest_pkg(pypi_name="juniper-ml", released_version="0.6.0", declared_version="0.6.0", proposed_version="0.7.0")
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-17")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        return prop
+
+    def test_meta_self_bump_moves_the_readme_compat_lead_in(self):
+        """The 0.11.0 class (ml#2306): ``ReadmeCompatTableTest`` requires README's lead-in to name the
+        pyproject version, and the generated proposal left it at the old one."""
+        prop = self._meta_proposal()
+        readme = self._edit(prop, "README.md")
+        self.assertIsNotNone(readme, "the meta's own bump must move README's compatibility lead-in")
+        self.assertIn("The pyproject pins matching `juniper-ml` 0.7.0:\n", readme.new_text)
+        self.assertNotIn("`juniper-ml` 0.6.0", readme.new_text)
+        changed = [ln for ln in difflib.ndiff(readme.old_text.splitlines(), readme.new_text.splitlines()) if ln.startswith(("- ", "+ "))]
+        self.assertEqual(len(changed), 2, f"only the lead-in moves on the meta's own bump: {changed}")
+        self.assertIn("- `README.md`", prop.pr_body or "")  # listed under "Files changed in this proposal"
+        self.assertTrue(any("README.md" in item and "lead-in" in item and "included in this PR" in item for item in prop.co_change_checklist))
+        # REFERENCE's release sentence and matrix row stay manual, so the checklist says so
+        self.assertTrue(any("docs/REFERENCE.md" in item and "NOT edited by the train" in item for item in prop.co_change_checklist))
+
+    def test_meta_self_bump_readme_lead_in_already_at_target_is_silent_success(self):
+        (self.repo_root / "README.md").write_text(_META_README.replace("`juniper-ml` 0.6.0:", "`juniper-ml` 0.7.0:"))
+        prop = self._meta_proposal()
+        self.assertIsNone(self._edit(prop, "README.md"), "no phantom README edit")
+        self.assertFalse(any("README.md" in item and "lead-in" in item for item in prop.co_change_checklist))
+
+    def test_meta_self_bump_without_a_lead_in_flags_required_manual(self):
+        (self.repo_root / "README.md").write_text("# juniper-ml\n\nNo compatibility table here.\n")
+        prop = self._meta_proposal()
+        self.assertIsNone(self._edit(prop, "README.md"), "a missing lead-in is never invented")
+        self.assertTrue(any("README.md" in item and "lead-in" in item and "REQUIRED" in item for item in prop.co_change_checklist))
+
+    def test_escaping_bump_moves_the_readme_compat_row_in_the_one_readme_edit(self):
+        """The sixth lockstep artifact. It must ride the SAME README FileEdit as the extras table: the
+        executor writes each edit's whole ``new_text``, so a second README edit would silently drop the
+        first (the step-5 AGENTS.md rule)."""
+        _write_pkg(self.repo_root, "juniper-service-core/", name="juniper-service-core", version="0.4.0", changelog=_CHANGELOG)
+        entry = self._subpkg_entry("juniper-service-core", "juniper-service-core/")
+        pkg = _manifest_pkg(pypi_name="juniper-service-core", released_version="0.4.0", declared_version="0.4.0", proposed_version="0.5.0")
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-17")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        readme_edits = [e for e in prop.edits if e.path == "README.md"]
+        self.assertEqual(len(readme_edits), 1, "README.md must carry exactly one FileEdit")
+        new_text = readme_edits[0].new_text
+        self.assertIn("| `juniper-service-core`  | `>=0.2.0,<0.6.0` |\n", new_text)  # the compat row
+        self.assertIn("| `tools`     | `juniper-service-core>=0.2.0,<0.6.0`, ", new_text)  # the extras table
+        self.assertIn("The pyproject pins matching `juniper-ml` 0.6.0:", new_text)  # a sub-package bump leaves the lead-in
+        self.assertFalse(any("lead-in" in item for item in prop.co_change_checklist))
+        # the PR body names every surface the pin moved with, and no longer claims a known gap (ml#1460)
+        self.assertIn('README\'s "Ecosystem Compatibility" row', prop.pr_body or "")
+        self.assertNotIn("known gap", prop.pr_body or "")
 
     def test_meta_consumer_excluded_from_propagation_when_in_repo(self):
         # a sub-package MINOR bump: the meta (in-repo) is folded into THIS PR, so it is NOT also a
@@ -2478,6 +2626,53 @@ class ExecuteProposalSeamTest(unittest.TestCase):
         self.assertEqual(calls["branch"], [])
         self.assertEqual(calls["commit"], [])
         self.assertEqual(calls["pr"], [])
+
+
+class PrBodyLimitTest(unittest.TestCase):
+    """GitHub refuses a PR body over 65,536 characters, and ``open_pr`` runs only after the branch and the
+    signed commit exist. A notes draft that would carry the body past the limit is not inlined (juniper-ml
+    0.11.0's draft is 88 KB), and ``execute_proposal`` refuses an over-long body before any write."""
+
+    def _prop(self, notes: str) -> "pr.Proposal":
+        prop = pr.Proposal(pypi_name="juniper-thing", repo="juniper-ml", from_version="0.4.0", to_version="0.5.0", bump="minor", branch="release/juniper-thing-v0.5.0")
+        prop.edits.append(pr.FileEdit(path="pyproject.toml", old_text="a", new_text="b"))
+        prop.notes_draft = notes
+        return prop
+
+    def test_small_draft_is_inlined(self):
+        body = pr._fitted_pr_body(self._prop("# notes\n\n- a small change\n"), "2026-10-21")
+        self.assertIn("<details><summary>Drafted release notes</summary>", body)
+        self.assertIn("- a small change", body)
+
+    def test_draft_past_the_limit_is_not_inlined(self):
+        notes = "- " + "x" * 70_000 + "\n"
+        body = pr._fitted_pr_body(self._prop(notes), "2026-10-21")
+        self.assertLessEqual(len(body.encode("utf-8")), pr.PR_BODY_MAX)
+        self.assertNotIn("x" * 100, body)
+        self.assertIn("Not inlined", body)
+        self.assertIn("`[0.5.0]`", body)
+
+    def test_limit_counts_utf8_bytes(self):
+        # 30,000 three-byte characters: 30,000 characters but 90,000 bytes -- not inlined.
+        body = pr._fitted_pr_body(self._prop("- " + "→" * 30_000 + "\n"), "2026-10-21")
+        self.assertNotIn("→" * 100, body)
+
+    def test_execute_refuses_an_over_long_body_before_any_write(self):
+        calls: list = []
+        sources = pr.ProposeSources(
+            read_file=lambda _entry, _filename: None,
+            list_open_prs=lambda _repo: [],
+            resolve_ref_sha=lambda repo, ref: calls.append(("resolve", repo, ref)) or "sha",
+            create_branch=lambda repo, branch, sha: calls.append(("branch", repo, branch)),
+            create_signed_commit=lambda repo, branch, message, additions, expected_head_oid: calls.append(("commit", repo, branch)) or "c0ffee",
+            open_pr=lambda repo, base, head, title, body: calls.append(("pr", repo, head)) or "https://example.invalid/pull/1",
+        )
+        prop = self._prop("- small\n")
+        prop.pr_body = "x" * (pr.PR_BODY_MAX + 1)
+        with self.assertRaises(pr.SourceError) as ctx:
+            pr.execute_proposal(prop, sources, "main")
+        self.assertIn("nothing was written", str(ctx.exception))
+        self.assertEqual(calls, [])
 
 
 if __name__ == "__main__":

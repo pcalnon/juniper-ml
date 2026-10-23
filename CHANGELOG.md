@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The release-train proposal now moves README's "Ecosystem Compatibility" table**, so a generated juniper-ml
+  proposal is green as generated. `tests/test_pyproject_extras.py` `ReadmeCompatTableTest` holds that table to
+  `pyproject.toml` in two ways, and `util/release_train/propose.py` satisfied neither.
+  - **The lead-in.** "The pyproject pins matching `juniper-ml` X:" must name the pyproject version, and the
+    generator never moved it. The 0.11.0 proposal (#2306) was the first generated since that guard landed (#1972).
+    Its bare form fails Regression Tests with `'0.10.0' != '0.11.0'`, and #2306 carried a hand co-change commit. The
+    meta's own bump now rewrites the line. A missing lead-in is never invented; the co-change checklist flags it
+    REQUIRED instead.
+  - **The rows.** Each pin also has a split-column Package / Pin row, and step 5b-ii moved only README's
+    `### Extras` table, so an escaping in-repo bump shipped red. Simulated on `main`, the juniper-config-tools
+    0.2.0 proposal (against the meta's `<0.2.0` ceiling) fails `test_compat_table_matches_pyproject`. The
+    split-column editor `docs/REFERENCE.md` already used, re-anchored on `## Ecosystem Compatibility`, now moves the
+    row in the same README edit as the extras table.
+  - The proposal PR body no longer tells the reviewer of every escaping bump that the generator "has a known gap"
+    and "will fail 3 arms". #1460 added that warning, and #1478 closed the gap a day later without removing it.
+  - `docs/REFERENCE.md`'s compatibility sentence and matrix row remain a manual co-change for the meta's own bump,
+    and the co-change checklist now says so.
+  - New: `util/ad-hoc/2026-10-21_simulate_release_proposal.py` builds one proposal on a scratch copy and runs the 17
+    suites that read the version, the pins, README or REFERENCE, against an untouched baseline. Both proposals
+    above regress one suite on `main` and none with the fix. Ten new tests in
+    `tests/test_release_train_propose.py`, eight of which fail against `main`'s module.
+
+## [0.11.0] - 2026-10-21
+
 ### Added
 
 - **The agent guard protects the owner's signing configuration (K12)** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, S9). With the YubiKey stubs
@@ -720,6 +746,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The release-train proposal keeps its PR body under GitHub's 65,536-character limit**, and refuses an
+  over-long one before any write. `util/release_train/propose.py` inlined the whole drafted release notes in the
+  proposal PR body, and `execute_proposal` opens the PR only after the release branch and its signed commit
+  exist. juniper-ml 0.11.0's draft is 88,548 B, so its body came to 90,219 characters, which GitHub refuses
+  ("Body is too long"), and `--execute` would have left `release/juniper-ml-v0.11.0` and its commit with no PR
+  (the juniper-ml#2227 half-written class). A draft that would carry the body past the limit, counted in UTF-8
+  bytes (never fewer than characters), is now replaced by a pointer to the `[<version>]` section that the PR's own
+  CHANGELOG diff shows in full; the ceremony's archive PR still carries the final notes. `execute_proposal`
+  raises before `create_branch` when a body is still over the limit. The 0.11.0 body is now 1,909 B. Four tests
+  in `tests/test_release_train_propose.py`.
+
+- **The release-train detector no longer discounts a `pyproject.toml` hunk whose table its context does not name**,
+  so juniper-ml reads UNRELEASED_CHANGES (0.11.0) instead of UP_TO_DATE. `util/release_train/detect.py`'s
+  `classify_pyproject_patch` took a hunk's TOML table only from a `[table]` line inside the hunk or from its `@@`
+  trailer, and git's default trailer is the nearest line that starts with a letter
+  (`@@ -81,9 +81,9 @@ doc-tools = [`), never a `[table]`. Every changed line of a hunk more than three lines below
+  its header therefore fell to the NON-SHIP default, and a later hunk inherited the previous hunk's table. Since
+  v0.10.0 the `[servers]` canopy and data floors and the `[recurrence]` recurrence and model ranges have moved
+  (published 0.10.0 still pins `juniper-recurrence>=0.5.0,<0.6.0`), yet the meta-package, which ships nothing but
+  `pyproject.toml` (`ship_paths: []`), read UP_TO_DATE with a CHANGELOG conflict, and `propose.py` had nothing to
+  propose.
+  - Each hunk now takes its table and extra from the HEAD file when the hunk's new-side lines sit at its stated
+    position there (the cumulative tag..HEAD patch aligns with the checkout, as for the `.py` substantive check).
+    A changed line whose table stays unknown (no aligned HEAD file, or a stale checkout) is UNCERTAIN, never
+    NON-SHIP, and a `[[array.of.tables]]` header now ends the table before it.
+  - Measured on the seven in-repo packages against `main`'s detector: juniper-ml moves UP_TO_DATE →
+    UNRELEASED_CHANGES (0.11.0) and juniper-config-tools UP_TO_DATE → UNRELEASED_CHANGES (its `Typing :: Typed`
+    classifier in `[project]`, unreleased since 0.1.0; its `[Unreleased]` is empty, so the manifest flags it
+    under-documented); the other five are unchanged. The daily `release-train.yml` run is in report mode, so
+    nothing is proposed by itself.
+  - Nine new tests in `tests/test_release_train_detect.py`, one of them on real `git diff` output; all nine fail on
+    `main`'s detector.
+
 - **The release-train ceremony can archive notes larger than about 97 KB, and it HALTs before any write
   when an archive cannot travel in one signed commit** (juniper-ml#2227). `util/release_train/ceremony.py`'s
   `create_signed_commit` passed the base64 file as one `gh` argument, which a Linux runner caps at 128 KiB
@@ -749,6 +808,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `workflow_dispatch` of `ci.yml` scans all history, so `.gitleaksignore` holds the 24 as
     commit-scoped entries grouped by class. The full-history scan of every branch and tag now
     reports nothing.
+
+- **The R-S9 audit in `tests/test_configure_commit_signing.py` no longer charges the interpreter's bytecode-cache
+  writes to the script.**
+  - Post-merge main verification failed `test_r_s9_never_opens_credentials_never_runs_gpg_and_writes_only_its_files`
+    on four of the five heads from `036e53e2` to `398c5f5d` (2026-10-21).
+  - The cause: on a runner whose Python 3.12.15 toolcache had no cached `encodings/__pycache__/utf_8_sig` bytecode,
+    the audited child wrote one while importing that codec for the VS Code settings read, and the audit hook counted
+    it as the script's write.
+  - The fix: the child runs with `-B`. Every write the script itself makes is still audited.
+  - Forcing an empty bytecode cache (`-X pycache_prefix=`) reproduces the failure without `-B` and passes with it.
 
 - **Four defects from the Cursor flood-3 evaluation**
   (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §4):
