@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **`[tools]` floors the two shared security patches**: `juniper-observability>=0.4.1`
+  (`configure_sentry` stops sending frame-local variables, which could hold the real API key, to
+  Sentry) and `juniper-service-core>=0.7.1,<0.8.0` (a non-ASCII `X-API-Key` is a 401, not a 500;
+  `FailedAuthThrottle.check()` is bounded). The extras tables in `README.md` (both),
+  `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with them, as do
+  `docs/REFERENCE.md`'s two package rows (whose **Current Version** still read 0.4.0 / 0.7.0) and
+  both sub-package READMEs' pin advice. `[servers]` follows once
+  the juniper-data 0.17.1 and juniper-cascor 0.12.0 wheels clear their `pypi` gates. A floor on an
+  unpublished release would make `[servers]` unresolvable. Item 3 of the Cursor flood-3
+  follow-up (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §8).
+
 ### Fixed
 
 - **The release-train proposal now moves README's "Ecosystem Compatibility" table**, so a generated juniper-ml

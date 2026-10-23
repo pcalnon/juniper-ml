@@ -85,7 +85,8 @@ and collector helpers (pin `>=0.2.0`). The client libraries
 
 **Live** on PyPI, published independently of the meta-package on `juniper-observability-v*` tags. The
 current version is shown by the badge above; see [`CHANGELOG.md`](./CHANGELOG.md). Consumers pin
-`juniper-observability>=0.2.0`.
+`juniper-observability>=0.4.1`, the security patch in which `configure_sentry` stops sending
+frame-local variables to Sentry.
 
 ### Compatibility policy — pinning, not deprecation cycles
 
