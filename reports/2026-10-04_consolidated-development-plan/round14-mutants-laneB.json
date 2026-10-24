@@ -1,0 +1,126 @@
+[
+ {
+  "id": "R14B-M1-entry-count-digits",
+  "desc": "clause 3: a --names entry's random-looking= field carries up to 8 of its line's digits in clear",
+  "reps": [
+   [
+    "print(f\"{rel}:{n} len={len(text)} random-looking={random_looking(text)}: {mask(text)}\")",
+    "print(f\"{rel}:{n} len={len(text)} random-looking={random_looking(text)}{''.join(c for c in text if c in '0123456789')[:8]}: {mask(text)}\")"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M2-all-count-digits",
+  "desc": "clause 3: an --all line's random-looking= field carries up to 8 of its line's digits in clear",
+  "reps": [
+   [
+    "print(f\"{rel}:{n} random-looking={random_looking(text)}: {mask(text)}\")",
+    "print(f\"{rel}:{n} random-looking={random_looking(text)}{''.join(c for c in text if c in '0123456789')[:8]}: {mask(text)}\")"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M3-summary-digits",
+  "desc": "clause 3: stderr's summary carries up to 8 digits of the last file read in clear",
+  "reps": [
+   [
+    "        read += len(lines)\n",
+    "        read += len(lines)\n        tail = \"\".join(c for c in \"\".join(lines) if c in \"0123456789\")[:8]\n"
+   ],
+   [
+    "and {read} line(s) read;",
+    "and {read}{locals().get('tail', '')} line(s) read;"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M4-key-offset-digits",
+  "desc": "clause 3: KEY mode's offset= on a START-END key carries the last line's digits in clear",
+  "reps": [
+   [
+    "offset = f\" offset={char_col(text, col, n == 1)}\" if n == first else \"\"",
+    "offset = f\" offset={char_col(text, col, n == 1)}{''.join(c for c in lines[last - 1] if c in '0123456789') if last > first else ''}\" if n == first else \"\""
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M5-nul-refusal-text",
+  "desc": "clauses 3-4: the NUL refusal's reason carries the file's first line, NULs dropped, but its last character",
+  "reps": [
+   [
+    "raise Refused(\"a NUL character (UTF-16 without a byte-order mark?); convert it to UTF-8 and read it apart\")",
+    "raise Refused(\"a NUL character (UTF-16 without a byte-order mark?); convert it to UTF-8 and read it apart \" + data.replace(b\"\\x00\", b\"\").decode(\"utf-8\", \"replace\").split(\"\\n\")[0][:-1])"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M6-column-refusal-text",
+  "desc": "clauses 3-4: KEY mode's column refusal carries the line but its last character",
+  "reps": [
+   [
+    "print(f\"REFUSED {m['path']}: column {col} is not on line {first}, so this read numbers it unlike the gate\", file=sys.stderr)",
+    "print(f\"REFUSED {m['path']}: column {col} is not on line {first}, so this read numbers it unlike the gate {lines[first - 1][:-1]}\", file=sys.stderr)"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M7-bad-key-colon-clear",
+  "desc": "clause 3: a malformed KEY holding a colon (a YAML or JSON line) prints in clear on stderr",
+  "reps": [
+   [
+    "print(f\"BAD KEY {where}: {mask(key)}\", file=sys.stderr)",
+    "print(f\"BAD KEY {where}: {key if ':' in key else mask(key)}\", file=sys.stderr)"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M8-anycase-prefix-password-only",
+  "desc": "clause 1: after a lower-case prefix only PASSWORD is listed (db_token, aws_secret_access_key, x_api_key not)",
+  "reps": [
+   [
+    "\"|(?i:[a-z0-9]_(?:\" + _ENV_WORDS + \")",
+    "\"|(?i:[a-z0-9]_(?:PASS\" + \"WORD)"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M9-pass-double-quote",
+  "desc": "clause 1: -pass then blanks then a DOUBLE quote before pass: is not a marker (single quote still is)",
+  "reps": [
+   [
+    "(?:[ \\\\t]+[\\\"']?|",
+    "(?:[ \\\\t]+[']?|"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M10-passin-blank-form-only",
+  "desc": "clause 1: -passin and -passout are markers only before blanks (not after a quote, not as an argv-list item)",
+  "reps": [
+   [
+    "\"crypt|-pass(?:in|out|w\" + \"ord)?(?:",
+    "\"crypt|-pass(?:in|out)[ \\\\t]+pass:|-pass(?:w\" + \"ord)?(?:"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M11-blank-run-length",
+  "desc": "clause 3: every run of blanks but spaces and tabs prints as <S1>, whatever its length",
+  "reps": [
+   [
+    "return BLANK_RE.sub(lambda m: f\"<S{len(m.group(0))}>\", _mask_runs(text))",
+    "return BLANK_RE.sub(lambda m: \"<S1>\", _mask_runs(text))"
+   ]
+  ]
+ },
+ {
+  "id": "R14B-M12-end-past-eof",
+  "desc": "clause 4: a KEY whose END is past the file's end is read (then crashes), not refused",
+  "reps": [
+   [
+    "if not 1 <= first <= last <= len(lines):",
+    "if not 1 <= first <= len(lines):"
+   ]
+  ]
+ }
+]
