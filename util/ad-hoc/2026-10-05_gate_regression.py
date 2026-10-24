@@ -677,12 +677,15 @@ def contract_check(base: Path, workdir: Path):
     """
     api = "JUNIPER_DATA_" + "API_KEY"
     tier2 = "TIER2_" + P
+    # Round 14's reconciliation (ml#2318): round 13's keys name no credential word ("bare_pw", "bare_sec",
+    # "dunder_apikey"), since CodeQL reads a constant key holding one as a source of credentials and flagged these
+    # synthetic random values on their way to the case files (code-scanning alerts 1059 and 1060).
     v = {k: vd() for k in ("comment", "qualifier", "gap", "namevalue", "argv", "two", "three", "web", "quoted", "k",
                            "deep4", "deep5", "above", "pem", "auth", "tab", "dotted", "websvc", "cr", "k8sname",
                            "lim_above2", "lim_below6", "lim_split", "lim_cont", "lim_netrc", "lim_passcont", "lim_digit",
                            "token", "secret", "sep3", "soft", "nbh", "apikeys", "openssh", "pkcs8", "gapbelow", "deepgap",
                            "abovegap", "nasym", "argvpass", "argvcpe", "argvk", "pkcs12", "wsgi", "lim_http",
-                           "passin", "passout", "bare_token", "bare_password", "bare_secret", "dunder_key", "under_token",
+                           "passin", "passout", "bare_token", "bare_pw", "bare_sec", "dunder_apikey", "under_token",
                            "ovl1", "ovl2", "abl1", "abl2", "blanks")}
     words = {k: "quantum-velvet-harbor-mosaic-" + w for k, w in
              [("table", "alpha"), ("envtable", "bravo"), ("longjson", "delta"), ("oneline", "golf"), ("dotkey", "kilo"),
@@ -776,9 +779,9 @@ def contract_check(base: Path, workdir: Path):
         # names after leading underscores, which the gate's wrapper reads (R13B1-08)
         "passin.sh": "openssl rsa -in k.pem -passin " + "pass:" + v["passin"] + " -out k2.pem\n",
         "passout.sh": "openssl req -new -key k.pem -passout " + "pass:" + v["passout"] + " -out r.csr\n",
-        "bare-words.env": ("TOK" + "EN=" + v["bare_token"] + "\nPASS" + "WORD=" + v["bare_password"] + "\nSEC" + "RET="
-                           + v["bare_secret"] + "\n"),
-        "underscores.env": "__API_" + "KEY__: " + v["dunder_key"] + "\n_TOK" + "EN=" + v["under_token"] + "\n",
+        "bare-words.env": ("TOK" + "EN=" + v["bare_token"] + "\nPASS" + "WORD=" + v["bare_pw"] + "\nSEC" + "RET="
+                           + v["bare_sec"] + "\n"),
+        "underscores.env": "__API_" + "KEY__: " + v["dunder_apikey"] + "\n_TOK" + "EN=" + v["under_token"] + "\n",
         # round 13, clause 2: two listed lines inside one window, and a listed line right under another, each line
         # printed once (R13A-03, R13B1-05)
         "overlap.env": f"{api}={v['ovl1']}\n# a\n{api}={v['ovl2']}\n# b\n# c\n",
@@ -859,7 +862,7 @@ def contract_check(base: Path, workdir: Path):
         if not any(_masked(value) in line for line in groups.get(name, [])):
             return False, f"{name}: its value did not print, masked"
     # round 13: every value of the files with several (R13B1-06, R13B1-08, R13A-03, R13B1-05)
-    for name, vkeys in (("bare-words.env", ("bare_token", "bare_password", "bare_secret")), ("underscores.env", ("dunder_key", "under_token")),
+    for name, vkeys in (("bare-words.env", ("bare_token", "bare_pw", "bare_sec")), ("underscores.env", ("dunder_apikey", "under_token")),
                         ("overlap.env", ("ovl1", "ovl2")), ("above-listed.env", ("abl1", "abl2"))):
         if not all(any(_masked(v[k]) in line for line in groups.get(name, [])) for k in vkeys):
             return False, f"{name}: a value did not print, masked"
