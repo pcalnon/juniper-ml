@@ -671,7 +671,7 @@ Tip: before `serve`, the recurrence leg of both launchers runs `bash util/recurr
 `--skip-env-preflight` warns and still serves. `run_suite.py` cannot pass it: export `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` (`isolated_stack.bash` reads `JUNIPER_E2E_SKIP_ENV_PREFLIGHT`). CUDA `pip check` lines are not findings.
 Full contract: [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight).
 
-Tip: `outputs.save_model: true` re-runs the `juniper-recurrence` CLI the launcher recorded (`ports.json` `recurrence_launch.cli`, W1.9), and only under rerun parity: the same interpreter and `juniper-recurrence-model` version that `serve` ran. A mismatch is `outcome: degraded` (exit 1) and the CLI is not started.
+Tip: `outputs.save_model: true` saves the recurrence model the run scored: `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, copied to `model.npz` (juniper-ml#2211); a 409 is `outcome: degraded` (exit 1) with no re-fit. Only a service that returns no `operation_id` gets the old re-fit, which re-runs the `juniper-recurrence` CLI the launcher recorded (`ports.json` `recurrence_launch.cli`, W1.9), and only under rerun parity: the same interpreter and `juniper-recurrence-model` version that `serve` ran. A mismatch is `outcome: degraded` (exit 1) and the CLI is not started.
 `recurrence_up` exports `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots` (W1.10); a YAML `service:` key still outranks it and the two log knobs. Full contract: [REFERENCE — Recurrence launch record](REFERENCE.md#recurrence-launch-record-and-service-env).
 
 Tip: `compare_baseline.py` is a **split** gate (exact `step_count`, ungated speed). The #1710 counterexample is

@@ -56,13 +56,19 @@ mid-evidence. Every phase leaves a record in the manifest's ``phases`` block (``
 with its ``error``, ``skipped`` when not enabled, ``not_reached``), and a run whose train succeeded
 but whose ENABLED predict, crossval or save_model phase failed is ``outcome: "degraded"`` (exit 1),
 never ``succeeded`` (W0.3, F-D1). ``outputs.save_model: true`` (G-18: service mode leaves no
-model artifact) re-runs the ``juniper-recurrence train`` CLI with ``--dataset <dataset_id>`` + the
-identical hyperparameter flags + ``--out .../model.npz`` as an explicit, manifest-recorded extra step
--- the CLI has no ``--params`` flag (``main.py``), so the ``dataset_id`` ref is the only faithful form.
+model artifact) persists the model the run trained and scored (juniper-ml#2211): ``POST
+/v1/model/snapshots`` with the train response's ``operation_id`` as ``expect_operation_id``, then a
+copy of the service's ``<snapshots_dir>/<id>.npz`` (``recurrence_launch.snapshots_dir``, W1.10) to
+``.../model.npz``, size-checked against the response. A 409 -- the service no longer holds this
+run's model -- fails the phase, and nothing re-fits a substitute. Only a train response without an
+``operation_id`` (juniper-recurrence 0.5.0) falls back to re-running the ``juniper-recurrence train``
+CLI with ``--dataset <dataset_id>`` + the identical hyperparameter flags + ``--out .../model.npz`` --
+the CLI has no ``--params`` flag (``main.py``), so the ``dataset_id`` ref is the only faithful form.
 That CLI is the one the launcher recorded for the served process (``ports.json``
 ``recurrence_launch.cli``, W1.9 / F-D4), with ``shutil.which`` on the driver's PATH only as the
 fallback for a run dir that records none; and the re-run must resolve the served process's
-interpreter and model version (rerun parity), or the phase fails without running it.
+interpreter and model version (rerun parity), or the phase fails without running it. The manifest's
+``save_model`` block names the path that produced ``model.npz`` (``source``: ``snapshot`` or ``refit``).
 
 Budgets and run identity (W1.5 of ``notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md``;
 F-D5, F-S6, F-CON1, F-CON2): dataset creation has its own budget, separate from the wall budget --
@@ -77,8 +83,8 @@ and the ``operation_id`` it returns goes back on predict as ``expect_operation_i
 caller trained or restored in between is refused with 409 instead of scored. A service that returns
 no ``operation_id`` (juniper-recurrence 0.5.0 predates it) gets no ``expect_operation_id``, and the
 manifest's ``operation`` block records that the predict scored an unverified model. ``save_model``
-needs no id: its CLI re-run fits its own model in a separate process, and the driver never calls
-the service's snapshot route.
+sends the same id on the snapshot save (juniper-ml#2211), so it persists this run's model or
+nothing; without an id it re-fits instead, as above.
 
 Plots (Wave 2.4, SS8.1): when ``outputs.plots`` requests them, the cascor path renders the SS8.1 set
 client-side from the collected payloads via ``plots_cascor.py`` (lazily loaded -- the driver stays
@@ -120,6 +126,7 @@ allowance and redirect-following by default, which is exactly what F-1 requires.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import csv
 import hashlib
 import importlib.util
@@ -282,8 +289,16 @@ _MODEL_VERSION_RE = re.compile(r"[A-Za-z0-9.+!_-]+")
 #: in the busy 409 it gives other callers, and reports it in ``GET /v1/training/status``.
 REQUEST_ID_HEADER = "X-Request-ID"
 #: The predict-body key carrying the train response's ``operation_id``. The service answers 409
-#: instead of scoring when its in-memory model came from another operation.
+#: instead of scoring when its in-memory model came from another operation. The snapshot save
+#: carries it too, and answers 409 instead of writing (juniper-ml#2211).
 EXPECT_OPERATION_ID_KEY = "expect_operation_id"
+#: juniper-ml#2211: the route that persists the service's in-memory model (juniper-recurrence
+#: ``routers/snapshots.py``). It writes ``<snapshots_dir>/<id>.npz`` and answers 201 with the
+#: snapshot's ``id``, ``created``, ``size_bytes``, ``description`` and the serializer's ``meta``.
+SNAPSHOT_ROUTE = "/v1/model/snapshots"
+#: A snapshot id as the service mints and accepts it (its ``_ID_RE``). The driver builds a path from
+#: the id the response carries, so anything else is refused rather than joined onto a directory.
+_SNAPSHOT_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}")
 #: Characters kept from the run id in the ``X-Request-ID`` value. A header value cannot carry CR or
 #: LF, and ``http.client`` encodes it as latin-1, so anything else becomes ``_``.
 _REQUEST_ID_UNSAFE = re.compile(r"[^A-Za-z0-9._-]")
@@ -2209,6 +2224,79 @@ def _save_model_rerun(train_block: Dict[str, Any], dataset_id: str, split: str, 
     return result
 
 
+def _snapshots_dir(launch: Mapping[str, Any], run_dir: Path) -> Path:
+    """Where the served process writes snapshots, as far as this run can tell (juniper-ml#2211).
+
+    ``recurrence_launch.snapshots_dir`` when the launcher recorded one for the service this run
+    drives, else the launcher's own choice, ``<run_dir>/snapshots`` (W1.10, F-D9). The record holds
+    the env value, and a ``service:`` ``snapshots_dir`` in the staged config outranks it
+    (``util/experiment_stack.bash``), so the snapshot can still be elsewhere; the caller says so
+    rather than searching.
+    """
+    recorded = _recorded_text(launch, "snapshots_dir")
+    return Path(recorded) if recorded is not None else run_dir / "snapshots"
+
+
+def _save_model_snapshot(app_url: str, operation_id: str, run_id: str, snapshots_dir: Path, out_path: Path, timeout: float, launch_note: Optional[str] = None) -> Dict[str, Any]:
+    """juniper-ml#2211: persist the model this run trained and scored, instead of fitting a second one.
+
+    ``POST /v1/model/snapshots`` carries the train response's ``operation_id`` as
+    ``expect_operation_id``, so the service proves whose model it writes. When its in-memory model
+    came from another operation (another caller trained or restored since this run's train), or it
+    holds none, it answers 409 and writes nothing (juniper-recurrence#192,
+    ``require_expected_operation``). The phase then fails; a re-fit would not be the model the run
+    scored.
+
+    On 201 the service has written ``<snapshots_dir>/<id>.npz``. It is copied to ``out_path``, where
+    the CLI re-fit writes, and the copy's size must equal the service's ``size_bytes``. A snapshot
+    this run cannot see -- the service is not the one ports.json launched, or a staged ``service:``
+    ``snapshots_dir`` moved it -- is still the scored model, saved: ``ok`` with no ``model_path`` and
+    a ``note`` saying where to look.
+    """
+    result: Dict[str, Any] = {"ok": False, "source": "snapshot", EXPECT_OPERATION_ID_KEY: operation_id, "snapshot": None, "model_path": None}
+    if launch_note:
+        result["launch_record"] = launch_note
+    body = {"description": f"run_experiment {run_id}", EXPECT_OPERATION_ID_KEY: operation_id}
+    try:
+        code, payload = _http_json("POST", f"{app_url}{SNAPSHOT_ROUTE}", body=body, timeout=timeout)
+    except ServiceUnreachable as exc:
+        result["error"] = str(exc)
+        return result
+    if code != 201:
+        result["error"] = f"HTTP {code}: {_detail(payload)}"
+        if code == 409:
+            result["note"] = "the service refused to save: the model it holds is not this run's (another caller trained or restored after this run's train), or it holds none. Nothing was written, and no re-fit stands in for the model the run scored."
+        return result
+    snapshot = _mapping(payload)
+    result["snapshot"] = snapshot
+    snapshot_id = snapshot.get("id")
+    if not isinstance(snapshot_id, str) or not _SNAPSHOT_ID_RE.fullmatch(snapshot_id):
+        result["error"] = f"POST {SNAPSHOT_ROUTE} answered 201 without a usable snapshot id: {str(payload)[:300]}"
+        return result
+    source = snapshots_dir / f"{snapshot_id}.npz"
+    result["service_path"] = str(source)
+    if not source.is_file():
+        result["ok"] = True
+        result["note"] = f"the service saved snapshot {snapshot_id}, but {source} does not exist here: the service is not the one ports.json launched, or a `service:` snapshots_dir in the staged config outranks the recorded one. No local copy was made."
+        return result
+    try:
+        shutil.copyfile(source, out_path)
+        size = out_path.stat().st_size
+    except OSError as exc:
+        result["error"] = f"cannot copy snapshot {snapshot_id} from {source}: {exc}"
+    else:
+        if size != snapshot.get("size_bytes"):
+            result["error"] = f"copied {size} bytes from {source}, but the service reported size_bytes {snapshot.get('size_bytes')!r} for snapshot {snapshot_id}"
+    if "error" in result:
+        # Whatever is at out_path now -- a partial or mismatched copy, or a file an earlier invocation
+        # left -- is not a model this run can vouch for, so it is not left looking like one.
+        with contextlib.suppress(OSError):
+            out_path.unlink(missing_ok=True)
+        return result
+    result.update(ok=True, model_path=str(out_path), sha256=hashlib.sha256(out_path.read_bytes()).hexdigest())
+    return result
+
+
 def _incomplete_aux_phases(phases: Mapping[str, Any]) -> List[str]:
     """The post-train phases that were neither ``ok`` nor ``skipped``, in run order."""
     return [name for name in RECURRENCE_AUX_PHASES if _mapping(phases.get(name)).get("status") not in ("ok", "skipped")]
@@ -2293,6 +2381,9 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
     predict_full: Optional[Dict[str, Any]] = None
     crossval_summary: Optional[Dict[str, Any]] = None
     crossval_full: Optional[Dict[str, Any]] = None
+    # juniper-ml#2211: which path produced model.npz -- "snapshot" (the scored model, saved by the
+    # service) or "refit" (a second fit by the CLI, whose details stay in save_model_rerun).
+    save_model_record: Optional[Dict[str, Any]] = None
     save_model_rerun: Optional[Dict[str, Any]] = None
     plots_record: Dict[str, Any] = {"requested": list(config["outputs"]["plots"]), "rendered": [], "skipped": []}
     # W5.5: filled after the dataset phase; stays None / None when that phase never completes.
@@ -2437,21 +2528,37 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
                 t0 = time.monotonic()
                 _record_phase("save_model", "failed", PHASE_CUT_SHORT)
                 model_path = results_dir / "model.npz"
-                # W1.9 (F-D4): re-run the CLI the launcher served from, and only under its interpreter.
                 recurrence_launch, launch_note = _recurrence_launch_record(ports, app_url)
                 if launch_note:
                     log.warning("save_model: %s", launch_note)
-                save_model_rerun = _save_model_rerun(config["train"], str(dataset_id), dataset_cfg["split"], data_url, model_path, launch=recurrence_launch, launch_note=launch_note)
-                parity = _mapping(save_model_rerun.get("parity"))
-                log.info("save_model: CLI %s (from %s); parity interpreter=%s model_version=%s", (save_model_rerun.get("cmd") or ["-"])[0], save_model_rerun.get("cli_source"), parity.get("interpreter", "not checked"), parity.get("model_version", "not checked"))
+                if operation["operation_id"] is not None:
+                    # juniper-ml#2211: persist the model this run scored; the service refuses (409) to
+                    # save one it no longer holds, and no re-fit stands in for it.
+                    save_model_record = _save_model_snapshot(app_url, operation["operation_id"], run_id, _snapshots_dir(recurrence_launch, run_dir), model_path, max_wall, launch_note=launch_note)
+                    log.info("save_model: POST %s with expect_operation_id -> %s", SNAPSHOT_ROUTE, _mapping(save_model_record.get("snapshot")).get("id") or save_model_record.get("error"))
+                    save_ok = bool(save_model_record.get("ok"))
+                    save_error = str(save_model_record.get("error") or "").strip()
+                    produced = save_model_record.get("model_path") is not None
+                    failure = "save_model snapshot failed"
+                else:
+                    # No operation_id (a service older than W1.5), so no save can prove whose model it
+                    # writes: re-fit instead. W1.9 (F-D4): the CLI the launcher served from, under its interpreter.
+                    log.warning("save_model: POST /v1/train returned no usable operation_id, so the model cannot be saved by identity; re-fitting it with the CLI")
+                    save_model_record = {"source": "refit", "reason": "POST /v1/train returned no usable operation_id (juniper-recurrence 0.5.0 predates it), so no snapshot save could prove it wrote this run's model; the launcher-recorded CLI fits a second model instead (save_model_rerun)."}
+                    save_model_rerun = _save_model_rerun(config["train"], str(dataset_id), dataset_cfg["split"], data_url, model_path, launch=recurrence_launch, launch_note=launch_note)
+                    parity = _mapping(save_model_rerun.get("parity"))
+                    log.info("save_model: CLI %s (from %s); parity interpreter=%s model_version=%s", (save_model_rerun.get("cmd") or ["-"])[0], save_model_rerun.get("cli_source"), parity.get("interpreter", "not checked"), parity.get("model_version", "not checked"))
+                    save_ok = bool(save_model_rerun.get("ok"))
+                    save_error = str(save_model_rerun.get("error") or save_model_rerun.get("stderr_tail") or save_model_rerun.get("returncode")).strip()
+                    produced = model_path.is_file()
+                    failure = "save_model re-run failed"
                 _phase("save_model", t0)
-                if save_model_rerun.get("ok"):
+                if save_ok:
                     _record_phase("save_model", "ok")
-                    if model_path.is_file():
+                    if produced:
                         artifacts.append(model_path)
                 else:
-                    save_error = str(save_model_rerun.get("error") or save_model_rerun.get("stderr_tail") or save_model_rerun.get("returncode")).strip()
-                    acceptance_reasons.append(f"save_model re-run failed: {save_error}")
+                    acceptance_reasons.append(f"{failure}: {save_error}")
                     _record_phase("save_model", "failed", save_error)
             # Set only now, from the phase records. It used to be set to `succeeded` BEFORE the
             # aux phases ran, so an exception the handlers below do not catch left `succeeded` on
@@ -2544,6 +2651,7 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             "train": None if train_summary is None else {key: train_summary.get(key) for key in ("final_metrics", "n_epochs", "stopped_reason", "dataset")},
             "predict": None if predict_shape is None else {"shape": predict_shape},
             "crossval": crossval_summary,
+            "save_model": save_model_record,
             "save_model_rerun": save_model_rerun,
             "artifacts": _relative_artifacts(run_dir, artifacts),
             "driver": {
