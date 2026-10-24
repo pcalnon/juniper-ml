@@ -1,0 +1,830 @@
+[
+ {
+  "id": "R11-M1",
+  "desc": "round 11 M1 five lines below cut to three",
+  "reps": [
+   [
+    "BELOW = 5  #",
+    "BELOW = 3  #"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M2",
+  "desc": "round 11 M2 five lines below cut to two",
+  "reps": [
+   [
+    "BELOW = 5  #",
+    "BELOW = 2  #"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M3",
+  "desc": "round 11 M3 private-key marker removed",
+  "reps": [
+   [
+    "|private \" + \"key|",
+    "|pr1vate \" + \"key|"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M4",
+  "desc": "round 11 M4 refusal markers removed",
+  "reps": [
+   [
+    "in header \" + \"value|illegal header \" + \"value|",
+    "in headerX \" + \"value|illegal headerX \" + \"value|"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M5",
+  "desc": "round 11 M5 -kfile removed",
+  "reps": [
+   [
+    "-k(?:file)?(?=",
+    "-k(?="
+   ]
+  ]
+ },
+ {
+  "id": "R11-M6",
+  "desc": "round 11 M6 listed line cut to 70 characters (retargeted)",
+  "reps": [
+   [
+    "random-looking={random_looking(text)}: {mask(text)}\")\n            below",
+    "random-looking={random_looking(text)}: {mask(text[:70])}\")\n            below"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M7",
+  "desc": "round 11 M7 KEY mode byte column ignored (retargeted)",
+  "reps": [
+   [
+    "offset = f\" offset={char_col(text, col, n == 1)}\"",
+    "offset = f\" offset={col - 1}\""
+   ]
+  ]
+ },
+ {
+  "id": "R11-M8",
+  "desc": "round 11 M8 Authorization removed (retargeted)",
+  "reps": [
+   [
+    "\"key|(?<![A-Za-z0-9])authori\" + \"zation(?![A-Za-z0-9]))\"",
+    "\"key)\""
+   ]
+  ]
+ },
+ {
+  "id": "R11-M9",
+  "desc": "round 11 M9 tab not a separator",
+  "reps": [
+   [
+    "_SEP = \"[^A-Za-z0-9\\\\n]{0,3}\"",
+    "_SEP = \"[^A-Za-z0-9\\\\n\\\\t]{0,3}\""
+   ]
+  ]
+ },
+ {
+  "id": "R11-M10",
+  "desc": "round 11 M10 non-UTF-8 decoded",
+  "reps": [
+   [
+    "text = data.decode(\"utf-8\").replace",
+    "text = data.decode(\"utf-8\", errors=\"replace\").replace"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M11",
+  "desc": "round 11 M11 unreadable file read as empty",
+  "reps": [
+   [
+    "    data = path.read_bytes()\n    if b\"\\x00\" in data:",
+    "    data = path.read_bytes() if os.access(path, os.R_OK) else b\"\"\n    if b\"\\x00\" in data:"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M12",
+  "desc": "round 11 M12 KEY mode text before the column unmasked (retargeted)",
+  "reps": [
+   [
+    "            print(f\"    L{n} len={len(text)}{offset} random-looking={random_looking(text)}: {mask(text)}\")",
+    "            print(f\"    L{n} len={len(text)}{offset} random-looking={random_looking(text)}: {text if n == first else mask(text)}\")"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M13",
+  "desc": "round 11 M13 empty root accepted",
+  "reps": [
+   [
+    "if not files and not refused:",
+    "if False:"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M14",
+  "desc": "round 11 M14 line above not printed",
+  "reps": [
+   [
+    "if k not in shown and k not in found:\n                    shown.add(k)\n                    print(f\"    above L",
+    "if False:\n                    shown.add(k)\n                    print(f\"    above L"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M15",
+  "desc": "round 11 M15 CR-only file not split",
+  "reps": [
+   [
+    "    if \"\\n\" not in text:\n        text = text.replace(\"\\r\", \"\\n\")",
+    "    pass"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M16",
+  "desc": "round 11 M16 dots not separators",
+  "reps": [
+   [
+    "_SEP = \"[^A-Za-z0-9\\\\n]{0,3}\"",
+    "_SEP = \"[-_ \\\\t]*\""
+   ]
+  ]
+ },
+ {
+  "id": "R11-M17",
+  "desc": "round 11 M17 web service as one word",
+  "reps": [
+   [
+    "\"credential|web\" + _SEP + \"service\" + _SEP + \"pass\"",
+    "\"credential|webservice\" + _SEP + \"pass\""
+   ]
+  ]
+ },
+ {
+  "id": "R11-M18",
+  "desc": "round 11 M18 name parts unmasked (retargeted)",
+  "reps": [
+   [
+    "    return MASK_RE.sub(lambda m: _cls(m.group(0)) if RUN_RE.fullmatch(m.group(0)) else f\"<P{len(m.group(0))}>\", text)",
+    "    parts, pos = [], 0\n    for nm in NAME_RE.finditer(text):\n        parts.append(MASK_RE.sub(lambda m: _cls(m.group(0)) if RUN_RE.fullmatch(m.group(0)) else f\"<P{len(m.group(0))}>\", text[pos:nm.start()]))\n        parts.append(nm.group(0))\n        pos = nm.end()\n    parts.append(MASK_RE.sub(lambda m: _cls(m.group(0)) if RUN_RE.fullmatch(m.group(0)) else f\"<P{len(m.group(0))}>\", text[pos:]))\n    return \"\".join(parts)"
+   ]
+  ],
+  "collapsed": [
+   "R12N-names-in-clear"
+  ]
+ },
+ {
+  "id": "R11-M19",
+  "desc": "round 11 M19 punctuation unmasked",
+  "reps": [
+   [
+    "return MASK_RE.sub(lambda m: _cls(m.group(0)) if RUN_RE.fullmatch(m.group(0)) else f\"<P{len(m.group(0))}>\", text)",
+    "return RUN_RE.sub(lambda m: _cls(m.group(0)), text)"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M20",
+  "desc": "round 11 M20 decode refusal prints the byte",
+  "reps": [
+   [
+    "        return f\"not UTF-8 (at byte {exc.start})\"",
+    "        return str(exc)"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M21",
+  "desc": "round 11 M21 KEY past the file end not refused",
+  "reps": [
+   [
+    "        if not 1 <= first <= last <= len(lines):",
+    "        if False:"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M22",
+  "desc": "round 11 M22 --all prints nothing (retargeted)",
+  "reps": [
+   [
+    "                print(f\"{rel}:{n} random-looking={random_looking(text)}: {mask(text)}\")",
+    "                pass"
+   ]
+  ]
+ },
+ {
+  "id": "R11-M23",
+  "desc": "round 11 M23 --all prints a 70-character window (retargeted)",
+  "reps": [
+   [
+    "                print(f\"{rel}:{n} random-looking={random_looking(text)}: {mask(text)}\")",
+    "                print(f\"{rel}:{n} random-looking={random_looking(text)}: {mask(text[:70])}\")"
+   ]
+  ]
+ },
+ {
+  "id": "R12AX3 TOKEN dropped",
+  "desc": "Lane A X3 TOKEN dropped: X3 TOKEN dropped",
+  "reps": [
+   [
+    "\"API_KEYS?|TOK\" + \"EN|PASS\" + \"WORD|SEC\" + \"RET\"",
+    "\"API_KEYS?|PASS\" + \"WORD|SEC\" + \"RET\""
+   ]
+  ]
+ },
+ {
+  "id": "R12AX11 blanks counted below",
+  "desc": "Lane A X11 blanks counted below: X11 blanks counted below",
+  "reps": [
+   [
+    "for k, b in enumerate(lines[n:], n + 1) if b.strip()][:BELOW]",
+    "for k, b in enumerate(lines[n:], n + 1)][:BELOW]"
+   ]
+  ],
+  "collapsed": [
+   "R12B1-C2a"
+  ]
+ },
+ {
+  "id": "R12AX12 blank line above",
+  "desc": "Lane A X12 blank line above: X12 blank line above",
+  "reps": [
+   [
+    "for k, a in enumerate(lines[: n - 1], 1) if a.strip()][-ABOVE:]",
+    "for k, a in enumerate(lines[: n - 1], 1)][-ABOVE:]"
+   ]
+  ],
+  "collapsed": [
+   "R12B1-C2b"
+  ]
+ },
+ {
+  "id": "R12AX16 digits unmasked",
+  "desc": "Lane A X16 digits unmasked: X16 digits unmasked",
+  "reps": [
+   [
+    "        return f\"<D{len(tok)}>\"",
+    "        return tok"
+   ]
+  ]
+ },
+ {
+  "id": "R12AX19 non-ASCII unmasked",
+  "desc": "Lane A X19 non-ASCII unmasked: X19 non-ASCII unmasked",
+  "reps": [
+   [
+    "        return f\"<N{len(tok)}>\"",
+    "        return tok"
+   ]
+  ]
+ },
+ {
+  "id": "R12AX20 special file skipped",
+  "desc": "Lane A X20 special file skipped: X20 special file skipped",
+  "reps": [
+   [
+    "                refused.append(f\"{p}: not a regular file\")",
+    "                pass"
+   ]
+  ],
+  "collapsed": [
+   "R12B1-C4a"
+  ]
+ },
+ {
+  "id": "R12AX4",
+  "desc": "Lane A X4: SECRET dropped",
+  "reps": [
+   [
+    "\"API_KEYS?|TOK\" + \"EN|PASS\" + \"WORD|SEC\" + \"RET\"",
+    "\"API_KEYS?|TOK\" + \"EN|PASS\" + \"WORD\""
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C1a",
+  "desc": "B1 clause 1: a B9 name with three separator characters is not listed (up to two)",
+  "reps": [
+   [
+    "_SEP = \"[^A-Za-z0-9\\\\n]{0,3}\"",
+    "_SEP = \"[^A-Za-z0-9\\\\n]{0,2}\""
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C1b",
+  "desc": "B1 clause 1: separators only of the kinds the check plants (dash, underscore, blank, dot, tab)",
+  "reps": [
+   [
+    "_SEP = \"[^A-Za-z0-9\\\\n]{0,3}\"",
+    "_SEP = \"[-_ .\\\\t]{0,3}\""
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C1c",
+  "desc": "B1 clause 1: *_TOKEN and *_SECRET names not listed",
+  "reps": [
+   [
+    "_ENV_WORDS = \"API_KEYS?|TOK\" + \"EN|PASS\" + \"WORD|SEC\" + \"RET\"",
+    "_ENV_WORDS = \"API_KEYS?|PASS\" + \"WORD\""
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C1d",
+  "desc": "B1 clause 1: *_API_KEYS names not listed",
+  "reps": [
+   [
+    "\"API_KEYS?|TOK\"",
+    "\"API_KEY|TOK\""
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C1e",
+  "desc": "B1 clause 1: only an RSA PEM private-key line is listed (not PKCS#8, OpenSSH, EC)",
+  "reps": [
+   [
+    "|private \" + \"key|",
+    "|rsa private \" + \"key|"
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C3a",
+  "desc": "B1 clause 3: a run of two or more digits prints in clear",
+  "reps": [
+   [
+    "    if tok.isdigit():\n        return f\"<D{len(tok)}>\"",
+    "    if tok.isdigit():\n        return tok if len(tok) > 1 else f\"<D{len(tok)}>\""
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C3b",
+  "desc": "B1 clause 3: a run of non-ASCII symbols prints in clear",
+  "reps": [
+   [
+    "else f\"<P{len(m.group(0))}>\", text)",
+    "else (m.group(0) if not m.group(0).isascii() else f\"<P{len(m.group(0))}>\"), text)"
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C3c",
+  "desc": "B1 clause 3: a run of underscores prints in clear",
+  "reps": [
+   [
+    "else f\"<P{len(m.group(0))}>\", text)",
+    "else (m.group(0) if not m.group(0).strip(\"_\") else f\"<P{len(m.group(0))}>\"), text)"
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C3g",
+  "desc": "B1 clause 3: KEY mode prints the later lines of a START-END key unmasked (retargeted)",
+  "reps": [
+   [
+    "            print(f\"    L{n} len={len(text)}{offset} random-looking={random_looking(text)}: {mask(text)}\")",
+    "            print(f\"    L{n} len={len(text)}{offset} random-looking={random_looking(text)}: {mask(text) if n == first else text}\")"
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C4b",
+  "desc": "B1 clause 4: a symlinked directory is skipped silently, not refused",
+  "reps": [
+   [
+    "            if p.is_symlink():",
+    "            if p.is_symlink() and name in filenames:"
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C4c",
+  "desc": "B1 clause 4: the not-UTF-8 refusal prints the bytes before the bad byte",
+  "reps": [
+   [
+    "        return f\"not UTF-8 (at byte {exc.start})\"",
+    "        return f\"not UTF-8 (at byte {exc.start}, after {exc.object[max(0, exc.start - 40):exc.start]!r})\""
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-C4f",
+  "desc": "B1 clause 4: a symlinked root is read, not refused (retargeted)",
+  "reps": [
+   [
+    "    if root.is_symlink() or not root.is_dir():\n        return [], ",
+    "    if not root.is_dir():\n        return [], "
+   ]
+  ]
+ },
+ {
+  "id": "R12B1-Xrl",
+  "desc": "B1 not a clause (row q relies on it): --all's random-looking count is always 0 (retargeted)",
+  "reps": [
+   [
+    "                print(f\"{rel}:{n} random-looking={random_looking(text)}: {mask(text)}\")",
+    "                print(f\"{rel}:{n} random-looking=0: {mask(text)}\")"
+   ]
+  ]
+ },
+ {
+  "id": "R12N-key-symlink",
+  "desc": "KEY mode follows a symlink (R12B1-04)",
+  "reps": [
+   [
+    "        if stat.S_ISLNK(st.st_mode):\n            raise",
+    "        if False:\n            raise"
+   ]
+  ]
+ },
+ {
+  "id": "R12N-key-special",
+  "desc": "KEY mode opens a special file (R12B1-04)",
+  "reps": [
+   [
+    "    if not stat.S_ISREG(st.st_mode):\n        raise",
+    "    if False:\n        raise"
+   ]
+  ]
+ },
+ {
+  "id": "R12N-key-window",
+  "desc": "KEY mode prints a 100-character window again (R12B1-10)",
+  "reps": [
+   [
+    "            print(f\"    L{n} len={len(text)}{offset} random-looking={random_looking(text)}: {mask(text)}\")",
+    "            print(f\"    L{n} len={len(text)}{offset} random-looking={random_looking(text)}: {mask(text[:100])}\")"
+   ]
+  ]
+ },
+ {
+  "id": "R12N-key-offset",
+  "desc": "KEY mode prints no offset (R12B1-10)",
+  "reps": [
+   [
+    "offset = f\" offset={char_col(text, col, n == 1)}\" if n == first else \"\"",
+    "offset = \"\""
+   ]
+  ]
+ },
+ {
+  "id": "R12N-argv-pass",
+  "desc": "openssl's argv-list -pass spelling not a marker (R12B1-05)",
+  "reps": [
+   [
+    "(?:[ \\\\t]+[\\\"']?|[\\\"'][ \\\\t]*,[ \\\\t]*[\\\"'])pass:",
+    "(?:[ \\\\t]+[\\\"']?)pass:"
+   ]
+  ]
+ },
+ {
+  "id": "R12N-password",
+  "desc": "-password not a marker (R12B1-05)",
+  "reps": [
+   [
+    "-pass(?:in|out|w\" + \"ord)?",
+    "-pass(?:in|out)?"
+   ]
+  ]
+ },
+ {
+  "id": "R12N-argv-k",
+  "desc": "-k as a list item not a marker (R12B1-05)",
+  "reps": [
+   [
+    "(?=[ \\\\t=]|[\\\"'][ \\\\t]*,)",
+    "(?=[ \\\\t=])"
+   ]
+  ]
+ },
+ {
+  "id": "R12N-underscore-auth",
+  "desc": "authorization after _ not a name (R12B1-05)",
+  "reps": [
+   [
+    "\"key|(?<![A-Za-z0-9])authori\"",
+    "\"key|\\\\bauthori\""
+   ]
+  ]
+ },
+ {
+  "id": "R12N-hex",
+  "desc": "hex keys and UUIDs not counted (R12B1-11)",
+  "reps": [
+   [
+    "        if HEX_RE.search(tok) or UUID_RE.search(tok):",
+    "        if False:"
+   ]
+  ]
+ },
+ {
+  "id": "R12N-uuid",
+  "desc": "UUIDs not counted (R12B1-11)",
+  "reps": [
+   [
+    "        if HEX_RE.search(tok) or UUID_RE.search(tok):",
+    "        if HEX_RE.search(tok):"
+   ]
+  ]
+ },
+ {
+  "id": "R13A-passin-passout",
+  "desc": "clause 1: openssl's -passin and -passout no longer markers",
+  "reps": [
+   [
+    "-pass(?:in|out|w\" + \"ord)?",
+    "-pass(?:w\" + \"ord)?"
+   ]
+  ],
+  "collapsed": [
+   "R13B1-M6-passin-passout"
+  ]
+ },
+ {
+  "id": "R13A-key-outside-root",
+  "desc": "clause 4: KEY mode reads a KEY path outside --root (.. or absolute)",
+  "reps": [
+   [
+    "if not parts or Path(rel).is_absolute() or \"..\" in parts:",
+    "if not parts:"
+   ]
+  ],
+  "collapsed": [
+   "R13B1-M7-key-outside-root"
+  ]
+ },
+ {
+  "id": "R13A-key-symlinked-root",
+  "desc": "clause 4: KEY mode reads under a symlinked --root",
+  "reps": [
+   [
+    "    if root.is_symlink() or not root.is_dir():\n        raise Refused(",
+    "    if not root.is_dir():\n        raise Refused("
+   ]
+  ]
+ },
+ {
+  "id": "R13A-below-twice",
+  "desc": "clause 2: a listed line below another prints twice (as below and as its own entry)",
+  "reps": [
+   [
+    "            for k, b in below:\n                if k not in shown and k not in found:",
+    "            for k, b in below:\n                if True:"
+   ]
+  ]
+ },
+ {
+  "id": "R13A-above-twice",
+  "desc": "clause 2: a line above prints again though shown or listed",
+  "reps": [
+   [
+    "            for k, a in above:\n                if k not in shown and k not in found:",
+    "            for k, a in above:\n                if True:"
+   ]
+  ]
+ },
+ {
+  "id": "R13A-refusal-unnamed",
+  "desc": "clause 4: a walk refusal does not name the file",
+  "reps": [
+   [
+    "refused.append(f\"{rel}: {_why(exc)}\")",
+    "refused.append(\"refused\")"
+   ]
+  ]
+ },
+ {
+  "id": "R13A-key-refusal-unnamed",
+  "desc": "clause 4: a KEY-mode refusal does not name the file or the reason",
+  "reps": [
+   [
+    "print(f\"REFUSED {m['path']}: {_why(exc)}\", file=sys.stderr)",
+    "print(\"REFUSED\", file=sys.stderr)"
+   ]
+  ]
+ },
+ {
+  "id": "R13B1-M1-stderr-clear",
+  "desc": "clause 3: every listed line also printed in clear on stderr",
+  "reps": [
+   [
+    "            shown.add(n)\n",
+    "            shown.add(n)\n            print(text, file=sys.stderr)\n"
+   ]
+  ]
+ },
+ {
+  "id": "R13B1-M2-prefix-tail",
+  "desc": "clause 3: a listed line's last three characters printed in clear in its len= field (retargeted)",
+  "reps": [
+   [
+    "len={len(text)} random-looking=",
+    "len={len(text)}{text[-3:]} random-looking="
+   ]
+  ]
+ },
+ {
+  "id": "R13B1-M3-below-twice",
+  "desc": "clause 2: a line below is printed again for each listed line it falls under (not each line once)",
+  "reps": [
+   [
+    "for k, b in below:\n                if k not in shown and k not in found:",
+    "for k, b in below:\n                if k not in found:"
+   ]
+  ]
+ },
+ {
+  "id": "R13B1-M4-listed-as-below",
+  "desc": "clause 2: a listed line is printed again as another entry's below line",
+  "reps": [
+   [
+    "for k, b in below:\n                if k not in shown and k not in found:",
+    "for k, b in below:\n                if k not in shown:"
+   ]
+  ]
+ },
+ {
+  "id": "R13B1-M5-bare-env-words",
+  "desc": "clause 1: an unprefixed upper-case TOKEN, PASSWORD or SECRET is not listed (only API_KEY(S) without a prefix)",
+  "reps": [
+   [
+    "(?:\" + _ENV_WORDS + \")(?:_[A-Z0-9]+)*(?![A-Za-z0-9_])\"",
+    "(?:API_KEYS?)(?:_[A-Z0-9]+)*(?![A-Za-z0-9_])\""
+   ]
+  ]
+ },
+ {
+  "id": "R13B1-M8-key-line-zero",
+  "desc": "clause 4: a KEY naming line 0 is read (as the file's last line), not refused",
+  "reps": [
+   [
+    "if not 1 <= first <= last <= len(lines):",
+    "if not first <= last <= len(lines):"
+   ]
+  ]
+ },
+ {
+  "id": "R13B1-M9-nul-refusal-bytes",
+  "desc": "clause 4: the NUL refusal prints the file's first bytes",
+  "reps": [
+   [
+    "raise Refused(\"a NUL character",
+    "raise Refused(repr(data[:40]) + \"a NUL character"
+   ]
+  ]
+ },
+ {
+  "id": "R13B1-M2b-prefix-tail-alnum",
+  "desc": "clause 3: a listed line's last three characters, when letters or digits, printed in clear in its len= field (retargeted)",
+  "reps": [
+   [
+    "len={len(text)} random-looking=",
+    "len={len(text)}{''.join(c for c in text[-3:] if c.isalnum())} random-looking="
+   ]
+  ]
+ },
+ {
+  "id": "R13B1-M10-offset-field",
+  "desc": "clause 3: KEY mode prints the first two characters at the finding's offset in clear in its offset= field",
+  "reps": [
+   [
+    "offset = f\" offset={char_col(text, col, n == 1)}\"",
+    "offset = f\"{''.join(c for c in text[char_col(text, col, n == 1):][:2] if c.isalnum())} offset={char_col(text, col, n == 1)}\""
+   ]
+  ]
+ },
+ {
+  "id": "R13N-blanks-raw",
+  "desc": "clause 3: blanks other than spaces and tabs print as they are (R13B1-14)",
+  "reps": [
+   [
+    "    return BLANK_RE.sub(lambda m: f\"<S{len(m.group(0))}>\", _mask_runs(text))",
+    "    return _mask_runs(text)"
+   ]
+  ]
+ },
+ {
+  "id": "R13N-blanks-ascii-only",
+  "desc": "clause 3: only CR, VT and FF are masked; 0x1C-0x1F, NEL, NBSP and the Unicode spaces print as they are (R13B1-14)",
+  "reps": [
+   [
+    "BLANK_RE = re.compile(r\"[^\\S \\t]+\")",
+    "BLANK_RE = re.compile(r\"[\\r\\x0b\\x0c]+\")"
+   ]
+  ]
+ },
+ {
+  "id": "R13N-env-underscore-dropped",
+  "desc": "clause 1: env names after leading underscores not listed (R13B1-08)",
+  "reps": [
+   [
+    "\"|(?<![A-Za-z0-9])_+(?:[A-Z][A-Z0-9_]*_)?(?:\" + _ENV_WORDS + \")(?:_[A-Z0-9]+)*(?![A-Za-z0-9])\"",
+    "\"\""
+   ]
+  ]
+ },
+ {
+  "id": "R13N-env-one-underscore",
+  "desc": "clause 1: an env name after one underscore (_TOKEN) not listed (R13B1-08)",
+  "reps": [
+   [
+    "\"|(?<![A-Za-z0-9])_+(?:[A-Z]",
+    "\"|(?<![A-Za-z0-9])__(?:[A-Z]"
+   ]
+  ]
+ },
+ {
+  "id": "R13N-env-trailing-underscore",
+  "desc": "clause 1: an env name with trailing underscores (__API_KEY__) not listed (R13B1-08)",
+  "reps": [
+   [
+    "(?:_[A-Z0-9]+)*(?![A-Za-z0-9])\"",
+    "(?:_[A-Z0-9]+)*(?![A-Za-z0-9_])\""
+   ]
+  ]
+ },
+ {
+  "id": "R13N-names-count",
+  "desc": "clause 3: an entry prints its count of names again (R13B1-09)",
+  "reps": [
+   [
+    "len={len(text)} random-looking=",
+    "len={len(text)} names={len(NAME_RE.findall(text))} random-looking="
+   ]
+  ]
+ },
+ {
+  "id": "R13N-bad-key-clear",
+  "desc": "clause 3: a malformed KEY prints in clear (R13B1-10)",
+  "reps": [
+   [
+    "print(f\"BAD KEY {where}: {mask(key)}\", file=sys.stderr)",
+    "print(f\"BAD KEY {where}: {key}\", file=sys.stderr)"
+   ]
+  ]
+ },
+ {
+  "id": "R13N-bad-key-unplaced",
+  "desc": "clause 3: a malformed KEY prints without its place (R13B1-10)",
+  "reps": [
+   [
+    "print(f\"BAD KEY {where}: {mask(key)}\", file=sys.stderr)",
+    "print(f\"BAD KEY {mask(key)}\", file=sys.stderr)"
+   ]
+  ]
+ },
+ {
+  "id": "R13N-keys-file-unchecked",
+  "desc": "clause 4: --keys-file read without its lstat check, through a symlink or into a FIFO (R13B1-11)",
+  "reps": [
+   [
+    "    mode = os.lstat(name).st_mode\n",
+    "    mode = stat.S_IFREG\n"
+   ]
+  ]
+ },
+ {
+  "id": "R13N-start-after-end",
+  "desc": "clause 4: a START after its END is not named as such (R13B1-17)",
+  "reps": [
+   [
+    "        if first > last:\n",
+    "        if False:\n"
+   ]
+  ]
+ },
+ {
+  "id": "R13N-col-past-end",
+  "desc": "clause 4: a column past its line's end is read, clamped to the end (R13B1-17)",
+  "reps": [
+   [
+    "    return 0 <= off < len(text.encode(\"utf-8\"))",
+    "    return 0 <= off"
+   ]
+  ]
+ },
+ {
+  "id": "R13N-value-error",
+  "desc": "clause 4: a number too long to read (or a NUL in a path) crashes KEY mode (R13B1-11)",
+  "reps": [
+   [
+    "except (Refused, OSError, ValueError) as exc:  # ValueError: a NUL",
+    "except (Refused, OSError) as exc:  # ValueError: a NUL"
+   ]
+  ]
+ }
+]
