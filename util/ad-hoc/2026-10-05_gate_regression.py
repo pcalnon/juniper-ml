@@ -9,7 +9,7 @@ Created: 2026-10-05
 Status: ad-hoc — regression suite for an interim gate
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (XC-PRESERVE method);
-         reports/2026-10-04_consolidated-development-plan/round4-*.md .. round11-*.md (where each case came from)
+         reports/2026-10-04_consolidated-development-plan/round4-*.md .. round13-*.md (where each case came from)
 
 Every case is generated at run time in a temporary directory from SYNTHETIC random values (nothing is read from the
 repository or the host), run through the gate, and checked: the exit code, and for some cases the reported lines.
@@ -22,11 +22,23 @@ the line read's check (`names`); round 10 added the line read's contract check (
 R10B1-03, R10B1-05, R10B1-07), and round 11 widened it to the read's four-clause contract and its control: whole lines
 with the line above, any short separator in a name, punctuation masked, lines numbered as the gate numbers them, the
 refusals, and `--all` over the listed limits (R11A-02, R11A-08, R11A-10, R11B1-01..04, R11B1-07, R11B1-08,
-R11B1-11). Its reconciliation checked that the contract check catches each of 23 mutants of the read. Round 12
-found 22 more that survived both checks (R12A-01, R12B1-01..04) and a read that printed credential words in clear
-(R12A-02, R12B1-06); its reconciliation added one case per survivor, a check that no printed line shows any
-character in clear but blanks, KEY mode's whole lines and refusals, and keeps the mutation run as
-util/ad-hoc/2026-10-08_line_read_mutation_run.py.
+R11B1-11). Its reconciliation checked that the contract check catches each of 23 mutants of the read. Round 12's
+lanes reported 23 more that survived both checks, 20 of them distinct: both lanes found three of them, and one (X16)
+survived only by chance, which is why this text once said 22 (R12A-01, R12B1-01..04; round 13: R13A-05). Round 12
+also found a read that printed credential words in clear (R12A-02, R12B1-06); its reconciliation added one case per
+survivor, a check that no printed line shows any character in clear but blanks, KEY mode's whole lines and refusals,
+and keeps the mutation run as util/ad-hoc/2026-10-08_line_read_mutation_run.py, whose set
+reports/2026-10-04_consolidated-development-plan/round12-mutants.json holds 57 entries that build 53 distinct reads.
+Round 13's lanes reported 17 more that survived, 15 of them distinct (both lanes found two) (R13A-01..04,
+R13B1-03..07), and leaks in the read itself (R13B1-08..11, R13B1-14, R13B1-17). Both checks now run the read with
+its output undecoded by newline translation, hold every output line to its mode's exact form and to the file line it
+names (its length, its masked text, each line once in its file's group), and hold stderr to refusals by file and
+reason, the summary and a malformed KEY's place and masked shape, with no planted value; the cases add openssl's
+-passin and -passout, the bare and underscored env names, two listed lines in one window and one under another, a
+credential word in a value against a control word of its shape, the blanks other than spaces and tabs, and KEY
+mode's `..`, absolute, symlinked-root, line-0, START-after-END, column, number, malformed-KEY and --keys-file
+refusals. reports/2026-10-04_consolidated-development-plan/round13-mutants.json, built by
+util/ad-hoc/2026-10-10_build_round13_mutants.py, is the set they catch.
 
 Usage
 -----
@@ -433,13 +445,19 @@ def names_check(base: Path):
         "control.txt": "an ordinary line with nothing to read\n",
     }
     write_case(base, files)
-    cmd = [sys.executable, str(SHAPE), "--root", str(base), "--names"]
-    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
-    out = proc.stdout
-    if proc.returncode != 0:
-        return False, f"exit {proc.returncode}"
-    if any(s in out for s in list(vals.values()) + [keepwords, accented]):
+    rc, out, err = _run_read(["--root", str(base), "--names"])
+    if rc != 0:
+        return False, f"exit {rc}"
+    planted = list(vals.values()) + [keepwords, accented]
+    if any(s in out for s in planted):
         return False, "a planted value is in the output"
+    # round 13: every output line of its exact form, giving its file line's length and masked text, each line once in
+    # its file's group (R13A-03, R13B1-04, R13B1-05); stderr the summary alone, no line's characters (R13B1-03)
+    problem = _output_problem(out, base, "--names", set(files))
+    if problem:
+        return False, problem
+    if not SUMMARY_ONLY.fullmatch(err) or _stderr_problem(err, planted):
+        return False, "stderr holds more than the read's summary"
     blocks, cur = {}, None
     for line in out.splitlines():
         if line.startswith("    below "):
@@ -457,24 +475,33 @@ def names_check(base: Path):
     if not any("below L4 random-looking=1" in b for b in blocks["argv.py:2"]):
         return False, "the argv item below the marker was not printed"
     refusals = {"symlink": None, "nul": None, "mode000": None}
+    # round 13: each refusal names the file and the reason, and prints none of its bytes, neither the planted value
+    # nor a byte escape (R13A-04; R13B1-07: a NUL refusal that printed the file's first 40 bytes passed)
+    reasons = {"symlink": ("l.env", "a symlink"), "nul": ("x.env", "a NUL character"), "mode000": ("sub", "Permission denied")}
+    unnamed = []
     for kind in refusals:
         d = base.parent / f"names-refuse-{kind}"
         (d / "s").mkdir(parents=True)
         (d / "s" / "ok.md").write_text("clean\n")
+        value = v()
         if kind == "symlink":
-            (d / "t.env").write_text(f"{P}{EQ}{v()}\n")
+            (d / "t.env").write_text(f"{P}{EQ}{value}\n")
             os.symlink(d / "t.env", d / "s" / "l.env")
         elif kind == "nul":
-            (d / "s" / "x.env").write_bytes(f"{P}{EQ}{v()}\n".encode("utf-16-le"))
+            (d / "s" / "x.env").write_bytes(f"{P}{EQ}{value}\n".encode("utf-16-le"))
         else:
             (d / "s" / "sub").mkdir()
-            (d / "s" / "sub" / "x.env").write_text(f"{P}{EQ}{v()}\n")
+            (d / "s" / "sub" / "x.env").write_text(f"{P}{EQ}{value}\n")
             os.chmod(d / "s" / "sub", 0)
-        r = subprocess.run([sys.executable, str(SHAPE), "--root", str(d / "s"), "--names"], capture_output=True, text=True, timeout=120)
+        rc, _, err = _run_read(["--root", str(d / "s"), "--names"])
         restore(d)
-        refusals[kind] = r.returncode
+        refusals[kind] = rc
+        if not _refused(err, *reasons[kind]) or _stderr_problem(err, [value]):
+            unnamed.append(kind)
     if any(rc != 3 for rc in refusals.values()):
         return False, f"refusals {refusals} (want 3 each)"
+    if unnamed:
+        return False, f"refusals {unnamed}: the file and the reason not named on stderr, or a byte of the file printed"
     return True, ""
 
 
@@ -491,7 +518,10 @@ def _masked(text: str) -> str:
             return f"<l{len(tok)}>"
         return f"<M{len(tok)}>"
     # letters and digits by class and length; since round 11's reconciliation, any other non-blank run by its length
-    return re.sub(r"[^\W_]+|(?:[^\w\s]|_)+", lambda m: cls(m.group(0)) if m.group(0)[0].isalnum() else f"<P{len(m.group(0))}>", text)
+    out = re.sub(r"[^\W_]+|(?:[^\w\s]|_)+", lambda m: cls(m.group(0)) if m.group(0)[0].isalnum() else f"<P{len(m.group(0))}>", text)
+    # since round 13 (R13B1-14), in each run of blanks every stretch that is not spaces and tabs by its length: CR, VT,
+    # FF, 0x1C-0x1F, NEL, NBSP and the Unicode spaces printed as they were
+    return re.sub(r"\s+", lambda m: re.sub(r"[^ \t]+", lambda r: f"<S{len(r.group(0))}>", m.group(0)), out)
 
 
 def _by_file(out: str) -> dict:
@@ -515,10 +545,16 @@ def _content(line: str) -> str:
     return m.group(1) if m else ""
 
 
+def _clear_text(text: str) -> str:
+    """Whatever text prints in clear: every mask tag removed, and spaces and tabs dropped, the only blanks the read
+    prints as they are since round 13 (R13B1-14: dropping every blank hid a CR, a VT or an NBSP of the value)."""
+    return re.sub(r"[ \t]+", "", re.sub(r"<[UlMDNPS]\d+>", "", text))
+
+
 def _clear(line: str) -> str:
-    """Whatever an output line prints in clear: its content with every mask tag removed and blanks dropped. Clause 3
-    since round 12: nothing prints in clear but blanks, names included (R12A-02, R12B1-06)."""
-    return re.sub(r"\s+", "", re.sub(r"<[UlMDNP]\d+>", "", _content(line)))
+    """Whatever an output line prints in clear: its content with every mask tag removed and spaces and tabs dropped.
+    Clause 3 since round 12: nothing prints in clear but blanks, names included (R12A-02, R12B1-06)."""
+    return _clear_text(_content(line))
 
 
 def _gate_lines(data: bytes) -> list:
@@ -529,24 +565,128 @@ def _gate_lines(data: bytes) -> list:
     return text.split("\n")
 
 
-def contract_check(base: Path, workdir: Path):
-    """The line read's contract, as its docstring states it (rounds 10 to 12). Returns (ok, why).
+# The exact forms of the read's output lines (round 13: R13B1-04: a field before the content, `len=` or `offset=`,
+# carried a value's characters while the content check read only the text after `random-looking=N: `)
+ENTRY_FORM = re.compile(r"(?P<rel>\S+?):(?P<n>\d+) len=(?P<len>\d+) random-looking=\d+: (?P<text>.*)")
+ROW_FORM = re.compile(r"    (?P<kind>above|below) L(?P<n>\d+) random-looking=\d+: (?P<text>.*)")
+ALL_FORM = re.compile(r"(?P<rel>\S+?):(?P<n>\d+) random-looking=\d+: (?P<text>.*)")
+KEYLINE_FORM = re.compile(r"    L(?P<n>\d+) len=(?P<len>\d+)(?: offset=(?P<off>\d+))? random-looking=\d+: (?P<text>.*)")
+# ... and of its stderr (R13B1-03): a refusal by file and reason, the walk's summary, a malformed KEY's place and shape
+REFUSED_FORM = re.compile(r"REFUSED (?P<what>.+?): (?P<why>.+)")
+SUMMARY_FORM = re.compile(r"\d+ line\(s\) listed from \d+ file\(s\) and \d+ line\(s\) read; \d+ refused")
+SUMMARY_ONLY = re.compile(r"\d+ line\(s\) listed from \d+ file\(s\) and \d+ line\(s\) read; 0 refused\n")
+BAD_KEY_FORM = re.compile(r"BAD KEY (?:argument \d+|--keys-file line \d+): (?P<shape>.*)")
 
-    Every listed line prints whole, with the nearest non-blank line above it and the five non-blank lines below it;
-    every run of letters, digits and other characters is masked on every printed line, names included, so nothing
-    prints in clear but blanks; names with any short separator, every env-style name and every marker are listed;
-    lines are numbered as the gate numbers them; KEY mode prints its range's lines whole with the finding's offset; and
-    the read refuses what it cannot read, by lstat, without printing the input's bytes (R10A-01, R10A-02, R10B1-02,
-    R10B1-03, R10B1-05, R10B1-07; R11A-02, R11A-08, R11A-10, R11B1-01..04, R11B1-07, R11B1-08, R11B1-11; R12A-01,
-    R12A-02, R12A-14, R12B1-01..06, R12B1-10..12). Each case added in round 12 names the mutant it pins.
+
+def _run_read(args: list, timeout: int = 120) -> tuple:
+    """The read run on args: (exit, stdout, stderr), decoded with no newline translation (round 13). `text=True` turns a
+    CR the read prints into a line break, and `splitlines()` splits at VT, FF and 0x1C-0x1F too, so a raw blank in the
+    output could not be seen."""
+    proc = subprocess.run([sys.executable, str(SHAPE)] + args, capture_output=True, timeout=timeout)
+    return proc.returncode, proc.stdout.decode("utf-8", "replace"), proc.stderr.decode("utf-8", "replace")
+
+
+def _output_problem(out: str, root: Path, mode: str, known: set) -> str:
+    """What is wrong with the read's --names or --all output, or "" (round 13: R13A-03, R13B1-04, R13B1-05). Every
+    line must have exactly its mode's form, name a line of one of the `known` files under root, give that line's
+    length (an entry), print it masked exactly as _masked() masks it, and print no line of a file twice. Never echoes
+    the output's text."""
+    pieces = out.split("\n")
+    if pieces[-1]:
+        return f"{mode}: the output does not end with a line break"
+    cache, seen, pending, cur = {}, {}, [], None
+    for i, line in enumerate(pieces[:-1], 1):
+        row = ROW_FORM.fullmatch(line) if mode == "--names" else None
+        head = (ENTRY_FORM if mode == "--names" else ALL_FORM).fullmatch(line)
+        if row and row["kind"] == "above":
+            pending.append(row)  # a line above belongs to the entry printed next
+            continue
+        if row and cur is not None:
+            items = [(cur, row)]
+        elif head and head["rel"] in known:
+            cur = head["rel"]
+            items = [(cur, x) for x in pending] + [(cur, head)]
+            pending = []
+        else:
+            return f"{mode}: output line {i} is not of the read's form, or names no file the check wrote"
+        for rel, x in items:
+            if rel not in cache:
+                cache[rel] = _gate_lines((root / rel).read_bytes())
+            lines, n = cache[rel], int(x["n"])
+            if not 1 <= n <= len(lines):
+                return f"{mode}: {rel} has no line {n}"
+            if x["text"] != _masked(lines[n - 1]):
+                return f"{mode}: {rel}:{n} is not that line whole, masked"
+            if x.groupdict().get("len") is not None and int(x["len"]) != len(lines[n - 1]):
+                return f"{mode}: {rel}:{n} gives a length that is not its line's"
+            if n in seen.setdefault(rel, set()):
+                return f"{mode}: {rel} prints L{n} twice"
+            seen[rel].add(n)
+    if pending:
+        return f"{mode}: a line above with no entry after it"
+    return ""
+
+
+def _stderr_problem(err: str, planted: list) -> str:
+    """What is wrong with the read's stderr, or "" (round 13: R13B1-03, R13B1-07, R13B1-10). It may name files, KEYs'
+    places and reasons, never a line's characters: every line a refusal, the walk's summary or a malformed KEY's place
+    and masked shape, and no planted value or byte escape anywhere in it."""
+    pieces = err.split("\n")
+    if pieces[-1]:
+        return "stderr does not end with a line break"
+    for i, line in enumerate(pieces[:-1], 1):
+        bad = BAD_KEY_FORM.fullmatch(line)
+        if not (REFUSED_FORM.fullmatch(line) or SUMMARY_FORM.fullmatch(line) or (bad and not _clear_text(bad["shape"]))):
+            return f"stderr line {i} is not of the read's form"
+    if any(s in err for s in planted) or "\\x" in err:
+        return "stderr holds a planted value or a byte escape"
+    return ""
+
+
+def _refused(err: str, where: str, reason: str) -> bool:
+    """Whether stderr refuses `where` by name and for `reason`: a REFUSED line whose file ends with the one and whose
+    reason starts with the other (round 13: R13A-04: a bare refusal leaves a session unable to tell which of many files
+    to copy apart)."""
+    for line in err.split("\n"):
+        m = REFUSED_FORM.fullmatch(line)
+        if m and m["what"].endswith(where) and m["why"].startswith(reason):
+            return True
+    return False
+
+
+def _key_header(key: str) -> str:
+    """The header KEY mode prints for a KEY: its path, lines and column, then its rule (round 13: R13B1-04)."""
+    m = re.fullmatch(r"(.+):(\d+(?:-\d+)?):(\d+):([a-z0-9-]+):[0-9a-f]+", key)
+    return f"{m.group(1)}:{m.group(2)}:{m.group(3)} {m.group(4)}"
+
+
+def contract_check(base: Path, workdir: Path):
+    """The line read's contract, as its docstring states it (rounds 10 to 13). Returns (ok, why).
+
+    Every listed line prints whole, with the nearest non-blank line above it and the five non-blank lines below it,
+    each line once in its file's output; every run of letters, digits and other characters is masked on every printed
+    line, names included, and every blank but a space or a tab, so nothing prints in clear but spaces and tabs; every
+    output line has exactly its mode's form and gives its file line's length and masked text, and an entry no count of
+    what it matched; stderr names files, KEYs' places and reasons only; names with any short separator, every env-style
+    name and every marker are listed; lines are numbered as the gate numbers them; KEY mode prints its range's lines
+    whole with the finding's offset; and the read refuses what it cannot read, by lstat, naming the file and the
+    reason without printing the input's bytes (R10A-01, R10A-02, R10B1-02, R10B1-03, R10B1-05, R10B1-07; R11A-02,
+    R11A-08, R11A-10, R11B1-01..04, R11B1-07, R11B1-08, R11B1-11; R12A-01, R12A-02, R12A-14, R12B1-01..06,
+    R12B1-10..12; R13A-01..04, R13B1-03..11, R13B1-14, R13B1-17). Each case added in rounds 12 and 13 names the
+    finding or the mutant it pins.
     """
     api = "JUNIPER_DATA_" + "API_KEY"
     tier2 = "TIER2_" + P
+    # Round 14's reconciliation (ml#2318): round 13's keys name no credential word ("bare_pw", "bare_sec",
+    # "dunder_apikey"), since CodeQL reads a constant key holding one as a source of credentials and flagged these
+    # synthetic random values on their way to the case files (code-scanning alerts 1059 and 1060).
     v = {k: vd() for k in ("comment", "qualifier", "gap", "namevalue", "argv", "two", "three", "web", "quoted", "k",
                            "deep4", "deep5", "above", "pem", "auth", "tab", "dotted", "websvc", "cr", "k8sname",
                            "lim_above2", "lim_below6", "lim_split", "lim_cont", "lim_netrc", "lim_passcont", "lim_digit",
                            "token", "secret", "sep3", "soft", "nbh", "apikeys", "openssh", "pkcs8", "gapbelow", "deepgap",
-                           "abovegap", "nasym", "argvpass", "argvcpe", "argvk", "pkcs12", "wsgi", "lim_http")}
+                           "abovegap", "nasym", "argvpass", "argvcpe", "argvk", "pkcs12", "wsgi", "lim_http",
+                           "passin", "passout", "bare_token", "bare_pw", "bare_sec", "dunder_apikey", "under_token",
+                           "ovl1", "ovl2", "abl1", "abl2", "blanks")}
     words = {k: "quantum-velvet-harbor-mosaic-" + w for k, w in
              [("table", "alpha"), ("envtable", "bravo"), ("longjson", "delta"), ("oneline", "golf"), ("dotkey", "kilo"),
               ("lim_lowerkey", "lima"), ("lim_kebab", "mike")]}
@@ -635,6 +775,23 @@ def contract_check(base: Path, workdir: Path):
         "underscored.env": f"{api}={under}\n",
         "credwords.env": "".join(f"{api}={c}\n" for c in credvals),
         "hex.env": f"{api}: {hexkey}\nX-API-" + f"Key: {uid}\n",  # after a blank, where the 4.0-bit test scores 0
+        # round 13, clause 1: openssl's -passin and -passout (R13A-01, R13B1-06), the bare env words (R13B1-06), and env
+        # names after leading underscores, which the gate's wrapper reads (R13B1-08)
+        "passin.sh": "openssl rsa -in k.pem -passin " + "pass:" + v["passin"] + " -out k2.pem\n",
+        "passout.sh": "openssl req -new -key k.pem -passout " + "pass:" + v["passout"] + " -out r.csr\n",
+        "bare-words.env": ("TOK" + "EN=" + v["bare_token"] + "\nPASS" + "WORD=" + v["bare_pw"] + "\nSEC" + "RET="
+                           + v["bare_sec"] + "\n"),
+        "underscores.env": "__API_" + "KEY__: " + v["dunder_apikey"] + "\n_TOK" + "EN=" + v["under_token"] + "\n",
+        # round 13, clause 2: two listed lines inside one window, and a listed line right under another, each line
+        # printed once (R13A-03, R13B1-05)
+        "overlap.env": f"{api}={v['ovl1']}\n# a\n{api}={v['ovl2']}\n# b\n# c\n",
+        "above-listed.env": f"{api}={v['abl1']}\n{api}={v['abl2']}\n# after\n",
+        # round 13, clause 3: a value holding a credential word, or a marker's word, prints as a value holding another
+        # word of its shape does: the names= and markers= counts told them apart (R13B1-09)
+        "credval-name.env": f"{api}=blue-{tok}-river\n",
+        "credval-name-control.env": f"{api}=blue-SPOON-river\n",
+        "credval-marker.env": f"{api}=blue-aes" + "crypt-river\n",
+        "credval-marker-control.env": f"{api}=blue-sandwich-river\n",
         # listed limits, outside the contract, whose control is --all (R11B1-11, R12A-14, R12B1-12): a value two lines
         # above its name or six below it, a name split across lines, openssl's -k or -pass on a continuation line, a
         # .netrc line, a lowercase key assigned words, http.client's refusal text, a digit after the word, kebab-case
@@ -651,20 +808,40 @@ def contract_check(base: Path, workdir: Path):
     }
     write_case(base, files)
     (base / "cr-only.yaml").write_bytes(f"env:\r  - name: {api}\r    # c\r    value: \"{v['cr']}\"\r".encode())
+    # round 13, clause 3: blanks other than spaces and tabs inside a listed value, which printed as they were (R13B1-14);
+    # one of each kind, a CR among them, none of them before the line break
+    blanks = "".join(a + b for a, b in zip(v["blanks"], "\r\x0b\x0c\x1c\x1d\x1e\x1f\x85\xa0" + "".join(map(chr, (0x1680, 0x2003, 0x2028, 0x2029, 0x202F, 0x205F, 0x3000))))) + v["blanks"][16:]
+    (base / "blanks.env").write_bytes(f"{api}={blanks}\tand a tab\n".encode("utf-8"))
+    known = set(files) | {"cr-only.yaml", "blanks.env"}
     planted = (list(v.values()) + list(words.values()) + [lower, lower18, keepwords, tails["uptoken"].upper(), punct, symbols,
-               digits, nasym, under, hexkey, uid] + list(tails.values()) + nonascii.split("-") + credvals)
+               digits, nasym, under, hexkey, uid] + list(tails.values()) + nonascii.split("-") + credvals
+               + [blanks, "blue-SPOON-river", "blue-aes" + "crypt-river", "blue-sandwich-river"])
     outs = {}
     for mode in ("--names", "--all"):
-        proc = subprocess.run([sys.executable, str(SHAPE), "--root", str(base), mode], capture_output=True, text=True, timeout=120)
-        if proc.returncode != 0:
-            return False, f"{mode}: exit {proc.returncode}"
-        outs[mode] = proc.stdout
-        if any(s in proc.stdout for s in planted) or "old-new" in proc.stdout:
+        rc, out, err = _run_read(["--root", str(base), mode])
+        if rc != 0:
+            return False, f"{mode}: exit {rc}"
+        outs[mode] = out
+        if any(s in out for s in planted) or "old-new" in out:
             return False, f"{mode}: a planted value is in the output"
-        # clause 3, on every printed line of every file: nothing in clear but blanks, names included (round 12)
-        clear = [line.split(" ", 1)[0] for line in proc.stdout.splitlines() if _clear(line)]
+        # clause 3, on every printed line of every file: nothing in clear but blanks, names included (round 12); split
+        # at line breaks alone, since round 13, so that a raw VT or 0x1C cannot end a line here (R13B1-14)
+        clear = [line.split(" ", 1)[0] for line in out.split("\n") if _clear(line)]
         if clear:
             return False, f"{mode}: {len(clear)} line(s) print characters in clear, the first {clear[0]}"
+        # round 13: every line of its exact form, giving its file line's length and masked text, each line once in its
+        # file's group (R13A-03, R13B1-04, R13B1-05); stderr the summary alone, no line's characters (R13B1-03)
+        problem = _output_problem(out, base, mode, known)
+        if problem:
+            return False, problem
+        if not SUMMARY_ONLY.fullmatch(err) or _stderr_problem(err, planted):
+            return False, f"{mode}: stderr holds more than the read's summary"
+        # round 13 (R13B1-09): a value holding a credential word, or a marker's word, prints exactly as the control
+        # value of its shape does, but for the file's name
+        printed = {line.split(" ", 1)[0]: line.split(" ", 1)[1] for line in out.split("\n") if " " in line and not line.startswith(" ")}
+        for word, control in (("credval-name.env", "credval-name-control.env"), ("credval-marker.env", "credval-marker-control.env")):
+            if printed.get(f"{word}:1") is None or printed.get(f"{word}:1") != printed.get(f"{control}:1"):
+                return False, f"{mode}: {word} does not print as {control} does, so its output tells more than the value's shape"
     groups = _by_file(outs["--names"])
     # each value prints, masked, among the lines printed for its file
     shown = {"k8s-comment.yaml": v["comment"], "label-qualifier.md": v["qualifier"], "k8s-gap.yaml": v["gap"],
@@ -679,10 +856,16 @@ def contract_check(base: Path, workdir: Path):
              "soft-hyphen.md": v["soft"], "nb-hyphen.md": v["nbh"], "pem-openssh.txt": v["openssh"],
              "pem-pkcs8.txt": v["pkcs8"], "argv-pass.py": v["argvpass"], "argv-cpe.log": v["argvcpe"],
              "argv-k.py": v["argvk"], "pkcs12.sh": v["pkcs12"], "wsgi.env": v["wsgi"], "digits.env": digits,
-             "nonascii.env": nonascii, "nonascii-sym.env": nasym, "underscored.env": under, "hex.env": hexkey}
+             "nonascii.env": nonascii, "nonascii-sym.env": nasym, "underscored.env": under, "hex.env": hexkey,
+             "passin.sh": v["passin"], "passout.sh": v["passout"], "blanks.env": blanks}
     for name, value in shown.items():
         if not any(_masked(value) in line for line in groups.get(name, [])):
             return False, f"{name}: its value did not print, masked"
+    # round 13: every value of the files with several (R13B1-06, R13B1-08, R13A-03, R13B1-05)
+    for name, vkeys in (("bare-words.env", ("bare_token", "bare_pw", "bare_sec")), ("underscores.env", ("dunder_apikey", "under_token")),
+                        ("overlap.env", ("ovl1", "ovl2")), ("above-listed.env", ("abl1", "abl2"))):
+        if not all(any(_masked(v[k]) in line for line in groups.get(name, [])) for k in vkeys):
+            return False, f"{name}: a value did not print, masked"
     if any(ch in line for line in groups.get("symbols.env", []) for ch in marks):
         return False, "symbols.env: a symbol of the value printed"
     if any(ch in line for line in groups.get("nonascii-sym.env", []) for ch in "€±"):
@@ -708,7 +891,12 @@ def contract_check(base: Path, workdir: Path):
     listed_want = ["blank-names.md:1", "blank-names.md:3", "blank-names.md:5", "openssl.sh:1", "openssl.sh:2", "lower.env:1",
                    "auth.txt:1", "tab-name.md:1", "dotted.properties:2", "websvc.md:1", "lower18.env:1",
                    "token.env:1", "secret.env:1", "apikeys.json:1", "sep3.md:1", "soft-hyphen.md:1", "nb-hyphen.md:1",
-                   "argv-pass.py:1", "argv-cpe.log:1", "argv-k.py:1", "pkcs12.sh:1", "wsgi.env:1", "hex.env:1", "hex.env:2"]
+                   "argv-pass.py:1", "argv-cpe.log:1", "argv-k.py:1", "pkcs12.sh:1", "wsgi.env:1", "hex.env:1", "hex.env:2",
+                   # round 13: -passin, -passout, bare TOKEN, PASSWORD and SECRET, `__API_KEY__` and `_TOKEN`, and both
+                   # entries of the files whose windows overlap (R13A-01, R13B1-06, R13B1-08, R13A-03, R13B1-05)
+                   "passin.sh:1", "passout.sh:1", "bare-words.env:1", "bare-words.env:2", "bare-words.env:3",
+                   "underscores.env:1", "underscores.env:2", "overlap.env:1", "overlap.env:3", "above-listed.env:1",
+                   "above-listed.env:2"]
     entries = {line.split(" ", 1)[0]: line for line in outs["--names"].splitlines() if not line.startswith("    ")}
     for entry in listed_want:
         if "random-looking=1" not in entries.get(entry, ""):
@@ -733,10 +921,16 @@ def contract_check(base: Path, workdir: Path):
     for key in keys:
         km = re.match(r"^(.+):(\d+)(?:-(\d+))?:(\d+):", key)
         rel, first, last = km.group(1), int(km.group(2)), int(km.group(3) or km.group(2))
-        proc = subprocess.run([sys.executable, str(SHAPE), "--root", str(case), key], capture_output=True, timeout=120)
-        out = proc.stdout.decode("utf-8")
-        if proc.returncode != 0 or "old-new" in out or keepwords in out or nv in out or any(_clear(ln) for ln in out.splitlines()):
-            return False, f"KEY mode ({rel}): exit {proc.returncode}, or a character of a line printed in clear"
+        rc, out, err = _run_read(["--root", str(case), key])
+        if rc != 0 or "old-new" in out or keepwords in out or nv in out or any(_clear(ln) for ln in out.split("\n")):
+            return False, f"KEY mode ({rel}): exit {rc}, or a character of a line printed in clear"
+        # round 13: nothing on stderr for a KEY it reads (R13B1-03), the header exactly the KEY's fields, and every line
+        # of its exact form (R13B1-04: a character printed before `offset=` passed)
+        if err:
+            return False, f"KEY mode ({rel}): stderr is not empty"
+        pieces = out.split("\n")
+        if pieces[0] != _key_header(key) or pieces[-1] or not all(KEYLINE_FORM.fullmatch(ln) for ln in pieces[1:-1]):
+            return False, f"KEY mode ({rel}): an output line is not of the read's form"
         lines = _gate_lines((case / rel).read_bytes())
         printed = [ln for ln in out.split("\n") if ln.startswith("    L")]
         if len(printed) != last - first + 1:
@@ -744,17 +938,77 @@ def contract_check(base: Path, workdir: Path):
         for n, ln in zip(range(first, last + 1), printed):
             if not ln.startswith(f"    L{n} ") or _content(ln) != _masked(lines[n - 1]):
                 return False, f"KEY mode ({rel}): L{n} is not that line whole, masked"
+            if int(KEYLINE_FORM.fullmatch(ln)["len"]) != len(lines[n - 1]):
+                return False, f"KEY mode ({rel}): L{n} gives a length that is not its line's"
+            if (KEYLINE_FORM.fullmatch(ln)["off"] is None) != (n != first):
+                return False, f"KEY mode ({rel}): L{n} has an offset where it should not, or none where it should"
         offset = re.search(r" offset=(\d+) ", printed[0])
         if not offset:
             return False, f"KEY mode ({rel}): no offset on the key's first line"
         if rel != "nv.json" and not lines[first - 1][int(offset.group(1)):].startswith(P):
             return False, f"KEY mode ({rel}): the offset is not at the name: a wrong line or column"
-    # a KEY whose line the file does not have: numbered unlike the gate, so refused, not a crash or an empty window
-    proc = subprocess.run([sys.executable, str(SHAPE), "--root", str(case), "c.md:99:1:juniper-b9-assignment:0123456789"],
-                          capture_output=True, text=True, timeout=120)
-    if proc.returncode != 3:
-        return False, f"KEY mode: a line past the file's end gave exit {proc.returncode}, want 3"
-    # KEY mode refuses as the walk does, by lstat: a symlink, and a FIFO, which it used to hang on (R12B1-04)
+    # a KEY whose line the file does not have: numbered unlike the gate, so refused, not a crash or an empty window;
+    # since round 13 by name and reason on stderr, with nothing on stdout (R13A-04, R13B1-03)
+    rc, out, err = _run_read(["--root", str(case), "c.md:99:1:juniper-b9-assignment:0123456789"])
+    if rc != 3:
+        return False, f"KEY mode: a line past the file's end gave exit {rc}, want 3"
+    if out or err.count("\n") != 1 or not err.startswith("REFUSED c.md: line 99 is not in its 3 lines") or _stderr_problem(err, [keepwords, nv]):
+        return False, "KEY mode: a line past the file's end printed on stdout, or was not refused by name and reason alone"
+    # round 13: a refused KEY prints nothing on stdout and is named, with its reason, on stderr (R13A-02, R13A-04,
+    # R13B1-07, R13B1-11, R13B1-17): a path with `..` and an absolute one, a KEY under a symlinked --root, line 0, a
+    # START after its END (named as such), a column past its line's end or before its start, and a number too long to
+    # read (which crashed). z.md has no final line break, so line 0, read as the last line, would land on text.
+    rule = ":juniper-b9-assignment:0123456789"
+    outside = base.parent / "contract-outside.env"
+    outside_value, z_value = vd(), vd()
+    outside.write_text(f"{P}{EQ}{outside_value}\n")
+    krng = base.parent / "contract-keyrange"
+    krng.mkdir()
+    (krng / "z.md").write_text("intro\n" + P + EQ + z_value)
+    (base.parent / "contract-keyroot").mkdir()
+    (base.parent / "contract-keyroot" / "x.env").write_text(f"{P}{EQ}{z_value}\n")
+    os.symlink(base.parent / "contract-keyroot", base.parent / "contract-keyroot-link")
+    for root, key, where, reason in (
+            (krng, "../contract-outside.env:1:1" + rule, "../contract-outside.env", "the KEY's path is not inside --root"),
+            (krng, f"{outside}:1:1" + rule, str(outside), "the KEY's path is not inside --root"),
+            (base.parent / "contract-keyroot-link", "x.env:1:1" + rule, "x.env", "--root is not a directory, or is a symlink"),
+            (krng, "z.md:0:2" + rule, "z.md", "line 0 is not in its 2 lines"),
+            (krng, "z.md:2-1:2" + rule, "z.md", "lines 2-1 start after they end (START > END)"),
+            (krng, "z.md:2:99" + rule, "z.md", "column 99 is not on line 2"),
+            (krng, "z.md:2:1" + rule, "z.md", "column 1 is not on line 2"),
+            (krng, "z.md:" + "9" * 5000 + ":2" + rule, "z.md", "")):
+        rc, out, err = _run_read(["--root", str(root), key])
+        if rc != 3 or out or err.count("\n") != 1 or not err.startswith(f"REFUSED {where}: {reason}") or _stderr_problem(err, [outside_value, z_value]):
+            return False, f"KEY mode: a KEY of {key[:40]}... gave exit {rc} (want 3), or printed on stdout, or was not refused by name and reason alone"
+    # round 13 (R13B1-10): a malformed KEY prints as its place and masked shape, never its text, as an argument and as a
+    # line of --keys-file, whose good KEY is still read
+    bad = "SETTINGS_" + "TOKEN=" + vd()
+    rc, out, err = _run_read(["--root", str(case), bad])
+    if rc != 3 or out or err != f"BAD KEY argument 1: {_masked(bad)}\n":
+        return False, f"KEY mode: a malformed KEY as an argument gave exit {rc} (want 3), or was not reported by its place and masked shape alone"
+    keys_file = base.parent / "contract-keys.txt"
+    keys_file.write_text(keys[0] + "\n" + bad + "\n")
+    rc, out, err = _run_read(["--root", str(case), "--keys-file", str(keys_file)])
+    if rc != 3 or out.split("\n")[0] != _key_header(keys[0]) or err != f"BAD KEY --keys-file line 2: {_masked(bad)}\n":
+        return False, f"KEY mode: a malformed line of --keys-file gave exit {rc} (want 3), or was not reported by its place and masked shape alone"
+    # round 13 (R13B1-11): --keys-file is checked as a KEY's file is, by lstat, and read as UTF-8 with no NUL: a symlink,
+    # a FIFO (which hung the read), text that is not UTF-8 (which crashed it, naming the byte) and a NUL are refused
+    lead_k = vd()
+    os.symlink(keys_file, base.parent / "contract-keys-link.txt")
+    os.mkfifo(base.parent / "contract-keys-fifo.txt")
+    (base.parent / "contract-keys-latin1.txt").write_bytes(keys[0].encode() + b"\n" + lead_k.encode() + b"\xe9\n")
+    (base.parent / "contract-keys-nul.txt").write_bytes(keys[0].encode() + b"\n\x00\n")
+    for name, reason in (("contract-keys-link.txt", "a symlink"), ("contract-keys-fifo.txt", "not a regular file"),
+                         ("contract-keys-latin1.txt", "not UTF-8"), ("contract-keys-nul.txt", "a NUL character")):
+        try:
+            rc, out, err = _run_read(["--root", str(case), "--keys-file", str(base.parent / name)], timeout=30)
+        except subprocess.TimeoutExpired:
+            rc, out, err = "a hang", "", ""
+        if rc != 3 or out or not _refused(err, name, reason) or _stderr_problem(err, [lead_k]) or "0xe9" in err:
+            return False, f"--keys-file ({name}): gave {rc} (want exit 3), or printed on stdout, or was not refused by name and reason without its bytes"
+    os.unlink(base.parent / "contract-keys-fifo.txt")
+    # KEY mode refuses as the walk does, by lstat: a symlink, and a FIFO, which it used to hang on (R12B1-04); since round
+    # 13 each by name and reason on stderr, with nothing on stdout (R13A-04)
     kref = base.parent / "contract-keyrefuse"
     kref.mkdir(parents=True)
     (base.parent / "contract-keytarget.env").write_text(f"{P}{EQ}{vd()}\n")
@@ -765,17 +1019,22 @@ def contract_check(base: Path, workdir: Path):
     os.mkfifo(kref / "p.env")
     for rel in ("l.env", "d/x.env", "p.env"):
         try:
-            r = subprocess.run([sys.executable, str(SHAPE), "--root", str(kref), f"{rel}:1:1:juniper-b9-assignment:0123456789"],
-                               capture_output=True, text=True, timeout=30)
-            rc = r.returncode
+            rc, out, err = _run_read(["--root", str(kref), f"{rel}:1:1:juniper-b9-assignment:0123456789"], timeout=30)
         except subprocess.TimeoutExpired:
-            rc = "a hang"
+            rc, out, err = "a hang", "", ""
         if rc != 3:
             return False, f"KEY mode: a KEY naming {rel} ({'a symlink' if rel == 'l.env' else 'under a symlinked directory' if rel == 'd/x.env' else 'a FIFO'}) gave {rc}, want exit 3"
+        reason = "not a regular file" if rel == "p.env" else "a symlink"
+        if out or err != f"REFUSED {rel}: {reason}" + ("\n" if rel == "p.env" else "; copy the file itself\n"):
+            return False, f"KEY mode: a KEY naming {rel} printed on stdout, or was not refused by name and reason alone"
     os.unlink(kref / "p.env")
     # refusals: an empty root, text that is not UTF-8, an unreadable file (R11B1-07, R11B1-08); a FIFO (X20, C4a), a
-    # symlinked subdirectory (C4b) and a symlinked root (C4f) (round 12)
+    # symlinked subdirectory (C4b) and a symlinked root (C4f) (round 12); since round 13 each by the file's name and the
+    # reason on stderr, with no byte of the file (R13A-04: a bare refusal left a session unable to tell which file)
     lead = vd()
+    reasons = {"empty": ("contract-refuse-empty", "holds no regular file"), "latin1": ("x.env", "not UTF-8"),
+               "unreadable": ("x.env", "[Errno 13] Permission denied"), "fifo": ("p.env", "not a regular file"),
+               "symdir": ("sub", "a symlink"), "symroot": ("link", "not a directory, or a symlink")}
     for kind in ("empty", "latin1", "unreadable", "fifo", "symdir", "symroot"):
         d = base.parent / f"contract-refuse-{kind}"
         d.mkdir(parents=True)
@@ -801,10 +1060,9 @@ def contract_check(base: Path, workdir: Path):
             os.symlink(d / "t", d / "link")
             root = d / "link"
         try:
-            r = subprocess.run([sys.executable, str(SHAPE), "--root", str(root), "--names"], capture_output=True, text=True, timeout=30)
-            rc, err = r.returncode, r.stderr
+            rc, out, err = _run_read(["--root", str(root), "--names"], timeout=30)
         except subprocess.TimeoutExpired:
-            rc, err = "a hang", ""
+            rc, out, err = "a hang", "", ""
         if kind == "unreadable":
             os.chmod(d / "x.env", 0o600)
         if kind == "fifo":
@@ -813,6 +1071,8 @@ def contract_check(base: Path, workdir: Path):
             return False, f"refusal ({kind}): exit {rc}, want 3"
         if kind == "latin1" and ("0xe9" in err or "\\xe9" in err or lead[:8] in err):
             return False, "refusal (latin1): the reason printed the file's bytes"
+        if out or not _refused(err, *reasons[kind]) or _stderr_problem(err, [lead]):
+            return False, f"refusal ({kind}): printed on stdout, or did not name the file and the reason on stderr, or printed a byte of it"
     return True, ""
 
 
@@ -887,13 +1147,13 @@ def main() -> int:
         if not args.only or "names" in args.only:
             ran += 1
             ok, why = names_check(root / "names")
-            print(f"{'ok  ' if ok else 'FAIL'} names: the line read lists every planted line, prints the lines below, shows no value, and refuses what it cannot read{'' if ok else ' (' + why + ')'}")
+            print(f"{'ok  ' if ok else 'FAIL'} names: the line read lists every planted line, prints the lines below, shows no value on stdout or stderr, and refuses what it cannot read by name and reason{'' if ok else ' (' + why + ')'}")
             if not ok:
                 failures.append("names")
         if not args.only or "contract" in args.only:
             ran += 1
             ok, why = contract_check(root / "contract", workdir)
-            print(f"{'ok  ' if ok else 'FAIL'} contract: the line read lists names with any short separator and every marker, prints each listed line whole with the non-blank line above and the five below, prints nothing in clear but blanks, prints a KEY's lines whole, numbers lines as the gate does, and refuses what it cannot read{'' if ok else ' (' + why + ')'}")
+            print(f"{'ok  ' if ok else 'FAIL'} contract: the line read lists names with any short separator and every marker, prints each listed line whole with the non-blank line above and the five below and each line once, prints nothing in clear but spaces and tabs on stdout or stderr, in each line's exact form, prints a KEY's lines whole, numbers lines as the gate does, and refuses what it cannot read by name and reason{'' if ok else ' (' + why + ')'}")
             if not ok:
                 failures.append("contract")
     finally:
