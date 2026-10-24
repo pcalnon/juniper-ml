@@ -7,7 +7,7 @@
 - **Status**: Rounds 1–14 of consensus validation are reconciled, and validation has ended by the owner's ruling of 2026-10-24 (no round 15). Round 14's dispositions are in `EX/round14-reconciliation.md`.
   - v1.12.1 was landed as a record of v1.12.0's text through ml#2214 (merged 2026-10-10T20:19:43Z, `7638be7f`); v1.13.0 is the re-baseline, and v1.14.0 applies round 14's corrections to it.
   - v1.13.0 takes in the drift from the 2026-10-08T22:16Z census to the final census of 2026-10-10T21:30Z (Snapshot). v1.14.0 takes in none after it, and is stale (Snapshot).
-  - Round 14, a narrow round on round 13's corrections and the drift, ran on 2026-10-10. It found one MAJOR that is not a pin (R14A-01, applied), seven MAJOR pins (R14B-01..07, listed limits) and 18 MINORs and NITs, all applied (Validation record).
+  - Round 14, a narrow round on round 13's corrections and the drift, ran on 2026-10-10. It found one MAJOR that is not a pin (R14A-01, applied), seven MAJOR pins (R14B-01..07, listed limits) and 18 MINORs and NITs, all applied (Validation record). It **sampled** v1.13.0's changes (80 items and 52 cases) rather than reading each one, so a row outside that sample is unverified unless its own citation says otherwise.
   - The owner's four rulings of 2026-10-10 are applied:
     1. Fix-forward releases are owed for R-OBS-SC (P3-07, then observability 0.4.2 and service-core 0.7.2) and R-DATA (P3-03 with P3-09, then data 0.17.2 unless the owner withdraws 0.17.1), each cut after its fix validates (§5).
     2. H-23 narrows to the window before P0 step 10 completes and to step 11's restore (§11). v1.14.0 ends that window at step 10's restart and adds Procedure B's Repair (R14B-13, R14B-15).
@@ -1907,9 +1907,10 @@ The dispositions are in `EX/round14-reconciliation.md`. In this section, R14A- a
 - The 12 pins are listed limits of the checks, in the read's docstring and §3 XC-PRESERVE method. The frozen read does as its clauses say on each, so the limit is on what the checks would catch, not on what the read prints.
 - The harness refuses a repeated member name, reports a `BASELINE` id or an id with no directory of its own as BUILD-FAIL, and fails a run whose tallies do not add up to its entry count. The regression's 181 cases all behave as expected, and `EX/round13-mutants.json`'s 81 entries are all caught.
 - CodeQL on v1.14.0's PR (ml#2318) found three alerts that `util/ad-hoc/2026-10-05_codeql_python_prescreen.py`'s queries do not cover (`EX/round14-reconciliation.md`).
-  - Two are high: round 13 had named three synthetic keys of the regression after credential words, and CodeQL read those values as credentials written to a file. The keys were renamed.
+  - Two are high: round 13 had named three synthetic keys of the regression after credential words, and CodeQL read those values as credentials written to a file. The keys were renamed, one of them twice, since CodeQL reads `apikey` as a password too.
   - The third is a warning: the read's range refusal re-tests `first <= last` after the START > END refusal. It stays, since four mutants anchor on that line and the ruleset blocks only errors and high security alerts.
 - Round 14 did not meet the ending rule as written: R14A-01 is a MAJOR that is not a pin. Validation ends by the owner's ruling instead (Ending rule).
+- Round 14 **sampled** v1.13.0; it did not read every change. Lane A checked 80 items against the diff's 398 added and changed lines, and Lane B 52 cases and claims. The rest of the roughly 150 edits an editor agent made for v1.13.0 (`EX/round13-reconciliation.md`, "How v1.13.0 was written") were read by no round, and that file's "Round 14 re-derives the rest" overstates what ran (`EX/round14-reconciliation.md`, "Corrections to round 13's record").
 
 **Termination rule.** `…CONSENSUS-PROCEDURE.md` §4 says to stop when a round changes no number, disposition or action. A plan whose subject is live state never fully satisfies that: every re-probe finds drift. So drift alone does not reopen this plan. Only an error in its reasoning or facts *as of its snapshot* does.
 
