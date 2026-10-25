@@ -2179,6 +2179,8 @@ The owner's sentence for this tier ends at "the additional backup should". Propo
 - **Retention**: keep the last three `full` sets; delete older sets by UUID only after a restore drill of the newest passes.
 - **Offline discipline**: the drive is connected for the run and disconnected afterwards; the scheduler's `.path` unit makes the run happen on connection.
 
+*(As built 2026-10-25, after D-5 ruled this default: the drive is the fstab's "Blackbox Part 1", `JUNIPER_BACKUP_DEVICES=dee46823-4119-4914-ac15-08194ee27d81` under the default `/run/media/$USER` root, with `JUNIPER_BACKUP_DIR=Juniper/Backups` (the fstab deprecates `/mnt/JuniperArchive`); `juniper-backup-full.{timer,path,service}` run it from its own state directory, `~/.local/state/juniper-backup-full`, `bash util/install_juniper_backup_timer.bash --lane full` installs them, and deletion stays manual.)*
+
 ### 7.10 Coverage gaps — disposition
 
 | Gap | Disposition |

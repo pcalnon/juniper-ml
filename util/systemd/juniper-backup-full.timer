@@ -1,0 +1,15 @@
+[Unit]
+Description=Monthly window for the Juniper full-set archive (tier 3; skips when its drive is not attached)
+
+[Timer]
+# The 1st of each month, an hour after tier 2's Sunday 03:00 window. The drive is kept offline
+# (design §7.9), so this run usually finds it detached: it is the lane's staleness check, which
+# reads FAILED, and fires OnFailure=, once no full set has succeeded within STALE_DAYS. The run
+# that writes a set is normally the .path unit's, on connection.
+OnCalendar=*-*-01 04:00:00
+RandomizedDelaySec=15m
+Persistent=true
+Unit=juniper-backup-full.service
+
+[Install]
+WantedBy=timers.target
