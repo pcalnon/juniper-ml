@@ -814,7 +814,7 @@ Tip: snapshot sidecar chain is index → classify → attribute → backfill. Pa
 
 Tip: snapshot attribution is not reproducible until juniper-ml#1333. `--seed` only samples which snapshots to score; `--dataset-seed` (default `DATASET_SEED=20260824`) pins generators that declare `seed=None`. spiral keeps its own seed. Do not export `JUNIPER_CASCOR_SNAPSHOTS_DIR` for the sidecar chain — pass `--root`. See [REFERENCE — Snapshot Attribution Dataset Pin](REFERENCE.md#snapshot-attribution-dataset-pin).
 
-Tip: P4 `include` cells do not inherit `matrix`. Oversize cascor stall is pool ≥ 16 **or** cap ≥ 64 (`stall_seconds` > 120). `per_run_timeout_seconds` must sit **above** the driver wall (equal loses the manifest). `e-j-h2h-wide-cap128` is n=2 — the description still says 3. Recurrence P4 cells report; they do not gate. See [REFERENCE — P4 Campaign Suites](REFERENCE.md#p4-campaign-suites).
+Tip: P4 `include` cells do not inherit `matrix`. Oversize cascor stall is pool ≥ 16 **or** cap ≥ 64 (`stall_seconds` > 120). `per_run_timeout_seconds` must sit **above** each cell's worst-case driver budget (equal loses the manifest); `run_suite` refuses the suite otherwise (juniper-ml#2210). `e-j-h2h-wide-cap128` is n=2 — the description still says 3. Recurrence P4 cells report; they do not gate. See [REFERENCE — P4 Campaign Suites](REFERENCE.md#p4-campaign-suites).
 
 Tip: `MEMORY.md` truncates silently newest-first at 200 lines / 25,000 UTF-8 bytes. Run `python3 util/memory_index_check.py` on the host that writes `~/.claude` — CI never sees the real file. The 120 cap is the **hook** (`len` after the `)`), not the line. `--accept` grandfathers and always exits 0; it does not evict. See [REFERENCE — MEMORY.md Index Check](REFERENCE.md#memorymd-index-check).
 Tip: after an `AGENTS.md` cut, re-run `python3 util/ad-hoc/2026-08-31_resident_gap_triage.py <repos> --min-score 3 --json OUT`. The scored **total will rise** — relocation removes resident identifiers, so the gap predicate starts matching them. Health is the score ≥ 3 count (and whether anything *new* appears there), not the total. `2026-08-28_hazard_triage.py` alone cannot find what was never in `AGENTS.md`. Full contract: [REFERENCE — Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage).
@@ -900,7 +900,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | `config_sha256` differs across PF-1 repeats | Expected — it hashes `experiment.description`. Use `workload_fingerprint` (`description`/`name` stripped, `seed` kept). |
 | Driver exit `1` stalled/timed_out | Cascor stall detector / wall budget; recurrence `timed_out` = train socket budget. See `manifest.json`. |
 | P4 cell `stalled` at ~130 s while healthy | Missing `stall_seconds` > 120 on pool ≥ 16 **or** cap ≥ 64. See [REFERENCE — P4](REFERENCE.md#p4-campaign-suites). |
-| P4 `timed_out` with no `manifest.json` | `per_run_timeout_seconds` ≤ driver wall — raise the subprocess ceiling. |
+| P4 `timed_out` with no `manifest.json` | `per_run_timeout_seconds` ≤ the worst-case driver budget — raise the subprocess ceiling. A current `run_suite` refuses that before launch (juniper-ml#2210). |
 | Quoted 3-seed spread at P4 cap 128 | Stale `suite.description`. n = 2 (`r0`/`r1`). |
 | `make_baseline` exit 2 on P4 E-D…E-G | Expected — recurrence work is not countable (#1683). |
 | Same `equities_seq` id, service-default r² −18081 in the audit and −20344.64 later | `dataset_id` hashes the request. Compare `meta.checksum` (`037baab7…` is the incomplete Scenario-B mint, `c02004e1…` the complete one). An all-zero AAPL `dividend` column is a silent fill, not "no dividends". See [REFERENCE — Equities Dataset Id](REFERENCE.md#equities-dataset-id-does-not-pin-array-content). |
@@ -1041,7 +1041,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | PF-1 `scrape_confirmed: false`, file present | Cell died before file_sd + scrape (15 s + 15 s). Need `(10, 10)` + 4000/4000 and `JUNIPER_SUITE_GRAFANA_BRIDGE=1`. |
 | PF-1 `drive` ~15 s / 32 steps | Smoke pair (50/50) won — set **both** `max_epochs` and `output_epochs` to 4000. |
 | PF-3 `stalled` at ~120 s while candidates train | Missing `execution.stall_seconds` > 120, or wall still inherited 600 from `spiral-smoke`. |
-| PF-3 `timed_out` / `exit_code: null` / no manifest | `per_run_timeout_seconds` ≤ wall budget — suite killed the driver. |
+| PF-3 `timed_out` / `exit_code: null` / no manifest | `per_run_timeout_seconds` ≤ the worst-case driver budget — suite killed the driver (refused before launch since juniper-ml#2210). |
 | Green PF-5/6/7 treated as a work-gate | Thresholds unratified. Those files measure fit time. Instruments, not verdicts. |
 | `make_baseline` / `compare_baseline` says "no countable work" | Recurrence suite — expected refuse (#1683). Report via `read_run_metrics.py --run RUN_DIR --json`; do not bless a speed-only baseline. |
 | Recurrence `work_invariant` is false on identical-looking cells | Third state: `work_countable` is false, so the invariant is false because the question does not apply. Use `--json`. |
@@ -1079,7 +1079,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Quoted 23/200 blocking from the 2026-08-10 note | Historical. Re-run; do not strip a ruleset from a one-shot empty sample. |
 | Suite exit `2` unknown `execution:` key | Typo (`stall_second`). R-6 (`tests/test_experiment_suite_yamls.py`) catches this on shipped suites. |
 | Suite exit `2` cascor parallel | Launched cascor below 0.10.0 or version unreadable — sequential, or retarget `JUNIPER_EXP_CASCOR_SRC_DIR`. |
-| Suite cells `stalled` ~130 s then finish | Candidate-phase inert stall — set `execution.stall_seconds`; size `per_run_timeout_seconds` above the wall. |
+| Suite cells `stalled` ~130 s then finish | Candidate-phase inert stall — set `execution.stall_seconds`; size `per_run_timeout_seconds` above the worst-case driver budget. |
 | `--resume` re-runs a green cell | Only `registry.jsonl` `succeeded` is skipped; missing resume dir is exit `2`. |
 | Repeats ran the smoke config | `include` does not inherit `matrix` — put the repeat axis on `matrix` (PF-1). |
 

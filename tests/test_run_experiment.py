@@ -1238,6 +1238,60 @@ class StallWindowCoherenceTest(unittest.TestCase):
         self.assertFalse(rx._stall_window_is_inert(120.0, 600.0))
 
 
+class WorstCaseBudgetTest(unittest.TestCase):
+    """juniper-ml#2210: ``worst_case_budget`` adds up the bounds the run paths put on each phase.
+
+    run_suite refuses a suite whose ``per_run_timeout_seconds`` does not exceed this sum for every
+    cell, so a term that drifts from its phase lets the subprocess kill land before the manifest
+    write again. The configs go through ``load_config``, as run_suite's do.
+    """
+
+    def _budget(self, cfg: dict, **overrides: float) -> dict:
+        with tempfile.TemporaryDirectory() as tmp:
+            return rx.worst_case_budget(rx.load_config(_write_config(Path(tmp), cfg)), **overrides)
+
+    def test_cascor_sums_the_health_waits_dataset_drive_and_teardown_settle(self) -> None:
+        self.assertEqual(self._budget(_base_config()), {"health_wait": 180.0, "dataset_create": 120.0, "drive": 30.0, "teardown_preempt": 30.0})
+
+    def test_cascor_snapshot_at_end_adds_its_own_bound(self) -> None:
+        cfg = _base_config()
+        cfg["outputs"]["snapshot_at_end"] = True
+        self.assertEqual(self._budget(cfg)["snapshot_at_end"], rx.SNAPSHOT_AT_END_TIMEOUT_SECONDS)
+
+    def test_recurrence_gives_each_enabled_phase_the_whole_wall_budget(self) -> None:
+        """Each phase's socket timeout is the full ``max_wall``, so they add rather than share one."""
+        self.assertEqual(self._budget(_recurrence_config()), {"health_wait": 180.0, "dataset_create": 120.0, "train": 30.0, "predict": 30.0, "crossval": 30.0})
+
+    def test_a_disabled_phase_adds_nothing(self) -> None:
+        cfg = _recurrence_config()
+        cfg["predict"]["enabled"] = False
+        del cfg["crossval"]
+        self.assertEqual(set(self._budget(cfg)), {"health_wait", "dataset_create", "train"})
+
+    def test_save_model_counts_the_larger_of_its_two_paths(self) -> None:
+        """The snapshot save is one wall-bounded POST; the re-fit is the version probe plus the CLI.
+        Which one runs is known only once the train has answered (juniper-ml#2211)."""
+        cfg = _recurrence_config()
+        cfg["outputs"]["save_model"] = True
+        self.assertEqual(self._budget(cfg)["save_model"], rx.MODEL_VERSION_PROBE_TIMEOUT_SECONDS + rx.SAVE_MODEL_REFIT_TIMEOUT_SECONDS)
+        cfg["outputs"]["max_wall_seconds"] = 900
+        self.assertEqual(self._budget(cfg)["save_model"], 900.0)
+
+    def test_the_flags_beat_the_yaml_as_on_the_run_paths(self) -> None:
+        cfg = _recurrence_config()
+        cfg["outputs"]["dataset_create_timeout_seconds"] = 300
+        self.assertEqual(self._budget(cfg)["dataset_create"], 300.0)
+        terms = self._budget(cfg, max_wall_seconds=2000, dataset_create_timeout_seconds=600, health_timeout=5)
+        self.assertEqual((terms["health_wait"], terms["dataset_create"], terms["train"], terms["crossval"]), (10.0, 600.0, 2000.0, 2000.0))
+
+    def test_each_fixed_term_is_the_constant_its_phase_passes(self) -> None:
+        """Read from the source: a literal back in one call site would leave its term counting a stale bound."""
+        source = Path(rx.__file__).read_text(encoding="utf-8")
+        for call in ("timeout=TEARDOWN_PREEMPT_TIMEOUT_SECONDS", "timeout=SNAPSHOT_AT_END_TIMEOUT_SECONDS", "timeout=MODEL_VERSION_PROBE_TIMEOUT_SECONDS", "timeout=SAVE_MODEL_REFIT_TIMEOUT_SECONDS"):
+            with self.subTest(call=call):
+                self.assertEqual(source.count(call), 1, call)
+
+
 class FailureArmsTest(_StubTestCase):
     def test_manifest_records_an_inert_stall_window(self) -> None:
         """The finding reaches the evidence, not just the log."""
