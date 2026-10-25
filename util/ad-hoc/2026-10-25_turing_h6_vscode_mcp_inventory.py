@@ -20,7 +20,8 @@ unread, as in H5: this script reads the files, and what it prints is a default-d
             <redacted: N chars>); a URL as scheme://host[:port]/path, with userinfo dropped, query keys only
             and token-like path segments redacted; env and headers by KEY only, each value classified as
             input-ref, env-ref, empty or literal (N chars); any other key by name and JSON type
-  inputs    the inputs array: id, type, password flag (VS Code keeps input values in its secret storage)
+  inputs    the inputs array: id, type, and masked yes/no, from VS Code's "password" flag (input values stay in
+            VS Code's secret storage; the label is chosen by the flag, never copied from it)
   settings  from the user settings.json: every chat.mcp.* and chat.tools.* key, booleans and short enum
             strings printed, objects as their keys with boolean values or value types (command patterns,
             not secrets), anything else by type
@@ -172,7 +173,7 @@ def describe_server(entry: object) -> dict:
 def describe_inputs(inputs: object) -> list:
     if not isinstance(inputs, list):
         return []
-    return [{"id": item.get("id"), "type": item.get("type"), "password": item.get("password", False)} if isinstance(item, dict) else {"entry_type": type(item).__name__} for item in inputs]
+    return [{"id": item.get("id"), "type": item.get("type"), "masked": "yes" if item.get("password") is True else "no"} if isinstance(item, dict) else {"entry_type": type(item).__name__} for item in inputs]
 
 
 def describe_settings(data: dict) -> dict:
