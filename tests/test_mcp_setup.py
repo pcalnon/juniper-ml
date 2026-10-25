@@ -16,17 +16,19 @@ own ``.mcp.json`` are never written.
 Pinned here:
 
 - the entry, argument for argument, with the checkout's resolved path; a worktree's ``.git`` file counts;
-- the three defects the entry fixes: an entry without ``--project`` (audit A2-F1), one bound to another
-  checkout (A2-F4), and an unpinned ``git+https://github.com/oraios/serena`` (D10). ``--check`` fails on
-  each, and a write replaces each;
+- the four defects the entry fixes: an entry without ``--project`` (audit A2-F1), one bound to another
+  checkout (A2-F4), an unpinned ``git+https://github.com/oraios/serena`` (D10), and one that leaves
+  Serena's usage report on (SER-E1 of the H6 audit; owner ruling 2026-10-25). ``--check`` fails on each,
+  and a write replaces each. The opt-out is ``SERENA_USAGE_REPORTING`` set to exactly ``false``, the one
+  value Serena v1.7.0 compares against;
 - other servers and other top-level keys are kept; a changed file is backed up first and keeps its mode;
   a new file is 600; a second run writes nothing; ``--dry-run`` writes nothing;
 - ``--remove`` keeps the rest, and deletes a file that held only Serena;
 - every refusal exits 2 and writes nothing: a pin that is not a full commit, a context that is a path, a
   source other than upstream, another host's pin, a ``.mcp.json`` that is not a JSON object or is a
   symlink, no checkout, no pin, no python;
-- the committed ``conf/hosts/turing/mcp.json`` drives the script, and ``.serena/project.yml`` excludes the
-  shell tool too.
+- the committed ``conf/hosts/turing/mcp.json`` drives the script and records both checks made at its
+  commit, and ``.serena/project.yml`` excludes the shell tool too.
 """
 
 from __future__ import annotations
@@ -53,6 +55,7 @@ TIMEOUT_SECONDS = 60
 SOURCE = "git+https://github.com/oraios/serena"
 COMMIT = "0123456789abcdef0123456789abcdef01234567"
 OTHER_COMMIT = "fedcba9876543210fedcba9876543210fedcba98"
+USAGE_OFF = {"SERENA_USAGE_REPORTING": "false"}  # src/serena/agent.py at v1.7.0 compares the exact string "false"
 UNPINNED_A2_F1 = {"type": "stdio", "command": "uvx", "args": ["--from", SOURCE, "serena", "start-mcp-server", "--context", "claude-code"], "env": {}}
 DEEPWIKI = {"type": "http", "url": "https://mcp.deepwiki.com/mcp"}
 CONTEXT7 = {"type": "http", "url": "https://mcp.context7.com/mcp", "headers": {"CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"}}
@@ -91,10 +94,10 @@ class McpSetupHarness(unittest.TestCase):
         env["PYTHON"] = python or sys.executable
         return subprocess.run(argv, capture_output=True, text=True, env=env, timeout=TIMEOUT_SECONDS, check=False)  # nosec B603 - fixed argv
 
-    def entry(self, checkout=None, commit: str = COMMIT) -> dict:
+    def entry(self, checkout=None, commit: str = COMMIT, env=None) -> dict:
         project = os.path.realpath(checkout or self.checkout)
         args = ["--from", "%s@%s" % (SOURCE, commit), "serena", "start-mcp-server", "--context", "claude-code", "--project", project, "--open-web-dashboard", "False"]
-        return {"type": "stdio", "command": "uvx", "args": args, "env": {}}
+        return {"type": "stdio", "command": "uvx", "args": args, "env": dict(USAGE_OFF) if env is None else env}
 
     def write_mcp(self, doc, mode=None) -> bytes:
         text = doc if isinstance(doc, str) else json.dumps(doc, indent=2) + "\n"
@@ -138,6 +141,17 @@ class WriteTest(McpSetupHarness):
         (self.checkout / ".git").write_text("gitdir: /elsewhere/.git/worktrees/x\n", encoding="utf-8")
         self.assert_rc(self.run_setup(), 0)
         self.assertEqual(self.doc()["mcpServers"]["serena"], self.entry())
+
+    def test_serenas_usage_report_is_off(self):
+        self.assert_rc(self.run_setup(), 0)
+        env = self.doc()["mcpServers"]["serena"]["env"]
+        self.assertEqual(env, {"SERENA_USAGE_REPORTING": "false"}, "SER-E1: Serena v1.7.0 skips the report only for this exact value; 'False' or '0' still reports")
+
+    def test_an_entry_written_before_the_opt_out_is_replaced(self):
+        old = self.write_mcp({"mcpServers": {"serena": self.entry(env={})}})
+        self.assert_rc(self.run_setup(), 0)
+        self.assertEqual(self.doc()["mcpServers"]["serena"], self.entry())
+        self.assertEqual([b.read_bytes() for b in self.backups()], [old])
 
     def test_a_second_run_writes_nothing(self):
         self.assert_rc(self.run_setup(), 0)
@@ -239,6 +253,15 @@ class CheckTest(McpSetupHarness):
         self.assert_rc(self.run_setup(), 0)
         self.write_conf(commit=OTHER_COMMIT)
         self.assert_rc(self.run_setup("--check"), 1)
+
+    def test_check_fails_on_an_entry_that_still_reports_usage(self):
+        for label, env in {"empty env (H4 before the opt-out)": {}, "capitalised value": {"SERENA_USAGE_REPORTING": "False"}}.items():
+            with self.subTest(case=label):
+                old = self.write_mcp({"mcpServers": {"serena": self.entry(env=env)}})
+                proc = self.run_setup("--check")
+                self.assert_rc(proc, 1)
+                self.assertIn("differs from the pin", proc.stdout)
+                self.assertEqual(self.mcp.read_bytes(), old, "--check never writes")
 
 
 class RemoveTest(McpSetupHarness):
@@ -374,6 +397,7 @@ class CommittedFilesTest(McpSetupHarness):
         self.assertRegex(pin["release"], r"^v\d+\.\d+\.\d+$")
         self.assertEqual(pin["context"], "claude-code", "the context whose excluded_tools were verified at the pin")
         self.assertIn("execute_shell_command", pin["verified"], "a pin records that its context excludes the shell tool")
+        self.assertIn("SERENA_USAGE_REPORTING", pin["verified"], "a pin records that the usage-report opt-out was checked at its commit")
 
     def test_turings_pin_drives_the_script(self):
         proc = self.run_setup("--dry-run", host="turing", conf=False)

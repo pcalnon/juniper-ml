@@ -24,6 +24,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     juniper-cascor-worker and juniper-recurrence have no `.gitleaks.toml`, so gitleaks loads its built-in default.
     juniper-recurrence runs no secret scan in any workflow.
 
+### Changed
+
+- **H4's Serena entry turns Serena's usage report off** (turing bring-up, erratum E-H6 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-25).
+  Serena v1.7.0 sends the OS, the dashboard flag, the version, the backend and the context name to
+  `oraios-software.de` at every start unless `SERENA_USAGE_REPORTING` is exactly `false`
+  (`src/serena/agent.py:724-737` at `949a27ef`; SER-E1 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md`).
+  `util/mcp_setup.bash` wrote `"env": {}`.
+  - `util/mcp_setup.bash` now writes `"env": {"SERENA_USAGE_REPORTING": "false"}`. `False` or `0` would still
+    report, so the value is the exact string. An entry written before this fails `--check`, and the next write
+    replaces it, backing up the old file first. No checkout on turing had an entry yet: H4's live check still
+    waits on E-H4-WHEEL.
+  - `conf/hosts/turing/mcp.json`'s `verified` record adds the check made at the pin, so a pin bump re-reads it.
+  - `tests/test_mcp_setup.py` gains 3 tests (38 in all) and pins the exact value.
+    `util/ad-hoc/2026-10-25_turing_h4_usage_report_mutation_check.py` kills 7 of 7 mutants, and the 20 of `util/ad-hoc/2026-10-21_turing_h4_mutation_check.py` still apply.
+
 ### Fixed
 
 - **`run_suite` refuses a `per_run_timeout_seconds` the driver's own budgets can outrun** (juniper-ml#2210).
