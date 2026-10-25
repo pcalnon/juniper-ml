@@ -34,12 +34,16 @@ signal at all. Measured on the E-I cap sweep at fixed pool 8 (suite run
 the last exceeds the inherited default, but 64 clears it by just 693 s, so 64 is the first
 cap that cannot be assumed safe under the defaults.
 
-Fourth contract: ``execution.per_run_timeout_seconds`` must sit ABOVE the wall budget the
-driver will enforce. That timeout is run_suite's SUBPROCESS ceiling, not a budget. When it
-is at or below the driver's own budget, run_suite kills the driver from outside and records
-``timed_out`` with ``exit_code: null`` (``run_suite.py:350-354``), returning BEFORE the
-manifest read at ``:355`` — so the driver never writes a manifest and the honest ``timed_out``
-record is destroyed rather than degraded. The rule was stated in-repo by a suite author
+Fourth contract: ``execution.per_run_timeout_seconds`` must sit ABOVE every cell's worst-case
+driver budget. That timeout is run_suite's SUBPROCESS ceiling, not a budget. When it is at or
+below what the driver may spend, run_suite kills the driver from outside and records
+``timed_out`` with ``exit_code: null`` (``execute_cell``'s ``TimeoutExpired`` arm), returning
+BEFORE the manifest read — so the driver never writes a manifest and the honest ``timed_out``
+record is destroyed rather than degraded. Until juniper-ml#2210 the budget compared here was the
+wall budget alone. The driver's health waits, dataset creation and, on recurrence, a fresh wall
+budget for predict and for crossval plus save_model all add to it, and ``run_suite.main`` now
+refuses a suite on that sum before launch (``check_per_run_timeout``). This gate sums it the same
+way (``_effective_driver_budgets``). The rule was stated in-repo by a suite author
 (``suites/p4/e-j-h2h-wide-cap64.yaml:73-75``: "the DRIVER must be what stops a run") and then
 not carried to the suites that needed it. EQUAL is a loss, not a tie: the driver still has to
 write its manifest after hitting its deadline, so a simultaneous subprocess kill pre-empts it.
@@ -73,6 +77,7 @@ reading the base alone would flag them as wide-cap suites they are not.
 from __future__ import annotations
 
 import importlib.util
+import logging
 import re
 import tempfile
 import unittest
@@ -310,6 +315,42 @@ def _effective_wall_budgets(doc: dict, suite_path: Path) -> "tuple[list[float], 
     return budgets, unresolved
 
 
+def _effective_driver_budgets(doc: dict, suite_path: Path) -> "tuple[list[float], list[str]]":
+    """Each judgeable cell's worst-case driver budget, by the code ``run_suite.main`` runs before launch.
+
+    juniper-ml#2210. The wall budget alone understates what the driver may spend: the health waits,
+    dataset creation and, on recurrence, a fresh wall budget for predict and for crossval plus
+    save_model all add to it. Readable cells are materialised into a scratch dir and summed by
+    ``run_suite.driver_budgets`` (the driver's own ``load_config`` and ``worst_case_budget``), so this
+    gate and the launch-time refusal cannot disagree. A cell whose base config does not resolve is
+    declined, as ``_cell_specs`` declines it.
+    """
+    try:
+        cells = run_suite.expand_cells(doc, suite_path)
+    except Exception as exc:  # noqa: BLE001 - a malformed suite is the load contract's job
+        return [], [f"{suite_path.name}: expand_cells failed: {exc}"]
+    readable = [cell for cell in cells if Path(cell["config_path"]).is_file()]
+    unresolved = sorted({cell["config_path"] for cell in cells if not Path(cell["config_path"]).is_file()})
+    if not readable:
+        return [], unresolved
+    driver = run_suite._driver_module()
+    execution = doc.get("execution") or {}
+    max_wall = float(execution["max_wall_seconds"]) if execution.get("max_wall_seconds") is not None else None
+    dataset = float(execution["dataset_create_timeout_seconds"]) if execution.get("dataset_create_timeout_seconds") is not None else None
+    # load_config logs its non-fatal config findings (the max_epochs / output_epochs split) on every
+    # call. They are noise here; the driver's own tests own them.
+    logger = logging.getLogger(driver.LOGGER_NAME)
+    level = logger.level
+    logger.setLevel(logging.ERROR)
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            configs = {cell["cell_id"]: driver.load_config(run_suite.materialise_cell(cell, doc["suite"], Path(tmp), None)) for cell in readable}
+    finally:
+        logger.setLevel(level)
+    budgets = run_suite.driver_budgets(driver, configs, max_wall, dataset)
+    return [sum(terms.values()) for terms in budgets.values()], unresolved
+
+
 class SuiteYamlLoadTest(unittest.TestCase):
     """Every shipped suite must survive the validator it will be run through."""
 
@@ -523,10 +564,10 @@ class TimeoutOrderingContractTest(unittest.TestCase):
     """The DRIVER must be what stops a run — never run_suite's subprocess timeout."""
 
     def test_cascor_suites_time_out_after_the_driver_stops(self) -> None:
-        """``per_run_timeout_seconds`` must sit strictly above the effective wall budget.
+        """``per_run_timeout_seconds`` must sit strictly above every cell's worst-case driver budget.
 
-        Below or equal, run_suite's ``subprocess.run(timeout=...)`` fires first and returns at
-        ``run_suite.py:354`` before the manifest read at ``:355``: the row is recorded
+        Below or equal, run_suite's ``subprocess.run(timeout=...)`` fires first and
+        ``execute_cell``'s ``TimeoutExpired`` arm returns before the manifest read: the row is recorded
         ``timed_out`` with ``exit_code: null`` and the driver's own manifest is never written.
         The evidence is destroyed, not degraded — which is why this is fatal where ml#1152's
         inert-stall-window check is advisory: there the run itself stays valid.
@@ -562,6 +603,13 @@ class TimeoutOrderingContractTest(unittest.TestCase):
         survey run with ``JUNIPER_EXP_PROJECT_DIR`` set against a full ecosystem is what
         actually judges them, which is why the assertion below demands cascor decidability
         specifically rather than settling for any decidable suite.
+
+        **The budget is the whole driver's since juniper-ml#2210 (2026-10-25)**, not the wall budget:
+        ``_effective_driver_budgets`` adds the health waits, dataset creation, the cascor teardown
+        settle and snapshot, and recurrence's per-phase wall budgets and save_model, exactly as the
+        launch-time refusal does. Surveyed then (``util/ad-hoc/2026-10-25_driver_budget_survey.py``,
+        full ecosystem): 20 cascor suites clear it, the tightest ``perf/pf2-axis2`` and ``perf/pf3``
+        at 2400 over 2330. All 9 recurrence suites sat under their 3900 s budget and were raised to 4500.
         """
         default_timeout = _run_suite_default_timeout()
         checked = 0
@@ -572,7 +620,7 @@ class TimeoutOrderingContractTest(unittest.TestCase):
             app = doc["suite"]["app"]
             raw = (doc.get("execution") or {}).get("per_run_timeout_seconds")
             timeout = float(raw) if isinstance(raw, (int, float)) and not isinstance(raw, bool) else default_timeout
-            budgets, unresolved = _effective_wall_budgets(doc, path)
+            budgets, unresolved = _effective_driver_budgets(doc, path)
             if not budgets:
                 # Every cell's base config is a sibling repo this checkout cannot read, so the
                 # budget is unknowable. Declining is the honest outcome — the same call
@@ -590,7 +638,10 @@ class TimeoutOrderingContractTest(unittest.TestCase):
                 self.assertGreater(
                     timeout,
                     worst,
-                    f"{path.name} ({app}) sets per_run_timeout_seconds={timeout:g} against an effective wall budget of {worst:g}s, " f"so run_suite's subprocess kill pre-empts the driver: the cell is recorded 'timed_out' with exit_code null " f"and NO manifest is written. Raise per_run_timeout_seconds above {worst:g}, or lower the budget via " "execution.max_wall_seconds — the driver must be what stops a run (suites/p4/e-j-h2h-wide-cap64.yaml:73-75)",
+                    f"{path.name} ({app}) sets per_run_timeout_seconds={timeout:g} against a worst-case driver budget of {worst:g}s (juniper-ml#2210), "
+                    f"so run_suite's subprocess kill pre-empts the driver: the cell is recorded 'timed_out' with exit_code null "
+                    f"and NO manifest is written. Raise per_run_timeout_seconds above {worst:g}, or lower the budgets it sums "
+                    "(execution.max_wall_seconds, the dataset budget, the phases the cells enable) — the driver must be what stops a run (suites/p4/e-j-h2h-wide-cap64.yaml:73-75)",
                 )
         # Cascor specifically, not "anything decidable": every recurrence suite's base_config is
         # a sibling repo, so in CI they all decline. A bare `checked > 0` would stay satisfied by
@@ -645,35 +696,41 @@ class TimeoutOrderingContractTest(unittest.TestCase):
             self.assertEqual((budgets, unresolved), ([900.0], []))
             self.assertFalse(900 > max(budgets), "the shape all four EQUAL recurrence suites shipped with")
 
-    def test_the_five_recurrence_suites_stay_above_their_budget(self) -> None:
-        """Regression pin for the five rows fixed 2026-08-26.
+    def test_the_recurrence_suites_stay_above_their_surveyed_budget(self) -> None:
+        """Regression pin for the nine recurrence suites, which CI cannot judge.
 
         In CI these suites are UNDECIDABLE — their base_config is a sibling repo — so the loop
-        above declines them and could not catch a revert. Their inherited budget was surveyed at
-        900 s with a full ecosystem checked out (``2026-08-20_wall_ordering_survey.py`` with
-        ``JUNIPER_EXP_PROJECT_DIR`` set), and 1800 is what ``perf/pf6`` / ``perf/pf7`` already
-        carry against that same budget. The survey remains authoritative for the live number;
-        this only stops the five silently returning to 900/600.
+        above declines them and could not catch a revert. Five were first raised on 2026-08-26, to
+        1800 against a 900 s wall budget. Since juniper-ml#2210 the budget is the whole driver's:
+        for ``irregular-sine-rff.yaml`` (juniper-recurrence ``23a8691f``, surveyed 2026-10-25) it is
+        3900 s, the health waits 180 + dataset 120 + train, predict, crossval and save_model at 900 s
+        each, so all nine went to 4500. The survey
+        (``util/ad-hoc/2026-10-25_driver_budget_survey.py --project-dir <Juniper root>``) is
+        authoritative for the live number; this only stops a suite silently dropping back under it.
         """
-        fixed = {
-            "recurrence-d-sweep.yaml": None,
-            "p4/e-d-recurrence-d-sweep.yaml": None,
-            "p4/e-f-recurrence-irregularity.yaml": None,
-            "p4/e-g-recurrence-cv-scheme.yaml": None,
-            "perf/pf5-recurrence-d-scaling.yaml": None,
-        }
-        precedent = ("perf/pf6-recurrence-nsteps-scaling.yaml", "perf/pf7-recurrence-readout-rungs.yaml")
-        for rel in list(fixed) + list(precedent):
+        surveyed_budget = 3900
+        pinned = (
+            "recurrence-d-sweep.yaml",
+            "p4/e-d-recurrence-d-sweep.yaml",
+            "p4/e-e-recurrence-readout-spectrum.yaml",
+            "p4/e-f-recurrence-irregularity.yaml",
+            "p4/e-g-recurrence-cv-scheme.yaml",
+            "p4/e-h-recurrence-real-data.yaml",
+            "perf/pf5-recurrence-d-scaling.yaml",
+            "perf/pf6-recurrence-nsteps-scaling.yaml",
+            "perf/pf7-recurrence-readout-rungs.yaml",
+        )
+        for rel in pinned:
             path = SUITES_ROOT / rel
             with self.subTest(suite=rel):
                 self.assertTrue(path.is_file(), f"{rel} moved or was renamed — re-point this pin")
                 doc = run_suite.load_suite(path)
                 self.assertEqual(doc["suite"]["app"], "recurrence")
                 timeout = (doc.get("execution") or {}).get("per_run_timeout_seconds")
-                self.assertGreaterEqual(
+                self.assertGreater(
                     timeout,
-                    1800,
-                    f"{rel} dropped to per_run_timeout_seconds={timeout} against a surveyed 900s budget; " "at or below it run_suite's subprocess kill destroys the driver's manifest",
+                    surveyed_budget,
+                    f"{rel} dropped to per_run_timeout_seconds={timeout} against a surveyed {surveyed_budget}s worst-case driver budget; " "at or below it run_suite's subprocess kill destroys the driver's manifest",
                 )
 
     def test_a_cell_pinning_no_budget_anywhere_still_has_one(self) -> None:

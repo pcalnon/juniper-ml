@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`run_suite` refuses a `per_run_timeout_seconds` the driver's own budgets can outrun** (juniper-ml#2210).
+  The subprocess ceiling was compared, in a test only, with the wall budget alone, but the driver's other
+  budgets add to that one: two 90 s health waits, dataset creation, and on recurrence a fresh wall budget for
+  predict and for crossval plus `save_model`. A suite could pass the test and still be killed from outside:
+  `timed_out` with `exit_code: null`, no `manifest.json`, and a re-run on `--resume`.
+  - `util/experiments/run_experiment.py` gains `worst_case_budget`, the sum of the bound the driver puts on each
+    phase a config runs. `save_model` counts the larger of its two paths: the wall-bounded snapshot `POST`, or
+    the 60 s version probe plus the 600 s CLI re-fit for a service that returns no `operation_id`. Those two
+    timeouts and cascor's `snapshot_at_end` timeout become named constants.
+  - `util/experiments/run_suite.py` sums it per cell after materialisation and exits 2 before the first `--up`
+    when `per_run_timeout_seconds` (default 3600) does not exceed it, naming the largest cell and its terms.
+    `load_suite` stays structural, so CI's suite gate still needs no sibling repo (D5).
+  - The nine recurrence suites sat under their 3900 s budget and now carry `per_run_timeout_seconds: 4500`;
+    the 20 cascor suites already cleared theirs (`util/ad-hoc/2026-10-25_driver_budget_survey.py`).
+  - The R-6 gate in `tests/test_experiment_suite_yamls.py` sums the same budget. New tests in
+    `tests/test_run_experiment.py` and `tests/test_run_suite.py`, including the first to drive the subprocess
+    kill. `docs/REFERENCE.md` gains § Suite timeout budget, and it and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`
+    state the new rule.
+
+### Security
+
+- **The agent guard covers Serena's edit tools and MCP registration (task C9)** (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` §18.2, widened by RR-10 of
+  `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md`). An MCP tool call reached the C8 guard only through its settings matcher, which named Claude Code's own
+  tools, so Serena's edit tools could write `.git/hooks` in a primary checkout unseen (E-SERENA-EDIT). No rule covered MCP
+  registration either, and a registered server runs a command the guard never sees.
+  - `util/claude_agent_guard.py` 1.2.0 adds three rules:
+    - `MCP-EDIT-PATH` judges Serena v1.7.0's 19 edit tools. A path argument, resolved against the project roots literally
+      and through `realpath`, may not reach `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the owner's git
+      configuration, `~/.claude.json` or a `.mcp.json`. `replace_in_files`' include glob and `repl` are judged too, and
+      Serena's `execute_shell_command` gets the Bash rules.
+    - `MCP-REGISTER-BASH` denies `mcp add`, `add-json` and `add-from-claude-desktop` after any command word, `--mcp-config`,
+      and any mention of `~/.claude.json`, a `.mcp.json` file or the two approval keys. So `cat ~/.claude.json` is now
+      denied; the Read tool still reads it.
+    - `MCP-REGISTER-FILE` denies writer calls on `~/.claude.json` and any `.mcp.json`, and a `.claude/settings*.json` write
+      that sets `enabledMcpjsonServers` or `enableAllProjectMcpServers`. `util/mcp_setup.bash` keeps working.
+  - The settings matcher now names the eight built-in tools and Serena's tools (`--settings-matcher` prints it).
+    `util/install_claude_agent_guard.bash` reads it from the guard, and `--apply` replaces a 1.1.0 entry in place.
+  - `tests/test_claude_agent_guard.py` adds 10 tests: 46 registration Bash cases (30 denied), 15 registration file cases
+    (8 denied), every Serena edit tool, 32 path cases, 20 `replace_in_files` cases and 7 shell cases. The self-test runs
+    50 checks.
+  - `util/ad-hoc/2026-10-25_turing_c9_guard_mutation_check.py` kills 26 of 26 mutants, each by its own pin test.
+  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install it.
+
+## [0.11.1] - 2026-10-25
+
 ### Security
 
 - **`[tools]` floors the two shared security patches**: `juniper-observability>=0.4.1`

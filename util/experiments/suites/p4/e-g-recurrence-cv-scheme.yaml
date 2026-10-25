@@ -6,7 +6,9 @@ suite:
   app: recurrence
   base_config: [../../../../../juniper-recurrence/conf/experiments/irregular-sine-rff.yaml]
   seed_policy: fixed
-execution: {mode: parallel, max_parallel: 2, continue_on_failure: true, per_run_timeout_seconds: 1800}
+# per_run_timeout_seconds 1800 -> 4500 (juniper-ml#2210): above the cells' worst-case driver budget of 3900 s,
+# the health waits (180) + dataset (120) + train, predict, crossval and save_model at the base's 900 s wall each.
+execution: {mode: parallel, max_parallel: 2, continue_on_failure: true, per_run_timeout_seconds: 4500}
 matrix:
   crossval.scheme: [expanding, rolling]
   crossval.embargo: [0, 2, 5]

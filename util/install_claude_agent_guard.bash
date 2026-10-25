@@ -12,7 +12,8 @@
 # with its sha256 beside it, and runs the copy's --self-test. A copy, not a symlink: a branch switch
 # in a checkout must not silently change the live guard. Then it prints the settings JSON, or with
 # --apply merges it: a PreToolUse hook (exec form: HOOK_PYTHON -I <copy>, timeout 10,
-# onFailure block) and the belt-and-braces permissions.deny rules.
+# onFailure block) whose matcher the guard prints (--settings-matcher: the built-in tools and,
+# since task C9, Serena's edit tools), and the belt-and-braces permissions.deny rules.
 #
 # Usage: bash util/install_claude_agent_guard.bash [--apply | --uninstall] [--dry-run]
 #            [--settings FILE] [--hooks-dir DIR] [--help]
@@ -40,7 +41,7 @@ DRY_RUN=0
 PROG="install_claude_agent_guard"
 
 usage() {
-    sed -n '2,28p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    sed -n '2,29p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
 }
 
 die_usage() {
@@ -101,9 +102,9 @@ verify_copy() {
     fi
 }
 
-# The merge: stdlib JSON, Python 3.9-safe. argv: mode settings hook_python installed manifest dry_run
+# The merge: stdlib JSON, Python 3.9-safe. argv: mode settings hook_python installed manifest dry_run matcher
 merge_settings() {
-    "$MERGE_PYTHON" -I - "$1" "$SETTINGS" "$HOOK_PYTHON" "$INSTALLED" "$MANIFEST" "$DRY_RUN" <<'PY'
+    "$MERGE_PYTHON" -I - "$1" "$SETTINGS" "$HOOK_PYTHON" "$INSTALLED" "$MANIFEST" "$DRY_RUN" "$MATCHER" <<'PY'
 import copy
 import datetime
 import difflib
@@ -112,9 +113,9 @@ import os
 import sys
 import tempfile
 
-mode, settings_path, hook_python, installed, manifest_path, dry_run = sys.argv[1:7]
+mode, settings_path, hook_python, installed, manifest_path, dry_run, matcher = sys.argv[1:8]
 DRY = dry_run == "1"
-MATCHER = "Bash|Read|Write|Edit|MultiEdit|NotebookEdit|Grep|Glob"
+MATCHER = matcher
 DENY = ["Read(~/.ssh/**)", "Read(~/.gnupg/**)", "Edit(~/.ssh/**)", "Edit(~/.gnupg/**)", "Bash(sudo *)", "Bash(ssh-add*)", "Bash(gpg --card-status*)", "Bash(gpg -K*)"]
 ENTRY = {"matcher": MATCHER, "hooks": [{"type": "command", "command": hook_python, "args": ["-I", installed], "timeout": 10, "onFailure": "block"}]}
 GUARD_FILE = "juniper_agent_guard.py"
@@ -306,6 +307,10 @@ if [[ "$DRY_RUN" -eq 0 && "$ACTION" != "uninstall" && ! -x "$HOOK_PYTHON" ]]; th
     die_env "HOOK_PYTHON is not executable: $HOOK_PYTHON"
 fi
 [[ -f "$SOURCE" ]] || die_env "guard source not found: $SOURCE"
+# The matcher comes from the guard, so the hook entry names exactly the tools the guard judges.
+MATCHER="$("$MERGE_PYTHON" -I "$SOURCE" --settings-matcher)" || die_env "cannot read the hook matcher from $SOURCE --settings-matcher"
+MATCHER_RE='^[A-Za-z_]+([|][A-Za-z_]+)*$'
+[[ "$MATCHER" =~ $MATCHER_RE ]] || die_env "unexpected hook matcher from $SOURCE: $MATCHER"
 case "$HOOKS_DIR" in
     /*) ;;
     *) HOOKS_DIR="$(pwd)/${HOOKS_DIR}" ;;

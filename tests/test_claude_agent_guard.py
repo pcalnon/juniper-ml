@@ -27,7 +27,14 @@ Pinned here:
 - malformed input exits 2 with empty stdout; an unknown tool prints nothing;
 - stdout is EMPTY for every allowed case (the guard never emits ``allow``), and a deny is exactly one
   JSON object of the documented shape whose reason names the rule id and says owner-run (D11);
-- the guard parses as Python 3.9 and runs under ``/usr/bin/python3`` when that exists.
+- the guard parses as Python 3.9 and runs under ``/usr/bin/python3`` when that exists;
+- task C9: the settings matcher names exactly the eight built-in tools plus Serena v1.7.0's edit tools and
+  shell; every Serena edit tool is judged (a ``.git/hooks`` path denied, an ordinary file allowed); paths
+  reach ``.git/``, ``.ssh``, Claude's settings and the registration files through ``..``, absolute paths and
+  symlinks in the checkout, against the checkout that holds ``cwd`` and against ``CLAUDE_PROJECT_DIR``;
+  ``replace_in_files`` globs and ``repl``; memory names as ``.serena/memories/<name>.md``; Serena's shell
+  under the Bash rules; and MCP registration (RR-10): ``mcp add*`` whatever the command word,
+  ``--mcp-config``, ``~/.claude.json`` and ``.mcp.json`` in Bash and the writers, and the two approval keys.
 
 The installer cases run ``/bin/bash`` (3.2 on macOS) with ``--settings`` and ``--hooks-dir`` in a temp
 tree: ``--dry-run`` writes nothing; ``--apply`` keeps an existing ``cc-status`` PreToolUse hook, adds
@@ -60,7 +67,11 @@ SYSTEM_PYTHON = "/usr/bin/python3"
 BASH = "/bin/bash"
 TIMEOUT_SECONDS = 60
 OVERRIDE_ENV = "JUNIPER_GUARD_HOME"
-MATCHER = "Bash|Read|Write|Edit|MultiEdit|NotebookEdit|Grep|Glob"
+PROJECT_DIR_ENV = "CLAUDE_PROJECT_DIR"
+BUILTIN_MATCHER = "Bash|Read|Write|Edit|MultiEdit|NotebookEdit|Grep|Glob"  # the 1.1.0 matcher
+# Serena v1.7.0's edit tools (ToolMarkerCanEdit at H4's pin, 949a27ef), its shell after them: what task C9 adds.
+SERENA_EDIT_TOOLS = ["create_text_file", "replace_content", "replace_in_files", "delete_lines", "replace_lines", "insert_at_line", "replace_symbol_body", "insert_after_symbol", "insert_before_symbol", "rename_symbol", "safe_delete_symbol", "jet_brains_move", "jet_brains_safe_delete", "jet_brains_inline_symbol", "jet_brains_rename", "write_memory", "edit_memory", "delete_memory", "rename_memory"]
+MATCHER = "|".join([BUILTIN_MATCHER] + ["mcp__serena__" + name for name in SERENA_EDIT_TOOLS + ["execute_shell_command"]])
 DENY_RULES = ["Read(~/.ssh/**)", "Read(~/.gnupg/**)", "Edit(~/.ssh/**)", "Edit(~/.gnupg/**)", "Bash(sudo *)", "Bash(ssh-add*)", "Bash(gpg --card-status*)", "Bash(gpg -K*)"]
 CC_STATUS = {"hooks": [{"type": "command", "command": "/Users/example/.config/iterm2/cc-status"}]}
 
@@ -106,9 +117,13 @@ class GuardHarness(unittest.TestCase):
             ".claude/settings.local.json": "{}\n",
             ".claude/hooks/old_hook.py": "x\n",
             ".claude/projects/x/memory/MEMORY.md": "x\n",
+            ".claude.json": "{}\n",
             "Development/repo/.claude/settings.json": "{}\n",
+            "Development/repo/.git/HEAD": "ref: refs/heads/main\n",  # the checkout Serena's --project names
             "Development/repo/README.md": "x\n",
             "Development/repo/nb.ipynb": "{}\n",
+            "Development/repo/sub/a.py": "x\n",
+            "Development/repo/.serena/memories/notes.md": "x\n",
         }
         for rel, body in files.items():
             path = cls.home / rel
@@ -121,6 +136,11 @@ class GuardHarness(unittest.TestCase):
         (elsewhere / "cfg").symlink_to(cls.home / ".ssh" / "config")
         (elsewhere / "link-to-settings").symlink_to(cls.home / ".claude" / "settings.json")
         (elsewhere / "link-to-hooks").symlink_to(cls.home / ".claude" / "hooks")
+        # symlinks inside the checkout, which Serena follows (task C9)
+        (cls.repo / "link-to-ssh").symlink_to(cls.home / ".ssh")
+        (cls.repo / "link-to-claude").symlink_to(cls.home / ".claude")
+        (cls.repo / "cfg-link").symlink_to(cls.home / ".claude.json")
+        (cls.repo / ".serena" / "memories" / "shared").symlink_to(cls.home / ".ssh")
         cls.subs = {"@HOME@": str(cls.home), "@REAL@": os.path.realpath(cls.home), "@REPO@": str(cls.repo), "@ROOT@": str(cls.root)}
 
     @classmethod
@@ -138,12 +158,15 @@ class GuardHarness(unittest.TestCase):
             return [self.sub(v) for v in value]
         return value
 
-    def run_guard(self, payload=None, raw=None, python=None, cwd=None) -> tuple:
+    def run_guard(self, payload=None, raw=None, python=None, cwd=None, project_dir=None) -> tuple:
         if raw is None:
             raw = json.dumps(payload).encode("utf-8")
         env = RedactedEnv(os.environ)
         env[OVERRIDE_ENV] = str(self.home)
         env["HOME"] = str(self.home)
+        env.pop(PROJECT_DIR_ENV, None)  # a test run inside Claude Code inherits the session's
+        if project_dir:
+            env[PROJECT_DIR_ENV] = self.sub(project_dir)
         proc = subprocess.run(  # nosec B603 - fixed argv, temp home
             [python or sys.executable, "-I", str(GUARD)],
             input=raw,
@@ -155,7 +178,7 @@ class GuardHarness(unittest.TestCase):
         )
         return proc.returncode, proc.stdout.decode("utf-8"), proc.stderr.decode("utf-8")
 
-    def decide(self, tool: str, tool_input, cwd=None, python=None) -> tuple:
+    def decide(self, tool: str, tool_input, cwd=None, python=None, project_dir=None) -> tuple:
         payload = {
             "session_id": "test-session",
             "transcript_path": "/dev/null",
@@ -166,10 +189,10 @@ class GuardHarness(unittest.TestCase):
             "cwd": self.sub(cwd) if cwd else str(self.repo),
             "tool_use_id": "toolu_test",
         }
-        return self.run_guard(payload, python=python)
+        return self.run_guard(payload, python=python, project_dir=project_dir)
 
-    def assert_denied(self, tool: str, tool_input, rule_id: str, cwd=None, primary: bool = False) -> dict:
-        code, out, err = self.decide(tool, tool_input, cwd)
+    def assert_denied(self, tool: str, tool_input, rule_id: str, cwd=None, primary: bool = False, project_dir=None) -> dict:
+        code, out, err = self.decide(tool, tool_input, cwd, project_dir=project_dir)
         label = "%s %r" % (tool, tool_input)
         self.assertEqual(code, 0, "%s: exit %d, stderr %s" % (label, code, err))
         self.assertTrue(out.strip(), "%s: expected a deny from %s, got no output" % (label, rule_id))
@@ -190,8 +213,8 @@ class GuardHarness(unittest.TestCase):
             self.assertIn(rule_id, named, "%s: %s" % (label, reason))
         return spec
 
-    def assert_allowed(self, tool: str, tool_input, cwd=None) -> None:
-        code, out, err = self.decide(tool, tool_input, cwd)
+    def assert_allowed(self, tool: str, tool_input, cwd=None, project_dir=None) -> None:
+        code, out, err = self.decide(tool, tool_input, cwd, project_dir=project_dir)
         self.assertEqual((code, out), (0, ""), "%s %r must pass silently (no output, never an allow); stderr: %s" % (tool, tool_input, err))
 
     def check_table(self, tool: str, table: list, key: str = "command", cwd=None) -> None:
@@ -221,6 +244,9 @@ SELF_FILE = "SELF-PROTECT-FILE"
 CRED_SEARCH = "CRED-PATH-SEARCH"
 GIT_SIGNING = "GIT-SIGNING-CONFIG"
 GIT_SIGNING_FILE = "GIT-SIGNING-FILE"
+MCP_BASH = "MCP-REGISTER-BASH"
+MCP_FILE = "MCP-REGISTER-FILE"
+MCP_EDIT = "MCP-EDIT-PATH"
 
 # (command, the rule it must trip, or None for "passes silently")
 CRED_PATH_CASES = [
@@ -494,7 +520,7 @@ SELF_PROTECT_BASH_CASES = [
     ("ls ~/.claude/agents/", None),
     ("ls -la ~/.claude/", None),  # listing the directory is fine; moving or removing it is not
     ("cat ~/.claude/settings.json.bak-2026-10-17-pre-C8", None),
-    ("cat ~/.claude.json", None),
+    ("cat ~/.claude.json.backup", None),  # ~/.claude.json itself is MCP-REGISTER-BASH's (task C9)
     ("cat ~/.claude/hooks.md", None),
     ("bash util/install_claude_agent_guard.bash --dry-run --apply", None),
     ("bash util/install_claude_agent_guard.bash --help", None),
@@ -696,6 +722,182 @@ SEARCH_CASES = [
 ]
 
 
+# Task C9 (RR-10 of the H5 risk analysis): MCP registration in Bash, whatever the command word.
+MCP_REGISTER_BASH_CASES = [
+    ("claude mcp add serena-x -- uvx serena", MCP_BASH),
+    ("claude mcp add --transport http sentry https://mcp.example.invalid/mcp", MCP_BASH),
+    ('claude mcp add-json evil \'{"type": "stdio", "command": "sh"}\'', MCP_BASH),
+    ("claude mcp add-from-claude-desktop", MCP_BASH),
+    ("claude mcp --scope user add x -- y", MCP_BASH),
+    ("~/.local/share/claude/versions/2.1.310 mcp add x -- npx y", MCP_BASH),
+    ("npx -y @anthropic-ai/claude-code mcp add x -- y", MCP_BASH),
+    ("C=claude; $C mcp add x -- y", MCP_BASH),
+    ("bash -c 'claude mcp add x -- y'", MCP_BASH),
+    ("echo $(claude mcp add-json x '{}')", MCP_BASH),
+    ("python3 -c \"import subprocess; subprocess.run(['claude', 'mcp', 'add', 'x', '--', 'y'])\"", MCP_BASH),
+    ("printf 'mcp add x -- y' | xargs claude", MCP_BASH),  # one quoted word: only xargs' reading splits it
+    ("xargs claude <<< 'mcp add-json x {}'", MCP_BASH),
+    ("find . -name x -exec claude mcp add x -- y ;", MCP_BASH),
+    ("claude -p hi --mcp-config /tmp/servers.json", MCP_BASH),
+    ("claude --mcp-config='{\"mcpServers\": {}}' -p hi", MCP_BASH),
+    ("cat ~/.claude.json", MCP_BASH),
+    ("jq '.mcpServers' $HOME/.claude.json", MCP_BASH),
+    ('cp /tmp/x "$HOME"/.claude.json', MCP_BASH),
+    ("cat @HOME@/.claude.json", MCP_BASH),
+    ("cd ~ && cat .claude.json", MCP_BASH),
+    ("cat ./cfg-link", MCP_BASH),  # a symlink in the checkout to ~/.claude.json (a word with a / is resolved)
+    ("echo '{}' > .mcp.json", MCP_BASH),
+    ("cp /tmp/x sub/.mcp.json", MCP_BASH),
+    ("cat ./.mcp.json", MCP_BASH),
+    ("mv x .MCP.json", MCP_BASH),
+    ("cat .mcp.js?n", MCP_BASH),
+    ("true  # then edit .mcp.json by hand", MCP_BASH),  # raw text, comments included (the guard's mention rule)
+    ("echo '{\"enableAllProjectMcpServers\": true}' > .claude/settings.local.json", MCP_BASH),
+    ('claude --settings \'{"enabledMcpjsonServers": ["x"]}\' -p hi', MCP_BASH),
+    ("claude mcp list", None),
+    ("timeout 30 claude mcp list", None),
+    ("claude mcp get serena", None),
+    ("claude mcp remove old-server", None),
+    ("claude mcp reset-project-choices", None),
+    ("claude --strict-mcp-config -p hi", None),
+    ("bash util/mcp_setup.bash", None),  # H4's writer keeps working (it writes .mcp.json inside a script)
+    ("bash util/mcp_setup.bash --check", None),
+    ("bash util/mcp_setup.bash --remove --dry-run", None),
+    ("cat conf/hosts/turing/mcp.json", None),
+    ("ls .mcp.json.bak-20261025T000000Z", None),
+    ("cat docs/x.mcp.json", None),
+    ("git commit -m 'mcp add docs'", None),
+    ("grep -rn 'claude mcp add' docs", None),
+    ("uv add mcp", None),
+    ("python3 -m unittest tests/test_mcp_setup.py", None),
+]
+
+# Task C9 (RR-10): the writers on the registration files, and the approval keys in Claude settings.
+MCP_REGISTER_FILE_CASES = [
+    ("Write", {"file_path": "@REPO@/.mcp.json", "content": "{}"}, MCP_FILE),
+    ("Edit", {"file_path": "@REPO@/sub/.mcp.json", "old_string": "a", "new_string": "b"}, MCP_FILE),
+    ("MultiEdit", {"file_path": "@HOME@/.claude.json", "edits": [{"old_string": "a", "new_string": "b"}]}, MCP_FILE),
+    ("Write", {"file_path": "~/.claude.json", "content": "{}"}, MCP_FILE),
+    ("Write", {"file_path": "@REAL@/.claude.json", "content": "{}"}, MCP_FILE),
+    ("Write", {"file_path": "@REPO@/cfg-link", "content": "{}"}, MCP_FILE),
+    ("Write", {"file_path": "@REPO@/.claude/settings.local.json", "content": '{"enableAllProjectMcpServers": true}'}, MCP_FILE),
+    ("Edit", {"file_path": "@REPO@/.claude/settings.json", "old_string": "{}", "new_string": '{"enabledMcpjsonServers": ["serena"]}'}, MCP_FILE),
+    ("Read", {"file_path": "@REPO@/.mcp.json"}, None),
+    ("Read", {"file_path": "@HOME@/.claude.json"}, None),
+    ("Write", {"file_path": "@REPO@/conf/hosts/turing/mcp.json", "content": "{}"}, None),
+    ("Write", {"file_path": "@REPO@/.mcp.json.bak-20261025T000000Z", "content": "{}"}, None),
+    ("Write", {"file_path": "@HOME@/.claude.json.backup", "content": "{}"}, None),
+    ("Write", {"file_path": "@REPO@/docs/mcp.md", "content": "enableAllProjectMcpServers stays unset"}, None),
+    ("MultiEdit", {"file_path": "@REPO@/.claude/settings.json", "edits": [{"old_string": '"enableAllProjectMcpServers": true', "new_string": ""}]}, None),
+]
+
+
+def serena_input(tool: str, path: str) -> dict:
+    """A plausible tool_input for one of Serena's edit tools, with ``path`` as its path (or memory name)."""
+    symbol = {"name_path": "f", "relative_path": path, "body": "x"}
+    inputs: dict[str, dict] = {
+        "create_text_file": {"relative_path": path, "content": "x"},
+        "replace_content": {"relative_path": path, "needle": "a", "repl": "b", "mode": "literal"},
+        "replace_in_files": {"needle": "a", "repl": "b", "mode": "literal", "relative_path": path},
+        "delete_lines": {"relative_path": path, "start_line": 0, "end_line": 1},
+        "replace_lines": {"relative_path": path, "start_line": 0, "end_line": 1, "content": "x"},
+        "insert_at_line": {"relative_path": path, "line": 0, "content": "x"},
+        "replace_symbol_body": symbol,
+        "insert_after_symbol": symbol,
+        "insert_before_symbol": symbol,
+        "rename_symbol": {"name_path": "f", "relative_path": path, "new_name": "g"},
+        "safe_delete_symbol": {"name_path_pattern": "f", "relative_path": path},
+        "jet_brains_move": {"relative_path": path},
+        "jet_brains_safe_delete": {"relative_path": path},
+        "jet_brains_inline_symbol": {"name_path": "f", "relative_path": path},
+        "jet_brains_rename": {"relative_path": path, "new_name": "g"},
+        "write_memory": {"memory_name": path, "content": "x"},
+        "edit_memory": {"memory_name": path, "needle": "a", "repl": "b", "mode": "literal"},
+        "delete_memory": {"memory_name": path},
+        "rename_memory": {"old_name": path, "new_name": "notes/b"},
+    }
+    return inputs[tool]
+
+
+# Task C9: Serena's path arguments, on replace_content (each edit tool is covered by the per-tool test).
+MCP_EDIT_CASES = [
+    (p, MCP_EDIT)
+    for p in (
+        ".git/hooks/post-commit",
+        ".git/config",
+        ".git/info/exclude",
+        ".GIT/HEAD",
+        "sub/../.git/hooks/pre-push",
+        "../../.ssh/config",
+        "link-to-ssh/config",
+        "@HOME@/.gnupg/gpg-agent.conf",
+        ".claude/settings.local.json",
+        ".claude/settings.json",
+        ".claude/hooks/x.py",
+        "link-to-claude/settings.json",
+        "@HOME@/.claude/settings.json",
+        ".mcp.json",
+        "sub/.mcp.json",
+        "@HOME@/.claude.json",
+        "cfg-link",
+        ".gitconfig",
+        ".config/git/config",
+        "@HOME@/.config/git/juniper-signing.gitconfig",
+    )
+] + [
+    (p, None)
+    for p in (
+        "README.md",
+        "sub/a.py",
+        ".gitignore",
+        ".gitattributes",
+        ".github/hooks/x",
+        "docs/git/config",
+        ".claude/agents/x.md",
+        ".sshrc_backup",
+        "notes/settings.json",
+        "hooks/x.py",
+        ".serena/project.yml",
+        "@REPO@/sub/a.py",
+    )
+]
+
+# Task C9: replace_in_files' optional relative_path, include glob and replacement text.
+REPLACE_IN_FILES_CASES = [
+    ({"relative_path": ".git"}, MCP_EDIT),
+    ({"paths_include_glob": ".git/**"}, MCP_EDIT),
+    ({"paths_include_glob": "**/.git/hooks/*"}, MCP_EDIT),
+    ({"paths_include_glob": ".g?t/*"}, MCP_EDIT),
+    ({"paths_include_glob": "{src,.git}/**"}, MCP_EDIT),
+    ({"paths_include_glob": ".claude/settings*.json"}, MCP_EDIT),
+    ({"paths_include_glob": ".claude/*"}, MCP_EDIT),
+    ({"paths_include_glob": "**/.claude/**"}, MCP_EDIT),
+    ({"paths_include_glob": "**/.mcp.json"}, MCP_EDIT),
+    ({"paths_include_glob": "**/.ssh/*"}, MCP_EDIT),
+    ({"repl": '"enableAllProjectMcpServers": true'}, MCP_EDIT),
+    ({"repl": '"disableAllHooks": true'}, MCP_EDIT),
+    ({}, None),
+    ({"relative_path": "sub"}, None),
+    ({"paths_include_glob": "**/*.py"}, None),
+    ({"paths_include_glob": "**"}, None),  # Serena's own walk skips .git/ and ignored files
+    ({"paths_include_glob": "src/**/*.{py,md}"}, None),
+    ({"paths_include_glob": ".github/**"}, None),
+    ({"paths_include_glob": "**/*.json"}, None),
+    ({"relative_path": "", "paths_include_glob": ""}, None),
+]
+
+# Task C9: Serena's shell gets the Bash rules, with its cwd resolved against the project root.
+SERENA_SHELL_CASES = [
+    ({"command": "cat ~/.ssh/config"}, CRED_BASH),
+    ({"command": "gh api -X POST repos/o/r/issues"}, GH_API),
+    ({"command": "claude mcp add x -- y"}, MCP_BASH),
+    ({"command": "cat link-to-ssh/config"}, CRED_BASH),
+    ({"command": "cat config", "cwd": "link-to-ssh"}, CRED_BASH),
+    ({"command": "ls"}, None),
+    ({"command": "git status", "cwd": "sub"}, None),
+]
+
+
 class FileAndSearchRuleTests(GuardHarness):
     def test_file_tools(self) -> None:
         for tool, tool_input, expected in FILE_CASES:
@@ -717,6 +919,52 @@ class FileAndSearchRuleTests(GuardHarness):
         self.assert_denied("Grep", {"pattern": "BEGIN"}, CRED_SEARCH, cwd="@HOME@")
 
 
+class McpRuleTests(GuardHarness):
+    """Task C9: Serena's edit tools and shell, and MCP registration (RR-10)."""
+
+    def test_c9_mcp_registration_in_bash(self) -> None:
+        self.check_table("Bash", MCP_REGISTER_BASH_CASES)
+
+    def test_c9_mcp_registration_files(self) -> None:
+        for tool, tool_input, expected in MCP_REGISTER_FILE_CASES:
+            with self.subTest(tool=tool, tool_input=tool_input):
+                if expected is None:
+                    self.assert_allowed(tool, tool_input)
+                else:
+                    self.assert_denied(tool, tool_input, expected)
+
+    def test_c9_serena_edit_paths(self) -> None:
+        self.check_table("mcp__serena__replace_content", [(serena_input("replace_content", p), rule) for p, rule in MCP_EDIT_CASES])
+
+    def test_c9_every_serena_edit_tool_is_judged(self) -> None:
+        for name in SERENA_EDIT_TOOLS:
+            memory = name.endswith("_memory")
+            with self.subTest(tool=name):
+                self.assert_denied("mcp__serena__" + name, serena_input(name, ".git/hooks/x" if memory else ".git/hooks/post-commit"), MCP_EDIT, primary=True)
+                self.assert_allowed("mcp__serena__" + name, serena_input(name, "notes/topic" if memory else "sub/a.py"))
+
+    def test_c9_second_paths_and_memory_names(self) -> None:
+        self.assert_denied("mcp__serena__jet_brains_move", {"relative_path": "sub/a.py", "target_relative_path": ".git/hooks/x"}, MCP_EDIT)
+        self.assert_allowed("mcp__serena__jet_brains_move", {"relative_path": "sub/a.py", "target_relative_path": "sub/b.py"})
+        self.assert_denied("mcp__serena__rename_memory", {"old_name": "notes/a", "new_name": ".git/x"}, MCP_EDIT)
+        self.assert_denied("mcp__serena__write_memory", {"memory_name": "shared/x", "content": "x"}, MCP_EDIT)  # .serena/memories/shared -> ~/.ssh
+        self.assert_allowed("mcp__serena__write_memory", {"memory_name": "global/topic", "content": "x"})
+
+    def test_c9_replace_in_files_scope_and_text(self) -> None:
+        base = {"needle": "a", "repl": "b", "mode": "literal"}
+        self.check_table("mcp__serena__replace_in_files", [(dict(base, **extra), rule) for extra, rule in REPLACE_IN_FILES_CASES])
+
+    def test_c9_serena_shell_gets_the_bash_rules(self) -> None:
+        self.check_table("mcp__serena__execute_shell_command", SERENA_SHELL_CASES)
+
+    def test_c9_paths_resolve_against_the_checkout_and_the_project_dir(self) -> None:
+        """No literal marker in these: only the roots tell them apart."""
+        edit = serena_input("replace_content", "link-to-claude/settings.json")
+        self.assert_denied("mcp__serena__replace_content", edit, MCP_EDIT, cwd="@REPO@/sub")  # the checkout holding cwd
+        self.assert_allowed("mcp__serena__replace_content", edit, cwd="@ROOT@/elsewhere")
+        self.assert_denied("mcp__serena__replace_content", edit, MCP_EDIT, cwd="@ROOT@/elsewhere", project_dir="@REPO@")
+
+
 MALFORMED = [
     b"not json",
     b"",
@@ -734,6 +982,15 @@ MALFORMED = [
     b'{"tool_name": "Grep", "tool_input": {"pattern": "x", "path": 5}}',
     b"\xff\xfe\x00",
     b'{"tool_name": "Bash", "tool_input": {"command": "' + b"$(" * 40 + b'"}}',
+    b'{"tool_name": "mcp__serena__replace_content", "tool_input": "x"}',
+    b'{"tool_name": "mcp__serena__replace_content", "tool_input": {}}',
+    b'{"tool_name": "mcp__serena__replace_content", "tool_input": {"relative_path": 7}}',
+    b'{"tool_name": "mcp__serena__replace_content", "tool_input": {"relative_path": ""}}',
+    b'{"tool_name": "mcp__serena__write_memory", "tool_input": {"content": "x"}}',
+    b'{"tool_name": "mcp__serena__rename_memory", "tool_input": {"old_name": "a"}}',
+    b'{"tool_name": "mcp__serena__replace_in_files", "tool_input": {"paths_include_glob": 5}}',
+    b'{"tool_name": "mcp__serena__execute_shell_command", "tool_input": {"command": ["ls"]}}',
+    b'{"tool_name": "mcp__serena__execute_shell_command", "tool_input": {"command": "ls", "cwd": 3}}',
 ]
 
 
@@ -751,6 +1008,9 @@ class ContractTests(GuardHarness):
             {"tool_name": "WebFetch", "tool_input": {"url": "https://example.com"}},
             {"tool_name": "TodoWrite"},
             {"tool_name": "mcp__serena__read_file", "tool_input": {"relative_path": "~/.ssh/config"}},
+            {"tool_name": "mcp__serena__find_symbol", "tool_input": {"name_path_pattern": "x"}},
+            {"tool_name": "mcp__other__replace_content", "tool_input": {"relative_path": ".git/hooks/post-commit"}},
+            {"tool_name": "mcp__plugin_x_serena__replace_content", "tool_input": {"relative_path": ".git/hooks/post-commit"}},
         ):
             with self.subTest(tool=payload["tool_name"]):
                 self.assertEqual(self.run_guard(payload)[:2], (0, ""))
@@ -780,8 +1040,9 @@ class ContractTests(GuardHarness):
 class RuleCoverageTest(unittest.TestCase):
     def test_every_rule_has_a_denied_case(self) -> None:
         ids = {rule.rule_id for rule in _load_guard().RULES}
-        covered = {rule for _, rule in CRED_PATH_CASES + SSH_PRIV_DEFAULTS_CASES + GPG_CASES + GH_CASES + SELF_PROTECT_BASH_CASES + GIT_SIGNING_CASES if rule}
-        covered |= {rule for _, _, rule in FILE_CASES + SEARCH_CASES if rule}
+        covered = {rule for _, rule in CRED_PATH_CASES + SSH_PRIV_DEFAULTS_CASES + GPG_CASES + GH_CASES + SELF_PROTECT_BASH_CASES + GIT_SIGNING_CASES + MCP_REGISTER_BASH_CASES if rule}
+        covered |= {rule for _, _, rule in FILE_CASES + SEARCH_CASES + MCP_REGISTER_FILE_CASES if rule}
+        covered |= {rule for _, rule in MCP_EDIT_CASES + REPLACE_IN_FILES_CASES + SERENA_SHELL_CASES if rule}
         covered |= {GH_API}
         self.assertEqual(ids - covered, set(), "rules with no denied case in this suite")
         self.assertEqual(covered - ids, set(), "cases name rules the guard does not have")
@@ -828,6 +1089,17 @@ class PortabilityAndCliTests(GuardHarness):
         for rule in _load_guard().RULES:
             self.assertIn(rule.rule_id, listing.stdout)
         self.assertEqual(self.run_cli("--no-such-flag").returncode, 2)
+
+    def test_c9_settings_matcher_names_the_builtins_and_serenas_edit_tools(self) -> None:
+        """An MCP call reaches the hook only if the matcher names it; exact names keep it on the exact-list path."""
+        printed = self.run_cli("--settings-matcher")
+        self.assertEqual((printed.returncode, printed.stdout), (0, MATCHER + "\n"))
+        self.assertRegex(MATCHER, r"^[A-Za-z_|]+$", "only exact-match characters: Claude Code compares each name exactly")
+        names = MATCHER.split("|")
+        self.assertEqual(len(names), len(set(names)))
+        guard = _load_guard()
+        self.assertEqual(guard.SETTINGS_MATCHER, MATCHER)
+        self.assertEqual(list(guard.SERENA_EDIT_TOOLS), SERENA_EDIT_TOOLS)
 
     def test_installed_copy_ignores_the_test_override(self) -> None:
         """The live copy under <home>/.claude/hooks/ must not let an env var move the protected homes."""
@@ -950,6 +1222,17 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(self.settings.read_bytes(), after_first, "a second --apply must change nothing")
         self.assertEqual(len(self.backups()), 1, "an unchanged apply writes no backup")
         self.assertEqual(len(self.settings_now()["hooks"]["PreToolUse"]), 2)
+
+    def test_c9_apply_upgrades_a_1_1_0_entry_to_the_new_matcher(self) -> None:
+        old = {"matcher": BUILTIN_MATCHER, "hooks": [{"type": "command", "command": sys.executable, "args": ["-I", str(self.installed)], "timeout": 10, "onFailure": "block"}]}
+        self.write_settings(dict(self.original, hooks={"PreToolUse": [CC_STATUS, old], "Stop": [CC_STATUS]}))
+        code, out = self.install("--apply")
+        self.assertEqual(code, 0, out)
+        self.assertIn("hook entry updated", out)
+        self.assertEqual(self.settings_now()["hooks"]["PreToolUse"], [CC_STATUS, self.expected_entry()])
+        after = self.settings.read_bytes()
+        self.assertEqual(self.install("--apply")[0], 0)
+        self.assertEqual(self.settings.read_bytes(), after, "a second --apply must change nothing")
 
     def test_sha256_file_matches_the_copy_and_the_source(self) -> None:
         code, out = self.install("--apply")

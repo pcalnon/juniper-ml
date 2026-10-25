@@ -33,13 +33,13 @@
 
 D §7 keeps the certified three-tier posture and adds the owner's 2026-09-21 direction. Condensed:
 
-| Tier | Medium | Mechanism | Cadence | Key custody |
-| --- | --- | --- | --- | --- |
-| T0 | inside T1's source | daily copy of the server database into `~/.local/state/duplicati-server-db/` (root timer, 13:45 UTC) | daily | — |
-| T1 | `sda1` → `/mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi/` | Duplicati 2.4.0.0 server, job `Yamaguchi`, run as the `duplicati` system user under a confined systemd unit; AES volumes under `PASSPHRASE` | daily 14:00 UTC | printed sheet, password manager, an `sda1` copy **outside** the Dropbox root |
-| T1c | Dropbox cloud | the desktop client replicating `Backups/` from the T1 destination (ciphertext only) | continuous | same |
-| T2 | USB sticks `EBC5-F0A3`, `DFF3-2782` | `util/juniper-backup.bash`: per-repo `tar` streamed into `gpg -e` for two YubiKey recipients; user-scope timer + path unit, runs when a drive is mounted | weekly | YubiKeys |
-| T3 | offline external hard drive | same script, widened to the whole Juniper parent, label `full` | monthly, when attached | YubiKeys |
+| Tier | Medium                                                    | Mechanism                                                                                                                                                | Cadence                | Key custody                                                                  |
+|------|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|------------------------------------------------------------------------------|
+| T0   | inside T1's source                                        | daily copy of the server database into `~/.local/state/duplicati-server-db/` (root timer, 13:45 UTC)                                                     | daily                  | —                                                                            |
+| T1   | `sda1` → `/mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi/` | Duplicati 2.4.0.0 server, job `Yamaguchi`, run as the `duplicati` system user under a confined systemd unit; AES volumes under `PASSPHRASE`              | daily 14:00 UTC        | printed sheet, password manager, an `sda1` copy **outside** the Dropbox root |
+| T1c  | Dropbox cloud                                             | the desktop client replicating `Backups/` from the T1 destination (ciphertext only)                                                                      | continuous             | same                                                                         |
+| T2   | USB sticks `EBC5-F0A3`, `DFF3-2782`                       | `util/juniper-backup.bash`: per-repo `tar` streamed into `gpg -e` for two YubiKey recipients; user-scope timer + path unit, runs when a drive is mounted | weekly                 | YubiKeys                                                                     |
+| T3   | offline external hard drive                               | same script, widened to the whole Juniper parent, label `full`                                                                                           | monthly, when attached | YubiKeys                                                                     |
 
 The service contract (D §7.3, rulings D-1/4/6/9/14 of §10.1, all binding since 2026-09-22):
 
