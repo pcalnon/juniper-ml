@@ -560,7 +560,11 @@ def _driver_module():
 
 
 def _driver_validator():
-    """The real driver's load_config, imported by path — None if unavailable."""
+    """The real driver's load_config, imported by path — None if unavailable.
+
+    A wrapper over ``_driver_module`` since juniper-ml#2210, which needs the whole module for
+    ``worst_case_budget``; ``main`` validates through the module directly.
+    """
     mod = _driver_module()
     return None if mod is None else (lambda path: mod.load_config(path))
 
