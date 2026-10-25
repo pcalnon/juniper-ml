@@ -9,11 +9,14 @@ Created: 2026-10-17
 Status: permanent utility. util/install_claude_agent_guard.bash (owner-run) installs it as a COPY,
         ~/.claude/hooks/juniper_agent_guard.py, so a branch switch in a checkout cannot change it.
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (D11 item 4,
-         enforcement option (b); task C8; the H3 negative tests);
+         enforcement option (b); task C8; task C9: the MCP-* rules; the H3 negative tests);
          notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md (S9, task K12: the
-         GIT-SIGNING-* rules); tests/test_claude_agent_guard.py;
+         GIT-SIGNING-* rules);
+         notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md (RR-10: MCP
+         registration); tests/test_claude_agent_guard.py;
          util/ad-hoc/2026-10-17_turing_c8_guard_mutation_check.py,
-         util/ad-hoc/2026-10-20_k12_guard_mutation_check.py
+         util/ad-hoc/2026-10-20_k12_guard_mutation_check.py,
+         util/ad-hoc/2026-10-25_turing_c9_guard_mutation_check.py
 
 Why a hook
 ----------
@@ -40,16 +43,43 @@ Contract
 Rules (``RULES`` below is the table; ``--list-rules`` prints it)
 -----------------------------------------------------------------
 Bash: CRED-PATH-BASH, SSH-PROBE, PRIV-ESCALATION, MACOS-DEFAULTS-WRITE, GPG-SECRET, GPG-SIGN,
-GH-PR-WRITE, GH-KEY-ADMIN, GH-AUTH, GH-API-WRITE, KEYCHAIN-DUMP, SELF-PROTECT-BASH, GIT-SIGNING-CONFIG.
-Read, Write, Edit, MultiEdit, NotebookEdit: CRED-PATH-FILE, and for the writers SELF-PROTECT-FILE and
-GIT-SIGNING-FILE.
+GH-PR-WRITE, GH-KEY-ADMIN, GH-AUTH, GH-API-WRITE, KEYCHAIN-DUMP, SELF-PROTECT-BASH, GIT-SIGNING-CONFIG,
+MCP-REGISTER-BASH.
+Read, Write, Edit, MultiEdit, NotebookEdit: CRED-PATH-FILE, and for the writers SELF-PROTECT-FILE,
+GIT-SIGNING-FILE and MCP-REGISTER-FILE.
 Grep and Glob: CRED-PATH-SEARCH.
+Serena's edit tools (``mcp__serena__<tool>``): MCP-EDIT-PATH. Its ``execute_shell_command`` gets the Bash rules.
 
 The two GIT-SIGNING rules (commit-signing plan S9, task K12) guard the owner's signing configuration.
 Once the owner's YubiKey stubs are learned, an agent that could rewrite that configuration could get the
 owner's signature. It could point ``gpg.program`` or ``core.hooksPath`` at its own program, plant a
 local key that outranks the owner's include, drop a ``post-commit`` hook inside a cached-touch window,
 or re-enable signing past D11 with ``git -c include.path=`` or ``--config-env``.
+
+Serena's edit tools and MCP registration (task C9)
+--------------------------------------------------
+An MCP tool call reaches a PreToolUse hook only when the settings matcher names it, so the matcher names each
+of Serena's edit tools (``SERENA_EDIT_TOOLS``: Serena v1.7.0, H4's pin) and its shell. Serena resolves a
+``relative_path`` against its ``--project`` root and keeps it inside that root lexically, but it follows
+symlinks and does not refuse ``.git/``, so in a primary checkout it could write ``.git/hooks`` (the K12 class).
+MCP-EDIT-PATH resolves each path argument against every plausible project root: the payload ``cwd`` and
+``CLAUDE_PROJECT_DIR``, each with the checkout that holds it (``util/mcp_setup.bash`` binds ``--project`` to
+the checkout). It reads the result literally and through ``realpath``, and denies a ``.git``, ``.ssh`` or
+``.gnupg`` component, ``.claude/settings*.json`` or ``.claude/hooks``, ``.config/git``, a file named
+``.mcp.json``, ``.claude.json`` or ``.gitconfig``, and anything the writers' rules protect. A path that
+leaves the root, or a symlink that leads out of it, is read whole. A memory name is judged as the file Serena
+writes, ``.serena/memories/<name>.md``. ``replace_in_files`` also takes an include glob, denied when it names
+one of those targets (``.git/**``, ``.claude/*``, ``**/.mcp.json``). A bare ``*`` or ``**`` does not count,
+because Serena's own walk skips ``.git/`` and ignored files. Its ``repl`` may not set ``disableAllHooks`` or
+either MCP approval key, since an unscoped call reaches every tracked file.
+
+A registered MCP server runs a command the guard never sees, so registration is owner-run (RR-10).
+MCP-REGISTER-BASH denies ``mcp add``, ``mcp add-json`` and ``mcp add-from-claude-desktop`` whatever the
+command word (``claude``, its versions path ``~/.local/share/claude/versions/<v>``, ``npx``), ``--mcp-config``,
+a command that names ``~/.claude.json`` or a ``.mcp.json`` file, and text that names
+``enabledMcpjsonServers`` or ``enableAllProjectMcpServers``. MCP-REGISTER-FILE denies a writer call on those
+files, and a ``.claude/settings*.json`` write that sets either key. ``util/mcp_setup.bash`` keeps working: it
+writes ``.mcp.json`` inside a script, which the guard does not see (gap 1).
 
 The ``.ssh`` / ``.gnupg`` boundary
 ----------------------------------
@@ -100,8 +130,8 @@ A command-text hook sees only the text of the call. Known gaps:
    operand, ``cd "$(...)"``. A literal ``cd`` target, ``cd`` and ``cd -`` are followed.
 5. A hard link to a key file made before the guard was installed; a symlink inside a search root
    (Grep/Glob do not walk the tree to find one).
-6. Tools outside the settings matcher: MCP tools (Serena's ``read_file``, any MCP shell). Subagent
-   tool calls are covered.
+6. Tools outside the settings matcher: every MCP tool but Serena's edit tools and shell (Serena's read
+   tools, any other server's tools, Serena registered under another name). Subagent tool calls are covered.
 7. ``disableAllHooks`` in a project ``.claude/settings*.json`` turns user hooks off. The guard
    denies writing or naming that key, but not a file holding it copied into place, nor a nested
    ``claude --setting-sources project``. Managed settings (owner, sudo) close this fully.
@@ -109,6 +139,11 @@ A command-text hook sees only the text of the call. Known gaps:
 9. A shell edit of a repository's own ``.git/config`` (``sed -i``, ``echo >>``, ``tee``). Reading that file
    is too common to deny by mention, so only ``git config`` writes and the file tools are guarded.
    ``util/configure_commit_signing.py --check`` fails a planted local signing key instead.
+10. What an MCP edit does beyond its arguments: ``rename_symbol`` and ``safe_delete_symbol`` change the files a
+    language server names, and an unscoped ``replace_in_files`` reaches every file Serena does not ignore. In a
+    checkout that tracks ``.claude/settings.json`` or ``.mcp.json``, only its ``repl`` is checked there.
+11. Other clients' MCP configuration: VS Code's ``mcp.json``, Claude Desktop's config and ``~/.cursor/mcp.json``
+    (task H6 reviews VS Code's servers).
 
 Home directory
 --------------
@@ -118,15 +153,16 @@ for tests only: the installed copy (any file under ``<home>/.claude/hooks/``) ig
 
 Settings entry (util/install_claude_agent_guard.bash writes it)
 --------------------------------------------------------------
-    "hooks": {"PreToolUse": [{"matcher": "Bash|Read|Write|Edit|MultiEdit|NotebookEdit|Grep|Glob",
+    "hooks": {"PreToolUse": [{"matcher": "Bash|Read|Write|Edit|MultiEdit|NotebookEdit|Grep|Glob|mcp__serena__...",
       "hooks": [{"type": "command", "command": "/usr/bin/python3",
                  "args": ["-I", "<home>/.claude/hooks/juniper_agent_guard.py"],
                  "timeout": 10, "onFailure": "block"}]}]}
 
-``-I`` (isolated mode) keeps ``PYTHONPATH`` and friends from reaching the hook. Runs on Python 3.9
-(macOS ``/usr/bin/python3``) through 3.14, stdlib only.
+``--settings-matcher`` prints the whole matcher: the eight built-in tools, then each Serena edit tool and its
+shell as ``mcp__serena__<tool>``. ``-I`` (isolated mode) keeps ``PYTHONPATH`` and friends from reaching the
+hook. Runs on Python 3.9 (macOS ``/usr/bin/python3``) through 3.14, stdlib only.
 
-Usage: juniper_agent_guard.py [--self-test | --list-rules | --version | --help]
+Usage: juniper_agent_guard.py [--self-test | --list-rules | --settings-matcher | --version | --help]
 """
 
 from __future__ import annotations
@@ -137,11 +173,11 @@ import os
 import re
 import sys
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 GUARD_NAME = "juniper-agent-guard"
 PLAN_DOC = "notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md"
 HOME_OVERRIDE_ENV = "JUNIPER_GUARD_HOME"
-SETTINGS_MATCHER = "Bash|Read|Write|Edit|MultiEdit|NotebookEdit|Grep|Glob"
+PROJECT_DIR_ENV = "CLAUDE_PROJECT_DIR"
 MAX_DEPTH = 12
 MAX_BRACE_ALTERNATIVES = 64
 EVIDENCE_LIMIT = 120
@@ -184,10 +220,28 @@ RULES = (
         "The owner's signing configuration and git hooks are changed only by the owner (commit-signing plan S9, task K12); agent commits stay unsigned (D11) "
         "and land through util/open_signed_pr.py. Read config with git config --get / --list, and the files with the Read tool",
     ),
+    Rule(
+        "MCP-REGISTER-BASH",
+        "Bash",
+        "an MCP server registration: mcp add, mcp add-json or mcp add-from-claude-desktop after any command word (claude, its versions path, npx), --mcp-config, "
+        "a command that names ~/.claude.json or a .mcp.json file, or text that names enabledMcpjsonServers or enableAllProjectMcpServers",
+        "A registered MCP server runs a command the guard never sees, so registration is owner-run (task C9, RR-10 of the H5 risk analysis); "
+        "util/mcp_setup.bash writes the pinned Serena entry. Read those files with the Read tool",
+    ),
     Rule("CRED-PATH-FILE", "Read|Write|Edit|MultiEdit|NotebookEdit", "the target path, or the path a symlink resolves to, is inside ~/.ssh or ~/.gnupg (or has a .ssh or .gnupg component)", "Agents never read or change SSH or GnuPG material on turing"),
     Rule("SELF-PROTECT-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude/settings.json, ~/.claude/settings.local.json or ~/.claude/hooks/, or a .claude/settings*.json write that sets disableAllHooks", "The guard and its settings are changed only by the owner. Reading them is allowed"),
     Rule("GIT-SIGNING-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.gitconfig, anything under ~/.config/git, git's system gitconfig (/usr/local/etc, /opt/homebrew/etc, /etc), a repository's .git/config or config.worktree, or anything under a .git/hooks directory", "The owner's signing configuration and git hooks are changed only by the owner (commit-signing plan S9, task K12). Reading them is allowed"),
+    Rule("MCP-REGISTER-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude.json or to any .mcp.json, or a .claude/settings*.json write that sets enabledMcpjsonServers or enableAllProjectMcpServers", "MCP registration is owner-run (task C9, RR-10 of the H5 risk analysis); util/mcp_setup.bash writes the pinned Serena entry. Reading the files is allowed"),
     Rule("CRED-PATH-SEARCH", "Grep|Glob", "the search root or path pattern reaches into ~/.ssh or ~/.gnupg, or the search root is home or above it (a recursive search would descend into them)", "Agents never read or list SSH or GnuPG material on turing; narrow the search root"),
+    Rule(
+        "MCP-EDIT-PATH",
+        "mcp__serena__<edit tool>",
+        "a Serena edit whose path, resolved against the project root literally or through symlinks, reaches .git/, .ssh or .gnupg, Claude's settings or hooks, "
+        "the owner's git configuration, ~/.claude.json or a .mcp.json; a replace_in_files include glob that names one of them; "
+        "or a replace_in_files repl that sets disableAllHooks, enabledMcpjsonServers or enableAllProjectMcpServers",
+        "The guard cannot see what an MCP server writes beyond its arguments, so Serena's edits stay on ordinary project files (task C9). "
+        "Use the Edit or Write tool, which the guard judges path by path",
+    ),
 )
 RULE_BY_ID = {rule.rule_id: rule for rule in RULES}
 
@@ -247,6 +301,44 @@ GH_PR_ACTIONS = ("create", "new", "merge")
 GH_PR_OPTS_WITH_ARG = ("-R", "--repo")
 GH_KEY_ADMIN = {"repo": ("deploy-key",), "ssh-key": ("add", "delete"), "gpg-key": ("add", "delete")}
 GH_ALIAS_ACTIONS = ("set", "import")
+# Task C9 (RR-10). A registered MCP server runs a command the guard never sees.
+MCP_SUBCOMMAND = "mcp"
+MCP_ADD_SUBCOMMANDS = ("add", "add-json", "add-from-claude-desktop")
+MCP_CONFIG_FLAG = "--mcp-config"
+MCP_PROJECT_FILE = ".mcp.json"
+CLAUDE_STATE_FILE = ".claude.json"
+# Task C9. Serena's edit tools at H4's pin (v1.7.0, 949a27ef: every ToolMarkerCanEdit tool but the shell), each as
+# (path keys it requires, path keys it may carry, include-glob keys, replacement-text keys). The settings matcher
+# names every tool, so a pin bump that adds an edit tool needs a row here and a re-install.
+SERENA_PREFIX = "mcp__serena__"
+SERENA_EDIT_TOOLS = {
+    "create_text_file": (("relative_path",), (), (), ()),
+    "replace_content": (("relative_path",), (), (), ()),
+    "replace_in_files": ((), ("relative_path",), ("paths_include_glob",), ("repl",)),
+    "delete_lines": (("relative_path",), (), (), ()),
+    "replace_lines": (("relative_path",), (), (), ()),
+    "insert_at_line": (("relative_path",), (), (), ()),
+    "replace_symbol_body": (("relative_path",), (), (), ()),
+    "insert_after_symbol": (("relative_path",), (), (), ()),
+    "insert_before_symbol": (("relative_path",), (), (), ()),
+    "rename_symbol": (("relative_path",), (), (), ()),
+    "safe_delete_symbol": (("relative_path",), (), (), ()),
+    "jet_brains_move": (("relative_path",), ("target_relative_path",), (), ()),
+    "jet_brains_safe_delete": (("relative_path",), (), (), ()),
+    "jet_brains_inline_symbol": (("relative_path",), (), (), ()),
+    "jet_brains_rename": (("relative_path",), (), (), ()),
+    "write_memory": (("memory_name",), (), (), ()),
+    "edit_memory": (("memory_name",), (), (), ()),
+    "delete_memory": (("memory_name",), (), (), ()),
+    "rename_memory": (("old_name", "new_name"), (), (), ()),
+}
+SERENA_SHELL_TOOL = "execute_shell_command"
+# a memory is the file <project>/.serena/memories/<name>.md
+SERENA_MEMORY_KEYS = ("memory_name", "old_name", "new_name")
+SERENA_MEMORY_DIR = ".serena/memories"
+# Read component by component, a path through any of these reaches a protected target whatever its root.
+MCP_GUARDED_DIRS = (".git",) + CRED_DIR_NAMES
+MCP_GUARDED_FILES = (MCP_PROJECT_FILE, CLAUDE_STATE_FILE, ".gitconfig")
 
 SHELLS = ("bash", "sh", "zsh", "dash", "ksh", "mksh", "fish")
 SHELL_OPTS_WITH_ARG = ("-o", "-O", "+o", "+O", "--rcfile", "--init-file")
@@ -287,6 +379,7 @@ _NAME_START = frozenset("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_")
 _NAME_CHARS = _NAME_START | frozenset("0123456789")
 _SPECIAL_PARAMS = frozenset("@*#?-$!0123456789")
 _CRED_COMPONENT_RE = re.compile(r"(?<![A-Za-z0-9._-])\.(?:ssh|gnupg)(?![A-Za-z0-9._-])", re.IGNORECASE)
+_MCP_APPROVAL_RE = re.compile(r"enabledMcpjsonServers|enableAllProjectMcpServers", re.IGNORECASE)
 _HOME_SPELLING_RE = re.compile(r"^(?:~[A-Za-z0-9._-]*|\$HOME(?![A-Za-z0-9_])|\$\{HOME(?:[^A-Za-z0-9_}][^}]*)?\})(?=/|$)")
 _HOME_LIKE_RE = re.compile(r"^/+(?:(?:Users|home)/+[^/]+|(?:private/+)?var/+root|root)(?=/|$)", re.IGNORECASE)
 _STRING_LITERAL_RE = re.compile(r"'((?:[^'\\\n]|\\.)*)'|\"((?:[^\"\\\n]|\\.)*)\"")
@@ -416,6 +509,14 @@ def _glob_literal_chars(pattern: str) -> str:
             out.append(ch)
         i += 1
     return "".join(out)
+
+
+def _comp_names(comp: str, literal: str) -> bool:
+    """``comp`` is ``literal`` (case-insensitively), or a dot-glob with literal characters that can match it.
+    A bare ``*`` or ``.*`` does not count: bash and Serena's own walks skip what a bare glob would reach."""
+    if not _has_glob(comp):
+        return comp.casefold() == literal.casefold()
+    return comp.startswith(".") and bool(_glob_literal_chars(comp).strip(".")) and component_matches(comp, literal)
 
 
 def _components(path: str) -> list:
@@ -966,8 +1067,9 @@ class BashAnalyzer(object):
     def hit(self, rule_id: str, evidence: str) -> None:
         self.hits.append(Hit(rule_id, evidence))
 
-    def analyze(self, command: str) -> list:
-        self._scan(command, 0, [self.ctx.cwd] if self.ctx.cwd else [])
+    def analyze(self, command: str, bases=None) -> list:
+        """``bases`` replaces the payload cwd as what relative words resolve against (Serena's shell)."""
+        self._scan(command, 0, list(bases) if bases is not None else ([self.ctx.cwd] if self.ctx.cwd else []))
         if self.opaque:
             self._opaque_fallback()
         return self.hits
@@ -1002,6 +1104,9 @@ class BashAnalyzer(object):
         m = self.ctx.signing_re().search(text)
         if m:
             self.hit("GIT-SIGNING-CONFIG", m.group(0))
+        m = self.ctx.mcp_register_re().search(text) or _MCP_APPROVAL_RE.search(text)
+        if m:
+            self.hit("MCP-REGISTER-BASH", m.group(0))
 
     def _segment(self, seg: Segment, segments: list, depth: int, bases: list) -> None:
         args = seg.args()
@@ -1016,6 +1121,7 @@ class BashAnalyzer(object):
                 self.hit("GIT-SIGNING-CONFIG", m.group(0))
         for extra in res.strings:
             self._scan(extra, depth + 1, bases)
+        self._check_mcp_register(args, res, seg, segments)
         if res.index is not None:
             self._command(args[res.index], args[res.index + 1 :], res, seg, segments, depth, bases)
         for k, word in enumerate(args):
@@ -1354,6 +1460,22 @@ class BashAnalyzer(object):
         if not any(w.text in INSTALLER_SAFE_FLAGS for w in rest):
             self.hit("SELF-PROTECT-BASH", INSTALLER_NAME)
 
+    def _check_mcp_register(self, args: list, res: Resolved, seg: Segment, segments: list) -> None:
+        """``mcp add*`` and ``--mcp-config`` after any command word (task C9, RR-10). The guard compares
+        basenames, so a rule on ``claude`` alone would miss its versions path and ``npx``."""
+        texts = [w.text for w in args]
+        if any(w in STDIN_ARG_WRAPPERS for w in res.wrappers):
+            extra = seg.herestrings() + [body for body, _ in seg.heredocs] + self._piped_texts(seg, segments)
+            texts.extend(t for text in extra for t in text.split())
+        folded = [t.casefold() for t in texts]
+        for k, word in enumerate(folded):
+            if word == MCP_SUBCOMMAND:
+                later = [w for w in folded[k + 1 :] if w in MCP_ADD_SUBCOMMANDS]
+                if later:
+                    self.hit("MCP-REGISTER-BASH", "mcp " + later[0])
+            elif word == MCP_CONFIG_FLAG or word.startswith(MCP_CONFIG_FLAG + "="):
+                self.hit("MCP-REGISTER-BASH", texts[k])
+
     # -- path rules ------------------------------------------------------------------------
     def _path_word(self, text: str, bases: list, mutating: bool) -> None:
         for alt in brace_expand(text):
@@ -1363,6 +1485,8 @@ class BashAnalyzer(object):
             for comp in alt.split("/"):
                 if comp.startswith(".") and _has_glob(comp) and _glob_literal_chars(comp).strip(".") and any(component_matches(comp, nm) for nm in CRED_DIR_NAMES):
                     self.hit("CRED-PATH-BASH", alt)
+                if _has_glob(comp) and _comp_names(comp, MCP_PROJECT_FILE):
+                    self.hit("MCP-REGISTER-BASH", alt)
             for rest in self._home_rests(alt, bases):
                 if not rest:
                     continue
@@ -1371,6 +1495,8 @@ class BashAnalyzer(object):
                     self.hit("CRED-PATH-BASH", alt)
                 if _claude_protected(rest, mutating):
                     self.hit("SELF-PROTECT-BASH", alt)
+                if len(rest) == 1 and _comp_names(head, CLAUDE_STATE_FILE):
+                    self.hit("MCP-REGISTER-BASH", alt)
             # an absolute or cwd-relative word, against the resolved directories (a symlinked ~/.ssh)
             if alt.startswith("/"):
                 readings = [os.path.normpath(alt)]
@@ -1384,6 +1510,8 @@ class BashAnalyzer(object):
                 self.hit("CRED-PATH-BASH", alt)
             if self.ctx.is_protected(readings):
                 self.hit("SELF-PROTECT-BASH", alt)
+            if self.ctx.is_mcp_registration(readings):
+                self.hit("MCP-REGISTER-BASH", alt)
 
     def _home_rests(self, text: str, bases: list) -> list:
         """Each reading of ``text`` as a path below a home directory, as a component list."""
@@ -1493,11 +1621,12 @@ def resolve_homes() -> list:
 
 
 class Context(object):
-    """The homes in force, the cwd, and the protected paths below the homes (literal and real)."""
+    """The homes in force, the cwd, the project dir, and the protected paths below the homes (literal and real)."""
 
-    def __init__(self, homes: list, cwd) -> None:
+    def __init__(self, homes: list, cwd, project_dir=None) -> None:
         self.homes = _unique([os.path.normpath(os.path.abspath(h)) for h in homes if h])
         self.cwd = cwd if isinstance(cwd, str) and cwd else None
+        self.project_dir = project_dir if isinstance(project_dir, str) and os.path.isabs(project_dir) else None
         self.home_variants = _unique(self.homes + [os.path.realpath(h) for h in self.homes])
         self.cred_dirs = _with_real([os.path.join(h, name) for h in self.home_variants for name in CRED_DIR_NAMES])
         claude_dirs = _with_real([os.path.join(h, CLAUDE_DIR_NAME) for h in self.home_variants])
@@ -1505,8 +1634,10 @@ class Context(object):
         self.protected_dirs = _with_real([os.path.join(d, "hooks") for d in claude_dirs])
         self.signing_files = _with_real([os.path.join(h, ".gitconfig") for h in self.home_variants] + list(SYSTEM_GITCONFIGS))
         self.signing_dirs = _with_real([os.path.join(h, ".config", "git") for h in self.home_variants])
+        self.mcp_register_files = _with_real([os.path.join(h, CLAUDE_STATE_FILE) for h in self.home_variants])
         self._self_re = None
         self._signing_re = None
+        self._mcp_re = None
 
     def _home_spellings(self) -> str:
         literal = "".join("|" + re.escape(h.rstrip("/")) for h in sorted(self.home_variants, key=len, reverse=True) if h.rstrip("/"))
@@ -1526,6 +1657,19 @@ class Context(object):
             system = r"(?<![A-Za-z0-9._/-])(?:/usr/local|/opt/homebrew)?/+etc/+gitconfig(?![A-Za-z0-9._-])"
             self._signing_re = re.compile(r"%s|%s|%s" % (home, hooks, system), re.IGNORECASE)
         return self._signing_re
+
+    def mcp_register_re(self):
+        """Raw-text spellings of ~/.claude.json under any home spelling, and of any .mcp.json file (task C9)."""
+        if self._mcp_re is None:
+            state = r"(?:%s)/+\.claude\.json(?![A-Za-z0-9._-])" % self._home_spellings()
+            project = r"(?<![A-Za-z0-9._-])\.mcp\.json(?![A-Za-z0-9._-])"
+            self._mcp_re = re.compile(r"%s|%s" % (state, project), re.IGNORECASE)
+        return self._mcp_re
+
+    def is_mcp_registration(self, candidates: list) -> bool:
+        """~/.claude.json, or any file named .mcp.json: Claude Code's user and project MCP registrations."""
+        files = [f.casefold() for f in self.mcp_register_files]
+        return any(c.casefold() in files or os.path.basename(c).casefold() == MCP_PROJECT_FILE for c in candidates)
 
     def is_signing_config(self, candidates: list) -> bool:
         """~/.gitconfig, anything under ~/.config/git, a repository's .git/config or config.worktree, or .git/hooks/."""
@@ -1553,11 +1697,15 @@ def _with_real(paths: list) -> list:
 
 
 # ---------------------------------------------------------------------------------------------
-# Read / Write / Edit / MultiEdit / NotebookEdit, and Grep / Glob
+# Read / Write / Edit / MultiEdit / NotebookEdit, Grep / Glob, and Serena's edit tools
 # ---------------------------------------------------------------------------------------------
 FILE_TOOLS = ("Read", "Write", "Edit", "MultiEdit", "NotebookEdit")
 SEARCH_TOOLS = ("Grep", "Glob")
-COVERED_TOOLS = ("Bash",) + FILE_TOOLS + SEARCH_TOOLS
+MCP_EDIT_TOOLS = tuple(SERENA_PREFIX + name for name in SERENA_EDIT_TOOLS)
+MCP_SHELL_TOOLS = (SERENA_PREFIX + SERENA_SHELL_TOOL,)
+COVERED_TOOLS = ("Bash",) + FILE_TOOLS + SEARCH_TOOLS + MCP_EDIT_TOOLS + MCP_SHELL_TOOLS
+# The settings matcher names exactly the covered tools; util/install_claude_agent_guard.bash reads it.
+SETTINGS_MATCHER = "|".join(COVERED_TOOLS)
 
 
 def path_candidates(path: str, ctx: Context) -> list:
@@ -1615,6 +1763,11 @@ def check_file_tool(tool: str, tool_input: dict, ctx: Context) -> list:
             hits.append(Hit("SELF-PROTECT-FILE", "disableAllHooks in " + path))
         if ctx.is_signing_config(candidates):
             hits.append(Hit("GIT-SIGNING-FILE", path))
+        if ctx.is_mcp_registration(candidates):
+            hits.append(Hit("MCP-REGISTER-FILE", path))
+        m = _MCP_APPROVAL_RE.search(_new_content(tool, tool_input)) if settings_like else None
+        if m:
+            hits.append(Hit("MCP-REGISTER-FILE", "%s in %s" % (m.group(0), path)))
     return hits
 
 
@@ -1660,6 +1813,109 @@ def _pattern_reaches(pattern: str, roots: list, ctx: Context) -> bool:
     return False
 
 
+def mcp_roots(ctx: Context) -> list:
+    """Where a Serena path may be relative to: the payload cwd and CLAUDE_PROJECT_DIR, each with the checkout
+    that holds it, since util/mcp_setup.bash binds Serena's --project to the checkout."""
+    roots = []
+    for start in (ctx.cwd, ctx.project_dir):
+        if not start or not os.path.isabs(start):
+            continue
+        cur = os.path.normpath(start)
+        roots.append(cur)
+        while True:
+            if os.path.lexists(os.path.join(cur, ".git")):
+                roots.append(cur)
+                break
+            parent = os.path.dirname(cur)
+            if parent == cur:
+                break
+            cur = parent
+    return _unique(roots)
+
+
+def _guarded_target(parts: list, globbing: bool):
+    """The protected target a component list leads to whatever its root, or None. With ``globbing`` a component
+    may be a glob: a dot-glob with literal characters can name a dot-name, and any glob can be the child of
+    ``.claude`` or ``.config``."""
+
+    def names(comp: str, literal: str) -> bool:
+        return _comp_names(comp, literal) if globbing else comp.casefold() == literal
+
+    def child(comp: str, literal: str) -> bool:
+        return (comp == "**" or component_matches(comp, literal)) if globbing else comp.casefold() == literal
+
+    for comp in parts:
+        for name in MCP_GUARDED_DIRS:
+            if names(comp, name):
+                return name
+    for parent, comp in zip(parts, parts[1:]):
+        if names(parent, CLAUDE_DIR_NAME) and any(child(comp, c) for c in CLAUDE_PROTECTED_CHILDREN):
+            return "%s/%s" % (CLAUDE_DIR_NAME, comp)
+        if names(parent, ".config") and child(comp, "git"):
+            return ".config/git"
+    if parts and any(names(parts[-1], name) for name in MCP_GUARDED_FILES):
+        return parts[-1]
+    return None
+
+
+def _mcp_path_reach(path: str, roots: list, ctx: Context):
+    """Evidence that a Serena path argument reaches a protected target, or None. It is read against each root,
+    literally and through realpath; the part below the root is read component by component, and a path that
+    leaves the root (``..``, an absolute path, a symlink out) is read whole."""
+    for root in roots or [""]:
+        literal = os.path.normpath(os.path.join(root, path))
+        real = os.path.realpath(literal)
+        for candidate, base in ((literal, root), (real, os.path.realpath(root) if root else "")):
+            tail = candidate[len(base.rstrip("/")) :] if base and _inside(candidate, base) else candidate
+            target = _guarded_target(_components(tail), False)
+            if target:
+                return "%s (%s, read as %s)" % (path, target, candidate)
+        found = _unique([literal, real])
+        if ctx.in_cred_dir(found) or ctx.is_protected(found) or ctx.is_signing_config(found) or ctx.is_mcp_registration(found):
+            return "%s (read as %s)" % (path, real)
+    return None
+
+
+def check_mcp_tool(tool: str, tool_input: dict, ctx: Context) -> list:
+    """MCP-EDIT-PATH for one of Serena's edit tools (task C9)."""
+    required, optional, globs, texts = SERENA_EDIT_TOOLS[tool[len(SERENA_PREFIX) :]]
+    roots = mcp_roots(ctx)
+    hits = []
+    for key in required + optional + globs + texts:
+        value = tool_input.get(key)
+        if value is None and key not in required:
+            continue
+        if not isinstance(value, str) or (key in required and not value):
+            raise MalformedInput("%s needs a %sstring tool_input.%s" % (tool, "non-empty " if key in required else "", key))
+        if not value:
+            continue
+        if key in texts:
+            m = _MCP_APPROVAL_RE.search(value) or re.search(DISABLE_HOOKS_KEY, value, re.IGNORECASE)
+            evidence = "%s sets %s" % (key, m.group(0)) if m else None
+        elif key in globs:
+            target = next((t for t in (_guarded_target(_components(alt.replace("\\", "/")), True) for alt in brace_expand(value)) if t), None)
+            evidence = "%s %s (%s)" % (key, value, target) if target else None
+        else:
+            evidence = _mcp_path_reach("%s/%s.md" % (SERENA_MEMORY_DIR, value) if key in SERENA_MEMORY_KEYS else value, roots, ctx)
+        if evidence:
+            hits.append(Hit("MCP-EDIT-PATH", evidence))
+    return hits
+
+
+def check_mcp_shell(tool: str, tool_input: dict, ctx: Context) -> list:
+    """Serena's shell gets the Bash rules, its cwd resolved against the project roots (task C9)."""
+    command = tool_input.get("command")
+    cwd = tool_input.get("cwd")
+    if not isinstance(command, str):
+        raise MalformedInput("%s needs a string tool_input.command" % tool)
+    if cwd is not None and not isinstance(cwd, str):
+        raise MalformedInput("%s tool_input.cwd must be a string" % tool)
+    roots = mcp_roots(ctx)
+    # the shell runs in the resolved directory, so a cwd that is a symlink into ~/.ssh counts as ~/.ssh
+    bases = _with_real([os.path.normpath(os.path.join(r, cwd)) for r in roots] if cwd else roots)
+    return BashAnalyzer(ctx).analyze(command, bases)
+
+
 # ---------------------------------------------------------------------------------------------
 # Decision and output
 # ---------------------------------------------------------------------------------------------
@@ -1682,8 +1938,12 @@ def decide(payload, ctx: Context) -> list:
         hits = BashAnalyzer(ctx).analyze(command)
     elif tool in FILE_TOOLS:
         hits = check_file_tool(tool, tool_input, ctx)
-    else:
+    elif tool in SEARCH_TOOLS:
         hits = check_search_tool(tool, tool_input, ctx)
+    elif tool in MCP_SHELL_TOOLS:
+        hits = check_mcp_shell(tool, tool_input, ctx)
+    else:
+        hits = check_mcp_tool(tool, tool_input, ctx)
     seen = set()
     out = []
     for h in hits:
@@ -1711,15 +1971,17 @@ def deny_output(hits: list, tool: str) -> dict:
     return {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": deny_reason(hits, tool)}}
 
 
-def run_hook(raw: bytes, homes=None) -> tuple:
-    """(exit code, stdout, stderr) for one payload. Never produces an allow decision."""
+def run_hook(raw: bytes, homes=None, project_dir=None) -> tuple:
+    """(exit code, stdout, stderr) for one payload. Never produces an allow decision. ``project_dir`` defaults
+    to CLAUDE_PROJECT_DIR, which Claude Code sets for its hooks: the directory the session started in."""
     try:
         try:
             payload = json.loads(raw.decode("utf-8"))
         except (UnicodeDecodeError, ValueError) as exc:
             raise MalformedInput("stdin is not UTF-8 JSON (%s)" % exc.__class__.__name__)
         cwd = payload.get("cwd") if isinstance(payload, dict) else None
-        ctx = Context(resolve_homes() if homes is None else homes, cwd if isinstance(cwd, str) and cwd else os.getcwd())
+        project = os.environ.get(PROJECT_DIR_ENV) if project_dir is None else project_dir
+        ctx = Context(resolve_homes() if homes is None else homes, cwd if isinstance(cwd, str) and cwd else os.getcwd(), project)
         hits = decide(payload, ctx)
     except MalformedInput as exc:
         return 2, "", "%s: refusing a malformed hook payload (fail closed): %s\n" % (GUARD_NAME, exc)
@@ -1784,15 +2046,25 @@ def self_test() -> int:
             ("Glob", {"pattern": os.path.join(home, ".ss?", "*")}, "CRED-PATH-SEARCH"),
             ("Glob", {"pattern": "**/*.py", "path": repo}, None),
             ("WebFetch", {"url": "https://example.com"}, None),
+            ("Bash", {"command": "claude mcp add x -- npx y"}, "MCP-REGISTER-BASH"),
+            ("Bash", {"command": "cat .mcp.json"}, "MCP-REGISTER-BASH"),
+            ("Bash", {"command": "claude mcp list"}, None),
+            ("Write", {"file_path": os.path.join(repo, ".mcp.json"), "content": "{}"}, "MCP-REGISTER-FILE"),
+            ("Edit", {"file_path": os.path.join(repo, ".claude", "settings.json"), "old_string": "{}", "new_string": '{"enableAllProjectMcpServers": true}'}, "MCP-REGISTER-FILE"),
+            ("mcp__serena__replace_content", {"relative_path": ".git/hooks/post-commit", "needle": "a", "repl": "b", "mode": "literal"}, "MCP-EDIT-PATH"),
+            ("mcp__serena__replace_symbol_body", {"name_path": "f", "relative_path": os.path.join("..", "link-to-ssh", "config"), "body": "x"}, "MCP-EDIT-PATH"),
+            ("mcp__serena__replace_symbol_body", {"name_path": "f", "relative_path": "src/a.py", "body": "x"}, None),
+            ("mcp__serena__execute_shell_command", {"command": "cat ~/.ssh/config"}, "CRED-PATH-BASH"),
+            ("mcp__serena__read_file", {"relative_path": ".git/config"}, None),
         ]
         failures = []
         for tool, tool_input, expected in cases:
-            code, out, _ = run_hook(json.dumps({"tool_name": tool, "tool_input": tool_input, "cwd": repo}).encode("utf-8"), homes=[home])
+            code, out, _ = run_hook(json.dumps({"tool_name": tool, "tool_input": tool_input, "cwd": repo}).encode("utf-8"), homes=[home], project_dir=repo)
             got = json.loads(out)["hookSpecificOutput"]["permissionDecisionReason"].split("Rule ", 1)[1].split(":", 1)[0] if out else None
             if code != 0 or got != expected:
                 failures.append("%s %s: expected %s, got %s (exit %d)" % (tool, json.dumps(tool_input), expected, got, code))
         for bad in (b"not json", b"[]", b'{"tool_input": {}}', b'{"tool_name": "Bash"}', b'{"tool_name": "Read", "tool_input": {"file_path": 7}}'):
-            code, out, err = run_hook(bad, homes=[home])
+            code, out, err = run_hook(bad, homes=[home], project_dir=repo)
             if code != 2 or out or not err:
                 failures.append("malformed %r: expected exit 2 with empty stdout, got exit %d" % (bad, code))
         spec = deny_output([Hit("GH-API-WRITE", "-X")], "Bash")["hookSpecificOutput"]
@@ -1828,6 +2100,7 @@ def _cli(argv: list) -> int:
     ap = argparse.ArgumentParser(prog=GUARD_NAME, description="Claude Code PreToolUse hook that denies what D11 forbids an agent on turing (%s)." % PLAN_DOC, epilog=SETTINGS_HELP, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--self-test", action="store_true", help="run the built-in sanity table against a temporary home; exit 0 or 1")
     ap.add_argument("--list-rules", action="store_true", help="print the rule table")
+    ap.add_argument("--settings-matcher", action="store_true", help="print the PreToolUse matcher the installer writes")
     ap.add_argument("--version", action="version", version="%s %s" % (GUARD_NAME, __version__))
     args = ap.parse_args(argv)
     if args.self_test:
@@ -1835,6 +2108,9 @@ def _cli(argv: list) -> int:
     if args.list_rules:
         for rule in RULES:
             print("%-21s %-38s %s" % (rule.rule_id, rule.scope, rule.description))
+        return 0
+    if args.settings_matcher:
+        print(SETTINGS_MATCHER)
         return 0
     ap.print_help()
     return 2
