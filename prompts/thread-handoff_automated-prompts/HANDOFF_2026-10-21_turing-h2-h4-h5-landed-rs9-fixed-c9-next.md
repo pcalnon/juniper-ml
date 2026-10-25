@@ -1,5 +1,7 @@
 # Handoff — turing bring-up: H2, H4 and H5 landed (plan v1.4.4), main's R-S9 flake fixed; C9 next, owner decisions pending
 
+- **Superseded (2026-10-25, plan v1.4.6).** C9 landed (juniper-ml#2322) and H6's audit ran. The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md`. What follows is this file's state before C9.
+
 - **From:** the 2026-10-20/21 session on turing named "code signing" (ae687e; worktree `.claude/worktrees/linked-floating-sprout`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-g1-landed-g4-promoted-h2-next.md`.
 - **This file supersedes** this session's earlier `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-landed-c9-next.md`. That one was written before H5, plan v1.4.4 and the R-S9 fix. The "mac dev" session's `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-audit-landed-owner-decides.md` stays the authority on H5's state and the removal commands. **Since plan v1.4.5** the owner has chosen H5's option B (keep, hardened), and the authority on H5 is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md`.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.4.
