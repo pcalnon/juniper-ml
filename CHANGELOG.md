@@ -26,6 +26,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **G-SEC's firewall condition follows C2's block-all form** (turing bring-up task C2, the §18.2 C2 row of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-25).
+  The owner chose to block all incoming connections while nothing inbound is needed, over per-app inbound
+  denies (RR-11 of `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md`).
+  The condition passed at `State = 1`, and its fix still said "allowing signed software".
+  - `util/host_state_probe.bash` also captures `socketfilterfw --getblockall` (`blockall` in the security section).
+  - `util/host_state_check.py` passes the firewall only when it is on and `--getblockall` reports block all. It
+    accepts both block-all sentences in the binary's strings, since turning block all on needs the owner's sudo.
+    An unknown or undefined state, or a probe without the capture, cannot be judged (exit 2 under `--check`),
+    unless the firewall is off, which fails anyway. The fix names only the missing `socketfilterfw` steps.
+    Stealth mode stays reported, not gated, as G1 designed it.
+  - `tests/test_host_state_check.py` gains 3 failure cases and a `FirewallTest` class of 5 tests (59 tests across
+    the two G1 suites), and `tests/test_host_state_probe.py` pins the capture.
+    `util/ad-hoc/2026-10-25_turing_c2_gate_mutation_check.py` kills 11 of 11 mutants, and the 57 of `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` still apply.
+  - `conf/hosts/turing/expected.yaml`'s G-SEC comment follows. turing still fails the condition: its firewall is
+    off (`State = 0`), as it was on 2026-10-15.
+
 - **H4's Serena entry turns Serena's usage report off** (turing bring-up, erratum E-H6 of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-25).
   Serena v1.7.0 sends the OS, the dashboard flag, the version, the backend and the context name to
