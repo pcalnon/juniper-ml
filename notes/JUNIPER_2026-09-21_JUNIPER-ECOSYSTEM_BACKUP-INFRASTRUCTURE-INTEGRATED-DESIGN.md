@@ -2062,7 +2062,7 @@ IOSchedulingPriority=7
 # Project:      juniper-ml
 # Sub-Project:  backup infrastructure
 # Author:       Paul Calnon
-# Version:      1.0.0 (design draft 2026-09-21)
+# Version:      1.1.0 (design draft 2026-09-21; 1.1.0 2026-10-25)
 # License:      MIT
 #
 # Invoked by juniper-backup.timer (cadence) and juniper-backup.path (a drive appeared).
@@ -2073,6 +2073,16 @@ IOSchedulingPriority=7
 # "Due" = no success stamp for that drive newer than PERIOD_DAYS. State lives in
 # ~/.local/state/juniper-backup/. The archive script itself decides which mounted drives
 # receive copies (all of them); this wrapper only decides whether to run at all.
+#
+# Tier 3 runs this same script from juniper-backup-full.service, whose Environment= sets its
+# own JUNIPER_BACKUP_* values (its own STATE_DIR among them, so its lock, status and stamps
+# never mix with tier 2's) and whose ExecStart= passes --label full --repos "...": the
+# arguments go to the runner unchanged, and the runner validates both before it probes anything.
+#
+# 1.1.0: JUNIPER_BACKUP_DIR may be a relative path (tier 3's Juniper/Backups). It is checked by
+# is_backup_dir, whose body is byte-identical to the runner's, so this script never judges a
+# drive usable under a value the runner refuses; a malformed value is FAILED, exit 2, before
+# any drive is probed. Before 1.1.0 nothing here checked it at all.
 set -euo pipefail
 
 RUNNER="${JUNIPER_BACKUP_RUNNER:-${HOME}/.local/bin/juniper-backup.bash}"
@@ -2090,6 +2100,15 @@ NOW="$(date +%s)"
 
 log() { printf '%s %s\n' "$(date -Is)" "$*"; }
 write_status() { printf 'result=%s\nwhen=%s\nreason=%s\n' "$1" "$(date -Is)" "$2" > "${STATUS_FILE}"; }
+
+# JUNIPER_BACKUP_DIR: one or more [A-Za-z0-9._-]+ components joined by single slashes, none of
+# them "." or ".." -- relative to the drive, no empty component, no walk off it. The body is
+# util/juniper-backup.bash's, byte for byte (tests/test_juniper_backup_tier3_lane.py pins it).
+is_backup_dir() {
+    local dir="$1"
+    local components_re='^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$'
+    [[ "${dir}" =~ ${components_re} && "/${dir}/" != *"/./"* && "/${dir}/" != *"/../"* ]]
+}
 
 newest_success_age_days() {
     # Age in days of the newest success stamp across all devices; 100000 when none exists.
@@ -2117,6 +2136,7 @@ skip_or_fail() {
 
 exec 9>"${LOCK_FILE}"
 flock -n 9 || skip_or_fail "another run holds ${LOCK_FILE}"
+is_backup_dir "${BACKUP_DIR}" || { log "FATAL: JUNIPER_BACKUP_DIR must be a relative path of [A-Za-z0-9._-]+ components joined by single slashes, none of them . or .. : $(printf '%q' "${BACKUP_DIR}")"; write_status FAILED "malformed JUNIPER_BACKUP_DIR"; exit 2; }
 [[ -x "${RUNNER}" ]] || { log "FATAL: runner missing: ${RUNNER}"; write_status FAILED "runner missing"; exit 1; }
 
 mounted=()

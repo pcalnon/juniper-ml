@@ -79,6 +79,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- **`juniper-secret-assignment` fires on a QUOTED value that contains spaces** (owner-approved 2026-10-25; a
+  follow-up to the backup recovery B9 rule of juniper-ml#2203). A value opened by `"` or `'` right after the `=`
+  stopped at its first space, so a quoted diceware phrase left only its first word, which is under the
+  12-character minimum, and never fired.
+  - `.gitleaks.toml`: the regex gains a double-quoted and a single-quoted branch. Each runs to its own close
+    quote, spaces and tabs included, and still needs 12 characters. Unquoted values keep the no-whitespace rule.
+    The reported value is whichever of the three groups matched, so the rule sets no `secretGroup`. A fourth
+    allowlist holds quoted prose: a value containing an English function word as a whole word, such as
+    `passphrase="the one you set"`. The comment's measurement and "Known boundary" are updated. Still silent:
+    whitespace in a value not quoted right after the `=` (unquoted, unterminated, or systemd's
+    `Environment="NAME=..."`), and a quoted passphrase that contains a function word.
+  - Across every commit on every remote branch and tag (about 3,130 commits, `--no-ignore`), the rule reports 10
+    historical lines, up from 8. The two new ones are one test fixture, two dictionary words in single quotes in
+    `tests/test_yamaguchi_edit_target.py`, at two commits. `.gitleaksignore` adds them as commit-scoped entries
+    under a new class comment, 34 entries in all.
+  - `tests/test_gitleaks_secret_assignment_rule.py`: quoted phrases built at runtime, in both quote styles under
+    every name, must report the WHOLE phrase, and the same phrases must stay silent in every unquoted form. It adds
+    quoted-prose negatives and pins the boundary lines. Its model takes the first non-empty group, as gitleaks does.
+  - `util/ad-hoc/2026-10-10_gitleaks_rule_mutation_check.py` runs 21 mutants, up from 16: dropping the quoted
+    branches, an unquoted value running on through spaces, a double- or single-quoted value running past its close
+    quote, and dropping the quoted-prose allowlist. A mutant may now state how many times its target text occurs.
+    `…_secret_assignment_corpus_survey.py` reads the value group the same way, and `docs/REFERENCE.md`'s suite
+    description follows.
+
 - **`[servers]` floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`**, up from `>=0.11.0` and `>=0.17.0`: the two server releases that floor
   the shared security patches (R-ML-SERVERS in §5 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`). This is the `[servers]` half of juniper-ml#2314,
   which floored `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0` under `[tools]` and left
