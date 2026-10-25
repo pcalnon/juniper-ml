@@ -47,7 +47,8 @@ G-SIGN [signing]
     ``util/headless_signing_preflight.bash``, which do not depend on an agent session's D11 override.
     ``integration``: the I-SIGN record (signing plan K10, recorded by K11), a file that must exist.
 G-SEC [security]
-    ``sip`` and ``authenticated-root`` (csrutil), ``firewall`` (socketfilterfw state 1 or 2),
+    ``sip`` and ``authenticated-root`` (csrutil), ``firewall`` (socketfilterfw state 1 or 2, blocking all
+    incoming connections: task C2's block-all form, owner ruling 2026-10-25; stealth mode is reported only),
     ``filevault`` (fdesetup), ``key-exports`` (no ``*.asc`` or ``*recovery*`` file under ``~/.ssh`` or
     ``~/.gnupg``: task C3) and ``key-modes`` (no non-public file directly in ``~/.ssh`` open to group or
     others: task C4).
@@ -695,18 +696,44 @@ def _authenticated_root(sec: dict[str, Any]) -> Condition:
     return Condition("authenticated-root", "fail", first_line(text), "task C1 (owner): csrutil authenticated-root enable from recoveryOS")
 
 
+# socketfilterfw --getblockall, by the binary's strings: "Firewall is set to block all non-essential incoming
+# connections" when on ("is blocking all ..." is the State = 2 form of --getglobalstate, also accepted), "Firewall has
+# block all state set to disabled." when off (turing, 2026-10-25), and an unknown or undefined state otherwise.
+_BLOCKALL_ON_RE = re.compile(r"(?:is set to block|is blocking) all non-essential incoming connections")
+_BLOCKALL_OFF = "has block all state set to disabled"
+_C2_FIX = "task C2 (owner): sudo /usr/libexec/ApplicationFirewall/socketfilterfw {steps} (block all incoming connections while nothing inbound is needed; owner ruling 2026-10-25)"
+
+
+def _blocks_all(text: str) -> bool:
+    if _BLOCKALL_ON_RE.search(text):
+        return True
+    if _BLOCKALL_OFF in text:
+        return False
+    raise DataError(f"socketfilterfw --getblockall: no block-all state in {first_line(text)!r}")
+
+
 def _firewall(sec: dict[str, Any]) -> Condition:
     text = stdout_of(get_capture(sec, "firewall", "socketfilterfw --getglobalstate"), "socketfilterfw --getglobalstate")
     state = _status_word(text, r"State = (\d+)", "socketfilterfw --getglobalstate")
-    message = first_line(text)
+    parts, blocks_all = [first_line(text)], False
     try:
-        stealth = f"; {first_line(stdout_of(get_capture(sec, 'stealth', 'socketfilterfw --getstealthmode'), 'socketfilterfw --getstealthmode'))}"
+        blockall = stdout_of(get_capture(sec, "blockall", "socketfilterfw --getblockall"), "socketfilterfw --getblockall")
+        parts.append(first_line(blockall))
+        blocks_all = _blocks_all(blockall)
     except DataError:
-        stealth = ""  # stealth mode is reported only; the gate reads the global state
-    message += stealth
+        if int(state) != 0:
+            raise
+        # the firewall is off, so the condition fails whatever the block-all capture says
+    try:
+        parts.append(first_line(stdout_of(get_capture(sec, "stealth", "socketfilterfw --getstealthmode"), "socketfilterfw --getstealthmode")))
+    except DataError:
+        pass  # stealth mode is reported only; the gate reads the global and block-all states
+    message = "; ".join(parts)
     if int(state) >= 1:
-        return Condition("firewall", "pass", message)
-    return Condition("firewall", "fail", message, "task C2 (owner): turn the application firewall on, with stealth mode, allowing signed software")
+        if blocks_all:
+            return Condition("firewall", "pass", message)
+        return Condition("firewall", "fail", message, _C2_FIX.format(steps="--setblockall on"))
+    return Condition("firewall", "fail", message, _C2_FIX.format(steps="--setglobalstate on, then --setblockall on and --setstealthmode on"))
 
 
 def _filevault(sec: dict[str, Any]) -> Condition:
