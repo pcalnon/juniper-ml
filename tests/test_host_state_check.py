@@ -17,6 +17,10 @@ G-SIGN, G-SEC, G-TOOLS, G-ENV, G-NET and G-MEM of §9.3). The suite pins:
 - expected.yaml's validation, which exits 2 before anything runs. That includes R-G1, the X2 class: a
   VM that cannot fit the machine (vm.mem_gib plus G-MEM's reserve over hw.memsize, or more vCPUs than
   cores), checked on a synthetic file and on the committed turing file;
+- C2's block-all form (owner ruling 2026-10-25): G-SEC's firewall condition passes only when the firewall
+  is on (state 1 or 2) and ``socketfilterfw --getblockall`` reports block all, in either of the binary's
+  sentences. An unknown block-all state cannot be judged, unless the firewall is off, which fails anyway.
+  The fix names only the missing steps, and stealth mode is reported, not gated;
 - identity: a probe of another machine exits 2;
 - G-MEM's verdicts equal ``util/macvm_ctl.bash status``'s on the same vm_stat, swap and pgrep output,
   rounding included, because the gate is that script's gate;
@@ -111,6 +115,12 @@ JuniperPython        *   /usr/local/miniforge3/envs/JuniperPython
 """
 TURING_KUBECTL = json.dumps({"clientVersion": {"major": "1", "minor": "22", "gitVersion": "v1.22.4", "platform": "darwin/amd64"}})
 TURING_EN7 = f"en7: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500\n\tether {MAC}\n\tmedia: autoselect (none)\n\tstatus: inactive\n"
+# socketfilterfw: turing's captures (2026-10-25: the firewall off, block all off), and the block-all sentences of
+# the binary's strings, since block all cannot be turned on without the owner's sudo.
+TURING_FIREWALL = "Firewall is disabled. (State = 0)\n"
+TURING_BLOCKALL = "Firewall has block all state set to disabled.\n"
+FIREWALL_BLOCKING = "Firewall is blocking all non-essential incoming connections. (State = 2)\n"
+BLOCKALL_ON = "Firewall is set to block all non-essential incoming connections\n"
 
 
 def cap(stdout: str = "", rc: int = 0, *, argv: tuple[str, ...] = ("tool",), found: bool = True, timed_out: bool = False, stderr: str = "") -> dict:
@@ -179,6 +189,7 @@ def green_probe() -> dict:
             "sip": cap("System Integrity Protection status: enabled.\n"),
             "authenticated_root": cap("Authenticated Root status: enabled\n"),
             "firewall": cap("Firewall is enabled. (State = 1)\n"),
+            "blockall": cap(BLOCKALL_ON),
             "stealth": cap("Firewall stealth mode is on\n"),
             "filevault": cap("FileVault is On.\n"),
             "key_exports": {"dirs": [f"{HOME}/.ssh", f"{HOME}/.gnupg"], "find": cap("")},
@@ -350,7 +361,10 @@ FAILURES: list[tuple[str, dict[str, Any], dict[str, Any], str, str, str, str]] =
     ("SIP disabled", {"security.sip": cap("System Integrity Protection status: disabled.\n")}, {}, "G-SEC", "sip", "fail", "disabled"),
     ("csrutil printed no status", {"security.sip": cap("garbage\n")}, {}, "G-SEC", "sip", "error", "no status"),
     ("authenticated root disabled", {"security.authenticated_root": cap("Authenticated Root status: disabled\n")}, {}, "G-SEC", "authenticated-root", "fail", "disabled"),
-    ("the firewall is off (turing)", {"security.firewall": cap("Firewall is disabled. (State = 0)\n")}, {}, "G-SEC", "firewall", "fail", "State = 0"),
+    ("the firewall is off (turing)", {"security.firewall": cap(TURING_FIREWALL), "security.blockall": cap(TURING_BLOCKALL)}, {}, "G-SEC", "firewall", "fail", "State = 0"),
+    ("C2: the firewall on, but not blocking all", {"security.firewall": cap("Firewall is enabled. (State = 1)\n"), "security.blockall": cap(TURING_BLOCKALL)}, {}, "G-SEC", "firewall", "fail", "Firewall is enabled. (State = 1); Firewall has block all state set to disabled."),
+    ("an unknown block-all state", {"security.blockall": cap("Firewall has unknown block all state.\n")}, {}, "G-SEC", "firewall", "error", "no block-all state in 'Firewall has unknown block all state.'"),
+    ("socketfilterfw --getblockall failed", {"security.blockall": cap("", rc=1, stderr="socketfilterfw: boom\n")}, {}, "G-SEC", "firewall", "error", "socketfilterfw: boom"),
     ("FileVault off", {"security.filevault": cap("FileVault is Off.\n")}, {}, "G-SEC", "filevault", "fail", "FileVault is Off."),
     ("fdesetup missing", {"security.filevault": cap(found=False, argv=("/usr/bin/fdesetup", "status"))}, {}, "G-SEC", "filevault", "error", "/usr/bin/fdesetup not found"),
     ("key exports at rest (task C3)", {"security.key_exports.find": cap(f"{HOME}/.ssh/priv.asc\n{HOME}/.ssh/github-recovery-codes.txt\n")}, {}, "G-SEC", "key-exports", "fail", "2 key-export or recovery file(s): ~/.ssh/github-recovery-codes.txt, ~/.ssh/priv.asc"),
@@ -421,12 +435,67 @@ class FailureTest(CheckTestCase):
         self.assertEqual(code, 2, "under --check an error anywhere exits 2, which wins over 1")
 
     def test_the_text_report_names_each_fix(self) -> None:
-        set_path(self.probe, "security.firewall", cap("Firewall is disabled. (State = 0)\n"))
+        set_path(self.probe, "security.firewall", cap(TURING_FIREWALL))
+        set_path(self.probe, "security.blockall", cap(TURING_BLOCKALL))
         code, out, _ = self.main()
         self.assertEqual(code, 0)
         self.assertIn("FAIL  G-SEC  1 of 6 fail: firewall", out)
-        self.assertIn("  FAIL  firewall           Firewall is disabled. (State = 0); Firewall stealth mode is on -- fix: task C2 (owner)", out)
+        self.assertIn("  FAIL  firewall           Firewall is disabled. (State = 0); Firewall has block all state set to disabled.; Firewall stealth mode is on -- fix: task C2 (owner)", out)
         self.assertIn("readiness: 6 of 7 gates pass (G-ALIAS, G-SIGN, G-TOOLS, G-ENV, G-NET, G-MEM); 1 fail: G-SEC", out)
+
+
+class FirewallTest(CheckTestCase):
+    """G-SEC's firewall condition under C2's block-all form (owner ruling 2026-10-25)."""
+
+    def firewall(self, globalstate: str, blockall=None, stealth: str | None = None) -> dict:
+        set_path(self.probe, "security.firewall", cap(globalstate))
+        if blockall is not None:
+            set_path(self.probe, "security.blockall", blockall if isinstance(blockall, dict) else cap(blockall))
+        if stealth is not None:
+            set_path(self.probe, "security.stealth", cap(stealth))
+        _, result = self.result("--check")
+        return self.condition(result, "G-SEC", "firewall")
+
+    def test_block_all_passes_in_either_sentence_and_either_state(self) -> None:
+        # Which state block all leaves the global state in is not measured here, so 1 and 2 both pass.
+        for globalstate in (FIREWALL_BLOCKING, "Firewall is enabled. (State = 1)\n"):
+            for blockall in (BLOCKALL_ON, "Firewall is blocking all non-essential incoming connections.\n"):
+                with self.subTest(globalstate=globalstate, blockall=blockall):
+                    cond = self.firewall(globalstate, blockall)
+                    self.assertEqual(cond["status"], "pass", cond)
+                    self.assertIn(blockall.strip(), cond["message"])
+
+    def test_the_fix_names_only_the_missing_steps(self) -> None:
+        off = self.firewall(TURING_FIREWALL, TURING_BLOCKALL)
+        self.assertEqual(off["status"], "fail")
+        for step in ("--setglobalstate on", "--setblockall on", "--setstealthmode on"):
+            self.assertIn(step, off["remediation"])
+        on = self.firewall("Firewall is enabled. (State = 1)\n", TURING_BLOCKALL)
+        self.assertEqual(on["status"], "fail")
+        self.assertIn("--setblockall on", on["remediation"])
+        self.assertNotIn("--setglobalstate", on["remediation"])
+        for cond in (off, on):
+            self.assertIn("/usr/libexec/ApplicationFirewall/socketfilterfw", cond["remediation"])
+            self.assertNotIn("signed software", cond["remediation"], "C2's block-all form replaced 'allow signed software'")
+
+    def test_an_off_firewall_fails_even_when_block_all_cannot_be_read(self) -> None:
+        for blockall in (cap("Firewall is in undefined block all state.\n"), cap(found=False, argv=("/usr/libexec/ApplicationFirewall/socketfilterfw", "--getblockall"))):
+            with self.subTest(blockall=blockall):
+                cond = self.firewall(TURING_FIREWALL, blockall)
+                self.assertEqual(cond["status"], "fail", cond)
+                self.assertIn("--setblockall on", cond["remediation"])
+
+    def test_a_probe_without_the_block_all_capture_cannot_pass(self) -> None:
+        # A probe from before 2026-10-25 has no blockall capture: a firewall that is on cannot be judged.
+        del self.probe["security"]["blockall"]
+        cond = self.firewall("Firewall is enabled. (State = 1)\n")
+        self.assertEqual(cond["status"], "error", cond)
+        self.assertIn("the probe recorded no socketfilterfw --getblockall", cond["message"])
+
+    def test_stealth_mode_is_reported_not_gated(self) -> None:
+        cond = self.firewall(FIREWALL_BLOCKING, BLOCKALL_ON, stealth="Firewall stealth mode is off\n")
+        self.assertEqual(cond["status"], "pass", cond)
+        self.assertIn("Firewall stealth mode is off", cond["message"])
 
 
 class SectionTest(CheckTestCase):

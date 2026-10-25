@@ -44,8 +44,9 @@ gates:
   G-SIGN:
     integration: null   # signing plan K10 (owner), recorded by K11
 
-  # SIP and authenticated root enabled; the application firewall on; FileVault on; no *.asc or *recovery*
-  # file under ~/.ssh or ~/.gnupg (task C3); no non-public file in ~/.ssh open to group or others (task C4).
+  # SIP and authenticated root enabled; the application firewall on and blocking all incoming connections
+  # (task C2's block-all form, owner ruling 2026-10-25); FileVault on; no *.asc or *recovery* file under
+  # ~/.ssh or ~/.gnupg (task C3); no non-public file in ~/.ssh open to group or others (task C4).
   G-SEC: {}
 
   G-TOOLS:
