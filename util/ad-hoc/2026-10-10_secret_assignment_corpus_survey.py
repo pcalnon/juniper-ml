@@ -114,14 +114,15 @@ def load_rule(root: Path) -> tuple[re.Pattern[str], int, list[re.Pattern[str]]]:
     with open(root / ".gitleaks.toml", "rb") as fh:
         cfg = tomllib.load(fh)
     rule = next(r for r in cfg.get("rules", []) if r.get("id") == RULE_ID)
-    allow = [re.compile(rx) for a in rule.get("allowlists", []) if a.get("regexTarget", "secret") == "secret" for rx in a.get("regexes", [])]
-    return re.compile(rule["regex"]), int(rule.get("secretGroup", 0)), allow
+    allow = [re.compile(rx, re.ASCII) for a in rule.get("allowlists", []) if a.get("regexTarget", "secret") == "secret" for rx in a.get("regexes", [])]
+    return re.compile(rule["regex"], re.ASCII), int(rule.get("secretGroup", 0)), allow
 
 
 def rule_fires(line: str, model: tuple[re.Pattern[str], int, list[re.Pattern[str]]]) -> bool:
     rx, group, allow = model
     for m in rx.finditer(line):
-        value = m.group(group) if group else m.group(0)
+        # As gitleaks 8.24.3 does: secretGroup, else the FIRST NON-EMPTY group (the rule has three), else the match.
+        value = m.group(group) if group else next((g for g in m.groups() if g), m.group(0))
         if not any(a.search(value) for a in allow):
             return True
     return False
