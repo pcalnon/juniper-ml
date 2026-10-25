@@ -1,0 +1,20 @@
+[Unit]
+Description=Record and announce a Juniper full-set archive (tier 3) failure
+Documentation=file:///home/pcalnon/Development/python/Juniper/juniper-ml/util/duplicati_backup_failure.bash
+
+[Service]
+Type=oneshot
+
+# The reporter is SHARED with tier 2 and the Duplicati lane, and its defaults are the Duplicati
+# lane's. This line points it at THIS lane's state directory, where juniper-backup-full.service's
+# scheduler writes last-run.status, so a full-set failure is recorded in this lane's
+# failures.log, never in tier 2's or the Duplicati lane's.
+Environment=DUPLICATI_STATE_DIR=%h/.local/state/juniper-backup-full
+
+# The unit name is $1: it heads the record, selects the journal tail and titles the
+# desktop notification ("Backup FAILED: juniper-backup-full.service").
+ExecStart=%h/.local/bin/duplicati-backup-failure.bash juniper-backup-full.service
+
+# Deliberately NOT chained to another OnFailure=. If the reporter itself fails
+# there is nothing useful left to escalate to, and a loop of failing reporters
+# would bury the original failure.
