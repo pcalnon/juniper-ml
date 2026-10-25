@@ -7,7 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **`[tools]` floors the two shared security patches**: `juniper-observability>=0.4.1`
+  (`configure_sentry` stops sending frame-local variables, which could hold the real API key, to
+  Sentry) and `juniper-service-core>=0.7.1,<0.8.0` (a non-ASCII `X-API-Key` is a 401, not a 500;
+  `FailedAuthThrottle.check()` is bounded). The extras tables in `README.md` (both),
+  `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with them, as do
+  `docs/REFERENCE.md`'s two package rows (whose **Current Version** still read 0.4.0 / 0.7.0) and
+  both sub-package READMEs' pin advice. `[servers]` follows once
+  the juniper-data 0.17.1 and juniper-cascor 0.12.0 wheels clear their `pypi` gates. A floor on an
+  unpublished release would make `[servers]` unresolvable. Item 3 of the Cursor flood-3
+  follow-up (`notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §8).
+
 ### Fixed
+
+- **`save_model` saves the recurrence model the run scored, instead of fitting a second one** (juniper-ml#2211).
+  `util/experiments/run_experiment.py` used to re-run the `juniper-recurrence train` CLI in a second process, for
+  up to 600 s, and nothing proved that fit saw the run's data: a `dataset_id` does not pin content, and two mints
+  of one `equities_seq` id 85 s apart differed (F-P8).
+  - When `POST /v1/train` returns an `operation_id` (juniper-recurrence 0.6.0 and later; juniper-ml pins 0.8.0),
+    the driver calls `POST /v1/model/snapshots` with it as `expect_operation_id`, so the service saves its
+    in-memory model only if that operation produced it. The driver then copies `<snapshots_dir>/<id>.npz`
+    (`recurrence_launch.snapshots_dir`, else `$RUN_DIR/snapshots`) to `artifacts/results/model.npz` and checks
+    its size against the response's `size_bytes`.
+  - A 409 (another caller trained or restored after this run's train) fails the phase (`degraded`, exit 1), and
+    nothing re-fits a substitute. An unusable snapshot id or a size mismatch fails it too, and a copy the run
+    cannot vouch for is removed. A snapshot this run cannot read is recorded with a note, not faked.
+  - Only a train response without an `operation_id` (a pre-W1.5 service) still re-fits through the
+    launcher-recorded CLI. The new `manifest.save_model` block names the path that ran: `source` is `snapshot`
+    or `refit`.
+  - `docs/REFERENCE.md`, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, `docs/QUICK_START.md` and
+    `docs/DOCUMENTATION_OVERVIEW.md` describe the snapshot path. Eight new tests in
+    `tests/test_recurrence_operation_identity_and_dataset_budget.py`, all of which fail against `main`'s driver.
 
 - **The release-train proposal now moves README's "Ecosystem Compatibility" table**, so a generated juniper-ml
   proposal is green as generated. `tests/test_pyproject_extras.py` `ReadmeCompatTableTest` holds that table to

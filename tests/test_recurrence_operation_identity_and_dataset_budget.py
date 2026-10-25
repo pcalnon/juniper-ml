@@ -22,6 +22,10 @@ What this module pins, against one loopback stub that plays both juniper-data an
   in-memory model); a model another caller replaced is refused and the run is ``degraded``; a service
   that returns no usable ``operation_id`` (juniper-recurrence 0.5.0) is never sent the key; the
   manifest's ``operation`` block records all of it, including that a timed-out fit is not cancelled.
+* **save_model persists the scored model** (juniper-ml#2211). The same id goes on ``POST
+  /v1/model/snapshots``; the snapshot is copied to ``model.npz`` and size-checked; a 409, an
+  unusable id or a size that disagrees fails the phase with no re-fit standing in; a snapshot the run
+  cannot see is recorded, not faked; only a train response without an id re-fits.
 
 **Time is scaled 1:100** so a real 40 s sleep is not needed: the 40 s data server sleeps 0.4 s, the
 client's old 30 s default is 0.3 s and the driver's 120 s default budget is 1.2 s. Only ordering
@@ -35,6 +39,7 @@ No live services. ``util/`` is not pre-commit-lint-gated, so this unittest is th
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
 import json
 import re
@@ -44,6 +49,7 @@ import tempfile
 import threading
 import time
 import unittest
+import unittest.mock as mock
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -68,6 +74,9 @@ DRIVER_DEFAULT_BUDGET = round(rx.DEFAULT_DATASET_CREATE_TIMEOUT_SECONDS * SCALE,
 
 OUR_OPERATION = "a" * 32
 OTHER_OPERATION = "b" * 32
+#: The id shape juniper-recurrence's save_snapshot mints (``lmu-<UTC %Y%m%dT%H%M%S%f>``), fixed here.
+SNAPSHOT_ID = "lmu-20261021T220000123456"
+SNAPSHOT_BYTES = b"PK-stand-in-for-the-scored-model"
 REQUEST_ID_RE = re.compile(r"run_experiment:[A-Za-z0-9._-]+:[0-9a-f]{12}")
 
 
@@ -90,6 +99,12 @@ class _State:
         self.train_busy = False
         # When set, /v1/train downloads the artifact first with this client timeout, as the service does.
         self.inner_timeout: "float | None" = None
+        # POST /v1/model/snapshots (juniper-ml#2211): where the stub service writes <id>.npz, whether it
+        # writes at all, the id it mints, and a size_bytes that lies about the file when set.
+        self.snapshots_dir: "Path | None" = None
+        self.snapshot_writes = True
+        self.snapshot_id = SNAPSHOT_ID
+        self.snapshot_size_lie: "int | None" = None
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -156,8 +171,23 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send(200, {"predictions": [[0.1], [0.2]], "shape": [2, 1]})
         elif path == "/v1/crossval":
             self._send(200, {"task_type": "regression", "n_folds": 2, "folds": [{"fold": 0, "eval_metrics": {"r2": 0.1}}], "eval_aggregate": {"r2": 0.1}, "eval_std": {"r2": 0.0}})
+        elif path == "/v1/model/snapshots":
+            self._snapshot(state, body or {})
         else:
             self._send(404, {"detail": "not found"})
+
+    def _snapshot(self, state: _State, body: dict) -> None:
+        """juniper-recurrence 0.8.0 ``save_snapshot``: the identity check first, then the write, then 201."""
+        expected = body.get("expect_operation_id")
+        if expected is not None and expected != state.model_operation_id:
+            message = f"expect_operation_id {expected} does not match the operation that produced the in-memory model ({state.model_operation_id}); another caller may have trained or restored since"
+            self._send(409, {"detail": {"message": message, "expected_operation_id": expected, "model_operation_id": state.model_operation_id}})
+            return
+        if state.snapshot_writes and state.snapshots_dir is not None:
+            state.snapshots_dir.mkdir(parents=True, exist_ok=True)
+            (state.snapshots_dir / f"{state.snapshot_id}.npz").write_bytes(SNAPSHOT_BYTES)
+        size = len(SNAPSHOT_BYTES) if state.snapshot_size_lie is None else state.snapshot_size_lie
+        self._send(201, {"id": state.snapshot_id, "created": "2026-10-21T22:00:00Z", "size_bytes": size, "description": body.get("description", ""), "meta": {"schema": 2, "d": 4}})
 
     def _train(self, state: _State) -> None:
         if state.train_busy:
@@ -196,10 +226,12 @@ class _Server(ThreadingHTTPServer):
         return f"http://127.0.0.1:{self.server_address[1]}"
 
 
-def _recurrence_config(*, budget: "float | None" = None, max_wall: float = 30.0, predict: bool = True, crossval: bool = True) -> dict:
+def _recurrence_config(*, budget: "float | None" = None, max_wall: float = 30.0, predict: bool = True, crossval: bool = True, save_model: bool = False) -> dict:
     outputs: dict[str, Any] = {"plots": [], "max_wall_seconds": max_wall}
     if budget is not None:
         outputs["dataset_create_timeout_seconds"] = budget
+    if save_model:
+        outputs["save_model"] = True
     cfg: dict[str, Any] = {
         "schema_version": 1,
         "experiment": {"name": "w15-driver", "description": "W1.5 driver half stub run", "seed": 515},
@@ -490,6 +522,124 @@ class OperationIdentityTest(_Case):
         self.assertEqual(manifest["operation"]["operation_id"], OUR_OPERATION)
         self.assertIsNone(manifest["operation"]["expect_operation_id_sent"])
         self.assertEqual(self._calls("POST", "/v1/predict"), [])
+
+
+class SaveModelSnapshotTest(_Case):
+    """juniper-ml#2211: ``save_model`` saves the model the run scored, by identity, or nothing.
+
+    The CLI re-fit is patched to fail the test whenever it runs, except in the one case where the
+    train response carried no ``operation_id`` and the re-fit is the deliberate fallback.
+    """
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.snapshots = self.run_dir / "snapshots"
+        self.state.snapshots_dir = self.snapshots
+        self.results = self.run_dir / "artifacts" / "results"
+        refit = mock.patch.object(rx, "_save_model_rerun", side_effect=AssertionError("the CLI re-fit ran although the train response carried an operation_id"))
+        self.refit = refit.start()
+        self.addCleanup(refit.stop)
+
+    def _save_only(self) -> dict:
+        return _recurrence_config(predict=False, crossval=False, save_model=True)
+
+    def test_the_scored_model_is_saved_by_identity_not_refit(self) -> None:
+        code, manifest = self._run(_recurrence_config(save_model=True))
+        self.assertEqual(code, rx.EXIT_SUCCESS, manifest["acceptance"])
+        (save,) = self._calls("POST", rx.SNAPSHOT_ROUTE)
+        self.assertEqual(save["body"]["expect_operation_id"], OUR_OPERATION)
+        self.assertIn(self.RUN_ID, save["body"]["description"])
+        posts = [req["path"] for req in self.state.requests if req["method"] == "POST"]
+        self.assertEqual(posts[-1], rx.SNAPSHOT_ROUTE, "saved after predict scored the same model")
+        record = manifest["save_model"]
+        self.assertEqual(record["source"], "snapshot")
+        self.assertEqual(record["snapshot"]["id"], SNAPSHOT_ID)
+        self.assertEqual(record["service_path"], str(self.snapshots / f"{SNAPSHOT_ID}.npz"))
+        model = self.results / "model.npz"
+        self.assertEqual(model.read_bytes(), SNAPSHOT_BYTES)
+        self.assertEqual(record["model_path"], str(model))
+        self.assertEqual(record["sha256"], hashlib.sha256(SNAPSHOT_BYTES).hexdigest())
+        self.assertIn("artifacts/results/model.npz", manifest["artifacts"])
+        self.assertIsNone(manifest["save_model_rerun"])
+        self.assertEqual(manifest["phases"]["save_model"], {"status": "ok"})
+        self.refit.assert_not_called()
+
+    def test_the_launch_record_names_the_snapshots_dir(self) -> None:
+        elsewhere = self.tmp / "service-snapshots"
+        self.state.snapshots_dir = elsewhere
+        ports = json.loads((self.run_dir / "ports.json").read_text(encoding="utf-8"))
+        ports[rx.RECURRENCE_LAUNCH_KEY] = {"snapshots_dir": str(elsewhere)}
+        (self.run_dir / "ports.json").write_text(json.dumps(ports), encoding="utf-8")
+        code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_SUCCESS, manifest["acceptance"])
+        self.assertEqual(manifest["save_model"]["service_path"], str(elsewhere / f"{SNAPSHOT_ID}.npz"))
+        self.assertEqual((self.results / "model.npz").read_bytes(), SNAPSHOT_BYTES)
+
+    def test_a_model_another_caller_replaced_is_neither_saved_nor_refit(self) -> None:
+        self.state.model_after_train = OTHER_OPERATION
+        code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+        self.assertEqual(manifest["outcome"], "degraded")
+        error = manifest["phases"]["save_model"]["error"]
+        self.assertTrue(error.startswith("HTTP 409: "), error)
+        self.assertIn(OUR_OPERATION, error)
+        self.assertIn(OTHER_OPERATION, error)
+        self.assertIn("no re-fit", manifest["save_model"]["note"])
+        self.assertIn(f"save_model snapshot failed: {error}", manifest["acceptance"]["reasons"])
+        self.assertFalse((self.results / "model.npz").exists())
+        self.assertFalse(self.snapshots.exists(), "the service wrote nothing")
+        self.refit.assert_not_called()
+
+    def test_a_service_without_operation_ids_falls_back_to_the_refit(self) -> None:
+        # juniper-recurrence 0.5.0: no operation_id, so no save could prove whose model it writes.
+        self.state.send_operation_id = False
+        self.refit.side_effect = None
+        self.refit.return_value = {"ok": True, "cli_source": "path", "cmd": ["juniper-recurrence", "train"], "parity": {"ok": True, "interpreter": "unverified"}}
+        with self.assertLogs(rx.log, level="WARNING") as logs:
+            code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_SUCCESS, manifest["acceptance"])
+        self.assertEqual(self._calls("POST", rx.SNAPSHOT_ROUTE), [], "a save without expect_operation_id writes whatever model the service holds")
+        self.refit.assert_called_once()
+        self.assertEqual(manifest["save_model"]["source"], "refit")
+        self.assertIn("0.5.0", manifest["save_model"]["reason"])
+        self.assertEqual(manifest["save_model_rerun"], self.refit.return_value)
+        self.assertTrue(any("re-fitting it with the CLI" in line for line in logs.output))
+
+    def test_a_snapshot_this_run_cannot_see_is_recorded_not_faked(self) -> None:
+        self.state.snapshot_writes = False
+        self.results.mkdir(parents=True)
+        (self.results / "model.npz").write_bytes(b"left by an earlier invocation")
+        code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_SUCCESS, manifest["acceptance"])
+        self.assertEqual(manifest["phases"]["save_model"], {"status": "ok"}, "the service saved the scored model; only the local copy is missing")
+        record = manifest["save_model"]
+        self.assertIsNone(record["model_path"])
+        self.assertIn("No local copy was made", record["note"])
+        self.assertNotIn("artifacts/results/model.npz", manifest["artifacts"], "a stale model.npz is not this run's")
+
+    def test_a_copy_whose_size_disagrees_with_the_service_fails_and_is_removed(self) -> None:
+        self.state.snapshot_size_lie = len(SNAPSHOT_BYTES) + 1
+        code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertIn("size_bytes", manifest["phases"]["save_model"]["error"])
+        self.assertIsNone(manifest["save_model"]["model_path"])
+        self.assertFalse((self.results / "model.npz").exists(), "a copy the run cannot vouch for is not left behind")
+        self.assertNotIn("artifacts/results/model.npz", manifest["artifacts"])
+
+    def test_an_unusable_snapshot_id_never_becomes_a_path(self) -> None:
+        self.state.snapshot_id = "../../escaped"
+        self.state.snapshot_writes = False
+        code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+        self.assertIn("without a usable snapshot id", manifest["phases"]["save_model"]["error"])
+        self.assertNotIn("service_path", manifest["save_model"])
+
+    def test_the_snapshots_dir_is_the_recorded_one_else_the_launchers(self) -> None:
+        self.assertEqual(rx._snapshots_dir({"snapshots_dir": "/srv/snapshots"}, self.run_dir), Path("/srv/snapshots"))
+        for record in ({}, {"snapshots_dir": ""}, {"snapshots_dir": None}, {"snapshots_dir": 7}):
+            with self.subTest(record=record):
+                self.assertEqual(rx._snapshots_dir(record, self.run_dir), self.run_dir / "snapshots")
 
 
 class RequestIdShapeTest(unittest.TestCase):

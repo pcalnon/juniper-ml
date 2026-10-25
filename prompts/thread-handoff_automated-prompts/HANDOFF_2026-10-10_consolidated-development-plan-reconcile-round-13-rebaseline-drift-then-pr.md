@@ -3,6 +3,10 @@
 **Written**: 2026-10-10 ~10:50Z by session `3e8595eb` (Claude session `session_016ZArnaAiHH5SUAEBj71fEJ`), at the round-13 boundary, on the owner's request.
 **Supersedes**: `HANDOFF_2026-10-08_consolidated-development-plan-reconcile-round-12-then-round-13-and-pr.md`, which this session consumed (it gets a CONSUMED banner in the plan's PR). That file, like every plan file, is still UNTRACKED. This handoff alone lands on `main`, through its own docs PR, opened from `origin/main` by the session that wrote it.
 
+> **CONSUMED 2026-10-10 by session `560c1ec5`.** It verified the starting state and asked the four owner questions first. The owner ruled: land the record now and re-baseline as v1.13.0 after; fix-forward releases are owed for R-OBS-SC and R-DATA; H-23 narrows and S0.3's docs PR stays; a round whose only MAJORs are the read's pins may end validation.
+> The record landed as ml#2214 (v1.12.1, 81 files, merged 2026-10-10T20:19:43Z). Round 13 was then reconciled and the drift to 21:30Z taken in as v1.13.0 (`reports/2026-10-04_consolidated-development-plan/round13-reconciliation.md`), and round 14 ran on it (`round14-reconciliation.md` in the same directory).
+> On 2026-10-24 the owner ruled to correct and land with no round 15, so v1.13.0 and round 14's corrections (v1.14.0) landed together through the PR that carries this banner. The corrections this session found in the text below are in `round13-reconciliation.md`, "Corrections to the handoff this session consumed". This file is kept as the archived mid-arc handoff.
+
 Continue the consolidated-development-plan arc in worktree
 `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/concurrent-gathering-biscuit`
 (branch `worktree-concurrent-gathering-biscuit` at `81d3fbb3`, 16 commits behind `origin/main` (`be3314dc`) at 10:45Z on 2026-10-10). Never `git commit` there: land through `util/open_signed_pr.py`, building on `origin/main`.
