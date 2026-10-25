@@ -17,9 +17,14 @@ Backup recovery B9 (design P0.5a item 6, "Close the detection gap"). Two failure
    went through ml#1967 and ml#1968. Even with the defaults loaded, generic-api-key's value class `[\\w.=-]`
    stops at the `* @ $ %` such a key carries.
 
+2026-10-25: a value OPENED by a quote runs to its close quote, so a quoted multi-word passphrase fires. It used to
+stop at the first space, leaving the first word alone, and a dictionary word is usually under the 12-character
+minimum. Quoted prose (`passphrase="the one you set"`) is held by a function-word allowlist.
+
 The model half reads `.gitleaks.toml` with `tomllib` and applies the rule the way gitleaks 8.24.3 does
-(`detect/detect.go`): the regex's `secretGroup` is the value, and a value matched by any regex of the rule's
-allowlists or of this file's global allowlist is dropped. (The built-in config's own global allowlist, which `[extend]`
+(`detect/detect.go`): the value is the regex's `secretGroup` when one is set, else its first non-empty capture group
+(this rule has three: a double-quoted, a single-quoted and an unquoted value), and a value matched by any regex of the
+rule's allowlists or of this file's global allowlist is dropped. (The built-in config's own global allowlist, which `[extend]`
 merges in, is not modelled; the RealEngine tests are what cover it.) The regex is kept in the subset RE2 and Python `re` share and is
 compiled with `re.ASCII`, matching RE2's ASCII `\\b`. Every positive value is ASSEMBLED AT RUNTIME, so this file
 holds no literal the rule, the default ruleset or GitHub push protection would flag. The `RealEngine` tests run the
@@ -79,6 +84,26 @@ ARGV_FORMS = (
     ("commented argv", "# ExecStart=/usr/bin/duplicati-server --{name}={value}"),
 )
 
+#: Forms whose VALUE is opened by a quote right after `=`: only there may a value contain spaces, up to the close
+#: quote. (`Environment="NAME=value"` opens its quote before the NAME, so it is not one of these: see the boundary.)
+QUOTED_ENV_FORMS = (
+    ("double-quoted", '{name}="{value}"'),
+    ("single-quoted", "{name}='{value}'"),
+    ("export double-quoted", 'export {name}="{value}"'),
+    ("export single-quoted", "export {name}='{value}'"),
+    ("commented double-quoted", '# {name}="{value}"'),
+    ("commented export single-quoted", "# export {name}='{value}'"),
+    ("markdown inline code", '`{name}="{value}"`'),
+    # A second quoted value on the line: the first value stops at ITS close quote, not at the last quote.
+    ("double-quoted, then another quoted value", '{name}="{value}" LABEL="nightly"'),
+    ("single-quoted, then another quoted value", "{name}='{value}' LABEL='nightly'"),
+)
+QUOTED_ARGV_FORMS = (
+    ("argv double-quoted", '--{name}="{value}"'),
+    ("argv single-quoted", "--{name}='{value}'"),
+    ("argv in a command, single-quoted", "duplicati-server --{name}='{value}' --webservice-port=8300"),
+)
+
 _ALNUM = string.digits + string.ascii_letters
 
 
@@ -104,8 +129,16 @@ def _rule(cfg: dict) -> dict:
     return rules[0]
 
 
+def _value_of(m: re.Match[str], group: int) -> str:
+    """The value gitleaks 8.24.3 reports for a match: `secretGroup` when set; else the FIRST NON-EMPTY capture group
+    (the rule's three alternative groups -- double-quoted, single-quoted, unquoted -- rely on this); else the match."""
+    if group:
+        return m.group(group)
+    return next((g for g in m.groups() if g), m.group(0))
+
+
 class RuleModel:
-    """How gitleaks 8.24.3 applies one rule to text: regex -> secretGroup value -> rule and global allowlists."""
+    """How gitleaks 8.24.3 applies one rule to text: regex -> value group -> rule and global allowlists."""
 
     def __init__(self, cfg: dict) -> None:
         rule = _rule(cfg)
@@ -118,7 +151,7 @@ class RuleModel:
     def reported(self, text: str) -> list[str]:
         out = []
         for m in self.regex.finditer(text):
-            value = m.group(self.group) if self.group else m.group(0)
+            value = _value_of(m, self.group)
             if not any(rx.search(value) for rx in self.allow):
                 out.append(value)
         return out
@@ -182,13 +215,18 @@ def _positive_values() -> list[tuple[str, str]]:
     return values
 
 
-def _with_names(value: str) -> list[tuple[str, str]]:
-    """`value` under every name in every form: each ENV form for each ENV name, each ARGV form for each ARGV name."""
+def _with_names(value: str, *, unquoted_only: bool = False) -> list[tuple[str, str]]:
+    """`value` under every name in every form: each ENV form for each ENV name, each ARGV form for each ARGV name.
+    With `unquoted_only`, only the forms whose value is NOT opened by a quote right after the `=`."""
     out = []
     for form_label, template in ENV_FORMS:
+        if unquoted_only and "={value}" not in template:
+            continue
         for name in ENV_NAMES:
             out.append((f"{form_label} | {name}", template.format(name=name, value=value)))
     for form_label, template in ARGV_FORMS:
+        if unquoted_only and "={value}" not in template:
+            continue
         for name in ARGV_NAMES:
             out.append((f"{form_label} | --{name}", template.format(name=name, value=value)))
     return out
@@ -196,6 +234,49 @@ def _with_names(value: str) -> list[tuple[str, str]]:
 
 def _positive_lines() -> list[tuple[str, str]]:
     return [(f"{where} | {v_label}", line) for v_label, value in _positive_values() for where, line in _with_names(value)]
+
+
+def _with_names_quoted(value: str) -> list[tuple[str, str]]:
+    """`value` in every QUOTED form under every name, skipping a form whose quote character the value itself holds."""
+    out = []
+    for forms, names, prefix in ((QUOTED_ENV_FORMS, ENV_NAMES, ""), (QUOTED_ARGV_FORMS, ARGV_NAMES, "--")):
+        for form_label, template in forms:
+            quote = "'" if "='{value}'" in template else '"'
+            if quote in value:
+                continue
+            for name in names:
+                out.append((f"{form_label} | {prefix}{name}", template.format(name=name, value=value)))
+    return out
+
+
+def _quoted_positive_values() -> list[tuple[str, str]]:
+    """Multi-word phrases: they fire only because a value opened by a quote runs to its close quote."""
+    return [
+        ("diceware: 4 lowercase words joined by spaces", _diceware(" ")),
+        ("6 words joined by spaces", " ".join(_WORDS + ("orbit", "lantern"))),
+        ("mixed case, digits and punctuation", " ".join(("Correct", "Horse", "Battery", "Staple", "42!"))),
+        ("words carrying * @ $ %", " ".join(("Correct*", "horse@", "battery$", "staple%"))),
+        ("a digit first", " ".join(("42", "Correct", "Horse", "Battery"))),
+        ("tab-separated words", "\t".join(_WORDS)),
+        # Holds the OTHER quote character, so it is checked in double-quoted forms only.
+        ("an apostrophe inside double quotes", " ".join(("Horse" + "'" + "s", "battery", "staple", "#9"))),
+    ]
+
+
+def _quoted_positive_lines() -> list[tuple[str, str]]:
+    return [(f"{where} | {v_label}", line) for v_label, value in _quoted_positive_values() for where, line in _with_names_quoted(value)]
+
+
+#: Prose in quotes: instructions about a credential, not the credential. Checked in every quoted form under every name.
+QUOTED_PROSE = (
+    ("the review's example", "the one you set"),
+    ("upper-case prose", "THE ONE YOU SET"),
+    ("an instruction", "your passphrase here"),
+    ("a pointer", "see the escrow file"),
+    ("a denial", "not a real passphrase"),
+    ("a location", "stored with the backup"),
+    ("an action", "set it in the vault"),
+)
 
 
 #: Values that only NAME or STAND IN for a credential. Each is checked under every ENV form and ARGV form.
@@ -245,8 +326,6 @@ NEGATIVE_VALUES = (
     ("fixture word", "fixture-key-with-$-and-%"),
     ("fake word", "fake-web-credential-99"),
     ("11 chars, under the 12 minimum", "Tr0ub4d0r&3"),
-    # Known boundary, pinned: the value stops at whitespace, so a quoted multi-word phrase leaves one short word.
-    ("a quoted value with spaces", _diceware(" ")),
 )
 
 #: Lines that merely mention a name, or that use a name this rule does not cover. Every line ends its value before the
@@ -265,11 +344,25 @@ NEGATIVE_LINES = (
     ("grep pattern", "grep -c '^SETTINGS_ENCRYPTION_KEY=' /etc/duplicati/env"),
     ("sed group", "PASSPHRASE=$(sed -nE 's/^PASSPHRASE=(.*)$/\\1/p' \"$F\")"),
     ("shell test", '[[ "${PASSPHRASE:-}" == "${EXPECTED:-}" ]] && echo "passphrase=match"'),
+    ("quoted prose, the review's example", 'passphrase="the one you set"'),
+    ("quoted prose in a Python call", 'client.restore(passphrase="the one you set") on the restore path'),
+    # 9 characters to its own close quote: it would fire only if the value ran on to the NEXT quote.
+    ("a short quoted value, then another quoted string", 'run(passphrase="Tr0ub4d0r", label="Q3 archive")'),
+    # Known boundaries, pinned. Built with join() so no source constant ends in `NAME=` (see the .pyc note above).
+    ("unquoted words stop at the first space", "".join(("PASSPHRASE", "=", _diceware(" ")))),
+    ("unterminated quote: read as unquoted", "".join(("PASSPHRASE", '="', _diceware(" ")))),
+    ("quote before the NAME (systemd): read as unquoted", "".join(('Environment="', "PASSPHRASE", "=", _diceware(" "), '"'))),
+    ("quoted, but under 12", "".join(("PASSPHRASE", '="', "red fox ran", '"'))),
+    ("quoted words holding a function word", "".join(("PASSPHRASE", "='", " ".join(("correct", "horse", "and", "battery")), "'"))),
 )
 
 
 def _negative_lines() -> list[tuple[str, str]]:
     lines = [(f"{v_label} | {where}", line) for v_label, value in NEGATIVE_VALUES for where, line in _with_names(value)]
+    lines += [(f"quoted prose: {p_label} | {where}", line) for p_label, value in QUOTED_PROSE for where, line in _with_names_quoted(value)]
+    # Unquoted values keep the no-whitespace rule: each phrase that fires in quotes leaves, unquoted, a first word
+    # under 12 characters -- in every unquoted form under every name (the systemd `Environment="NAME=..."` included).
+    lines += [(f"unquoted phrase: {v_label} | {where}", line) for v_label, value in _quoted_positive_values() for where, line in _with_names(value, unquoted_only=True)]
     lines += list(NEGATIVE_LINES)
     # A credential-SHAPED value under a name the rule does not cover: a different variable is not its business.
     shaped = _shaped(offset=7)
@@ -299,8 +392,13 @@ class RuleModelTest(unittest.TestCase):
 
     def test_rule_shape(self) -> None:
         rule = _rule(self.cfg)
-        self.assertEqual(rule.get("secretGroup"), 1)
-        self.assertEqual(self.model.regex.groups, 1, "one capture group: the value")
+        # Three alternative value groups -- double-quoted, single-quoted, unquoted -- and NO secretGroup, so gitleaks
+        # takes the first non-empty group. A secretGroup of 1 would report an empty value for every unquoted finding.
+        self.assertEqual(int(rule.get("secretGroup", 0)), 0, "secretGroup must stay unset: the value is whichever group matched")
+        self.assertEqual(self.model.regex.groups, 3, "double-quoted, single-quoted and unquoted value groups")
+        for _, line in _positive_lines() + _quoted_positive_lines():
+            for m in self.model.regex.finditer(line):
+                self.assertEqual(sum(1 for g in m.groups() if g), 1, "exactly one value branch matches")
         for entry in rule.get("allowlists", []):
             self.assertIn(entry.get("regexTarget", "secret"), ("secret",), "allowlists are tested against the VALUE only")
             self.assertNotIn("paths", entry, "a path allowlist would blind the rule for a whole file")
@@ -322,7 +420,14 @@ class RuleModelTest(unittest.TestCase):
     def test_human_passphrases_fire_under_the_passphrase_names(self) -> None:
         # Review of ml#2203: generic-api-key does not cover the PASSPHRASE names, so a diceware phrase or a short
         # mixed-case password there is caught by this rule or by nothing. Both used to be allowlisted.
-        samples = (("diceware, -", _diceware("-")), ("diceware, _", _diceware("_")), ("13 chars mixed-case", _spread(13, offset=40)))
+        # 2026-10-25: a QUOTED phrase with spaces as well, which used to leave only its first word.
+        samples = (
+            ("diceware, -", _diceware("-")),
+            ("diceware, _", _diceware("_")),
+            ("13 chars mixed-case", _spread(13, offset=40)),
+            ("diceware with spaces, double-quoted", '"' + _diceware(" ") + '"'),
+            ("diceware with spaces, single-quoted", "'" + _diceware(" ") + "'"),
+        )
         for label, value in samples:
             for name in ("PASSPHRASE", "PASSPHRASE_OLD", "DUPLICATI__PASSPHRASE", "--passphrase"):
                 with self.subTest(case=f"{name} | {label}"):
@@ -335,6 +440,17 @@ class RuleModelTest(unittest.TestCase):
             with self.subTest(case=label):
                 self.assertTrue(self.model.fires(line), "did not fire")
 
+    def test_quoted_phrases_fire(self) -> None:
+        # A value opened by a quote runs to its close quote, spaces included, in both quote styles under every name:
+        # the reported value is the WHOLE phrase, not the first word.
+        count = 0
+        for v_label, value in _quoted_positive_values():
+            for where, line in _with_names_quoted(value):
+                count += 1
+                with self.subTest(case=f"{where} | {v_label}"):
+                    self.assertEqual(self.model.reported(line), [value], "did not fire on the whole quoted phrase")
+        self.assertGreater(count, 300)
+
     def test_negatives_are_silent(self) -> None:
         cases = _negative_lines()
         self.assertGreater(len(cases), 500)
@@ -346,11 +462,12 @@ class RuleModelTest(unittest.TestCase):
         # Without its allowlists the bare regex must fire on some negative per allowlist: none is dead weight.
         rule = _rule(self.cfg)
         bare = re.compile(rule["regex"], re.ASCII)
+        group = int(rule.get("secretGroup", 0))
         negatives = [line for _, line in _negative_lines()]
         for i, entry in enumerate(rule.get("allowlists", [])):
             regexes = [re.compile(rx, re.ASCII) for rx in entry.get("regexes", [])]
             with self.subTest(allowlist=entry.get("description", i)):
-                hits = [line for line in negatives for m in bare.finditer(line) if any(rx.search(m.group(1)) for rx in regexes)]
+                hits = [line for line in negatives for m in bare.finditer(line) if any(rx.search(_value_of(m, group)) for rx in regexes)]
                 self.assertTrue(hits, "no negative sample exercises this allowlist")
 
 
@@ -448,7 +565,8 @@ class RealEngineTest(unittest.TestCase):
         self.assertIn("github-pat", hits.get((0, 1), set()), "the config's ruleset does not include the default rules")
 
     def test_real_engine_matches_the_model(self) -> None:
-        cases = [(label, line, True) for label, line in _positive_lines()] + [(label, line, False) for label, line in _negative_lines()]
+        positives = _positive_lines() + _quoted_positive_lines()
+        cases = [(label, line, True) for label, line in positives] + [(label, line, False) for label, line in _negative_lines()]
         batches = [cases[i : i + self.BATCH] for i in range(0, len(cases), self.BATCH)]
         hits = self._scan([[line for _, line, _ in batch] for batch in batches])
         for b, batch in enumerate(batches):

@@ -70,20 +70,27 @@ useDefault = true
 #     (Duplicati's environment form of its options; run-scripts receive them)
 #   settings-encryption-key   webservice-password[-init]   passphrase
 #
-# The VALUE (group 1, after an optional opening quote) is at least 12
-# characters with no whitespace, quote, backtick or backslash. It must not
-# START with `$ % < { ( [ | \` or any other character outside the class below:
-# a value beginning that way is an expansion (`$VAR`, `${VAR:-}`, `$(cmd)`), a
-# printf or systemd specifier (`%s`, `%d`), a `<template>`, a `{format}` field
-# or code, never a literal.
+# The VALUE is at least 12 characters and has no CR, LF, backtick or
+# backslash. A value OPENED by `"` or `'` right after the `=` runs to the
+# matching close quote and may contain spaces and tabs, so a diceware phrase in
+# quotes (four words, three spaces) is ONE value (added 2026-10-25); with no
+# close quote on the line it is read as unquoted. An unquoted value stops at
+# the first whitespace or quote. Either way it must not START with whitespace,
+# `$ % < { ( [ | \` or any other character outside the class below: a value
+# beginning that way is an expansion (`$VAR`, `${VAR:-}`, `$(cmd)`), a printf
+# or systemd specifier (`%s`, `%d`), a `<template>`, a `{format}` field or
+# code, never a literal.
 #
-# The three allowlists hold the remaining placeholder classes. Measured against
-# every commit reachable from every branch and tag on the remote (what a
-# workflow_dispatch run scans), the rule reports 8 historical lines: the two
-# commits that carried the 2026-09-20 literal, and six test fixtures and
-# synthetic keys, all in .gitleaksignore (commit-scoped). An ablation that
-# drops one allowlist adds: placeholder words 4 (`fixture-` / `placeholder-`
-# test values), one lowercase word 16 (the `abcdefghijklmnop` fixture), code 7.
+# The four allowlists hold what the value class cannot exclude: placeholders,
+# single-case words, code and quoted prose. Measured against every commit
+# reachable from every branch and tag on the remote (what a workflow_dispatch
+# run scans; ~3,130 commits on 2026-10-25), the rule reports 10 historical
+# lines: the two commits that carried the 2026-09-20 literal, and eight test
+# fixtures and synthetic keys, all in .gitleaksignore (commit-scoped). An
+# ablation that drops one allowlist adds: placeholder words 4 (`fixture-` /
+# `placeholder-` test values), one lowercase word 16 (the `abcdefghijklmnop`
+# fixture), code 7, quoted prose 0 -- no historical line needs that one alone;
+# the tests' prose samples are what hold it in place.
 #
 # Narrowed in review (ml#2203): a run of lowercase words joined by `-` or `_`
 # (a diceware passphrase) and a 12-15 character word-only value (a typical
@@ -91,21 +98,29 @@ useDefault = true
 # names, so this rule is the only thing that sees them there.
 #
 # Known boundary -- what still does NOT fire, deliberately:
-#   * a value under 12 characters, or one containing whitespace (a quoted
-#     multi-word phrase leaves only its first word);
+#   * a value under 12 characters (quoted: counted to its close quote);
+#   * whitespace in any value not quoted right after the `=` -- an unquoted
+#     value, a quote with no close quote on its line, and the systemd form
+#     that quotes the whole assignment (`Environment="PASSPHRASE=two words"`)
+#     all stop at the first space;
+#   * a quoted value holding one of the English function words the last
+#     allowlist lists (the, you, set, ...), as a whole word: prose, but also a
+#     passphrase that happens to contain one;
 #   * ONE lowercase word (letters only: no digit, capital or separator);
 #   * UPPER words with an optional short number (they read as constant names);
 #   * lowercase words joined by `.` (indistinguishable from `args.passphrase`),
 #     and a lowercase or UPPER_SNAKE name closed by `) ] ,`;
-#   * a value starting with `$ % < { ( [ | \` or a non-ASCII character, or
-#     containing a placeholder word (redacted, changeme, placeholder, example,
-#     dummy, synthetic, fixture, fake, sample).
+#   * a value starting with whitespace, `$ % < { ( [ | \` or a non-ASCII
+#     character, or containing a placeholder word (redacted, changeme,
+#     placeholder, example, dummy, synthetic, fixture, fake, sample).
 # -----------------------------------------------------------------------------
 [[rules]]
 id = "juniper-secret-assignment"
 description = "Backup credential (Duplicati settings key, passphrase, web credential) assigned a literal value"
-regex = '''\b(?:SETTINGS_ENCRYPTION_KEY(?:_OLD)?|settings-encryption-key|PASSPHRASE(?:_OLD)?|DUPLICATI_WEB_CREDENTIAL|webservice-password(?:-init)?|passphrase|DUPLICATI__(?:PASSPHRASE|SETTINGS_ENCRYPTION_KEY|WEBSERVICE_PASSWORD))=["']?([A-Za-z0-9!#&*+,\-./:;=?@^_~][^ \t\r\n"'`\\]{11,})'''
-secretGroup = 1
+regex = '''\b(?:SETTINGS_ENCRYPTION_KEY(?:_OLD)?|settings-encryption-key|PASSPHRASE(?:_OLD)?|DUPLICATI_WEB_CREDENTIAL|webservice-password(?:-init)?|passphrase|DUPLICATI__(?:PASSPHRASE|SETTINGS_ENCRYPTION_KEY|WEBSERVICE_PASSWORD))=(?:"([A-Za-z0-9!#&*+,\-./:;=?@^_~][^"\r\n`\\]{11,})"|'([A-Za-z0-9!#&*+,\-./:;=?@^_~][^'\r\n`\\]{11,})'|["']?([A-Za-z0-9!#&*+,\-./:;=?@^_~][^ \t\r\n"'`\\]{11,}))'''
+# No `secretGroup`: the regex has three groups (double-quoted, single-quoted,
+# unquoted), only one of which can match, and with secretGroup unset gitleaks
+# takes the first non-empty group as the value (detect/detect.go, 8.24.3).
 # gitleaks evaluates a rule only on content containing one of its keywords
 # (lowercased); every name above must contain one of these.
 keywords = [
@@ -139,4 +154,17 @@ keywords = [
   regexes = [
     '''^[a-z_][a-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+[(\[]?[)\],]*$''',
     '''^(?:[a-z_]+|_*[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)[(\[)\],]+$''',
+  ]
+
+  # Only a QUOTED value can hold whitespace, so only a quoted value can meet
+  # this: one of the listed English function words as a whole word, bounded by
+  # a space, a tab or an end of the value. It separates instructions in quotes
+  # from a diceware passphrase: `passphrase="the one you set"` is prose, while
+  # `"correct horse battery staple"` contains none of these words and fires. A
+  # passphrase that does contain one of them is missed (see the boundary in the
+  # comment above).
+  [[rules.allowlists]]
+  description = "Quoted prose: a multi-word value containing a common English function word (the, you, your, one, set, ...)"
+  regexes = [
+    '''(?i)(?:^|[ \t])(?:a|an|the|and|or|but|not|no|nor|to|of|in|on|at|by|for|with|from|into|as|is|are|was|were|be|been|it|its|this|that|these|those|there|here|you|your|yours|we|our|us|they|their|them|he|she|his|her|i|me|my|one|any|some|all|what|which|who|how|when|where|if|then|than|so|do|does|did|can|will|set|use|see)(?:[ \t]|$)''',
   ]
