@@ -9,6 +9,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Tier 3: the monthly full set to the offline drive, as a scheduled lane** (owner ruling D-5, 2026-10-25, on §7.9
+  and §8 P3 step 3 of `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`).
+  - **The units** (new): `util/systemd/juniper-backup-full.{timer,path,service}` and
+    `util/systemd/juniper-backup-full-failure.service`. The service runs tier 2's scheduler and runner with the lane's
+    own environment: state directory `~/.local/state/juniper-backup-full`, drive
+    `dee46823-4119-4914-ac15-08194ee27d81` ("Ext WD Passport, Blackbox Part 1" in the owner's `/etc/fstab`, mounted at
+    `/run/media/<user>/<UUID>`), directory `Juniper/Backups`, a 30-day period and a 45-day staleness limit. Its
+    `--label full --repos "…"` names the ten application repos, `juniper-legacy` and the parent-level
+    `notes prompts util backups`, and the scheduler hands both to the runner unchanged. The timer fires monthly and
+    the path unit on connection. The owner's fstab deprecates `/mnt/JuniperArchive`, so the path that §7.9 of
+    `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` proposed
+    is superseded, and that section gains a dated as-built note. Retention stays manual: nothing prunes.
+  - **`JUNIPER_BACKUP_DIR` may be a path.** `util/juniper-backup.bash` 1.1.0 accepts a relative path of
+    `[A-Za-z0-9._-]+` components (no empty, `.` or `..` component, no leading `/`) and judges every one-component
+    value as before. `util/juniper-backup-scheduled.bash` 1.1.0, which checked nothing, runs the same function (its
+    body byte-identical) and records a malformed value as `FAILED`, exit 2, before it probes a drive.
+  - **The installer.** `util/install_juniper_backup_timer.bash` 1.1.0 gains `--lane full`: the three shared scripts
+    and the four full units, copied rather than symlinked, with `--dry-run`, then the full timer and path unit
+    enabled. No `--lane`, or `--lane usb`, is the tier-2 install unchanged. `util/duplicati_backup_failure.bash`'s
+    header lists the third caller.
+  - **The lanes are independent.** Separate state directories give each lane its own lock, status and stamps, so
+    one lane's run never blocks or skips the other's, and one lane's success never hides the other's staleness. Both
+    path units watch `/run/media/pcalnon`, so every mount starts both checks, and each judges only its own drive.
+  - **The gate.** `tests/test_juniper_backup_tier3_lane.py` (new, 47 tests) is wired into `ci.yml` and
+    `docs/REFERENCE.md`, which documents the lane in § Juniper Project-Tree Backup.
+    `util/ad-hoc/2026-10-25_juniper_backup_tier3_mutation_check.py` (new) shows that it kills 46 of 46 mutants.
+    The tier-2 suite passes unchanged, and `util/ad-hoc/2026-10-03_juniper_backup_tier2_mutation_check.py` still
+    kills 30 of 30. `util/ad-hoc/2026-10-25_backup_tier2_install_parity.py` (new) shows that the installer's
+    default lane installs exactly what the one it replaces did, and
+    `util/ad-hoc/2026-10-25_backup_tier3_host_resolution_probe.bash` (new) shows, read-only, that both scripts
+    resolve the drive's `Juniper/Backups` on the host from the unit's own settings.
+
 - **Two gitleaks fleet instruments: the provenance of the zero-rule fix in three sibling repos** (the fleet follow-up
   to juniper-ml#2203, which found that a `.gitleaks.toml` with no `[extend]` table loads zero rules).
   - `util/ad-hoc/2026-10-25_gitleaks_fleet_survey.py` reads each of the nine repos' REMOTE default branch through
