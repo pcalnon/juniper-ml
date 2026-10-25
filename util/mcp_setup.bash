@@ -8,17 +8,19 @@
 # Status:     permanent utility
 # Related:    notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task H4, decision D10, §10);
 #             notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_HEADLESS-SIGNING-AND-SERENA-HARNESS-AUDIT.md (A2-F1, A2-F4);
+#             notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md (SER-E1);
 #             conf/hosts/<host>/mcp.json (the pin); tests/test_mcp_setup.py
 #
-# Claude Code reads a checkout's project-scope MCP servers from <checkout>/.mcp.json. Three defects this fixes:
+# Claude Code reads a checkout's project-scope MCP servers from <checkout>/.mcp.json. Four defects this fixes:
 #   A2-F1  the entry started Serena without --project, so Serena came up with no active project;
 #   A2-F4  juniper-ml gitignores .mcp.json, so no worktree inherits it, and a copied file binds the wrong
 #          checkout;
 #   D10    `uvx --from git+https://github.com/oraios/serena` runs the repository's unpinned HEAD, with the
-#          owner's keys in reach.
+#          owner's keys in reach;
+#   SER-E1 Serena reports usage to oraios-software.de at every start unless SERENA_USAGE_REPORTING is "false".
 # It writes one entry, per checkout:
 #
-#   "serena": {"type": "stdio", "command": "uvx", "env": {},
+#   "serena": {"type": "stdio", "command": "uvx", "env": {"SERENA_USAGE_REPORTING": "false"},
 #              "args": ["--from", "git+https://github.com/oraios/serena@<commit>", "serena", "start-mcp-server",
 #                       "--context", "<context>", "--project", "<checkout>", "--open-web-dashboard", "False"]}
 #
@@ -26,9 +28,11 @@
 # 40-hex sha, because a tag or a branch can move; the context is a built-in Serena context name, never a path.
 # turing's pin is Serena v1.7.0, whose claude-code context lists execute_shell_command in excluded_tools, so the
 # server offers no shell that would sidestep Claude Code's Bash permission rules (D10). A pin bump must re-read
-# that list at the new commit. <checkout> is the checkout's absolute path with symlinks resolved.
-# --open-web-dashboard False keeps Serena from opening a browser tab at every session start; the dashboard still
-# runs on localhost.
+# that list, and the usage-report check, at the new commit. <checkout> is the checkout's absolute path with
+# symlinks resolved. --open-web-dashboard False keeps Serena from opening a browser tab at every session start;
+# the dashboard still runs on localhost.
+# The env turns the usage report off (owner ruling, 2026-10-25). At v1.7.0, src/serena/agent.py's
+# _send_usage_info skips the report only when the variable is exactly "false": "False" or "0" still reports.
 #
 # Every other server, and every other top-level key, of an existing .mcp.json is kept. A file that changes is
 # copied to .mcp.json.bak-<UTC time> first (a -N suffix keeps two changes in one second apart). The new file is
@@ -62,8 +66,8 @@ Usage: mcp_setup.bash [--host NAME] [--conf FILE] [--check | --remove] [--dry-ru
 
 Write the Serena entry of <checkout>/.mcp.json: `uvx --from git+https://github.com/oraios/serena@<commit>
 serena start-mcp-server --context <context> --project <checkout> --open-web-dashboard False`, with the
-commit and context from the host's pin. Other servers and keys are kept; a changed file is backed up
-first; a second run writes nothing.
+commit and context from the host's pin and Serena's usage report off (SERENA_USAGE_REPORTING=false).
+Other servers and keys are kept; a changed file is backed up first; a second run writes nothing.
 
   checkout       the git checkout or worktree to configure (default: the one that holds this script)
   --host NAME    the host whose pin to use (default: this machine's short hostname, in lower case)
@@ -199,7 +203,7 @@ entry = {
         "--open-web-dashboard",
         "False",
     ],
-    "env": {},
+    "env": {"SERENA_USAGE_REPORTING": "false"},  # exactly "false": the only value Serena compares against
 }
 label = "serena %s (%s), context %s, project %s" % (pin.get("release", "?"), commit[:12], context, checkout)
 
