@@ -9,8 +9,9 @@
 #
 # Only push / pull_request scans are commit-ranged; a workflow_dispatch run of
 # ci.yml scans every commit reachable from every remote branch and tag. These
-# entries are what that scan finds, measured 2026-10-10 with
-# `util/ad-hoc/2026-10-10_gitleaks_probe.py scan --scope ci-dispatch` and
+# entries are what that scan finds, measured 2026-10-10 (and again on 2026-10-25,
+# when values in quotes started running to their close quote) with
+# `util/ad-hoc/2026-10-10_gitleaks_probe.py scan --scope ci-dispatch --no-ignore` and
 # classified with `util/ad-hoc/2026-10-10_gitleaks_finding_inspect.py` (shape and
 # masked context only; no value was printed). Values are never written here.
 #
@@ -41,6 +42,9 @@ cb4d63a4644dbcd2ea472fb87c941c2827361c42:tests/test_duplicati_wrapper_contract.p
 # Fixture: a 4-word test passphrase (24 chars) written to a temp env file for the fake Duplicati server in test_yamaguchi_edit_target.
 20e6658666a32c9db89cb0bfaa8ed09307712ee9:tests/test_yamaguchi_edit_target.py:juniper-secret-assignment:338
 959748c5e03d8313959b4d9ff8460700103aa149:tests/test_yamaguchi_edit_target.py:juniper-secret-assignment:340
+# Fixture: test_yamaguchi_edit_target's quote-handling case for read_passphrase -- two dictionary words in single quotes (13 chars). Found by the quoted-value branch (2026-10-25).
+20e6658666a32c9db89cb0bfaa8ed09307712ee9:tests/test_yamaguchi_edit_target.py:juniper-secret-assignment:102
+959748c5e03d8313959b4d9ff8460700103aa149:tests/test_yamaguchi_edit_target.py:juniper-secret-assignment:104
 #
 # ============================================================================
 # gitleaks' default ruleset -- every entry below classified as a false positive

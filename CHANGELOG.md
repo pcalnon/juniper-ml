@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Two gitleaks fleet instruments: the provenance of the zero-rule fix in three sibling repos** (the fleet follow-up
+  to juniper-ml#2203, which found that a `.gitleaks.toml` with no `[extend]` table loads zero rules).
+  - `util/ad-hoc/2026-10-25_gitleaks_fleet_survey.py` reads each of the nine repos' REMOTE default branch through
+    the contents API: the `.gitleaks.toml` tables, the `.gitleaksignore` entry count, every workflow step that runs
+    gitleaks (action SHA, `GITLEAKS_VERSION`, `GITLEAKS_CONFIG`, `--config`, `if:`), the events those workflows run
+    on, any `GITLEAKS_*` variable at any level, and any gitleaks pre-commit hook. It saves each config for the probe.
+  - `util/ad-hoc/2026-10-25_gitleaks_probe_for_repo.py` runs `util/ad-hoc/2026-10-10_gitleaks_probe.py` unchanged
+    against another checkout (it re-points the probe's `REPO` global), so the `ci-dispatch` scope rules are the
+    probe's own rather than a copy's.
+  - Verdicts, by the probe's `vacuity` check with gitleaks 8.24.3 (all nine run gitleaks-action v3.0.0, `e0c47f4f`):
+    juniper-data, juniper-canopy and juniper-deploy **VACUOUS** (PRs juniper-data#490, juniper-canopy#764,
+    juniper-deploy#259); juniper-cascor, juniper-cascor-client and juniper-ml **ACTIVE**; juniper-data-client,
+    juniper-cascor-worker and juniper-recurrence have no `.gitleaks.toml`, so gitleaks loads its built-in default.
+    juniper-recurrence runs no secret scan in any workflow.
+
 ### Fixed
 
 - **`run_suite` refuses a `per_run_timeout_seconds` the driver's own budgets can outrun** (juniper-ml#2210).
@@ -29,6 +46,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     state the new rule.
 
 ### Security
+
+- **`juniper-secret-assignment` fires on a QUOTED value that contains spaces** (owner-approved 2026-10-25; a
+  follow-up to the backup recovery B9 rule of juniper-ml#2203). A value opened by `"` or `'` right after the `=`
+  stopped at its first space, so a quoted diceware phrase left only its first word, which is under the
+  12-character minimum, and never fired.
+  - `.gitleaks.toml`: the regex gains a double-quoted and a single-quoted branch. Each runs to its own close
+    quote, spaces and tabs included, and still needs 12 characters. Unquoted values keep the no-whitespace rule.
+    The reported value is whichever of the three groups matched, so the rule sets no `secretGroup`. A fourth
+    allowlist holds quoted prose: a value containing an English function word as a whole word, such as
+    `passphrase="the one you set"`. The comment's measurement and "Known boundary" are updated. Still silent:
+    whitespace in a value not quoted right after the `=` (unquoted, unterminated, or systemd's
+    `Environment="NAME=..."`), and a quoted passphrase that contains a function word.
+  - Across every commit on every remote branch and tag (about 3,130 commits, `--no-ignore`), the rule reports 10
+    historical lines, up from 8. The two new ones are one test fixture, two dictionary words in single quotes in
+    `tests/test_yamaguchi_edit_target.py`, at two commits. `.gitleaksignore` adds them as commit-scoped entries
+    under a new class comment, 34 entries in all.
+  - `tests/test_gitleaks_secret_assignment_rule.py`: quoted phrases built at runtime, in both quote styles under
+    every name, must report the WHOLE phrase, and the same phrases must stay silent in every unquoted form. It adds
+    quoted-prose negatives and pins the boundary lines. Its model takes the first non-empty group, as gitleaks does.
+  - `util/ad-hoc/2026-10-10_gitleaks_rule_mutation_check.py` runs 21 mutants, up from 16: dropping the quoted
+    branches, an unquoted value running on through spaces, a double- or single-quoted value running past its close
+    quote, and dropping the quoted-prose allowlist. A mutant may now state how many times its target text occurs.
+    `…_secret_assignment_corpus_survey.py` reads the value group the same way, and `docs/REFERENCE.md`'s suite
+    description follows.
+
+- **`[servers]` floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`**, up from `>=0.11.0` and `>=0.17.0`: the two server releases that floor
+  the shared security patches (R-ML-SERVERS in §5 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`). This is the `[servers]` half of juniper-ml#2314,
+  which floored `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0` under `[tools]` and left
+  `[servers]` until both releases were on PyPI, because a floor on an unpublished release makes the extra
+  unresolvable.
+  - **juniper-cascor 0.12.0** (PyPI 2026-10-25) floors both patches unconditionally, so an upgrade of `[servers]`
+    over an environment that holds observability 0.4.0 or service-core 0.7.0 now moves them too. It also carries
+    cascor's own fixes: a non-ASCII `X-API-Key` is a 401, not a 500 whose Sentry event could carry the real key;
+    `FailedAuthThrottle.check()` stays bounded; `APIKeyAuth` checks every configured key; and the CLI's own Sentry
+    init stops sending frame-local variables.
+  - **juniper-data 0.17.1** (PyPI 2026-10-23) differs from 0.17.0 only in its version string and those two floors,
+    measured on the published wheels (the builder's setuptools version aside). Both floors sit under its `[api]`
+    extra, and `[servers]` installs bare `juniper-data`, so in a `[servers]` environment the patches arrive through
+    cascor 0.12.0. The data floor keeps `[servers]` level with the image juniper-deploy#258 pins.
+  - The extras tables in `README.md` (both), `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with
+    the pins. The `0.11.x` row of `docs/REFERENCE.md`'s compatibility matrix moves with the release that carries
+    this, which is the owner's cut. Applied by `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py`, which asserts each site's exact text and requires exactly
+    one match apiece.
+  - **Pre-flighted against real PyPI** on 2026-10-25 with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`, which resolves Linux x86_64 wheels and
+    installs nothing. `[servers]` resolves in 61 packages and `[all]` in 95, on Python 3.12, 3.13 and 3.14, with
+    cascor 0.12.0, data 0.17.1, observability 0.4.1 and service-core 0.7.1 (and juniper-cascor-worker 0.6.1 under
+    `[all]`). A control with `juniper-cascor>=0.13.0`, which is not on PyPI, fails it.
 
 - **The agent guard covers Serena's edit tools and MCP registration (task C9)** (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` §18.2, widened by RR-10 of
   `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md`). An MCP tool call reached the C8 guard only through its settings matcher, which named Claude Code's own
