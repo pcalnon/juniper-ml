@@ -30,6 +30,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- **`[servers]` floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`**, up from `>=0.11.0` and `>=0.17.0`: the two server releases that floor
+  the shared security patches (R-ML-SERVERS in §5 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`). This is the `[servers]` half of juniper-ml#2314,
+  which floored `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0` under `[tools]` and left
+  `[servers]` until both releases were on PyPI, because a floor on an unpublished release makes the extra
+  unresolvable.
+  - **juniper-cascor 0.12.0** (PyPI 2026-10-25) floors both patches unconditionally, so an upgrade of `[servers]`
+    over an environment that holds observability 0.4.0 or service-core 0.7.0 now moves them too. It also carries
+    cascor's own fixes: a non-ASCII `X-API-Key` is a 401, not a 500 whose Sentry event could carry the real key;
+    `FailedAuthThrottle.check()` stays bounded; `APIKeyAuth` checks every configured key; and the CLI's own Sentry
+    init stops sending frame-local variables.
+  - **juniper-data 0.17.1** (PyPI 2026-10-23) differs from 0.17.0 only in its version string and those two floors,
+    measured on the published wheels (the builder's setuptools version aside). Both floors sit under its `[api]`
+    extra, and `[servers]` installs bare `juniper-data`, so in a `[servers]` environment the patches arrive through
+    cascor 0.12.0. The data floor keeps `[servers]` level with the image juniper-deploy#258 pins.
+  - The extras tables in `README.md` (both), `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with
+    the pins. The `0.11.x` row of `docs/REFERENCE.md`'s compatibility matrix moves with the release that carries
+    this, which is the owner's cut. Applied by `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py`, which asserts each site's exact text and requires exactly
+    one match apiece.
+  - **Pre-flighted against real PyPI** on 2026-10-25 with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`, which resolves Linux x86_64 wheels and
+    installs nothing. `[servers]` resolves in 61 packages and `[all]` in 95, on Python 3.12, 3.13 and 3.14, with
+    cascor 0.12.0, data 0.17.1, observability 0.4.1 and service-core 0.7.1 (and juniper-cascor-worker 0.6.1 under
+    `[all]`). A control with `juniper-cascor>=0.13.0`, which is not on PyPI, fails it.
+
 - **The agent guard covers Serena's edit tools and MCP registration (task C9)** (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` §18.2, widened by RR-10 of
   `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md`). An MCP tool call reached the C8 guard only through its settings matcher, which named Claude Code's own
   tools, so Serena's edit tools could write `.git/hooks` in a primary checkout unseen (E-SERENA-EDIT). No rule covered MCP
