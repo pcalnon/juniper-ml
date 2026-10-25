@@ -2,23 +2,23 @@
 
 **Release Date:** 2026-10-25
 **Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Priority:** High: upgrade every environment installed through `juniper-ml[tools]` or `juniper-ml[all]`
 **Package Affected:** juniper-ml
 
 ---
 
-This is a security-bearing release of `juniper-ml` v0.11.1. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a security-bearing patch release of `juniper-ml` v0.11.1. The meta-package ships no code: its `[tools]` extra now floors the two shared security patches, `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0`, so upgrading an environment through `juniper-ml[tools]` or `juniper-ml[all]` also upgrades a vulnerable release of either. Both patches are rated Medium in their own notes, and so is this release. `[servers]` is unchanged here: it follows once juniper-cascor 0.12.0 clears its `pypi` gate.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-ml` |
 | **Fixed in** | 0.11.1 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | In the two releases it floors: sensitive information sent to an external service ([CWE-201](https://cwe.mitre.org/data/definitions/201.html)), improper handling of an exceptional condition that exposed a secret ([CWE-755](https://cwe.mitre.org/data/definitions/755.html)) and allocation of resources without limits ([CWE-770](https://cwe.mitre.org/data/definitions/770.html)) |
+| **Advisory** | None. Internal findings, fixed in juniper-observability 0.4.1 and juniper-service-core 0.7.1, both rated Medium; there is no CVE or Dependabot alert |
 
 ---
 
