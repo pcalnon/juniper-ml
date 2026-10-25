@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.2] - 2026-10-25
+
 ### Added
 
 - **Tier 3: the monthly full set to the offline drive, as a scheduled lane** (owner ruling D-5, 2026-10-25, on §7.9
