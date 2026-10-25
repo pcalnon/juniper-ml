@@ -1,5 +1,7 @@
 # Handoff — turing bring-up: H5 decided (option B: the trees kept, dormant and hardened); B.4 and B.5 are the owner's; four follow-ups adopted
 
+- **Continued (2026-10-25, plan v1.4.6).** C9 landed (juniper-ml#2322) and H6's audit ran; the arc's state and next steps are in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md`. The owner steps below (B.4, B.5, C0 and C2) still stand.
+
 - **From:** the 2026-10-21 session on turing now named "mac dev" (165a0b; worktree `.claude/worktrees/unified-jumping-marble`). It started as "unified-jumping-marble-dc" and took the name after the first "mac dev" (37a935) exited. It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-audit-landed-owner-decides.md`. "mac dev" (37a935), which wrote that file, stood down by cross-session message: it had no question open with the owner and no v1.4.5 draft.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.5.
   - §18.1 holds the owner's ruling on H5's trees.
