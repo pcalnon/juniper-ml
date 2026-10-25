@@ -84,7 +84,10 @@ caller trained or restored in between is refused with 409 instead of scored. A s
 no ``operation_id`` (juniper-recurrence 0.5.0 predates it) gets no ``expect_operation_id``, and the
 manifest's ``operation`` block records that the predict scored an unverified model. ``save_model``
 sends the same id on the snapshot save (juniper-ml#2211), so it persists this run's model or
-nothing; without an id it re-fits instead, as above.
+nothing; without an id it re-fits instead, as above. These bounds add up phase after phase, and
+``worst_case_budget`` is that sum for one config. ``run_suite.py`` refuses a suite whose
+``per_run_timeout_seconds`` does not exceed it for every cell (juniper-ml#2210), because its subprocess
+kill would land before the driver writes its manifest.
 
 Plots (Wave 2.4, SS8.1): when ``outputs.plots`` requests them, the cascor path renders the SS8.1 set
 client-side from the collected payloads via ``plots_cascor.py`` (lazily loaded -- the driver stays
@@ -251,6 +254,13 @@ TERMINAL_UNSETTLED = frozenset({"stalled", "timed_out"})
 #: subprocess -- and a kill there records `timed_out` with exit_code null and NO manifest
 #: (the failure mode p4/e-c-cascor-noise-robustness.yaml:22-26 raised its timeout to avoid).
 TEARDOWN_PREEMPT_TIMEOUT_SECONDS = 30.0
+#: The bound on cascor's opt-in ``outputs.snapshot_at_end`` ``POST /v1/snapshots`` (:func:`collect_results`).
+SNAPSHOT_AT_END_TIMEOUT_SECONDS = 120.0
+#: The save_model re-fit path's two subprocess bounds: the model-version probe its parity check runs
+#: (:func:`_probe_model_version`), then the ``juniper-recurrence train`` CLI (:func:`_save_model_rerun`).
+#: Named, like the two above, so :func:`worst_case_budget` sums what the code enforces (juniper-ml#2210).
+MODEL_VERSION_PROBE_TIMEOUT_SECONDS = 60.0
+SAVE_MODEL_REFIT_TIMEOUT_SECONDS = 600.0
 
 EXIT_SUCCESS = 0
 EXIT_ACCEPTANCE = 1
@@ -671,6 +681,49 @@ def _dataset_create_timeout(args: argparse.Namespace, config: Dict[str, Any]) ->
     if flag is not None:
         return float(flag)
     return float(_mapping(config.get("outputs")).get("dataset_create_timeout_seconds", DEFAULT_DATASET_CREATE_TIMEOUT_SECONDS))
+
+
+def worst_case_budget(config: Dict[str, Any], max_wall_seconds: Optional[float] = None, dataset_create_timeout_seconds: Optional[float] = None, health_timeout: float = DEFAULT_HEALTH_TIMEOUT) -> Dict[str, float]:
+    """juniper-ml#2210: how long this driver can take on ``config`` before its manifest write, phase by phase.
+
+    ``config`` is :func:`load_config`'s normalised config. The overrides are the
+    ``--max-wall-seconds`` / ``--dataset-create-timeout-seconds`` / ``--health-timeout`` flags, with the
+    precedence the run paths apply (flag > YAML > default). The phases run one after another, so their
+    bounds add, and each term is the bound the driver puts on one of them:
+
+    - ``health_wait``: :func:`wait_for_health` on juniper-data, then on the app;
+    - ``dataset_create``: ``POST /v1/datasets`` (W1.5);
+    - cascor: ``drive``, the poll loop's wall budget; ``teardown_preempt``, the settle a drive that ran out
+      its budget gets before collect; ``snapshot_at_end`` when enabled;
+    - recurrence: ``train``, then ``predict`` and ``crossval`` when enabled, each with a socket timeout of
+      the WHOLE wall budget, not a share of one; ``save_model`` when enabled, which is one wall-bounded
+      ``POST /v1/model/snapshots`` when the train returned an ``operation_id`` and otherwise the
+      model-version probe plus the CLI re-fit. Which path runs is known only once the train has answered,
+      so the term is the larger of the two.
+
+    Not counted: the per-request timeouts on single quick calls (the generator preflight, the
+    target-summary fetch, start, the stop request, the collect GETs, the Prometheus and git probes) and
+    the local work after the last phase (plots, stats, the manifest). They take seconds: the
+    2026-10-04 equities run (``reports/2026-10-04_recurrence-equities-cv-matrix/scenario-a-rerun/c001-manifest.json``)
+    spent 1.7 s on plots and 22.6 s in total, 0.016 s of it in the health waits this sum books at 180 s.
+    """
+    max_wall = float(max_wall_seconds) if max_wall_seconds is not None else float(config["outputs"]["max_wall_seconds"])
+    dataset = float(dataset_create_timeout_seconds) if dataset_create_timeout_seconds is not None else float(config["outputs"]["dataset_create_timeout_seconds"])
+    terms: Dict[str, float] = {"health_wait": 2 * float(health_timeout), "dataset_create": dataset}
+    if config["kind"] == "cascor":
+        terms["drive"] = max_wall
+        terms["teardown_preempt"] = TEARDOWN_PREEMPT_TIMEOUT_SECONDS
+        if config["outputs"]["snapshot_at_end"]:
+            terms["snapshot_at_end"] = SNAPSHOT_AT_END_TIMEOUT_SECONDS
+        return terms
+    terms["train"] = max_wall
+    if config["predict"]["enabled"]:
+        terms["predict"] = max_wall
+    if config["crossval"]["enabled"]:
+        terms["crossval"] = max_wall
+    if config["outputs"]["save_model"]:
+        terms["save_model"] = max(max_wall, MODEL_VERSION_PROBE_TIMEOUT_SECONDS + SAVE_MODEL_REFIT_TIMEOUT_SECONDS)
+    return terms
 
 
 def load_config(path: Path) -> Dict[str, Any]:
@@ -1269,7 +1322,7 @@ def collect_results(cascor_url: str, config: Dict[str, Any], results_dir: Path, 
 
     if outputs.get("snapshot_at_end"):
         try:
-            code, payload = _http_json("POST", f"{cascor_url}/v1/snapshots", body={"description": f"experiment {run_label}"}, timeout=120.0)
+            code, payload = _http_json("POST", f"{cascor_url}/v1/snapshots", body={"description": f"experiment {run_label}"}, timeout=SNAPSHOT_AT_END_TIMEOUT_SECONDS)
             if code == 200:
                 extras["snapshot"] = _unwrap(payload)
             else:
@@ -2100,7 +2153,7 @@ def _probe_model_version(python: str, env: Mapping[str, str]) -> Tuple[Optional[
     held to the launcher's acceptance rule: the whole answer must be one version-shaped token.
     """
     try:
-        proc = subprocess.run([python, "-c", RECURRENCE_MODEL_VERSION_PROBE], capture_output=True, text=True, timeout=60, env=dict(env), cwd="/", check=False)  # nosec B603 - fixed argv
+        proc = subprocess.run([python, "-c", RECURRENCE_MODEL_VERSION_PROBE], capture_output=True, text=True, timeout=MODEL_VERSION_PROBE_TIMEOUT_SECONDS, env=dict(env), cwd="/", check=False)  # nosec B603 - fixed argv
     except (OSError, subprocess.TimeoutExpired) as exc:
         return None, f"the probe could not run: {exc}"
     answer = proc.stdout.rstrip("\n")
@@ -2213,7 +2266,7 @@ def _save_model_rerun(train_block: Dict[str, Any], dataset_id: str, split: str, 
         result["error"] = parity["error"]
         return result
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600, env=env, check=False)  # nosec B603 - cmd built from validated config
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=SAVE_MODEL_REFIT_TIMEOUT_SECONDS, env=env, check=False)  # nosec B603 - cmd built from validated config
     except (OSError, subprocess.TimeoutExpired) as exc:
         result["error"] = str(exc)
         return result

@@ -83,7 +83,7 @@ def _suite_yaml(base: Path, suite_dir: Path, *, row_bands: Any = None, suite_ban
     doc: dict[str, Any] = {
         "schema_version": 1,
         "suite": {"name": "t-acc", "description": "acceptance fixture", "app": "cascor", "base_config": [str(base)], "seed_policy": "fixed"},
-        "execution": {"mode": "sequential", "continue_on_failure": True, "per_run_timeout_seconds": 60},
+        "execution": {"mode": "sequential", "continue_on_failure": True, "per_run_timeout_seconds": 900},
         "include": [
             {"name": "control", "overrides": {"training.params.max_hidden_units": 2}},
             {"name": "equities", "overrides": {"training.params.max_hidden_units": 4}},

@@ -58,6 +58,12 @@ to the driver. A recurrence cell's dataset budget -- that key, else the cell's o
 ``outputs.dataset_create_timeout_seconds`` -- also reaches ``--up`` as
 ``JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS``, so the service's own juniper-data timeout is
 the driver's budget rather than a different number. See ``recurrence_data_timeout_env``.
+
+``execution.per_run_timeout_seconds`` (default 3600) is the subprocess ceiling on each cell's driver.
+A suite is refused (exit 2) before the first ``--up`` when it does not exceed every cell's worst-case
+driver budget: the health waits, dataset creation, each wall-bounded phase and save_model, summed by
+the driver's own ``worst_case_budget`` (juniper-ml#2210). A lower ceiling can kill the driver before
+it writes its manifest. See ``check_per_run_timeout``.
 """
 
 from __future__ import annotations
@@ -540,17 +546,70 @@ def materialise_cell(cell: dict, suite: dict, suite_dir: Path, validate) -> Path
     return out
 
 
-def _driver_validator():
-    """The real driver's load_config, imported by path — None if unavailable."""
+def _driver_module():
+    """The real driver module, imported by path — None if unavailable."""
     try:
         import importlib.util
 
         spec = importlib.util.spec_from_file_location("run_experiment_for_suite", DEFAULT_DRIVER)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
-        return lambda path: mod.load_config(path)
+        return mod
     except Exception:
         return None
+
+
+def _driver_validator():
+    """The real driver's load_config, imported by path — None if unavailable."""
+    mod = _driver_module()
+    return None if mod is None else (lambda path: mod.load_config(path))
+
+
+def driver_budgets(driver, configs: "dict[str, dict]", max_wall_seconds: "float | None", dataset_create_timeout_seconds: "float | None") -> "dict[str, dict[str, float]]":
+    """juniper-ml#2210: each cell's worst-case driver budget, phase by phase.
+
+    ``configs`` maps cell id to the driver's ``load_config`` result for the cell's materialised YAML.
+    The driver does both halves, so this is not a second copy of its defaults: ``load_config``
+    normalises the cell (defaults, phase switches) and ``worst_case_budget`` adds up the bounds, given
+    the two budgets run_suite forwards as flags. run_suite forwards no ``--health-timeout``, so the
+    driver's default applies there.
+    """
+    return {cell_id: driver.worst_case_budget(config, max_wall_seconds=max_wall_seconds, dataset_create_timeout_seconds=dataset_create_timeout_seconds) for cell_id, config in configs.items()}
+
+
+def check_per_run_timeout(timeout: float, budgets: "dict[str, dict[str, float]]", declared: bool = True) -> None:
+    """Refuse the suite when ``per_run_timeout_seconds`` does not exceed every cell's worst-case driver budget.
+
+    juniper-ml#2210. ``per_run_timeout_seconds`` is run_suite's SUBPROCESS ceiling. When it fires,
+    ``execute_cell`` records ``timed_out`` with ``exit_code: null`` and returns before the manifest
+    read: the driver's ``finally`` never writes ``manifest.json``, the row carries no ``run_dir``,
+    phases or metrics, and ``--resume`` runs the cell again. So the driver must be what stops a run,
+    and that holds only while this ceiling sits above everything the driver may spend.
+
+    The R-6 gate (``tests/test_experiment_suite_yamls.py``) compared it with the wall budget alone,
+    but the driver's other budgets ADD to that one: the health waits, dataset creation, and on
+    recurrence a fresh wall budget for predict and for crossval, plus save_model. ``driver_budgets``
+    sums them per cell. The test is ``>``, not ``>=``: at equality the kill still lands before the
+    manifest write.
+
+    Here and not in ``load_suite``, for the reason D5 moved the cascor floor out of it: the sum needs
+    each cell's RESOLVED config, and a recurrence suite's base config lives in a sibling repo CI does
+    not clone. Still before the first ``--up``, like D2's ``runtime:`` check: a refusal after N cells
+    would come after N runs. ``declared`` says whether the suite set the value or got the default.
+    """
+    short = {cell_id: terms for cell_id, terms in budgets.items() if not timeout > sum(terms.values())}
+    if not short:
+        return
+    cell_id = max(short, key=lambda key: sum(short[key].values()))
+    terms = short[cell_id]
+    total = sum(terms.values())
+    source = "" if declared else " (the default: the suite sets none)"
+    raise SuiteError(
+        f"execution.per_run_timeout_seconds={timeout:g}{source} does not exceed the worst-case driver budget of {len(short)} of {len(budgets)} cell(s); "
+        f"the largest is {cell_id} at {total:g}s ({' + '.join(f'{name} {seconds:g}' for name, seconds in terms.items())}). "
+        "run_suite would kill the driver before it writes manifest.json, recording 'timed_out' with exit_code null. "
+        f"Raise per_run_timeout_seconds above {total:g}, or lower the budgets those terms come from (juniper-ml#2210)."
+    )
 
 
 _JSONL_LOCK = threading.Lock()
@@ -1311,7 +1370,15 @@ def main(argv: "list[str] | None" = None) -> int:
         return 2
 
     suite_dir.mkdir(parents=True, exist_ok=True)
-    validate = _driver_validator()
+    driver_module = _driver_module()
+    # juniper-ml#2210: validation keeps each cell's normalised config, so the budget check below sums what
+    # the driver will read without loading every cell (and repeating its config warnings) a second time.
+    normalised: "dict[Path, dict]" = {}
+
+    def _validate(path: Path) -> None:
+        normalised[path] = driver_module.load_config(path)
+
+    validate = None if driver_module is None else _validate
     registry_rows = _read_registry(suite_dir) if args.resume else {}
     selected = [c for c in cells if args.only is None or c["cell_id"] in args.only]
     if args.only is not None and len(selected) != len(args.only):
@@ -1359,6 +1426,14 @@ def main(argv: "list[str] | None" = None) -> int:
             for cell in runnable:
                 named = _explicit_runtime_vars(cell["overrides"])
                 runtime_envs[cell["cell_id"]] = {var: value for var, value in runtime_envs[cell["cell_id"]].items() if var not in _H11_CONTESTED_VARS or var in named}
+        # juniper-ml#2210: the subprocess ceiling must clear every cell's worst-case driver budget, and,
+        # like the runtime block, is checked before the first --up. Without the driver module there is
+        # no normalised config to sum, so the skipped check is announced rather than passed.
+        if driver_module is not None:
+            configs = {cell_id: normalised[path] for cell_id, path in materialised.items()}
+            check_per_run_timeout(timeout, driver_budgets(driver_module, configs, max_wall_seconds, dataset_create_timeout_seconds), declared="per_run_timeout_seconds" in execution)
+        else:
+            print("[suite] warning: the driver module did not import, so per_run_timeout_seconds was not checked against the cells' driver budgets (juniper-ml#2210)", file=sys.stderr)
     except SuiteError as exc:
         print(f"suite error: {exc}", file=sys.stderr)
         return 2

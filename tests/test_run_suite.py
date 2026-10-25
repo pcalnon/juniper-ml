@@ -54,6 +54,8 @@ outputs:
   max_wall_seconds: 60
 """
 
+# per_run_timeout_seconds clears BASE_CONFIG's 390 s worst-case driver budget, or run_suite refuses the
+# suite before any cell launches (juniper-ml#2210; the 180 s of health waits alone exceed the 60 it was).
 SUITE_TEMPLATE = """\
 schema_version: 1
 suite:
@@ -66,7 +68,7 @@ suite:
 execution:
   mode: sequential
   continue_on_failure: {cof}
-  per_run_timeout_seconds: 60
+  per_run_timeout_seconds: 900
 matrix:
   training.params.max_hidden_units: [2, 4]
 outputs:
@@ -587,7 +589,7 @@ class MainLoopTest(unittest.TestCase):
         """
         root, _suite_dir, _markers, run_root = self._setup()
         suite_yaml = root / "suite.yaml"
-        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 60", "  per_run_timeout_seconds: 60\n  stall_seconds: 900"))
+        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 900", "  per_run_timeout_seconds: 900\n  stall_seconds: 900"))
         rc, out = self._main("--suite", str(suite_yaml))
         self.assertEqual(rc, 0, msg=out)
         argvs = self._driver_argvs(run_root)
@@ -619,7 +621,7 @@ class MainLoopTest(unittest.TestCase):
         """
         root, _suite_dir, _markers, run_root = self._setup()
         suite_yaml = root / "suite.yaml"
-        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 60", "  per_run_timeout_seconds: 60\n  max_wall_seconds: 14400"))
+        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 900", "  per_run_timeout_seconds: 15600\n  max_wall_seconds: 14400"))
         rc, out = self._main("--suite", str(suite_yaml))
         self.assertEqual(rc, 0, msg=out)
         argvs = self._driver_argvs(run_root)
@@ -642,7 +644,7 @@ class MainLoopTest(unittest.TestCase):
         """stall_seconds and max_wall_seconds are orthogonal Q-2 knobs."""
         root, _suite_dir, _markers, run_root = self._setup()
         suite_yaml = root / "suite.yaml"
-        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 60", "  per_run_timeout_seconds: 60\n  stall_seconds: 900\n  max_wall_seconds: 14400"))
+        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 900", "  per_run_timeout_seconds: 15600\n  stall_seconds: 900\n  max_wall_seconds: 14400"))
         rc, out = self._main("--suite", str(suite_yaml))
         self.assertEqual(rc, 0, msg=out)
         argvs = self._driver_argvs(run_root)
@@ -655,7 +657,7 @@ class MainLoopTest(unittest.TestCase):
         """The allow-list widens by exactly one -- a near-miss spelling must still fail."""
         root, _suite_dir, _markers, _run_root = self._setup()
         suite_yaml = root / "suite.yaml"
-        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 60", "  per_run_timeout_seconds: 60\n  max_wall_second: 14400"))
+        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 900", "  per_run_timeout_seconds: 900\n  max_wall_second: 14400"))
         rc, _out = self._main("--suite", str(suite_yaml))
         self.assertEqual(rc, 2)
 
@@ -663,7 +665,7 @@ class MainLoopTest(unittest.TestCase):
         """The dry-run preview must show the budget an operator is about to spend."""
         root, _suite_dir, _markers, _run_root = self._setup()
         suite_yaml = root / "suite.yaml"
-        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 60", "  per_run_timeout_seconds: 60\n  max_wall_seconds: 14400"))
+        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 900", "  per_run_timeout_seconds: 15600\n  max_wall_seconds: 14400"))
         rc, out = self._main("--suite", str(suite_yaml), "--dry-run")
         self.assertEqual(rc, 0, msg=out)
         self.assertIn("--max-wall-seconds 14400.0", out)
@@ -672,7 +674,7 @@ class MainLoopTest(unittest.TestCase):
         """The new key widens the allow-list by exactly one — typos must still fail."""
         root, _suite_dir, _markers, _run_root = self._setup()
         suite_yaml = root / "suite.yaml"
-        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 60", "  per_run_timeout_seconds: 60\n  stall_second: 900"))
+        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 900", "  per_run_timeout_seconds: 900\n  stall_second: 900"))
         rc, out = self._main("--suite", str(suite_yaml))
         self.assertEqual(rc, 2, msg=out)
         self.assertIn("unknown execution: keys", out)
@@ -813,7 +815,7 @@ execution:
   mode: parallel
   max_parallel: 2
   continue_on_failure: true
-  per_run_timeout_seconds: 60
+  per_run_timeout_seconds: 900
 matrix:
   training.params.max_hidden_units: [2, 4]
 outputs:
@@ -1319,7 +1321,7 @@ execution:
   mode: {mode}
   max_parallel: {par}
   continue_on_failure: true
-  per_run_timeout_seconds: 60
+  per_run_timeout_seconds: 900
 matrix:
   training.params.max_hidden_units: [2]
 {extra_matrix}
@@ -1502,7 +1504,7 @@ class TestDatasetBudgetReachesDriverAndService(unittest.TestCase):
 
     RECURRENCE_BASE = "schema_version: 1\nexperiment:\n  name: fixture\n  seed: 7\ndataset:\n  generator: irregular_sine\n  split: train\n  params:\n    n_steps: 200\n    lookback: 16\ntrain:\n  d: 4\n  ridge: 1.0\n  readout: linear\noutputs:\n  max_wall_seconds: 60\n"
 
-    SUITE = "schema_version: 1\nsuite:\n  name: w15-suite\n  description: test\n  app: {app}\n  base_config:\n    - {base}\n  seed_policy: fixed\nexecution:\n  mode: sequential\n  continue_on_failure: true\n  per_run_timeout_seconds: 60\n{execution_extra}matrix:\n  {matrix_key}: [{matrix_value}]\noutputs:\n  suite_dir: {suite_dir}\n"
+    SUITE = "schema_version: 1\nsuite:\n  name: w15-suite\n  description: test\n  app: {app}\n  base_config:\n    - {base}\n  seed_policy: fixed\nexecution:\n  mode: sequential\n  continue_on_failure: true\n  per_run_timeout_seconds: 1800\n{execution_extra}matrix:\n  {matrix_key}: [{matrix_value}]\noutputs:\n  suite_dir: {suite_dir}\n"
 
     def _run(self, *, app: str = "recurrence", suite_budget: "str | None" = None, cell_budget: "str | None" = None, ambient: "str | None" = None, dry_run: bool = False) -> "tuple[int, str, list, list, list]":
         """One suite; returns ``(rc, output, launcher values, driver argvs, registry rows)``."""
@@ -1626,3 +1628,98 @@ class TestDatasetBudgetReachesDriverAndService(unittest.TestCase):
                 self.assertRegex(text, pattern)
                 self.assertRegex(text, "[1-9]", "the launcher's second test: not all zeros")
                 self.assertEqual(float(text), float(value))
+
+
+class PerRunTimeoutBudgetTest(MainLoopTest):
+    """juniper-ml#2210: ``per_run_timeout_seconds`` must exceed every cell's worst-case driver budget.
+
+    BASE_CONFIG's cells come to 390 s: the health waits (2 x 90) + dataset creation (120) + the 60 s
+    wall budget + the 30 s teardown settle. The refusal comes before the first ``--up``, so it leaves
+    no launcher marker and no registry row.
+    """
+
+    def _set_timeout(self, root: Path, value: str, extra: str = "") -> None:
+        suite_yaml = root / "suite.yaml"
+        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 900", f"  per_run_timeout_seconds: {value}{extra}"))
+
+    def test_a_timeout_at_or_below_the_budget_refuses_the_suite_before_any_launch(self) -> None:
+        for value in ("60", "390"):
+            with self.subTest(per_run_timeout_seconds=value):
+                root, suite_dir, markers, _run_root = self._setup()
+                self._set_timeout(root, value)
+                rc, out = self._main("--suite", str(root / "suite.yaml"))
+                self.assertEqual(rc, 2, msg=out)
+                self.assertIn(f"execution.per_run_timeout_seconds={value} does not exceed the worst-case driver budget of 2 of 2 cell(s)", out)
+                self.assertIn("at 390s (health_wait 180 + dataset_create 120 + drive 60 + teardown_preempt 30)", out)
+                self.assertEqual(list(markers.glob("up-*")), [], "refused before the first --up")
+                self.assertFalse((suite_dir / "registry.jsonl").exists())
+
+    def test_a_timeout_above_the_budget_runs(self) -> None:
+        root, suite_dir, _markers, _run_root = self._setup()
+        self._set_timeout(root, "391")
+        rc, out = self._main("--suite", str(root / "suite.yaml"))
+        self.assertEqual(rc, 0, msg=out)
+        self.assertEqual(len((suite_dir / "registry.jsonl").read_text().splitlines()), 2)
+
+    def test_the_forwarded_budgets_are_the_ones_summed(self) -> None:
+        """``execution.max_wall_seconds`` and the dataset budget reach the driver as flags, and the
+        flags beat the cell YAML, so the sum uses them."""
+        root, _suite_dir, _markers, _run_root = self._setup()
+        self._set_timeout(root, "14000", "\n  max_wall_seconds: 14400\n  dataset_create_timeout_seconds: 300")
+        rc, out = self._main("--suite", str(root / "suite.yaml"))
+        self.assertEqual(rc, 2, msg=out)
+        self.assertIn("at 14910s (health_wait 180 + dataset_create 300 + drive 14400 + teardown_preempt 30)", out)
+
+    def test_the_default_is_named_as_the_default(self) -> None:
+        root, _suite_dir, _markers, _run_root = self._setup()
+        suite_yaml = root / "suite.yaml"
+        suite_yaml.write_text(suite_yaml.read_text().replace("  per_run_timeout_seconds: 900\n", "  max_wall_seconds: 3600\n"))
+        rc, out = self._main("--suite", str(root / "suite.yaml"))
+        self.assertEqual(rc, 2, msg=out)
+        self.assertIn("execution.per_run_timeout_seconds=3600 (the default: the suite sets none) does not exceed", out)
+
+    def test_without_the_driver_module_the_skipped_check_is_announced(self) -> None:
+        root, _suite_dir, _markers, _run_root = self._setup()
+        self._set_timeout(root, "60")
+        with unittest.mock.patch.object(run_suite, "_driver_module", return_value=None):
+            rc, out = self._main("--suite", str(root / "suite.yaml"))
+        self.assertEqual(rc, 0, msg=out)
+        self.assertIn("per_run_timeout_seconds was not checked against the cells' driver budgets", out)
+
+    def test_the_refusal_names_the_largest_cell(self) -> None:
+        """The cell with the largest sum is the one named, so its number is the one to beat."""
+        budgets = {"c000-small": {"health_wait": 180.0, "drive": 60.0}, "c001-large": {"health_wait": 180.0, "drive": 900.0}}
+        with self.assertRaises(run_suite.SuiteError) as caught:
+            run_suite.check_per_run_timeout(1000.0, budgets)
+        self.assertIn("of 1 of 2 cell(s); the largest is c001-large at 1080s (health_wait 180 + drive 900)", str(caught.exception))
+        run_suite.check_per_run_timeout(1081.0, budgets)
+
+
+class ExecuteCellTimeoutTest(unittest.TestCase):
+    """What the subprocess kill leaves behind: the path ``check_per_run_timeout`` keeps an in-budget driver out of.
+
+    juniper-ml#2210 found no test reaching it, because every ``execute_cell`` call here used a stub
+    that exits at once. This driver sleeps through a 0.5 s ceiling.
+    """
+
+    def test_a_killed_driver_leaves_a_timed_out_row_without_the_manifest_evidence(self) -> None:
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        markers = root / "markers"
+        markers.mkdir()
+        launcher = root / "stub_launcher.bash"
+        _write_stub_launcher(launcher, markers)
+        driver = root / "sleeping_driver.py"
+        driver.write_text("import time\ntime.sleep(60)\n")
+        cell_yaml = root / "experiment.yaml"
+        cell_yaml.write_text(BASE_CONFIG)
+        cell = {"cell_id": "c000-sleeper", "name": None, "overrides": {}}
+        with unittest.mock.patch.object(run_suite, "DEFAULT_RUN_ROOT", root / "runroot"):
+            row = run_suite.execute_cell(cell, cell_yaml, "cascor", 0.5, launcher, driver, sys.executable)
+        self.assertEqual((row["outcome"], row["exit_code"], row["error"]), ("timed_out", None, "driver exceeded per_run_timeout_seconds=0.5"))
+        for key in ("run_dir", "phases", "metrics"):
+            self.assertNotIn(key, row, f"the kill returns before the manifest read, so the row carries no {key}")
+        self.assertTrue(row["teardown_ok"])
+        self.assertEqual(len(list(markers.glob("down-*"))), 1, "the stack is still torn down")
+        self.assertNotIn("timed_out", run_suite.COMPLETE_OUTCOMES, "--resume runs the cell again")
