@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Two gitleaks fleet instruments: the provenance of the zero-rule fix in three sibling repos** (the fleet follow-up
+  to juniper-ml#2203, which found that a `.gitleaks.toml` with no `[extend]` table loads zero rules).
+  - `util/ad-hoc/2026-10-25_gitleaks_fleet_survey.py` reads each of the nine repos' REMOTE default branch through
+    the contents API: the `.gitleaks.toml` tables, the `.gitleaksignore` entry count, every workflow step that runs
+    gitleaks (action SHA, `GITLEAKS_VERSION`, `GITLEAKS_CONFIG`, `--config`, `if:`), the events those workflows run
+    on, any `GITLEAKS_*` variable at any level, and any gitleaks pre-commit hook. It saves each config for the probe.
+  - `util/ad-hoc/2026-10-25_gitleaks_probe_for_repo.py` runs `util/ad-hoc/2026-10-10_gitleaks_probe.py` unchanged
+    against another checkout (it re-points the probe's `REPO` global), so the `ci-dispatch` scope rules are the
+    probe's own rather than a copy's.
+  - Verdicts, by the probe's `vacuity` check with gitleaks 8.24.3 (all nine run gitleaks-action v3.0.0, `e0c47f4f`):
+    juniper-data, juniper-canopy and juniper-deploy **VACUOUS** (PRs juniper-data#490, juniper-canopy#764,
+    juniper-deploy#259); juniper-cascor, juniper-cascor-client and juniper-ml **ACTIVE**; juniper-data-client,
+    juniper-cascor-worker and juniper-recurrence have no `.gitleaks.toml`, so gitleaks loads its built-in default.
+    juniper-recurrence runs no secret scan in any workflow.
+
 ### Fixed
 
 - **`run_suite` refuses a `per_run_timeout_seconds` the driver's own budgets can outrun** (juniper-ml#2210).
