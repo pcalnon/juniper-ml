@@ -4,7 +4,7 @@
 # Sub-Project:   juniper-ml
 # File Name:     juniper-backup.bash
 # Author:        Paul Calnon
-# Version:       1.0.0
+# Version:       1.1.0
 #
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
@@ -59,7 +59,9 @@
 #                                as-is; the scheduler does NOT take that form, so under it set the drive's parent as the
 #                                root and its leaf as the name. Either way, the mount root must lie under /mnt/, /media/
 #                                or /run/media/: mountpoint(1) is also true of /, /home, /tmp and /run/user/<uid>.
-#     JUNIPER_BACKUP_DIR         Directory on each drive that receives the archives. Default Juniper-8.0.0.python.
+#     JUNIPER_BACKUP_DIR         Directory on each drive that receives the archives, as a path relative to the drive: one or more
+#                                [A-Za-z0-9._-]+ components joined by single slashes, none of them . or .. (no leading, trailing or
+#                                doubled /). Default Juniper-8.0.0.python; tier 3 (juniper-backup-full.service) uses Juniper/Backups.
 #
 #     Every configured device must be mounted for exit 0. With one of the two default sticks attached the run
 #     writes that stick and exits 4 (PARTIAL), and the scheduler records FAILED and stamps nothing.
@@ -114,6 +116,12 @@
 #       through the root (JUNIPER_BACKUP_MEDIA_ROOT=/ with a device named tmp). Only a pre-existing writable BACKUP_DIR stood in the way. So every device's resolved mount root, in either form, must now lie
 #       strictly under DRIVE_PARENTS (/mnt, /media, /run/media), written plainly, or the run exits 2 before anything is probed. DRIVE_PARENTS is a literal list, not a setting: a bound the environment
 #       could widen would bound nothing.
+#
+#     THE BACKUP DIR MAY BE A PATH (1.1.0, 2026-10-25).
+#       Tier 3's drive (design §7.9, D-5 ruled 2026-10-25) receives its full sets in Juniper/Backups/, two components, and JUNIPER_BACKUP_DIR accepted one ([A-Za-z0-9._-]+, not . or ..), so the first full
+#       set had to go by hand through --dest. The rule is now a relative path of such components joined by single slashes (is_backup_dir): still no . or .. component, and so still no walk off the drive,
+#       and no leading, trailing or doubled slash. Every one-component value the old rule accepted is accepted unchanged. util/juniper-backup-scheduled.bash had NO check of its own, so it judged a drive
+#       usable from a value this script then refused; it now runs the same function, body byte-identical (pinned by tests/test_juniper_backup_tier3_lane.py), and refuses the same values first.
 #######################################################################################################################################################################################################################################################
 
 #######################################################################################################################################################################################################################################################
@@ -250,6 +258,16 @@ for _repo in "${APPLICATION_REPOS[@]}"; do
     [[ "${_repo}" != "." && "${_repo}" != ".." ]] || { echo "FATAL: invalid repo name: ${_repo}" >&2; exit 2; }
 done
 #######################################################################################################################################################################################################################################################
+# Is this JUNIPER_BACKUP_DIR a path that stays on the drive? One or more [A-Za-z0-9._-]+ components joined by single slashes, none of them "." or "..": relative to the drive's mount root (no leading
+#   slash), with no empty component (no trailing or doubled slash), and with no walk off the drive. Lexical only, like the drive bound below. util/juniper-backup-scheduled.bash runs this same function, its
+#   body byte-identical, so the scheduler never judges a drive usable under a value this script refuses. Juniper-8.0.0.python (tier 2) is one component; Juniper/Backups (tier 3) is two.
+function is_backup_dir() {
+    local dir="$1"
+    local components_re='^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$'
+    [[ "${dir}" =~ ${components_re} && "/${dir}/" != *"/./"* && "/${dir}/" != *"/../"* ]]
+}
+
+#######################################################################################################################################################################################################################################################
 # The mount root of one configured device. ONE definition, used by the bound below, the mount guard and target_dir_for, so the path that is bounded, the path that is probed and the path that is written
 #   cannot drift apart. Defined here, ahead of the other functions, because the device validation that follows must resolve every device before anything is probed.
 #   An entry beginning with / IS its mount root (an fstab-managed drive under /mnt/, design §7.9); any other entry is a directory under MEDIA_ROOT (where udisks2 automounts).
@@ -294,7 +312,7 @@ if [[ -z "${DEST_OVERRIDE}" ]]; then
         _mount_root="$(mount_root_for "${_media}")"
         is_drive_mount_root "${_mount_root}" || { echo "FATAL: device ${_media}: mount root ${_mount_root} is not strictly under ${DRIVE_PARENTS[*]} (written plainly) -- refusing a path the system disk may hold" >&2; exit 2; }
     done
-    [[ "${BACKUP_DIR}" =~ ^[A-Za-z0-9._-]+$ && "${BACKUP_DIR}" != "." && "${BACKUP_DIR}" != ".." ]] || { echo "FATAL: JUNIPER_BACKUP_DIR must match [A-Za-z0-9._-]+ : ${BACKUP_DIR}" >&2; exit 2; }
+    is_backup_dir "${BACKUP_DIR}" || { echo "FATAL: JUNIPER_BACKUP_DIR must be a relative path of [A-Za-z0-9._-]+ components joined by single slashes, none of them . or .. : ${BACKUP_DIR}" >&2; exit 2; }
 fi
 
 

@@ -8,10 +8,12 @@
 # License:      MIT
 ############################################################################################################################################################
 #
-# Invoked through `OnFailure=` by two lanes, each with its own reporter unit:
-#   duplicati-backup-failure.service  for duplicati-backup.service (the default $1 and state dir)
-#   juniper-backup-failure.service    for juniper-backup.service (tier 2; its unit points
-#                                     DUPLICATI_STATE_DIR at ~/.local/state/juniper-backup)
+# Invoked through `OnFailure=` by three lanes, each with its own reporter unit:
+#   duplicati-backup-failure.service       for duplicati-backup.service (the default $1 and state dir)
+#   juniper-backup-failure.service         for juniper-backup.service (tier 2; its unit points
+#                                          DUPLICATI_STATE_DIR at ~/.local/state/juniper-backup)
+#   juniper-backup-full-failure.service    for juniper-backup-full.service (tier 3; its unit points
+#                                          DUPLICATI_STATE_DIR at ~/.local/state/juniper-backup-full)
 # $1 is the failed unit. It heads the record, selects the journal tail and titles the
 # notification, so a report always names the lane that actually failed.
 #
