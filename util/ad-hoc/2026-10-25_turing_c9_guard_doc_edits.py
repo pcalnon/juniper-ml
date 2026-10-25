@@ -14,7 +14,9 @@ Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLA
 Why: the shared files take concurrent whole-file uploads, so each upload is built by running this against a
 FRESH `origin/main` copy at upload time (the juniper-ml#2262 revert class). Every edit has a marker (skip
 when present) and an anchor that must occur exactly once. The files: `.github/workflows/ci.yml`,
-`docs/REFERENCE.md` and `CHANGELOG.md`. The plan's C9 record is a separate PR.
+`docs/REFERENCE.md` and `CHANGELOG.md`. The plan's C9 record is a separate PR. The CHANGELOG marker counts
+anywhere in the file (since 2026-10-25): the 0.11.2 proposal, juniper-ml#2339, moved the entry out of
+[Unreleased], and a re-run must not add it again.
 
 Usage:
     python3 -I util/ad-hoc/2026-10-25_turing_c9_guard_doc_edits.py [--base DIR] [--check] --mutants N/M
@@ -144,7 +146,7 @@ def main(argv: list[str]) -> int:
         start = changelog.find("## [Unreleased]")
         end = changelog.find("\n## [", start + 1)
         section = changelog[start : end if end >= 0 else len(changelog)]
-        if CHANGELOG_MARKER not in section:
+        if CHANGELOG_MARKER not in changelog:  # anywhere: after a release cut the entry sits in the release section
             entry = CHANGELOG_ENTRY.replace("@MUTANTS@", f"{killed} of {total}")
             header = "## [Unreleased]\n"
             if section.count("\n### Security\n\n") == 1:
