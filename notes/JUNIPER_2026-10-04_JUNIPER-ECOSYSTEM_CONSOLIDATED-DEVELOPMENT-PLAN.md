@@ -3,7 +3,7 @@
 - **Project**: Juniper ecosystem (all repositories; the plan lives in juniper-ml)
 - **Author**: Paul Calnon
 - **Date**: 2026-10-04 (state re-probed 2026-10-05, 2026-10-08 and 2026-10-10; corrected 2026-10-24; P12's rows and the releases they name re-probed 2026-10-25)
-- **Version**: 1.15.0
+- **Version**: 1.15.1
 - **Status**: Rounds 1–14 of consensus validation are reconciled, and validation has ended by the owner's ruling of 2026-10-24 (no round 15). Round 14's dispositions are in `EX/round14-reconciliation.md`.
   - v1.12.1 was landed as a record of v1.12.0's text through ml#2214 (merged 2026-10-10T20:19:43Z, `7638be7f`); v1.13.0 is the re-baseline, and v1.14.0 applies round 14's corrections to it.
   - v1.13.0 takes in the drift from the 2026-10-08T22:16Z census to the final census of 2026-10-10T21:30Z (Snapshot). v1.14.0 takes in none after it, and is stale (Snapshot).
@@ -16,6 +16,7 @@
   - The owner's ruling of 2026-10-24: correct and land, with no round 15. v1.14.0 applies R14A-01's correction and every MINOR and NIT, records Lane B's 12 surviving mutants as listed limits, and is then gated, landed and merged (Validation record).
   - v1.15.0 (2026-10-25) is a record of the recurrence × equities arc (P12) since the final census: W1.13's four releases and W1.14 (2026-10-17), the owner's P12 rulings of 2026-10-17 and 2026-10-18, P12's W5 items, and juniper-ml 0.11.0 and 0.11.1 (XC-P12; §5). It re-probes the release rows those touch, and adds R-ML-TOOLS (shipped) and R-ML-SERVERS (next) to §5.
     - It is not a validation round: validation ended by the owner's ruling of 2026-10-24, so no round checks v1.15.0, and each fact it adds names the probe or the record it came from. Every other path keeps v1.14.0's state and its staleness (Snapshot).
+  - v1.15.1 (2026-10-25) records the P12 session that landed ml#2320 (ml#2210), and one owner ruling. ml#2320 merged and its post-merge re-check passed (XC-P12); its out-of-scope finding is ml#2330, asked in §6 Group C; R-ML-SERVERS's floors merged as ml#2326; and the owner ruled the next juniper-ml cut **0.11.2**, over the 0.12.0 that `util/release_train/detect.py` proposes (§5). Like v1.15.0, no round checks it.
   - Planning only: this plan changes no code, authorizes no merge, release or host action, and carries no approval.
 - **Owner**: Paul Calnon
 - **Template**: `notes/templates/TEMPLATE_DEVELOPMENT_ROADMAP.md`, adapted to a program that spans twelve paths
@@ -587,7 +588,7 @@ There is no standing grant: each path session asks the owner in its own first tu
 - **The pins and floors followed.** juniper-deploy#249 pinned recurrence 0.6.0 and canopy 0.9.0 after both deploy smokes passed on its head (8/8 and 3/3, by GHCR digest); #251, #255 and #257 moved recurrence to 0.6.1, 0.7.0 and 0.8.0. In juniper-ml, #2232 widened the `[recurrence]` ceilings and floored canopy `>=0.9.0` and recurrence `>=0.6.0`; #2243, #2260 and #2292 then raised them step by step, to recurrence `>=0.8.0,<0.9.0` and model `>=0.6.0,<0.7.0`.
 - **2c's name is settled** (owner ruling 2026-10-18): `${RUN_DIR}/snapshots`. juniper-ml's `util/isolated_stack.bash` sets it, and juniper-canopy#751 (open) has canopy Lane B adopt it.
 - **P12's W5 items.** W5.10 (recurrence#208), W5.9 and W5.8 (B) (recurrence#209, #212), W5.2 (recurrence#214, #215; the bench row #219), W5.4 with R5's band (ml#2262), and W5.5 and W5.6 (ml#2273) merged. Their model and service halves were released in model 0.5.0 and 0.6.0 and recurrence 0.7.0 and 0.8.0 (2026-10-19, 10-20); the juniper-ml items are driver tooling, which no package ships. W5.7 merged as data#486 and waits for juniper-data's next release (§5).
-- **juniper-ml 0.11.0 and 0.11.1** carry the meta-package's floors (2026-10-21, 2026-10-25; §5). The driver follow-ups filed on 2026-10-10 merged: ml#2211 as ml#2316, and ml#2210 as ml#2320.
+- **juniper-ml 0.11.0 and 0.11.1** carry the meta-package's floors (2026-10-21, 2026-10-25; §5). The driver follow-ups filed on 2026-10-10 merged: ml#2211 as ml#2316, and ml#2210 as ml#2320. ml#2316's post-merge re-check passed on `main` `899796d2`. ml#2320 (`f7a1442d`, 2026-10-25T18:12Z; v1.15.1) makes `run_suite` refuse a suite, before its first `--up`, whose `per_run_timeout_seconds` does not exceed a cell's worst-case driver budget. The driver's `worst_case_budget` sums the health waits, dataset creation, every wall-bounded phase and `save_model`, or cascor's teardown settle and `snapshot_at_end`. The nine recurrence suites, at 3900 s against 1200–1800, now carry 4500; the 20 cascor suites already cleared theirs. Its post-merge re-check passed on `main` `c86a5e5e`, four merges later. Its out-of-scope finding, E-C's wall budget, is ml#2330 (§6 Group C).
 
 **Actions:**
 
@@ -610,7 +611,7 @@ There is no standing grant: each path session asks the owner in its own first tu
 3. **`…EQUITIES-CV-BLOWUP-INVESTIGATION.md`**, the W5.1 note covering ml#2130's measurement, has had its consensus review: three rounds, GO upheld (ml#2168, 2026-10-05). R5 was ruled on 2026-10-18 (the amended band, re-measured on W5.2's population), and W5.4 encoded it (ml#2262).
 4. **APD-ML-002's cascor half** (P6-08) remains, with a trap: a one-level unwrap harvests 2 of 6 names and looks fixed. Ship it after P6 OD-3, with the first registry-`metrics` tests.
 5. **W0.1's service-core half**, the environment swap of the shared `JuniperCascor1`, is an OWNER-ACTION. A live cascor on `:8202` imports from that environment (§8). Ruled 2026-10-18: the owner runs it at the next cascor restart on the original host, and M0 closes on its date (2026-10-24) with it as an owner follow-up.
-6. **Do not dispatch W0.1–W0.9, Phase 1 (W1.1–W1.14) or the done W5 items again.** Further P12 work follows `…0-11-1-published-servers-floors-next.md`: R-ML-SERVERS (§5), the recurrence-client 0.3.1 cut, the W1.11 and W1.12 smokes on the 0.8.0 image, and the owner's open items (§6 A1, A9).
+6. **Do not dispatch W0.1–W0.9, Phase 1 (W1.1–W1.14) or the done W5 items again.** Further P12 work follows `…0-11-1-published-servers-floors-next.md`: the juniper-ml 0.11.2 cut (§5; R-ML-SERVERS's floors merged as ml#2326; v1.15.1), the recurrence-client 0.3.1 cut, the W1.11 and W1.12 smokes on the 0.8.0 image, and the owner's open items (§6 A1, A9).
 
 ### XC-CLEAN (T6, owner signal): one cleanup pass, behind its gates
 
@@ -848,7 +849,7 @@ P4-14 and R-ML-a's floor were also P12's W1.11 code half (`…EQUITIES-END-TO-EN
 | P10 ci-tools | P10-04 (recurrence `starlette>=1.7.0` floor; closes #182) · P10-01 → owner P10-02 · P10-03 (X7) · P10-11 | Coordinate X7 with P2 |
 | P2 canopy | P2-05, Phase 11 and P2-06 done → Phase 12 (own rounds) · `…phase11-landed.md` items 25, 26 · P2-10 (F-057 `weights`, cascor first) · P2-17 · P2-09 · P2-13 · P2-08 · P2-12 · P2-R8 · P2-R10 · P2-R13 · P2-02's M-REPLAY reconciliation (`…E2E-CLICK-BY-CLICK-TEST-MATRIX.md`) | Lane B (P2-27..P2-30) waits on O7 (= P2-26, §6 A5); merges 2c → 2a → 2b → addendum. W1.10 and W1.12 landed parts of 2c, 2b (XC-P12); O7 rules the rest; 2c matches `JUNIPER_RECURRENCE_SNAPSHOTS_DIR`'s name to W1.10's |
 | P3 register | P3-10 · P3-12 · P3-14 (after P3-11) · P3-15 · P3-16 · P3-13 (as gates clear) · P3-04 (before about 10-23, row l) · P3-33 (= P6-33, data#432's register ID) · P3-35 | One register or primer PR open at a time (§8) |
-| P12 equities | M0 closes on its date (10-24); W0.1's service-core half is an owner follow-up · Phase 1 done (10-17) → M1 (11-21; the W1.11/W1.12 smokes owed on 0.8.0) · W1.1b not commissioned · W5.4 done · next: R-ML-SERVERS | The F-S10 data-client patch comes from a `v0.5.0` branch (§5) and is forward-ported to `main` for a 0.6.x patch (0.6.0 was cut without it). Annotate the false `succeeded` row (`20261003T091414Z-4ba6`) in `~/.local/state/juniper-experiments/index.jsonl` (residue) |
+| P12 equities | M0 closes on its date (10-24); W0.1's service-core half is an owner follow-up · Phase 1 done (10-17) → M1 (11-21; the W1.11/W1.12 smokes owed on 0.8.0) · W1.1b not commissioned · W5.4 done · R-ML-SERVERS's floors merged (ml#2326) · next: the juniper-ml 0.11.2 cut (owner ruling 2026-10-25) | The F-S10 data-client patch comes from a `v0.5.0` branch (§5) and is forward-ported to `main` for a 0.6.x patch (0.6.0 was cut without it). Annotate the false `succeeded` row (`20261003T091414Z-4ba6`) in `~/.local/state/juniper-experiments/index.jsonl` (residue) |
 | P1 backup | row k's archive PR (Appendix A, T2), before about 11-02 (row k); P1-12, in its own validated PR if Phase C step 5's count is non-zero (Wave 1's Tier-1 item 1); and P1-25, which is hygiene (T6) | P1-11 moved to XC-LEAKS (juniper-ml's part merged as ml#2203) |
 | P4 release | P4-22 (ml#2065: 109 hidden test methods) · P4-45 (after R-CANOPY-A: re-run the wheel-contract probe) | S; P4-22 can start now |
 
@@ -915,7 +916,7 @@ Fold each into a nearby PR. Appendix A lists every hygiene row.
 | **R-ML-a** (shipped with R-ML-b as juniper-ml 0.11.0, 2026-10-21; note below), after R-DATA | The X8 floor (merged as ml#2190); ml#2062's `[servers]` fix (P4 D-1; open, and not in 0.11.0); the `[recurrence]` caps (unchanged), widened before the P12 chain's recurrence and canopy cuts (cap first) | R-DATA on PyPI (met on 2026-10-10); an `[all]` dry-run resolve (met, ml#2292) | Users of `pip install juniper-ml[all]` |
 | **R-ML-b** (shipped with R-ML-a as 0.11.0), after the P12 chain; W10 later | The P12-chain floors: `[servers]` canopy `>=0.9.0`; `[recurrence]` recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`. Later, W10's floors once W5 and W6 publish | Each floor read from the published wheel; PyPI's 0.11.x metadata carries them (2026-10-25) | — |
 | **R-ML-TOOLS** (shipped as juniper-ml 0.11.1, 2026-10-25) | The `[tools]` floors on the shared security patches, `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0` (ml#2314). Rated Medium, CWE-201, CWE-755 and CWE-770 (owner, 2026-10-25), as the releases it floors | R-OBS-SC on PyPI (met on 2026-10-10); proposal ml#2319, archive ml#2321; the owner approved the gate (run 40178692483) | `[tools]` and `[all]` users whose upgrade kept observability 0.4.0 or service-core 0.7.0 |
-| **R-ML-SERVERS** (next; unblocked on 2026-10-25): a juniper-ml patch | The `[servers]` floors `juniper-data>=0.17.1` and `juniper-cascor>=0.12.0`, which floor the shared security patches; ml#2062's fix if it is ready | Both on PyPI (met: data 2026-10-23, cascor 2026-10-25). The floors PR first, pre-flighted for `[servers]` and `[all]` against real PyPI; then the owner's cut, gate and rating | `[servers]` and `[all]` users whose upgrade keeps data 0.17.0 or cascor 0.11.0 |
+| **R-ML-SERVERS** (floors merged as ml#2326, `f823b0b7`; the cut is juniper-ml **0.11.2** by the owner's ruling of 2026-10-25, over `detect.py`'s 0.12.0; v1.15.1): a juniper-ml patch | The `[servers]` floors `juniper-data>=0.17.1` and `juniper-cascor>=0.12.0`, which floor the shared security patches; ml#2062's fix if it is ready (ml#2333, open on 2026-10-25) | Both on PyPI (met: data 2026-10-23, cascor 2026-10-25). The floors PR first, pre-flighted for `[servers]` and `[all]` against real PyPI; then the owner's cut, gate and rating | `[servers]` and `[all]` users whose upgrade keeps data 0.17.0 or cascor 0.11.0 |
 
 **R-DC-PATCH's branch.** P12's W1.4 merged to data-client `main` on 2026-10-05 (data-client#222, a breaking contract change). So `main` cuts 0.6.0, past canopy's `<0.6.0` cap (`EX/round7-laneA-reprobe.md`, drift); recurrence's is `<0.7.0` since recurrence#196.
 
@@ -960,7 +961,7 @@ Fold each into a nearby PR. Appendix A lists every hygiene row.
 4. R-ML-a: shipped as juniper-ml 0.11.0 (2026-10-21), with R-ML-b.
 5. The P12 chain: done (2026-10-17), and carried on through recurrence 0.8.0 (2026-10-20).
 6. R-ML-b: shipped with R-ML-a. R-ML-TOOLS followed as 0.11.1 (2026-10-25).
-7. R-ML-SERVERS, now that data 0.17.1 and cascor 0.12.0 are served. It waits on none of the steps above.
+7. R-ML-SERVERS: its floors merged as ml#2326 (2026-10-25), and the owner ruled the cut **0.11.2** (2026-10-25; `detect.py` proposed 0.12.0). The cut waits on none of the steps above (v1.15.1).
 
 **Outside this order**, each cut when its "Ready when" holds:
 
@@ -1086,6 +1087,11 @@ The few that gate something are asked before what they gate: P7's D4 and D5, and
 - **P7**: D4 and D5, which gate XC-CLEAN; D6 (record only).
 - **P8**: B-1.
 - **P10**: OD-7..OD-10.
+- **P12** (v1.15.1): ml#2330, E-C's wall budget against the R-6 gate's third contract. It fails only where juniper-cascor's `spiral-baseline.yaml` resolves, so CI never sees it. The options, from the issue:
+  1. raise E-C's budget, e.g. `execution.max_wall_seconds: 5400` (worst case 5850 s, under its 7200 s ceiling);
+  2. keep 3600 s and exempt E-C, on its own 517 s/cell measurement;
+  3. re-derive the cap threshold from post-#563 timings, which needs a fresh measurement.
+  Opened with the owner on 2026-10-25.
 
 ---
 
@@ -1990,6 +1996,7 @@ From round 13 (owner ruling 2026-10-10), a round whose only MAJORs are the line 
   - v1.13.0 took in the drift from 2026-10-08T22:16Z to the final census of 2026-10-10T21:30Z: Phase B and B9, the releases cut ahead of their gates and the fix-forwards owed for them, the P12 chain's first cuts, W1.11, Phase 1 wave 2, P2-06 and juniper-cascor 0.12.0's cut. Round 14 checks it.
   - v1.14.0 took in no drift. It records the plan as of 2026-10-10T21:30Z with round 14's corrections, marked stale (Snapshot), and no round checks it (owner ruling 2026-10-24).
   - v1.15.0 is a record of P12's drift to 2026-10-25 and of the releases P12's rows name (Snapshot). No round checks it (owner ruling 2026-10-24); its facts cite the census, `util/ad-hoc/2026-10-25_p12_arc_state_reprobe.py` and `…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` v1.7.16.
+  - v1.15.1 is a record of ml#2320's merge and re-check, ml#2330, ml#2326 and the owner's 0.11.2 ruling (2026-10-25). No round checks it (owner ruling 2026-10-24); its facts cite those PRs and `util/ad-hoc/2026-10-25_consolidated_plan_v1_15_1_session_record.py`.
 - **Gate severity, from round 9.** The gate is a screen, and every round has found forms it misses.
   - From round 9, a gate finding is a BLOCKER only when the gate fails open or misses a form in the case list of `util/ad-hoc/2026-10-05_gate_regression.py`.
   - A variant of a listed form (other quoting, escaping, separators or wrappers) is a MINOR, because the line read (§3 XC-PRESERVE method) is its control. This is not in `…CONSENSUS-PROCEDURE.md`; it keeps a variant from reopening the plan while still adding each one to the case list.
