@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plan v1.7.18: the #2316 and #2320 post-merge re-checks passed, juniper-ml#2330 (the p4/e-c wall budget) is filed, and the meta-package cut's version is back with the owner.
+"""Plan v1.7.18: the #2316 and #2320 post-merge re-checks passed, juniper-ml#2330 (the p4/e-c wall budget) is filed, and the cut stays 0.11.2 by the owner's ruling.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
@@ -29,7 +29,7 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parents[2]
 _PLAN = _REPO / "notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md"
 
-HEADLINE = "the #2316 and #2320 re-checks passed, juniper-ml#2330 filed, the cut's version back with the owner"
+HEADLINE = "the #2316 and #2320 re-checks passed, juniper-ml#2330 filed, the cut stays 0.11.2"
 
 CHECKED = (
     "the post-merge re-check of juniper-ml#2316 (the v1.7.16 handoff's item 1) passed on `main` `899796d2`: its CHANGELOG "
@@ -42,10 +42,10 @@ CHECKED = (
     "(`3600.0 not greater than 3600.0`). That suite sweeps `max_hidden_units: 64` on `spiral-baseline.yaml`'s 3,600 s wall "
     "budget, equal to the driver default the wide-cap contract requires it to exceed. It fails identically on pristine "
     "`899796d2`, and CI never sees it because the sibling base does not resolve there. The issue sets out three options: "
-    "raise the budget, exempt the suite on its own 517 s-per-cell measurement, or re-derive the threshold. The cut's "
-    "version moved: `util/release_train/detect.py` proposes 0.12.0, not the 0.11.2 the owner ruled, because "
-    "`[Unreleased]` carries an `### Added` entry (juniper-ml#2327) and juniper-ml#2322's subject is `feat(guard)`, either "
-    "of which it reads as a minor"
+    "raise the budget, exempt the suite on its own 517 s-per-cell measurement, or re-derive the threshold. "
+    "`util/release_train/detect.py` now proposes 0.12.0 for the cut, because `[Unreleased]` carries an `### Added` entry "
+    "(juniper-ml#2327) and juniper-ml#2322's subject is `feat(guard)`, either of which it reads as a minor; the owner "
+    "ruled on 2026-10-25 that the cut is 0.11.2 regardless (consolidated plan v1.15.1, juniper-ml#2334)"
 )
 
 NEXT_OLD = (
@@ -54,9 +54,9 @@ NEXT_OLD = (
 )
 
 NEXT_NEW = (
-    "  - **Next**: R-ML-SERVERS: the `[servers]` floors are on `main` (juniper-ml#2326), so what remains is the meta-package cut, driven to `PENDING_PYPI_APPROVAL` with "
-    "0.11.1's rating, as the owner ruled. Its version is the owner's call: the release train proposes 0.12.0, while the 2026-10-25 ruling named 0.11.2. Its `pypi` gate "
-    "stays the owner's. juniper-ml#2062's fix (`[servers]` installs no client) gets its own PR and a later release. juniper-ml#2330 (the `p4/e-c` wall budget) waits on "
+    "  - **Next**: R-ML-SERVERS: the `[servers]` floors are on `main` (juniper-ml#2326), so what remains is the 0.11.2 cut, driven to `PENDING_PYPI_APPROVAL` with "
+    "0.11.1's rating, as the owner ruled; the owner kept 0.11.2 on 2026-10-25 although the release train proposes 0.12.0. Its `pypi` gate stays the owner's. "
+    "juniper-ml#2062's fix (`[servers]` installs no client) is juniper-ml#2333, open, for a later release. juniper-ml#2330 (the `p4/e-c` wall budget) waits on "
     "the owner's choice of option. "
 )
 
@@ -80,7 +80,7 @@ def row() -> str:
     return (
         f"| 2026-10-25 | 1.7.18 | **{HEADLINE[0].upper()}{HEADLINE[1:]}**: {CHECKED}. "
         "Updated: Status line, the Progress block (a turing session 11 bullet; Next's head rewritten). "
-        "Owed: the meta-package cut (its version and its `pypi` gate are the owner's); juniper-ml#2330 (the owner's option); juniper-ml#2062's fix; "
+        "Owed: the 0.11.2 cut (its `pypi` gate is the owner's); juniper-ml#2330 (the owner's option); juniper-ml#2062's fix (juniper-ml#2333); "
         "the client 0.3.1 release; juniper-data's next release (W5.7); juniper-config-tools 0.2.0 (owner); W0.1's service-core half; the snapshot path's first live run. "
         "| Paul Calnon |\n"
     )
