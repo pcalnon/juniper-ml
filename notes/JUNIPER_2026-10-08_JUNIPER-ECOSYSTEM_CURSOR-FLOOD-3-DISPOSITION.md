@@ -335,7 +335,7 @@ All under `util/ad-hoc/` (script-placement rule; retained as provenance of recor
   - juniper-ml 0.11.1 (PyPI 2026-10-25 18:03Z) carries juniper-ml#2314's `[tools]` floors. Another session cut it: proposal juniper-ml#2319, archive juniper-ml#2321.
   - juniper-ml#2326 floors `[servers]` at `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`. This is R-ML-SERVERS in §5 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`; the owner assigned it to the session that keeps this record.
     - In a `[servers]` install the patches arrive through cascor 0.12.0, whose floors are unconditional.
-    - data 0.17.1's floors sit under its `[api]` extra, which `[servers]` does not request. Its published wheel differs from 0.17.0's only in version strings and those floors. So the data floor keeps `[servers]` level with the image juniper-deploy#258 pins, and is not itself a security floor.
+    - data 0.17.1's floors sit under its `[api]` extra, which `[servers]` does not request. Its published wheel differs from 0.17.0's only in version strings and those floors, apart from packaging metadata: `RECORD`, and `WHEEL`'s builder line (setuptools 84.0.0 -> 84.2.1). So the data floor keeps `[servers]` level with the image juniper-deploy#258 pins, and is not itself a security floor.
   - **Owner's:**
     - the juniper-ml release that carries `[servers]` to PyPI (0.11.2);
     - juniper-ml#2062, because `[servers]` installs no client, and data's service runtime and its floors also sit behind `[api]`.
