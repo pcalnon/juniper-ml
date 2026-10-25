@@ -1377,7 +1377,10 @@ jobs:
           # gh auth, deploy keys, gh api write/field flags in any position, keychain dumps,
           # user-level .claude settings edits, and (commit-signing K12) changes to the owner's signing
           # configuration and git hooks: -c include.path= / gpg.program, --config-env, signing-key
-          # git config writes, ~/.gitconfig, ~/.config/git, the system gitconfigs and .git/hooks. Payloads pipe
+          # git config writes, ~/.gitconfig, ~/.config/git, the system gitconfigs and .git/hooks; and (task C9)
+          # Serena's edit tools reaching .git/, .ssh, Claude settings or the registration files (symlinks
+          # followed), and MCP registration: mcp add* whatever the command word, --mcp-config,
+          # ~/.claude.json, .mcp.json and the two approval keys. Payloads pipe
           # through it with a temp
           # JUNIPER_GUARD_HOME: allowed calls print nothing (never "allow"); bad input exits 2.
           # Also drives util/install_claude_agent_guard.bash against a temp settings file.
