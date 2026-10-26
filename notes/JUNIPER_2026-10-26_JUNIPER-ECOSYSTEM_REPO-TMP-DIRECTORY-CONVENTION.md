@@ -202,11 +202,11 @@ quotes each PR's own title; read the PR for its file list.
 | juniper-k8s | C | juniper-k8s#14 (open; the repo has no CI) | "temp files go in the repo's tmp/, never /tmp (AGENTS.md, ignore line)" |
 | juniper-recurrence | C | juniper-recurrence#225 (open) | "temp files go in the repo's tmp/, never /tmp (AGENTS.md, examples, ignore line)" |
 | juniper-slacker | C | juniper-slacker#1 (open; the repo has no CI) | "!file's temp root is the repo's own tmp/, not /tmp" |
-| juniper-cascor | B | pending | pending |
-| juniper-cascor-client | B | pending | pending |
-| juniper-cascor-worker | B | pending | pending |
-| juniper-data | B | pending | pending |
-| juniper-data-client | B | pending | pending |
+| juniper-cascor | B | juniper-cascor#728 (open) | "nothing is written under /tmp -- lock-regen recipes use tmp/, the git_sha test survives an in-repo TMPDIR, /tmp/ ignored, the rule resident in AGENTS.md" |
+| juniper-cascor-client | B | juniper-cascor-client#187 (open) | "nothing is written under /tmp -- /tmp/ ignored; the rule resident in AGENTS.md" |
+| juniper-cascor-worker | B | juniper-cascor-worker#217 (open) | "nothing is written under /tmp -- /tmp/ ignored, the CPU-lock recipe uses tmp/, the rule resident in AGENTS.md" |
+| juniper-data | B | juniper-data#494 (open) | "nothing is written under /tmp -- tmp_path for the one test that did; /tmp/ ignored; the rule resident in AGENTS.md" |
+| juniper-data-client | B | juniper-data-client#244 (open) | "nothing is written under /tmp -- the lockfile step test relocates its runner /tmp; /tmp/ ignored; the rule resident in AGENTS.md" |
 
 ## 10. Left in juniper-ml, deliberately
 
