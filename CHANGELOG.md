@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`p4/e-c-cascor-noise-robustness` pins a wall budget above the driver default** (juniper-ml#2330). E-C sweeps
+  cap 64, the R-6 gate's wide-cap threshold, but took its only budget from juniper-cascor's `spiral-baseline.yaml`,
+  whose 3600 s equals the driver's `DEFAULT_MAX_WALL_SECONDS`. `WallBudgetContractTest` therefore failed it
+  wherever the sibling base resolved, and CI, which never resolves it, filed the suite `undecidable`.
+  - The suite sets `execution.max_wall_seconds: 5400` (owner ruling 2026-10-26, the issue's option 1). `run_suite`
+    forwards it as `--max-wall-seconds`, so the eight cells keep their ids and `config_sha256`. The worst-case
+    driver budget goes from 4050 s to 5850 s, still under `per_run_timeout_seconds: 7200`, and
+    `util/ad-hoc/2026-10-25_driver_budget_survey.py` reports every suite OK.
+  - `tests/test_experiment_suite_yamls.py` gains `test_e_c_stays_above_its_surveyed_budget`, a CI pin on both
+    bounds. Without it, deleting the line would make E-C `undecidable` in CI again rather than fail it, and CI
+    cannot judge E-C's timeout ordering at all.
+  - A comment in `util/experiments/run_experiment.py` that cited E-C's timeout rationale at `:22-26` now cites
+    `:36-41`.
+
 ## [0.11.2] - 2026-10-25
 
 ### Added
