@@ -252,7 +252,7 @@ TERMINAL_UNSETTLED = frozenset({"stalled", "timed_out"})
 #: AFTER the wall budget is already spent, and every second it takes is taken from the
 #: margin the manifest write needs before run_suite's `per_run_timeout_seconds` kills the
 #: subprocess -- and a kill there records `timed_out` with exit_code null and NO manifest
-#: (the failure mode p4/e-c-cascor-noise-robustness.yaml:22-26 raised its timeout to avoid).
+#: (the failure mode p4/e-c-cascor-noise-robustness.yaml:36-41 raised its timeout to avoid).
 TEARDOWN_PREEMPT_TIMEOUT_SECONDS = 30.0
 #: The bound on cascor's opt-in ``outputs.snapshot_at_end`` ``POST /v1/snapshots`` (:func:`collect_results`).
 SNAPSHOT_AT_END_TIMEOUT_SECONDS = 120.0

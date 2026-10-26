@@ -98,7 +98,7 @@
 | Field                  | Value        |
 |------------------------|--------------|
 | **PyPI Name**          | `juniper-ml` |
-| **Version**            | `0.11.2`     |
+| **Version**            | `0.11.3`     |
 | **Python**             | `>=3.12`     |
 | **Base Dependencies**  | None         |
 | **Importable Modules** | None         |
@@ -114,9 +114,9 @@
 | `clients`   | `juniper-data-client`                                                                    | `>=0.5.0`         |
 |             | `juniper-cascor-client`                                                                  | `>=0.8.0`         |
 | `worker`    | `juniper-cascor-worker`                                                                  | `>=0.4.0`         |
-| `servers`   | `juniper-canopy`                                                                         | `>=0.9.0`         |
-|             | `juniper-cascor`                                                                         | `>=0.12.0`        |
-|             | `juniper-data`                                                                           | `>=0.17.1`        |
+| `servers`   | `juniper-canopy[juniper-cascor,juniper-data]`                                            | `>=0.9.0`         |
+|             | `juniper-cascor[api,juniper-data]`                                                       | `>=0.12.0`        |
+|             | `juniper-data[api]`                                                                      | `>=0.17.1`        |
 | `tools`     | `juniper-ci-tools`                                                                       | `>=0.1.0`         |
 |             | `juniper-config-tools`                                                                   | `>=0.1.0,<0.2.0`  |
 |             | `juniper-doc-tools`                                                                      | `>=0.1.0,<0.2.0`  |
@@ -134,7 +134,7 @@
 ```bash
 pip install juniper-ml[clients]   # Data + CasCor HTTP/WS clients
 pip install juniper-ml[worker]    # Distributed training worker
-pip install juniper-ml[servers]   # Canopy + Cascor + Data services
+pip install juniper-ml[servers]   # Canopy + Cascor + Data services, with their clients
 pip install juniper-ml[tools]     # CI/doc tools + model-core + observability + service-core
 pip install juniper-ml[doc-tools] # Markdown link validator only (back-compat alias)
 pip install juniper-ml[recurrence]# Δt-native LMU model + FastAPI app + HTTP client
@@ -174,7 +174,7 @@ pip install juniper-ml[all]       # Everything
 
 ## Ecosystem Compatibility
 
-`juniper-ml` 0.11.2 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups. The `0.6.x` row is kept for history and covers 0.7.x too -- 0.7.0/0.7.1 changed no floor. The `0.11.x` row is 0.11.2's. 0.11.0 and 0.11.1 published `juniper-data>=0.17.0` and `juniper-cascor>=0.11.0`, which 0.11.2 raises to `>=0.17.1` and `>=0.12.0`. 0.11.0 published `juniper-observability>=0.2.0`, which 0.11.1 raised to `>=0.4.1`; 0.11.1 also raised `juniper-service-core`, which has no column here, from `>=0.2.0,<0.8.0` to `>=0.7.1,<0.8.0`. The three `recurrence` pins have no columns here; 0.11.0 through 0.11.2 set them to `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0` (see the extras table above), and 0.8.0 through 0.10.0 published `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`.
+`juniper-ml` 0.11.3 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups. The `0.6.x` row is kept for history and covers 0.7.x too -- 0.7.0/0.7.1 changed no floor. The `0.11.x` row is 0.11.3's, and its floors are 0.11.2's. 0.11.3 moves no floor: it requests the three servers with their own extras (juniper-ml#2062; the extras table above names them), and an extras marker has no column here. 0.11.0 and 0.11.1 published `juniper-data>=0.17.0` and `juniper-cascor>=0.11.0`, which 0.11.2 raised to `>=0.17.1` and `>=0.12.0`. 0.11.0 published `juniper-observability>=0.2.0`, which 0.11.1 raised to `>=0.4.1`; 0.11.1 also raised `juniper-service-core`, which has no column here, from `>=0.2.0,<0.8.0` to `>=0.7.1,<0.8.0`. The three `recurrence` pins have no columns here; 0.11.0 through 0.11.3 set them to `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0` (see the extras table above), and 0.8.0 through 0.10.0 published `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`.
 
 | juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools  | juniper-observability |
 |------------|--------------|----------------|----------------|---------------------|-----------------------|-----------------------|------------------|--------------------|-----------------------|
@@ -3449,7 +3449,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
   - Structural checks + the detector's **negative control** always run offline (a gate that cannot fail is not a gate; an untyped policy must read as `branch`, never `tag`). The live half is gated on `GITHUB_ACTIONS=true` / `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` and is read-only (`gh api` GETs).
   - **No silent caps**: per-PR CI's built-in `GITHUB_TOKEN` reaches juniper-ml only, so the live half partitions the registry repos into readable/unreadable, verifies the readable ones, **names** the unverified ones, and refuses to pass if nothing at all was readable. A repo that IS readable but whose environment 404s is a real finding (deleted environment), not a permission skip. Full-fleet cover: `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`.
   - Repair: `util/ad-hoc/2026-08-17_apply_env_tag_policies.bash --apply <repo> <env>`.
-- `tests/test_pyproject_extras.py` -- Lint test pinning the `[project.optional-dependencies]` surface (`clients`, `worker`, `servers`, `tools`, `doc-tools`, `all`). Asserts the exact set of extras, the exact membership of each, that `[all]` aggregates every non-alias extra exactly once, and that `[project].version` is semver-ish. Added pre-0.5.0 after juniper-ml#295 introduced `[servers]` + `[tools]` without regression coverage; any future edit to extras must update the lint contract in the same PR.
+- `tests/test_pyproject_extras.py` -- Lint test pinning the `[project.optional-dependencies]` surface (`clients`, `worker`, `servers`, `tools`, `doc-tools`, `all`). Asserts the exact set of extras, the exact membership of each, that `[all]` aggregates every non-alias extra exactly once, that `[servers]` requests each server's client and `[api]` extras and no torch-pulling one (juniper-ml#2062), and that `[project].version` is semver-ish. Added pre-0.5.0 after juniper-ml#295 introduced `[servers]` + `[tools]` without regression coverage; any future edit to extras must update the lint contract in the same PR.
   - juniper-ml's own pin check runs every PR; the cross-repo assertion auto-skips when siblings aren't on disk and additionally skips local runs by default. Set `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` to opt in locally.
 - `tests/test_template_library_drift.py` -- Lint test enforcing manifest <-> template consistency for the custom-agent template library (`prompts/agent_templates/`): every registered template exists, and every template is registered; each follows the canonical section skeleton in order; every `{{placeholder}}` matches the systematic convention; the `generic` fallback always matches.
   - The **sole gate** for the library because `prompts/**` is excluded from all pre-commit hooks, so it must stay wired into `ci.yml`. Design-of-record §5.4/§9.

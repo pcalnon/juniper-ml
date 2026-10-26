@@ -499,6 +499,38 @@ class WallBudgetContractTest(unittest.TestCase):
                 self.assertGreater(min(effective), default, f"{path.name} pins wall budget {min(effective)}s, at or below the driver's {default}s default — no effect")
         self.assertGreater(checked, 0, f"no wide-cap cascor suite was decidable — the contract would pass vacuously (undecidable: {undecidable})")
 
+    def test_e_c_stays_above_its_surveyed_budget(self) -> None:
+        """Regression pin for ``p4/e-c-cascor-noise-robustness.yaml`` (juniper-ml#2330), which CI cannot fully judge.
+
+        E-C sweeps cap 64 on juniper-cascor's ``spiral-baseline.yaml``, whose
+        ``outputs.max_wall_seconds: 3600`` only EQUALS the driver default, so the contract above
+        failed it wherever the sibling base resolved, and CI, where it never resolves, filed it
+        ``undecidable``. The suite now pins ``execution.max_wall_seconds: 5400``, which CI reads
+        without the base; deleting that line would send E-C back to ``undecidable`` rather than fail,
+        and the timeout-ordering contract declines E-C in CI either way. Surveyed 2026-10-26
+        (``util/ad-hoc/2026-10-25_driver_budget_survey.py --project-dir <Juniper root>``): its
+        worst-case driver budget is 180 + 120 + 5400 + 30 + 120 = 5850 s against
+        ``per_run_timeout_seconds: 7200``. The survey is authoritative for the live number; this only
+        stops the suite silently dropping back under either bound.
+        """
+        default = _driver_default("DEFAULT_MAX_WALL_SECONDS")
+        surveyed_budget = 5850
+        rel = "p4/e-c-cascor-noise-robustness.yaml"
+        path = SUITES_ROOT / rel
+        self.assertTrue(path.is_file(), f"{rel} moved or was renamed — re-point this pin")
+        doc = run_suite.load_suite(path)
+        self.assertEqual(doc["suite"]["app"], "cascor")
+        execution = doc.get("execution") or {}
+        wall = execution.get("max_wall_seconds")
+        self.assertIsNotNone(wall, f"{rel} lost execution.max_wall_seconds; its base's 3600 s only equals the driver's {default}s default (juniper-ml#2330)")
+        self.assertGreater(wall, default, f"{rel} pins execution.max_wall_seconds={wall}, at or below the driver's {default}s default — no effect (juniper-ml#2330)")
+        timeout = execution.get("per_run_timeout_seconds")
+        self.assertGreater(
+            timeout,
+            surveyed_budget,
+            f"{rel} dropped to per_run_timeout_seconds={timeout} against a surveyed {surveyed_budget}s worst-case driver budget; " "at or below it run_suite's subprocess kill destroys the driver's manifest",
+        )
+
     def test_a_budget_pinned_only_in_base_config_counts(self) -> None:
         """The false-positive class this contract shipped with, caught in CI on day one.
 

@@ -42,15 +42,23 @@ suite:
 # stall_seconds is defensive rather than required — the Q-2 detector only misreads pools >= 16 and
 # baseline's pool is 8 (E-A's pool-8 cells all completed clean) — but a noise-0.2 cell is the
 # slowest thing here, and a false "stalled" is expensive to re-run.
-execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 7200, stall_seconds: 1200}
+# max_wall_seconds: 5400 (juniper-ml#2330). Cap 64 is the R-6 gate's wide-cap threshold, so the wall
+# budget must sit strictly ABOVE the driver's 3600 s default (WallBudgetContractTest in
+# tests/test_experiment_suite_yamls.py), and spiral-baseline's 3600 only equals it. run_suite forwards
+# the key as --max-wall-seconds, so cell ids and config_sha256 are unchanged. The worst-case driver
+# budget becomes 180 + 120 + 5400 + 30 + 120 = 5850 s (health waits, dataset, wall, teardown settle,
+# snapshot_at_end), still under per_run_timeout_seconds 7200; a hung cell now runs 30 min longer
+# before the driver stops it.
+execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 7200, stall_seconds: 1200, max_wall_seconds: 5400}
 matrix:
   dataset.params.noise: [0.0, 0.05, 0.1, 0.2]
   # Single-element axes add no cells (expand_cells takes the cross-product), so this stays 4
   # spiral cells. 64 is E-I's resolving point (64 units -> 1.00 on the same n_rotations 3.0
   # spiral), and max_iterations must EQUAL OR CLEAR the unit cap or that cap can never bind:
   # growth adds one unit per iteration, so 64 is exactly enough. E-I c001 measured this exact
-  # shape at 517 s/cell post-#563, so four spiral cells cost ~35-45 min against the 3600 s
-  # budget spiral-baseline already grants — no outputs.max_wall_seconds override needed.
+  # shape at 517 s/cell post-#563, so four spiral cells cost ~35-45 min, well inside even the
+  # 3600 s budget spiral-baseline grants. The 5400 in `execution` is the R-6 contract's, not a
+  # measured need (juniper-ml#2330).
   training.params.max_hidden_units: [64]
   training.params.max_iterations: [64]
 include:
