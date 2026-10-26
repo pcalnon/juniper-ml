@@ -30,7 +30,7 @@ Published components — `juniper-canopy`, `juniper-cascor`, `juniper-data`, `ju
 ## Ecosystem Compatibility
 
 This meta-package is part of the [Juniper](https://github.com/pcalnon/juniper-ml) ecosystem.
-The pyproject pins matching `juniper-ml` 0.11.2:
+The pyproject pins matching `juniper-ml` 0.11.3:
 
 | Package                                       | Pin              |
 |-----------------------------------------------|------------------|

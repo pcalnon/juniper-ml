@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.3] - 2026-10-26
+
 ### Fixed
 
 - **`[servers]` installs what each server needs to run as a service** (juniper-ml#2062; option (a+), owner ruling 2026-10-25).
