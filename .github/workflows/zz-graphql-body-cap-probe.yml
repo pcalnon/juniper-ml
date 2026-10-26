@@ -1,0 +1,27 @@
+# THROWAWAY -- never merged, and its PR targets a throwaway base branch, so no main-scoped workflow
+# runs. It measures which GraphQL request-body sizes GitHub accepts from a GitHub-hosted runner: the
+# runner-side measurement that owner ruling 2026-10-18 named for util/release_train/ceremony.py's
+# ARCHIVE_B64_MAX_DEFAULT (follow-up to juniper-ml#2227). Read-only: no-op queries, contents: read.
+name: GraphQL body-cap probe (throwaway)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: GraphQL body-cap probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Probe
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 -I util/ad-hoc/2026-10-26_graphql_body_cap_probe.py --mode both --bisect --sizes 100000,125000,130000,131000,140000,262144,524288,1048576,2097152,4194304,8388608,16777216
