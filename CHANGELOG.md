@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.3] - 2026-10-26
+
 ### Fixed
 
 - **`[servers]` installs what each server needs to run as a service** (juniper-ml#2062; option (a+), owner ruling 2026-10-25).
@@ -29,8 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and juniper-data-client 0.6.0. `[all]` is unchanged at 95.
   - **Verified on the built wheel** by `util/ad-hoc/2026-10-25_verify_servers_extras_ml2062.bash`. It runs
     `util/ad-hoc/2026-09-21_decision11_wheel_contract_probe.py` in two clean Python 3.12 venvs with CPU torch, one
-    with the published 0.11.1's `[servers]` and one with this change's.
-    - With 0.11.1, JD-8, CC-2 and CC-3 SKIP on `No module named 'juniper_data_client'`, and CP-1 reports
+    with a published release's `[servers]` and one with this change's. The control was 0.11.1 on 2026-10-25, and
+    0.11.2 on 2026-10-26, after this change was re-cut on top of the 0.11.2 cut.
+    - With either control, JD-8, CC-2 and CC-3 SKIP on `No module named 'juniper_data_client'`, and CP-1 reports
       `backend.service_backend` not importable (`No module named 'juniper_cascor_client'`).
     - With this change, all four pass and `service_backend` imports. CP-1 is a defect probe that records PASS either
       way, so its text is the measurement.

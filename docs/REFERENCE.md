@@ -98,7 +98,7 @@
 | Field                  | Value        |
 |------------------------|--------------|
 | **PyPI Name**          | `juniper-ml` |
-| **Version**            | `0.11.2`     |
+| **Version**            | `0.11.3`     |
 | **Python**             | `>=3.12`     |
 | **Base Dependencies**  | None         |
 | **Importable Modules** | None         |
@@ -174,7 +174,7 @@ pip install juniper-ml[all]       # Everything
 
 ## Ecosystem Compatibility
 
-`juniper-ml` 0.11.2 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups. The `0.6.x` row is kept for history and covers 0.7.x too -- 0.7.0/0.7.1 changed no floor. The `0.11.x` row is 0.11.2's. 0.11.0 and 0.11.1 published `juniper-data>=0.17.0` and `juniper-cascor>=0.11.0`, which 0.11.2 raises to `>=0.17.1` and `>=0.12.0`. 0.11.0 published `juniper-observability>=0.2.0`, which 0.11.1 raised to `>=0.4.1`; 0.11.1 also raised `juniper-service-core`, which has no column here, from `>=0.2.0,<0.8.0` to `>=0.7.1,<0.8.0`. The three `recurrence` pins have no columns here; 0.11.0 through 0.11.2 set them to `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0` (see the extras table above), and 0.8.0 through 0.10.0 published `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`.
+`juniper-ml` 0.11.3 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups. The `0.6.x` row is kept for history and covers 0.7.x too -- 0.7.0/0.7.1 changed no floor. The `0.11.x` row is 0.11.3's, and its floors are 0.11.2's. 0.11.3 moves no floor: it requests the three servers with their own extras (juniper-ml#2062; the extras table above names them), and an extras marker has no column here. 0.11.0 and 0.11.1 published `juniper-data>=0.17.0` and `juniper-cascor>=0.11.0`, which 0.11.2 raised to `>=0.17.1` and `>=0.12.0`. 0.11.0 published `juniper-observability>=0.2.0`, which 0.11.1 raised to `>=0.4.1`; 0.11.1 also raised `juniper-service-core`, which has no column here, from `>=0.2.0,<0.8.0` to `>=0.7.1,<0.8.0`. The three `recurrence` pins have no columns here; 0.11.0 through 0.11.3 set them to `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0` (see the extras table above), and 0.8.0 through 0.10.0 published `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`.
 
 | juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools  | juniper-observability |
 |------------|--------------|----------------|----------------|---------------------|-----------------------|-----------------------|------------------|--------------------|-----------------------|
