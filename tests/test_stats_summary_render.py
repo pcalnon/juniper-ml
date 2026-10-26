@@ -188,6 +188,38 @@ class GitAndKindRenderTest(unittest.TestCase):
         self.assertIn("theta: 0.5 (explicit)", ss.render_summary_md(stats))
         self.assertNotIn("data-driven", ss.render_summary_md(stats))
 
+    def test_theta_service_default_is_not_data_driven(self) -> None:
+        """An unset ``train.theta`` resolves to ``service.default_theta`` when the run's YAML sets one.
+
+        juniper-recurrence's train route uses ``req.theta if req.theta is not None else
+        settings.default_theta``, so θ is data-driven only when the service default is unset too.
+        The label used to read only the train block and called this fixed θ data-driven.
+        """
+        for train_config in ({}, {"theta": None}):
+            with self.subTest(train_config=train_config):
+                stats = ss.build_stats(_manifest(), kind="recurrence", train_summary={}, train_config=train_config, service_config={"default_theta": 91.0})
+                self.assertEqual(stats["recurrence"]["theta"], {"value": 91.0, "note": "service default from service.default_theta; train.theta is unset"})
+                rendered = ss.render_summary_md(stats)
+                self.assertIn("- theta: 91.0 (service default from service.default_theta; train.theta is unset)", rendered)
+                self.assertNotIn("data-driven", rendered)
+
+    def test_theta_source_precedence(self) -> None:
+        """An explicit ``train.theta`` outranks the service default; a null or absent default leaves θ data-driven."""
+        data_driven = {"value": None, "note": "data-driven (resolved from per-window elapsed time)"}
+        cases = [
+            ({"theta": 0.5}, {"default_theta": 91.0}, {"value": 0.5, "note": "explicit"}),
+            ({"theta": None}, {"default_theta": None}, data_driven),
+            ({"theta": None}, {"default_ridge": "gcv"}, data_driven),
+            ({"theta": None}, None, data_driven),
+            ({"theta": None}, ["default_theta", 91.0], data_driven),
+            (None, {"default_theta": 91.0}, {"value": 91.0, "note": "service default from service.default_theta; train.theta is unset"}),
+        ]
+        for train_config, service_config, expected in cases:
+            with self.subTest(train_config=train_config, service_config=service_config):
+                self.assertEqual(ss.theta_block(train_config, service_config), expected)
+                stats = ss.build_stats(_manifest(), kind="recurrence", train_summary={}, train_config=train_config, service_config=service_config)
+                self.assertEqual(stats["recurrence"]["theta"], expected)
+
     def test_class_distribution_line_is_conditional(self) -> None:
         with_dist = _render(dataset={"shapes": {}, "class_distribution": {"0": 10, "1": 12}})
         self.assertIn("- class distribution: {'0': 10, '1': 12}", with_dist)

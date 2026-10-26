@@ -131,7 +131,7 @@ Operator contract: [`docs/REFERENCE.md` § X7 Off-Loop Census](../../docs/REFERE
 
 ## Topology step order and blast-radius IDs (operational)
 
-`e2e_seg17_topology_driver.py` `--step` is order-preserving on one page. `topo` fills the raw-topology store (M-03 Weight Matrix); a later `topostate` then scores M-18 `INDETERMINATE`. Re-drive `--step topostate` **alone**. Scorer predicates stay with in-flight docs #1675.
+`e2e_seg17_topology_driver.py` `--step` is order-preserving on one page. `topo` fills the raw-topology store (M-03 Weight Matrix); a later `topostate` then scores M-18 `INDETERMINATE`. Re-drive `--step topostate` **alone**. Scorer predicates: [`docs/REFERENCE.md` § Predicates that landed with #1672](../../docs/REFERENCE.md#predicates-that-landed-with-1672).
 
 The copied blast-radius sentence *W4-01..17 and W1-12..14 stay BLOCKED* names 20 IDs that **are all defined** — matrix §4's `### W4` is 17 numbered steps and `### W1` is 19. They are written as ordinals under a heading, so a grep for `W4-09` finds nothing; that is a fact about the spelling, not the definition. The plan's zero matches are by design (it delegates workflow ids to the matrix).
 **The module docstring is correct — leave it.** What is thin is coverage: only `W4-02` was ever driven. juniper-ml#1695 filed this as F-E2E-007 and **withdrew it the same day**.
