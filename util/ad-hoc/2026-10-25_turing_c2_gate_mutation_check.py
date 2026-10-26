@@ -21,6 +21,12 @@ capture, the --getblockall sentence not recognised, the old remediation text, an
 again, the capture dropped from the probe, and stealth mode gated, which the design only reports. The G1 engine's
 behavioural classes plus FirewallTest then run against that copy, in a scratch tree that mirrors the repo layout.
 
+2026-10-26 (erratum E-C2-GATE, the on-state observed): once the owner applied C2, turing's --getblockall printed
+"Firewall is blocking all non-essential incoming connections." and never the "is set to block all ..." sentence,
+which the binary's strings place beside "Block all DISABLED!" as --setblockall's confirmation. The gate now accepts
+only the getter's sentence, so B7 was redefined: it used to drop the setter's sentence (now the code itself), and
+now re-accepts it. B12 re-introduces juniper-ml#2338's premise, that the setter's sentence was the getter's.
+
 A mutant is KILLED when the suites fail; the report names the tests that failed. The unmutated control must pass,
 or the run is void. Each mutant gets its own scratch tree, so ``--jobs`` mutants run at once. Nothing in the
 repository is modified. Not wired into CI: it is evidence, not a gate.
@@ -81,11 +87,12 @@ MUTANTS = [
     ("B4", CHECK, "an unknown block-all state fails instead of going unjudged", [(UNKNOWN_RAISE, "    return False\n")]),
     ("B5", CHECK, "an off firewall errors when block all cannot be read", [(OFF_GUARD, "        raise\n")]),
     ("B6", CHECK, "a firewall that is on fails, not errors, when block all cannot be read", [(OFF_GUARD, "        pass\n")]),
-    ("B7", CHECK, "--getblockall's own on-sentence is not recognised", [('r"(?:is set to block|is blocking) all non-essential incoming connections"', 'r"is blocking all non-essential incoming connections"')]),
+    ("B7", CHECK, "--setblockall's confirmation reads as block all", [("    if _BLOCKALL_ON in text:\n", '    if _BLOCKALL_ON in text or "is set to block all non-essential incoming connections" in text:\n')]),
     ("B8", CHECK, "the remediation keeps the pre-ruling wording", [('_C2_FIX = "task C2 (owner): sudo /usr/libexec/ApplicationFirewall/socketfilterfw {steps}', '_C2_FIX = "task C2 (owner): turn the application firewall on, with stealth mode, allowing signed software{steps}')]),
     ("B9", CHECK, "a firewall that is on is told to turn it on again", [(ON_FIX, '_C2_FIX.format(steps="--setglobalstate on, then --setblockall on and --setstealthmode on")')]),
     ("B10", PROBE, "the probe no longer captures --getblockall", [('    capture blockall "$SOCKETFILTERFW" --getblockall\n', "")]),
     ("B11", CHECK, "stealth mode is gated, which the design only reports", [('    message = "; ".join(parts)\n', '    message = "; ".join(parts)\n    if "stealth mode is off" in message:\n        return Condition("firewall", "fail", message, "stealth")\n')]),
+    ("B12", CHECK, "the getter's on-sentence is taken to be the setter's (juniper-ml#2338's premise)", [('_BLOCKALL_ON = "is blocking all non-essential incoming connections"', '_BLOCKALL_ON = "is set to block all non-essential incoming connections"')]),
 ]
 
 # unittest's failure headers: "FAIL: test_x (tests.test_mod.Class.test_x)" (3.11+), optionally with a [subtest].
