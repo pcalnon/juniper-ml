@@ -592,7 +592,7 @@ There is no standing grant: each path session asks the owner in its own first tu
 - **juniper-ml 0.11.0, 0.11.1 and 0.11.2** carry the meta-package's floors (2026-10-21, 2026-10-25 and 2026-10-26; §5). The driver follow-ups filed on 2026-10-10 merged: ml#2211 as ml#2316, and ml#2210 as ml#2320. ml#2316's post-merge re-check passed on `main` `899796d2`.
   ml#2320 (`f7a1442d`, 2026-10-25T18:12Z; v1.15.1) makes `run_suite` refuse a suite, before its first `--up`, whose `per_run_timeout_seconds` does not exceed a cell's worst-case driver budget. The driver's `worst_case_budget` sums the health waits, dataset creation, every wall-bounded phase and `save_model`, or cascor's teardown settle and `snapshot_at_end`.
   The nine recurrence suites, at 3900 s against 1200–1800, now carry 4500; the 20 cascor suites already cleared theirs. Its post-merge re-check passed on `main` `c86a5e5e`, four merges later. Its out-of-scope finding, E-C's wall budget, is ml#2330 (§6 Group C).
-  The owner chose ml#2330's option 1 on 2026-10-26 (v1.15.2). ml#2345 (open and armed on 2026-10-26) sets E-C's `execution.max_wall_seconds` to 5400, so its worst-case driver budget is 5,850 s against a 7,200 s `per_run_timeout_seconds`; its cell ids and `config_sha256` are unchanged, and a CI test pins both bounds.
+  The owner chose ml#2330's option 1 on 2026-10-26 (v1.15.2). ml#2345 (merged as `278c6139`) sets E-C's `execution.max_wall_seconds` to 5400, so its worst-case driver budget is 5,850 s against a 7,200 s `per_run_timeout_seconds`; its cell ids and `config_sha256` are unchanged, and a CI test pins both bounds.
 
 **Actions:**
 
@@ -955,7 +955,7 @@ Fold each into a nearby PR. Appendix A lists every hygiene row.
 - canopy 0.9.0 was also R-CANOPY-A: its `[0.9.0]` section names F-CANOPY-059, #678, #683, #685 and #702. It was cut before R-OBS-SC-2 existed, so ahead of that row's lock-PR gate; whether P3-06, the O3 wording and A4 were met is not re-probed.
 - recurrence 0.6.0 shipped without the owner's floors ruling of 2026-10-10, and 0.6.1 carries it (2026-10-18). P12's W5 items followed in model 0.5.0 and 0.6.0 and recurrence 0.7.0 and 0.8.0 (2026-10-19, 10-20).
 - R-ML-a and R-ML-b shipped together as juniper-ml 0.11.0 (2026-10-21). Its `[recurrence]` ceilings rose on `main` the day after the cuts (ml#2232, 2026-10-18), and until 0.11.0 `juniper-ml[recurrence]` resolved recurrence 0.5.x. R-ML-TOOLS followed as 0.11.1 (2026-10-25), and R-ML-SERVERS as 0.11.2 (2026-10-26).
-- R-ML-SERVERS shipped in 0.11.2 under the owner's ruling of 2026-10-25 (`detect.py` proposed 0.12.0), with ml#2062's fix (ml#2333) left out. PyPI's 0.11.2 metadata carries both floors under `extra == "servers"`, and the published `[servers]` and `[all]` resolve against real PyPI in 62 and 96 packages (2026-10-26). `[servers]` still installs no Juniper client (ml#2062).
+- R-ML-SERVERS shipped in 0.11.2 under the owner's ruling of 2026-10-25 (`detect.py` proposed 0.12.0), with ml#2062's fix (ml#2333) left out. PyPI's 0.11.2 metadata carries both floors under `extra == "servers"`, and the published `[servers]` and `[all]` resolve against real PyPI in 61 and 95 packages besides juniper-ml itself (2026-10-26). 0.11.2's `[servers]` still installs no Juniper client (ml#2062); its fix, ml#2333, merged on 2026-10-26 (`da5e8de3`) and ships in 0.11.3.
 - There is still no forward-port: PyPI has no data-client 0.6.1.
 
 **Recommended order.** R-OBS-SC and R-DATA were cut on 2026-10-08 ahead of this order's gates; the order now runs (owner ruling 2026-10-10):
@@ -1096,7 +1096,7 @@ The few that gate something are asked before what they gate: P7's D4 and D5, and
   1. raise E-C's budget, e.g. `execution.max_wall_seconds: 5400` (worst case 5850 s, under its 7200 s ceiling);
   2. keep 3600 s and exempt E-C, on its own 517 s/cell measurement;
   3. re-derive the cap threshold from post-#563 timings, which needs a fresh measurement.
-  Opened with the owner on 2026-10-25. **Ruled 2026-10-26: option 1** (in a turing session; v1.15.2). Its fix is ml#2345, open and armed on 2026-10-26.
+  Opened with the owner on 2026-10-25. **Ruled 2026-10-26: option 1** (in a turing session; v1.15.2). Its fix is ml#2345, merged as `278c6139`.
 
 ---
 
@@ -1241,7 +1241,7 @@ This updates the table in `…INDEX_consolidated-development-paths.md`.
 | P5-11 | — | First: P6 OD-3 depends on what it surfaces |
 | P12 phase 0 (merged) | Owner ratification: R6, P6 OD-2, canopy#685 (a) | Ratify or revert |
 | P12 R5 (gates only W5.4) | The consensus review of `…EQUITIES-CV-BLOWUP-INVESTIGATION.md` | Met: ml#2168, 2026-10-05 |
-| P12 W1.11 / M1 | R-DATA on PyPI and GHCR; W1.11's floor and pin PRs are P4-14 and R-ML-a's, opened only then (§10) | W1.11 met on 2026-10-10 (deploy#243, deploy#245, ml#2190), its PRs opened earlier as drafts (§10). W1.13, W1.14, 2c's name and the Phase 1 rulings were done by 2026-10-18. Every M1 landing is on `main`, and the W1.11 and W1.12 smokes are owed on the 0.8.0 image |
+| P12 W1.11 / M1 | R-DATA on PyPI and GHCR; W1.11's floor and pin PRs are P4-14 and R-ML-a's, opened only then (§10) | W1.11 met on 2026-10-10 (deploy#243, deploy#245, ml#2190), its PRs opened earlier as drafts (§10). W1.13, W1.14, 2c's name and the Phase 1 rulings were done by 2026-10-18. Every M1 landing is on `main`, and the W1.11 and W1.12 smokes passed on the 0.8.0 image (2026-10-25; `…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` v1.7.17) |
 | P12-48, and what remains of Y2 2b/2c | P2 O7, merged in the order 2c → 2a → 2b | W1.10 and W1.12 landed through P12 on 2026-10-05, without O7 (XC-P12); 2c must reconcile the snapshot-directory name with W1.10's: settled as W1.10's on 2026-10-18 (juniper-canopy#751) |
 | P5 W10 | The P12-chain recurrence release, with the cap width set by DC-0.6; recurrence's width is `<0.7.0` (recurrence#196) | Conditional. A narrow cap forces a second recurrence and canopy release. Recurrence 0.8.0 and canopy 0.9.0 both cap data-client at `<0.7.0` |
 | P4-10 (P4's conditional Wave 4 shape) | P10-10 (throwaway-repo test) | Hard, if that shape is chosen |

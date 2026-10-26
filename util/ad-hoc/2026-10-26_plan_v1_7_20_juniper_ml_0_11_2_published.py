@@ -40,13 +40,14 @@ _HEADLINE = "juniper-ml 0.11.2 published, juniper-ml#2330 ruled"
 RECORD = (
     "the owner approved the `pypi` gate of publish run 40247789317 on 2026-10-26, and `Publish to PyPI` succeeded "
     "(08:38:21Z-08:38:43Z). `https://pypi.org/pypi/juniper-ml/0.11.2/json` serves the wheel (08:38:39Z) and the sdist "
-    "(08:38:40Z), and its 17 `requires_dist` entries are `pyproject.toml`'s at the tag `e8d38732`, unchanged on `main` "
-    "since: `[servers]` floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`, beside `juniper-canopy>=0.9.0`. "
+    "(08:38:40Z), and its 17 `requires_dist` entries equal, as requirements, `pyproject.toml`'s at the tag `e8d38732`: "
+    "`[servers]` floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`, beside `juniper-canopy>=0.9.0`. "
     "The aggregate endpoint names 0.11.2 the latest. Resolved from the published metadata against real PyPI (`pip "
-    "install --dry-run --no-cache-dir --only-binary=:all:`, Python 3.14.7, Linux x86_64), `juniper-ml[servers]==0.11.2` "
-    "takes 62 packages, among them cascor 0.12.0, data 0.17.1, canopy 0.9.0, observability 0.4.1 and service-core "
-    "0.7.1, and no Juniper client, so juniper-ml#2062 still holds; `juniper-ml[all]==0.11.2` takes 96, among them "
-    "worker 0.6.1, recurrence 0.8.0, model 0.6.0 and data-client 0.6.0. pip's first pass, minutes after the upload, "
+    "install --dry-run --ignore-installed --no-cache-dir --only-binary=:all:`, Python 3.14.7, Linux x86_64), "
+    "`juniper-ml[servers]==0.11.2` takes 61 packages besides juniper-ml itself, among them cascor 0.12.0, data 0.17.1, "
+    "canopy 0.9.0, observability 0.4.1 and service-core 0.7.1, and no Juniper client: juniper-ml#2062's defect holds in "
+    "0.11.2 (the issue closed at 09:10:08Z with juniper-ml#2333, which ships in 0.11.3); `juniper-ml[all]==0.11.2` "
+    "takes 95, among them worker 0.6.1, recurrence 0.8.0, model 0.6.0 and data-client 0.6.0. pip's first pass, minutes after the upload, "
     "was served an index that listed versions only to 0.11.1; `--no-cache-dir` cleared it. The parent "
     "`Juniper/AGENTS.md` RELEASED paragraph names 0.11.2 the latest and its `[servers]` floors (re-probed against PyPI "
     "on 2026-10-26; nothing else in it had moved), and the consolidated plan records R-ML-SERVERS shipped (v1.15.2). "
@@ -68,8 +69,9 @@ NEXT_HEAD_OLD = (
     "release. juniper-ml#2330 (the `p4/e-c` wall budget) waits on the owner's choice of option. "
 )
 NEXT_HEAD_NEW = (
-    "  - **Next**: juniper-ml#2062's fix (`[servers]` installs no client, as 0.11.2's still does) is juniper-ml#2333, "
-    "open, for a later release. FIX_NEXT"
+    "  - **Next**: juniper-ml#2062's fix (`[servers]` installs no client, as 0.11.2's still does), juniper-ml#2333, "
+    "merged as `da5e8de3` (2026-10-26 09:10Z); it ships in juniper-ml 0.11.3 (owner ruling 2026-10-25), whose `pypi` "
+    "gate is the owner's. FIX_NEXT"
 )
 #: The unchanged tail of the Next bullet, asserted so the head edit cannot land on a rewritten bullet.
 _NEXT_TAIL = "The juniper-recurrence-client 0.3.1 release (owner's cut) carries the embargo fix."

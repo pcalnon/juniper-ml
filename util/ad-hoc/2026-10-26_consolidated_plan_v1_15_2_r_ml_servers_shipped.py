@@ -99,7 +99,7 @@ _FURTHER_P12_NEW = (
 _RML_NOTES_OLD = "R-ML-TOOLS followed as 0.11.1 (2026-10-25).\n- There is still no forward-port"
 _RML_NOTES_NEW = (
     "R-ML-TOOLS followed as 0.11.1 (2026-10-25), and R-ML-SERVERS as 0.11.2 (2026-10-26).\n"
-    "- R-ML-SERVERS shipped in 0.11.2 under the owner's ruling of 2026-10-25 (`detect.py` proposed 0.12.0), with ml#2062's fix (ml#2333) left out. PyPI's 0.11.2 metadata carries both floors under `extra == \"servers\"`, and the published `[servers]` and `[all]` resolve against real PyPI in 62 and 96 packages (2026-10-26). `[servers]` still installs no Juniper client (ml#2062).\n"
+    "- R-ML-SERVERS shipped in 0.11.2 under the owner's ruling of 2026-10-25 (`detect.py` proposed 0.12.0), with ml#2062's fix (ml#2333) left out. PyPI's 0.11.2 metadata carries both floors under `extra == \"servers\"`, and the published `[servers]` and `[all]` resolve against real PyPI in 61 and 95 packages besides juniper-ml itself (2026-10-26). 0.11.2's `[servers]` still installs no Juniper client (ml#2062); its fix, ml#2333, merged on 2026-10-26 (`da5e8de3`) and ships in 0.11.3.\n"
     "- There is still no forward-port"
 )
 
@@ -131,6 +131,10 @@ REPLACEMENTS = [
     (_XC_P12_OLD, _XC_P12_NEW),
     (_FURTHER_P12_OLD, _FURTHER_P12_NEW),
     (_P12_ROW_OLD, _P12_ROW_NEW),
+    (
+        "Every M1 landing is on `main`, and the W1.11 and W1.12 smokes are owed on the 0.8.0 image |",
+        "Every M1 landing is on `main`, and the W1.11 and W1.12 smokes passed on the 0.8.0 image (2026-10-25; `…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` v1.7.17) |",
+    ),
     (_SERVERS_ROW_OLD, _SERVERS_ROW_NEW),
     (_RML_NOTES_OLD, _RML_NOTES_NEW),
     (
