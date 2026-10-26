@@ -2,23 +2,23 @@
 
 **Release Date:** 2026-10-25
 **Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Priority:** High: upgrade every environment installed through `juniper-ml[servers]` without `[tools]`; `[tools]` and `[all]` already floor both patches, since 0.11.1
 **Package Affected:** juniper-ml
 
 ---
 
-This is a security-bearing release of `juniper-ml` v0.11.2. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a security-bearing patch release of `juniper-ml` v0.11.2. The meta-package ships no code: its `[servers]` extra now floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`, up from `>=0.11.0` and `>=0.17.0`. Both server releases floor the two shared security patches, `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0`, but only juniper-cascor 0.12.0 floors them unconditionally. juniper-data 0.17.1 floors them under its `[api]` extra, which `[servers]` does not install, so the data floor carries no security change for `[servers]`. Upgrading an environment installed through `juniper-ml[servers]` therefore upgrades a vulnerable release of either patch by way of juniper-cascor 0.12.0. `[tools]`, and so `[all]`, has floored both patches directly since 0.11.1. The patches are rated Medium in their own notes, and so is this release.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-ml` |
 | **Fixed in** | 0.11.2 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | In the two shared releases juniper-cascor 0.12.0 floors: sensitive information sent to an external service ([CWE-201](https://cwe.mitre.org/data/definitions/201.html)), improper handling of an exceptional condition that exposed a secret ([CWE-755](https://cwe.mitre.org/data/definitions/755.html)) and allocation of resources without limits ([CWE-770](https://cwe.mitre.org/data/definitions/770.html)) |
+| **Advisory** | None. Internal findings, fixed in juniper-observability 0.4.1 and juniper-service-core 0.7.1, both rated Medium; there is no CVE or Dependabot alert |
 
 ---
 
