@@ -134,7 +134,7 @@ pre-commit hook and as a whole-scope step in ci.yml's Pre-commit job. When it la
 ### 4.7 Side effects of a `TMPDIR` inside a checkout
 
 Moving `TMPDIR` from the system temp dir into a repo's `tmp/` changes what tools see around a temp file. Each repo
-needs the four checks below; CI is unaffected, because a runner's `TMPDIR` is its own temp dir and a fresh checkout's
+needs the five checks below; CI is unaffected, because a runner's `TMPDIR` is its own temp dir and a fresh checkout's
 `tmp/` is empty.
 
 1. **git discovery.** git run anywhere under the repo's `tmp/` walks up to the ENCLOSING checkout, so a test's
@@ -160,6 +160,13 @@ needs the four checks below; CI is unaffected, because a runner's `TMPDIR` is it
    Source, `$HOME`), `tests/test_e2e_f037_render_census.py` and `tests/test_replay_redrive_stack_refusal.py` (they find
    the real ecosystem root), and `tests/test_workflow_script_paths.py` (it finds the primary's `.github/workflows`). A
    git ceiling cannot bound these walks; each needs its code under test to accept a bound (section 10).
+5. **Unix socket paths.** An `AF_UNIX` path is capped at 108 bytes on Linux (104 on macOS). Python's
+   `multiprocessing` binds its sockets under `tempfile.gettempdir()` (`pymp-XXXXXXXX/sock-XXXXXXXX`, 28 more
+   characters), and when `len(TMPDIR) + 28` reaches the cap it silently uses the system `/tmp` instead, whatever
+   `TMPDIR` says (JuniperCascor1's Python 3.14, `multiprocessing/util.py`). cascor's forkserver (3.14's Linux default)
+   is such a socket. So `TMPDIR` must stay under 80 characters: a primary checkout's `tmp/` does (juniper-ml's is 55,
+   juniper-cascor-worker's 67), a deep worktree's `tmp/` does not (101 for a `.claude/worktrees/` one), and that is one
+   more reason `TMPDIR` names the primary's (Phase 16's round 9, Lane 16P-R9B).
 
 ## 5. Out of scope
 
