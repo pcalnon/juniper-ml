@@ -14,6 +14,8 @@ Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLA
 Why: the shared files take concurrent whole-file uploads, so each upload is built by running this against a
 FRESH `origin/main` copy at upload time (the juniper-ml#2262 revert class). Every edit has a marker (skip
 when present) and an anchor that must occur exactly once. The files: `docs/REFERENCE.md` and `CHANGELOG.md`.
+The CHANGELOG marker counts anywhere in the file, because a release proposal (0.11.2, juniper-ml#2339) moves
+[Unreleased]'s entries into the release section, and a re-run must not add the entry again.
 The plan's record of the ruling is a separate PR.
 
 Usage:
@@ -87,13 +89,13 @@ def replace_once(text: str, old: str, new: str, marker: str) -> str:
 
 def add_changelog_entry(changelog: str, entry: str) -> str:
     """Put the entry at the top of [Unreleased]'s Changed subsection, opening one above Fixed or Security if needed."""
+    if CHANGELOG_MARKER in changelog:
+        return changelog  # anywhere: after a release cut the entry sits in the release section
     start = changelog.find("## [Unreleased]")
     if start < 0:
         raise AnchorError("CHANGELOG.md has no '## [Unreleased]' section")
     end = changelog.find("\n## [", start + 1)
     section = changelog[start : end if end >= 0 else len(changelog)]
-    if CHANGELOG_MARKER in section:
-        return changelog
     if section.count("\n### Changed\n\n") == 1:
         section = section.replace("\n### Changed\n\n", "\n### Changed\n\n" + entry + "\n", 1)
     elif "\n### Changed\n" in section:

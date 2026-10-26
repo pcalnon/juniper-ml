@@ -1,5 +1,7 @@
 # Handoff — turing bring-up: C9 landed (guard 1.2.0 covers Serena's edit tools and MCP registration); H6 audited; owner decisions and the guard install next
 
+- **Continued (2026-10-25, plan v1.4.7).** The "macos dev env setup" session took this handoff. The owner ruled on H4's usage report (opt out, juniper-ml#2335), C2's form (block all, juniper-ml#2338) and H6 (deferred). The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-h4-usage-off-c2-block-all-gate-h6-deferred.md`. The owner steps below still stand, C2's now in its block-all form.
+
 - **From:** the 2026-10-25 session on turing named "dev env macos" (014c35; worktree `.claude/worktrees/breezy-baking-lerdorf`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md`. Its author, "mac dev" (165a0b), could not be reached (HTTP 409), and no other session was on that handoff.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.6.
   - §18.2 holds the C9 and H6 rows.
