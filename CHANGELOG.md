@@ -42,7 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `[api]` is cascor's and data's web runtime (fastapi, starlette, uvicorn, pydantic-settings). It used to arrive only
     through canopy's base dependencies, so cascor's and data's own lower bounds were never applied. data's `[api]` also
     carries its `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1` floors, which `[servers]` now applies
-    for the first time.
+    for the first time. *(Clarified 2026-10-26: these are data's own floors. The same versions already reached
+    `[servers]` through juniper-canopy 0.9.0 since 0.11.0, and through juniper-cascor 0.12.0 since 0.11.2, so no
+    environment gains a patch from them.)*
   - torch stays out: cascor's `[ml]` and canopy's `[demo]` are not requested.
   - **Pre-flighted against real PyPI** with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`. `[servers]`
     resolves in 63 packages on Python 3.12, 3.13 and 3.14, up from 61; the two added are juniper-cascor-client 0.8.0
@@ -222,6 +224,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     measured on the published wheels (the builder's setuptools version aside). Both floors sit under its `[api]`
     extra, and `[servers]` installs bare `juniper-data`, so in a `[servers]` environment the patches arrive through
     cascor 0.12.0. The data floor keeps `[servers]` level with the image juniper-deploy#258 pins.
+  - **Correction (2026-10-26).** The two shared patches were not new to `[servers]`: juniper-canopy 0.9.0 floors
+    both unconditionally, and `[servers]` has required it since 0.11.0. This release's security content is
+    juniper-cascor 0.12.0's own fixes above, which no earlier `[servers]` or `[all]` floored, so any `[servers]` or
+    `[all]` environment installed before 0.11.2, with or without `[tools]`, can still hold juniper-cascor 0.11.0 or
+    older. The release notes told `[tools]` and `[all]` users they were covered; the Release v0.11.2 body and
+    `notes/releases/RELEASE_NOTES_v0.11.2.md` now carry an erratum. Measured on PyPI's published metadata by
+    `util/ad-hoc/2026-10-26_erratum_0_11_x_security_floor_probe.py`.
   - The extras tables in `README.md` (both), `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with
     the pins. The `0.11.x` row of `docs/REFERENCE.md`'s compatibility matrix moves with the release that carries
     this, which is the owner's cut. Applied by `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py`, which asserts each site's exact text and requires exactly
