@@ -764,7 +764,7 @@ class PreconditionHaltTest(unittest.TestCase):
         # archive whose encoding exceeds the cap HALTs in the planner -- before create_branch, so no empty
         # release-notes/<pkg>-v<ver> branch is left behind -- instead of crashing at the gh call.
         rec = _Recorder()
-        plan = _plan(changelog=self._big_changelog(130_000), recorder=rec)
+        plan = _plan(changelog=self._big_changelog(800_000), recorder=rec)
         self._assert_halt(plan, "archive-too-large")
         self.assertIn("condense the notes", plan.halt_reason)
         self.assertIn("nothing was written", plan.halt_reason)
@@ -776,11 +776,25 @@ class PreconditionHaltTest(unittest.TestCase):
         self.assertEqual(plan.state, "CEREMONY_PLANNED")
         self.assertEqual(plan.action_kinds[0], "open_archive_pr")
 
+    def test_an_archive_the_old_cap_halted_is_now_planned(self):
+        # Owner ruling 2026-10-26: the default rose from 125,000 to 1,000,000 after the runner-side
+        # measurement (every GraphQL body up to 16 MiB accepted from a GitHub-hosted runner). An archive
+        # whose encoding lies between the two, as juniper-canopy 0.9.0's 103 KB notes did, now plans
+        # instead of HALTing for a condense.
+        plan = _plan(changelog=self._big_changelog(130_000))
+        encoded = len(base64.b64encode(plan.archive_content.encode("utf-8")))
+        self.assertGreater(encoded, 125_000)
+        self.assertLess(encoded, ce.ARCHIVE_B64_MAX_DEFAULT)
+        self.assertEqual(plan.state, "CEREMONY_PLANNED")
+
     def test_archive_cap_is_env_overridable_and_falls_back_on_junk(self):
         with mock.patch.dict(os.environ, {ce.ARCHIVE_B64_MAX_ENV: "10000000"}):
             self.assertEqual(ce.archive_b64_max(), 10_000_000)
-            plan = _plan(changelog=self._big_changelog(130_000))
+            plan = _plan(changelog=self._big_changelog(800_000))
         self.assertEqual(plan.state, "CEREMONY_PLANNED")
+        with mock.patch.dict(os.environ, {ce.ARCHIVE_B64_MAX_ENV: "125000"}):
+            self.assertEqual(ce.archive_b64_max(), 125_000)
+            self._assert_halt(_plan(changelog=self._big_changelog(130_000)), "archive-too-large")
         for junk in ("not-a-number", "0", "-5", "", "  "):
             with mock.patch.dict(os.environ, {ce.ARCHIVE_B64_MAX_ENV: junk}):
                 self.assertEqual(ce.archive_b64_max(), ce.ARCHIVE_B64_MAX_DEFAULT, junk)
