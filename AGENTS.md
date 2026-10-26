@@ -60,21 +60,7 @@ PR rather than waiving the budget gate.
 ## Build & Package Commands
 
 ```bash
-# Build
-pip install build twine
-python -m build
-
-# Validate package
-twine check dist/*
-
-# Install locally (editable)
-pip install -e .               # base (no deps)
-pip install -e ".[clients]"    # client libraries
-pip install -e ".[worker]"     # distributed worker
-pip install -e ".[servers]"    # canopy + cascor + data services, with their clients
-pip install -e ".[tools]"      # ci-tools + doc-tools + observability
-pip install -e ".[doc-tools]"  # markdown link validator (back-compat alias)
-pip install -e ".[all]"        # everything (multi-GB; pulls torch via worker)
+# Install locally: pip install -e ".[<extra>]" -- extras are in pyproject.toml; ".[all]" is multi-GB (pulls torch via worker)
 
 # Run all tests -- the full ordered list of 225 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
@@ -114,32 +100,7 @@ immutable TestPyPI upload in juniper-ml#555). Full steps:
 [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md). (This convention drifted
 during rapid concurrent refactoring — several sub-packages shipped tag-only — and is being restored.)
 
-The shared `juniper-observability` package is published separately from the same repo (subdirectory `juniper-observability/`) by `.github/workflows/publish-observability.yml`, fired by a Release whose tag matches `juniper-observability-v*`. The remaining in-repo shared publishers follow the same Release-only pattern: `publish-ci-tools.yml`, `publish-config-tools.yml`, `publish-doc-tools.yml`, `publish-model-core.yml`, and `publish-service-core.yml`.
-
-The shared `juniper-doc-tools` package (Wave 0 scaffold, plan
-[`notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`](notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md))
-is published from subdirectory `juniper-doc-tools/` by
-`.github/workflows/publish-doc-tools.yml`, triggered by tags matching
-`juniper-doc-tools-v*`. It packages the markdown link validator
-(`juniper-check-doc-links` console script + `python -m juniper_doc_tools`
-module form) so that the 8 ecosystem repos can replace their inline
-`scripts/check_doc_links.py` copies with a single PyPI dependency.
-
-The shared `juniper-ci-tools` package (Wave 0 scaffold, plan
-[`notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md`](notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md))
-is published from subdirectory `juniper-ci-tools/` by
-`.github/workflows/publish-ci-tools.yml`, triggered by tags matching
-`juniper-ci-tools-v*`. It packages the dependency-documentation generator
-(`juniper-generate-dep-docs` console script + `python -m juniper_ci_tools`
-module form), Python port of the legacy `scripts/generate_dep_docs.sh` that
-drifted across 8 Juniper repos. Replaces all consumer inline copies via a
-single PyPI dependency; carries the cascor 2026-05-20 awk-extraction fix as
-the canonical implementation. As of **0.8.0** it also ships the two
-sequence-safety ref-diff screens — `juniper-symbol-loss-check` (AST symbol-loss)
-and `juniper-docs-additions-check` (markdown deletion-magnitude), both gaining a
-repeatable `--scope GLOB` knob — migrated from the two hand-copied
-`util/sequence_safety/` trees (Wave 0 of the sequence-safety ecosystem rollout,
-plan `notes/JUNIPER_2026-08-07_JUNIPER-ECOSYSTEM_SEQUENCE-SAFETY-ROLLOUT-PLAN.md`).
+Per-package publish pipelines for the six in-repo shared packages (`juniper-ci-tools`, `juniper-config-tools`, `juniper-doc-tools`, `juniper-model-core`, `juniper-observability`, `juniper-service-core`) -- the release tag prefix, workflow and build directory for each, and the contracts they share -- are in [`docs/REFERENCE.md` § Independent Sibling Package Publish Pipelines](docs/REFERENCE.md#independent-sibling-package-publish-pipelines) — read it when working on this area.
 
 ## Shared Observability Helpers
 
@@ -179,14 +140,6 @@ juniper-ml/
 
 ## Key Files
 
-### Package and Metadata
-
-- `pyproject.toml` -- Package metadata, version (`0.6.0`), and optional dependency groups (`clients`, `worker`, `servers`, `tools`, `doc-tools`, `all`)
-- `README.md` -- PyPI landing page content
-- `CHANGELOG.md` -- Version history in Keep a Changelog format
-- `MANIFEST.in` -- Source distribution file includes
-- `LICENSE` -- MIT License
-
 ### Documentation
 
 - `docs/DOCUMENTATION_OVERVIEW.md` -- Navigation index for all juniper-ml documentation
@@ -217,13 +170,6 @@ Per-workflow reference for every file in `.github/workflows/`, including the con
 
 ### Configuration
 
-- `.pre-commit-config.yaml` -- Pre-commit hooks: flake8, bandit, shellcheck, markdownlint, yamllint, SOPS env check
-- `.markdownlint.yaml` -- Markdown linting rules (line length: 512, ol-prefix disabled)
-- `.sops.yaml` -- SOPS encryption configuration for `.env` and `.env.secrets` using age key
-- `.serena/project.yml` -- Serena code agent integration (project: juniper_ml, language: python)
-- `.gitattributes` -- Git LFS tracking for image files (jpg, png, ico, xcf, svg, etc.)
-- `.github/CODEOWNERS` -- Code ownership: @pcalnon for all files
-- `.github/dependabot.yml` -- Automated dependency updates: pip (weekly) and github-actions (weekly)
 - `conf/hosts/<host>/` -- Per-host target state and records: `expected.yaml`, which `util/host_state_check.py` judges `util/host_state_probe.bash`'s captures against (the host gates; turing bring-up G1), turing's conda-env specs and `hosttools-environment.yml`, and `mcp.json`, the Serena pin `util/mcp_setup.bash` reads (H4)
 
 ## CI/CD Pipelines
@@ -273,12 +219,7 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 ## Conventions
 
 - Python >=3.12 required (classifiers include 3.12, 3.13, 3.14)
-- Package name on PyPI: `juniper-ml`
-- Import name: none (meta-package, no importable modules)
-- Version tracked in `pyproject.toml` under `[project].version`
 - Line length: 512 for all linters (flake8, markdownlint)
-- Shell scripts use bash with `shellcheck` compliance
-- Markdown files use `.markdownlint.yaml` configuration
 - `notes/` documents are named `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<CONTENTS-DESCRIPTION-PHRASE>.md` (REPO one of ML / CANOPY / RECURRENCE / CASCOR / CASCOR-CLIENT / CASCOR-WORKER / DATA / DATA-CLIENT / DEPLOY / ECOSYSTEM). Exempt: `notes/{templates,releases,requirements,legacy}/` and README files. Full rules + migration record: [`notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`](notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md)
 - **Name every document a summary REFERENCES or CHANGES** (mandatory, ecosystem-wide, 2026-09-01; widened 2026-09-02). In a step-completion or work-arc summary:
   - every **reference** to a document carries its filename — by section number, by role ("the plan", "the analysis"), or by implication. One document cited → name it on first reference; two or more → **every** reference carries its filename.
