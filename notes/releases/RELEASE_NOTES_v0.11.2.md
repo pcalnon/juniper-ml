@@ -2,10 +2,18 @@
 
 **Release Date:** 2026-10-25
 **Release Type:** Security Patch
-**Priority:** High: upgrade every environment installed through `juniper-ml[servers]` without `[tools]`; `[tools]` and `[all]` already floor both patches, since 0.11.1
+**Priority:** High: upgrade every environment installed through `juniper-ml[servers]` or `juniper-ml[all]`, with or without `[tools]` (corrected 2026-10-26; see the erratum below)
 **Package Affected:** juniper-ml
 
 ---
+
+> **Erratum (2026-10-26).** As first published, these notes placed this release's security content in the two shared patches, and told `[tools]` and `[all]` users they were already covered. Both statements were wrong.
+>
+> - **The shared patches were not new to `[servers]`.** juniper-canopy 0.9.0 floors `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1` unconditionally, and `[servers]`, and so `[all]`, has required `juniper-canopy>=0.9.0` since 0.11.0.
+> - **The security content is juniper-cascor 0.12.0's own fixes**, which no earlier `[servers]` or `[all]` floored: a non-ASCII `X-API-Key` is a 401, not a 500 whose Sentry event could carry the real key (juniper-cascor#689); `FailedAuthThrottle.check()` stays bounded (juniper-cascor#710); `APIKeyAuth` checks every configured key (juniper-cascor#659); and the CLI's own Sentry init stops sending frame-local variables.
+> - **So the Priority line under-warned.** Any `[servers]` or `[all]` environment installed before 0.11.2, with or without `[tools]`, can still hold juniper-cascor 0.11.0 or older: upgrade it. `[tools]` alone installs no server and is unaffected.
+>
+> The Medium rating and the CWE-201, CWE-755 and CWE-770 classes stand, now for cascor's own fixes. Apart from the Priority line, the text below is as published on 2026-10-25. The Priority line read: "High: upgrade every environment installed through `juniper-ml[servers]` without `[tools]`; `[tools]` and `[all]` already floor both patches, since 0.11.1".
 
 This is a security-bearing patch release of `juniper-ml` v0.11.2. The meta-package ships no code: its `[servers]` extra now floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`, up from `>=0.11.0` and `>=0.17.0`. Both server releases floor the two shared security patches, `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0`, but only juniper-cascor 0.12.0 floors them unconditionally. juniper-data 0.17.1 floors them under its `[api]` extra, which `[servers]` does not install, so the data floor carries no security change for `[servers]`. Upgrading an environment installed through `juniper-ml[servers]` therefore upgrades a vulnerable release of either patch by way of juniper-cascor 0.12.0. `[tools]`, and so `[all]`, has floored both patches directly since 0.11.1. The patches are rated Medium in their own notes, and so is this release.
 
