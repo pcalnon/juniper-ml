@@ -38,7 +38,9 @@
   - `[api]` is cascor's and data's web runtime (fastapi, starlette, uvicorn, pydantic-settings). It used to arrive only
     through canopy's base dependencies, so cascor's and data's own lower bounds were never applied. data's `[api]` also
     carries its `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1` floors, which `[servers]` now applies
-    for the first time.
+    for the first time. *(Clarified 2026-10-26: these are data's own floors. The same versions already reached
+    `[servers]` through juniper-canopy 0.9.0 since 0.11.0, and through juniper-cascor 0.12.0 since 0.11.2, so no
+    environment gains a patch from them.)*
   - torch stays out: cascor's `[ml]` and canopy's `[demo]` are not requested.
   - **Pre-flighted against real PyPI** with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`. `[servers]`
     resolves in 63 packages on Python 3.12, 3.13 and 3.14, up from 61; the two added are juniper-cascor-client 0.8.0
