@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.11.2
-**Last Updated**: 2026-10-25
+**Last Updated**: 2026-10-26
 
 ---
 
@@ -71,7 +71,7 @@ twine check dist/*
 pip install -e .               # base (no deps)
 pip install -e ".[clients]"    # client libraries
 pip install -e ".[worker]"     # distributed worker
-pip install -e ".[servers]"    # canopy + cascor + data service packages
+pip install -e ".[servers]"    # canopy + cascor + data services, with their clients
 pip install -e ".[tools]"      # ci-tools + doc-tools + observability
 pip install -e ".[doc-tools]"  # markdown link validator (back-compat alias)
 pip install -e ".[all]"        # everything (multi-GB; pulls torch via worker)
@@ -264,7 +264,7 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `clients`    | `juniper-data-client>=0.5.0`, `juniper-cascor-client>=0.8.0`                                                                                                                                                 |
 | `worker`     | `juniper-cascor-worker>=0.4.0`                                                                                                                                                                               |
-| `servers`    | `juniper-canopy>=0.9.0`, `juniper-cascor>=0.12.0`, `juniper-data>=0.17.1`                                                                                                                                      |
+| `servers`    | `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`, `juniper-cascor[api,juniper-data]>=0.12.0`, `juniper-data[api]>=0.17.1`                                                                                  |
 | `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.4.1`, `juniper-service-core>=0.7.1,<0.8.0` |
 | `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)                                                                                                                     |
 | `recurrence` | `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |

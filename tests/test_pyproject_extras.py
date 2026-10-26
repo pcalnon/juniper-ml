@@ -70,15 +70,20 @@ def _repo_root() -> Path:
 _REPO = _repo_root()
 _PYPROJECT = _REPO / "pyproject.toml"
 
-# Full pin inside backticks: `juniper-foo>=0.1.0,<0.2.0`
-_INLINE_PIN_RE = re.compile(r"`(juniper-[a-z0-9-]+>=[^`]+)`")
+# Full pin inside backticks: `juniper-foo>=0.1.0,<0.2.0`, optionally with a PEP 508 extras marker:
+# `juniper-foo[bar,baz]>=0.1.0` (juniper-ml#2062 put three in [servers]).
+_INLINE_PIN_RE = re.compile(r"`(juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\])?>=[^`]+)`")
 # Extra name in the first table column: | `tools` | … |
 _EXTRA_CELL_RE = re.compile(r"^\|\s*`([a-z0-9-]+)`\s*\|")
 # REFERENCE.md three-column row: | [`extra`| ] | `pkg` [(…)] | `>=…` |
-_REFERENCE_ROW_RE = re.compile(r"^\|\s*(?:`(?P<extra>[a-z0-9-]+)`)?\s*\|\s*`(?P<pkg>juniper-[a-z0-9-]+)`" r"[^|]*\|\s*`(?P<spec>[^`]+)`\s*\|")
+_REFERENCE_ROW_RE = re.compile(r"^\|\s*(?:`(?P<extra>[a-z0-9-]+)`)?\s*\|\s*`(?P<pkg>juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\])?)`" r"[^|]*\|\s*`(?P<spec>[^`]+)`\s*\|")
 
-# README "Ecosystem Compatibility" two-column row: | `juniper-foo` | `>=1.2.3` |
-_COMPAT_ROW_RE = re.compile(r"^\|\s*`(?P<pkg>juniper-[a-z0-9-]+)`\s*\|\s*`(?P<spec>[^`]+)`\s*\|\s*$")
+# README "Ecosystem Compatibility" two-column row: | `juniper-foo` | `>=1.2.3` |, where the package
+# cell keeps an extras marker (`juniper-foo[bar]`), as ReadmeCompatTableTest keys a row by
+# everything before `>=`.
+_COMPAT_ROW_RE = re.compile(r"^\|\s*`(?P<pkg>juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\])?)`\s*\|\s*`(?P<spec>[^`]+)`\s*\|\s*$")
+# A requirement's name and its optional extras marker, for the [servers] contract test.
+_REQUIREMENT_EXTRAS_RE = re.compile(r"^(?P<name>[A-Za-z0-9][A-Za-z0-9._-]*)(?:\[(?P<extras>[^\]]*)\])?")
 # The lead-in sentence that introduces that table, naming the package's own version.
 _COMPAT_LEAD_RE = re.compile(r"^The pyproject pins matching `juniper-ml` (?P<version>[0-9][^:]*):$", re.MULTILINE)
 
@@ -147,9 +152,9 @@ EXPECTED_EXTRAS = {
         "juniper-cascor-worker>=0.4.0",
     },
     "servers": {
-        "juniper-canopy>=0.9.0",
-        "juniper-cascor>=0.12.0",
-        "juniper-data>=0.17.1",
+        "juniper-canopy[juniper-cascor,juniper-data]>=0.9.0",
+        "juniper-cascor[api,juniper-data]>=0.12.0",
+        "juniper-data[api]>=0.17.1",
     },
     "tools": {
         "juniper-ci-tools>=0.1.0",
@@ -231,6 +236,37 @@ class PyprojectExtrasTest(unittest.TestCase):
             head = part.split("-", 1)[0].split("+", 1)[0]
             self.assertTrue(head.isdigit(), f"version component {part!r} (from {version!r}) is not numeric")
 
+    def test_servers_requests_what_each_server_needs_to_run(self) -> None:
+        """juniper-ml#2062: `[servers]` must request each server's client and `[api]` extras, and no torch.
+
+        `[servers]` used to install juniper-canopy, juniper-cascor and juniper-data bare. canopy's
+        service mode then died importing `juniper_cascor_client`, and cascor's dataset fetch on a
+        missing juniper-data-client. The web runtime cascor and data declare under `[api]` arrived
+        only because canopy's base dependencies happen to carry it. EXPECTED_EXTRAS pins the exact
+        strings; this names the reason, so an edit that drops a bracket fails with it attached.
+        """
+        required = {
+            "juniper-canopy": {"juniper-cascor", "juniper-data"},
+            "juniper-cascor": {"api", "juniper-data"},
+            "juniper-data": {"api"},
+        }
+        # cascor's [ml] and canopy's [demo] pull torch; docs/QUICK_START.md promises [servers] has none.
+        torch_extras = {"juniper-canopy": {"demo"}, "juniper-cascor": {"ml"}}
+        requested: dict[str, set[str]] = {}
+        for member in self.extras["servers"]:
+            match = _REQUIREMENT_EXTRAS_RE.match(member)
+            self.assertIsNotNone(match, f"unparsable [servers] member {member!r}")
+            assert match is not None
+            extras = match.group("extras") or ""
+            requested[match.group("name")] = {e.strip() for e in extras.split(",") if e.strip()}
+        for name, needs in required.items():
+            with self.subTest(server=name):
+                self.assertIn(name, requested, f"[servers] no longer requests {name}")
+                missing = needs - requested[name]
+                self.assertFalse(missing, f"[servers] requests {name} without its {sorted(missing)} extra(s) (juniper-ml#2062)")
+                torch = torch_extras.get(name, set()) & requested[name]
+                self.assertFalse(torch, f"[servers] must stay torch-free, but requests {name}{sorted(torch)}")
+
 
 def _pins_from_compat_table(text: str) -> dict[str, str]:
     """Parse README.md's flat "Ecosystem Compatibility" | Package | Pin | table.
@@ -308,6 +344,22 @@ class ExtrasDocsLockstepTest(unittest.TestCase):
         )
         self.assertNotEqual(parsed["tools"], self.pyproject_pins["tools"])
 
+    def test_parsers_keep_an_extras_marker(self) -> None:
+        """Synthetic: a `pkg[extra,...]` pin parses whole in all three table shapes (juniper-ml#2062).
+
+        Before the parsers knew the marker, `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0` matched
+        nothing, and a row the parser cannot see reads as an extras set that drifted.
+        """
+        inline = "| `servers` | `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`, `juniper-data[api]>=0.17.1` |\n"
+        self.assertEqual(
+            _pins_from_inline_extras_table(inline)["servers"],
+            {"juniper-canopy[juniper-cascor,juniper-data]>=0.9.0", "juniper-data[api]>=0.17.1"},
+        )
+        reference = "### Available Extras\n\n| `servers`   | `juniper-cascor[api,juniper-data]` | `>=0.12.0` |\n"
+        self.assertEqual(_pins_from_reference_extras_table(reference)["servers"], {"juniper-cascor[api,juniper-data]>=0.12.0"})
+        compat = "| `juniper-data[api]` | `>=0.17.1` |\n"
+        self.assertEqual(_pins_from_compat_table(compat), {"juniper-data[api]": ">=0.17.1"})
+
 
 class ReadmeCompatTableTest(unittest.TestCase):
     """README's flat pin table must match pyproject, and name the current version.
@@ -369,10 +421,11 @@ class ReadmeCompatTableTest(unittest.TestCase):
 
     def test_compat_parser_detects_a_stale_row(self) -> None:
         """Synthetic: the parser must surface a drifted pin, not silently match nothing."""
-        stale = "| Package | Pin |\n|---|---|\n| `juniper-canopy` | `>=0.5.0` |\n"
+        canopy = "juniper-canopy[juniper-cascor,juniper-data]"
+        stale = f"| Package | Pin |\n|---|---|\n| `{canopy}` | `>=0.5.0` |\n"
         parsed = _pins_from_compat_table(stale)
-        self.assertEqual(parsed, {"juniper-canopy": ">=0.5.0"})
-        self.assertNotEqual(parsed.get("juniper-canopy"), self.expected["juniper-canopy"])
+        self.assertEqual(parsed, {canopy: ">=0.5.0"})
+        self.assertNotEqual(parsed.get(canopy), self.expected[canopy])
 
 
 if __name__ == "__main__":
