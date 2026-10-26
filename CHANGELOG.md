@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **G-SEC's firewall condition reads the block-all sentence turing printed** (turing bring-up task C2; the §18.2
+  C2 row and erratum E-C2-GATE of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
+  The owner applied C2's block-all form on 2026-10-26, so the on-state captures exist: `--getglobalstate` prints
+  "Firewall is blocking all non-essential incoming connections. (State = 2)", `--getblockall` "Firewall is blocking
+  all non-essential incoming connections." and `--getstealthmode` "Firewall stealth mode is on".
+  - `util/host_state_check.py` accepts only the getter's sentence. "Firewall is set to block all non-essential
+    incoming connections", which juniper-ml#2338 took for the getter's, sits beside "Block all DISABLED!" in the
+    binary's strings, the shape of `--setblockall`'s confirmations. A capture holding it cannot be judged (exit 2
+    under `--check`), unless the firewall is off, which fails anyway.
+  - `tests/test_host_state_check.py` pins turing's on-state captures and the setter's sentence: `FirewallTest`
+    gains 2 tests (61 across the two G1 suites). B7 of
+    `util/ad-hoc/2026-10-25_turing_c2_gate_mutation_check.py` now re-accepts the setter's sentence, and B12
+    re-introduces the #2338 premise; it kills 12 of 12 mutants, and the 57 of
+    `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` still apply.
+  - turing's firewall condition passes. G-SEC still fails, on SIP (task C1) and the key exports (task C3).
+
 ## [0.11.3] - 2026-10-26
 
 ### Fixed

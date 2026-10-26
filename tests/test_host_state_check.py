@@ -18,9 +18,10 @@ G-SIGN, G-SEC, G-TOOLS, G-ENV, G-NET and G-MEM of §9.3). The suite pins:
   VM that cannot fit the machine (vm.mem_gib plus G-MEM's reserve over hw.memsize, or more vCPUs than
   cores), checked on a synthetic file and on the committed turing file;
 - C2's block-all form (owner ruling 2026-10-25): G-SEC's firewall condition passes only when the firewall
-  is on (state 1 or 2) and ``socketfilterfw --getblockall`` reports block all, in either of the binary's
-  sentences. An unknown block-all state cannot be judged, unless the firewall is off, which fails anyway.
-  The fix names only the missing steps, and stealth mode is reported, not gated;
+  is on (state 1 or 2) and ``socketfilterfw --getblockall`` reports block all, in the sentence turing's
+  getter printed once the owner applied C2 (2026-10-26). ``--setblockall``'s confirmation sentence and an
+  unknown block-all state cannot be judged, unless the firewall is off, which fails anyway. The fix names
+  only the missing steps, and stealth mode is reported, not gated;
 - identity: a probe of another machine exits 2;
 - G-MEM's verdicts equal ``util/macvm_ctl.bash status``'s on the same vm_stat, swap and pgrep output,
   rounding included, because the gate is that script's gate;
@@ -115,12 +116,14 @@ JuniperPython        *   /usr/local/miniforge3/envs/JuniperPython
 """
 TURING_KUBECTL = json.dumps({"clientVersion": {"major": "1", "minor": "22", "gitVersion": "v1.22.4", "platform": "darwin/amd64"}})
 TURING_EN7 = f"en7: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500\n\tether {MAC}\n\tmedia: autoselect (none)\n\tstatus: inactive\n"
-# socketfilterfw: turing's captures (2026-10-25: the firewall off, block all off), and the block-all sentences of
-# the binary's strings, since block all cannot be turned on without the owner's sudo.
+# socketfilterfw: turing's captures, the firewall off with block all disabled (2026-10-25) and on, blocking all
+# incoming connections (2026-10-26, once the owner applied C2); and the binary's "set to block all" sentence, which
+# sits beside "Block all DISABLED!" in its strings as --setblockall's confirmation.
 TURING_FIREWALL = "Firewall is disabled. (State = 0)\n"
 TURING_BLOCKALL = "Firewall has block all state set to disabled.\n"
 FIREWALL_BLOCKING = "Firewall is blocking all non-essential incoming connections. (State = 2)\n"
-BLOCKALL_ON = "Firewall is set to block all non-essential incoming connections\n"
+BLOCKALL_ON = "Firewall is blocking all non-essential incoming connections.\n"
+BLOCKALL_SET = "Firewall is set to block all non-essential incoming connections\n"
 
 
 def cap(stdout: str = "", rc: int = 0, *, argv: tuple[str, ...] = ("tool",), found: bool = True, timed_out: bool = False, stderr: str = "") -> dict:
@@ -456,14 +459,27 @@ class FirewallTest(CheckTestCase):
         _, result = self.result("--check")
         return self.condition(result, "G-SEC", "firewall")
 
-    def test_block_all_passes_in_either_sentence_and_either_state(self) -> None:
-        # Which state block all leaves the global state in is not measured here, so 1 and 2 both pass.
+    def test_block_all_passes_in_either_state(self) -> None:
+        # Block all left turing's global state at 2 (2026-10-26), but the gate judges block all by its own
+        # capture, so 1 passes too (G1's C12).
         for globalstate in (FIREWALL_BLOCKING, "Firewall is enabled. (State = 1)\n"):
-            for blockall in (BLOCKALL_ON, "Firewall is blocking all non-essential incoming connections.\n"):
-                with self.subTest(globalstate=globalstate, blockall=blockall):
-                    cond = self.firewall(globalstate, blockall)
-                    self.assertEqual(cond["status"], "pass", cond)
-                    self.assertIn(blockall.strip(), cond["message"])
+            with self.subTest(globalstate=globalstate):
+                cond = self.firewall(globalstate, BLOCKALL_ON)
+                self.assertEqual(cond["status"], "pass", cond)
+                self.assertIn(BLOCKALL_ON.strip(), cond["message"])
+
+    def test_turing_with_c2_applied_passes(self) -> None:
+        cond = self.firewall(FIREWALL_BLOCKING, BLOCKALL_ON, stealth="Firewall stealth mode is on\n")
+        self.assertEqual(cond["status"], "pass", cond)
+        self.assertEqual(cond["message"], "Firewall is blocking all non-essential incoming connections. (State = 2); Firewall is blocking all non-essential incoming connections.; Firewall stealth mode is on")
+
+    def test_the_setters_sentence_cannot_be_judged(self) -> None:
+        # --getblockall never prints --setblockall's confirmation, so a capture holding it is not the getter's.
+        for globalstate in (FIREWALL_BLOCKING, "Firewall is enabled. (State = 1)\n"):
+            with self.subTest(globalstate=globalstate):
+                cond = self.firewall(globalstate, BLOCKALL_SET)
+                self.assertEqual(cond["status"], "error", cond)
+                self.assertIn("no block-all state in 'Firewall is set to block all non-essential incoming connections'", cond["message"])
 
     def test_the_fix_names_only_the_missing_steps(self) -> None:
         off = self.firewall(TURING_FIREWALL, TURING_BLOCKALL)
@@ -479,7 +495,7 @@ class FirewallTest(CheckTestCase):
             self.assertNotIn("signed software", cond["remediation"], "C2's block-all form replaced 'allow signed software'")
 
     def test_an_off_firewall_fails_even_when_block_all_cannot_be_read(self) -> None:
-        for blockall in (cap("Firewall is in undefined block all state.\n"), cap(found=False, argv=("/usr/libexec/ApplicationFirewall/socketfilterfw", "--getblockall"))):
+        for blockall in (cap("Firewall is in undefined block all state.\n"), cap(BLOCKALL_SET), cap(found=False, argv=("/usr/libexec/ApplicationFirewall/socketfilterfw", "--getblockall"))):
             with self.subTest(blockall=blockall):
                 cond = self.firewall(TURING_FIREWALL, blockall)
                 self.assertEqual(cond["status"], "fail", cond)
