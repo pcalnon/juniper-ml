@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The release-train ceremony's archive cap rises from 125,000 B to 1,000,000 B** (owner ruling 2026-10-26, on the
+  runner-side measurement that the 2026-10-18 ruling called for; a follow-up to juniper-ml#2227).
+  `util/release_train/ceremony.py`'s `ARCHIVE_B64_MAX_DEFAULT` bounds a release-notes archive's base64, because the
+  archive travels inside one `createCommitOnBranch` request. The old figure was measured from turing, and was that
+  host's weak link.
+  - **The measurement.** From a GitHub-hosted runner (Actions run 40410086979), GitHub accepted every GraphQL request
+    body from 100,000 B to 16,777,216 B, padded in a comment or in a variable, the slowest in 3.29 s. From the Linux
+    host it accepted every body up to 8,388,608 B. The instrument is `util/ad-hoc/2026-10-26_graphql_body_cap_probe.py`
+    (new), and the evidence is in `reports/2026-10-26_graphql-body-cap-probe/` (new). The runner run came from a
+    throwaway draft PR (juniper-ml#2361) against a throwaway base, closed unmerged, with both branches deleted.
+  - **Why it matters.** juniper-ml 0.11.0's archive, at 122,032 B, came within 7 KB of the old cap, and
+    juniper-canopy 0.9.0's 103 KB notes had to be condensed. `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` still
+    overrides the default.
+  - **Tests.** `tests/test_release_train_ceremony.py` now HALTs on an 800,000 B changelog, and a new test plans
+    one that only the old cap halted. The env-override test now also proves that an override to 125,000 restores
+    the old HALT. With the default patched back to 125,000, the new test alone fails.
+  - `docs/REFERENCE.md`'s ceremony precondition, and the `archive-too-large` row of
+    `notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md` (1.2.4), name the new default
+    and the measurement.
+
 - **G-SEC's firewall condition reads the block-all sentence turing printed** (turing bring-up task C2; the §18.2
   C2 row and erratum E-C2-GATE of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
   The owner applied C2's block-all form on 2026-10-26, so the on-state captures exist: `--getglobalstate` prints

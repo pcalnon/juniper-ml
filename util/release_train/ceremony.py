@@ -304,11 +304,17 @@ _CREATE_COMMIT_ON_BRANCH_MUTATION = (
 # 131,000 B refused with HTTP 499) but NOT established as GitHub's own limit rather than that host's
 # link (re-diagnosed 2026-10-18 as turing's weak Wi-Fi: GitHub's GraphQL frontend drops a request that runs
 # past about 7-10 s, so the figure is a request-duration symptom, not a body-size rule). plan_ceremony HALTs `archive-too-large` BEFORE any write when the encoded archive exceeds this
-# many bytes (owner ruling 2026-10-18: the conservative measured figure as the default);
-# JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX overrides it once a runner-side measurement settles the real cap.
-# The remedy is to condense the notes (util/ad-hoc/2026-10-17_condense_release_notes_section.py, the
+# many bytes. The owner ruled on 2026-10-18 to default to that conservative figure (125,000) until a
+# runner-side measurement settled the real cap. It was settled on 2026-10-26: from a GitHub-hosted runner
+# (juniper-ml run 40410086979), GitHub accepted every GraphQL request body from 100,000 B to 16,777,216 B,
+# padded in a comment or in a variable, the largest in 3.29 s, and from the Linux host every body up to
+# 8,388,608 B (util/ad-hoc/2026-10-26_graphql_body_cap_probe.py; reports/2026-10-26_graphql-body-cap-probe/).
+# The owner then ruled (2026-10-26) to raise the default to 1,000,000: 16x below the largest body the runner
+# was seen to accept, and far above any release notes so far (juniper-ml 0.11.0's archive, at 122,032 B, came
+# within 7 KB of the old cap). JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX still overrides it. The remedy for a
+# HALT is still to condense the notes (util/ad-hoc/2026-10-17_condense_release_notes_section.py, the
 # juniper-canopy 0.9.0 precedent), never to invent an archive body.
-ARCHIVE_B64_MAX_DEFAULT = 125_000
+ARCHIVE_B64_MAX_DEFAULT = 1_000_000
 ARCHIVE_B64_MAX_ENV = "JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX"
 
 
