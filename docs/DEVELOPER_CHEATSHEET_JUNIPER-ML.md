@@ -23,7 +23,7 @@
 | `python3 -m unittest -v tests/test_publish_release_only_trigger.py` | All `publish*.yml` stay `release: published` only (no `push:`) |
 | `bash scripts/test_resume_file_safety.bash`            | Run resume file safety regression               |
 | `pre-commit run --all-files`                           | Run all pre-commit hooks                        |
-| `juniper-check-doc-links --cross-repo skip`            | Validate doc links (CI-parity mode; install via `pip install juniper-doc-tools`) |
+| `juniper-check-doc-links --exclude tmp --cross-repo skip` | Validate doc links (CI-parity mode, scratch `tmp/` skipped; install via `pip install juniper-doc-tools`) |
 | `util/juniper_plant_all.bash`                          | Start the host-level Juniper stack with health gates |
 | `util/get_cascor_status.bash`                          | Query host-mode cascor status (`CASCOR_HOST` / `CASCOR_PORT`, default `localhost:8201`) |
 | `util/juniper_chop_all.bash`                           | Stop the host-level stack from `JuniperProject.pid` |
@@ -367,7 +367,7 @@ Tip: `csv_import` refuses sources over 128 MiB with HTTP **422** until `dataset.
 | Open-PR budget alarm   | Daily 14:00 UTC `pr-budget-alarm.yml` (report-only); `gh workflow run pr-budget-alarm.yml`  |
 | Ruleset context audit  | `python util/ad-hoc/2026-08-10_ruleset_context_audit.py` (read-only; see tip below)         |
 | Doc links (CI parity)  | `juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude tmp --cross-repo skip` |
-| Doc links (full local) | `juniper-check-doc-links --cross-repo check`                                                |
+| Doc links (full local) | `juniper-check-doc-links --exclude tmp --cross-repo check`                                  |
 | Re-run main-verify     | `gh workflow run main-verify.yml --repo pcalnon/juniper-ml` (dispatch; catch-up BASE still applies) |
 | Sequence-safety (local) | `juniper-symbol-loss-check --base origin/main --head HEAD` (+ sibling `docs_additions_check.py`) |
 | Fleet predicted-merge  | `python util/fleet_triage/predict_merge.py --pr N` / `--batch` (exit 0 = report; 2 = misuse) |

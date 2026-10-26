@@ -252,10 +252,18 @@ See [`util/ad-hoc/README.md`](util/ad-hoc/README.md) for the ad-hoc-script conve
 
 - This repo's temp root is its gitignored `tmp/`. `TMPDIR` points at the **primary** checkout's (it outlives any worktree); a worktree-isolated session writes its own scratch files into its worktree's `tmp/`.
 - Sessions get `TMPDIR` from the launcher (`scripts/wake_the_claude.bash`) and a user-level SessionStart hook, so `tempfile`, `mktemp` and pytest's `tmp_path` follow it. Both also set `GIT_CEILING_DIRECTORIES` at the `tmp/` dirs: under a `TMPDIR` inside a checkout, git would otherwise find the enclosing checkout, so a test's "not a git repo" dir sets the ceiling (a proper ancestor of where git starts) in its subprocess env.
-- Tree walkers must skip `tmp/` (`juniper-check-doc-links --exclude tmp`); pytest stays out through `testpaths`.
 - In code: never a `/tmp/...` literal and never `${TMPDIR:-/tmp}`; tests use `tmp_path`; state another process must find (pid files, run directories) lives at a fixed path under the primary's `tmp/` (`util/juniper_repo_tmp.bash`) or `~/.local/state/`, never one derived from `TMPDIR`. Gate G-TMP (`util/tmp_path_literal_check.py`) fails a new literal.
 - Out of scope: GitHub-hosted CI runners and a container's own `/tmp`.
 - Ecosystem rule and rationale: [`notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`](notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md).
+- **Owner rulings, 2026-10-26** (canonical: `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`):
+  - `juniper-check-doc-links` ignores `tmp/`: every invocation passes `--exclude tmp`.
+  - pytest does not ignore `tmp/`: no `norecursedirs`, `--ignore` or `collect_ignore` entry names it.
+  - A local Docker build ignores `tmp/`: the build context's `.dockerignore` lists it.
+  - `tmp/` is a valid search location: a script that counts matches with `grep` or `find` includes it.
+  - Full-tree copies of the repo, and copies of log files, may live in `tmp/`.
+  - **Retention.** A file a work arc writes to `tmp/` is kept until it is no longer needed, no work arc (its own
+    included) uses it, and it is no longer needed for documentation or reference, and, where needed, until it has
+    been archived in an appropriate non-temporary directory. Only then may it be deleted.
 
 ---
 

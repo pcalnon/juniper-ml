@@ -6,7 +6,7 @@
 # Application:   util/ad-hoc
 # File Name:     2026-10-26_tmp_literal_sweep.py
 # Author:        Paul Calnon
-# Version:       0.1.0
+# Version:       0.2.0
 #
 # Date Created:  2026-10-26
 # Last Modified: 2026-10-26
@@ -23,7 +23,14 @@
 #   File classes: code (py/bash/sh), config (toml/yaml/json/ini/units/Docker/Make), workflow
 #   (.github/), agent (.claude/ skills, agents, settings, hooks), operative-doc (AGENTS.md,
 #   CLAUDE.md, README, docs/, notes/ procedures and templates), record (every other notes/,
-#   prompts/, reports/ file: what happened, which a remediation does not rewrite).
+#   prompts/, reports/ file: what happened, which a remediation does not rewrite), scratch
+#   (the repo's own gitignored tmp/).
+#
+#   The repo's tmp/ is searched too: by the owner's 2026-10-26 ruling it is a valid search
+#   location, and a count of matches includes it. ripgrep skips a gitignored directory when
+#   it walks ".", so the sweep names tmp as a search path of its own (rg searches an ignored
+#   directory it is given) and reports those hits as the scratch class, apart from the files
+#   a remediation edits.
 #
 # Usage:
 #   python3 util/ad-hoc/2026-10-26_tmp_literal_sweep.py [--root DIR] [--list CLASS] [--repo NAME]
@@ -49,6 +56,8 @@ OPERATIVE_NOTE = re.compile(r"(PROCEDURE|TEMPLATE|CONVENTION|README)", re.IGNORE
 def classify(rel: str) -> str:
     p = Path(rel)
     name = p.name
+    if p.parts and p.parts[0] == "tmp":
+        return "scratch"
     if rel.startswith(".github/"):
         return "workflow"
     if rel.startswith(".claude/") or "/.claude/" in rel:
@@ -73,12 +82,19 @@ def sweep(repo: Path):
     for g in SKIP_GLOBS:
         cmd += ["-g", g]
     cmd += ["-g", "!.git/**", "."]
+    # The repo's tmp/ is gitignored, so the walk of "." skips it; naming it searches it (owner ruling, 2026-10-26).
+    if (repo / "tmp").is_dir():
+        cmd.append("tmp")
     out = subprocess.run(cmd, cwd=repo, capture_output=True, text=True, check=False).stdout
     hits = defaultdict(list)
+    seen = set()
     for line in out.splitlines():
         path, _, rest = line.partition(":")
         lineno, _, text = rest.partition(":")
         rel = path[2:] if path.startswith("./") else path
+        if (rel, lineno) in seen:  # a tmp/ that is NOT ignored is reached by both search paths
+            continue
+        seen.add((rel, lineno))
         hits[rel].append((int(lineno) if lineno.isdigit() else 0, text.strip()))
     return hits
 

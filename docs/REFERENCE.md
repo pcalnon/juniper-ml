@@ -7519,7 +7519,7 @@ Structural gate: `tests/test_subpackage_ci_workflows.py`.
 
 Weekly (Monday 06:00 UTC) + `workflow_dispatch` workflow [`.github/workflows/docs-full-check.yml`](../.github/workflows/docs-full-check.yml). It does **not** run on PRs — per-PR CI uses `--cross-repo skip`. The weekly job clones sibling checkouts and runs the screens PR CI cannot:
 
-1. `juniper-check-doc-links --cross-repo check` across the cloned workspace.
+1. `juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude tmp --cross-repo check` across the cloned workspace.
 2. Consumer `juniper-doc-tools` pin lint (`tests/test_doc_tools_drift.py`).
 3. Downstream consumer doc-link integration (per-repo failure threshold).
 4. The matching `juniper-ci-tools` pin + dep-docs integration screens.
