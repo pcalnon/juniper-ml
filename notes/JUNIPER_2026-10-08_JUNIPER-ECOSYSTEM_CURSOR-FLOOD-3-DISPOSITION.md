@@ -404,4 +404,4 @@ All under `util/ad-hoc/` (script-placement rule; retained as provenance of recor
   - `propose.py` changed `pyproject.toml`, `CHANGELOG.md`, `README.md` and `AGENTS.md`.
   - The co-change commit changed `docs/REFERENCE.md` and `CHANGELOG.md`, and added `util/ad-hoc/2026-10-26_juniper_ml_0_11_3_cut_cochanges.py`.
 - **The archive:** juniper-ml#2350 adds `notes/releases/RELEASE_NOTES_v0.11.3.md`.
-- **This record's fifth update** rides the arc's closing handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_flood3-followups-servers-extras-fixed-juniper-ml-0-11-3-at-pypi-gate.md`, which changes this file and adds that handoff.
+- **This record's fifth update** rides the arc's closing handoff, juniper-ml#2352 (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_flood3-followups-servers-extras-fixed-juniper-ml-0-11-3-at-pypi-gate.md`), which changes this file and adds that handoff.

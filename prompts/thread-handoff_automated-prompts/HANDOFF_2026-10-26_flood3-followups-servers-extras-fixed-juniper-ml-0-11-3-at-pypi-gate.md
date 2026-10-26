@@ -2,7 +2,7 @@
 
 **Date**: 2026-10-26 (UTC)
 **Arc**: Cursor flood-3 disposition (2026-10-08) and the owner-requested follow-ups (2026-10-08 to 2026-10-26)
-**Record of the arc**: `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, written `…FLOOD-3-DISPOSITION.md` below. Its §4 lists the defects, §8 the open items and §9 the files changed. The PR that lands this file makes its fifth update.
+**Record of the arc**: `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, written `…FLOOD-3-DISPOSITION.md` below. Its §4 lists the defects, §8 the open items and §9 the files changed. juniper-ml#2352, which lands this file, makes its fifth update.
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-10_flood3-followups-released-ci-tools-0-9-1-at-pypi-gate.md` (ml#2208), written `HANDOFF_2026-10-10_…gate.md` below. § Residue closes or carries each of its six items.
 **Host**: the Linux host, session worktree `.claude/worktrees/enchanted-sniffing-popcorn`. Commits go only through GraphQL `createCommitOnBranch` (`util/open_signed_pr.py`, `util/push_signed_commit.py`); a local `git commit` hangs on the YubiKey.
 **Validated**: in two rounds by five independent lanes. Round 1 used a rubric lane against `prompts/agent_templates/RUBRIC.md`, an adversarial fact-check and a fresh-session procedure audit. Round 2 checked what the rewrite broke and attacked the correction. Every finding was re-probed before it was applied (§ Validation).
@@ -62,7 +62,7 @@ The owner's last request in this arc, verbatim: "let's publish ml#2062 changes o
     - ml#2345 re-applied its entry under #2333's `### Fixed` and merged first (`278c6139`), so it rides 0.11.3;
     - ml#2346 reverted its CHANGELOG change until after the cut, then merged as `89f5af48`, with its entry under `[Unreleased]`.
 - **Records:**
-  - `…FLOOD-3-DISPOSITION.md`: its fifth update rides this PR.
+  - `…FLOOD-3-DISPOSITION.md`: its fifth update rides ml#2352, this file's PR.
   - The parent `/home/pcalnon/Development/python/Juniper/AGENTS.md` RELEASED paragraph: its juniper-ml bullet now says 0.11.3 waits at the gate, #2333 is on `main`, and the patches reach `[servers]` through canopy (corrected).
 
 ## Remaining work
@@ -129,7 +129,7 @@ The owner's last request in this arc, verbatim: "let's publish ml#2062 changes o
 
 ## Key context and traps
 
-- **Merge approval.** The owner's "merge approval granted" (2026-10-25) covered ml#2333, the 0.11.3 proposal and archive, and this PR. It ended with this session. A new session needs the owner's approval for any merge (memory `feedback_headless_merge_approval_policy.md`).
+- **Merge approval.** The owner's "merge approval granted" (2026-10-25) covered ml#2333, the 0.11.3 proposal and archive, and ml#2352, this file's PR. It ended with this session. A new session needs the owner's approval for any merge (memory `feedback_headless_merge_approval_policy.md`).
 - **Never approve a `pypi` gate from a session.** Never put a secret in argv.
 - **A release cut under open `[Unreleased]` PRs** (memory `reference_release_cut_under_an_open_pr_changelog_automerges_silently.md`). Right before the proposal merges, every open PR touching `CHANGELOG.md` must have merged already, or carry no CHANGELOG change. The unsafe sequence is a re-cut before the proposal merges and a merge after it: update-branch then files the bullet under the released heading.
 - **Re-cutting a PR onto a moved `main`.** Replay its apply script in a fresh `origin/main` worktree, then run `util/ad-hoc/2026-10-08_fleet_flood3_reset_pr_branch.py`. It makes one signed commit on a temporary branch, then force-moves the PR ref, guarded on the old tip. A whole-file upload onto a stale branch reverts `main`.
@@ -176,7 +176,7 @@ gh pr list --repo pcalnon/juniper-ml --state open
 Checked item by item against git, GitHub and PyPI on 2026-10-26:
 
 1. **juniper-ci-tools 0.9.1's `pypi` gate**: closed. The owner approved it, and it has been on PyPI since 2026-10-21 21:53Z.
-2. **The touch of `…FLOOD-3-DISPOSITION.md`**: closed, and since exceeded. ml#2315 was its third update, ml#2326 the fourth, and this PR is the fifth.
+2. **The touch of `…FLOOD-3-DISPOSITION.md`**: closed, and since exceeded. ml#2315 was its third update, ml#2326 the fourth, and ml#2352 is the fifth.
 3. **Delivering the released fixes**: closed (§ Completed).
    - The fixes it listed as "on `main` but in no release" have shipped: cascor#689 and #710 are ancestors of cascor's `v0.12.0` tag, and canopy `v0.9.0` compares key bytes.
    - canopy 0.9.0 and recurrence 0.6.0 shipped through W1.13 (in `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`) on 2026-10-17.
@@ -191,11 +191,11 @@ Checked item by item against git, GitHub and PyPI on 2026-10-26:
 
 ## Git status at handoff
 
-- juniper-ml `main` will be at this PR's merge or later.
+- juniper-ml `main` will be at ml#2352's merge or later.
 - **The session worktree, `.claude/worktrees/enchanted-sniffing-popcorn`**: local branch `worktree-enchanted-sniffing-popcorn` at `2a69b817`. Nothing is staged, and every change landed through the API.
   - Its modified `…FLOOD-3-DISPOSITION.md` is an old copy (ml#2315's blob `ae42ab26`). Never upload it.
   - Its three untracked `util/ad-hoc/2026-10-10_*` scripts are byte-identical to `main`'s.
-- No remote branch or armed auto-merge of this arc remains once this PR merges.
+- No remote branch or armed auto-merge of this arc remains once ml#2352 merges.
 - Local branches that remain:
   - the session worktree's;
   - the ten `worktree-agent-*` branches of `HANDOFF_2026-10-10_…gate.md`'s targets, all at `d3971e10`, which its cleanup loop deletes.
@@ -220,7 +220,7 @@ Checked item by item against git, GitHub and PyPI on 2026-10-26:
     - `juniper-ml--release--juniper-ml-v0.11.3--20261026-0410--da5e8de3`
     - `juniper-ml--release--juniper-ml-v0.11.3--20261026-0441--278c6139`
     - `juniper-ml--ceremony--v0.11.3--20261026-0507--a771a5b8`
-    - `juniper-ml--docs--handoff-flood3-0-11-3--20261026-0523--89f5af48`: only after this PR has merged, because until then it holds this PR's only local copy.
+    - `juniper-ml--docs--handoff-flood3-0-11-3--20261026-0523--89f5af48`: only after ml#2352 has merged, because until then it holds that PR's only local copy.
   - juniper-data:
     - `juniper-data--deps--shared-security-floors--20261010-1444--f13a83ee`
     - `juniper-data--release--juniper-data-v0.17.1--20261010-1520--96f26ca7`
@@ -254,7 +254,7 @@ Checked item by item against git, GitHub and PyPI on 2026-10-26:
     - from the co-change commit: `docs/REFERENCE.md` and `CHANGELOG.md`;
     - new: `util/ad-hoc/2026-10-26_juniper_ml_0_11_3_cut_cochanges.py`.
   - ml#2350: `notes/releases/RELEASE_NOTES_v0.11.3.md` (new).
-  - This PR:
+  - ml#2352, this file's PR:
     - this file (new);
     - `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, the fifth update: header, §4, §7, §8 and §9, including the canopy correction and §9's ml#2315 backfill.
   - Unversioned files on this host, with no history:
