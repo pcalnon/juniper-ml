@@ -30,8 +30,8 @@
   ],
   "files": {
     "AGENTS.md": {
-      "ceiling_chars": 38000,
-      "_note": "Ratcheted 2026-08-23 from 45084 after the CI/CD Workflows relocation (ml#1271) took the file to 36792. Deliberately 38000, NOT 36792: --ratchet tightens to the exact current size, which leaves ZERO headroom and fails the very next author. The 1208-char slack is about five days of working room at the measured burn (+937 over four days / five PRs, median +58 but one docs PR took +605). Target after P3 is still 32443."
+      "ceiling_chars": 28000,
+      "_note": "Ratcheted 2026-10-26 from 38000 after the derivable-content trim (Package and Metadata, Configuration and Conventions bullets, the build commands, the per-package publishing paragraphs) took the file to 25930. Deliberately 28000, not 25930: about 2070 chars of slack, roughly nine days at the burn below and room for one +605 docs PR. Earlier: ratcheted 2026-08-23 from 45084 after the CI/CD Workflows relocation (ml#1271) took the file to 36792. Deliberately 38000, NOT 36792: --ratchet tightens to the exact current size, which leaves ZERO headroom and fails the very next author. The 1208-char slack is about five days of working room at the measured burn (+937 over four days / five PRs, median +58 but one docs PR took +605). Target after P3 is still 32443."
     }
   }
 }
