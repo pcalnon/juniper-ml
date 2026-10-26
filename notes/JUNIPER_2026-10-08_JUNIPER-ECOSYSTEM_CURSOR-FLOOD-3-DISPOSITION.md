@@ -4,7 +4,7 @@
 **Author**: Paul Calnon
 **Status**: Complete — each of the 116 draft PRs is merged, or closed with its content carried or the reason it was rejected recorded (§5)
 **Date**: 2026-10-08
-**Updated**: 2026-10-26. The follow-up: the `ANTHROPIC_API_KEY` secret in all seven repos that lacked it, five §4 defects fixed, and six releases on PyPI: juniper-observability 0.4.1, juniper-service-core 0.7.1, juniper-data 0.17.0 and 0.17.1, juniper-ci-tools 0.9.1 and juniper-cascor 0.12.0. The shared fixes run in every service image juniper-deploy pins. juniper-ml floors them on PyPI: `[tools]` since 0.11.1, and `[servers]` since 0.11.0 through juniper-canopy 0.9.0 (cascor 0.12.0 too from 0.11.2). juniper-ml#2062 is fixed (juniper-ml#2333), and juniper-ml 0.11.3, which carries the fix, waits at the owner's `pypi` gate (§4, §8, §9)
+**Updated**: 2026-10-26. The follow-up: the `ANTHROPIC_API_KEY` secret in all seven repos that lacked it, five §4 defects fixed, and six releases on PyPI: juniper-observability 0.4.1, juniper-service-core 0.7.1, juniper-data 0.17.0 and 0.17.1, juniper-ci-tools 0.9.1 and juniper-cascor 0.12.0. The shared fixes run in every service image juniper-deploy pins. juniper-ml floors them on PyPI: `[tools]` since 0.11.1, and `[servers]` since 0.11.0 through juniper-canopy 0.9.0 (cascor 0.12.0 too from 0.11.2). juniper-ml#2062 is fixed (juniper-ml#2333), and juniper-ml 0.11.3, which carries the fix, has been on PyPI since 2026-10-26 17:48Z (§4, §8, §9)
 **Applies to**: juniper-ml, juniper-data, juniper-canopy, juniper-cascor, juniper-data-client, juniper-deploy, juniper-cascor-client, juniper-cascor-worker
 
 ---
@@ -356,7 +356,11 @@ All under `util/ad-hoc/` (script-placement rule; retained as provenance of recor
     - Proposal juniper-ml#2349 (squash `a771a5b8`).
     - Release `v0.11.3`, published 2026-10-26 10:20:47Z with its tag at `a771a5b8`.
     - Archive juniper-ml#2350 (squash `8b2221d3`). It matches the Release body.
-  - **Owner's:** the `pypi` gate of publish run 40306687867 (environment id 12341743943). It can be re-run until 2026-11-25 10:20:49Z (day 30), and GitHub cancels it on 2026-11-30 10:20:49Z (day 35); §6 has the rule.
+  - **On PyPI since 2026-10-26 17:48Z.** The owner approved the `pypi` gate of publish run 40306687867 (environment id 12341743943), and its `Publish to PyPI` job succeeded at 17:48:12Z. Checked after the upload:
+    - `/pypi/juniper-ml/0.11.3/json` lists exactly three `[servers]` requirements, each naming its server's extras. The wheel's and the sdist's sha256 equal TestPyPI's, so one build reached both indexes.
+    - The differential wheel check ran at 19:11Z with the published `juniper-ml[servers]==0.11.3` as its control. JD-8, CC-2 and CC-3 PASS, CP-1 reads `backend.service_backend imported`, and `pip check` is clean.
+    - Of the probe's 39 checks, 26 PASS, 13 SKIP and none FAIL. Twelve of the SKIPs are recurrence checks, which `[servers]` does not install for; the thirteenth, CC-4, needs matplotlib.
+    - The 0.11.2 control, measured at 08:53Z against the same canopy, cascor and data releases, passed 18 and skipped 21. The eight that 0.11.3 turns from SKIP to PASS are JD-8, CC-2, CC-3 and the five data-client checks.
 - **Not done, deliberately:** a `tests/test_service_fork_drift.py` guard for the `FailedAuthThrottle` fix. That test requires every guard to cite a defect-register `APD-` id, and the register has no row for this defect. Filing one is a new row in §4.9 ("Filed after the primer") of `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`. The register's "five touches" govern closing a row, not filing one; until 2026-10-10 this bullet called the filing the five-touch protocol. Each of the three copies is pinned by its own repo's regression test.
 - **The remaining open rows in §4**, including the six that the follow-up's Sequence Safety and throttle sweeps found.
 - The fleet keeps running by owner decision. The next flood will meet the same structure: every docs PR rewrites shared version stamps, so the docs class conflicts by construction and consolidation is the default disposition.
@@ -405,3 +409,4 @@ All under `util/ad-hoc/` (script-placement rule; retained as provenance of recor
   - The co-change commit changed `docs/REFERENCE.md` and `CHANGELOG.md`, and added `util/ad-hoc/2026-10-26_juniper_ml_0_11_3_cut_cochanges.py`.
 - **The archive:** juniper-ml#2350 adds `notes/releases/RELEASE_NOTES_v0.11.3.md`.
 - **This record's fifth update** rides the arc's closing handoff, juniper-ml#2352 (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_flood3-followups-servers-extras-fixed-juniper-ml-0-11-3-at-pypi-gate.md`), which changes this file and adds that handoff.
+- **This record's sixth update**, juniper-ml#2358, records 0.11.3 on PyPI (2026-10-26 17:48Z) and changes only this file.
