@@ -35,7 +35,7 @@ pip install juniper-ml[clients]
 # Distributed training worker only (juniper-cascor-worker)
 pip install juniper-ml[worker]
 
-# Server packages (juniper-canopy + juniper-cascor + juniper-data)
+# Server packages (juniper-canopy + juniper-cascor + juniper-data, with the clients they call)
 pip install juniper-ml[servers]
 
 # Shared tooling (juniper-ci-tools + juniper-doc-tools + juniper-observability)
@@ -49,7 +49,7 @@ pip install juniper-ml[all]
 ```
 
 > **Note on install size.** `juniper-ml[all]` transitively pulls a multi-GB dependency tree (notably `torch` via `juniper-cascor-worker` and `juniper-cascor`). On a fresh environment this resolves to approximately **5 GB on disk after install** (measured on Python 3.13 + Linux x86_64 against PyPI on 2026-05-21).
-> Callers who do not need the worker or server distributions should prefer a narrower extra: `[clients]`, `[tools]`, and `[doc-tools]` each resolve to under 50 MB; `[servers]` is under 200 MB (no torch).
+> Callers who do not need the worker or server distributions should prefer a narrower extra. Measured on disk on 2026-10-25 (Python 3.12, Linux x86_64, pip itself excluded): `[doc-tools]` is about 1 MB, `[clients]` about 85 MB and `[tools]` about 91 MB. `[servers]` is about 410 MB, with no torch: it requests each server's client and `[api]` extras, never cascor's `[ml]` or canopy's `[demo]`. scipy, plotly, numpy and dash are about three quarters of it.
 
 ### What Each Extra Installs
 
@@ -57,7 +57,7 @@ pip install juniper-ml[all]
 |-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `clients`   | `juniper-data-client>=0.5.0`, `juniper-cascor-client>=0.8.0`                                                                                                                                                 |
 | `worker`    | `juniper-cascor-worker>=0.4.0`                                                                                                                                                                               |
-| `servers`   | `juniper-canopy>=0.9.0`, `juniper-cascor>=0.12.0`, `juniper-data>=0.17.1`                                                                                                                                      |
+| `servers`   | `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`, `juniper-cascor[api,juniper-data]>=0.12.0`, `juniper-data[api]>=0.17.1`                                                                                  |
 | `tools`     | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.4.1`, `juniper-service-core>=0.7.1,<0.8.0` |
 | `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)                                                                                                                     |
 | `recurrence`| `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |

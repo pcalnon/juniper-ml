@@ -13,7 +13,7 @@
 | `pip install -e ".[all]"`                              | Install meta-package with all extras (editable; multi-GB — pulls torch via `[worker]`) |
 | `pip install -e ".[clients]"`                          | Install just the HTTP/WS client libraries (editable) |
 | `pip install -e ".[worker]"`                           | Install just the distributed training worker (editable) |
-| `pip install -e ".[servers]"`                          | Install just the service distributions: canopy + cascor + data (editable) |
+| `pip install -e ".[servers]"`                          | Install just the service distributions: canopy + cascor + data, with their clients (editable) |
 | `pip install -e ".[tools]"`                            | Install shared tooling: ci/doc/config tools + model-core + observability + service-core (editable) |
 | `pip install -e ".[recurrence]"`                       | Install Δt-native recurrence stack: model + FastAPI app + HTTP client (editable) |
 | `python -m build && twine check dist/*`                | Build and validate package                      |

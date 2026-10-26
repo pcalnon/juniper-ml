@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`[servers]` installs what each server needs to run as a service** (juniper-ml#2062; option (a+), owner ruling 2026-10-25).
+  `[servers]` installed `juniper-canopy`, `juniper-cascor` and `juniper-data` bare, but canopy declares both clients and
+  cascor its data client only as extras. So the three services started and failed at their first cross-service call:
+  canopy's service mode on `ModuleNotFoundError: No module named 'juniper_cascor_client'`, and cascor's dataset fetch on
+  `RuntimeError("juniper-data-client is not installed; cannot reload dataset")`. `[all]` was not affected, because it
+  also installs `[clients]`.
+  - `[servers]` now requests `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`,
+    `juniper-cascor[api,juniper-data]>=0.12.0` and `juniper-data[api]>=0.17.1`. Each client comes from its server's own
+    extra, inside that server's caps (canopy's `juniper-cascor-client<0.9.0` and `juniper-data-client<0.7.0`), not
+    from `[clients]`'s floors.
+  - `[api]` is cascor's and data's web runtime (fastapi, starlette, uvicorn, pydantic-settings). It used to arrive only
+    through canopy's base dependencies, so cascor's and data's own lower bounds were never applied. data's `[api]` also
+    carries its `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1` floors, which `[servers]` now applies
+    for the first time.
+  - torch stays out: cascor's `[ml]` and canopy's `[demo]` are not requested.
+  - **Pre-flighted against real PyPI** with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`. `[servers]`
+    resolves in 63 packages on Python 3.12, 3.13 and 3.14, up from 61; the two added are juniper-cascor-client 0.8.0
+    and juniper-data-client 0.6.0. `[all]` is unchanged at 95.
+  - **Verified on the built wheel** by `util/ad-hoc/2026-10-25_verify_servers_extras_ml2062.bash`. It runs
+    `util/ad-hoc/2026-09-21_decision11_wheel_contract_probe.py` in two clean Python 3.12 venvs with CPU torch, one
+    with the published 0.11.1's `[servers]` and one with this change's.
+    - With 0.11.1, JD-8, CC-2 and CC-3 SKIP on `No module named 'juniper_data_client'`, and CP-1 reports
+      `backend.service_backend` not importable (`No module named 'juniper_cascor_client'`).
+    - With this change, all four pass and `service_backend` imports. CP-1 is a defect probe that records PASS either
+      way, so its text is the measurement.
+  - **`docs/QUICK_START.md`'s install sizes were stale before this change.** Measured on disk on 2026-10-25 (Python 3.12,
+    Linux x86_64, pip excluded), `[servers]` is about 410 MB both at 0.11.1 and with this change (+1 MB, the two
+    clients), not "under 200 MB". `[clients]` is 85 MB and `[tools]` 91 MB, not "under 50 MB", and `[doc-tools]` is
+    about 1 MB. The note now gives the measured sizes.
+  - `tests/test_pyproject_extras.py` pins the contract (`test_servers_requests_what_each_server_needs_to_run`), and its
+    three docs-table parsers now read a PEP 508 extras marker (`test_parsers_keep_an_extras_marker`).
+    `util/ad-hoc/2026-09-21_sync_readme_compat_table.py` keeps the marker with the package in README's compatibility table.
+  - Applied by `util/ad-hoc/2026-10-25_servers_own_extras_ml2062.py`, which asserts each site's exact text and requires exactly one match apiece.
+- **`p4/e-c-cascor-noise-robustness` pins a wall budget above the driver default** (juniper-ml#2330). E-C sweeps
+  cap 64, the R-6 gate's wide-cap threshold, but took its only budget from juniper-cascor's `spiral-baseline.yaml`,
+  whose 3600 s equals the driver's `DEFAULT_MAX_WALL_SECONDS`. `WallBudgetContractTest` therefore failed it
+  wherever the sibling base resolved, and CI, which never resolves it, filed the suite `undecidable`.
+  - The suite sets `execution.max_wall_seconds: 5400` (owner ruling 2026-10-26, the issue's option 1). `run_suite`
+    forwards it as `--max-wall-seconds`, so the eight cells keep their ids and `config_sha256`. The worst-case
+    driver budget goes from 4050 s to 5850 s, still under `per_run_timeout_seconds: 7200`, and
+    `util/ad-hoc/2026-10-25_driver_budget_survey.py` reports every suite OK.
+  - `tests/test_experiment_suite_yamls.py` gains `test_e_c_stays_above_its_surveyed_budget`, a CI pin on both
+    bounds. Without it, deleting the line would make E-C `undecidable` in CI again rather than fail it, and CI
+    cannot judge E-C's timeout ordering at all.
+  - A comment in `util/experiments/run_experiment.py` that cited E-C's timeout rationale at `:22-26` now cites
+    `:36-41`.
+
 ## [0.11.2] - 2026-10-25
 
 ### Added

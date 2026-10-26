@@ -41,7 +41,9 @@ _README = _REPO / "README.md"
 _PYPROJECT = _REPO / "pyproject.toml"
 
 _LEAD_RE = re.compile(r"^The pyproject pins matching `juniper-ml` [0-9][^:]*:$", re.MULTILINE)
-_SPEC_RE = re.compile(r"^(?P<pkg>juniper-[a-z0-9-]+)(?P<spec>.*)$")
+# A PEP 508 extras marker stays with the package (juniper-ml#2062): ReadmeCompatTableTest keys a
+# row by everything before `>=`, so `juniper-data[api]` is the package and `>=0.17.1` the pin.
+_SPEC_RE = re.compile(r"^(?P<pkg>juniper-[a-z0-9-]+(?:\[[^\]]*\])?)(?P<spec>.*)$")
 
 
 def _collect_pins() -> tuple[str, dict[str, str]]:
@@ -74,7 +76,8 @@ def _render(version: str, pins: dict[str, str]) -> str:
         f"| {'Package'.ljust(width_pkg)} | {'Pin'.ljust(width_pin)} |",
         f"|{'-' * (width_pkg + 2)}|{'-' * (width_pin + 2)}|",
     ]
-    for pkg in sorted(pins):
+    # Sort on the bare name, so `juniper-cascor[api,...]` stays ahead of `juniper-cascor-client`.
+    for pkg in sorted(pins, key=lambda name: (name.split("[", 1)[0], name)):
         rows.append(f"| {f'`{pkg}`'.ljust(width_pkg)} | {f'`{pins[pkg]}`'.ljust(width_pin)} |")
     lead = f"The pyproject pins matching `juniper-ml` {version}:"
     return lead + "\n\n" + "\n".join(rows)
