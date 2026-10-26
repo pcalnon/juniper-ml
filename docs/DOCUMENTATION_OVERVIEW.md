@@ -214,6 +214,7 @@ This repository also houses six independently published subpackages under `junip
 juniper-ml[clients]    ──> juniper-data-client, juniper-cascor-client
 juniper-ml[worker]     ──> juniper-cascor-worker
 juniper-ml[servers]    ──> juniper-canopy, juniper-cascor, juniper-data
+                           (with their client and [api] extras; no torch)
 juniper-ml[tools]      ──> juniper-ci-tools, juniper-config-tools, juniper-doc-tools,
                            juniper-model-core, juniper-observability, juniper-service-core
 juniper-ml[doc-tools]  ──> juniper-doc-tools  (back-compat alias)

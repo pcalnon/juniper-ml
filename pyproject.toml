@@ -80,10 +80,15 @@ worker = [
 doc-tools = [
     "juniper-doc-tools>=0.1.0,<0.2.0",
 ]
+# Each server is requested WITH the extras that make it run as a service (juniper-ml#2062):
+# canopy's two client extras, cascor's data-client extra, and the [api] web runtime
+# (fastapi, starlette, uvicorn, pydantic-settings) that cascor and data declare. Requested
+# bare, the three services started and failed at their first cross-service call. torch stays
+# out: cascor's [ml] and canopy's [demo] are deliberately not requested.
 servers = [
-    "juniper-canopy>=0.9.0",
-    "juniper-cascor>=0.12.0",
-    "juniper-data>=0.17.1",
+    "juniper-canopy[juniper-cascor,juniper-data]>=0.9.0",
+    "juniper-cascor[api,juniper-data]>=0.12.0",
+    "juniper-data[api]>=0.17.1",
 ]
 tools = [
     "juniper-ci-tools>=0.1.0",
