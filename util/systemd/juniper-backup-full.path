@@ -1,0 +1,16 @@
+[Unit]
+Description=Run the Juniper full-set archive (tier 3) when its drive is mounted and a run is due
+
+[Path]
+# The directory tier 2's juniper-backup.path watches, deliberately: udisks2 mounts both lanes'
+# drives under it, so every mount or unmount starts BOTH services. Each scheduler judges only
+# its own drive, from its own state directory and under its own lock, so neither lane's run
+# can block or skip the other's.
+# PathChanged=, never PathExists=: a PathExists= oneshot re-triggers after EVERY termination
+# (systemd.path(5)), so a "nothing due" exit 0 loops into the start-rate limit and the path
+# unit itself then fails, losing the monitoring. Verified against systemd v259 path.c.
+PathChanged=/run/media/pcalnon
+Unit=juniper-backup-full.service
+
+[Install]
+WantedBy=default.target

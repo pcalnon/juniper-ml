@@ -219,6 +219,7 @@ class ProbeHarness:
         r("pmset -g", "System-wide power settings:\nCurrently in use:\n standby              1\n sleep                0\n")
         r("fdesetup status", "FileVault is On.\n")
         r("socketfilterfw --getglobalstate", "Firewall is disabled. (State = 0)\n")
+        r("socketfilterfw --getblockall", "Firewall has block all state set to disabled.\n")  # turing, 2026-10-25
         r("socketfilterfw --getstealthmode", "Firewall stealth mode is off\n")
         r("csrutil status", TURING_CSRUTIL)
         r("csrutil authenticated-root status", "Authenticated Root status: enabled\n")
@@ -354,6 +355,7 @@ class DocumentTest(ProbeTestCase):
         self.assertCapture(sec["sip"], [str(self.h.bin / "csrutil"), "status"], TURING_CSRUTIL)
         self.assertCapture(sec["authenticated_root"], [str(self.h.bin / "csrutil"), "authenticated-root", "status"])
         self.assertCapture(sec["firewall"], [str(self.h.bin / "socketfilterfw"), "--getglobalstate"])
+        self.assertCapture(sec["blockall"], [str(self.h.bin / "socketfilterfw"), "--getblockall"], "Firewall has block all state set to disabled.\n")
         self.assertCapture(sec["stealth"], [str(self.h.bin / "socketfilterfw"), "--getstealthmode"])
         self.assertCapture(sec["filevault"], [str(self.h.bin / "fdesetup"), "status"], "FileVault is On.\n")
         self.assertCapture(doc["tools"]["kubectl_version"], [str(self.h.bin / "kubectl"), "version", "--client", "-o", "json"], TURING_KUBECTL)

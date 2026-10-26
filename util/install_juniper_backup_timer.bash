@@ -2,31 +2,43 @@
 ############################################################################################################################################################
 # Project:      Juniper
 # Sub-Project:  juniper-ml
-# Application:  Juniper USB-Archive (Tier 2) Timer Installer
+# Application:  Juniper USB-Archive (Tier 2) and Full-Set (Tier 3) Timer Installer
 # Author:       Paul Calnon
-# Version:      1.0.0
+# Version:      1.1.0
 # License:      MIT
 ############################################################################################################################################################
 #
-# Installs the `systemd --user` tier-2 lane of the backup design
-# (notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §7.8, §8 P3 step 2):
+# Installs one `systemd --user` lane of the backup design
+# (notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §7.8 and §7.9, §8 P3 steps 2 and 3).
+# Both lanes run the same three scripts:
 #
 #   ~/.local/bin/juniper-backup.bash                        the archive runner          <- util/juniper-backup.bash
 #   ~/.local/bin/juniper-backup-scheduled.bash              the due-or-skip scheduler   <- util/juniper-backup-scheduled.bash
 #   ~/.local/bin/duplicati-backup-failure.bash              the OnFailure reporter      <- util/duplicati_backup_failure.bash
-#   ~/.config/systemd/user/juniper-backup.timer             the weekly window
-#   ~/.config/systemd/user/juniper-backup.path              fires the service when a drive is mounted
-#   ~/.config/systemd/user/juniper-backup.service           runs the scheduler
-#   ~/.config/systemd/user/juniper-backup-failure.service   the service's OnFailure= target
 #
-# then `systemctl --user daemon-reload` and `systemctl --user enable --now juniper-backup.timer juniper-backup.path`.
+# and each has its own four units in ~/.config/systemd/user/. --lane usb, the default (tier 2, §7.8):
+#
+#   juniper-backup.timer                                    the weekly window
+#   juniper-backup.path                                     fires the service when a drive is mounted
+#   juniper-backup.service                                  runs the scheduler
+#   juniper-backup-failure.service                          the service's OnFailure= target
+#
+# --lane full (tier 3, §7.9): juniper-backup-full.{timer,path,service} and juniper-backup-full-failure.service, the
+# same four roles for the monthly full set on the offline drive. Its service sets the lane's environment (its own
+# state directory, ~/.local/state/juniper-backup-full) and passes --label full --repos "..." through the scheduler.
+#
+# It then runs `systemctl --user daemon-reload` and `systemctl --user enable --now` on the lane's timer and path unit.
 # Every installed name is the one a unit's ExecStart= or the scheduler's default RUNNER already expects.
+# Installing either lane rewrites the three shared scripts, so it updates what the other lane runs too.
 #
 # Usage:
-#     bash util/install_juniper_backup_timer.bash [--dry-run]
+#     bash util/install_juniper_backup_timer.bash [--lane usb|full] [--dry-run]
 #
 #     Invoke it through bash: a file added by an API-signed commit lands without the executable bit.
 #
+#     --lane usb  Tier 2, the default: the weekly per-repo archive to the two USB sticks. The same as no --lane.
+#     --lane full Tier 3: the monthly full set (label full) to the offline external drive. Installs nothing
+#                 of tier 2's units, and changes none of them.
 #     --dry-run   Run every read-only check, then print each action the real run would take and touch
 #                 nothing: no directory, no file, no systemctl call. Exits as the real run would, so a
 #                 non-zero dry run means the real run would refuse.
@@ -35,7 +47,7 @@
 #     0  installed and enabled (under --dry-run: would install and enable)
 #     1  refused before anything was written: running as root, a source file missing, systemctl
 #        absent, or Linger not enabled
-#     2  misuse (unknown argument)
+#     2  misuse (unknown argument, or a --lane other than usb or full)
 #
 # WHY THE SCRIPTS ARE COPIED RATHER THAN SYMLINKED
 #   Same reason as util/install_duplicati_timer.bash: the canonical copies live in a git worktree, and a
@@ -55,7 +67,13 @@
 #   ~/.local/bin/duplicati-backup-failure.bash is also what install_duplicati_timer.bash installs, from the
 #   same repository file, so whichever installer ran last wrote the same bytes. The two lanes are told
 #   apart by the UNIT, not the script: juniper-backup-failure.service sets DUPLICATI_STATE_DIR to this
-#   lane's state directory and passes juniper-backup.service as $1.
+#   lane's state directory and passes juniper-backup.service as $1. Tier 3's juniper-backup-full-failure.service
+#   does the same for ~/.local/state/juniper-backup-full and juniper-backup-full.service.
+#
+# RE-INSTALLING WHILE A RUN IS IN PROGRESS
+#   install(1) replaces a destination with a new inode (GNU coreutils 9.7 and uutils 0.10.0 both, measured
+#   2026-10-25) rather than rewriting it in place, so a scheduler or runner that bash is still reading keeps
+#   its own copy: installing one lane during the other lane's hours-long run does not change that run.
 #
 # REFUSES TO RUN AS ROOT
 #   These are --user units under $HOME. Under sudo they would land in /root, root-owned, where the user's
@@ -65,9 +83,13 @@
 set -euo pipefail
 
 DRY_RUN=0
+LANE="usb"
 while (( $# > 0 )); do
     case "$1" in
         --dry-run) DRY_RUN=1; shift ;;
+        --lane)
+            [[ $# -ge 2 && -n "$2" ]] || { echo "--lane requires usb or full" >&2; exit 2; }
+            LANE="$2"; shift 2 ;;
         -h|--help) sed -n '/^# Usage:/,/^# Exit codes:/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) echo "unknown argument: $1" >&2; exit 2 ;;
     esac
@@ -76,15 +98,28 @@ done
 REPO_UTIL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BIN_DIR="${HOME}/.local/bin"
 UNIT_DIR="${HOME}/.config/systemd/user"
-STATE_DIR="${HOME}/.local/state/juniper-backup"
 
 # Parallel arrays: repository file under util/  ->  installed name under BIN_DIR. The reporter is renamed
 # (underscores to hyphens) because juniper-backup-failure.service, like the Duplicati lane's unit, names
-# the hyphenated form in its ExecStart=.
+# the hyphenated form in its ExecStart=. Both lanes run these three scripts.
 SCRIPT_SOURCES=( "juniper-backup.bash" "juniper-backup-scheduled.bash" "duplicati_backup_failure.bash" )
 SCRIPT_TARGETS=( "juniper-backup.bash" "juniper-backup-scheduled.bash" "duplicati-backup-failure.bash" )
-UNITS=( "juniper-backup.timer" "juniper-backup.path" "juniper-backup.service" "juniper-backup-failure.service" )
-ENABLE_UNITS=( "juniper-backup.timer" "juniper-backup.path" )
+
+# The lane's units and its state directory. STATE_DIR here only names where the acceptance notes look: each
+# lane's scheduler takes it from its service (tier 2's default; tier 3's Environment=JUNIPER_BACKUP_STATE_DIR).
+case "${LANE}" in
+    usb)
+        STATE_DIR="${HOME}/.local/state/juniper-backup"
+        UNITS=( "juniper-backup.timer" "juniper-backup.path" "juniper-backup.service" "juniper-backup-failure.service" )
+        ENABLE_UNITS=( "juniper-backup.timer" "juniper-backup.path" )
+        ;;
+    full)
+        STATE_DIR="${HOME}/.local/state/juniper-backup-full"
+        UNITS=( "juniper-backup-full.timer" "juniper-backup-full.path" "juniper-backup-full.service" "juniper-backup-full-failure.service" )
+        ENABLE_UNITS=( "juniper-backup-full.timer" "juniper-backup-full.path" )
+        ;;
+    *) echo "unknown lane: ${LANE} (want usb or full)" >&2; exit 2 ;;
+esac
 
 say() { printf '%s\n' "$*"; }
 
@@ -202,16 +237,39 @@ else
     say
     say "Installed and enabled."
 fi
-say "Acceptance (design AC-10, §8 P3 step 2) reads ${STATE_DIR}/last-run.status. In this order:"
-say "  1. Do the OK run FIRST, with BOTH configured sticks mounted (by default EBC5-F0A3 and DFF3-2782). One"
-say "     stick is not enough: the runner writes it and exits 4 (PARTIAL), the scheduler records"
-say "     result=FAILED and stamps nothing, and the next plug-in rebuilds the whole set. The .path unit"
-say "     should start a due run (hours: every repo); if it does not, start juniper-backup.service by hand."
-say "       systemctl --user status juniper-backup.path         # still active 30 s after the plug-in"
-say "  2. Then, with no stick mounted: result=SKIPPED. Before any success, the same run reads result=FAILED"
-say "     (the scheduler counts 'never succeeded' as older than STALE_DAYS) and OnFailure= fires."
-say "       systemctl --user start juniper-backup.service"
-say "  3. The class-1 drill: bash util/ad-hoc/2026-08-26_backup_restore_drill.bash"
-say "  The weekly window: systemctl --user list-timers juniper-backup.timer"
+if [[ "${LANE}" == "usb" ]]; then
+    say "Acceptance (design AC-10, §8 P3 step 2) reads ${STATE_DIR}/last-run.status. In this order:"
+    say "  1. Do the OK run FIRST, with BOTH configured sticks mounted (by default EBC5-F0A3 and DFF3-2782). One"
+    say "     stick is not enough: the runner writes it and exits 4 (PARTIAL), the scheduler records"
+    say "     result=FAILED and stamps nothing, and the next plug-in rebuilds the whole set. The .path unit"
+    say "     should start a due run (hours: every repo); if it does not, start juniper-backup.service by hand."
+    say "       systemctl --user status juniper-backup.path         # still active 30 s after the plug-in"
+    say "  2. Then, with no stick mounted: result=SKIPPED. Before any success, the same run reads result=FAILED"
+    say "     (the scheduler counts 'never succeeded' as older than STALE_DAYS) and OnFailure= fires."
+    say "       systemctl --user start juniper-backup.service"
+    say "  3. The class-1 drill: bash util/ad-hoc/2026-08-26_backup_restore_drill.bash"
+    say "  The weekly window: systemctl --user list-timers juniper-backup.timer"
+else
+    say "Acceptance (design AC-11, §8 P3 step 3) reads ${STATE_DIR}/last-run.status. In this order:"
+    say "  1. Do the OK run FIRST. Connect the tier-3 drive, Ext WD Passport \"Blackbox Part 1\": it must mount at"
+    say "     /run/media/${user_name}/dee46823-4119-4914-ac15-08194ee27d81 and hold Juniper/Backups/. The .path"
+    say "     unit should start the run (hours: 15 archives, label full). If last-run.status has not been written a"
+    say "     minute after the mount, the trigger may have come before the mount completed; start the run by hand,"
+    say "     without waiting on it (a oneshot start blocks until the run ends):"
+    say "       systemctl --user start --no-block juniper-backup-full.service"
+    say "       journalctl --user -u juniper-backup-full.service -f"
+    say "     If the drive was already mounted when you installed, no mount event comes at all (PathChanged= does"
+    say "     not fire when the path unit starts), so start that first run by hand the same way."
+    say "  2. Disconnect the drive only after last-run.status reads result=OK (offline discipline, design §7.9)."
+    say "     The unplug starts this lane's check again; it reads result=SKIPPED, and the success stamp stays."
+    say "  3. Until that first success, a run with the drive detached reads result=FAILED and OnFailure= fires,"
+    say "     and every plug-in or unplug of any drive, a tier-2 stick included, runs this lane's check. Step 1 first."
+    say "  4. AC-11: restore one archive of the set and compare it with the live tree (the YubiKey decrypts):"
+    say "       gpg -d Juniper_full_<name>_<uuid>_<stamp>.tbz2.gpg | tar -xjf - -C <an empty scratch directory>"
+    say "  A set is due 30 days after the last success; a drive connected sooner reads SKIPPED (none due)."
+    say "  Retention is MANUAL: keep the last three full sets, and delete an older set (every archive bearing its"
+    say "  UUID) only after a restore drill of the newest passes. Nothing prunes."
+    say "  The monthly window: systemctl --user list-timers juniper-backup-full.timer"
+fi
 say "Never run juniper-backup-scheduled.bash with --dry-run by hand. It passes the flag to the runner, the"
 say "preview exits 0, and the scheduler then stamps a success and writes result=OK with no archive written."

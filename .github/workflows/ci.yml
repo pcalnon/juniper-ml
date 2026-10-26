@@ -293,6 +293,13 @@ jobs:
           # are refused before any write, copies replace symlinks. PATH-stubbed
           # mountpoint/gpg/systemctl; scratch trees only, never a real drive.
           python3 -m unittest -v tests/test_juniper_backup_tier2_lane.py
+          # tests/test_juniper_backup_tier3_lane.py: the tier-3 full-set lane (backup design
+          # §7.9, D-5). JUNIPER_BACKUP_DIR may be a relative path (Juniper/Backups) in the runner
+          # and the scheduler, through one function whose body is byte-identical in both; the
+          # four juniper-backup-full units as written and as systemd runs them; separate locks,
+          # statuses and stamps for the two lanes; the installer's --lane full. It imports the
+          # tier-2 suite's fixture: PATH-stubbed, scratch trees only, never a real drive.
+          python3 -m unittest -v tests/test_juniper_backup_tier3_lane.py
           python3 -m unittest -v tests/test_editable_install_drift_check.py
           # tests/test_env_floor_drift_check.py: gap-I-2 floor-drift checker --
           # installed juniper-* (dist-info METADATA) vs the target repo's pyproject

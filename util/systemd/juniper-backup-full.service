@@ -1,0 +1,36 @@
+[Unit]
+Description=Juniper full-set archive (tier 3) to the offline external drive
+OnFailure=juniper-backup-full-failure.service
+
+[Service]
+Type=oneshot
+
+# Tier 3 (design §7.9; owner ruling D-5, 2026-10-25). The scheduler and the runner are the
+# scripts tier 2 runs; this lane differs only in what this unit sets.
+#
+# Its OWN state directory. The scheduler keeps its lock, last-run.status and last-success.*
+# stamps there, and judges staleness from the newest stamp it finds in it. Shared with tier 2,
+# a tier-2 success would hide a stale full set, and the two lanes would contend for one lock.
+Environment=JUNIPER_BACKUP_STATE_DIR=%h/.local/state/juniper-backup-full
+# "Ext WD Passport, Blackbox Part 1", by its filesystem UUID (the owner's /etc/fstab), mounted
+# at /run/media/<user>/<UUID>: the relative form under the default JUNIPER_BACKUP_MEDIA_ROOT,
+# which the scheduler and the runner resolve to the same path. The fstab deprecates
+# /mnt/JuniperArchive, the path the design's §7.9 proposed.
+Environment=JUNIPER_BACKUP_DEVICES=dee46823-4119-4914-ac15-08194ee27d81
+Environment=JUNIPER_BACKUP_DIR=Juniper/Backups
+# Monthly. STALE_DAYS must be at least PERIOD_DAYS, or a drive attached before its set is due
+# would read FAILED. 45 is the period plus two weeks' grace: tier 2's 21 is three of its
+# periods, and three of these would let the newest full set reach 90 days before anything
+# said so.
+Environment=JUNIPER_BACKUP_PERIOD_DAYS=30
+Environment=JUNIPER_BACKUP_STALE_DAYS=45
+
+# The content: the ten application repos (the runner's APPLICATION_REPOS), juniper-legacy, and
+# the parent-level notes, prompts, util and backups directories, all children of the Juniper
+# parent, labelled full. The scheduler hands its arguments to the runner unchanged, and the
+# runner validates both before it probes anything.
+ExecStart=%h/.local/bin/juniper-backup-scheduled.bash --label full --repos "juniper-canopy juniper-cascor juniper-cascor-client juniper-cascor-worker juniper-data juniper-data-client juniper-deploy juniper-ml juniper-recurrence juniper-slacker juniper-legacy notes prompts util backups"
+TimeoutStartSec=infinity
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

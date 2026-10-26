@@ -30,7 +30,7 @@
 #   vm        VBoxManage --version, list vms, showvminfo <vm> --machinereadable  [G-MEM: the VM's size]
 #   network   ifconfig -a; networksetup -listallhardwareports  [G-NET]
 #   power     pmset -g  [no gate: task C7]
-#   security  fdesetup status; socketfilterfw --getglobalstate and --getstealthmode; csrutil status and
+#   security  fdesetup status; socketfilterfw --getglobalstate, --getblockall and --getstealthmode; csrutil status and
 #             authenticated-root status; the names of *.asc and *recovery* files under ~/.ssh and
 #             ~/.gnupg; the files directly in ~/.ssh, public ones aside, with any group or other
 #             permission bit  [G-SEC]
@@ -80,7 +80,7 @@
 #   vm        {name: str, version: CAPTURE, list_vms: CAPTURE, showvminfo: CAPTURE}
 #   network   {ifconfig: CAPTURE, hardware_ports: CAPTURE}
 #   power     {pmset: CAPTURE}
-#   security  {filevault, firewall, stealth, sip, authenticated_root: CAPTURE,
+#   security  {filevault, firewall, blockall, stealth, sip, authenticated_root: CAPTURE,
 #              key_exports: {"dirs": [str], "find": CAPTURE|null},   (null when no dir exists)
 #              ssh_loose: {"dir": str, "find": CAPTURE|null}}        (null when ~/.ssh does not exist)
 #   tools     {local_bin: str,
@@ -554,6 +554,7 @@ section_security() {
     section_begin security
     capture filevault "$FDESETUP" status
     capture firewall "$SOCKETFILTERFW" --getglobalstate
+    capture blockall "$SOCKETFILTERFW" --getblockall
     capture stealth "$SOCKETFILTERFW" --getstealthmode
     capture sip "$CSRUTIL" status
     capture authenticated_root "$CSRUTIL" authenticated-root status

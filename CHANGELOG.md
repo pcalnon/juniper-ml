@@ -7,7 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.2] - 2026-10-25
+
 ### Added
+
+- **Tier 3: the monthly full set to the offline drive, as a scheduled lane** (owner ruling D-5, 2026-10-25, on §7.9
+  and §8 P3 step 3 of `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`).
+  - **The units** (new): `util/systemd/juniper-backup-full.{timer,path,service}` and
+    `util/systemd/juniper-backup-full-failure.service`. The service runs tier 2's scheduler and runner with the lane's
+    own environment: state directory `~/.local/state/juniper-backup-full`, drive
+    `dee46823-4119-4914-ac15-08194ee27d81` ("Ext WD Passport, Blackbox Part 1" in the owner's `/etc/fstab`, mounted at
+    `/run/media/<user>/<UUID>`), directory `Juniper/Backups`, a 30-day period and a 45-day staleness limit. Its
+    `--label full --repos "…"` names the ten application repos, `juniper-legacy` and the parent-level
+    `notes prompts util backups`, and the scheduler hands both to the runner unchanged. The timer fires monthly and
+    the path unit on connection. The owner's fstab deprecates `/mnt/JuniperArchive`, so the path that §7.9 of
+    `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` proposed
+    is superseded, and that section gains a dated as-built note. Retention stays manual: nothing prunes.
+  - **`JUNIPER_BACKUP_DIR` may be a path.** `util/juniper-backup.bash` 1.1.0 accepts a relative path of
+    `[A-Za-z0-9._-]+` components (no empty, `.` or `..` component, no leading `/`) and judges every one-component
+    value as before. `util/juniper-backup-scheduled.bash` 1.1.0, which checked nothing, runs the same function (its
+    body byte-identical) and records a malformed value as `FAILED`, exit 2, before it probes a drive.
+  - **The installer.** `util/install_juniper_backup_timer.bash` 1.1.0 gains `--lane full`: the three shared scripts
+    and the four full units, copied rather than symlinked, with `--dry-run`, then the full timer and path unit
+    enabled. No `--lane`, or `--lane usb`, is the tier-2 install unchanged. `util/duplicati_backup_failure.bash`'s
+    header lists the third caller.
+  - **The lanes are independent.** Separate state directories give each lane its own lock, status and stamps, so
+    one lane's run never blocks or skips the other's, and one lane's success never hides the other's staleness. Both
+    path units watch `/run/media/pcalnon`, so every mount starts both checks, and each judges only its own drive.
+  - **The gate.** `tests/test_juniper_backup_tier3_lane.py` (new, 47 tests) is wired into `ci.yml` and
+    `docs/REFERENCE.md`, which documents the lane in § Juniper Project-Tree Backup.
+    `util/ad-hoc/2026-10-25_juniper_backup_tier3_mutation_check.py` (new) shows that it kills 46 of 46 mutants.
+    The tier-2 suite passes unchanged, and `util/ad-hoc/2026-10-03_juniper_backup_tier2_mutation_check.py` still
+    kills 30 of 30. `util/ad-hoc/2026-10-25_backup_tier2_install_parity.py` (new) shows that the installer's
+    default lane installs exactly what the one it replaces did, and
+    `util/ad-hoc/2026-10-25_backup_tier3_host_resolution_probe.bash` (new) shows, read-only, that both scripts
+    resolve the drive's `Juniper/Backups` on the host from the unit's own settings.
 
 - **Two gitleaks fleet instruments: the provenance of the zero-rule fix in three sibling repos** (the fleet follow-up
   to juniper-ml#2203, which found that a `.gitleaks.toml` with no `[extend]` table loads zero rules).
@@ -23,6 +57,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     juniper-deploy#259); juniper-cascor, juniper-cascor-client and juniper-ml **ACTIVE**; juniper-data-client,
     juniper-cascor-worker and juniper-recurrence have no `.gitleaks.toml`, so gitleaks loads its built-in default.
     juniper-recurrence runs no secret scan in any workflow.
+
+### Changed
+
+- **G-SEC's firewall condition follows C2's block-all form** (turing bring-up task C2, the §18.2 C2 row of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-25).
+  The owner chose to block all incoming connections while nothing inbound is needed, over per-app inbound
+  denies (RR-11 of `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md`).
+  The condition passed at `State = 1`, and its fix still said "allowing signed software".
+  - `util/host_state_probe.bash` also captures `socketfilterfw --getblockall` (`blockall` in the security section).
+  - `util/host_state_check.py` passes the firewall only when it is on and `--getblockall` reports block all. It
+    accepts both block-all sentences in the binary's strings, since turning block all on needs the owner's sudo.
+    An unknown or undefined state, or a probe without the capture, cannot be judged (exit 2 under `--check`),
+    unless the firewall is off, which fails anyway. The fix names only the missing `socketfilterfw` steps.
+    Stealth mode stays reported, not gated, as G1 designed it.
+  - `tests/test_host_state_check.py` gains 3 failure cases and a `FirewallTest` class of 5 tests (59 tests across
+    the two G1 suites), and `tests/test_host_state_probe.py` pins the capture.
+    `util/ad-hoc/2026-10-25_turing_c2_gate_mutation_check.py` kills 11 of 11 mutants, and the 57 of `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` still apply.
+  - `conf/hosts/turing/expected.yaml`'s G-SEC comment follows. turing still fails the condition: its firewall is
+    off (`State = 0`), as it was on 2026-10-15.
+
+- **H4's Serena entry turns Serena's usage report off** (turing bring-up, erratum E-H6 of
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-25).
+  Serena v1.7.0 sends the OS, the dashboard flag, the version, the backend and the context name to
+  `oraios-software.de` at every start unless `SERENA_USAGE_REPORTING` is exactly `false`
+  (`src/serena/agent.py:724-737` at `949a27ef`; SER-E1 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md`).
+  `util/mcp_setup.bash` wrote `"env": {}`.
+  - `util/mcp_setup.bash` now writes `"env": {"SERENA_USAGE_REPORTING": "false"}`. `False` or `0` would still
+    report, so the value is the exact string. An entry written before this fails `--check`, and the next write
+    replaces it, backing up the old file first. No checkout on turing had an entry yet: H4's live check still
+    waits on E-H4-WHEEL.
+  - `conf/hosts/turing/mcp.json`'s `verified` record adds the check made at the pin, so a pin bump re-reads it.
+  - `tests/test_mcp_setup.py` gains 3 tests (38 in all) and pins the exact value.
+    `util/ad-hoc/2026-10-25_turing_h4_usage_report_mutation_check.py` kills 7 of 7 mutants, and the 20 of `util/ad-hoc/2026-10-21_turing_h4_mutation_check.py` still apply.
 
 ### Fixed
 
