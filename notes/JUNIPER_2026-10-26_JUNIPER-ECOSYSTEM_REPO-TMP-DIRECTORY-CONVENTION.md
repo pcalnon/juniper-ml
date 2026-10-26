@@ -192,13 +192,23 @@ needs the five checks below; CI is unaffected, because a runner's `TMPDIR` is it
    Source, `$HOME`), `tests/test_e2e_f037_render_census.py` and `tests/test_replay_redrive_stack_refusal.py` (they find
    the real ecosystem root), and `tests/test_workflow_script_paths.py` (it finds the primary's `.github/workflows`). A
    git ceiling cannot bound these walks; each needs its code under test to accept a bound (section 10).
-5. **Unix socket paths.** An `AF_UNIX` path is capped at 108 bytes on Linux (104 on macOS). Python's
-   `multiprocessing` binds its sockets under `tempfile.gettempdir()` (`pymp-XXXXXXXX/sock-XXXXXXXX`, 28 more
-   characters), and when `len(TMPDIR) + 28` reaches the cap it silently uses the system `/tmp` instead, whatever
-   `TMPDIR` says (JuniperCascor1's Python 3.14, `multiprocessing/util.py`). cascor's forkserver (3.14's Linux default)
-   is such a socket. So `TMPDIR` must stay under 80 characters: a primary checkout's `tmp/` does (juniper-ml's is 55,
-   juniper-cascor-worker's 67), a deep worktree's `tmp/` does not (101 for a `.claude/worktrees/` one), and that is one
-   more reason `TMPDIR` names the primary's (Phase 16's round 9, Lane 16P-R9B).
+5. **Unix socket paths.** `sun_path` is 108 bytes on Linux (104 on macOS) and holds the path's terminating NUL, so
+   Python binds a socket path of up to 107 bytes and refuses 108 ("AF_UNIX path too long"). `multiprocessing` puts its
+   sockets in a `pymp-XXXXXXXX` directory under `tempfile.gettempdir()`. `multiprocessing/util.py:179-183` keeps
+   `TMPDIR` while `len(TMPDIR) + 28 < 108`, a sum that assumes an 8-character `sock-XXXXXXXX`; from 80 characters it
+   silently moves the sockets to the system `/tmp`, whatever `TMPDIR` says. cascor's forkserver (3.14's Linux default)
+   binds `connection.arbitrary_address('AF_UNIX')` with no fallback (`forkserver.py:165-167`), and that name is `sock-`
+   plus 12 hex characters (`connection.py:82-83`), so the path is `len(TMPDIR) + 32` bytes. Measured 2026-10-26 with
+   JuniperCascor1's Python 3.14.7: a `TMPDIR` of 74 or 75 characters binds (106 and 107 bytes); one of 76 to 79 is
+   kept, fails to bind ("AF_UNIX path too long") and stops the forkserver from starting. Lengths from 80 were read
+   from the code, not run, because the fallback test-writes a file in the system `/tmp`. On macOS the same file
+   assumes 92 bytes (`util.py:138-144` names only Linux, OpenBSD and FreeBSD), so there the fallback starts at 64
+   characters; that too is read from the code. `tempfile` also skips a `TMPDIR` that does not exist or cannot be
+   written, tries `TEMP` and `TMP`, then falls back to `/tmp` (`tempfile.py:164-174`, `:197-221`). So on Linux
+   `TMPDIR` must be an existing, writable directory outside `/tmp` and `/var/tmp`, of at most 75 characters. A
+   primary checkout's `tmp/` is (juniper-ml's is 55, juniper-cascor-worker's 66); a deep worktree's `tmp/` is not (101
+   for a `.claude/worktrees/` one), and that is one more reason `TMPDIR` names the primary's (Phase 16's round 9, Lane
+   16P-R9B; round 10's Lane 16P-R10B re-derived the bound, which this item gave as "under 80" until then).
 
 ### 4.8 Docker builds, searches and copies
 
