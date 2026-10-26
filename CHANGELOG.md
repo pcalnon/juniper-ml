@@ -7,7 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The repo `tmp/` convention: no file is written under `/tmp`** (owner directive, 2026-10-26;
+  `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`, new). On the Linux host `/tmp` is a
+  tmpfs that `systemd-tmpfiles-clean` ages daily (`q /tmp 1777 root root 10d`). It emptied the isolated E2E stack's
+  pid files and venv three times in a week, leaving seven live servers killable by the orphan reaper.
+  - `util/tmp_path_literal_check.py` (new), gate G-TMP: a tracked script, test or config under `util/`, `scripts/`,
+    `tests/`, `conf/`, `.claude/` or a sub-package may hold no more system temp-dir literal lines than
+    `conf/tmp_path_literal_baseline.json` (new; 314 files, 452 lines) allows it. It mirrors G-PATH's CLI, exit codes
+    and baseline schema; `# tmp-path-literal: allow` exempts a line; `.github/` is out of scope. It runs as the
+    `tmp-path-literal` pre-commit hook and as a whole-scope step in ci.yml's Pre-commit job.
+  - `util/juniper_repo_tmp.bash` (new) prints the PRIMARY checkout's gitignored `tmp/` for a directory, creating it,
+    and exits 1 outside any checkout; sourced, it defines `juniper_repo_primary` and `juniper_repo_tmp`.
+  - `tests/test_tmp_path_literal_check.py` and `tests/test_juniper_repo_tmp.py` (new), wired into ci.yml and
+    `docs/REFERENCE.md` (227 suites).
+  - `.gitignore` ignores the root-anchored `/tmp/`.
+  - Records: `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` (the inventory), `util/ad-hoc/2026-10-26_guard_live_e2e_servers.py`
+    (wrote the seven reaper guards) and `util/ad-hoc/2026-10-26_session_tmpdir_hook_probe.py` (the SessionStart hook,
+    its known answers and its installer).
+
 ### Changed
+
+- **Fixed temp paths instead of the system temp dir** (the 2026-10-26 repo `tmp/` rule).
+  - `scripts/wake_the_claude.bash` exports `TMPDIR` / `TMP` / `TEMP` (the starting Juniper repo's primary `tmp/`, else
+    juniper-ml's) and `CLAUDE_CODE_TMPDIR` (juniper-ml's, as `~/.claude/settings.json` sets it), and refuses to launch
+    when no `tmp/` can be made. It also exports `GIT_CEILING_DIRECTORIES` at the `tmp/` dirs, so git run under a
+    `TMPDIR` inside a checkout does not find the enclosing checkout; the SessionStart hook in
+    `util/ad-hoc/2026-10-26_session_tmpdir_hook_probe.py` writes the same list (6 of 6 known answers pass).
+  - Five tests that build a "not a git repository" fixture set `GIT_CEILING_DIRECTORIES` in their subprocess env
+    (`tests/test_configure_commit_signing.py`, `tests/test_predict_merge.py`, `tests/test_prompt_discovery.py`); no
+    assertion changed.
+  - `juniper-check-doc-links` gets `--exclude tmp` in the pre-commit hook, `ci.yml`, `docs-full-check.yml` (both
+    invocations), `AGENTS.md` and the cheatsheet: it walks the tree, so scratch markdown under `tmp/` failed it locally.
+  - `util/isolated_stack.bash` defaults its run dir to the FIXED `tmp/juniper-e2e` of the juniper-ml primary checkout,
+    never derived from `TMPDIR`; `util/ad-hoc/2026-09-04_canopy_verify_instance.bash` follows it.
+  - `util/experiment_stack.bash` falls back to juniper-ml's primary `tmp/juniper-experiments` for its lock root when
+    `XDG_RUNTIME_DIR` is unset.
+  - `util/host_state_probe.bash`, `util/headless_signing_preflight.bash` and `util/ad-hoc/watch_fable5_availability.bash`
+    make their scratch dir under `TMPDIR`, else the checkout's `tmp/` (no `git`), and
+    `tests/test_headless_signing_preflight.py`'s socket dir no longer uses `/tmp`.
+  - `AGENTS.md` gains a resident hazard and § Temporary files, and drops § Script placement's "/tmp as a scratch
+    workspace" exception. § Requirements (JR-ID) moved to `docs/REFERENCE.md` to pay for them (25930 -> 25991 chars).
+  - The operative procedures that wrote under `/tmp` now use `tmp/`: the PyPI publish, worktree cleanup, YubiKey
+    key-to-card and Docker Hub secret procedures, the SOPS guide (the new age key goes beside the old one), the
+    isolated-stack checklist, the release-train runbook, `docs/REFERENCE.md`, the developer cheatsheet and the
+    Template Agent's standing rule.
 
 - **G-SEC's firewall condition reads the block-all sentence turing printed** (turing bring-up task C2; the §18.2
   C2 row and erratum E-C2-GATE of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
@@ -24,6 +69,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     re-introduces the #2338 premise; it kills 12 of 12 mutants, and the 57 of
     `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` still apply.
   - turing's firewall condition passes. G-SEC still fails, on SIP (task C1) and the key exports (task C3).
+
+### Fixed
+
+- **The orphan reaper protected the isolated stack only when its own `TMPDIR` matched the stack's.**
+  `util/reap_pytest_orphans.bash` derived the stack's protected run dir from `${TMPDIR:-/tmp}`, so a stack launched under
+  one `TMPDIR` and reaped under another had no pid-file protection, and every session sets `TMPDIR` now. It protects the
+  FIXED default (`util/juniper_repo_tmp.bash`), resolved after the arguments are parsed, plus, read-only, the legacy
+  `/tmp/juniper-e2e` and `${TMPDIR}/juniper-e2e` that older checkouts' stacks may still use. It exits 1, reaping nothing,
+  when it cannot resolve the default. `tests/test_reap_pytest_orphans.py` gains 8 tests and redirects the legacy roots.
 
 ## [0.11.3] - 2026-10-26
 

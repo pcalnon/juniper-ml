@@ -768,6 +768,49 @@ if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
     exit 1
 fi
 
+# Temp root (2026-10-26 rule): the session writes temp files to a Juniper repo's gitignored tmp/,
+# never to the system temp dir, which systemd-tmpfiles ages while files are in use. Exported here,
+# after the binary check, so a missing claude still reports itself first.
+#   CLAUDE_CODE_TMPDIR  Claude Code's own temp root (scratchpad, task output): juniper-ml's primary
+#                       tmp/. It must equal env.CLAUDE_CODE_TMPDIR in ~/.claude/settings.json, which
+#                       overrides the process environment anyway.
+#   TMPDIR/TMP/TEMP     for programs (tempfile, mktemp, pytest): the PRIMARY checkout's tmp/ of the
+#                       Juniper repo the session starts in (it outlives a worktree), else juniper-ml's.
+#                       The same answer as the user-level SessionStart hook (marker juniper-repo-tmpdir),
+#                       which re-exports TMPDIR for every Bash command; a repo outside the Juniper tree
+#                       never gets a tmp/ created in it.
+# If no tmp/ can be made, stop: an unset or missing TMPDIR silently falls back to the system temp dir.
+# shellcheck source=../util/juniper_repo_tmp.bash
+source "${REPO_ROOT}/util/juniper_repo_tmp.bash"
+HARNESS_TMP_DIR="$(juniper_repo_tmp "${REPO_ROOT}")" || {
+    echo "Error: cannot create juniper-ml's tmp/ (from ${REPO_ROOT}); refusing to launch on the system temp dir" >&2
+    exit 1
+}
+SESSION_TMP_DIR="${HARNESS_TMP_DIR}"
+ECOSYSTEM_DIR="$(dirname "$(dirname "${HARNESS_TMP_DIR}")")"
+if PWD_PRIMARY_DIR="$(juniper_repo_primary "${PWD}" 2>/dev/null)"; then
+    case "${PWD_PRIMARY_DIR}" in
+        "${ECOSYSTEM_DIR}"/juniper-*)
+            SESSION_TMP_DIR="$(juniper_repo_tmp "${PWD_PRIMARY_DIR}")" || SESSION_TMP_DIR="${HARNESS_TMP_DIR}"
+            ;;
+    esac
+fi
+# GIT_CEILING_DIRECTORIES: a TMPDIR inside a checkout makes git, run anywhere under it, find the ENCLOSING
+# checkout, so a "not a git repository" fixture built under tempfile/tmp_path stops being one. The ceiling
+# stops discovery at the tmp/ dirs: the session's primary tmp/, plus the launch directory's own top-level
+# tmp/ when that is a Juniper worktree (its Write-tool scratch lives there), then any inherited value.
+# The same list as the SessionStart hook writes.
+SESSION_CEILING="${SESSION_TMP_DIR}"
+PWD_TOPLEVEL_DIR="$(git -C "${PWD}" rev-parse --show-toplevel 2>/dev/null || true)"
+case "${PWD_TOPLEVEL_DIR}" in
+    "${ECOSYSTEM_DIR}"/juniper-* | "${ECOSYSTEM_DIR}"/worktrees/*)
+        [[ "${PWD_TOPLEVEL_DIR}/tmp" == "${SESSION_TMP_DIR}" ]] || SESSION_CEILING="${SESSION_CEILING}:${PWD_TOPLEVEL_DIR}/tmp"
+        ;;
+esac
+export TMPDIR="${SESSION_TMP_DIR}" TMP="${SESSION_TMP_DIR}" TEMP="${SESSION_TMP_DIR}" CLAUDE_CODE_TMPDIR="${HARNESS_TMP_DIR}"
+export GIT_CEILING_DIRECTORIES="${SESSION_CEILING}${GIT_CEILING_DIRECTORIES:+:${GIT_CEILING_DIRECTORIES}}"
+debug_log "TMPDIR=${TMPDIR} CLAUDE_CODE_TMPDIR=${CLAUDE_CODE_TMPDIR} GIT_CEILING_DIRECTORIES=${GIT_CEILING_DIRECTORIES}"
+
 if [[ "${CLAUDE_HEADLESS_VALUE[*]}" != "" ]]; then
     NOHUP_LOG_FILE=""
     NOHUP_LOG_CANDIDATE="${LOGS_DIR}/wake_the_claude.nohup.log"

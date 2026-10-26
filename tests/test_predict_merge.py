@@ -990,7 +990,8 @@ class CliExitCodeTest(_RepoCase):
     def test_non_git_repo_root_exits_2(self):
         nongit = self.tmp / "nongit"
         nongit.mkdir()
-        cp = self._run_cli("--batch", "--repo-root", str(nongit))
+        # The ceiling keeps git from finding the checkout that encloses TMPDIR (a repo's tmp/ since 2026-10-26).
+        cp = self._run_cli("--batch", "--repo-root", str(nongit), env_overrides={"GIT_CEILING_DIRECTORIES": str(self.tmp)})
         self.assertEqual(cp.returncode, 2)
         self.assertIn("not inside a git repository", cp.stderr)
 

@@ -15,4 +15,4 @@ rules:
   no_merge_without_pr: true
   worktree_cleanup_only_on_merge: true
   do_not_force_push_pr_branches: true
-  scripts_live_under_util: "Utility/single-use/temporary scripts go in util/ (ad-hoc -> util/ad-hoc/); /tmp/ is prohibited for script source files."
+  scripts_live_under_util: "Utility/single-use/temporary scripts go in util/ (ad-hoc -> util/ad-hoc/). No file is ever written under /tmp (owner rule, 2026-10-26): temp files go to the repo's gitignored tmp/ (TMPDIR is the primary checkout's); never a /tmp literal or a ${TMPDIR:-/tmp} fallback."

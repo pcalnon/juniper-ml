@@ -7,6 +7,7 @@ command so the reaping decisions are deterministic and never touch real PIDs.
 """
 
 import os
+import shutil
 import subprocess
 import tempfile
 import textwrap
@@ -33,11 +34,16 @@ class FakeProcessFixture:
         self.proc_root = self.root / "proc"
         self.kill_log = self.root / "kill.log"
         # Redirected so a test never reads the real run roots — a live campaign
-        # on this workstation must not be able to change a test's verdict.
+        # on this workstation must not be able to change a test's verdict. The
+        # legacy roots (read-only since 2026-10-26) are redirected too: the fixed
+        # one through its test seam, the TMPDIR-derived one through TMPDIR.
         self.exp_run_root = self.root / "exp-run-root"
         self.e2e_run_dir = self.root / "e2e-run-dir"
+        self.legacy_e2e_run_dir = self.root / "legacy-e2e-run-dir"
+        self.tmpdir = self.root / "session-tmpdir"
         self.bin_dir.mkdir()
         self.proc_root.mkdir()
+        self.tmpdir.mkdir()
 
         self._write_fake_id()
         self._write_fake_ps(ps_rows)
@@ -100,6 +106,8 @@ class FakeProcessFixture:
         env["JUNIPER_REAP_PROC_ROOT"] = str(self.proc_root)
         env["JUNIPER_EXP_RUN_ROOT"] = str(self.exp_run_root)
         env["JUNIPER_E2E_RUN_DIR"] = str(self.e2e_run_dir)
+        env["JUNIPER_REAP_LEGACY_E2E_RUN_DIR"] = str(self.legacy_e2e_run_dir)
+        env["TMPDIR"] = str(self.tmpdir)
         return env
 
 
@@ -498,6 +506,119 @@ class TestLiveExperimentProtection(unittest.TestCase):
                 "Dry-run summary: 1 would be reaped, 0 kept (live parent), 0 protected (live experiment), 0 skipped.",
                 result.stdout,
             )
+
+
+class TestIsolatedStackRunDirRoots(unittest.TestCase):
+    """The 2026-10-26 repo tmp/ rule moved the isolated stack's run dir out of the system temp dir.
+
+    Its default is now FIXED -- the juniper-ml primary checkout's ``tmp/juniper-e2e``, the path
+    ``util/isolated_stack.bash`` defaults to -- because a root derived from ``TMPDIR`` protects nothing
+    when the stack was launched under a different ``TMPDIR``, and every session sets one now. The run
+    dirs older checkouts defaulted to stay protected, read-only: a stack they launched may still run.
+    """
+
+    ORPHAN = ["/opt/conda/envs/JuniperCaa/bin/python", "-c", "forkserver"]
+    ORPHAN_PS = "/opt/conda/envs/JuniperCaa/bin/python -c forkserver"
+
+    @staticmethod
+    def _pidfile(directory: Path, name: str, pid: int) -> None:
+        directory.mkdir(parents=True, exist_ok=True)
+        (directory / f"{name}.pid").write_text(f"{pid}\n", encoding="utf-8")
+
+    def _copied_checkout(self, fixture: FakeProcessFixture, *, git_init: bool) -> tuple[Path, dict[str, str]]:
+        """The reaper and its helper copied into a fresh checkout (or a plain directory) under the fixture."""
+        checkout = fixture.root / ("checkout" if git_init else "plain")
+        (checkout / "util").mkdir(parents=True)
+        for name in ("reap_pytest_orphans.bash", "juniper_repo_tmp.bash"):
+            shutil.copy2(SCRIPT_PATH.parent / name, checkout / "util" / name)
+        env = {k: v for k, v in fixture.env().items() if not k.startswith("GIT_")}
+        env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_CEILING_DIRECTORIES=str(fixture.root))
+        del env["JUNIPER_E2E_RUN_DIR"]
+        if git_init:
+            subprocess.run(["git", "init", "-q", str(checkout)], env=env, check=True, capture_output=True, timeout=SCRIPT_TIMEOUT_SECONDS)
+        return checkout, env
+
+    def _run(self, script: Path, env: dict[str, str], *args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(["bash", str(script), *args], capture_output=True, text=True, env=env, timeout=SCRIPT_TIMEOUT_SECONDS)
+
+    def test_a_pidfile_in_the_legacy_fixed_root_is_protected(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            fixture = FakeProcessFixture(tmpdir, ["50 testuser /usr/lib/systemd/systemd --user", f"8202 testuser {self.ORPHAN_PS}"])
+            fixture.add_process(8202, 50, self.ORPHAN)
+            self._pidfile(fixture.legacy_e2e_run_dir, "juniper-cascor", 8202)
+            result = run_script(fixture, "--dry-run")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("PROTECT    pid=8202 ppid=50 (live experiment)", result.stdout)
+            self.assertNotIn("WOULD REAP", result.stdout)
+
+    def test_a_pidfile_in_the_tmpdir_derived_legacy_root_is_protected(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            fixture = FakeProcessFixture(tmpdir, ["50 testuser /usr/lib/systemd/systemd --user", f"8051 testuser {self.ORPHAN_PS}"])
+            fixture.add_process(8051, 50, self.ORPHAN)
+            self._pidfile(fixture.tmpdir / "juniper-e2e", "juniper-canopy", 8051)
+            result = run_script(fixture, "--dry-run")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("PROTECT    pid=8051 ppid=50 (live experiment)", result.stdout)
+
+    def test_a_cmdline_naming_a_legacy_root_is_protected(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            fixture = FakeProcessFixture(tmpdir, ["50 testuser /usr/lib/systemd/systemd --user", f"8101 testuser {self.ORPHAN_PS}"])
+            fixture.add_process(8101, 50, [f"{fixture.legacy_e2e_run_dir}/.venv-data/bin/python", "-m", "juniper_data", "JuniperCaa"])
+            result = run_script(fixture, "--dry-run")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("PROTECT    pid=8101 ppid=50 (live experiment)", result.stdout)
+
+    def test_the_legacy_roots_protect_only_what_they_hold(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            fixture = FakeProcessFixture(tmpdir, ["50 testuser /usr/lib/systemd/systemd --user", f"777 testuser {self.ORPHAN_PS}"])
+            fixture.add_process(777, 50, self.ORPHAN)
+            self._pidfile(fixture.legacy_e2e_run_dir, "juniper-cascor", 999)
+            result = run_script(fixture, "--dry-run")
+            self.assertIn("WOULD REAP pid=777 ppid=50", result.stdout)
+
+    def test_the_default_run_dir_is_the_checkouts_tmp_and_not_tmpdir(self):
+        """JUNIPER_E2E_RUN_DIR unset: the copied reaper protects the checkout's tmp/juniper-e2e, whatever TMPDIR says."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            fixture = FakeProcessFixture(
+                tmpdir,
+                ["50 testuser /usr/lib/systemd/systemd --user", f"8202 testuser {self.ORPHAN_PS}", f"8888 testuser {self.ORPHAN_PS}"],
+            )
+            fixture.add_process(8202, 50, self.ORPHAN)
+            fixture.add_process(8888, 50, self.ORPHAN)
+            checkout, env = self._copied_checkout(fixture, git_init=True)
+            self._pidfile(checkout / "tmp" / "juniper-e2e", "juniper-cascor", 8202)
+            result = self._run(checkout / "util" / "reap_pytest_orphans.bash", env, "--dry-run")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("PROTECT    pid=8202 ppid=50 (live experiment)", result.stdout)
+            self.assertIn("WOULD REAP pid=8888 ppid=50", result.stdout)
+            self.assertNotEqual(Path(env["TMPDIR"]), checkout / "tmp")
+
+    def test_an_unresolvable_default_exits_1_and_reaps_nothing(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            fixture = FakeProcessFixture(tmpdir, ["50 testuser /usr/lib/systemd/systemd --user", f"888 testuser {self.ORPHAN_PS}"])
+            fixture.add_process(888, 50, self.ORPHAN)
+            plain, env = self._copied_checkout(fixture, git_init=False)
+            result = self._run(plain / "util" / "reap_pytest_orphans.bash", env)
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("nothing reaped", result.stderr)
+            self.assertNotIn("REAP", result.stdout)
+            self.assertFalse(fixture.kill_log.exists())
+            self.assertFalse((plain / "tmp").exists())
+
+    def test_help_names_the_legacy_roots_without_resolving_the_default(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            fixture = FakeProcessFixture(tmpdir, [])
+            plain, env = self._copied_checkout(fixture, git_init=False)
+            result = self._run(plain / "util" / "reap_pytest_orphans.bash", env, "--help")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn(str(fixture.legacy_e2e_run_dir), result.stdout)
+            self.assertIn(f"{fixture.tmpdir}/juniper-e2e", result.stdout)
+            self.assertIn("never derived from TMPDIR", result.stdout)
+
+    def test_the_legacy_literal_is_the_only_one_and_carries_the_pragma(self):
+        lines = [line for line in SCRIPT_PATH.read_text(encoding="utf-8").splitlines() if "juniper-e2e" in line and "${TMPDIR" not in line and "JUNIPER_REAP_LEGACY_E2E_RUN_DIR:-" in line]
+        self.assertEqual(len(lines), 1, lines)
+        self.assertIn("tmp-path-literal: allow", lines[0])
 
 
 if __name__ == "__main__":

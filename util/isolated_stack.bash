@@ -54,7 +54,10 @@
 #   JUNIPER_E2E_SKIP_ENV_PREFLIGHT — 1 = --skip-env-preflight (matches experiment_stack.bash
 #                                  JUNIPER_EXP_SKIP_ENV_PREFLIGHT)
 #   JUNIPER_E2E_RUN_DIR        — scratch run dir (venv/logs/data; the recurrence leg's snapshots
-#                                  land in ${RUN_DIR}/snapshots, W1.10 parity) (default: ${TMPDIR:-/tmp}/juniper-e2e)
+#                                  land in ${RUN_DIR}/snapshots, W1.10 parity) (default: the FIXED
+#                                  tmp/juniper-e2e of the juniper-ml primary checkout, named by
+#                                  util/juniper_repo_tmp.bash; never derived from TMPDIR, so
+#                                  util/reap_pytest_orphans.bash finds its pid files under any TMPDIR)
 #   JUNIPER_E2E_DATA_EXTRAS    — juniper-data pip extras  (default: api; use api,mnist for the D2/I-5 checks)
 #   JUNIPER_E2E_HEALTH_TIMEOUT — per-service health wait, seconds (default: 60)
 #   JUNIPER_E2E_CASCOR_WS_EXTRA_ORIGINS
@@ -78,6 +81,10 @@ set -euo pipefail
 ###########################################################################################################################################################################################################
 SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
 SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+
+# juniper_repo_tmp: the PRIMARY checkout's gitignored tmp/, this repo's temp root (2026-10-26 rule).
+# shellcheck source=juniper_repo_tmp.bash
+source "${SCRIPT_DIR}/juniper_repo_tmp.bash"
 
 # util/ -> juniper-ml -> Juniper (ecosystem root); override with JUNIPER_E2E_PROJECT_DIR.
 JUNIPER_ML_DIR="$(dirname "${SCRIPT_DIR}")"
@@ -112,7 +119,14 @@ WITH_RECURRENCE=0
 ENV_PREFLIGHT="${SCRIPT_DIR}/recurrence_env_preflight.bash"
 SKIP_ENV_PREFLIGHT="${JUNIPER_E2E_SKIP_ENV_PREFLIGHT:-0}"
 
-RUN_DIR="${JUNIPER_E2E_RUN_DIR:-${TMPDIR:-/tmp}/juniper-e2e}"
+# The run dir holds the pid files util/reap_pytest_orphans.bash protects, so its default is FIXED: the
+# juniper-ml primary checkout's tmp/juniper-e2e. It was ${TMPDIR:-<system temp dir>}/juniper-e2e until
+# 2026-10-26, and a protection keyed on TMPDIR protects nothing from a reaper whose TMPDIR differs --
+# every session sets TMPDIR now. systemd-tmpfiles also emptied the old default three times in one week.
+RUN_DIR="${JUNIPER_E2E_RUN_DIR:-$(juniper_repo_tmp "${SCRIPT_DIR}")/juniper-e2e}" || {
+    echo "[${SCRIPT_NAME}] ERROR: cannot create this checkout's tmp/ for the default run dir; set JUNIPER_E2E_RUN_DIR" >&2
+    exit 1
+}
 DATA_VENV="${RUN_DIR}/.venv-data"
 LOG_DIR="${RUN_DIR}/logs"
 DATA_EXTRAS="${JUNIPER_E2E_DATA_EXTRAS:-api}"
@@ -352,9 +366,11 @@ data_up() {
     require_cmd python3.14 || return 1
     ensure_dir "${RUN_DIR}"
     ensure_dir "${LOG_DIR}"
-    # A USABLE venv, not a directory. ${RUN_DIR} defaults under /tmp, which
-    # systemd-tmpfiles ages (``Q /tmp 1777 root root 10d``): once the venv's files are
-    # ten days old they are DELETED and its directories are left standing. A bare
+    # A USABLE venv, not a directory. Until 2026-10-26 ${RUN_DIR} defaulted under the system
+    # temp dir, which systemd-tmpfiles ages by FILE; /usr/lib/tmpfiles.d/tmp.conf reads
+    # ``q /tmp 1777 root root 10d``  # tmp-path-literal: allow -- the config's own bytes
+    # Once the venv's files were ten days old they were DELETED and its directories left
+    # standing. An explicit JUNIPER_E2E_RUN_DIR can still point there. A bare
     # ``[[ -d ]]`` then saw a venv, skipped the create, and failed at ``source
     # bin/activate`` -- found 2026-09-22 with bin/ empty, no pyvenv.cfg, and zero files
     # under twenty site-packages directories. Rebuild anything short of activatable.

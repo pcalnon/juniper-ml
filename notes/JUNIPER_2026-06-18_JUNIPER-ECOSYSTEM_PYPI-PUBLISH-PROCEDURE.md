@@ -237,9 +237,9 @@ Verify it contains the expected files (metadata, license, readme) and nothing un
 ### 5.3 Test a local install
 
 ```bash
-# Create an isolated venv
-python -m venv /tmp/test-install
-source /tmp/test-install/bin/activate
+# Create an isolated venv under the repo's gitignored tmp/ (never the system temp dir: notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md)
+python -m venv tmp/test-install
+source tmp/test-install/bin/activate
 
 # Install from the built wheel
 pip install dist/juniper_ml-0.1.0-py3-none-any.whl
@@ -249,7 +249,7 @@ pip show juniper-ml
 
 # Clean up
 deactivate
-rm -rf /tmp/test-install
+rm -rf tmp/test-install
 ```
 
 ---
@@ -293,8 +293,8 @@ Visit `https://test.pypi.org/project/juniper-ml/0.1.0/` and verify:
 ### 7.2 Test installation from TestPyPI
 
 ```bash
-python -m venv /tmp/test-testpypi
-source /tmp/test-testpypi/bin/activate
+python -m venv tmp/test-testpypi
+source tmp/test-testpypi/bin/activate
 
 # --extra-index-url ensures real dependencies resolve from PyPI
 pip install \
@@ -305,7 +305,7 @@ pip install \
 pip show juniper-ml
 
 deactivate
-rm -rf /tmp/test-testpypi
+rm -rf tmp/test-testpypi
 ```
 
 > **Important**: The `--extra-index-url https://pypi.org/simple/` flag is essential. TestPyPI does not host all packages — without this fallback, dependencies will fail to resolve.
@@ -341,8 +341,8 @@ Visit `https://pypi.org/project/juniper-ml/0.1.0/`.
 ### 9.2 Test installation from PyPI
 
 ```bash
-python -m venv /tmp/test-pypi
-source /tmp/test-pypi/bin/activate
+python -m venv tmp/test-pypi
+source tmp/test-pypi/bin/activate
 
 pip install juniper-ml==0.1.0
 pip show juniper-ml
@@ -351,7 +351,7 @@ pip show juniper-ml
 pip install "juniper-ml[all]==0.1.0"
 
 deactivate
-rm -rf /tmp/test-pypi
+rm -rf tmp/test-pypi
 ```
 
 ---
@@ -692,7 +692,7 @@ Test rendering locally:
 
 ```bash
 pip install readme-renderer[md]
-python -m readme_renderer README.md -o /tmp/readme.html
+python -m readme_renderer README.md -o tmp/readme.html
 ```
 
 ### TestPyPI install fails with "No matching distribution found"
