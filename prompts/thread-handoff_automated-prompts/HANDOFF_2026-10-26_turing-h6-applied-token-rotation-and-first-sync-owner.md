@@ -1,5 +1,7 @@
 # Handoff — turing bring-up: H6 applied (VS Code's Serena and markitdown removed, Hugging Face token-less, autostart and the gallery off); the token's rotation and the first sync are the owner's
 
+- **Continued (2026-10-27, plan v1.4.10).** "cached-enchanting-cosmos-84" ran H3, which passed (juniper-ml#2374), once the owner had installed C8. The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-27_turing-h3-passed-c8-installed-owner-steps.md`, which carries this file's owner steps forward.
+
 - **From:** the 2026-10-26 session on turing named "c9-landed-h6-audited-owner-decides" (bd4cfc; worktree `.claude/worktrees/clever-finding-lemon`).
   - The owner pointed it at `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md` and resumed H6.
   - That file had been superseded twice, so the session continued from the arc's main handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`.
