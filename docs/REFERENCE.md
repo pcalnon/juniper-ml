@@ -391,7 +391,7 @@ Same class as isolated-stack `activate_conda` and the `experiment_stack.bash` OR
 rg -n -A12 '^safe_conda_activate' util/juniper_plant_all.bash
 ```
 
-Coverage: open juniper-ml#795 (`tests/test_juniper_plant_all.py` — `TestSafeCondaActivate`).
+Coverage: juniper-ml#795, merged 2026-07-27 (`tests/test_juniper_plant_all.py` — `TestSafeCondaActivate`).
 
 Troubleshooting:
 
@@ -984,7 +984,7 @@ A dynamic version is read-only from an **explicit** declaration (setuptools `[to
 python util/editable_install_drift_check.py --fix --dry-run --json
 ```
 
-Coverage: open juniper-ml#795 (`tests/test_editable_install_drift_check.py` — `test_discover_canonical_ambiguous_returns_none`, `test_fix_skips_when_canonical_ambiguous`).
+Coverage: juniper-ml#795, merged 2026-07-27 (`tests/test_editable_install_drift_check.py` — `test_discover_canonical_ambiguous_returns_none`, `test_fix_skips_when_canonical_ambiguous`).
 
 #### Live `--fix` actions (`FIXED` / `ERROR`)
 
@@ -1007,7 +1007,7 @@ python util/editable_install_drift_check.py --fix --dry-run --json
 python util/editable_install_drift_check.py --fix --json
 ```
 
-Coverage: open juniper-ml#802 (`test_run_fix_executes_and_reports_fixed`, `test_run_fix_reports_called_process_error`, `test_run_fix_reports_oserror`).
+Coverage: juniper-ml#802, merged 2026-07-27 (`test_run_fix_executes_and_reports_fixed`, `test_run_fix_reports_called_process_error`, `test_run_fix_reports_oserror`).
 
 The JuniperCascor1 editable finder maps every `juniper-cascor` import onto the primary checkout's `src`. That is why a live importer makes the primary unsafe to edit — see [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell).
 
@@ -1458,10 +1458,6 @@ Troubleshooting:
 | Unexpected `BELOW_FLOOR` after a partial upgrade | Multi-interpreter env may still have an older site-packages tree — the tool reports the **highest** installed version; upgrade every tree or remove the stale one. |
 | `MISSING` but `pip show` works | Checker reads `METADATA` on disk under the resolved dirs only — confirm `--env` / `--site-packages` matches the interpreter you inspected. |
 | Floor / editable green, `import torch` still fails | Those checkers never import torch. Classify the ABI/`_C` layout with [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5). |
-
-Do **not** point isolated ports at the host stack or run `--up` on ports `plant_all` already owns.
-
-Store-apply contradictions (correct `/api/topology` body, empty DOM) are a different class from bring-up failures — see [F-039 Store Probe](#f-039-store-probe).
 
 ---
 
@@ -3423,20 +3419,21 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_editable_install_drift_check.py` -- Tests for `util/editable_install_drift_check.py`: FRESH / WORKTREE_PINNED / ORPHANED classification, `*-DEPRECATED` env exclusion, `--env` filtering, dedup across interpreter trees, CLI exit codes (0/1/2), JSON output, and `--fix --dry-run` canonical-source resolution (synthetic conda-dir fixture; no real pip)
   - `VersionDriftTest` (version axis): static + dynamic version resolution (setuptools `attr` flat and `src/` layouts, hatch `path`), MATCH/STALE classification, orthogonality (a WORKTREE_PINNED install still gets a version verdict), STALE soft by default / hard under `--strict-version` with `--strict` unaffected, the summary+JSON version fields, and `--fix-stale` repairing in place (`drift: "stale-metadata"`, canonical == the recorded path) while ORPHANED repair still resolves canonically
   - Honesty pins in the same class: an undeclared `_version.py` is **never** guessed at (unrecognized backend → UNKNOWN, so no `STALE` can be manufactured from the wrong file), and an ORPHANED target is UNKNOWN rather than a fabricated comparison
-  - Ambiguous canonical SKIP (open #795): two non-worktree checkouts with the same `[project].name` → `discover_canonical` returns `(None, [..])`; `--fix --dry-run` emits `action=SKIP` with `ambiguous` in `reason` (never re-points to `candidates[0]`).
-  - Live `run_fix` (open #802): mocked `subprocess.run` covers `FIXED` on success, `ERROR` on `CalledProcessError`, and `ERROR` then `FIXED` when the first item raises `OSError` (plan continues).
+  - Ambiguous canonical SKIP (#795, merged 2026-07-27): two non-worktree checkouts with the same `[project].name` → `discover_canonical` returns `(None, [..])`; `--fix --dry-run` emits `action=SKIP` with `ambiguous` in `reason` (never re-points to `candidates[0]`).
+  - Live `run_fix` (#802, merged 2026-07-27): mocked `subprocess.run` covers `FIXED` on success, `ERROR` on `CalledProcessError`, and `ERROR` then `FIXED` when the first item raises `OSError` (plan continues).
 - `tests/test_env_floor_drift_check.py` -- Tests for `util/env_floor_drift_check.py` (I-2): floor parsing (juniper-* `>=` bound; skips non-juniper/floorless/self-ref; dedup-highest), numeric version compare (`0.10.0 > 0.9.0`), OK/BELOW_FLOOR/MISSING classification, exit codes (0/1/2, `--strict`), `--json` -- via a synthetic site-packages fixture (no real pip/conda); also asserts no hardcoded env name. Sole gate (`util/` not lint-gated); real-env scan is manual-verify.
   - `MalformedOperatorInputGuardTest` (juniper-ml#2001): a truthy non-mapping, non-UTF-8 bytes, or a non-string env key degrades instead of raising (one case end-to-end at exit 2), and a bad extra still keeps floors declared in `dependencies`.
   - #796 added `ResolveSiteDirsTest` (`--site-packages` wins, `--env` expand, ecosystem `used_by`, exit-2 reasons). #802 added `InstalledVersionsTest` (highest-across-dirs, malformed/unreadable skip, underscore normalize). Both merged 2026-07-27.
 - `tests/test_workflow_script_paths.py` -- Lint test: every `python <path.py>` / `bash <path.bash>` invocation in `.github/workflows/*.yml` must reference a path that exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18.
 - The sequence-safety screen unit tests (symbol + docs: `LOST`/`WEAKENED`/`DUPLICATED`, SF3 masking pin, relocation WARN, heading / `>=N`-run FAIL, both trailer escapes + wildcard, `--min-run`, the `--scope` glob engine, exit codes 0/1/2) moved to `juniper-ci-tools/tests/` with the package migration (rollout W3); they run under the dedicated `CI -- juniper-ci-tools` workflow. juniper-ml's `tests/test_ci_tools_drift.py` carries the anti-resurrection guard + the two new screen-pin drift checks.
 - `tests/test_doc_tools_drift.py` -- Lint test (plan §5.1) for `juniper-doc-tools` pins. Extracts the `juniper-doc-tools>=X,<Y` pin from juniper-ml's own workflows and each cloned consumer repo's `ci.yml`, then asserts the range still admits the current version (read from `juniper-doc-tools/pyproject.toml`). Soft-warns on pins more than 2 minors behind; hard-fails when the upper bound excludes current.
-- `tests/test_service_fork_drift.py` -- Drift gate for the security guards that must hold identically in `juniper-data`'s and `juniper-cascor`'s forks of the `juniper-service-core` middleware/security code, and in `juniper-canopy`'s own `APIKeyAuth` for the two key-handling guards (defect-register §2.3 "Copy drift"; canopy since `APD-ECO-008`). The shared package's own `security.py` is a site of those two guards too (owner ruling 2026-09-23; `juniper-recurrence` imports it). It is read from THIS checkout, never from `<ecosystem root>/juniper-ml` (in a session worktree that is the main checkout), and `SharedPackageGuardTest` asserts it on every run, with no sibling needed. The ecosystem root is located by the two original forks only (`_ROOT_ANCHOR_REPOS`), so a missing canopy checkout FAILS the file-existence test instead of silently skipping every guard — when the test runs. In `docs-full-check.yml` the cross-repo link check runs first and fails on a missing canopy or cascor checkout, which juniper-ml's notes link into, and the drift step has no `if: always()`, so there the step is skipped instead. A missing juniper-data checkout is the silent case: no juniper-ml note links into juniper-data, so the link check passes, and the drift step finds no ecosystem root and skips every sibling site, green (`OK (skipped=3)`; `APD-ML-008` in the defect register). And the guards match marker TEXT: a regression that keeps its markers passes (`APD-ML-008` in the defect register).
+- `tests/test_service_fork_drift.py` -- Drift gate for the security guards that must hold identically in `juniper-data`'s and `juniper-cascor`'s forks of the `juniper-service-core` middleware/security code, and in `juniper-canopy`'s own `APIKeyAuth` for the two key-handling guards (defect-register §2.3 "Copy drift"; canopy since `APD-ECO-008`). The shared package's own `security.py` is a site of those two guards too (owner ruling 2026-09-23; `juniper-recurrence` imports it), and of `throttle-check-never-inserts` (`APD-ECO-015`, 2026-10-26), whose other two sites are the forks' own `security.py`. It is read from THIS checkout, never from `<ecosystem root>/juniper-ml` (in a session worktree that is the main checkout), and `SharedPackageGuardTest` asserts it on every run, with no sibling needed. The ecosystem root is located by the two original forks only (`_ROOT_ANCHOR_REPOS`), so a missing canopy checkout FAILS the file-existence test instead of silently skipping every guard — when the test runs. In `docs-full-check.yml` the cross-repo link check runs first and fails on a missing canopy or cascor checkout, which juniper-ml's notes link into, and the drift step has no `if: always()`, so there the step is skipped instead. A missing juniper-data checkout is the silent case: no juniper-ml note links into juniper-data, so the link check passes, and the drift step finds no ecosystem root and skips every sibling site, green (`OK (skipped=3)`; `APD-ML-008` in the defect register). And the guards match marker TEXT: a regression that keeps its markers passes (`APD-ML-008` in the defect register). The one exception is `throttle-check-never-inserts`, whose sites are **scoped** (below).
   - A registry of named guards, each detected by a small source marker, rather than a file diff: the forks diverge legitimately and constantly (juniper-data deliberately holds API keys in a `list` for `compare_digest` timing where service-core uses a `set`), so a diff would drown the signal.
   - Two-sided by design. `ENFORCED` guards must be **present** in every fork; their disappearance is a regression. `KNOWN_GAP` guards must still be **absent** -- when someone closes one, the gate fails and instructs them to promote the row to `ENFORCED`, so the ledger cannot rot into a list of things that used to be true.
   - Cross-repo assertions gate exactly like `test_ci_tools_drift.py` (`GITHUB_ACTIONS=true` or `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`); the registry-structure checks and the matcher's negative controls always run. It bites in `docs-full-check.yml`, the only job that runs it with the siblings cloned (`release-train.yml` clones them too, for its own steps; `ci.yml` runs it without them, so only the always-on checks and `SharedPackageGuardTest` bite there).
   - A site may be marked **`ordered`**, meaning its markers must appear in the declared sequence, not merely be present. `cors-outside-auth` (register `APD-CASCOR-001b` / `APD-DATA-035`) is the reason the flag exists: that guard regresses by two `add_middleware` calls **swapping places**, so both markers are present either way and a presence-only check would report SUCCESS on the exact defect it guards -- the vacuous-pass class. Requiring `RequestIdMiddleware` to be registered before `CORSMiddleware` *is* the invariant "CORS is registered last, so it runs outermost". Its negative controls are in the always-on structural class, so they still run in `ci.yml`, where the cross-repo arms are skipped.
-  - **No `KNOWN_GAP` rows currently remain** -- all seven copy-drift guards are `ENFORCED` (six until juniper-ml#1974 added `nonshortcircuit-key-compare`). The `KNOWN_GAP` machinery is retained for the next row that acquires a reference implementation; note that with zero such rows `test_known_gaps_are_still_open_or_get_promoted` iterates an empty set and passes **vacuously**.
+  - A site may be **scoped** to one definition (`scope="FailedAuthThrottle.check"`): its markers are then matched against that definition's code alone, re-rendered by `ast.unparse` with every docstring dropped, so a comment, a docstring or the same expression in another function cannot satisfy them. A scoped site may also list **`forbidden`** markers, which must be absent from that code, and a scope that cannot be found reads as the guard being ABSENT. `throttle-check-never-inserts` (register `APD-ECO-015`) is the reason the form exists: `check()` must read the failure table through `.get()` and never subscript it or call `setdefault` on it, but in the same file `record_failure()` makes the same `.get()` read and it and `_maybe_cleanup()` legitimately subscript the table, so whole-file markers are vacuous in both directions. The scoped matcher's negative controls are always-on as well. `util/ad-hoc/2026-10-26_throttle_check_guard_mutation_check.py` runs the real gate on a synthetic ecosystem root: the guard fails on each copy's pre-fix `security.py` and on seven marker-preserving mutations of each current copy, and the same marker matched over the whole file passes all 21 mutations. It is still a structural proxy: an alias of the table or an inserting helper method would pass it.
+  - **No `KNOWN_GAP` rows currently remain** -- all eight guards are `ENFORCED`: the seven copy-drift guards (six until juniper-ml#1974 added `nonshortcircuit-key-compare`) and, since 2026-10-26, `throttle-check-never-inserts`, which guards a defect every copy shared rather than a drift between them. The `KNOWN_GAP` machinery is retained for the next row that acquires a reference implementation; note that with zero such rows `test_known_gaps_are_still_open_or_get_promoted` iterates an empty set and passes **vacuously**.
 - `tests/test_assert_release_tag.py` -- Behavioral tests for `util/assert_release_tag.bash` plus a **wiring gate** asserting all 7 publishers invoke it with their own `--expect-prefix`, and that **no publisher grants `id-token` at workflow level** (P4).
   - Drives synthetic dist directories: happy paths (meta, sub-package, `-rc1` normalization, alpha), and the refusals that matter -- branch ref, **empty** ref_type (must fail closed, not read as a tag), tag/version mismatch, wrong package prefix, missing dist dir, sdist-only, version-less tag, misuse exit 2.
   - The mismatch case is a live regression guard: it originally passed because `tr -d '-_'` errored on this host and both sides normalized to empty. `util/` is outside every pre-commit Python hook's scope, so this suite is the gate.
@@ -3569,6 +3566,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`: `load_suite` plus oversize-stall / wall-pin / timeout-ordering, the last against each cell's worst-case driver budget since juniper-ml#2210 ([§ Suite timeout budget](#suite-timeout-budget)). Operator surface: [P4 Campaign Suites](#p4-campaign-suites).
 - `tests/test_run_suite.py` -- Behavioral suite-driver coverage, including P2 item 1.4 (`GateInputsInAggregateTest` / `ComparisonReportingTest`): `aggregate.csv` must carry both gate inputs beside `wall_seconds`; `REPORT.md` must say `wall_seconds` is DE-RATIFIED and print work-invariant / single-workload; `--compare-baseline` is reporting-only (missing tag and FAIL verdict still exit 0). `PerRunTimeoutBudgetTest` (juniper-ml#2210): a `per_run_timeout_seconds` at or below a cell's worst-case driver budget exits 2 before any `--up`, naming the largest cell and its terms; `ExecuteCellTimeoutTest` drives the subprocess kill itself (a `timed_out` row with no `run_dir`, phases or metrics, and the stack still torn down). Operator surface: [Suite Report Gate Inputs](#suite-report-gate-inputs).
   W0.3 / W0.4 (`DegradedSuiteTest` / `OutcomeLineTest` / `HeadlineMetricsTest`): a `degraded` cell is counted on its own in the summary line, listed under `## Degraded cells`, printed `degraded (crossval failed: …)`, re-run by `--resume` and keeps the exit at `1`; `_headline_metrics` surfaces `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` on the plan's four fixtures (audited `crossval: null`, successful, `0.0`, `-18081.0`).
+  APD-ML-002 (`CascorHeadlineMetricsTest` / `RowMetricsTest` / `ReaggregateTest`, fixtures from the real `build_stats(kind="cascor")`): exactly `train_accuracy` / `val_accuracy` from `cascor.final` (`0.0` kept; `bool` / `None` / strings and the top-level dead names yield nothing; `eval_scalars` unmapped); a cascor `aggregate.csv` / REPORT gains both columns; `aggregate` re-reads `stats.json` and falls back to the recorded `metrics` only for a gone run dir; `--reaggregate` adds the columns to a pre-fix cascor suite with every launch / materialise / append seam patched to raise, leaves `registry.jsonl` / `suite_manifest.json` / `index.jsonl` byte-identical, refuses the execution flags and a bad manifest (exit 2), and `--suite` is still required otherwise.
   W1.5 (`TestDatasetBudgetReachesDriverAndService`, read back from a stub launcher's own environment): `execution.dataset_create_timeout_seconds` reaches the driver as `--dataset-create-timeout-seconds` and a recurrence `--up` as `JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS`, and the registry row as `service_env`; a cell's own `outputs` key reaches `--up` while the driver reads it from the YAML; the suite key wins; with neither, nothing is exported and an operator's own export passes through; a cascor suite gets the flag and no recurrence env; bad values refuse the suite before any launch; `_seconds_text` produces the launcher's `data_timeout_re` form, read from the script.
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`, which no test loaded before it: every suite must pass `run_suite.load_suite` (catching the unknown-`execution:`-key / `stall_second` typo class that otherwise surfaces hours into a GPU campaign), and any oversize `app: cascor` suite must declare an `execution.stall_seconds` above the driver's `DEFAULT_STALL_SECONDS` (read from the driver source, not hardcoded).
   Fourth contract: `execution.per_run_timeout_seconds` must sit **above** every cell's worst-case driver budget (`>` not `>=`) so the driver writes the honest manifest — `perf/pf5` shipped 900/900 and was raised to 1800. Since juniper-ml#2210 that budget is the driver's whole sum, not its wall alone, and the nine recurrence suites carry 4500 against 3900 ([§ Suite timeout budget](#suite-timeout-budget)). Operator surfaces: [§ PF Scenario Suites](#pf-scenario-suites) and [P4 Campaign Suites](#p4-campaign-suites).
@@ -3603,6 +3601,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_soak_analyse_date_pool.py` -- Pins that `analyse()` pools the corpus the probe picker now SPLITS by date -- a pooled analysis over a split corpus silently mixes cohorts and reports one number for two populations.
 - `tests/test_run_suite_gate_metrics.py` -- Suite-report gate values that the header pin in #1643 cannot see: the header can be correct while the gate VALUES beneath it are stale or absent.
 - `tests/test_run_suite_acceptance.py` -- W5.4 (F-D3 / F-SCI4): the suite `acceptance:` facility and the R5 band on the E-H row. The schema (a list of `{metric, min, max, mode}` bands on the suite or on an `include` row; every malformed shape refuses the suite at load, before a launch); the comparator over the W0.4 headline keys with inclusive bounds and `0.0` a value; R6's outcomes -- `cv_r2 = -18081` is `failed` under `gate` (exit 1) and `flagged` under `report` (exit 0), an absent metric follows the mode and is not `degraded`, a degraded cell keeps its outcome with the bands recorded; row scoping (the irregular-sine control's `cv_r2 0.975` fails `+0.5` only under a suite-level band); `flagged` is complete for `--resume` and the exit code; the `acceptance` column is LAST in `aggregate.csv` and the REPORT table, with a `## Acceptance bands` section; bands do not enter the cell id; the shipped E-H suite carries `cv_r2 in [-1.0, 0.5]` and `cv_r2_std <= 0.5`, both `gate`, on the equities row only. Hermetic (stub launcher + driver through the `JUNIPER_SUITE_*` seams).
+  APD-ML-002 (`CascorBandMetricsTest` / `NonFiniteBandValueTest` / `CascorSuiteLoopAcceptanceTest`): `ACCEPTANCE_METRICS` is stated literally and as the union of the two path tables plus the pending `test_accuracy`; `final_accuracy` is refused with its reason (exit 2 through `main`); a `test_accuracy` band reads `absent` and warns once before any launch; a cascor `val_accuracy` band gives `pass` / `fail`, never `absent`, end to end through a stub driver writing stats with the real writer; NaN and ±inf fail `min`, `max` and two-sided bands, and a huge int does not overflow.
 - `tests/test_list_runs_classify_guards.py` -- The `list_runs` classification guards the happy-path suite never reaches -- the arms that REFUSE to classify, which a well-formed run never enters.
 - `tests/test_register_close_protocol.py` -- The defect-register operator pair that #1648/#1717 cannot see: the close protocol itself, distinct from the open-set reader and the status crosscheck.
 - `tests/test_stats_summary_render.py` -- `summary.md` scrape-honesty line collection: which lines the renderer must emit, the conditional class-distribution line, the reason sub-bullet, and `present`/`written` key precedence.
@@ -3741,7 +3740,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Operator surface: [Ruleset Scope Guard](#ruleset-scope-guard). Tests: `tests/test_ruleset_scope_guard.py`.
 - Documentation link validator now lives in [`juniper-doc-tools/`](juniper-doc-tools/) and is published to PyPI as `juniper-doc-tools` (Wave 4 of the doc-link migration plan; install with `pip install juniper-doc-tools` and invoke via `juniper-check-doc-links`).
 - X7 off-loop census (ad-hoc; lands with juniper-ml#1631) -- exploratory sibling of the canopy slice-1a gate. **Not the authority.** Operator surface: [§ X7 Off-Loop Census](#x7-off-loop-census). Do not quote v1 counts; do not reintroduce module-global expression exemptions.
-- `util/ad-hoc/e2e_seg17_topology_driver.py` -- `--step` is order-preserving on one browser page; `topostate` must run first or alone or M-TOPOLOGY-18 reports `INDETERMINATE`. The module docstring's `W4-01..17` / `W1-12..14` list is **correct** (matrix §4 steps); three of its step→row aliases are not. Operator surface: [§ Canopy E2E Topology Step Order and Blast-Radius IDs](#canopy-e2e-topology-step-order-and-blast-radius-ids). Scorer predicates remain in-flight docs #1675.
+- `util/ad-hoc/e2e_seg17_topology_driver.py` -- `--step` is order-preserving on one browser page; `topostate` must run first or alone or M-TOPOLOGY-18 reports `INDETERMINATE`. The module docstring's `W4-01..17` / `W1-12..14` list is **correct** (matrix §4 steps); three of its step→row aliases are not. Operator surface: [§ Canopy E2E Topology Step Order and Blast-Radius IDs](#canopy-e2e-topology-step-order-and-blast-radius-ids). Scorer predicates: [§ Predicates that landed with #1672](#predicates-that-landed-with-1672).
 - `util/ad-hoc/e2e_finding_triage.py` -- `pri_of` takes the first severity token anywhere in the bolded header body (not only the parenthetical). Do not name another severity in header prose. Dispositions, including WITHDRAWN, are [Canopy E2E Finding Triage](#canopy-e2e-finding-triage). Same section as the bullet above.
 - Canopy E2E matrix writes (ad-hoc) -- `e2e_matrix_fill.py` (dry-run default; `status` header per table; escaped-pipe split), `2026-09-02_matrix_set_verdicts.py` (**no dry-run**; `--from` + last-cell write; naive `line.split("|")`), `e2e_matrix_rescore.py` (named rows; missing ids warn and still write). Ledger reader: `e2e_unfilled_rows.py`. Do not plan from `e2e_row_coverage.py`. Operator surface: [§ Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes).
 - X7 off-loop census (`util/ad-hoc/2026-09-04_x7_offload_census_v2.py`) -- exploratory sibling of the canopy slice-1a gate. **Not the authority.** After canopy#567 the shipped count is **58**. Operator surface: [§ X7 Off-Loop Census](#x7-off-loop-census). Do not quote v1 counts; do not reintroduce module-global expression exemptions; a green `main.py` gate is not proof the adapter is clean.
@@ -3762,7 +3761,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Live `--fix` actions (juniper-ml#802 coverage): `run_fix` marks `FIXED` on successful `pip install -e <canonical> --no-deps --force-reinstall`; `OSError` / `CalledProcessError` become `action=ERROR` (stderr truncated to 500 chars) without aborting later plan items; after a non-dry run, `main` re-scans so exit `1` still reflects remaining orphans. Operator surface: `docs/REFERENCE.md` Editable Install Drift Check + cheatsheet tip.
 - `util/env_floor_drift_check.py` -- Floor-drift checker (gap I-2): reads each installed `juniper-*` version from its `*.dist-info/METADATA` and compares to the target repo's `pyproject.toml` floors -> `OK` / `BELOW_FLOOR` / `MISSING` -- the below-floor plain-wheel case the pins/editable checkers miss. Env selection is data-driven (`--site-packages`/`--env`/`ecosystem.yaml`); exit 1 on `BELOW_FLOOR` (`--strict` also `MISSING`); `--json`; structural CI gate. Tests: `tests/test_env_floor_drift_check.py`.
   - `resolve_site_dirs` precedence: `--site-packages` → `--env` → `ecosystem.yaml` `used_by` for `[project].name`; unresolved paths exit 2 with the reason string (never invent an env name). A truthy non-mapping in either hand-authored file degrades the same way (`_mapping`); it does not traceback. Operator surface: [Environment Floor Drift Check](#environment-floor-drift-check) ([Malformed operator input](#malformed-operator-input)).
-  - Multi-site / multi-interpreter: `installed_juniper_versions` keeps the **highest** version across site-packages dirs; malformed / unreadable `METADATA` and non-`juniper-*` are skipped. Coverage: open #796 / #802.
+  - Multi-site / multi-interpreter: `installed_juniper_versions` keeps the **highest** version across site-packages dirs; malformed / unreadable `METADATA` and non-`juniper-*` are skipped. Coverage: #796 / #802, both merged 2026-07-27.
 - `util/check_conda_env_torch.bash` -- Classifies a conda env's `import torch` / `torch._C` layout (P-5). Exit 0 healthy / 1 missing env / 2 free-threaded shadow / 3 other import fail / 4 namespace-package `_C` (May-7 regular-3.14 wheel class, or imported `_C` has no `__file__`). Does **not** rebuild. `JUNIPER_CONDA_DIR` default `/opt/miniforge3`. Tests: `tests/test_check_conda_env_torch.py`. Operator surface: [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5).
 - `util/release_train/` -- PyPI release-train tooling (release-train plan §12). `registry.yaml`: the data-driven 18-package / 8-repo registry (§4.1). `detect.py`: the per-package "needs a PyPI deploy?" engine (§4.2/4.3, Phase 1, report-only) -- PyPI truth vs declared version, tag-matched diff base, `gh compare` (`--local-git` fallback past the 300-file cap), and a substantive-hunk SHIP filter discounting the notes-rename comment/docstring/link class; report-only, exit 0/1/2.
   - SHIP / SemVer edges: whitespace + pure comment deletion discounted; pure code deletion ships; `local_git_compare` A/D/R/**C** of a `.py` module is inherently substantive (no blob compare); Keep-a-Changelog `Security` → patch, `Changed`/`feat!`/`BREAKING CHANGE` → minor pre-1.0. Operator tables: release-train operator runbook §3.1.
@@ -3788,7 +3787,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Signed-archive re-entry: reuse tip-at-base / single-commit-atop-base; HALT on unresolvable base/tip, non-422 refs errors, or diverged branch (never invent a sha). Operator table: release-train operator runbook §3.3.
   - Open archive-PR reuse (juniper-ml#730): `enable_automerge(…, pr_ref or plan.archive_branch)`; archive-already-on-main → release only; Release-exists → `RESUME_MONITOR`.
   - Precondition: `notes-render-failed` HALTs when `notes_render.render_notes` raises `OSError` (missing/unreadable `TEMPLATE_RELEASE_NOTES.md` / security template) — restore the template, re-run; never invent archive body. Operator catalogue: release-train operator runbook §4.
-  - Precondition: `archive-too-large` HALTs (juniper-ml#2227) when the rendered archive's base64 exceeds the one-request signed-commit cap (default 125,000 B; `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX`), checked after the re-entry checks and before any write, so no empty archive branch is left. `create_signed_commit` hands the base64 to gh as `-F contents=@<file>`, so a Linux runner's 128 KiB argv cap (`MAX_ARG_STRLEN`) no longer applies, and `_gh` turns `OSError` (E2BIG) into a `SourceError`. Remedy: condense (`util/ad-hoc/2026-10-17_condense_release_notes_section.py`), never invent. Operator catalogue: release-train operator runbook §4.
+  - Precondition: `archive-too-large` HALTs (juniper-ml#2227) when the rendered archive's base64 exceeds the one-request signed-commit cap (default 1,000,000 B since 2026-10-26, up from 125,000 after a GitHub-hosted runner was measured sending every GraphQL body up to 16 MiB, `reports/2026-10-26_graphql-body-cap-probe/`; `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX`), checked after the re-entry checks and before any write, so no empty archive branch is left. `create_signed_commit` hands the base64 to gh as `-F contents=@<file>`, so a Linux runner's 128 KiB argv cap (`MAX_ARG_STRLEN`) no longer applies, and `_gh` turns `OSError` (E2BIG) into a `SourceError`. Remedy: condense (`util/ad-hoc/2026-10-17_condense_release_notes_section.py`), never invent. Operator catalogue: release-train operator runbook §4.
   - Monitor: `NOT_FOUND` (run invisible right after `cut_release`) is **not** terminal — keep polling; timeout while still building or permanently missing → honest `IN_PROGRESS` (never invent PENDING/RELEASED/HALT). Operator guidance: release-train operator runbook §3.3.
   - Monitor run **selection** (`select_publish_run`): a Release fires EVERY `release: published` publisher in the owning repo, and the tag-guarded ones finish `completed/skipped`
     sharing the real run's `displayTitle` **and** `headBranch`. Feeding a skipped run to `classify_publish_run` yields `IN_PROGRESS` forever, so the monitor burns its whole
@@ -4036,7 +4035,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Recurrence drive (Wave 2.3): health-gates `/v1/health/ready`, then the **synchronous** `POST /v1/train` (the response IS completion — no poll loop; the Q-2 budget is the request's socket timeout → `timed_out`), then optional `POST /v1/predict` (`predict.from_dataset_split`, default `test`) and `POST /v1/crossval` (same LMU hyperparams as `train:` for bench comparability); every phase refs the dataset by content-addressed `dataset_id` (H-8).
   - Null `train:` values are dropped before those recurrence POSTs, and the service fills every omitted field from its own defaults (an omitted `readout` is linear at `default_ridge`): [Recurrence Crossval Hyperparameters](#recurrence-crossval-hyperparameters). An error `detail` from the service is copied into the run record (its first 500 characters): [Recurrence Upstream Error Text](#recurrence-upstream-error-text).
   - A busy recurrence `POST /v1/train` is a `409` and exit 4; the driver neither stops the holder nor retries, and after a wall-clock timeout its own fit keeps the service's lock: [One caller per recurrence service](#one-caller-per-recurrence-service).
-  - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) saves the model the run trained and scored (juniper-ml#2211): `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, then a size-checked copy of `<snapshots_dir>/<id>.npz` to `.../model.npz`. A `409` (the service no longer holds this run's model) fails the phase, and nothing re-fits a substitute. Only a train response without an `operation_id` (a pre-W1.5 service) falls back to re-running the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` (the CLI has no `--params` flag, so the dataset_id ref is the only faithful form); `manifest.save_model.source` names the path.
+  - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) saves the model the run trained and scored (juniper-ml#2211): `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, then a size-checked copy of `<snapshots_dir>/<id>.npz` to `.../model.npz`. A `409` (the service no longer holds this run's model) fails the phase, and nothing re-fits a substitute. Only a train response without an `operation_id` (a pre-W1.5 service) falls back to re-running the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` (that pre-0.6.0 CLI has no `--params` flag — `train --params` / `--params-file` arrived with juniper-recurrence#190 in 0.6.0, the release that also returns an `operation_id` — so the dataset_id ref is the only faithful form); `manifest.save_model.source` names the path.
     That CLI is `ports.json` `recurrence_launch.cli` when the launcher recorded one (W1.9, F-D4; `shutil.which` on the driver's PATH otherwise), and rerun parity — the served process's interpreter and `juniper-recurrence-model` version — must hold, or the phase fails without running it.
     Every phase leaves a record in the manifest's `phases` block (`ok` / `failed` + `error` / `skipped` when not enabled / `not_reached`). `degraded` = train succeeded but an ENABLED predict, crossval or save_model phase did not; it is derived from those records, never from `acceptance.ok`, so a plot-only acceptance failure stays `succeeded`.
   - Collects `metrics_final.json` / `metrics_history.json` / `topology.json` / `decision_boundary.npz` (2-D input only) + optional `POST /v1/snapshots` (cascor), `train_response.json` / `predict_response.json` / `crossval_response.json` (recurrence); ALWAYS writes the §13.4 `manifest.json` (also for stalled / timed-out / failed runs) and prints a one-screen summary.
@@ -4064,7 +4063,8 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Do not confuse `execution.max_wall_seconds` with `execution.per_run_timeout_seconds`: the latter is only the **subprocess** timeout, which kills the driver from the OUTSIDE and records `timed_out` where the driver would otherwise write an honest `timed_out` manifest (§13.4). Size `per_run_timeout_seconds` ABOVE the cell's worst-case driver budget so the driver is the one that stops; `run_suite` refuses the suite otherwise ([§ Suite timeout budget](#suite-timeout-budget)).
   - A suite could always reach the budget through a dotted `outputs.max_wall_seconds` override (`suites/p4/e-i-cascor-cap-ceiling.yaml:71` does exactly that), but before this key, an un-overridden cell silently inherited `base_config`'s value — 3600 s for `spiral-baseline` — with no signal. Both mechanisms are accepted by the R-6 gate. Tests: `tests/test_run_suite.py`.
   - `degraded` (W0.3) is in `TERMINAL_OUTCOMES` but never a success: the summary line counts it on its own, `REPORT.md` lists it under `## Degraded cells`, the console prints `degraded (crossval failed: …)` from the manifest's `phases` record, `--resume` re-runs it and the exit stays `1`.
-  - `_headline_metrics` (W0.4) reads `final_metrics.r2` → `train_r2`, `crossval.eval_aggregate.r2` → `cv_r2`, `crossval.eval_std.r2` → `cv_r2_std` and `dataset_descriptor.n_windows` → `n_windows` from `stats["recurrence"]`; a null `crossval` writes no `cv_*` value.
+  - `_headline_metrics` (W0.4) reads `final_metrics.r2` → `train_r2`, `crossval.eval_aggregate.r2` → `cv_r2`, `crossval.eval_std.r2` → `cv_r2_std` and `dataset_descriptor.n_windows` → `n_windows` from `stats["recurrence"]`; a null `crossval` writes no `cv_*` value. Since 2026-10-26 (APD-ML-002) it reads `final.train_accuracy` → `train_accuracy` and `final.val_accuracy` → `val_accuracy` (selected-on) from `stats["cascor"]`; `test_accuracy` is an accepted band metric with no producer yet, and `final_accuracy` is refused.
+  - `--reaggregate SUITE_DIR` (APD-ML-002) re-renders `aggregate.csv` + `REPORT.md` from `suite_manifest.json`, `registry.jsonl` and each run's `stats.json`, launching nothing; `aggregate` re-reads every headline column from the run dir. A NaN or infinite value fails any acceptance band. [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
   - **`include` does not inherit `matrix`.** Empty matrix still yields one cell per `base_config`. P4 catalog + the cap-128 n=2 trap: [P4 Campaign Suites](#p4-campaign-suites).
 - `util/experiments/read_run_metrics.py` -- Canonical reader for the cascor perf-lane gate inputs (P2 item 0.4). Reads the last `metrics_series.csv` step-duration row (`step_count` / `step_sum`); `summarise().work_invariant` is true iff every cell shares one count.
   - `timings.drive` and `aggregate.csv` `wall_seconds` are de-ratified. `--sweep` is docstring-only, not a flag.
@@ -4860,7 +4860,7 @@ This is **not** the isolated E2E trio (`util/isolated_stack.bash` on `8101`/`820
 
 Before `serve`, the recurrence leg runs the scoped env check in [Recurrence Env Preflight](#recurrence-env-preflight) (W0.2, juniper-ml#2139): a green `/v1/health/ready` does not prove a `split="full"` request can run.
 
-Recurrence YAML still allow-lists `dataset.split` / `predict.from_dataset_split` as `{train, test, full}` — `"validation"` is exit 2. That is the shipped NPZ contract, not the closed design. Operator surface: [Train / Val / Test Partition Contract](#train--val--test-partition-contract).
+Recurrence YAML allow-lists `dataset.split` / `predict.from_dataset_split` as `{train, val, test, full}` (`RECURRENCE_SPLITS` in `util/experiments/run_experiment.py`) — `"validation"` is exit 2: the contract name is `val`. Operator surface: [Train / Val / Test Partition Contract](#train--val--test-partition-contract).
 
 ### Launcher (`util/experiment_stack.bash`)
 
@@ -5324,13 +5324,18 @@ python util/experiments/run_suite.py --suite path/to/suite.yaml --only c000-dead
 
 # Share one equities cache across every cell (W5.6; see the launcher's Shared equities cache section)
 python util/experiments/run_suite.py --suite util/experiments/suites/p4/e-h-recurrence-real-data.yaml --shared-equities-cache "$HOME/.cache/juniper-experiments/equities"
+
+# Re-render a finished suite's aggregate.csv + REPORT.md from disk; launches nothing (APD-ML-002)
+python util/experiments/run_suite.py --reaggregate "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/suites/<SUITE_ID>"
 ```
 
 | Exit | Meaning |
 |------|---------|
 | `0` | Every executed cell succeeded or is `flagged` (a `mode: report` band miss, W5.4) (and `--dry-run`) |
 | `1` | Suite finished with at least one failed / degraded / stalled / timed-out cell (a `mode: gate` band miss is `failed`), or aggregation found none succeeded |
-| `2` | Misuse / suite-validation (`SuiteError`, unknown `--only` id, `--resume` dir missing) |
+| `2` | Misuse / suite-validation (`SuiteError`, unknown `--only` id, `--resume` dir missing; `--reaggregate` given an execution flag, or a dir with no usable `suite_manifest.json`) |
+
+`--reaggregate SUITE_DIR` (or a suite id under `$JUNIPER_EXP_RUN_ROOT/suites`) exits with the same `0` / `1`, computed from the registry as it stands: it re-renders, it never re-judges an outcome. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
 
 `--compare-baseline TAG` pastes a standalone comparator verdict into `REPORT.md` and **never** changes this exit code. Use `util/experiments/compare_baseline.py` when you want the comparator's own 0/1/2.
 
@@ -5353,14 +5358,14 @@ Cell ids are `c{index:03d}-{sha8(relative_config + sorted_overrides)}`. The hash
 
 #### Acceptance bands (W5.4)
 
-`acceptance:` is a **list** of bands, on the suite (judges every cell) or on one `include` row (judges that row only). A band names one headline metric `aggregate.csv` carries -- the W0.4 recurrence keys `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` or the cascor `final_accuracy` / `test_accuracy` / `val_accuracy` -- with `min` and / or `max` (inclusive, finite numbers; `min <= max`) and a required `mode`:
+`acceptance:` is a **list** of bands, on the suite (judges every cell) or on one `include` row (judges that row only). A band names one headline metric `aggregate.csv` carries -- the W0.4 recurrence keys `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` or the cascor `train_accuracy` / `val_accuracy` (since 2026-10-26; `val_accuracy` is **selected-on**, not held out) -- or `test_accuracy`, which is accepted with **no producer yet**: until cascor's final evaluation computes it ([juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731)) and juniper-ml#2064's labelled stats block carries it, a band on it reads `absent`, so a `gate` band fails every cell, and `run_suite` prints that warning before any launch. `final_accuracy` was accepted until 2026-10-26 and is now refused (exit `2`): no writer ever produced it. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). A band takes `min` and / or `max` (inclusive, finite numbers; `min <= max`) and a required `mode`:
 
 | `mode` | A miss, or a metric the cell did not produce | Exit code |
 |--------|-----------------------------------------------|-----------|
 | `gate` | the cell is `failed`; `error` names the miss (`acceptance: cv_r2=-18081.0 outside [-1.0, 0.5] (gate)` / `cv_r2 absent (gate)`) | non-zero |
 | `report` | the cell is `flagged` with the same note | unchanged |
 
-Semantics are the plan's R6: `gate` is the row's explicit opt-in to fail; `flagged` is information for a person, not a build outcome, so it counts as **complete** -- `--resume` skips it and the exit code counts it with `succeeded`. An absent metric follows the mode and is distinct from `degraded` (W0.3), which says an enabled *phase* did not run; a cell that is already `failed` / `degraded` / `stalled` / `timed_out` keeps that outcome, and its bands are still recorded. A malformed band (not a list, unknown key, unknown metric, missing `mode`, no bound, `min > max`, a bool or non-finite bound) refuses the suite at load (exit `2`), before any cell launches. Bands do **not** enter the cell id: they judge the result, they do not change the experiment, so adding one keeps a row's resume identity.
+Semantics are the plan's R6: `gate` is the row's explicit opt-in to fail; `flagged` is information for a person, not a build outcome, so it counts as **complete** -- `--resume` skips it and the exit code counts it with `succeeded`. An absent metric follows the mode and is distinct from `degraded` (W0.3), which says an enabled *phase* did not run; a cell that is already `failed` / `degraded` / `stalled` / `timed_out` keeps that outcome, and its bands are still recorded. A malformed band (not a list, unknown key, unknown metric, missing `mode`, no bound, `min > max`, a bool or non-finite bound) refuses the suite at load (exit `2`), before any cell launches. Bands do **not** enter the cell id: they judge the result, they do not change the experiment, so adding one keeps a row's resume identity. A NaN or infinite **value** fails any band -- `min`, `max` or both -- and the report prints it; until 2026-10-26 NaN passed every band, `+inf` a `min` band and `-inf` a `max` band (APD-ML-002 ruling 4).
 
 Surface: the registry row carries `acceptance` (one result per band: `value`, `result` in `pass` / `fail` / `absent`); `aggregate.csv` gains an `acceptance` column **last** (blank without bands, `pass`, or the misses); the REPORT table gains the same column when any cell has bands, plus a `## Acceptance bands` section (one row per band per cell); `--dry-run` prints each banded cell's `acceptance=`; `suite_manifest.json` records each cell's bands.
 
@@ -5449,7 +5454,7 @@ Test seams (operator-visible): `JUNIPER_SUITE_LAUNCHER`, `JUNIPER_SUITE_DRIVER`,
 | `--status` says UNSCRAPED | Expected without `--grafana-bridge`; opt in only when `socat` + deploy `prometheus/targets/` are available. |
 | Driver exit `2` on YAML | Unknown block/key, missing `experiment.seed`, or rule-6 infra key — see stderr. |
 | Driver exit `2` `POST /v1/datasets rejected (422)` on csv_import | Source over the 128 MiB cap without opt-in — [CSV Import Byte Cap](#csv-import-byte-cap). |
-| Driver exit `2` `dataset.split` / `from_dataset_split` | Recurrence allow-list is `{train, test, full}`. `"validation"` is refused today; `X_val` is design-closed, not shipped. See [Partition Contract](#train--val--test-partition-contract). |
+| Driver exit `2` `dataset.split` / `from_dataset_split` | Recurrence allow-list is `{train, val, test, full}`. `"validation"` is refused: the contract name is `val` (`X_val` shipped with decision 11). See [Partition Contract](#train--val--test-partition-contract). |
 | Driver exit `1` `stalled` / `timed_out` | Cascor: raise `--stall-seconds` / `--max-wall-seconds` only after confirming the run is still progressing; recurrence `timed_out` is the train socket budget. |
 | Missing correlation / empty plot | Correlation is only in the driver's `metrics_series.csv` (not `/v1/metrics/history`). A `/metrics` 404 degrades sampling (G-3), not the run. |
 | `--down` deleted results | `--down` must keep `artifacts/`. If results are gone, you either pointed at the wrong `RUN_ROOT` or ran `list_runs.py --prune --yes` (that path deletes the whole `RUN_DIR`). |
@@ -5941,6 +5946,7 @@ Design of record: [`notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN
 | `REPORT.md` **Gate inputs** | States `wall_seconds` is DE-RATIFIED, then two suite-level verdicts (computed independently, not via `summarise()`). |
 | `REPORT.md` **Baseline comparison** | Only when `--compare-baseline TAG` is passed. The text is `compare_baseline.render(...)`. |
 | Recurrence headline columns (W0.4) | `train_r2`, `cv_r2`, `cv_r2_std`, `n_windows` in both files, read from `stats.json`'s nested `recurrence` block. A cell whose crossval failed or was disabled leaves the `cv_*` cells **empty**, never `0`. |
+| Cascor headline columns (APD-ML-002, 2026-10-26) | `train_accuracy`, `val_accuracy` in both files, read from `stats.json`'s `cascor.final` block; `val_accuracy` is selected-on. Every headline column is re-read from the cell's `stats.json` at each aggregation, so a suite aggregated before a column existed gains it with `run_suite.py --reaggregate SUITE_DIR`, which launches nothing. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). |
 | `REPORT.md` summary line + **Degraded cells** (W0.3) | `Cells: N total, X succeeded, Y degraded, Z failed/other, W not run.` A degraded cell is never counted as succeeded; each one is listed with the phase it lost. |
 
 Suite-level verdicts:
@@ -6089,6 +6095,8 @@ When `outputs.suite_dir` is set, that path is the suite dir and `--resume` is on
 
 `--only` still aggregates the full expansion. Unselected cells that are not already `succeeded` count as not-run, so a partial `--only` exits `1` even when every selected cell succeeded. Resume a previous suite (or `--only` the entire expansion) when you need exit `0`.
 
+`--reaggregate SUITE_DIR` is **not** a resume. It re-renders `aggregate.csv` + `REPORT.md` from what the suite dir already holds and launches nothing, where `--resume` re-runs every cell that is not complete -- on the run corpus of 2026-10-26, 29 of the 116 cascor suites have such a cell. Its exit code follows the table above.
+
 Each executed cell appends `SUITE_DIR/registry.jsonl` and `$JUNIPER_EXP_RUN_ROOT/index.jsonl`. `list_runs.py` does **not** read that index — it scans `RUN_DIR` names.
 
 ### Grafana bridge and snapshot provenance
@@ -6101,7 +6109,7 @@ The suite is the only layer that knows both identities. Every `--up` gets `--exp
 
 After the last cell, `aggregate` writes `aggregate.csv` + `REPORT.md`. Those files also carry perf-lane gate-input columns (`step_count` / `mean_step_seconds` beside de-ratified `wall_seconds`) and an optional `--compare-baseline TAG` block. That contract is a **separate** operator surface (in-flight docs #1649) and is reporting-only: a FAIL verdict does **not** change this driver's exit code.
 
-Recurrence `degraded` cells and the `train_r2` / `cv_r2` columns: [Recurrence Degraded Outcome and Headline Metrics](#recurrence-degraded-outcome-and-headline-metrics).
+Recurrence `degraded` cells, the `train_r2` / `cv_r2` columns and the cascor `train_accuracy` / `val_accuracy` columns: [Recurrence Degraded Outcome and Headline Metrics](#recurrence-degraded-outcome-and-headline-metrics).
 
 Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor parallel floor, grafana toggle, resume, `--only`, both Q-2 budget flags, H-11 budget, provenance env).
 
@@ -6126,6 +6134,7 @@ Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor par
 | `--resume` re-ran a failed cell | Expected — only `succeeded` is skipped. |
 | Cell printed `degraded (crossval failed: …)`, suite exit `1` | Train succeeded but an enabled phase did not (W0.3). Read the cell's `phases` in `registry.jsonl` / `manifest.json`. A crossval `422` naming `X_full` means the recurrence env serves a model without `derive_full_split` — F-E1 of [the equities audit plan](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md). |
 | `--only` one cell, exit `1`, cell succeeded | Aggregate scores the full expansion; unselected cells are not-run. |
+| A cascor `aggregate.csv` with no accuracy column | Aggregated before 2026-10-26 (APD-ML-002). `run_suite.py --reaggregate SUITE_DIR` re-renders it and launches nothing; do not `--resume` for this, which re-runs incomplete cells. |
 | `--dry-run` still listed cells you `--only`'d out | Dry-run prints the full product. |
 | Bridged vs unbridged PF-1 hashes differ | Do not put the bridge in the suite YAML. Use `JUNIPER_SUITE_GRAFANA_BRIDGE=1`. |
 | Worktree ran worktree cascor against primary YAML | Set `JUNIPER_EXP_PROJECT_DIR` — the override wins over a resolving literal. |
@@ -6137,7 +6146,7 @@ Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor par
 
 ## Recurrence Degraded Outcome and Headline Metrics
 
-Operator runbook for a recurrence run that **trained** and then lost a phase its config enabled (W0.3, F-D1), and for the r² columns `run_suite.py` copies onto `aggregate.csv` / `REPORT.md` (W0.4, F-D2).
+Operator runbook for a recurrence run that **trained** and then lost a phase its config enabled (W0.3, F-D1), for the r² columns `run_suite.py` copies onto `aggregate.csv` / `REPORT.md` (W0.4, F-D2), and, since 2026-10-26, for the cascor accuracy columns and the `--reaggregate` backfill (APD-ML-002).
 Both shipped in [juniper-ml#2145](https://github.com/pcalnon/juniper-ml/pull/2145), the re-land of the closed #2131 (its code and test files are byte-identical to #2131's head).
 The one-line contract sits in the `run_experiment.py` / `run_suite.py` entries of [Utility Script Reference](#utility-script-reference) and in [Suite Report Gate Inputs](#suite-report-gate-inputs).
 
@@ -6183,7 +6192,7 @@ A crossval `422` whose error names `X_full` is F-E1 of the plan: the env serves 
 
 ### Headline metrics (W0.4)
 
-`_headline_metrics` reads `artifacts/results/stats.json` and puts numeric columns on the registry row (`metrics`), from which both `aggregate.csv` and the `REPORT.md` cell table are written. The paths are inside `stats["recurrence"]`, the block `stats_summary.build_stats` writes from the train response and the crossval payload:
+`_headline_metrics` reads `artifacts/results/stats.json` and puts numeric columns on the registry row (`metrics`) when the cell runs; `aggregate` re-reads the same file for both `aggregate.csv` and the `REPORT.md` cell table, and uses the recorded `metrics` only when the run dir is gone. The recurrence paths are inside `stats["recurrence"]`, the block `stats_summary.build_stats` writes from the train response and the crossval payload:
 
 | Column | Path under `stats.recurrence` |
 |--------|-------------------------------|
@@ -6196,12 +6205,43 @@ A crossval `422` whose error names `X_full` is F-E1 of the plan: the env serves 
 
 A null or missing `crossval` writes **no** `cv_*` key, so the CSV cell is empty, not `0`. The test is `isinstance(value, (int, float))` with `bool` excluded, so `0.0` and `-18081.0` both reach the report; `None` and strings are dropped, and a missing, unreadable or non-object `stats.json` yields no columns at all.
 
-The cascor columns stay empty. The reader asks for `final_accuracy` / `test_accuracy` / `val_accuracy` at the top of `stats.cascor` (without the `bool` exclusion), but `build_stats` nests `train_accuracy` / `val_accuracy` under `cascor.final` and `f1` / `precision` / `recall` / `roc_auc` under `cascor.eval_scalars`.
-W0.4 fixed only the recurrence half of register row `APD-ML-002` in [`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`](../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md).
+W0.4 fixed the recurrence half of register row `APD-ML-002` in [`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`](../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md); the cascor half is below.
 
 ```bash
 jq '{train_r2: .recurrence.final_metrics.r2, cv_r2: .recurrence.crossval.eval_aggregate.r2, cv_r2_std: .recurrence.crossval.eval_std.r2, n_windows: .recurrence.dataset_descriptor.n_windows, shapes_n_windows: .dataset.shapes.n_windows}' \
   "$RUN_DIR/artifacts/results/stats.json"
+```
+
+#### Cascor columns and `--reaggregate` (APD-ML-002)
+
+The cascor train / val half of register row `APD-ML-002` was fixed on 2026-10-26, under the owner's rulings of that day; the row stays open on `test_accuracy`. Until then the reader asked for `final_accuracy` / `test_accuracy` / `val_accuracy` at the **top** of `stats.cascor`, where `build_stats` never wrote anything, so every cascor cell recorded `metrics: {}`: on the run corpus, 0 of 439 cascor registry rows carried a metric and none of its 110 cascor `aggregate.csv` files had an accuracy column. The columns now come from `CASCOR_HEADLINE_PATHS`:
+
+| Column | Path under `stats.cascor` |
+|--------|---------------------------|
+| `train_accuracy` | `final.train_accuracy` |
+| `val_accuracy` | `final.val_accuracy`. **Selected-on**: the VAL split drove early stopping, so this is not a held-out score. Before decision 11 the service's "val" was the `X_test` partition, doing the same job. |
+
+`final` is the `/v1/metrics` read the driver takes when training ends. The same `_is_metric` test applies: `0.0` is kept, `bool` / `None` / strings are dropped, and a run with no val split has an empty `val_accuracy` cell. On 2026-10-26, 404 of the corpus's 426 cascor `stats.json` carried a number at `final.val_accuracy`.
+
+- **Not mapped, deliberately: `eval_scalars`** (`f1` / `precision` / `recall` / `roc_auc`). They are live mid-training values, 19 corpus runs computed them on the TRAINING split, and [juniper-ml#2064](https://github.com/pcalnon/juniper-ml/issues/2064) will change what they mean.
+- **`test_accuracy` is pending.** It stays an accepted band metric, to be fed by an accuracy cascor's final evaluation will compute ([juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731)) and #2064's labelled block will carry into `stats.json`; the held-out `test_*` columns arrive the same way. Until both land nothing produces it: a band on it reads `absent` (a `gate` band fails the cell, a `report` band flags it), and `run_suite` prints a warning saying so before any cell launches.
+- **`final_accuracy` is gone.** It existed nowhere; a band naming it is refused at load (exit `2`), with that reason.
+- **NaN and ±inf fail any band**, and the columns print them as `nan` / `inf` (ruling 4).
+
+**Backfill.** `aggregate` re-reads every headline column from each cell's `stats.json` while the run dir is on disk (`_row_metrics`), the rule `_gate_metrics` already followed for `step_count`, so a suite aggregated before a column existed gains it without re-running anything:
+
+```bash
+python util/experiments/run_suite.py --reaggregate "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/suites/<SUITE_ID>"
+```
+
+- It reads the suite and its full expansion from `SUITE_DIR/suite_manifest.json` (what the last run expanded, not today's YAML) and the outcomes from `registry.jsonl`. It launches nothing, materialises no cell, and writes only `aggregate.csv` and `REPORT.md`.
+- `registry.jsonl`, `index.jsonl` and `suite_manifest.json` are not written, so the rows' recorded `metrics` stay `{}`. The registry is append-only, and `read_run_metrics.read_suite` reads every line of it: appending re-derived rows would count each cell twice in `compare_baseline` / `make_baseline`.
+- Outcomes and band results are the ones recorded when each cell ran. It re-renders; it does not re-judge.
+- `--compare-baseline TAG` is honoured. `--suite`, `--dry-run`, `--resume`, `--only` and `--shared-equities-cache` are refused (exit `2`), as is a dir without a usable `suite_manifest.json`.
+- It is not `--resume`, which re-runs every incomplete cell: 29 of the corpus's 116 cascor suites have one.
+
+```bash
+jq '{train_accuracy: .cascor.final.train_accuracy, val_accuracy: .cascor.final.val_accuracy}' "$RUN_DIR/artifacts/results/stats.json"
 ```
 
 ### Work-gate interaction
@@ -6220,9 +6260,11 @@ jq '{train_r2: .recurrence.final_metrics.r2, cv_r2: .recurrence.crossval.eval_ag
 | Headline `n_windows` disagrees with `dataset.shapes.n_windows` | Expected: the headline is the train descriptor; `shapes` is `meta.n_samples`. |
 | Plot skipped / matplotlib missing, outcome still `succeeded`, exit 1 | An acceptance failure that is not a phase. Not `degraded`. |
 | `make_baseline` refuses a degraded recurrence cell | Expected (`outcome != succeeded`); recurrence is not countable anyway. |
-| Cascor cell, headline accuracy columns empty | Expected: the cascor half of `APD-ML-002` is open (see above). |
+| Cascor cell, headline accuracy columns empty | The suite was aggregated before 2026-10-26: re-render it with `--reaggregate SUITE_DIR` (see above). A cell whose run dir is gone keeps its recorded, empty `metrics`. |
+| A `test_accuracy` band reads `absent` and fails the cell | Expected until its producer lands (see above). Use `mode: report` meanwhile. |
+| A `final_accuracy` band refuses the suite, exit `2` | Removed 2026-10-26: no writer ever produced it. `val_accuracy` exists, and is selected-on. |
 
-Coverage: `tests/test_run_experiment.py` (`DegradedOutcomeTest`, `DeriveRecurrenceOutcomeTest`), `tests/test_run_suite.py` (`DegradedSuiteTest`, `OutcomeLineTest`, `HeadlineMetricsTest`), `tests/test_read_run_metrics.py` (`DegradedOutcomeTest`).
+Coverage: `tests/test_run_experiment.py` (`DegradedOutcomeTest`, `DeriveRecurrenceOutcomeTest`), `tests/test_run_suite.py` (`DegradedSuiteTest`, `OutcomeLineTest`, `HeadlineMetricsTest`, and for APD-ML-002 `CascorHeadlineMetricsTest`, `RowMetricsTest`, `ReaggregateTest`), `tests/test_run_suite_acceptance.py` (`CascorBandMetricsTest`, `NonFiniteBandValueTest`, `CascorSuiteLoopAcceptanceTest`), `tests/test_read_run_metrics.py` (`DegradedOutcomeTest`).
 
 ---
 
@@ -6419,7 +6461,7 @@ Canopy and the CLI resolve the same way. A canopy recurrence fit is always linea
 | A hand-written `POST /v1/crossval` on an E-H listener returns eval r² around −2×10^4 while the suite cell is about −0.1 | The body omitted the `train:` keys, so every fold fitted a new linear model at the listener's `default_ridge` (0.0). The start log prints `readout=linear` when the field is absent. Send the `train:` block. |
 | Raised `Settings.default_ridge` (or `JUNIPER_RECURRENCE_DEFAULT_RIDGE`) and the stack still solves ridge 0 | The copied YAML `service.default_ridge: 0.0` ranks above both. Change the YAML. |
 | `service.default_ridge: 1.0` and an RFF request that omits `ridge` | RFF's omitted ridge is `gcv`. `default_ridge` is the linear fallback only. |
-| `train.theta: null` together with `service.default_theta: 91` | The null is dropped on the wire, and a JSON null would fall back to `default_theta` anyway, so every fold uses 91. `stats.json` still labels θ data-driven (it reads the YAML θ). Data-driven θ needs `default_theta: null`. |
+| `train.theta: null` together with `service.default_theta: 91` | The null is dropped on the wire, and a JSON null would fall back to `default_theta` anyway, so every fold uses 91. `stats.json` labels it `service default from service.default_theta; train.theta is unset`, value 91 (it reads the YAML `train:` and `service:` blocks; a `default_theta` the service takes from its own environment is not visible to it). Data-driven θ needs `default_theta: null`. |
 | Train r² quoted as the held-out result | `final_metrics` are in-sample. Held-out numbers are the crossval eval fields. |
 | `POST /v1/crossval` returns 409 | One crossval at a time per service. Wait and retry; `GET /v1/crossval/status` shows only the last completed run. |
 | `rff_features` set while `readout` is omitted | Schema 422. RFF knobs require `readout: rff`. |
@@ -6514,7 +6556,7 @@ jq '.stats_error' "$RUN_DIR/manifest.json"
 | `outcome.timings` | driver `_phase` | The honest duration map. Cascor keys include `health_wait` / `dataset_create` / `stage` / `start` / `drive`. Recurrence keys include `train` / `crossval` (driver-measured; `/v1/train` is synchronous) |
 | `cascor.training_step_duration` | last-row histogram + per-poll deltas from `metrics_series.csv` | Gateable **work** is `total_steps`. `p50_seconds` / `p95_seconds` are **per-poll means** (`delta-sum / delta-count`); true per-step quantiles are not recoverable from a sum/count exposition — `basis` says so |
 | `cascor.candidate_correlation` | same CSV | Best sampled correlation **per growth round** (round = a `current_hidden_units` increment). Sole source — `/v1/metrics/history` does not carry it |
-| `recurrence.*` | train / crossval payloads + YAML `train` | `n_epochs`, `stopped_reason`, `theta` (explicit vs data-driven), readout rung, CV folds. **No duration field in this block** — train/crossval seconds live under `outcome.timings` |
+| `recurrence.*` | train / crossval payloads + YAML `train` / `service` | `n_epochs`, `stopped_reason`, `theta` (explicit, service default, or data-driven), readout rung, CV folds. **No duration field in this block** — train/crossval seconds live under `outcome.timings` |
 | `provenance.metrics_scraped` | driver `_metrics_scraped` | Two facts, never collapsed — see below |
 | `provenance.degraded_notes` | manifest | G-3 sampling errors, collect failures, plot skips, eval-disabled, G-6 mismatch, a target summary the driver could not produce (W5.5) |
 
@@ -6562,7 +6604,7 @@ jq '.outcome.timings' "$RUN_DIR/artifacts/results/stats.json"
 jq '.recurrence.n_epochs, .dataset.shapes.n_windows' "$RUN_DIR/artifacts/results/stats.json"
 ```
 
-`theta.note` is `"data-driven (resolved from per-window elapsed time)"` when the YAML left `theta` unset, else `"explicit"`. Sequence `n_windows` is input size (pinned: `test_build_stats_sequence_shapes_and_summary`).
+`theta.note` is `"explicit"` when the YAML sets `train.theta`. When it does not, the service fills θ from its `default_theta`, so the note is `"service default from service.default_theta; train.theta is unset"` (value: that default) when the YAML sets `service.default_theta`, and `"data-driven (resolved from per-window elapsed time)"` (value: null) when it sets neither. Sequence `n_windows` is input size (pinned: `test_build_stats_sequence_shapes_and_summary`).
 
 ### `scrape_confirmed` is tri-state
 
@@ -6677,18 +6719,18 @@ util/experiment_stack.bash --up --recurrence --config path/to/csv-import.yaml
 
 In the YAML, put `allow_truncation` / `max_bytes` under `dataset.params`. `max_bytes` can only lower the deployment ceiling.
 
-### Still open: `equities` silent truncation
+### `equities`: the same ruling, bounded in symbols
 
-The csv_import ruling (truncation acceptable, **silence** not) has **not** been applied to `equities`. On juniper-data `main`, `EquitiesGenerator._resolve_symbols` does `ordered = ordered[: params.max_symbols]` at `generators/equities/generator.py:286` — a bare slice, no 422, no `DatasetMeta.truncation`. Defect-register `APD-DATA-018` still cites `:264`; that anchor drifted (line 264 is now CIK parsing). The cap *value* for equities is a separate owner call.
+The csv_import ruling (truncation acceptable, **silence** not) was applied to `equities` by [juniper-data#354](https://github.com/pcalnon/juniper-data/pull/354), first released in juniper-data 0.14.0. The bare `ordered = ordered[: params.max_symbols]` slice in `EquitiesGenerator._resolve_symbols` is deleted. An over-cap universe is refused with a 422 unless truncation is allowed, and an allowed cut is annotated in `DatasetMeta.truncation`, as for csv_import. The cap is in **symbols** (14), not bytes: see [Equities Symbol Cap](#equities-symbol-cap).
 
-The E-H suite YAML (`util/experiments/suites/p4/e-h-real-data.yaml`) uses `symbols: [AAPL]` and does **not** set `max_symbols`, so that cell is unaffected. A run that *does* set `max_symbols` is the trap: the dataset looks complete.
+The E-H suite YAML (`util/experiments/suites/p4/e-h-real-data.yaml`) uses `symbols: [AAPL]` and does **not** set `max_symbols`, so that cell stays inside the cap with no annotation.
 
 | Symptom | Check / Fix |
 |---------|-------------|
 | Driver exit `2` `POST /v1/datasets rejected (422)` on csv_import | Source over 128 MiB without opt-in. Set `dataset.params.allow_truncation: true`, or export `JUNIPER_DATA_CSV_IMPORT_ALLOW_TRUNCATION=true` before `--up`. Read `DatasetMeta.truncation` on the result — a truncated import is permanently annotated. |
 | `FileNotFoundError` / path-traversal `ValueError` | `file_path` is not under `JUNIPER_DATA_IMPORT_DIR`. Export a real on-host directory; do not assume `/data/imports` exists. |
 | Cascor YAML with `generator: csv_import` | Expected ConfigError — not in `STAGEABLE_GENERATOR_ALIASES`. Use a stageable generator, or the recurrence path. |
-| Equities run silently shorter than `symbols` / the S&P universe | `max_symbols` sliced the ticker list (`:286`). Not the csv_import 422 class. |
+| Equities `POST /v1/datasets` 422, or a universe shorter than `symbols` | The symbol cap, not the byte cap: an over-cap universe is refused unless truncation is allowed, and an allowed cut writes `DatasetMeta.truncation`. Not a silent `max_symbols` slice; that is deleted (juniper-data#354). See [Equities Symbol Cap](#equities-symbol-cap). |
 
 Do **not** raise `JUNIPER_DATA_CSV_IMPORT_MAX_BYTES` without a streaming loader — 128 MiB of 20-feature rows is ~700k dicts and several GB of peak objects.
 
@@ -7702,7 +7744,7 @@ The previous default — `EQUITIES_DEFAULT_MAX_SYMBOLS = None`, meaning all **50
 | `equities_seq` | reuses `EquitiesGenerator._resolve_symbols` | Inherits the bound **and** the annotation. `EquitiesSeqParams` subclasses `EquitiesParams`, so the knobs need no redeclaration. |
 | Cache | `JUNIPER_DATA_EQUITIES_CACHE_DIR` | `experiment_stack.bash` `data_up` sets this to `$RUN_DIR/equities-cache`. It does **not** set the two cap env vars — they inherit. |
 | Default universe | bundled `sp500_constituents.csv` (**503** tickers) when `symbols` is omitted | `_resolve_symbols` sorts the CSV keys. Index *titles* over-claim (Russell 3000 published 2,923; Wilshire 5000 published 3,414 as of the 2026-09-04 count). |
-| Boundary | `ordered = ordered[: params.max_symbols]` at `generators/equities/generator.py:286` | Bare slice. **No 422**, no `DatasetMeta.truncation`, no record of dropped tickers. Register `APD-DATA-018` still cites `:264` — that line is now CIK parsing in `_load_constituents`. |
+| Boundary | `EquitiesGenerator._resolve_symbols` (`generators/equities/generator.py`) | A list within the cap passes unchanged. Over it: `InputTooLargeError` (422) unless truncation is allowed, else the authorised cut above. The bare `ordered[: params.max_symbols]` slice that truncated with no record is deleted (data#354, first released in juniper-data 0.14.0). |
 | Features | 15 `float32` columns in `EQUITIES_FEATURE_COLUMNS` (`defaults.py`) | Indices 0–9 are `open, high, low, close, volume, week52_high, week52_low, total_shares, market_cap, cost_basis`; then `dividend` (10), `split_ratio` (11), `days_since_week52_high` (12), `days_since_week52_low` (13), `days_since_report` (14). `Adj Close` is downloaded (`auto_adjust=False`) and kept as `adj_close` for optional `basis_price_field`; it is not a column of `X` (APD-DATA-041). |
 | `seed` | defaulted (`DEFAULT_GENERATOR_SEED`) | Unused for the temporal split. Real non-reproducibility: `end_date` defaults to the wall clock. |
 | Shares fill | `fundamentals_fill` default `"nan"` (`EQUITIES_DEFAULT_FUNDAMENTALS_FILL`) | Missing SEC facts stay NaN. `"zero"` writes `total_shares` / `market_cap` (and `days_since_report`) as 0.0 and keeps the rows; `"drop"` removes them. This knob does not fill `dividend` / `split_ratio`. |
@@ -7741,8 +7783,8 @@ To raise the **deployment** ceiling (not the request), set `JUNIPER_DATA_EQUITIE
 | Driver exit `2` / API `422` on default `equities` | You asked for the full S&P 500. Set `symbols` to ≤14 names, or set `allow_truncation: true` and accept a permanent `DatasetMeta.truncation`. |
 | Requested `max_symbols: 50` still caps at 14 | A request may only *lower* the ceiling. Raise `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS` on the **service**, then re-request. |
 | Truncated dataset looks complete | Authorised cut writes `meta.truncation` (`reason=universe_exceeded_symbol_cap`). Count `ticker_vocab` against `imported`. The old silent slice is deleted. |
-| Dataset create hangs / client timeout on default `equities` | You asked for the full S&P 500. Set `symbols` to a short list. `max_symbols` also bounds the list but **truncates silently**. |
-| Equities run silently shorter than `symbols` / the S&P universe | `max_symbols` sliced at `:286`. The NPZ looks complete. Count `ticker_vocab`. |
+| Dataset create hangs / client timeout on default `equities` | The service's `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS` was raised, so the full S&P 500 fans out again. Set `symbols` to a short list. `max_symbols` also bounds the list; past the cap a request is refused or cut with an annotation, never sliced silently. |
+| Equities run shorter than `symbols` / the S&P universe | Not a `max_symbols` slice: that is deleted (data#354). A symbol-cap cut writes `meta.truncation` (row above). Count `ticker_vocab` against `symbols`. |
 | `total_shares` / `market_cap` are all zeros | SEC returned no facts for that CIK, then `fundamentals_fill: zero`. Use `nan` or `drop` if zeros would train. |
 | Cascor YAML with `generator: equities_seq` | Expected `ConfigError` — not in `STAGEABLE_GENERATOR_ALIASES`. Use the recurrence path, or flat `equities`. |
 | `501` / `equities` unavailable | Install `juniper-data[equities]` into the **serving** env (`JuniperData` for the experiment stack; `JuniperCascor1` for in-process bench). |

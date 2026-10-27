@@ -302,7 +302,7 @@ def main() -> int:
     ap.add_argument("--run-dir", required=True, type=pathlib.Path)
     ap.add_argument("--out", required=True, type=pathlib.Path)
     ap.add_argument("--skip-train", action="store_true")
-    ap.add_argument("--snapshot", help="replay this snapshot id instead of the newest")
+    ap.add_argument("--snapshot", help="replay this existing snapshot id instead of making a new explicit save (POST /v1/snapshots) and replaying that")
     args = ap.parse_args()
     ev = Evidence(args.out)
     ev.notes["health"] = {name: requests.get(f"{url}/v1/health", timeout=30).json() for name, url in (("data", DATA), ("cascor", CASCOR), ("canopy", CANOPY))}
@@ -316,13 +316,17 @@ def main() -> int:
             # (cascade_correlation.py saves them without include_training_state), so a replay
             # of one has length 0 and nothing to seek. The explicit save (POST /v1/snapshots,
             # manager.save_snapshot) includes it.
-            saved = requests.post(f"{CASCOR}/v1/snapshots", json={"description": "replay re-drive"}, timeout=120).json().get("data") or {}
-            snap = {"id": saved.get("id"), "explicit_save": saved}
+            resp = requests.post(f"{CASCOR}/v1/snapshots", json={"description": "replay re-drive"}, timeout=120)
+            body = resp.json()
+            saved = body.get("data") or {}
+            snap = {"id": saved.get("id"), "explicit_save": saved, "save_http_status": resp.status_code, "save_detail": body.get("detail")}
         ev.notes["snapshot"] = snap
-        if not snap:
-            ev.row("setup: a snapshot exists", "BLOCKED", "no snapshot listed after the fit")
+        # ``snap`` always has keys, so ``if not snap`` never fired: a failed save (cascor answers 404
+        # or 500 with a ``detail`` and no ``data``) went on to drive() with no id. Test the id.
+        if not snap["id"]:
+            ev.row("setup: a snapshot exists", "BLOCKED", f"POST /v1/snapshots returned no snapshot id (HTTP {snap.get('save_http_status')}: {snap.get('save_detail')})")
             return 1
-        if drive(ev, args.run_dir / "logs" / "juniper-cascor.log", snap.get("id") or snap.get("snapshot_id") or snap.get("name")):
+        if drive(ev, args.run_dir / "logs" / "juniper-cascor.log", snap["id"]):
             start_after(ev)
     finally:
         ev.save()

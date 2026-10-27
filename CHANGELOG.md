@@ -78,6 +78,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     supersede (26390 -> 27404 of 28000 chars). The convention doc gains them in sections 1, 4.7, 4.8 (new), 6, 9, 10
     and 11 (new), and the Template Agent's standing rules gain `repo_tmp_rulings`.
 
+- **The release-train ceremony's archive cap rises from 125,000 B to 1,000,000 B** (owner ruling 2026-10-26, on the
+  runner-side measurement that the 2026-10-18 ruling called for; a follow-up to juniper-ml#2227).
+  `util/release_train/ceremony.py`'s `ARCHIVE_B64_MAX_DEFAULT` bounds a release-notes archive's base64, because the
+  archive travels inside one `createCommitOnBranch` request. The old figure was measured from turing, and was that
+  host's weak link.
+  - **The measurement.** From a GitHub-hosted runner (Actions run 40410086979), GitHub accepted every GraphQL request
+    body from 100,000 B to 16,777,216 B, padded in a comment or in a variable, the slowest in 3.29 s. From the Linux
+    host it accepted every body up to 8,388,608 B. The instrument is `util/ad-hoc/2026-10-26_graphql_body_cap_probe.py`
+    (new), and the evidence is in `reports/2026-10-26_graphql-body-cap-probe/` (new). The runner run came from a
+    throwaway draft PR (juniper-ml#2361) against a throwaway base, closed unmerged, with both branches deleted.
+  - **Why it matters.** juniper-ml 0.11.0's archive, at 122,032 B, came within 7 KB of the old cap, and
+    juniper-canopy 0.9.0's 103 KB notes had to be condensed. `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` still
+    overrides the default.
+  - **Tests.** `tests/test_release_train_ceremony.py` now HALTs on an 800,000 B changelog, and a new test plans
+    one that only the old cap halted. The env-override test now also proves that an override to 125,000 restores
+    the old HALT. With the default patched back to 125,000, the new test alone fails.
+  - `docs/REFERENCE.md`'s ceremony precondition, and the `archive-too-large` row of
+    `notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md` (1.2.4), name the new default
+    and the measurement.
+
 - **G-SEC's firewall condition reads the block-all sentence turing printed** (turing bring-up task C2; the §18.2
   C2 row and erratum E-C2-GATE of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
   The owner applied C2's block-all form on 2026-10-26, so the on-state captures exist: `--getglobalstate` prints
@@ -103,6 +123,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `/tmp/juniper-e2e` and `${TMPDIR}/juniper-e2e` that older checkouts' stacks may still use. It exits 1, reaping nothing,
   when it cannot resolve the default. `tests/test_reap_pytest_orphans.py` gains 8 tests and redirects the legacy roots.
 
+- **Cascor suites carry headline columns: `aggregate.csv` and `REPORT.md` gain `train_accuracy` and `val_accuracy`, a
+  finished suite gains them without re-running, and a NaN or infinite value fails every acceptance band** (register row
+  `APD-ML-002`; the owner's four rulings of 2026-10-26; juniper-ml#2369). `util/experiments/run_suite.py`'s
+  `_headline_metrics` read `final_accuracy` / `test_accuracy` / `val_accuracy` off the TOP of `stats["cascor"]`, where
+  `stats_summary.build_stats` never wrote anything, so every cascor cell recorded `metrics: {}` (0 of 439 cascor
+  registry rows on the run corpus) and a W5.4 band on those names (juniper-ml#2262) read `absent` on every cascor cell.
+  The recurrence half was fixed by juniper-ml#2145 on 2026-10-04.
+  - `CASCOR_HEADLINE_PATHS` reads both columns from `stats["cascor"]["final"]`. `val_accuracy` keeps its name and is
+    selected-on: the VAL split drove early stopping. `eval_scalars` stay unmapped: live mid-training values, which 19
+    corpus runs computed on the TRAINING split and juniper-ml#2064 will redefine.
+  - `ACCEPTANCE_METRICS` is the union of the two path tables plus `test_accuracy`. That name stays accepted with no
+    producer until cascor's final evaluation computes it (juniper-cascor#731) and juniper-ml#2064's labelled
+    stats block carries it: a band on it reads `absent`, and `run_suite` warns once before any launch.
+    `final_accuracy` existed nowhere and is refused (exit 2), with that reason.
+  - `evaluate_acceptance` fails a NaN or infinite value against any band. Before, NaN passed every band, `+inf` a
+    `min` band and `-inf` a `max` band.
+  - New `run_suite.py --reaggregate SUITE_DIR` re-renders `aggregate.csv` + `REPORT.md` from `suite_manifest.json`,
+    `registry.jsonl` and each run's `stats.json`. It launches nothing, and writes neither the registry, `index.jsonl`
+    nor the manifest; `aggregate` now re-reads every headline column from the run dir (the recorded `metrics` only
+    when the run dir is gone). The 110 cascor suites aggregated before this gain the columns. `--resume` was no
+    substitute: it re-runs incomplete cells, and 29 of the corpus's 116 cascor suites have one.
+  - 32 new tests in `tests/test_run_suite.py` (`CascorHeadlineMetricsTest`, `RowMetricsTest`, `ReaggregateTest`) and
+    `tests/test_run_suite_acceptance.py` (`CascorBandMetricsTest`, `NonFiniteBandValueTest`,
+    `CascorSuiteLoopAcceptanceTest`); `util/ad-hoc/2026-10-26_apd_ml_002_mutation_check.py` kills 25 of 25 mutants,
+    each by its own pin test.
+
 ## [0.11.3] - 2026-10-26
 
 ### Fixed
@@ -120,7 +166,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `[api]` is cascor's and data's web runtime (fastapi, starlette, uvicorn, pydantic-settings). It used to arrive only
     through canopy's base dependencies, so cascor's and data's own lower bounds were never applied. data's `[api]` also
     carries its `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1` floors, which `[servers]` now applies
-    for the first time.
+    for the first time. *(Clarified 2026-10-26: these are data's own floors. The same versions already reached
+    `[servers]` through juniper-canopy 0.9.0 since 0.11.0, and through juniper-cascor 0.12.0 since 0.11.2, so no
+    environment gains a patch from them.)*
   - torch stays out: cascor's `[ml]` and canopy's `[demo]` are not requested.
   - **Pre-flighted against real PyPI** with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`. `[servers]`
     resolves in 63 packages on Python 3.12, 3.13 and 3.14, up from 61; the two added are juniper-cascor-client 0.8.0
@@ -300,6 +348,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     measured on the published wheels (the builder's setuptools version aside). Both floors sit under its `[api]`
     extra, and `[servers]` installs bare `juniper-data`, so in a `[servers]` environment the patches arrive through
     cascor 0.12.0. The data floor keeps `[servers]` level with the image juniper-deploy#258 pins.
+  - **Correction (2026-10-26).** The two shared patches were not new to `[servers]`: juniper-canopy 0.9.0 floors
+    both unconditionally, and `[servers]` has required it since 0.11.0. This release's security content is
+    juniper-cascor 0.12.0's own fixes above, which no earlier `[servers]` or `[all]` floored, so any `[servers]` or
+    `[all]` environment installed before 0.11.2, with or without `[tools]`, can still hold juniper-cascor 0.11.0 or
+    older. The release notes told `[tools]` and `[all]` users they were covered; the Release v0.11.2 body and
+    `notes/releases/RELEASE_NOTES_v0.11.2.md` now carry an erratum. Measured on PyPI's published metadata by
+    `util/ad-hoc/2026-10-26_erratum_0_11_x_security_floor_probe.py`.
   - The extras tables in `README.md` (both), `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with
     the pins. The `0.11.x` row of `docs/REFERENCE.md`'s compatibility matrix moves with the release that carries
     this, which is the owner's cut. Applied by `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py`, which asserts each site's exact text and requires exactly

@@ -1637,6 +1637,20 @@ class RecurrencePathTest(_StubTestCase):
 
         self.assertIn("(recurrence)", stdout)
 
+    def test_service_default_theta_is_labelled_the_service_default_not_data_driven(self) -> None:
+        """The driver passes the YAML ``service:`` block to the stats, so an unset ``train.theta`` with ``service.default_theta`` set is labelled the service default.
+
+        The train body carries no theta either way: the service fills it from ``default_theta``
+        (juniper-recurrence ``routers/training.py``), so calling it data-driven named the wrong θ.
+        """
+        code, stdout = _invoke(self._config(service={"default_theta": 91.0}), self.run_dir)
+        self.assertEqual(code, rx.EXIT_SUCCESS, stdout)
+        self.assertNotIn("theta", self._posts("/v1/train")[0])
+        results = self.run_dir / "artifacts" / "results"
+        stats = json.loads((results / "stats.json").read_text(encoding="utf-8"))
+        self.assertEqual(stats["recurrence"]["theta"], {"value": 91.0, "note": "service default from service.default_theta; train.theta is unset"})
+        self.assertIn("- theta: 91.0 (service default from service.default_theta; train.theta is unset)", (results / "summary.md").read_text(encoding="utf-8"))
+
     def test_disabled_blocks_skip_phases(self) -> None:
         code, _ = _invoke(self._config(crossval=None, predict=None), self.run_dir)
         self.assertEqual(code, rx.EXIT_SUCCESS)
