@@ -24,6 +24,16 @@
 Usage:
     python util/experiments/run_suite.py --suite SUITE.yaml [--dry-run] [--resume SUITE_ID]
                                          [--only CELL_ID ...]
+    python util/experiments/run_suite.py --reaggregate SUITE_DIR [--compare-baseline TAG]
+
+``--reaggregate SUITE_DIR`` (APD-ML-002, 2026-10-26) re-renders an existing suite's ``aggregate.csv``
+and ``REPORT.md`` from what is already on disk -- its ``suite_manifest.json``, its ``registry.jsonl`` and
+each cell's run dir -- and LAUNCHES NOTHING: no ``--up``, no driver, no materialised cell, and no write
+to ``registry.jsonl``, ``index.jsonl`` or ``suite_manifest.json``. It backfills the headline columns of
+suites aggregated before those columns existed (every cascor suite until 2026-10-26). ``--resume`` is no
+substitute: it re-runs every cell that is not already complete. SUITE_DIR may also be a suite id under
+``$JUNIPER_EXP_RUN_ROOT/suites``. Its exit code is the completeness code below, computed by the same
+``aggregate``.
 
 Exit codes: 0 = every cell in the FULL EXPANSION has succeeded or is ``flagged`` (in this
 invocation or an earlier one resumed with --resume); 1 = suite completed with failed, degraded
@@ -101,17 +111,18 @@ DEFAULT_RUN_ROOT = Path(os.environ.get("JUNIPER_EXP_RUN_ROOT", str(Path.home() /
 RUN_ID_BANNER = re.compile(r"Experiment run (\S+) is up")
 
 SUITE_KEYS = frozenset({"schema_version", "suite", "execution", "matrix", "include", "exclude", "outputs", "acceptance"})
-# W5.4 (F-D3 / F-SCI4): acceptance bands. A band names one headline metric (the W0.4 recurrence keys or
-# the cascor accuracies `_headline_metrics` reads), a `min` and / or `max` bound, and a `mode`. Bands
+# W5.4 (F-D3 / F-SCI4): acceptance bands. A band names one headline metric (a column `_headline_metrics`
+# reads through `RECURRENCE_HEADLINE_PATHS` / `CASCOR_HEADLINE_PATHS`, or a `PENDING_ACCEPTANCE_METRICS`
+# name -- `ACCEPTANCE_METRICS`, below the tables), a `min` and / or `max` bound, and a `mode`. Bands
 # live on the SUITE (every cell) or on an `include` row (that row only -- the R5 band is row-scoped to
 # the E-H equities row because the irregular-sine control's cv_r2 0.975 would fail +0.5). Outcome
 # semantics are R6's: a `gate` miss makes a succeeded cell `failed` (non-zero exit); a `report` miss
 # makes it `flagged` (exit unchanged). A metric the band names that the cell did not produce follows the
 # mode -- `failed (cv_r2 absent)` under gate, `flagged (cv_r2 absent)` under report -- and is distinct
-# from `degraded`, which says an enabled PHASE did not run.
+# from `degraded`, which says an enabled PHASE did not run. A NaN or infinite value is inside no band:
+# it is a `fail` of ANY band, `min` or `max` (APD-ML-002 ruling 4, 2026-10-26).
 ACCEPTANCE_BAND_KEYS = frozenset({"metric", "min", "max", "mode"})
 ACCEPTANCE_MODES = ("gate", "report")
-ACCEPTANCE_METRICS = frozenset({"final_accuracy", "test_accuracy", "val_accuracy", "train_r2", "cv_r2", "cv_r2_std", "n_windows"})
 SUITE_SUITE_KEYS = frozenset({"name", "description", "app", "base_config", "seed_policy"})
 EXECUTION_KEYS = frozenset({"mode", "max_parallel", "continue_on_failure", "per_run_timeout_seconds", "stall_seconds", "max_wall_seconds", "dataset_create_timeout_seconds"})
 #: W1.5 (F-D5 / F-S9): the recurrence service's own juniper-data client timeout, the setting
@@ -138,6 +149,39 @@ RECURRENCE_HEADLINE_PATHS = (
     ("cv_r2_std", ("crossval", "eval_std", "r2")),
     ("n_windows", ("dataset_descriptor", "n_windows")),
 )
+
+# APD-ML-002 (owner ruling 1, 2026-10-26, "A now, test later"): each cascor headline column and the path to
+# it inside `stats["cascor"]`, as `stats_summary.build_stats` writes that block -- `final` is the
+# `/v1/metrics` read the driver takes when training ends. The first reader asked for `final_accuracy` /
+# `test_accuracy` / `val_accuracy` at the TOP of the block, where no writer ever put them, so every cascor
+# cell got `metrics: {}` (0 of 439 cascor registry rows on the run corpus, 2026-10-26).
+#
+# `val_accuracy` keeps its name and is SELECTED-ON, not held out: the VAL split drove early stopping (and,
+# before decision 11, the service's "val" was the `X_test` partition doing the same job). The held-out
+# columns come later, from a labelled block juniper-ml#2064 will add to `build_stats`.
+#
+# `eval_scalars` (f1 / precision / recall / roc_auc) are deliberately NOT mapped: they are live
+# mid-training values, 19 corpus runs computed them on the TRAINING split, and juniper-ml#2064 will change
+# what they mean.
+CASCOR_HEADLINE_PATHS = (
+    ("train_accuracy", ("final", "train_accuracy")),
+    ("val_accuracy", ("final", "val_accuracy")),
+)
+
+#: APD-ML-002 ruling 2 (2026-10-26): band metrics ``parse_acceptance`` ACCEPTS although no run produces them
+#: yet, each with the reason ``main`` prints before any launch. A band on one reads ``absent`` until its
+#: producer lands -- so a ``gate`` band fails its cell, and a ``report`` band flags it.
+PENDING_ACCEPTANCE_METRICS = {
+    "test_accuracy": "cascor's final evaluation will compute it (juniper-cascor#731) and the labelled block juniper-ml#2064 adds to stats_summary.build_stats will carry it into stats.json; until both land no run produces it",
+}
+
+#: Band metrics that are REFUSED, each with the reason the refusal prints (APD-ML-002 ruling 2).
+RETIRED_ACCEPTANCE_METRICS = {
+    "final_accuracy": "removed 2026-10-26 (APD-ML-002): no writer has ever produced it, at any depth of stats.json",
+}
+
+#: Every name a band may use: a column a path table above can produce, or a pending name.
+ACCEPTANCE_METRICS = frozenset(column for column, _ in RECURRENCE_HEADLINE_PATHS + CASCOR_HEADLINE_PATHS) | frozenset(PENDING_ACCEPTANCE_METRICS)
 
 
 class SuiteError(Exception):
@@ -237,10 +281,12 @@ def parse_acceptance(spec, where: str) -> "list[dict]":
     """Validate one ``acceptance:`` list and return its bands normalised (``min`` / ``max`` ``None`` when absent).
 
     ``None`` (the key absent) is an empty list. Every other shape is checked strictly: a list of
-    mappings whose keys are exactly from ``ACCEPTANCE_BAND_KEYS``, ``metric`` one of the headline
-    columns ``_headline_metrics`` can produce, ``mode`` one of ``ACCEPTANCE_MODES`` (required -- a
-    band that does not say whether it gates is the ambiguity R6 exists to remove), at least one of
-    ``min`` / ``max``, both numbers (never ``bool``), ``min <= max``. Any violation is a ``SuiteError``.
+    mappings whose keys are exactly from ``ACCEPTANCE_BAND_KEYS``, ``metric`` one of
+    ``ACCEPTANCE_METRICS`` (a headline column ``_headline_metrics`` can produce, or a name in
+    ``PENDING_ACCEPTANCE_METRICS``; a ``RETIRED_ACCEPTANCE_METRICS`` name is refused with its reason),
+    ``mode`` one of ``ACCEPTANCE_MODES`` (required -- a band that does not say whether it gates is the
+    ambiguity R6 exists to remove), at least one of ``min`` / ``max``, both numbers (never ``bool``),
+    ``min <= max``. Any violation is a ``SuiteError``.
     """
     if spec is None:
         return []
@@ -256,7 +302,9 @@ def parse_acceptance(spec, where: str) -> "list[dict]":
             raise SuiteError(f"{label}: unknown keys {sorted(unknown)} (allowed: {sorted(ACCEPTANCE_BAND_KEYS)})")
         metric = band.get("metric")
         if metric not in ACCEPTANCE_METRICS:
-            raise SuiteError(f"{label}.metric must be one of {sorted(ACCEPTANCE_METRICS)}, got {metric!r}")
+            # A retired name says why it went: the W5.4 docs listed `final_accuracy` for a week.
+            why = f" ({RETIRED_ACCEPTANCE_METRICS[metric]})" if metric in RETIRED_ACCEPTANCE_METRICS else ""
+            raise SuiteError(f"{label}.metric must be one of {sorted(ACCEPTANCE_METRICS)}, got {metric!r}{why}")
         mode = band.get("mode")
         if mode not in ACCEPTANCE_MODES:
             raise SuiteError(f"{label}.mode must be one of {list(ACCEPTANCE_MODES)}, got {mode!r}")
@@ -270,6 +318,26 @@ def parse_acceptance(spec, where: str) -> "list[dict]":
             raise SuiteError(f"{label}: min {low!r} is above max {high!r}")
         bands.append({"metric": metric, "min": low, "max": high, "mode": mode})
     return bands
+
+
+def pending_band_warnings(cells: "list[dict]") -> "list[str]":
+    """One warning per ``PENDING_ACCEPTANCE_METRICS`` name a band names, saying why it reads ``absent``.
+
+    APD-ML-002 ruling 2 (2026-10-26) keeps ``test_accuracy`` a band metric while nothing produces it, so
+    such a band is accepted at load and then reads ``absent`` on every cell -- a ``gate`` band fails the
+    cell. ``main`` prints these before anything launches (and under ``--dry-run``), once per metric however
+    many cells carry the band, rather than letting the first sign be a failed suite.
+    """
+    counts: "dict[str, int]" = {}
+    for cell in cells:
+        for metric in {band.get("metric") for band in cell.get("acceptance") or [] if isinstance(band, dict)}:
+            if metric in PENDING_ACCEPTANCE_METRICS:
+                counts[metric] = counts.get(metric, 0) + 1
+    warnings: "list[str]" = []
+    for metric, count in sorted(counts.items()):
+        why = PENDING_ACCEPTANCE_METRICS[metric]
+        warnings.append(f"an acceptance band names {metric} on {count} of {len(cells)} cell(s), and no run produces it yet: {why}. Until then the band reads `absent`, so a `gate` band fails its cell and a `report` band flags it (APD-ML-002).")
+    return warnings
 
 
 def _is_positive_seconds(value) -> bool:
@@ -809,36 +877,72 @@ def _dig(block, path: "tuple[str, ...]"):
     return block
 
 
-def _headline_metrics(run_dir: Path) -> dict:
-    """The per-cell numbers ``aggregate.csv`` / ``REPORT.md`` carry, read from the run's stats.json.
-
-    Recurrence reads the nested shape ``stats_summary.build_stats`` writes (W0.4, F-D2 -- see
-    ``RECURRENCE_HEADLINE_PATHS``). A missing or null ``crossval`` block yields no ``cv_*`` key at
-    all: an absent cross-validation is not a cross-validation that scored nothing. The cascor keys
-    are read exactly as before.
-    """
+def _read_stats(run_dir: Path) -> "dict | None":
+    """The run's ``artifacts/results/stats.json`` as a mapping, or ``None`` when it is missing, unreadable
+    or not a JSON object -- which ``_row_metrics`` must tell apart from a readable file with no headline."""
     stats_file = run_dir / "artifacts" / "results" / "stats.json"
-    out: dict = {}
     if not stats_file.exists():
-        return out
+        return None
     try:
         stats = json.loads(stats_file.read_text())
     except (OSError, ValueError):
-        return out
-    if not isinstance(stats, dict):
-        return out
-    cascor = stats.get("cascor")
-    if isinstance(cascor, dict):
-        for metric in ("final_accuracy", "test_accuracy", "val_accuracy"):
-            if isinstance(cascor.get(metric), (int, float)):
-                out[metric] = cascor[metric]
-    recurrence = stats.get("recurrence")
-    if isinstance(recurrence, dict):
-        for column, path in RECURRENCE_HEADLINE_PATHS:
-            value = _dig(recurrence, path)
+        return None
+    return stats if isinstance(stats, dict) else None
+
+
+def _stats_headline(stats: dict) -> dict:
+    """Every path-table column whose value in this parsed stats.json is a number (``_is_metric``)."""
+    out: dict = {}
+    for block_name, table in (("cascor", CASCOR_HEADLINE_PATHS), ("recurrence", RECURRENCE_HEADLINE_PATHS)):
+        block = stats.get(block_name)
+        if not isinstance(block, dict):
+            continue
+        for column, path in table:
+            value = _dig(block, path)
             if _is_metric(value):
                 out[column] = value
     return out
+
+
+def _headline_metrics(run_dir: Path) -> dict:
+    """The per-cell numbers ``aggregate.csv`` / ``REPORT.md`` carry, read from the run's stats.json.
+
+    Both apps read the nested shape ``stats_summary.build_stats`` writes, through one path table each:
+    recurrence through ``RECURRENCE_HEADLINE_PATHS`` (W0.4, F-D2), cascor through
+    ``CASCOR_HEADLINE_PATHS`` (APD-ML-002, 2026-10-26) -- ``train_accuracy`` and ``val_accuracy`` from
+    ``stats["cascor"]["final"]``. A missing or null ``crossval`` block yields no ``cv_*`` key at all: an
+    absent cross-validation is not a cross-validation that scored nothing. Likewise a run with no val
+    split yields no ``val_accuracy``.
+
+    The test is ``_is_metric`` for every column: ``0.0`` is kept, ``bool`` / ``None`` / strings are
+    dropped, and a NaN or infinite number is KEPT -- it is a result, and ``evaluate_acceptance`` fails it
+    against any band rather than calling it absent. Names at the TOP of either block are never read: the
+    pre-fix readers looked there (``final_accuracy`` / ``test_accuracy`` / ``val_accuracy``, ``r2`` /
+    ``train_r2`` / ``cv_r2``) and no writer ever put anything there. ``test_accuracy`` has no path yet
+    (``PENDING_ACCEPTANCE_METRICS``), and ``final_accuracy`` is gone (``RETIRED_ACCEPTANCE_METRICS``).
+
+    A missing, unreadable or non-object stats.json yields ``{}``.
+    """
+    stats = _read_stats(run_dir)
+    return {} if stats is None else _stats_headline(stats)
+
+
+def _row_metrics(row: dict) -> dict:
+    """The headline numbers ``aggregate`` prints for one registry row.
+
+    Re-read from the run's own stats.json whenever it is readable -- the same rule ``_gate_metrics``
+    already follows for ``step_count`` -- and the row's recorded ``metrics`` only when it is not (the run
+    dir pruned, moved or never written). The recorded value is what ``apply_acceptance`` judged when the
+    cell ran, and ``registry.jsonl`` keeps it unchanged; reading the file again is what lets a suite
+    aggregated before a column existed gain it (``--reaggregate``, APD-ML-002), and keeps it gained after
+    a later ``--resume`` re-aggregates the suite.
+    """
+    run_dir = row.get("run_dir")
+    stats = _read_stats(Path(run_dir)) if isinstance(run_dir, str) and run_dir else None
+    if stats is not None:
+        return _stats_headline(stats)
+    recorded = row.get("metrics")
+    return recorded if isinstance(recorded, dict) else {}
 
 
 def _failed_phase_summary(phases) -> str:
@@ -890,6 +994,12 @@ def evaluate_acceptance(bands: "list[dict]", metrics: dict) -> "list[dict]":
     evaluated has not passed, but the report must say WHY). Bounds are inclusive; the comparison is
     the plain float comparison, so ``cv_r2 = -18081.0`` against ``[-1.0, 0.5]`` fails and ``-1.0``
     passes.
+
+    A NaN or infinite value is ``fail`` against ANY band, and keeps its value so the report prints it
+    (APD-ML-002 ruling 4, 2026-10-26). The plain comparison let every one of them through somewhere:
+    every comparison with NaN is false, so NaN passed ``min`` and ``max`` alike; ``+inf`` passed a
+    ``min`` band and ``-inf`` a ``max`` band. A diverged run is not inside a band. Only a ``float`` can
+    be non-finite -- an ``int`` never is, and ``math.isfinite`` would overflow on a huge one.
     """
     results: "list[dict]" = []
     for band in bands:
@@ -897,6 +1007,8 @@ def evaluate_acceptance(bands: "list[dict]", metrics: dict) -> "list[dict]":
         if not _is_metric(value):
             result = "absent"
             value = None
+        elif isinstance(value, float) and not math.isfinite(value):
+            result = "fail"
         else:
             low, high = band.get("min"), band.get("max")
             below = low is not None and value < low
@@ -1138,8 +1250,17 @@ def _run_comparison(tag: str, suite_dir: Path) -> str:
 
 
 def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "str | None" = None) -> int:
+    """Write ``aggregate.csv`` + ``REPORT.md`` for the full expansion ``cells``; 0 when every cell is complete, else 1.
+
+    It only READS: ``registry.jsonl`` (outcomes, errors, phases, the band results recorded when each cell
+    ran), each cell's run dir (the gate inputs through ``_gate_metrics``, the headline columns through
+    ``_row_metrics``) and, when asked, a baseline. It launches, appends and materialises nothing, which is
+    what lets ``--reaggregate`` call it on a finished suite (APD-ML-002).
+    """
     registry = _read_registry(suite_dir)
-    metric_keys = sorted({k for row in registry.values() for k in (row.get("metrics") or {})})
+    # APD-ML-002: one headline read per row, from the run's stats.json while it is on disk (`_row_metrics`).
+    row_metrics = {cell_id: _row_metrics(row) for cell_id, row in registry.items()}
+    metric_keys = sorted({k for metrics in row_metrics.values() for k in metrics})
     override_keys = sorted({k for cell in cells for k in cell["overrides"]})
     gate = _gate_metrics(suite_dir, cells)
     csv_path = suite_dir / "aggregate.csv"
@@ -1165,7 +1286,7 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
                     cell_gate.get("step_count", ""),
                     cell_gate.get("mean_step_seconds", ""),
                     *[cell["overrides"].get(k, "") for k in override_keys],
-                    *[(row.get("metrics") or {}).get(k, "") for k in metric_keys],
+                    *[row_metrics.get(cell["cell_id"], {}).get(k, "") for k in metric_keys],
                     _acceptance_cell(row),
                 ]
             )
@@ -1192,7 +1313,7 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
         row = registry.get(cell["cell_id"], {})
         cell_gate = gate.get(cell["cell_id"], {})
         mean_step = cell_gate.get("mean_step_seconds")
-        values = [str(cell["overrides"].get(k, "")) for k in override_keys] + [str((row.get("metrics") or {}).get(k, "")) for k in metric_keys]
+        values = [str(cell["overrides"].get(k, "")) for k in override_keys] + [str(row_metrics.get(cell["cell_id"], {}).get(k, "")) for k in metric_keys]
         if banded:
             values.append(_acceptance_cell(row))
         lines.append(
@@ -1204,7 +1325,7 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
             "",
             "## Acceptance bands",
             "",
-            "One row per band per cell (W5.4). `gate` misses make the cell `failed` and the suite exit non-zero; `report` misses make it `flagged` and leave the exit code alone (R6). `absent` means the cell produced no such headline metric.",
+            "One row per band per cell (W5.4). `gate` misses make the cell `failed` and the suite exit non-zero; `report` misses make it `flagged` and leave the exit code alone (R6). `absent` means the cell produced no such headline metric; a NaN or infinite value is a `fail` of any band.",
             "",
             "| cell | metric | band | mode | value | result |",
             "|---|---|---|---|---|---|",
@@ -1215,7 +1336,7 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
                 results = [{**band, "value": None, "result": "not-run"} for band in cell["acceptance"]]
             else:
                 # A row written by this run carries its results; one from an older registry does not.
-                results = row.get("acceptance") or evaluate_acceptance(cell["acceptance"], row.get("metrics") or {})
+                results = row.get("acceptance") or evaluate_acceptance(cell["acceptance"], row_metrics.get(cell["cell_id"], {}))
             for item in results:
                 lines.append(f"| {cell['cell_id']} | {item['metric']} | {_band_text(item)} | {item['mode']} | {'' if item['value'] is None else item['value']} | {item['result']} |")
     if degraded:
@@ -1290,9 +1411,91 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
     return 0 if len(succeeded) + len(flagged) == len(cells) else 1
 
 
+def load_suite_manifest(suite_dir: Path) -> "tuple[dict, list[dict]]":
+    """The ``suite`` block and the full cell expansion an existing suite dir recorded, for ``--reaggregate``.
+
+    Read from ``SUITE_DIR/suite_manifest.json``, which every run of the suite rewrites before its first
+    cell: it is what that run actually expanded, where re-expanding the suite YAML would give whatever
+    the YAML says today. A cell keeps ``cell_id`` / ``name`` / ``overrides`` and its recorded bands (none
+    before W5.4); a band is kept as recorded, so one naming a since-retired metric still renders.
+    Anything that is not that shape is a ``SuiteError``.
+    """
+    manifest_file = suite_dir / "suite_manifest.json"
+    try:
+        manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise SuiteError(f"--reaggregate: cannot read {manifest_file}: {exc}") from exc
+    suite = manifest.get("suite") if isinstance(manifest, dict) else None
+    raw_cells = manifest.get("cells") if isinstance(manifest, dict) else None
+    if not isinstance(suite, dict) or not suite.get("name"):
+        raise SuiteError(f"--reaggregate: {manifest_file} has no suite block with a name")
+    if not isinstance(raw_cells, list) or not raw_cells:
+        raise SuiteError(f"--reaggregate: {manifest_file} records no cells")
+    cells: "list[dict]" = []
+    for position, raw in enumerate(raw_cells):
+        overrides = raw.get("overrides") if isinstance(raw, dict) else None
+        bands = (raw.get("acceptance") if isinstance(raw, dict) else None) or []
+        if not isinstance(raw, dict) or not isinstance(raw.get("cell_id"), str) or not isinstance(overrides, dict):
+            raise SuiteError(f"--reaggregate: {manifest_file} cells[{position}] is not a cell record (a string cell_id and an overrides mapping)")
+        if not isinstance(bands, list) or not all(isinstance(band, dict) and isinstance(band.get("metric"), str) and band.get("mode") in ACCEPTANCE_MODES for band in bands):
+            raise SuiteError(f"--reaggregate: {manifest_file} cells[{position}].acceptance is not a list of recorded bands")
+        cells.append({"cell_id": raw["cell_id"], "index": raw.get("index", position), "name": raw.get("name"), "config_path": raw.get("config_path"), "overrides": overrides, "acceptance": bands})
+    return suite, cells
+
+
+def reaggregate(suite_dir: Path, compare_baseline: "str | None" = None) -> int:
+    """APD-ML-002 ruling 3 (2026-10-26): re-render ``aggregate.csv`` + ``REPORT.md`` from disk, LAUNCHING NOTHING.
+
+    The backfill for suites aggregated before a headline column existed -- every cascor suite until
+    2026-10-26. The suite and its expansion come from ``load_suite_manifest``; ``aggregate`` reads the
+    rest. Nothing is launched or materialised, and ``registry.jsonl``, ``index.jsonl`` and
+    ``suite_manifest.json`` are not written: only the two rendered files change. The headline reaches
+    them because ``aggregate`` re-reads each run's stats.json (``_row_metrics``).
+
+    The registry rows' own ``metrics`` stay as recorded, deliberately. ``registry.jsonl`` is append-only,
+    and ``read_run_metrics.read_suite`` reads EVERY line of it, so appending a re-derived copy of each row
+    would count every cell twice in ``compare_baseline`` / ``make_baseline``; rewriting it in place could
+    lose a row a still-running suite appends meanwhile. Outcomes and band results are likewise the ones
+    recorded when each cell ran: this re-renders, it does not re-judge.
+
+    ``--compare-baseline`` is honoured (it only reads). Returns ``aggregate``'s completeness code.
+    """
+    suite, cells = load_suite_manifest(suite_dir)
+    for warning in pending_band_warnings(cells):
+        print(f"[suite] warning: {warning}", file=sys.stderr)
+    comparison = _run_comparison(compare_baseline, suite_dir) if compare_baseline else None
+    return aggregate(suite_dir, suite, cells, comparison=comparison)
+
+
+def _reaggregate_main(args: argparse.Namespace) -> int:
+    """``main`` for ``--reaggregate``: refuse the execution flags, resolve SUITE_DIR, call ``reaggregate``.
+
+    The refusal is the point, not tidiness: every one of those flags belongs to the path that launches
+    cells, and ``--reaggregate`` must never reach it. Misuse exits 2, as everywhere else in this driver.
+    """
+    conflicting = [flag for flag, given in (("--suite", args.suite is not None), ("--dry-run", args.dry_run), ("--resume", args.resume is not None), ("--only", args.only is not None), ("--shared-equities-cache", args.shared_equities_cache is not None)) if given]
+    if conflicting:
+        print(f"suite error: --reaggregate launches nothing and reads the suite from SUITE_DIR/suite_manifest.json, so it takes no {' / '.join(conflicting)}", file=sys.stderr)
+        return 2
+    given = Path(args.reaggregate)
+    by_id = DEFAULT_RUN_ROOT / "suites" / args.reaggregate
+    suite_dir = given if given.is_dir() else by_id
+    if not suite_dir.is_dir():
+        print(f"suite error: --reaggregate {args.reaggregate}: no such suite dir (looked for {given} and {by_id})", file=sys.stderr)
+        return 2
+    try:
+        rc = reaggregate(suite_dir, args.compare_baseline)
+    except SuiteError as exc:
+        print(f"suite error: {exc}", file=sys.stderr)
+        return 2
+    print(f"[suite] re-rendered {suite_dir}/aggregate.csv + REPORT.md from disk; launched nothing")
+    return rc
+
+
 def main(argv: "list[str] | None" = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--suite", type=Path, required=True)
+    # Required for every mode but --reaggregate, which reads the suite from SUITE_DIR -- checked after parsing.
+    parser.add_argument("--suite", type=Path, default=None, help="The suite YAML. Required, except with --reaggregate")
     parser.add_argument("--dry-run", action="store_true", help="Print the expanded cell list and every command; write nothing")
     parser.add_argument("--resume", metavar="SUITE_ID", default=None, help="Resume an existing suite dir, skipping only cells whose registry.jsonl outcome is already 'succeeded' (failed / degraded / stalled / timed_out cells re-run)")
     parser.add_argument("--only", nargs="*", default=None, metavar="CELL_ID", help="Execute only these cell ids")
@@ -1312,7 +1515,21 @@ def main(argv: "list[str] | None" = None) -> int:
         "a cold Yahoo / SEC fetch per cell. JUNIPER_EXP_SHARED_EQUITIES_CACHE=DIR in the environment is honoured the same way. "
         "Cell ids and config_sha256 are unchanged: the cache changes where fetches land, not the experiment.",
     )
+    parser.add_argument(
+        "--reaggregate",
+        metavar="SUITE_DIR",
+        default=None,
+        help="Re-render SUITE_DIR's aggregate.csv + REPORT.md from what is already on disk -- its suite_manifest.json, registry.jsonl and each cell's run dir -- "
+        "and LAUNCH NOTHING (APD-ML-002): the backfill for suites aggregated before a headline column existed. SUITE_DIR may also be a suite id under "
+        "$JUNIPER_EXP_RUN_ROOT/suites. Takes no --suite and no execution flag (--dry-run / --resume / --only / --shared-equities-cache); "
+        "--compare-baseline is honoured. Not --resume, which re-runs every cell that is not complete.",
+    )
     args = parser.parse_args(argv)
+
+    if args.reaggregate is not None:
+        return _reaggregate_main(args)
+    if args.suite is None:
+        parser.error("--suite is required (or --reaggregate SUITE_DIR, to re-render a finished suite without launching anything)")
 
     # W5.6: resolve the shared cache from the flag or the launcher's own env knob HERE, so the registry row
     # and suite_manifest.json record what every --up was given either way, and a bad value refuses the
@@ -1333,6 +1550,9 @@ def main(argv: "list[str] | None" = None) -> int:
     except SuiteError as exc:
         print(f"suite error: {exc}", file=sys.stderr)
         return 2
+    # APD-ML-002 ruling 2: a band on a metric nothing produces yet is legal, and says so before any launch.
+    for warning in pending_band_warnings(cells):
+        print(f"[suite] warning: {warning}", file=sys.stderr)
 
     suite = doc["suite"]
     execution = doc.get("execution") or {}

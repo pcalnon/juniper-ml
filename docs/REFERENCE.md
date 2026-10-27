@@ -3561,6 +3561,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`: `load_suite` plus oversize-stall / wall-pin / timeout-ordering, the last against each cell's worst-case driver budget since juniper-ml#2210 ([§ Suite timeout budget](#suite-timeout-budget)). Operator surface: [P4 Campaign Suites](#p4-campaign-suites).
 - `tests/test_run_suite.py` -- Behavioral suite-driver coverage, including P2 item 1.4 (`GateInputsInAggregateTest` / `ComparisonReportingTest`): `aggregate.csv` must carry both gate inputs beside `wall_seconds`; `REPORT.md` must say `wall_seconds` is DE-RATIFIED and print work-invariant / single-workload; `--compare-baseline` is reporting-only (missing tag and FAIL verdict still exit 0). `PerRunTimeoutBudgetTest` (juniper-ml#2210): a `per_run_timeout_seconds` at or below a cell's worst-case driver budget exits 2 before any `--up`, naming the largest cell and its terms; `ExecuteCellTimeoutTest` drives the subprocess kill itself (a `timed_out` row with no `run_dir`, phases or metrics, and the stack still torn down). Operator surface: [Suite Report Gate Inputs](#suite-report-gate-inputs).
   W0.3 / W0.4 (`DegradedSuiteTest` / `OutcomeLineTest` / `HeadlineMetricsTest`): a `degraded` cell is counted on its own in the summary line, listed under `## Degraded cells`, printed `degraded (crossval failed: …)`, re-run by `--resume` and keeps the exit at `1`; `_headline_metrics` surfaces `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` on the plan's four fixtures (audited `crossval: null`, successful, `0.0`, `-18081.0`).
+  APD-ML-002 (`CascorHeadlineMetricsTest` / `RowMetricsTest` / `ReaggregateTest`, fixtures from the real `build_stats(kind="cascor")`): exactly `train_accuracy` / `val_accuracy` from `cascor.final` (`0.0` kept; `bool` / `None` / strings and the top-level dead names yield nothing; `eval_scalars` unmapped); a cascor `aggregate.csv` / REPORT gains both columns; `aggregate` re-reads `stats.json` and falls back to the recorded `metrics` only for a gone run dir; `--reaggregate` adds the columns to a pre-fix cascor suite with every launch / materialise / append seam patched to raise, leaves `registry.jsonl` / `suite_manifest.json` / `index.jsonl` byte-identical, refuses the execution flags and a bad manifest (exit 2), and `--suite` is still required otherwise.
   W1.5 (`TestDatasetBudgetReachesDriverAndService`, read back from a stub launcher's own environment): `execution.dataset_create_timeout_seconds` reaches the driver as `--dataset-create-timeout-seconds` and a recurrence `--up` as `JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS`, and the registry row as `service_env`; a cell's own `outputs` key reaches `--up` while the driver reads it from the YAML; the suite key wins; with neither, nothing is exported and an operator's own export passes through; a cascor suite gets the flag and no recurrence env; bad values refuse the suite before any launch; `_seconds_text` produces the launcher's `data_timeout_re` form, read from the script.
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`, which no test loaded before it: every suite must pass `run_suite.load_suite` (catching the unknown-`execution:`-key / `stall_second` typo class that otherwise surfaces hours into a GPU campaign), and any oversize `app: cascor` suite must declare an `execution.stall_seconds` above the driver's `DEFAULT_STALL_SECONDS` (read from the driver source, not hardcoded).
   Fourth contract: `execution.per_run_timeout_seconds` must sit **above** every cell's worst-case driver budget (`>` not `>=`) so the driver writes the honest manifest — `perf/pf5` shipped 900/900 and was raised to 1800. Since juniper-ml#2210 that budget is the driver's whole sum, not its wall alone, and the nine recurrence suites carry 4500 against 3900 ([§ Suite timeout budget](#suite-timeout-budget)). Operator surfaces: [§ PF Scenario Suites](#pf-scenario-suites) and [P4 Campaign Suites](#p4-campaign-suites).
@@ -3595,6 +3596,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_soak_analyse_date_pool.py` -- Pins that `analyse()` pools the corpus the probe picker now SPLITS by date -- a pooled analysis over a split corpus silently mixes cohorts and reports one number for two populations.
 - `tests/test_run_suite_gate_metrics.py` -- Suite-report gate values that the header pin in #1643 cannot see: the header can be correct while the gate VALUES beneath it are stale or absent.
 - `tests/test_run_suite_acceptance.py` -- W5.4 (F-D3 / F-SCI4): the suite `acceptance:` facility and the R5 band on the E-H row. The schema (a list of `{metric, min, max, mode}` bands on the suite or on an `include` row; every malformed shape refuses the suite at load, before a launch); the comparator over the W0.4 headline keys with inclusive bounds and `0.0` a value; R6's outcomes -- `cv_r2 = -18081` is `failed` under `gate` (exit 1) and `flagged` under `report` (exit 0), an absent metric follows the mode and is not `degraded`, a degraded cell keeps its outcome with the bands recorded; row scoping (the irregular-sine control's `cv_r2 0.975` fails `+0.5` only under a suite-level band); `flagged` is complete for `--resume` and the exit code; the `acceptance` column is LAST in `aggregate.csv` and the REPORT table, with a `## Acceptance bands` section; bands do not enter the cell id; the shipped E-H suite carries `cv_r2 in [-1.0, 0.5]` and `cv_r2_std <= 0.5`, both `gate`, on the equities row only. Hermetic (stub launcher + driver through the `JUNIPER_SUITE_*` seams).
+  APD-ML-002 (`CascorBandMetricsTest` / `NonFiniteBandValueTest` / `CascorSuiteLoopAcceptanceTest`): `ACCEPTANCE_METRICS` is stated literally and as the union of the two path tables plus the pending `test_accuracy`; `final_accuracy` is refused with its reason (exit 2 through `main`); a `test_accuracy` band reads `absent` and warns once before any launch; a cascor `val_accuracy` band gives `pass` / `fail`, never `absent`, end to end through a stub driver writing stats with the real writer; NaN and ±inf fail `min`, `max` and two-sided bands, and a huge int does not overflow.
 - `tests/test_list_runs_classify_guards.py` -- The `list_runs` classification guards the happy-path suite never reaches -- the arms that REFUSE to classify, which a well-formed run never enters.
 - `tests/test_register_close_protocol.py` -- The defect-register operator pair that #1648/#1717 cannot see: the close protocol itself, distinct from the open-set reader and the status crosscheck.
 - `tests/test_stats_summary_render.py` -- `summary.md` scrape-honesty line collection: which lines the renderer must emit, the conditional class-distribution line, the reason sub-bullet, and `present`/`written` key precedence.
@@ -4052,7 +4054,8 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Do not confuse `execution.max_wall_seconds` with `execution.per_run_timeout_seconds`: the latter is only the **subprocess** timeout, which kills the driver from the OUTSIDE and records `timed_out` where the driver would otherwise write an honest `timed_out` manifest (§13.4). Size `per_run_timeout_seconds` ABOVE the cell's worst-case driver budget so the driver is the one that stops; `run_suite` refuses the suite otherwise ([§ Suite timeout budget](#suite-timeout-budget)).
   - A suite could always reach the budget through a dotted `outputs.max_wall_seconds` override (`suites/p4/e-i-cascor-cap-ceiling.yaml:71` does exactly that), but before this key, an un-overridden cell silently inherited `base_config`'s value — 3600 s for `spiral-baseline` — with no signal. Both mechanisms are accepted by the R-6 gate. Tests: `tests/test_run_suite.py`.
   - `degraded` (W0.3) is in `TERMINAL_OUTCOMES` but never a success: the summary line counts it on its own, `REPORT.md` lists it under `## Degraded cells`, the console prints `degraded (crossval failed: …)` from the manifest's `phases` record, `--resume` re-runs it and the exit stays `1`.
-  - `_headline_metrics` (W0.4) reads `final_metrics.r2` → `train_r2`, `crossval.eval_aggregate.r2` → `cv_r2`, `crossval.eval_std.r2` → `cv_r2_std` and `dataset_descriptor.n_windows` → `n_windows` from `stats["recurrence"]`; a null `crossval` writes no `cv_*` value.
+  - `_headline_metrics` (W0.4) reads `final_metrics.r2` → `train_r2`, `crossval.eval_aggregate.r2` → `cv_r2`, `crossval.eval_std.r2` → `cv_r2_std` and `dataset_descriptor.n_windows` → `n_windows` from `stats["recurrence"]`; a null `crossval` writes no `cv_*` value. Since 2026-10-26 (APD-ML-002) it reads `final.train_accuracy` → `train_accuracy` and `final.val_accuracy` → `val_accuracy` (selected-on) from `stats["cascor"]`; `test_accuracy` is an accepted band metric with no producer yet, and `final_accuracy` is refused.
+  - `--reaggregate SUITE_DIR` (APD-ML-002) re-renders `aggregate.csv` + `REPORT.md` from `suite_manifest.json`, `registry.jsonl` and each run's `stats.json`, launching nothing; `aggregate` re-reads every headline column from the run dir. A NaN or infinite value fails any acceptance band. [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
   - **`include` does not inherit `matrix`.** Empty matrix still yields one cell per `base_config`. P4 catalog + the cap-128 n=2 trap: [P4 Campaign Suites](#p4-campaign-suites).
 - `util/experiments/read_run_metrics.py` -- Canonical reader for the cascor perf-lane gate inputs (P2 item 0.4). Reads the last `metrics_series.csv` step-duration row (`step_count` / `step_sum`); `summarise().work_invariant` is true iff every cell shares one count.
   - `timings.drive` and `aggregate.csv` `wall_seconds` are de-ratified. `--sweep` is docstring-only, not a flag.
@@ -5286,13 +5289,18 @@ python util/experiments/run_suite.py --suite path/to/suite.yaml --only c000-dead
 
 # Share one equities cache across every cell (W5.6; see the launcher's Shared equities cache section)
 python util/experiments/run_suite.py --suite util/experiments/suites/p4/e-h-recurrence-real-data.yaml --shared-equities-cache "$HOME/.cache/juniper-experiments/equities"
+
+# Re-render a finished suite's aggregate.csv + REPORT.md from disk; launches nothing (APD-ML-002)
+python util/experiments/run_suite.py --reaggregate "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/suites/<SUITE_ID>"
 ```
 
 | Exit | Meaning |
 |------|---------|
 | `0` | Every executed cell succeeded or is `flagged` (a `mode: report` band miss, W5.4) (and `--dry-run`) |
 | `1` | Suite finished with at least one failed / degraded / stalled / timed-out cell (a `mode: gate` band miss is `failed`), or aggregation found none succeeded |
-| `2` | Misuse / suite-validation (`SuiteError`, unknown `--only` id, `--resume` dir missing) |
+| `2` | Misuse / suite-validation (`SuiteError`, unknown `--only` id, `--resume` dir missing; `--reaggregate` given an execution flag, or a dir with no usable `suite_manifest.json`) |
+
+`--reaggregate SUITE_DIR` (or a suite id under `$JUNIPER_EXP_RUN_ROOT/suites`) exits with the same `0` / `1`, computed from the registry as it stands: it re-renders, it never re-judges an outcome. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
 
 `--compare-baseline TAG` pastes a standalone comparator verdict into `REPORT.md` and **never** changes this exit code. Use `util/experiments/compare_baseline.py` when you want the comparator's own 0/1/2.
 
@@ -5315,14 +5323,14 @@ Cell ids are `c{index:03d}-{sha8(relative_config + sorted_overrides)}`. The hash
 
 #### Acceptance bands (W5.4)
 
-`acceptance:` is a **list** of bands, on the suite (judges every cell) or on one `include` row (judges that row only). A band names one headline metric `aggregate.csv` carries -- the W0.4 recurrence keys `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` or the cascor `final_accuracy` / `test_accuracy` / `val_accuracy` -- with `min` and / or `max` (inclusive, finite numbers; `min <= max`) and a required `mode`:
+`acceptance:` is a **list** of bands, on the suite (judges every cell) or on one `include` row (judges that row only). A band names one headline metric `aggregate.csv` carries -- the W0.4 recurrence keys `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` or the cascor `train_accuracy` / `val_accuracy` (since 2026-10-26; `val_accuracy` is **selected-on**, not held out) -- or `test_accuracy`, which is accepted with **no producer yet**: until cascor's final evaluation computes it ([juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731)) and juniper-ml#2064's labelled stats block carries it, a band on it reads `absent`, so a `gate` band fails every cell, and `run_suite` prints that warning before any launch. `final_accuracy` was accepted until 2026-10-26 and is now refused (exit `2`): no writer ever produced it. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). A band takes `min` and / or `max` (inclusive, finite numbers; `min <= max`) and a required `mode`:
 
 | `mode` | A miss, or a metric the cell did not produce | Exit code |
 |--------|-----------------------------------------------|-----------|
 | `gate` | the cell is `failed`; `error` names the miss (`acceptance: cv_r2=-18081.0 outside [-1.0, 0.5] (gate)` / `cv_r2 absent (gate)`) | non-zero |
 | `report` | the cell is `flagged` with the same note | unchanged |
 
-Semantics are the plan's R6: `gate` is the row's explicit opt-in to fail; `flagged` is information for a person, not a build outcome, so it counts as **complete** -- `--resume` skips it and the exit code counts it with `succeeded`. An absent metric follows the mode and is distinct from `degraded` (W0.3), which says an enabled *phase* did not run; a cell that is already `failed` / `degraded` / `stalled` / `timed_out` keeps that outcome, and its bands are still recorded. A malformed band (not a list, unknown key, unknown metric, missing `mode`, no bound, `min > max`, a bool or non-finite bound) refuses the suite at load (exit `2`), before any cell launches. Bands do **not** enter the cell id: they judge the result, they do not change the experiment, so adding one keeps a row's resume identity.
+Semantics are the plan's R6: `gate` is the row's explicit opt-in to fail; `flagged` is information for a person, not a build outcome, so it counts as **complete** -- `--resume` skips it and the exit code counts it with `succeeded`. An absent metric follows the mode and is distinct from `degraded` (W0.3), which says an enabled *phase* did not run; a cell that is already `failed` / `degraded` / `stalled` / `timed_out` keeps that outcome, and its bands are still recorded. A malformed band (not a list, unknown key, unknown metric, missing `mode`, no bound, `min > max`, a bool or non-finite bound) refuses the suite at load (exit `2`), before any cell launches. Bands do **not** enter the cell id: they judge the result, they do not change the experiment, so adding one keeps a row's resume identity. A NaN or infinite **value** fails any band -- `min`, `max` or both -- and the report prints it; until 2026-10-26 NaN passed every band, `+inf` a `min` band and `-inf` a `max` band (APD-ML-002 ruling 4).
 
 Surface: the registry row carries `acceptance` (one result per band: `value`, `result` in `pass` / `fail` / `absent`); `aggregate.csv` gains an `acceptance` column **last** (blank without bands, `pass`, or the misses); the REPORT table gains the same column when any cell has bands, plus a `## Acceptance bands` section (one row per band per cell); `--dry-run` prints each banded cell's `acceptance=`; `suite_manifest.json` records each cell's bands.
 
@@ -5903,6 +5911,7 @@ Design of record: [`notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN
 | `REPORT.md` **Gate inputs** | States `wall_seconds` is DE-RATIFIED, then two suite-level verdicts (computed independently, not via `summarise()`). |
 | `REPORT.md` **Baseline comparison** | Only when `--compare-baseline TAG` is passed. The text is `compare_baseline.render(...)`. |
 | Recurrence headline columns (W0.4) | `train_r2`, `cv_r2`, `cv_r2_std`, `n_windows` in both files, read from `stats.json`'s nested `recurrence` block. A cell whose crossval failed or was disabled leaves the `cv_*` cells **empty**, never `0`. |
+| Cascor headline columns (APD-ML-002, 2026-10-26) | `train_accuracy`, `val_accuracy` in both files, read from `stats.json`'s `cascor.final` block; `val_accuracy` is selected-on. Every headline column is re-read from the cell's `stats.json` at each aggregation, so a suite aggregated before a column existed gains it with `run_suite.py --reaggregate SUITE_DIR`, which launches nothing. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). |
 | `REPORT.md` summary line + **Degraded cells** (W0.3) | `Cells: N total, X succeeded, Y degraded, Z failed/other, W not run.` A degraded cell is never counted as succeeded; each one is listed with the phase it lost. |
 
 Suite-level verdicts:
@@ -6051,6 +6060,8 @@ When `outputs.suite_dir` is set, that path is the suite dir and `--resume` is on
 
 `--only` still aggregates the full expansion. Unselected cells that are not already `succeeded` count as not-run, so a partial `--only` exits `1` even when every selected cell succeeded. Resume a previous suite (or `--only` the entire expansion) when you need exit `0`.
 
+`--reaggregate SUITE_DIR` is **not** a resume. It re-renders `aggregate.csv` + `REPORT.md` from what the suite dir already holds and launches nothing, where `--resume` re-runs every cell that is not complete -- on the run corpus of 2026-10-26, 29 of the 116 cascor suites have such a cell. Its exit code follows the table above.
+
 Each executed cell appends `SUITE_DIR/registry.jsonl` and `$JUNIPER_EXP_RUN_ROOT/index.jsonl`. `list_runs.py` does **not** read that index — it scans `RUN_DIR` names.
 
 ### Grafana bridge and snapshot provenance
@@ -6063,7 +6074,7 @@ The suite is the only layer that knows both identities. Every `--up` gets `--exp
 
 After the last cell, `aggregate` writes `aggregate.csv` + `REPORT.md`. Those files also carry perf-lane gate-input columns (`step_count` / `mean_step_seconds` beside de-ratified `wall_seconds`) and an optional `--compare-baseline TAG` block. That contract is a **separate** operator surface (in-flight docs #1649) and is reporting-only: a FAIL verdict does **not** change this driver's exit code.
 
-Recurrence `degraded` cells and the `train_r2` / `cv_r2` columns: [Recurrence Degraded Outcome and Headline Metrics](#recurrence-degraded-outcome-and-headline-metrics).
+Recurrence `degraded` cells, the `train_r2` / `cv_r2` columns and the cascor `train_accuracy` / `val_accuracy` columns: [Recurrence Degraded Outcome and Headline Metrics](#recurrence-degraded-outcome-and-headline-metrics).
 
 Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor parallel floor, grafana toggle, resume, `--only`, both Q-2 budget flags, H-11 budget, provenance env).
 
@@ -6088,6 +6099,7 @@ Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor par
 | `--resume` re-ran a failed cell | Expected — only `succeeded` is skipped. |
 | Cell printed `degraded (crossval failed: …)`, suite exit `1` | Train succeeded but an enabled phase did not (W0.3). Read the cell's `phases` in `registry.jsonl` / `manifest.json`. A crossval `422` naming `X_full` means the recurrence env serves a model without `derive_full_split` — F-E1 of [the equities audit plan](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md). |
 | `--only` one cell, exit `1`, cell succeeded | Aggregate scores the full expansion; unselected cells are not-run. |
+| A cascor `aggregate.csv` with no accuracy column | Aggregated before 2026-10-26 (APD-ML-002). `run_suite.py --reaggregate SUITE_DIR` re-renders it and launches nothing; do not `--resume` for this, which re-runs incomplete cells. |
 | `--dry-run` still listed cells you `--only`'d out | Dry-run prints the full product. |
 | Bridged vs unbridged PF-1 hashes differ | Do not put the bridge in the suite YAML. Use `JUNIPER_SUITE_GRAFANA_BRIDGE=1`. |
 | Worktree ran worktree cascor against primary YAML | Set `JUNIPER_EXP_PROJECT_DIR` — the override wins over a resolving literal. |
@@ -6099,7 +6111,7 @@ Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor par
 
 ## Recurrence Degraded Outcome and Headline Metrics
 
-Operator runbook for a recurrence run that **trained** and then lost a phase its config enabled (W0.3, F-D1), and for the r² columns `run_suite.py` copies onto `aggregate.csv` / `REPORT.md` (W0.4, F-D2).
+Operator runbook for a recurrence run that **trained** and then lost a phase its config enabled (W0.3, F-D1), for the r² columns `run_suite.py` copies onto `aggregate.csv` / `REPORT.md` (W0.4, F-D2), and, since 2026-10-26, for the cascor accuracy columns and the `--reaggregate` backfill (APD-ML-002).
 Both shipped in [juniper-ml#2145](https://github.com/pcalnon/juniper-ml/pull/2145), the re-land of the closed #2131 (its code and test files are byte-identical to #2131's head).
 The one-line contract sits in the `run_experiment.py` / `run_suite.py` entries of [Utility Script Reference](#utility-script-reference) and in [Suite Report Gate Inputs](#suite-report-gate-inputs).
 
@@ -6145,7 +6157,7 @@ A crossval `422` whose error names `X_full` is F-E1 of the plan: the env serves 
 
 ### Headline metrics (W0.4)
 
-`_headline_metrics` reads `artifacts/results/stats.json` and puts numeric columns on the registry row (`metrics`), from which both `aggregate.csv` and the `REPORT.md` cell table are written. The paths are inside `stats["recurrence"]`, the block `stats_summary.build_stats` writes from the train response and the crossval payload:
+`_headline_metrics` reads `artifacts/results/stats.json` and puts numeric columns on the registry row (`metrics`) when the cell runs; `aggregate` re-reads the same file for both `aggregate.csv` and the `REPORT.md` cell table, and uses the recorded `metrics` only when the run dir is gone. The recurrence paths are inside `stats["recurrence"]`, the block `stats_summary.build_stats` writes from the train response and the crossval payload:
 
 | Column | Path under `stats.recurrence` |
 |--------|-------------------------------|
@@ -6158,12 +6170,43 @@ A crossval `422` whose error names `X_full` is F-E1 of the plan: the env serves 
 
 A null or missing `crossval` writes **no** `cv_*` key, so the CSV cell is empty, not `0`. The test is `isinstance(value, (int, float))` with `bool` excluded, so `0.0` and `-18081.0` both reach the report; `None` and strings are dropped, and a missing, unreadable or non-object `stats.json` yields no columns at all.
 
-The cascor columns stay empty. The reader asks for `final_accuracy` / `test_accuracy` / `val_accuracy` at the top of `stats.cascor` (without the `bool` exclusion), but `build_stats` nests `train_accuracy` / `val_accuracy` under `cascor.final` and `f1` / `precision` / `recall` / `roc_auc` under `cascor.eval_scalars`.
-W0.4 fixed only the recurrence half of register row `APD-ML-002` in [`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`](../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md).
+W0.4 fixed the recurrence half of register row `APD-ML-002` in [`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`](../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md); the cascor half is below.
 
 ```bash
 jq '{train_r2: .recurrence.final_metrics.r2, cv_r2: .recurrence.crossval.eval_aggregate.r2, cv_r2_std: .recurrence.crossval.eval_std.r2, n_windows: .recurrence.dataset_descriptor.n_windows, shapes_n_windows: .dataset.shapes.n_windows}' \
   "$RUN_DIR/artifacts/results/stats.json"
+```
+
+#### Cascor columns and `--reaggregate` (APD-ML-002)
+
+The cascor train / val half of register row `APD-ML-002` was fixed on 2026-10-26, under the owner's rulings of that day; the row stays open on `test_accuracy`. Until then the reader asked for `final_accuracy` / `test_accuracy` / `val_accuracy` at the **top** of `stats.cascor`, where `build_stats` never wrote anything, so every cascor cell recorded `metrics: {}`: on the run corpus, 0 of 439 cascor registry rows carried a metric and none of its 110 cascor `aggregate.csv` files had an accuracy column. The columns now come from `CASCOR_HEADLINE_PATHS`:
+
+| Column | Path under `stats.cascor` |
+|--------|---------------------------|
+| `train_accuracy` | `final.train_accuracy` |
+| `val_accuracy` | `final.val_accuracy`. **Selected-on**: the VAL split drove early stopping, so this is not a held-out score. Before decision 11 the service's "val" was the `X_test` partition, doing the same job. |
+
+`final` is the `/v1/metrics` read the driver takes when training ends. The same `_is_metric` test applies: `0.0` is kept, `bool` / `None` / strings are dropped, and a run with no val split has an empty `val_accuracy` cell. On 2026-10-26, 404 of the corpus's 426 cascor `stats.json` carried a number at `final.val_accuracy`.
+
+- **Not mapped, deliberately: `eval_scalars`** (`f1` / `precision` / `recall` / `roc_auc`). They are live mid-training values, 19 corpus runs computed them on the TRAINING split, and [juniper-ml#2064](https://github.com/pcalnon/juniper-ml/issues/2064) will change what they mean.
+- **`test_accuracy` is pending.** It stays an accepted band metric, to be fed by an accuracy cascor's final evaluation will compute ([juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731)) and #2064's labelled block will carry into `stats.json`; the held-out `test_*` columns arrive the same way. Until both land nothing produces it: a band on it reads `absent` (a `gate` band fails the cell, a `report` band flags it), and `run_suite` prints a warning saying so before any cell launches.
+- **`final_accuracy` is gone.** It existed nowhere; a band naming it is refused at load (exit `2`), with that reason.
+- **NaN and ±inf fail any band**, and the columns print them as `nan` / `inf` (ruling 4).
+
+**Backfill.** `aggregate` re-reads every headline column from each cell's `stats.json` while the run dir is on disk (`_row_metrics`), the rule `_gate_metrics` already followed for `step_count`, so a suite aggregated before a column existed gains it without re-running anything:
+
+```bash
+python util/experiments/run_suite.py --reaggregate "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/suites/<SUITE_ID>"
+```
+
+- It reads the suite and its full expansion from `SUITE_DIR/suite_manifest.json` (what the last run expanded, not today's YAML) and the outcomes from `registry.jsonl`. It launches nothing, materialises no cell, and writes only `aggregate.csv` and `REPORT.md`.
+- `registry.jsonl`, `index.jsonl` and `suite_manifest.json` are not written, so the rows' recorded `metrics` stay `{}`. The registry is append-only, and `read_run_metrics.read_suite` reads every line of it: appending re-derived rows would count each cell twice in `compare_baseline` / `make_baseline`.
+- Outcomes and band results are the ones recorded when each cell ran. It re-renders; it does not re-judge.
+- `--compare-baseline TAG` is honoured. `--suite`, `--dry-run`, `--resume`, `--only` and `--shared-equities-cache` are refused (exit `2`), as is a dir without a usable `suite_manifest.json`.
+- It is not `--resume`, which re-runs every incomplete cell: 29 of the corpus's 116 cascor suites have one.
+
+```bash
+jq '{train_accuracy: .cascor.final.train_accuracy, val_accuracy: .cascor.final.val_accuracy}' "$RUN_DIR/artifacts/results/stats.json"
 ```
 
 ### Work-gate interaction
@@ -6182,9 +6225,11 @@ jq '{train_r2: .recurrence.final_metrics.r2, cv_r2: .recurrence.crossval.eval_ag
 | Headline `n_windows` disagrees with `dataset.shapes.n_windows` | Expected: the headline is the train descriptor; `shapes` is `meta.n_samples`. |
 | Plot skipped / matplotlib missing, outcome still `succeeded`, exit 1 | An acceptance failure that is not a phase. Not `degraded`. |
 | `make_baseline` refuses a degraded recurrence cell | Expected (`outcome != succeeded`); recurrence is not countable anyway. |
-| Cascor cell, headline accuracy columns empty | Expected: the cascor half of `APD-ML-002` is open (see above). |
+| Cascor cell, headline accuracy columns empty | The suite was aggregated before 2026-10-26: re-render it with `--reaggregate SUITE_DIR` (see above). A cell whose run dir is gone keeps its recorded, empty `metrics`. |
+| A `test_accuracy` band reads `absent` and fails the cell | Expected until its producer lands (see above). Use `mode: report` meanwhile. |
+| A `final_accuracy` band refuses the suite, exit `2` | Removed 2026-10-26: no writer ever produced it. `val_accuracy` exists, and is selected-on. |
 
-Coverage: `tests/test_run_experiment.py` (`DegradedOutcomeTest`, `DeriveRecurrenceOutcomeTest`), `tests/test_run_suite.py` (`DegradedSuiteTest`, `OutcomeLineTest`, `HeadlineMetricsTest`), `tests/test_read_run_metrics.py` (`DegradedOutcomeTest`).
+Coverage: `tests/test_run_experiment.py` (`DegradedOutcomeTest`, `DeriveRecurrenceOutcomeTest`), `tests/test_run_suite.py` (`DegradedSuiteTest`, `OutcomeLineTest`, `HeadlineMetricsTest`, and for APD-ML-002 `CascorHeadlineMetricsTest`, `RowMetricsTest`, `ReaggregateTest`), `tests/test_run_suite_acceptance.py` (`CascorBandMetricsTest`, `NonFiniteBandValueTest`, `CascorSuiteLoopAcceptanceTest`), `tests/test_read_run_metrics.py` (`DegradedOutcomeTest`).
 
 ---
 
