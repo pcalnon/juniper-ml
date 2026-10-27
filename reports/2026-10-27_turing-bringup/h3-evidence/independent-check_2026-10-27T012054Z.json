@@ -1,0 +1,229 @@
+{
+ "schema": 1,
+ "mode": "report",
+ "host": "turing",
+ "expected": "/Users/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cached-enchanting-cosmos/conf/hosts/turing/expected.yaml",
+ "probe": {
+  "source": "file",
+  "path": "independent probe, 2026-10-27T01:20:54Z (raw capture not committed)",
+  "collected_at": "2026-10-27T01:20:54Z",
+  "node": "turing.midcoip.net"
+ },
+ "identity": "x86_64, 6 cores / 12 threads, hw.memsize 17179869184 (16 GiB)",
+ "gates": [
+  {
+   "id": "G-ALIAS",
+   "status": "fail",
+   "summary": "1 of 3 fail: origins",
+   "conditions": [
+    {
+     "id": "origins",
+     "status": "fail",
+     "message": "8 of 10 checkouts use their per-repo alias as origin; juniper-k8s: origin 'git@github.com:pcalnon/juniper-k8s.git' bypasses the alias; want 'git@github_juniper-k8s:pcalnon/juniper-k8s.git'; juniper-recurrence: origin 'https://github.com/pcalnon/juniper-recurrence.git' bypasses the alias; want 'git@github_juniper-recurrence:pcalnon/juniper-recurrence.git'",
+     "remediation": "git -C /Users/pcalnon/Development/python/Juniper/juniper-k8s remote set-url origin git@github_juniper-k8s:pcalnon/juniper-k8s.git (or rerun with --fix); git -C /Users/pcalnon/Development/python/Juniper/juniper-recurrence remote set-url origin git@github_juniper-recurrence:pcalnon/juniper-recurrence.git (or rerun with --fix)"
+    },
+    {
+     "id": "aliases",
+     "status": "pass",
+     "message": "10 of 10 aliases resolve to github.com with only their key, IdentitiesOnly yes and AddKeysToAgent no",
+     "remediation": null
+    },
+    {
+     "id": "keys",
+     "status": "pass",
+     "message": "10 of 10 deploy keys are regular files at mode 600",
+     "remediation": null
+    }
+   ]
+  },
+  {
+   "id": "G-SIGN",
+   "status": "fail",
+   "summary": "1 of 5 fail: integration",
+   "conditions": [
+    {
+     "id": "signing-config",
+     "status": "pass",
+     "message": "util/configure_commit_signing.py --check: OK -- all 16 checks passed",
+     "remediation": null
+    },
+    {
+     "id": "pinentry",
+     "status": "pass",
+     "message": "/usr/local/bin/pinentry-mac reports flavor 'mac' (pinentry-program in /Users/pcalnon/.gnupg/gpg-agent.conf)",
+     "remediation": null
+    },
+    {
+     "id": "agent-socket",
+     "status": "pass",
+     "message": "/Users/pcalnon/.gnupg/S.gpg-agent is a socket",
+     "remediation": null
+    },
+    {
+     "id": "external-cache",
+     "status": "pass",
+     "message": "no-allow-external-cache is set in /Users/pcalnon/.gnupg/gpg-agent.conf",
+     "remediation": null
+    },
+    {
+     "id": "integration",
+     "status": "fail",
+     "message": "no I-SIGN record: T1-T5 verified (signing plan K10, which widens B5) is not recorded in expected.yaml",
+     "remediation": "after B2 and B3, the owner runs the I-SIGN matrix (K10); K11 records it as G-SIGN.integration"
+    }
+   ]
+  },
+  {
+   "id": "G-SEC",
+   "status": "fail",
+   "summary": "2 of 6 fail: sip, key-exports",
+   "conditions": [
+    {
+     "id": "sip",
+     "status": "fail",
+     "message": "System Integrity Protection status: unknown (Custom Configuration).",
+     "remediation": "task C1 (owner): csrutil enable from recoveryOS, then approve the VirtualBox extensions; never csrutil disable (D5)"
+    },
+    {
+     "id": "authenticated-root",
+     "status": "pass",
+     "message": "Authenticated Root status: enabled",
+     "remediation": null
+    },
+    {
+     "id": "firewall",
+     "status": "pass",
+     "message": "Firewall is blocking all non-essential incoming connections. (State = 2); Firewall is blocking all non-essential incoming connections.; Firewall stealth mode is on",
+     "remediation": null
+    },
+    {
+     "id": "filevault",
+     "status": "pass",
+     "message": "FileVault is On.",
+     "remediation": null
+    },
+    {
+     "id": "key-exports",
+     "status": "fail",
+     "message": "15 key-export or recovery file(s): ~/.gnupg/0xCC413455A72974D0.sub_priv.asc, ~/.gnupg/gen3/0xCC413455A72974D0.priv.asc, ~/.gnupg/gen3/0xCC413455A72974D0.pub.asc, ~/.gnupg/gen3/0xCC413455A72974D0.sub_priv.asc, ~/.gnupg/gen3a/0x07FA41E24EBD4373.e-sub_priv.asc, ~/.gnupg/gen3a/0x07FA41E24EBD4373.e-sub_pub.asc, ~/.gnupg/gen3a/0x33E3FD7FAA25BD9D.priv.asc, ~/.gnupg/gen3a/0x33E3FD7FAA25BD9D.pub.asc, ~/.gnupg/gen3a/0x37AADEF5272A6403.s-sub_priv.asc, ~/.gnupg/gen3a/0x37AADEF5272A6403.s-sub_pub.asc, ~/.gnupg/gen3a/0xA2D9BBAC90B3B1D5.a-sub_priv.asc, ~/.gnupg/gen3a/0xA2D9BBAC90B3B1D5.a-sub_pub.asc, ~/.ssh/github-recovery-codes.txt, ~/.ssh/priv.asc, ~/.ssh/pub.asc",
+     "remediation": "task C3 (owner): plan D4 steps 1-6 (an offline encrypted backup and a test decrypt before any delete; regenerate the GitHub recovery codes; an exposure assessment)"
+    },
+    {
+     "id": "key-modes",
+     "status": "pass",
+     "message": "no non-public file in ~/.ssh is open to group or others",
+     "remediation": null
+    }
+   ]
+  },
+  {
+   "id": "G-TOOLS",
+   "status": "fail",
+   "summary": "1 of 2 fail: kubectl",
+   "conditions": [
+    {
+     "id": "local-bin",
+     "status": "pass",
+     "message": "11 of 11 tools resolve from ~/.local/bin",
+     "remediation": null
+    },
+    {
+     "id": "kubectl",
+     "status": "fail",
+     "message": "kubectl v1.22.4 is 14 minors behind the cluster's 1.36 (allowed: 1)",
+     "remediation": "task D4: kubectl 1.36.x; it needs re-planning under the D6 ruling (erratum E-D6)"
+    }
+   ]
+  },
+  {
+   "id": "G-ENV",
+   "status": "fail",
+   "summary": "1 of 2 fail: parent-agents-md",
+   "conditions": [
+    {
+     "id": "conda-envs",
+     "status": "pass",
+     "message": "all 5 conda envs exist: JuniperPython, JuniperHostTools, JuniperCascor1, JuniperData, JuniperCanopy1",
+     "remediation": null
+    },
+    {
+     "id": "parent-agents-md",
+     "status": "fail",
+     "message": "~/Development/python/Juniper/AGENTS.md is absent",
+     "remediation": "task E4 (owner): copy yamaguchi's file and record its sha256 here and in HOST.md (decision D9)"
+    }
+   ]
+  },
+  {
+   "id": "G-NET",
+   "status": "fail",
+   "summary": "3 of 3 fail: link, address, throughput",
+   "conditions": [
+    {
+     "id": "link",
+     "status": "fail",
+     "message": "en7 does not exist",
+     "remediation": "task F2 (owner): a cable, switch port or dongle that links en7 at 1000baseT"
+    },
+    {
+     "id": "address",
+     "status": "fail",
+     "message": "no reserved address is recorded for en7",
+     "remediation": "task A6 (owner): a DHCP reservation for the dongle's MAC, recorded as G-NET.reserved_ip and in HOST.md"
+    },
+    {
+     "id": "throughput",
+     "status": "fail",
+     "message": "not measured: iperf3 to yamaguchi must reach 800 Mb/s",
+     "remediation": "task F2: once the link is up, run iperf3 to yamaguchi and record it as G-NET.throughput"
+    }
+   ]
+  },
+  {
+   "id": "G-MEM",
+   "status": "fail",
+   "summary": "3 of 3 fail: memory, swap, docker",
+   "conditions": [
+    {
+     "id": "memory",
+     "status": "fail",
+     "message": "free + inactive 5684 MiB < 10240 MiB required (VM 6144 MiB from vm.mem_gib 6; juniper-macvm is not registered (task F4 creates it); reserve 4096 MiB)",
+     "remediation": "quit applications until macOS has headroom: node mode (task F3); D1 keeps the host admin-only while G-MEM fails"
+    },
+    {
+     "id": "swap",
+     "status": "fail",
+     "message": "swap used 12320 MiB > 2048 MiB allowed (used = 12320.00M)",
+     "remediation": "quit applications until macOS has headroom: node mode (task F3); D1 keeps the host admin-only while G-MEM fails"
+    },
+    {
+     "id": "docker",
+     "status": "fail",
+     "message": "Docker Desktop is running: com.docker.backend (pid 682), Docker (pid 674)",
+     "remediation": "quit Docker Desktop before node mode (decision D7)"
+    }
+   ]
+  }
+ ],
+ "not_evaluated": [
+  {
+   "id": "G-AUTH",
+   "where": "operator-run: the A3 auth matrix of ssh -T, ls-remote and push --dry-run per repo (plan \u00a714.1)"
+  },
+  {
+   "id": "G-PATH",
+   "where": "util/home_path_literal_check.py: task G5's pre-commit hook and its CI step"
+  },
+  {
+   "id": "G-AGENT",
+   "where": "tests/test_agents_frontmatter.py and each agent's contract test (task H2), and H3's denials"
+  }
+ ],
+ "readiness": {
+  "passed": 0,
+  "evaluated": 7
+ },
+ "ok": true,
+ "exit_code": 0,
+ "summary": "readiness: 0 of 7 gates pass; 7 fail: G-ALIAS, G-SIGN, G-SEC, G-TOOLS, G-ENV, G-NET, G-MEM"
+}
