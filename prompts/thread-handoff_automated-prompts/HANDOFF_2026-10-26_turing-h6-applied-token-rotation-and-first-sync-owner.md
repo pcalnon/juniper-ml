@@ -15,7 +15,8 @@
 
 | PR | Merge | What |
 |---|---|---|
-| this handoff's PR | — | **H6, applied on turing** by `util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py`, at 2026-10-27T00:32:24Z (19:32 local, 2026-10-26). Also the record: plan v1.4.9 by `util/ad-hoc/2026-10-26_turing_h6_applied_record.py`, the previous handoff's pointer, and this file |
+| juniper-ml#2368 | `fb5598b2` | **H6, applied on turing** by `util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py`, at 2026-10-27T00:32:24Z (19:32 local, 2026-10-26). Also the record: plan v1.4.9 by `util/ad-hoc/2026-10-26_turing_h6_applied_record.py`, the previous handoff's pointer, and this file |
+| the follow-up PR | — | `util/ad-hoc/2026-10-26_turing_h6_apply_evidence.py`: the read-only evidence behind E-H6-APPLY. It replaces three probes the session first wrote to its scratchpad, against the script-placement rule. Also E-H6-APPLY's pointer to it (the record script's edit 7) |
 
 ## The owner's tasks, item by item
 
@@ -95,6 +96,7 @@ gh pr list --repo pcalnon/juniper-ml --state open --search "turing in:title"
 python3 -I util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py --check       # 8 of 8 hold
 python3 -I util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py --self-test   # 15 of 15 passed
 python3 -I util/ad-hoc/2026-10-25_turing_h6_vscode_mcp_inventory.py                     # context7 + token-less huggingface; 1 input
+python3 -I util/ad-hoc/2026-10-26_turing_h6_apply_evidence.py                           # both settings sync; diff 97/0/0 and 0/1/1; no 50 wheel
 python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py --offline                # exit 0: option B intact
 python3 -I util/claude_agent_guard.py --version                                         # juniper-agent-guard 1.2.0
 ```
@@ -104,6 +106,7 @@ python3 -I util/claude_agent_guard.py --version                                 
 - **Created in this session:**
   - `util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py`;
   - `util/ad-hoc/2026-10-26_turing_h6_applied_record.py`;
+  - `util/ad-hoc/2026-10-26_turing_h6_apply_evidence.py`, the read-only evidence behind E-H6-APPLY (the follow-up PR to this handoff's);
   - this file.
 - **Modified in this session:**
   - `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, to v1.4.9;
