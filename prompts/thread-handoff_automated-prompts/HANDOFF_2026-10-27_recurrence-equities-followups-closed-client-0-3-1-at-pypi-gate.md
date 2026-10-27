@@ -58,6 +58,16 @@ Continue the recurrence × equities arc:
      - §5 R-ML rows and XC-P12 (consolidated).
      - The W1.2 / W1.12 status rows (canopy#735–#737 and deploy#250 closed).
    - **Validate** with one independent read-only fact-checker before landing (see the auto-memory `feedback_validate_handoff_prompts_independently.md`).
+   - **Also record APD-ML-002's cascor half.** Relayed by session "draft PRs" at about 01:30Z, NOT probed here; verify each point against its source first.
+     - **What landed**: it went in ahead of juniper-ml#2064, under owner rulings of 2026-10-26, as juniper-ml#2369 (`8467225b`, 01:26Z) and juniper-cascor#731 (`752a797f`, 00:11Z; cascor's final evaluation computes `accuracy`).
+     - **The rulings**:
+       - option A: cascor's `train_accuracy` and `val_accuracy` come from `stats["cascor"]["final"]`, with `val_accuracy` documented as selected-on;
+       - `test_accuracy` is kept, fed by cascor;
+       - a new `run_suite.py --reaggregate` launches nothing;
+       - a non-finite value fails any acceptance band;
+       - `final_accuracy` is refused.
+     - **Still owed**: `test_accuracy` needs a juniper-cascor release (the owner's call; #731 is unreleased) AND ml#2064's labelled block.
+     - **Possibly stale**: `…CONSOLIDATED-DEVELOPMENT-PLAN.md` around lines 570 and 809 ("P5-11 (ml#2064) first"), and P6 OD-3 in `reports/2026-10-04_consolidated-development-plan/extraction-P6-perf.md:87`.
 2. **The owner's items.** Surface them; do not act on them.
    - **Approve juniper-recurrence-client 0.3.1's `pypi` gate** (run 40417898021; the deadlines are above). Then update the parent `Juniper/AGENTS.md` RELEASED paragraph, which names the client as "Unmoved … 0.3.0". That file is on this host only and unversioned.
    - **R-DATA-2: juniper-data 0.17.2** (P3-03, P3-09 and W5.7; W5.7 changes a default). **That release will turn canopy#777's drift job red**: data#486 rewrote the `symbols` description of `equities_seq` and flat `equities`. Re-capture both snapshots then (the job prints the commands).
