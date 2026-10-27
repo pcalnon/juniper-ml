@@ -6,7 +6,7 @@
 # Application:   util/ad-hoc
 # File Name:     2026-10-26_tmp_literal_sweep.py
 # Author:        Paul Calnon
-# Version:       0.2.0
+# Version:       0.3.0
 #
 # Date Created:  2026-10-26
 # Last Modified: 2026-10-26
@@ -26,14 +26,15 @@
 #   prompts/, reports/ file: what happened, which a remediation does not rewrite), scratch
 #   (the repo's own gitignored tmp/).
 #
-#   The repo's tmp/ is searched too: by the owner's 2026-10-26 ruling it is a valid search
-#   location, and a count of matches includes it. ripgrep skips a gitignored directory when
-#   it walks ".", so the sweep names tmp as a search path of its own (rg searches an ignored
-#   directory it is given) and reports those hits as the scratch class, apart from the files
-#   a remediation edits.
+#   Scope (the owner's revised ruling, 2026-10-26: a counting script chooses its scope
+#   deliberately, never by .gitignore or a tool's defaults). By default the sweep searches
+#   the repo with its own tmp/ excluded by an explicit root-anchored glob, so the exclusion
+#   holds in a repo whose .gitignore does not name tmp/; a nested tmp/ is still searched.
+#   --tmp-only searches the repo's tmp/ alone, every file under it whatever ignore files say,
+#   and reports those hits as the scratch class. Nothing searches both.
 #
 # Usage:
-#   python3 util/ad-hoc/2026-10-26_tmp_literal_sweep.py [--root DIR] [--list CLASS] [--repo NAME]
+#   python3 util/ad-hoc/2026-10-26_tmp_literal_sweep.py [--root DIR] [--list CLASS] [--repo NAME] [--tmp-only]
 #####################################################################################################################################################################################################
 import argparse
 import re
@@ -46,6 +47,9 @@ from pathlib import Path
 # no var/ or private/ form, so it never saw a ${TMPDIR:-...} fallback or a var/tmp path.
 PATTERN = r"(?<![\w.~$})\]/])/(?:var/|private/)?tmp(?![\w-])"
 SKIP_GLOBS = ["!.claude/worktrees/**", "!**/.venv*/**", "!**/node_modules/**", "!**/juniper-legacy/**", "!**/*.lock", "!**/*.ipynb"]
+# The repo's own tmp/, anchored at the search root: measured with rg 15.1.0, "tmp/**" skips only the search root's
+# tmp directory, while "tmp" and "tmp/" also skip a nested sub/tmp/, and "./tmp/**" matches nothing.
+REPO_TMP_EXCLUDE = "!tmp/**"
 CODE_EXT = {".py", ".bash", ".sh", ".zsh"}
 CONFIG_EXT = {".toml", ".yml", ".yaml", ".json", ".ini", ".cfg", ".conf", ".service", ".timer", ".env", ".mk", ".txt"}
 CONFIG_NAMES = {"Makefile", "Dockerfile", ".pre-commit-config.yaml", ".gitignore", ".dockerignore"}
@@ -77,24 +81,27 @@ def classify(rel: str) -> str:
     return "other"
 
 
-def sweep(repo: Path):
+def sweep(repo: Path, tmp_only: bool = False):
+    """Hits by repo-relative path. The scope is chosen here, never left to ignore files: the repo with its own
+    tmp/ excluded (default), or that tmp/ alone (tmp_only). The two never overlap, so no hit is counted twice."""
     cmd = ["rg", "-n", "--no-messages", "--hidden", "-P", PATTERN]
     for g in SKIP_GLOBS:
         cmd += ["-g", g]
-    cmd += ["-g", "!.git/**", "."]
-    # The repo's tmp/ is gitignored, so the walk of "." skips it; naming it searches it (owner ruling, 2026-10-26).
-    if (repo / "tmp").is_dir():
-        cmd.append("tmp")
+    cmd += ["-g", "!.git/**"]
+    if tmp_only:
+        if not (repo / "tmp").is_dir():
+            return {}
+        # Every file under the repo's tmp/: --no-ignore, so an ignore file inside a copy there hides nothing.
+        cmd += ["--no-ignore", "tmp"]
+    else:
+        # The repo, its own tmp/ excluded by name; ripgrep's .gitignore handling is not what keeps tmp/ out.
+        cmd += ["-g", REPO_TMP_EXCLUDE, "."]
     out = subprocess.run(cmd, cwd=repo, capture_output=True, text=True, check=False).stdout
     hits = defaultdict(list)
-    seen = set()
     for line in out.splitlines():
         path, _, rest = line.partition(":")
         lineno, _, text = rest.partition(":")
         rel = path[2:] if path.startswith("./") else path
-        if (rel, lineno) in seen:  # a tmp/ that is NOT ignored is reached by both search paths
-            continue
-        seen.add((rel, lineno))
         hits[rel].append((int(lineno) if lineno.isdigit() else 0, text.strip()))
     return hits
 
@@ -106,6 +113,7 @@ def main() -> int:
     ap.add_argument("--repo", default=None, help="limit to one repo directory name")
     ap.add_argument("--max-lines", type=int, default=400)
     ap.add_argument("--layout", action="store_true", help="report each repo's tmp/ directory and its ignore rules, then exit")
+    ap.add_argument("--tmp-only", action="store_true", help="search each repo's tmp/ alone (default: the repo with its tmp/ excluded)")
     args = ap.parse_args()
     root = Path(args.root)
     repos = sorted(d for d in root.iterdir() if d.is_dir() and d.name.startswith("juniper-") and (d / ".git").exists())
@@ -123,8 +131,9 @@ def main() -> int:
         return 0
     grand = Counter()
     printed = 0
+    print("scope: " + ("each repo's tmp/ alone" if args.tmp_only else "each repo, its tmp/ excluded"))
     for repo in repos:
-        hits = sweep(repo)
+        hits = sweep(repo, args.tmp_only)
         files_by_class = Counter()
         lines_by_class = Counter()
         for rel, lst in hits.items():

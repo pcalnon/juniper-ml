@@ -38,6 +38,15 @@ kept):
 Section 4.7 applies the doc-link checker and pytest rulings, section 4.8 the Docker, search and copy rulings, and
 section 6 the retention rule.
 
+Later the same day, 2026-10-26, the owner revised the search ruling (verbatim):
+
+> let's also document the issue that all counting scripts must be modified to deliberately choose either to search
+> the repo while excluding the local tmp/ directory, or to only search the local tmp/ directory, unless there is some
+> particular edge case where intentionally searching both is needed.
+
+It replaces "scripts counting matches using grep  or find should include the tmp/ directory; the tmp/ dir is a valid
+search location". Section 4.8 applies it, and section 11 lists the juniper-ml counting sites it leaves owed.
+
 ## 2. The incident
 
 `util/isolated_stack.bash` defaulted its run directory to `${TMPDIR:-/tmp}/juniper-e2e`. That directory held the
@@ -176,8 +185,8 @@ needs the five checks below; CI is unaffected, because a runner's `TMPDIR` is it
    `juniper_doc_tools/check_doc_links.py`), so `--exclude tmp` also covers a nested `juniper-*/tmp/`. Measured
    2026-10-26 with juniper-doc-tools 0.1.1 on a fixture holding one broken link in `tmp/` and one in
    `juniper-foo/tmp/`: without the flag the checker failed on both; with it, it scanned neither and passed. A script
-   that counts matches is the opposite case: `tmp/` is a valid search location (section 4.8). A default exclude in
-   juniper-doc-tools needs a package release (section 10).
+   that counts matches chooses its scope deliberately instead (section 4.8). A default exclude in juniper-doc-tools
+   needs a package release (section 10).
 3. **pytest recursion.** pytest's default `norecursedirs` does not list `tmp`. By the owner's ruling (section 1) no
    repo configures pytest to ignore `tmp/`: no `norecursedirs`, `--ignore` or `collect_ignore` entry names it.
    `testpaths` keeps a bare run to the test directories, and an explicit `pytest tmp/<dir>` collects what is there;
@@ -218,17 +227,25 @@ The owner's other rulings of section 1:
   relative to the context root, so `tmp/` covers the repo's own `tmp/` when the context is the repo root. juniper-ml
   has no build context: measured 2026-10-26, its tree holds no Dockerfile, Containerfile, compose file or
   `.dockerignore`, the six sub-packages included, and no workflow builds an image.
-- **`tmp/` is a valid search location.** A script that counts matches with `grep` or `find`, or walks the tree in
-  Python, includes `tmp/`. `grep -r` and `find` do unless told not to. ripgrep does not: it honours `.gitignore` and
-  `info/exclude`, so its walk of `.` skips `tmp/`, while a `tmp` given as a search path is searched (measured
-  2026-10-26 with ripgrep 15.1.0). `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` therefore names `tmp` and reports
-  those hits as a class of their own, `scratch`: on 2026-10-26 juniper-ml's primary `tmp/` added 15 files and 47
-  lines, and no other class moved. Gates that read `git ls-files` judge tracked files, so they do not change.
+- **A counting script chooses its scope.** By the owner's revised ruling (section 1), a script that counts matches
+  with `grep` or `find`, or walks the tree in Python, searches EITHER the repo with its `tmp/` excluded OR that `tmp/`
+  alone, and searches both only for a stated edge case that needs both. The choice is written into the script, not
+  left to `.gitignore` or a tool's defaults, which disagree: `grep -r` and `find` include `tmp/` unless told
+  otherwise, while ripgrep leaves it out only while `.gitignore` or `info/exclude` names it and searches it when
+  `tmp` is given as a path (measured 2026-10-26 with ripgrep 15.1.0). `util/ad-hoc/2026-10-26_tmp_literal_sweep.py`
+  (0.3.0) makes the choice. By default it searches the repo with `tmp/` excluded by the explicit glob `!tmp/**`,
+  which skips only the root's `tmp/` (`tmp` and `tmp/` would also skip a nested `sub/tmp/`); `--tmp-only` searches
+  `tmp/` alone, ignore files inside it disregarded. On juniper-ml's primary checkout on 2026-10-26 the default
+  printed code=319f/463l, config=61f/146l, operative-doc=17f/76l, other=2f/3l, record=310f/983l and workflow=4f/20l,
+  and `--tmp-only` printed scratch=175f/759l, most of it tree copies other arcs left there that day. Gates that read
+  `git ls-files` have chosen already: tracked files, which a scratch file is not. Section 11 lists the sites still
+  owed.
 - **Copies.** A full-tree copy of a repo, and a copy of a log file, may live in `tmp/`. A walker that means the
   tracked tree then sees the copy too: `tests/test_release_train_registry.py` globs every `pyproject.toml` under the
   repo root, so a copied tree whose `pyproject.toml` names another repo's package fails
-  `test_finds_exactly_seven_in_repo_packages` locally (measured 2026-10-26 with a probe under `tmp/`; juniper-ml's
-  primary `tmp/` held no `pyproject.toml` that day).
+  `test_finds_exactly_seven_in_repo_packages` locally (measured 2026-10-26 with a probe under `tmp/`). By that evening
+  juniper-ml's primary `tmp/` held 11 such files from other arcs' tree copies, and the test's own walk, run against
+  the primary checkout, found 12 package names, five of them other repos'. It is owed a scope choice (section 11).
 
 ## 5. Out of scope
 
@@ -311,3 +328,46 @@ rulings of section 1.
 - **The installed SessionStart hook.** `~/.claude/settings.json` on the Linux host still carries the hook without the
   ceiling. Updating it is a configuration change the owner makes:
   `python3 util/ad-hoc/2026-10-26_session_tmpdir_hook_probe.py --install`, which runs the known answers first.
+
+## 11. Owed: counting scripts that must choose their scope
+
+By the owner's revised ruling (section 1), each site below is to be modified to choose its scope explicitly: the repo
+with its `tmp/` excluded, or `tmp/` alone. None is changed in this PR: the owner asked for the issue to be
+documented. The list comes from a 2026-10-26 scan of every tracked `find`, recursive `grep`, ripgrep call and Python
+tree walk in `util/`, `scripts/`, `tests/`, `.claude/`, `.github/`, `conf/`, `prompts/agent_templates/` and the six
+sub-packages, keeping those whose root is a repo root or above it. Line numbers are at this PR's head.
+
+| Site | What it counts or finds | Scope as to `tmp/` today | Change it needs |
+|------|-------------------------|--------------------------|-----------------|
+| `util/project_stats.bash:162`, `:128` | Per repo, the `*.py` files with their lines and bytes (`find`, `:162`) and the repo's size (`du`, `:128`) | Included: the `find` prunes only `.claude`, and `du` excludes only juniper-data's `data/` | Prune the repo's `tmp/` from the `find` and exclude it from `du`, both by absolute path |
+| `util/global_text_search.bash:123` | Every line matching a term under a location, `.` by default (`grep -r`) | Included: none of its 14 excluded directories is `tmp` | Exclude `tmp` by default (`--exclude-dir` matches the name at any depth), with an option for `tmp/` alone |
+| `util/find_encryption_readme_notes.bash:106` | Files whose name contains a pattern under a root, `$HOME/Development` by default | Included: every checkout's `tmp/` under the root | Prune each checkout's `tmp/` (`-name tmp -prune`, or only one beside a `.git`), with an option for `tmp/` alone |
+| `.github/workflows/ci.yml:2376`, `:2393` | `*.env.enc` and `*.env.secrets.enc` files, each then checked for plaintext lines (`:2412`) | Included: only `./.git` is pruned; a runner's fresh checkout has an empty `tmp/`, so CI is unaffected today | Add `-path ./tmp -prune -o` to both `find` calls |
+| `.claude/agents/prompt-validator.md:97` | An agent instruction: resolve a symbol with `grep -rn <symbol> <target>/` | Included whenever the target is a repo root | Name the scope in the instruction: `grep -rn --exclude-dir=tmp`, or `git grep` for tracked files |
+| `util/global_text_replace.bash:14` | Files under `./*` holding a string, each then rewritten in place with `sed -i` | Included: only `logs` and `reports` are excluded, so a run also rewrites scratch copies | Exclude `tmp` explicitly (`--exclude-dir tmp`) |
+| `util/editable_install_drift_check.py:356` | `pyproject.toml` files under the ecosystem root, to find each package's single canonical source directory | Included: `_SKIP_DIRS` has no `tmp`, so a tree copy there makes the result ambiguous and no fix is planned | Skip a checkout's own `tmp/` (a directory named `tmp` beside a `.git`) |
+| `tests/test_release_train_registry.py:180` | In-repo `pyproject.toml` files with a `[project]` table; `test_finds_exactly_seven_in_repo_packages` wants exactly the seven registered | Included: run against juniper-ml's primary checkout on 2026-10-26 its walk found 12 names (section 4.8) | Skip paths under the root's `tmp/`, or read `git ls-files` |
+| `util/prompt_discovery/file_probe.py:18`, `util/prompt_discovery/symbol_probe.py:22` | Up to 25 anchors, and a symbol's definition, for a generated prompt | Excluded by `git grep` (tracked files); the `grep -rn` fallback, used when git is unavailable, includes it | Pass `--exclude-dir=tmp` in the fallback |
+| `util/ad-hoc/apd_eco_002_mutation_check.py:77`, `util/ad-hoc/apd_eco_002_add_backoff_jitter.py:71` | `**/juniper_*_client/constants.py` under a client worktree; exactly one is required | Included: a tree copy in the worktree's `tmp/` makes two, and the script refuses | Skip paths under the worktree's `tmp/`. Both are records kept as provenance, listed because they are undated and re-runnable |
+
+`util/ad-hoc/2026-10-26_tmp_literal_sweep.py` made its choice in this PR (section 4.8).
+
+Not owed, because their scope is already chosen:
+
+- **Tracked files**: `util/tmp_path_literal_check.py` (G-TMP), `util/home_path_literal_check.py` (G-PATH) and
+  `util/markdown_structure_delta.py` read git's tracked files, which a scratch file is not.
+- **The doc-link checker** passes `--exclude tmp` at every invocation (section 4.7 item 2).
+- **Named roots**: `util/reap_pytest_orphans.bash:130` searches only its run roots for pid files; the tests' walks
+  (`tests/test_agent_suite_path_drift.py:53`, `tests/test_thread_width.py:319`,
+  `tests/test_headless_signing_preflight.py:858` and the fixture walks) start below a repo root;
+  `util/ad-hoc/canopy_poller_inventory.py:168` walks canopy's `src/frontend` by default.
+- **Outside any checkout**: conda environments (`util/check_conda_env_torch.bash`), `/proc`, `~/.ssh` and `~/.gnupg`
+  (`util/host_state_probe.bash`), backup destinations and drill directories (the Duplicati and Yamaguchi scripts), the
+  snapshot root (`util/worktree_cleanup.bash:412`).
+- **The backup source measurers** (`util/ad-hoc/duplicati_source_measure.py:116`,
+  `util/ad-hoc/duplicati_size_histogram.py:82`) apply the backup job's own exclusions. Whether that job should exclude
+  each checkout's `tmp/` belongs to the backup arc (section 10).
+- **Records**: 174 more matching lines in 126 dated `util/ad-hoc/` scripts record runs already made and stay as they
+  are (section 10).
+
+The ten sibling repos' inventories are reported in their own PRs (section 9).

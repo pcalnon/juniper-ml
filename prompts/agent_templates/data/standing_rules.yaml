@@ -20,8 +20,11 @@ rules:
     Owner rulings on the repo tmp/, 2026-10-26 (canonical: notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md):
     juniper-check-doc-links ignores tmp/ (every invocation passes --exclude tmp); pytest does not ignore tmp/
     (no norecursedirs, --ignore or collect_ignore entry names it); a local Docker build ignores tmp/ (the build
-    context's .dockerignore lists it); tmp/ is a valid search location (a script that counts matches with grep or
-    find includes it); full-tree copies of the repo, and copies of log files, may live in tmp/. Retention: a file a
-    work arc writes to tmp/ is kept until it is no longer needed, no work arc (its own included) uses it, and it is
-    no longer needed for documentation or reference, and, where needed, until it has been archived in an
-    appropriate non-temporary directory. Only then may it be deleted.
+    context's .dockerignore lists it); a script that counts matches with grep or find chooses its scope
+    deliberately: the repo with its tmp/ excluded, or tmp/ alone; it searches both only for a stated edge case that
+    needs both, and existing counting scripts are to be modified to make that choice explicit, not left to
+    .gitignore or a tool's defaults (the owner's revision, later the same day); full-tree copies of the repo, and
+    copies of log files, may live in tmp/. Retention: a file a work arc writes to tmp/ is kept until it is no
+    longer needed, no work arc (its own included) uses it, and it is no longer needed for documentation or
+    reference, and, where needed, until it has been archived in an appropriate non-temporary directory. Only then
+    may it be deleted.

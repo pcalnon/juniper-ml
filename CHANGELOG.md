@@ -56,8 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **The owner's 2026-10-26 rulings on `tmp/`**, quoted in section 1 of
   `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`: the doc-link checker and local Docker
-  builds ignore `tmp/`; pytest and grep/find counts do not; full-tree repo copies and log copies may live there; and
-  a work arc's `tmp/` file is kept until four conjunctive conditions hold (that doc's section 6).
+  builds ignore `tmp/`; pytest does not; a counting script chooses its scope deliberately (the owner's revision, later
+  the same day); full-tree repo copies and log copies may live there; and a work arc's `tmp/` file is kept until four
+  conjunctive conditions hold (that doc's section 6).
   - `--exclude tmp` reaches the remaining doc-link checker invocations: two more cheatsheet rows, `docs/REFERENCE.md`'s
     Docs Full Check summary and `juniper-doc-tools/README.md` (CLI and library examples). The `--version` smoke steps
     walk nothing. `--exclude` matches any path component, so a nested `juniper-*/tmp/` is covered too (measured).
@@ -65,13 +66,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the three `conftest.py` files, so nothing changed; `testpaths` keeps a bare `pytest` in `tests/`.
   - Docker: juniper-ml has no build context (no Dockerfile, Containerfile, compose file or `.dockerignore`, the
     sub-packages included).
-  - `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` (0.2.0) searches the repo's `tmp/` too. ripgrep skips a gitignored
-    directory unless it is named, so the sweep names it and reports its hits as a new `scratch` class, counted once
-    when a repo's `tmp/` is not ignored. Apart from gates that read `git ls-files` (tracked files only, unchanged), no
-    other counting script in `util/`, `scripts/`, `tests/`, `.claude/` or `.github/` left `tmp/` out.
+  - The owner's revised search ruling: a script that counts matches with `grep` or `find` searches the repo with its
+    `tmp/` excluded, or `tmp/` alone, and both only for a stated edge case; existing counting scripts are to be
+    modified to make that choice explicit, not left to `.gitignore` or a tool's defaults. The convention doc's new
+    section 11 documents the juniper-ml counting sites still owed that change (ten rows, twelve files), as the owner
+    asked; none of them is modified here. The ten sibling repos report theirs in their own PRs.
+  - `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` (0.3.0) makes the choice: by default the repo with `tmp/` excluded by
+    the explicit root-anchored glob `!tmp/**` (not by ripgrep's `.gitignore` handling), and with `--tmp-only` the
+    `tmp/` alone, its own ignore files disregarded, reported as a `scratch` class.
   - `AGENTS.md` § Temporary files gains the rulings and drops the "tree walkers must skip `tmp/`" bullet they
-    supersede (26390 -> 27176 of 28000 chars). The convention doc gains them in sections 1, 4.7, 4.8 (new), 6, 9 and
-    10, and the Template Agent's standing rules gain `repo_tmp_rulings`.
+    supersede (26390 -> 27404 of 28000 chars). The convention doc gains them in sections 1, 4.7, 4.8 (new), 6, 9, 10
+    and 11 (new), and the Template Agent's standing rules gain `repo_tmp_rulings`.
 
 - **G-SEC's firewall condition reads the block-all sentence turing printed** (turing bring-up task C2; the §18.2
   C2 row and erratum E-C2-GATE of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
