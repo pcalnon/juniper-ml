@@ -4,12 +4,12 @@
 # Purpose:       Juniper ML Meta-Package
 #
 # Author:        Paul Calnon
-# Version:       0.10.0
+# Version:       0.11.2
 # File Name:     requirements_ci.txt
 # File Path:     Juniper/juniper/conf/
 #
 # Date:          2025-12-06
-# Last Modified: 2026-10-19
+# Last Modified: 2026-10-26
 #
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
@@ -20,7 +20,7 @@
 #####################################################################################################################################################################################################
 # Notes:
 #
-#     created-by: pip 26.2.1
+#     created-by: pip 26.2.2
 #     platform: linux-64
 #     python: 3.12.15
 #
@@ -42,7 +42,7 @@
 # COMPLETED:
 #
 #####################################################################################################################################################################################################
-juniper-ci-tools==0.9.0
+juniper-ci-tools==0.9.1
 packaging==26.3
-pip==26.2.1
+pip==26.2.2
 PyYAML==6.0.3

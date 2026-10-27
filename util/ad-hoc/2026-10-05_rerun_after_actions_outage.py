@@ -5,7 +5,7 @@ Project:     Juniper
 Sub-Project: juniper-ml
 Application: util/ad-hoc (single-use operations helper)
 Author:      Paul Calnon
-Version:     0.2.0
+Version:     0.3.0
 License:     MIT License
 Created:     2026-10-05
 Status:      ad-hoc. Written during the 2026-10-05 Actions major outage (githubstatus incident opened
@@ -26,6 +26,10 @@ The wait ends when the Actions component reads ``operational``. Pass ``--accept-
 ``degraded_performance`` as well: at 21:32Z the status page moved to that state with "queued jobs are
 clearing, new jobs are not delayed", and jobs were in fact running again, so a wait for ``operational``
 would have held the re-runs and the merge for the whole tail of the incident.
+
+A status page that cannot be read never ends the wait. A request that fails, a body that is not JSON,
+and (since 0.3.0) a JSON body of the wrong shape all read as ``unknown (...)``, so the wait keeps
+polling until ``--max-wait-seconds`` and then gives up with exit 2, re-running and merging nothing.
 """
 
 from __future__ import annotations
@@ -52,7 +56,20 @@ def actions_status() -> str:
             data = json.load(resp)
     except Exception as exc:  # noqa: BLE001 - a status-page hiccup must not abort the wait
         return f"unknown ({exc.__class__.__name__})"
-    for comp in data.get("components", []):
+    # Statuspage API v2 serves ``components`` as a LIST of objects (https://www.githubstatus.com/api).
+    # Any other shape is unreadable as a whole: it reads as unknown, so the wait polls on and can still
+    # give up, exactly like a body that is not JSON. The shape is checked before any status is read,
+    # so a malformed payload never reaches "operational". Until 0.3.0 the walk sat outside the try
+    # and a dict-shaped ``components`` raised AttributeError out of main, aborting the wait.
+    if not isinstance(data, dict):
+        return f"unknown (payload is {type(data).__name__}, not an object)"
+    components = data.get("components", [])
+    if not isinstance(components, list):
+        return f"unknown (components is {type(components).__name__}, not a list)"
+    for comp in components:
+        if not isinstance(comp, dict):
+            return f"unknown (a component is {type(comp).__name__}, not an object)"
+    for comp in components:
         if comp.get("name") == "Actions":
             return str(comp.get("status"))
     return "unknown (no Actions component)"

@@ -63,7 +63,9 @@ copy of the service's ``<snapshots_dir>/<id>.npz`` (``recurrence_launch.snapshot
 run's model -- fails the phase, and nothing re-fits a substitute. Only a train response without an
 ``operation_id`` (juniper-recurrence 0.5.0) falls back to re-running the ``juniper-recurrence train``
 CLI with ``--dataset <dataset_id>`` + the identical hyperparameter flags + ``--out .../model.npz`` --
-the CLI has no ``--params`` flag (``main.py``), so the ``dataset_id`` ref is the only faithful form.
+that pre-0.6.0 CLI has no ``--params`` flag (``train --params`` / ``--params-file`` arrived with
+juniper-recurrence#190 in 0.6.0, the release that also returns an ``operation_id``), so the
+``dataset_id`` ref is the only faithful form.
 That CLI is the one the launcher recorded for the served process (``ports.json``
 ``recurrence_launch.cli``, W1.9 / F-D4), with ``shutil.which`` on the driver's PATH only as the
 fallback for a run dir that records none; and the re-run must resolve the served process's
@@ -2229,8 +2231,9 @@ def _recurrence_launch_record(ports: Mapping[str, Any], app_url: str) -> Tuple[D
 def _save_model_rerun(train_block: Dict[str, Any], dataset_id: str, split: str, data_url: str, out_path: Path, launch: Optional[Mapping[str, Any]] = None, launch_note: Optional[str] = None) -> Dict[str, Any]:
     """G-18: service mode leaves no model artifact, so ``outputs.save_model: true`` re-runs the
     ``juniper-recurrence train`` CLI with ``--dataset <dataset_id>`` (the exact content-addressed
-    artifact -- the CLI has no ``--params`` flag, so a generator re-ref would silently use default
-    params), the identical hyperparameter flags, and ``--out`` into the run's results dir.
+    artifact -- the pre-0.6.0 CLI this fallback serves has no ``--params`` flag, which arrived with
+    juniper-recurrence#190 in 0.6.0, so a generator re-ref would silently use default params), the
+    identical hyperparameter flags, and ``--out`` into the run's results dir.
 
     W1.9 (F-D4): the CLI is the one the launcher recorded for the served process (``launch["cli"]``,
     ports.json ``recurrence_launch``). ``shutil.which`` on the DRIVER's PATH is the fallback only when
@@ -2717,7 +2720,9 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
                 "plots": plots_record,
             },
         }
-        _emit_stats(manifest, results_dir, run_dir, artifacts, "recurrence", train_summary=train_summary, crossval=crossval_full, train_config=config["train"], **target_inputs)
+        # The normalized config drops the YAML ``service:`` block (load_config only validates it); the
+        # raw one keeps it, and stats need its ``default_theta`` to say where an unset θ came from.
+        _emit_stats(manifest, results_dir, run_dir, artifacts, "recurrence", train_summary=train_summary, crossval=crossval_full, train_config=config["train"], service_config=(config.get("raw") or {}).get("service"), **target_inputs)
         # Q-1: same artifact on this path. The service half is recorded as unavailable with
         # a reason rather than omitted -- recurrence exposes no training-parameters
         # endpoint, and "there is nothing to read" must be legible as a fact, not a gap.

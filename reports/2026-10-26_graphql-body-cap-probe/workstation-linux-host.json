@@ -1,0 +1,215 @@
+{
+  "where": "workstation",
+  "url": "https://api.github.com/graphql",
+  "results": [
+    {
+      "bytes": 100000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.34,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 125000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.38,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 130000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.37,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 131000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.32,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 140000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.35,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 262144,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.38,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 524288,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.46,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 1048576,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.59,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 2097152,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.75,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 4194304,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 1.54,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 8388608,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 2.15,
+      "accepted": true,
+      "mode": "comment"
+    },
+    {
+      "bytes": 100000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.28,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 125000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.28,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 130000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.31,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 131000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.32,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 140000,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.36,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 262144,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.32,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 524288,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.38,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 1048576,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.41,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 2097152,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.5,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 4194304,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 0.68,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    },
+    {
+      "bytes": 8388608,
+      "status": 200,
+      "graphql_json": true,
+      "error": null,
+      "seconds": 1.07,
+      "graphql_error": "Variable $pad is declared by anonymous query but not used",
+      "accepted": true,
+      "mode": "variable"
+    }
+  ]
+}

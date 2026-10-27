@@ -149,7 +149,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) -- 12-slot dash-renderer starvation (FIXED); do not add a new Interval; isolated stack only
 - [Worktree Divergence / in-use probe](REFERENCE.md#worktree-divergence-is-a-memory-cost) -- cwd-only liveness is not enough; STRONG cwd/open-fd vs WEAK cmdline
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only P0/P1 open-count; ACCEPTED is a third disposition; WITHDRAWN (`WITHDR`) is a fourth; always exits 0
-- [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) -- csv_import 128 MiB bound (422 until opt-in); experiment-stack `IMPORT_DIR` pitfall; equities `max_symbols` still silent
+- [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) -- csv_import 128 MiB bound (422 until opt-in); experiment-stack `IMPORT_DIR` pitfall; equities is capped in symbols instead ([Equities Symbol Cap](REFERENCE.md#equities-symbol-cap))
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-graph paint tally; exit 0 is not a paint PASS
 - [Defect Register Close Protocol](REFERENCE.md#defect-register-close-protocol) -- `**FIXED` token, cwd pitfall, third reading vs the two §4 counters
 - [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop, characterisation vs least-covered, `--force` on terminal verdicts

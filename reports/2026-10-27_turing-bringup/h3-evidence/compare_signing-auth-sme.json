@@ -1,0 +1,53 @@
+{
+ "report": "reports/2026-10-27_turing-bringup/2026-10-27T0139Z_signing-auth-sme.md",
+ "independent_probe": "independent probe, 2026-10-27T01:27:44Z",
+ "independent_collected_at": "2026-10-27T01:27:44Z",
+ "agent_collected_at": "2026-10-27T01:24:50Z",
+ "delta_seconds": 174,
+ "within_window": true,
+ "gates": [
+  {
+   "gate": "G-ALIAS",
+   "check_status": "fail",
+   "check_conditions": [
+    "origins"
+   ],
+   "row": "G-ALIAS `status` = `fail`; G-ALIAS conditions with status `fail` = `origins`; G-ALIAS conditions with status `error` = none",
+   "report_status": "fail",
+   "report_conditions": [
+    "origins"
+   ],
+   "columns": "key-value",
+   "report_sets": {
+    "fail": [
+     "origins"
+    ],
+    "error": []
+   },
+   "verdict": "agree"
+  },
+  {
+   "gate": "G-SIGN",
+   "check_status": "fail",
+   "check_conditions": [
+    "integration"
+   ],
+   "row": "G-SIGN `status` = `fail`; G-SIGN conditions with status `fail` = `integration`; G-SIGN conditions with status `error` = none",
+   "report_status": "fail",
+   "report_conditions": [
+    "integration"
+   ],
+   "columns": "key-value",
+   "report_sets": {
+    "fail": [
+     "integration"
+    ],
+    "error": []
+   },
+   "verdict": "agree"
+  }
+ ],
+ "contradictions": 0,
+ "missing": 0,
+ "ambiguous": 0
+}

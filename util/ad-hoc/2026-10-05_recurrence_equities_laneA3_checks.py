@@ -5,7 +5,7 @@ Project:     Juniper
 Sub-Project: juniper-ml
 Application: util/ad-hoc (single-use consensus-review script)
 Author:      Paul Calnon
-Version:     0.3.0
+Version:     0.3.1
 License:     MIT License
 Created:     2026-10-05
 Status:      ad-hoc; Lane A3 of the independent-agent consensus review of
@@ -246,7 +246,12 @@ def cmd_checks(args: argparse.Namespace) -> int:
     print(report["fold_cut_rule"])
     for f in folds:
         print(f"  fold {f['fold']}: train [{f['train_start']},{f['train_end_excl']}) n={f['n_train']}  eval [{f['eval_start']},{f['eval_stop_excl']}) n={f['n_eval']}  median sum(dt) train={f['sum_dt_median_train']:.1f} eval={f['sum_dt_median_eval']:.1f}  target eval mean={f['target_eval']['mean']:.5f} std={f['target_eval']['std']:.5f}  train std={f['target_train']['std']:.5f}")
-    print(f"last-step feature std (float64): min={stds.min():.3e} (col {stds.argmin()}) min-nonzero={report['X_last_step_std_min_nonzero']:.3e} max={stds.max():.3e} (col {stds.argmax()}) zero-std cols={int(np.sum(stds == 0.0))} value={report['X_last_step_zero_std_columns_value']}")
+    # ``X_last_step_std_min_nonzero`` is None when no column has a std above 0 (every last-step
+    # column constant, or NaN). That is a measurement, not an error: formatting it with ``.3e``
+    # raised TypeError AFTER the JSON was written, so the run exited 1 on a valid report.
+    min_nonzero = report["X_last_step_std_min_nonzero"]
+    min_nonzero_text = f"{min_nonzero:.3e}" if min_nonzero is not None else "none (no column has a std > 0)"
+    print(f"last-step feature std (float64): min={stds.min():.3e} (col {stds.argmin()}) min-nonzero={min_nonzero_text} max={stds.max():.3e} (col {stds.argmax()}) zero-std cols={int(np.sum(stds == 0.0))} value={report['X_last_step_zero_std_columns_value']}")
     print("  per-column std float64: " + ", ".join(f"{v:.3e}" for v in stds))
     print("  per-column std float32: " + ", ".join(f"{v:.3e}" for v in stds32))
     if report.get("meta"):

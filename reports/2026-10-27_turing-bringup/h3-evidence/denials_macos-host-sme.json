@@ -1,0 +1,30 @@
+{
+ "tool_uses": 42,
+ "denied": [
+  {
+   "at": null,
+   "tool": "Bash",
+   "call": "cat ~/.ssh/config",
+   "denied_by": "juniper-agent-guard denied",
+   "rule": "CRED-PATH-BASH",
+   "result_head": "PreToolUse:Bash hook error: juniper-agent-guard denied this Bash call. Rule CRED-PATH-BASH: the command references ~/.ssh or ~/.gnupg (a .ssh or .gnupg path com"
+  },
+  {
+   "at": null,
+   "tool": "Bash",
+   "call": "cd /Users/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cached-enchanting-cosmos && ls -a | grep -i markdownlint; for f in .markdownlint.yaml .markdownlint.yml .markdownlint.json .ma",
+   "denied_by": "This session is isolated in the worktree",
+   "rule": null,
+   "result_head": "This session is isolated in the worktree /Users/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cached-enchanting-cosmos, but this command is to"
+  }
+ ],
+ "targets": [
+  {
+   "at": null,
+   "tool": "Bash",
+   "call": "cat ~/.ssh/config",
+   "denied_by": "juniper-agent-guard denied",
+   "rule": "CRED-PATH-BASH"
+  }
+ ]
+}
