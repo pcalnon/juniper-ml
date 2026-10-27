@@ -29,6 +29,8 @@
 #
 # Exit codes:
 #   0 - success (zero or more orphans reaped)
+#   1 - the isolated stack's default run dir could not be resolved, so it could
+#       not be protected; nothing was reaped (set JUNIPER_E2E_RUN_DIR)
 #   2 - argument error
 #
 # Project:    Juniper
@@ -36,6 +38,11 @@
 # License:    MIT License
 
 set -euo pipefail
+
+SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+# juniper_repo_tmp: the PRIMARY checkout's gitignored tmp/, this repo's temp root (2026-10-26 rule).
+# shellcheck source=juniper_repo_tmp.bash
+source "${SCRIPT_DIR}/juniper_repo_tmp.bash"
 
 DRY_RUN=0
 VERBOSE=0
@@ -64,7 +71,13 @@ Environment:
   JUNIPER_EXP_RUN_ROOT   experiment run root protected from reaping
                          (default: \${HOME}/.local/state/juniper-experiments)
   JUNIPER_E2E_RUN_DIR    isolated-stack run dir protected from reaping
-                         (default: \${TMPDIR:-/tmp}/juniper-e2e)
+                         (default: tmp/juniper-e2e of the juniper-ml primary
+                         checkout, the fixed path util/isolated_stack.bash
+                         defaults to; never derived from TMPDIR)
+
+Also protected, read-only: the run dirs that checkouts from before
+2026-10-26 defaulted to, which a stack they launched may still use:
+  ${LEGACY_E2E_RUN_DIRS[*]}
 EOF
 }
 
@@ -85,14 +98,28 @@ EOF
 # Over-protection is deliberately the safe direction: the cost of a false
 # protect is one retained orphan holding RSS until the next sweep, while the
 # cost of a false reap is a destroyed multi-hour campaign.
+#
+# The protected roots: the experiment run root; the isolated stack's run dir,
+# whose default is FIXED (the juniper-ml primary checkout's tmp/juniper-e2e,
+# resolved after the arguments are parsed) because a root derived from TMPDIR
+# protects nothing when the stack was launched under a different TMPDIR, and
+# every session sets TMPDIR since 2026-10-26; and, read-only, the legacy run
+# dirs older checkouts defaulted to (${TMPDIR:-<system temp dir>}/juniper-e2e).
+# JUNIPER_REAP_LEGACY_E2E_RUN_DIR redirects the fixed legacy entry; it is a
+# test seam, like JUNIPER_REAP_PROC_ROOT.
 EXP_RUN_ROOT="${JUNIPER_EXP_RUN_ROOT:-${HOME:-}/.local/state/juniper-experiments}"
-E2E_RUN_DIR="${JUNIPER_E2E_RUN_DIR:-${TMPDIR:-/tmp}/juniper-e2e}"
+E2E_RUN_DIR="${JUNIPER_E2E_RUN_DIR:-}"
+LEGACY_E2E_RUN_DIRS=("${JUNIPER_REAP_LEGACY_E2E_RUN_DIR:-/tmp/juniper-e2e}") # tmp-path-literal: allow -- a legacy root, protected read-only
+if [[ -n "${TMPDIR:-}" ]]; then
+    LEGACY_E2E_RUN_DIRS+=("${TMPDIR%/}/juniper-e2e")
+fi
+PROTECTED_ROOTS=()
 
 declare -A PROTECTED_PIDS=()
 
 collect_protected_pids() {
     local root pidfile pid
-    for root in "${EXP_RUN_ROOT}" "${E2E_RUN_DIR}"; do
+    for root in "${PROTECTED_ROOTS[@]}"; do
         [[ -n "${root}" && -d "${root}" ]] || continue
         # Service pidfiles sit at <root>/<RUN_ID>/<svc>.pid and relay pids at
         # <root>/<RUN_ID>/relays/<svc>.pid; the isolated stack writes at depth 1.
@@ -110,7 +137,7 @@ is_experiment_protected() {
     if [[ -n "${PROTECTED_PIDS[${pid}]:-}" ]]; then
         return 0
     fi
-    for root in "${EXP_RUN_ROOT}" "${E2E_RUN_DIR}"; do
+    for root in "${PROTECTED_ROOTS[@]}"; do
         if [[ -n "${root}" && "${cmdline}" == *"${root}"* ]]; then
             return 0
         fi
@@ -149,6 +176,14 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+if [[ -z "${E2E_RUN_DIR}" ]]; then
+    E2E_RUN_DIR="$(juniper_repo_tmp "${SCRIPT_DIR}")/juniper-e2e" || {
+        echo "ERROR: cannot resolve the isolated stack's default run dir (this checkout's tmp/), so it cannot be protected; nothing reaped. Set JUNIPER_E2E_RUN_DIR." >&2
+        exit 1
+    }
+fi
+PROTECTED_ROOTS=("${EXP_RUN_ROOT}" "${E2E_RUN_DIR}" "${LEGACY_E2E_RUN_DIRS[@]}")
 
 collect_protected_pids
 

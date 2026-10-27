@@ -58,8 +58,9 @@ the 2026-07-18 session installed both explicitly because that session's `[api]` 
 `prometheus-client` lives in the separate `[observability]` extra to this day).
 
 ```bash
-# CWD determines where the generator's ./data/ artifacts land — run from a scratch dir.
-mkdir -p /tmp/juniper-e2e && cd /tmp/juniper-e2e
+# CWD determines where the generator's ./data/ artifacts land — run from a scratch dir: juniper-ml's
+# primary tmp/juniper-e2e, never the system temp dir (2026-10-26 rule). From the juniper-ml checkout:
+RUN_DIR="$(bash util/juniper_repo_tmp.bash)/juniper-e2e" && mkdir -p "$RUN_DIR" && cd "$RUN_DIR"
 python3.14 -m venv .venv-data
 source .venv-data/bin/activate
 pip install -e '/home/pcalnon/Development/python/Juniper/juniper-data[api]' prometheus_client juniper-observability
@@ -76,7 +77,7 @@ Health gate: `curl -sf http://127.0.0.1:8101/v1/health` returns 200.
 
 When using [`util/isolated_stack.bash`](../util/isolated_stack.bash) instead of the hand recipe: `data_up`
 requires `python3.14` on `PATH` (aborts before side effects if missing), creates
-`${JUNIPER_E2E_RUN_DIR:-/tmp/juniper-e2e}/.venv-data` only when absent, always re-runs the pip install above
+`${JUNIPER_E2E_RUN_DIR}/.venv-data` (default: the juniper-ml primary checkout's `tmp/juniper-e2e`, the system temp dir before 2026-10-26) only when absent, always re-runs the pip install above
 (extras from `JUNIPER_E2E_DATA_EXTRAS`, default `api`), launches with `PYTHON_GIL=0`, writes `juniper-data.pid`,
 then health-gates. Prefer `--up` / `--dry-run --up` over hand-rolling when the helper is available — see
 [`docs/REFERENCE.md` Isolated Stack — `data_up`](../docs/REFERENCE.md#dedicated-data-venv-bring-up-data_up).
@@ -390,7 +391,7 @@ for p in 8101 8202 8051; do
 done
 # (fallback) pgrep -af 'juniper_data|api.app:create_app|canopy/src/main.py'
 # 2) Clean run artifacts: the data venv's ./data/ dir, logs, pidfiles under the scratch dir.
-rm -rf /tmp/juniper-e2e/data /tmp/juniper-e2e/.venv-data
+rm -rf "${RUN_DIR:?}/data" "${RUN_DIR:?}/.venv-data"   # RUN_DIR from the bring-up step above
 # 3) Clean snapshot artifacts written during the run (gitignored, but tidy up):
 rm -f /home/pcalnon/Development/python/Juniper/juniper-cascor/src/snapshots/snapshot_* 2>/dev/null || true
 rm -f /home/pcalnon/Development/python/Juniper/juniper-canopy/src/snapshots/snapshot_* 2>/dev/null || true

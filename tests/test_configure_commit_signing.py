@@ -160,7 +160,10 @@ class SigningHarness(unittest.TestCase):
         scrubbed = ("XDG_CONFIG_HOME", "JUNIPER_ROOT", "COMMIT_SIGNING_GPG_CANDIDATES", "COMMIT_SIGNING_TODAY", "COMMIT_SIGNING_GNUPG_CELLARS", "GNUPGHOME")
         base = RedactedEnv({k: v for k, v in os.environ.items() if not k.startswith("GIT_") and k not in scrubbed})
         self.cellar = self.tmp / "opt" / "Cellar"
-        self.env = RedactedEnv(base, HOME=str(self.home), GIT_CONFIG_NOSYSTEM="1", FAKE_GPG_LOG=str(self.gpg_log), COMMIT_SIGNING_TODAY=TODAY, COMMIT_SIGNING_GNUPG_CELLARS=str(self.cellar), LC_ALL="C")
+        # GIT_CEILING_DIRECTORIES: TMPDIR is a repo's tmp/ (the 2026-10-26 rule), so without a ceiling git run
+        # under self.tmp finds the ENCLOSING checkout, and the include file reads as inside a work tree. The
+        # ceiling is self.tmp's PARENT because git ignores a ceiling equal to the directory it starts in.
+        self.env = RedactedEnv(base, HOME=str(self.home), GIT_CONFIG_NOSYSTEM="1", GIT_CEILING_DIRECTORIES=str(self.tmp.parent), FAKE_GPG_LOG=str(self.gpg_log), COMMIT_SIGNING_TODAY=TODAY, COMMIT_SIGNING_GNUPG_CELLARS=str(self.cellar), LC_ALL="C")
         for name in ACTIVE:
             self.git("init", "-q", str(self.root / f"juniper-{name}"))
 

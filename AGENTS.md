@@ -54,6 +54,11 @@ PR rather than waiving the budget gate.
   Juniper tree: `util/configure_commit_signing.py`. Plans:
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`,
   `notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`.
+- **`/tmp` deletes live files.** On the Linux host it is a tmpfs that `systemd-tmpfiles-clean`
+  ages daily (`q /tmp 1777 root root 10d`): a file untouched for ten days is deleted while in
+  use. In the week to 2026-10-26 it emptied the E2E stack's pid files and venv three times,
+  leaving seven live servers killable by the orphan reaper. Write every temp file under the
+  repo's gitignored `tmp/` (§ Temporary files below); gate G-TMP blocks new literals.
 
 ---
 
@@ -62,7 +67,7 @@ PR rather than waiving the budget gate.
 ```bash
 # Install locally: pip install -e ".[<extra>]" -- extras are in pyproject.toml; ".[all]" is multi-GB (pulls torch via worker)
 
-# Run all tests -- the full ordered list of 225 `python3 -m unittest`
+# Run all tests -- the full ordered list of 227 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
 # § Test Suite Reference. It is generated from ci.yml's regression step, which is
 # the authoritative list; tests/test_ci_test_wiring_drift.py gates that every suite
@@ -77,10 +82,10 @@ pre-commit run --all-files
 
 # Validate documentation links (requires `pip install juniper-doc-tools`
 # or `pip install -e juniper-doc-tools/` for editable local development)
-juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude pull_requests --exclude releases --exclude analysis --exclude fixes --exclude development --exclude CHANGELOG.md --cross-repo skip
+juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude pull_requests --exclude releases --exclude analysis --exclude fixes --exclude development --exclude CHANGELOG.md --exclude tmp --cross-repo skip
 
 # Validate documentation links (including cross-repo)
-juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude pull_requests --exclude releases --exclude analysis --exclude fixes --exclude development --exclude CHANGELOG.md --cross-repo check
+juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude pull_requests --exclude releases --exclude analysis --exclude fixes --exclude development --exclude CHANGELOG.md --exclude tmp --cross-repo check
 ```
 
 ## Publishing
@@ -235,11 +240,32 @@ Utility, single-use, temporary, and unfinished scripts MUST be created under `ut
 | Permanent utility, regularly used              | `util/<name>.{py,bash}`        |
 | Single-use, temporary, ad-hoc, or unfinished   | `util/ad-hoc/<name>.{py,bash}` |
 
-**`/tmp/` is prohibited** as the home for any script that produces, modifies, or analyzes repository content. `/tmp/` is reaped when sessions / sandboxes / containers end, and scripts placed there are lost. `/tmp/` remains acceptable as a scratch *workspace* for intermediate artifacts that the script itself creates and reads (e.g., `uv pip compile -o /tmp/lock && mv /tmp/lock requirements.lock`) — the prohibition is on script *source files*, not on transient data.
+**`/tmp/` is prohibited** as the home for any script that produces, modifies, or analyzes repository content. `/tmp/` is reaped when sessions / sandboxes / containers end, and scripts placed there are lost. Since 2026-10-26 it is no scratch workspace either: transient data goes to the repo's `tmp/` (next section), e.g. `uv pip compile -o tmp/lock && mv tmp/lock requirements.lock`.
 
 **Incident motivating this rule**: `phase4_consolidate.py` and `v2_citation_validate.py` were authored in `/tmp/` across the v1-v4 requirements snapshot effort and are now irrecoverable. See [`notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §7](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#7-stale--drift-detection) and [plan-doc §12](notes/JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md#12-open-issues--questions-discovered-during-execution).
 
 See [`util/ad-hoc/README.md`](util/ad-hoc/README.md) for the ad-hoc-script convention (file-header requirements, when to graduate to `util/` proper).
+
+### Temporary files: `tmp/`, never `/tmp` (mandatory)
+
+**No file is ever written under `/tmp`** (nor `/var/tmp`) by this repo's scripts, tests, tools, services, sessions or agents (owner directive, 2026-10-26). On the Linux host `/tmp` is a tmpfs that `systemd-tmpfiles-clean` ages daily (`q /tmp 1777 root root 10d`): a file untouched for ten days is deleted while still in use, and a reboot erases the rest. In the week to 2026-10-26 it emptied a live test stack's pid files and venv three times. macOS ages `/tmp` too.
+
+- This repo's temp root is its gitignored `tmp/`. `TMPDIR` points at the **primary** checkout's (it outlives any worktree); a worktree-isolated session writes its own scratch files into its worktree's `tmp/`.
+- Sessions get `TMPDIR` from the launcher (`scripts/wake_the_claude.bash`) and a user-level SessionStart hook, so `tempfile`, `mktemp` and pytest's `tmp_path` follow it. Both also set `GIT_CEILING_DIRECTORIES` at the `tmp/` dirs: under a `TMPDIR` inside a checkout, git would otherwise find the enclosing checkout, so a test's "not a git repo" dir sets the ceiling (a proper ancestor of where git starts) in its subprocess env.
+- In code: never a `/tmp/...` literal and never `${TMPDIR:-/tmp}`; tests use `tmp_path`; state another process must find (pid files, run directories) lives at a fixed path under the primary's `tmp/` (`util/juniper_repo_tmp.bash`) or `~/.local/state/`, never one derived from `TMPDIR`. Gate G-TMP (`util/tmp_path_literal_check.py`) fails a new literal.
+- Out of scope: GitHub-hosted CI runners and a container's own `/tmp`.
+- Ecosystem rule and rationale: [`notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`](notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md).
+- **Owner rulings, 2026-10-26** (canonical: `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`):
+  - `juniper-check-doc-links` ignores `tmp/`: every invocation passes `--exclude tmp`.
+  - pytest does not ignore `tmp/`: no `norecursedirs`, `--ignore` or `collect_ignore` entry names it.
+  - A local Docker build ignores `tmp/`: the build context's `.dockerignore` lists it.
+  - A script that counts matches with `grep` or `find` chooses its scope deliberately: the repo with its `tmp/`
+    excluded, or `tmp/` alone; it searches both only for a stated edge case that needs both. Existing counting
+    scripts are to be modified to make that choice explicit, not left to `.gitignore` or a tool's defaults.
+  - Full-tree copies of the repo, and copies of log files, may live in `tmp/`.
+  - **Retention.** A file a work arc writes to `tmp/` is kept until it is no longer needed, no work arc (its own
+    included) uses it, and it is no longer needed for documentation or reference, and, where needed, until it has
+    been archived in an appropriate non-temporary directory. Only then may it be deleted.
 
 ---
 
@@ -247,24 +273,7 @@ See [`util/ad-hoc/README.md`](util/ad-hoc/README.md) for the ad-hoc-script conve
 
 ### Requirements (JR-ID) cross-references
 
-PR descriptions on juniper-ml SHOULD include a `## Requirements` section that lists the [`JR-<REPO>-<AREA>-<NNN>` IDs](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md) this PR touches. The repository-level [`.github/pull_request_template.md`](.github/pull_request_template.md) pre-fills the section; delete it only if no tracked requirement applies.
-
-**Verb conventions** (from [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §4](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#4-jr-id-references-in-prs)):
-
-| Verb                    | Meaning                                                                            | Refresh-time effect       |
-| ----------------------- | ---------------------------------------------------------------------------------- | ------------------------- |
-| `Closes JR-*`           | This PR fully satisfies the requirement.                                           | Status → `shipped`.       |
-| `Partially closes JR-*` | This PR satisfies some of the requirement; describe which parts in the same line.  | Status unchanged.         |
-| `References JR-*`       | This PR is informed by but does not change the requirement.                        | Status unchanged.         |
-| `Supersedes JR-*`       | This PR's design replaces an earlier requirement.                                  | Old entry → `superseded`. |
-
-**Looking up an ID**:
-
-- Browse [`notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md) or [`notes/requirements/by-area/<CODE>.md`](notes/requirements/) for human-readable views.
-- For programmatic queries, see [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §3 recipes](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#3-snapshot-consumption-recipes).
-- Never `grep` `id_assignments.yaml` for content — briefs there are truncated.
-
-**Scope**: Apply the convention in PR *descriptions* only — not commit messages. CI lint validating IDs is deferred until the convention has organic uptake (see [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §6](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#6-ci-lint-validating-jr-id-references)).
+Every PR description SHOULD carry a `## Requirements` section listing the `JR-<REPO>-<AREA>-<NNN>` IDs it touches, with the verbs `Closes` / `Partially closes` / `References` / `Supersedes` (the PR template pre-fills it; descriptions only, never commit messages). What each verb does, the ID lookup and the scope moved to [`docs/REFERENCE.md` § PR Requirements (JR-ID) Cross-References](docs/REFERENCE.md#pr-requirements-jr-id-cross-references) — read it when writing a PR body.
 
 ### Other PR description conventions
 

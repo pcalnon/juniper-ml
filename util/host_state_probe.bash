@@ -275,7 +275,15 @@ done
 [[ -n "$ROOT" ]] || ROOT="${HOME}/Development/python/Juniper"
 [[ "$ROOT" == /* ]] || ROOT="${PWD}/${ROOT}"
 
-TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/host-state-probe.XXXXXX")" || die_env "mktemp failed"
+# Scratch for this run, removed on exit: under TMPDIR, else this checkout's gitignored tmp/ -- never
+# the system temp dir (2026-10-26 rule). Derived from the script's own path: the probe never runs git.
+if [[ -n "${TMPDIR:-}" ]]; then
+    SCRATCH_ROOT="${TMPDIR%/}"
+else
+    SCRATCH_ROOT="$(dirname "$HERE")/tmp"
+    mkdir -p "$SCRATCH_ROOT" || die_env "cannot create ${SCRATCH_ROOT}"
+fi
+TMP_DIR="$(mktemp -d "${SCRATCH_ROOT}/host-state-probe.XXXXXX")" || die_env "mktemp failed"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 # ---------------------------------------------------------------------------------------------

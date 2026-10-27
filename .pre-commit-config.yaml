@@ -280,6 +280,10 @@ repos:
           - development
           - --exclude
           - CHANGELOG.md
+          # The repo's gitignored tmp/ (2026-10-26 rule): the checker walks the tree, not git's files,
+          # so scratch copies of notes/ there would be scanned and fail.
+          - --exclude
+          - tmp
           - --cross-repo
           - skip
         pass_filenames: false
@@ -340,6 +344,25 @@ repos:
         entry: python3 util/home_path_literal_check.py
         language: system
         files: '^((util|scripts|\.github)/.+\.(bash|sh|py|yml)|conf/home_path_literal_baseline\.json)$'
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # G-TMP: no new system temp-dir path literal in scripts, tests or configs (the
+  # 2026-10-26 repo tmp/ rule: every file is written to the repo's gitignored
+  # tmp/, never to the tmpfs that systemd-tmpfiles ages). A staged .bash/.sh/.py/
+  # .yml/.yaml/.toml/.service/.timer file under util/, scripts/, tests/, conf/,
+  # .claude/ or a sub-package may hold no more literal lines than
+  # conf/tmp_path_literal_baseline.json allows it; staging the baseline re-checks
+  # the whole scope. .github/ is out of scope (GitHub's runner disk). A line that
+  # must keep the literal ends with "# tmp-path-literal: allow". The Pre-commit
+  # job in ci.yml also runs the whole-scope check as its own step.
+  # ═══════════════════════════════════════════════════════════════════════════
+  - repo: local
+    hooks:
+      - id: tmp-path-literal
+        name: No new system temp-dir literal in scripts, tests or configs (G-TMP)
+        entry: python3 util/tmp_path_literal_check.py
+        language: system
+        files: '^((util|scripts|tests|conf|\.claude|juniper-ci-tools|juniper-config-tools|juniper-doc-tools|juniper-model-core|juniper-observability|juniper-service-core)/.+\.(bash|sh|py|yml|yaml|toml|service|timer)|conf/tmp_path_literal_baseline\.json)$'
 
   # ═══════════════════════════════════════════════════════════════════════════
   # G-ALIAS at push time (turing bring-up G6): every Juniper checkout must reach

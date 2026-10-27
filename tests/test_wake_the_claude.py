@@ -1565,5 +1565,137 @@ class WakeTheClaudeGitignoreTests(unittest.TestCase):
         )
 
 
+class WakeTheClaudeTempDirTests(unittest.TestCase):
+    """The 2026-10-26 repo tmp/ rule: the launcher hands claude a Juniper repo's tmp/, never the system temp dir.
+
+    A stub ``claude`` records ``TMPDIR``, ``TMP``, ``TEMP`` and ``CLAUDE_CODE_TMPDIR`` as it receives them.
+    ``CLAUDE_CODE_TMPDIR`` is always juniper-ml's primary ``tmp/`` (it must equal ``~/.claude/settings.json``'s
+    value); the other three are the starting directory's Juniper repo's primary ``tmp/``, else juniper-ml's --
+    the answer the user-level SessionStart hook gives. A repo outside the Juniper tree never gets a ``tmp/``.
+    """
+
+    VARS = ("TMPDIR", "TMP", "TEMP", "CLAUDE_CODE_TMPDIR")
+    LOGGED = (*VARS, "GIT_CEILING_DIRECTORIES")
+
+    def setUp(self) -> None:
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.base = Path(tmp.name).resolve()
+        self.bin_dir = self.base / "bin"
+        self.bin_dir.mkdir()
+        self.env_log = self.base / "claude_env.log"
+        fake = self.bin_dir / "claude"
+        fake.write_text("#!/usr/bin/env bash\n" + "".join(f'printf \'{name}=%s\\n\' "${{{name}-<unset>}}" >> "$CLAUDE_ENV_LOG"\n' for name in self.LOGGED), encoding="utf-8")
+        fake.chmod(0o755)
+        for name in ("sessions", "logs", "inherited"):
+            (self.base / name).mkdir()
+        env = RedactedEnv({k: v for k, v in os.environ.items() if not k.startswith("GIT_")})
+        for var in ("CLAUDE_SKIP_PERMISSIONS", "BASH_ENV", "ENV"):
+            env.pop(var, None)
+        env.update(
+            PATH=f"{self.bin_dir}:{env.get('PATH', '')}",
+            CLAUDE_ENV_LOG=str(self.env_log),
+            WTC_SESSIONS_DIR=str(self.base / "sessions"),
+            WTC_LOGS_DIR=str(self.base / "logs"),
+            GIT_CONFIG_NOSYSTEM="1",
+            GIT_CONFIG_GLOBAL=os.devnull,
+            GIT_CEILING_DIRECTORIES=str(self.base),
+            # Values the launcher must replace, not inherit.
+            TMPDIR=str(self.base / "inherited"),
+            TMP=str(self.base / "inherited"),
+            TEMP=str(self.base / "inherited"),
+            CLAUDE_CODE_TMPDIR=str(self.base / "inherited"),
+        )
+        self.env = env
+
+    def launch(self, script: Path, cwd: Path) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(["bash", str(script), "--resume", VALID_UUID, "--prompt", "hello"], cwd=cwd, env=self.env, text=True, capture_output=True, check=False)
+
+    def received(self) -> dict[str, str]:
+        if not self.env_log.exists():
+            return {}
+        return dict(line.split("=", 1) for line in self.env_log.read_text(encoding="utf-8").splitlines())
+
+    def git_init(self, path: Path) -> Path:
+        path.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["git", "init", "-q", str(path)], env=self.env, check=True, capture_output=True)
+        return path
+
+    def ecosystem(self) -> Path:
+        """A fake Juniper tree: juniper-ml carrying the launcher and its helper, plus one sibling repo."""
+        eco = self.base / "Juniper"
+        ml = self.git_init(eco / "juniper-ml")
+        for rel in ("scripts/wake_the_claude.bash", "util/juniper_repo_tmp.bash"):
+            (ml / rel).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(REPO_ROOT / rel, ml / rel)
+        (self.git_init(eco / "juniper-sibling") / "sub").mkdir()
+        return eco
+
+    def test_the_four_variables_arrive_and_replace_inherited_values(self) -> None:
+        harness_tmp = subprocess.run(["bash", str(REPO_ROOT / "util" / "juniper_repo_tmp.bash"), str(REPO_ROOT)], env=self.env, capture_output=True, text=True, check=True).stdout.strip()
+        plain = self.base / "plain"
+        plain.mkdir()
+        result = self.launch(SCRIPT_PATH, plain)
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        got = self.received()
+        self.assertEqual({name: got[name] for name in self.VARS}, {name: harness_tmp for name in self.VARS})
+        # The ceiling: the session's tmp/, then the inherited value (here the fixture's own ceiling).
+        self.assertEqual(got["GIT_CEILING_DIRECTORIES"], f"{harness_tmp}:{self.base}")
+
+    def test_a_sibling_juniper_repo_gets_its_own_tmp(self) -> None:
+        eco = self.ecosystem()
+        result = self.launch(eco / "juniper-ml" / "scripts" / "wake_the_claude.bash", eco / "juniper-sibling" / "sub")
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        got = self.received()
+        for name in ("TMPDIR", "TMP", "TEMP"):
+            self.assertEqual(got[name], str(eco / "juniper-sibling" / "tmp"))
+        self.assertEqual(got["CLAUDE_CODE_TMPDIR"], str(eco / "juniper-ml" / "tmp"))
+        self.assertEqual(got["GIT_CEILING_DIRECTORIES"], f"{eco / 'juniper-sibling' / 'tmp'}:{self.base}")
+        self.assertTrue((eco / "juniper-sibling" / "tmp").is_dir())
+
+    def test_a_repo_outside_the_juniper_tree_gets_juniper_mls_tmp_and_no_tmp_of_its_own(self) -> None:
+        eco = self.ecosystem()
+        foreign = self.git_init(self.base / "foreign")
+        result = self.launch(eco / "juniper-ml" / "scripts" / "wake_the_claude.bash", foreign)
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        got = self.received()
+        self.assertEqual({name: got[name] for name in self.VARS}, {name: str(eco / "juniper-ml" / "tmp") for name in self.VARS})
+        self.assertEqual(got["GIT_CEILING_DIRECTORIES"], f"{eco / 'juniper-ml' / 'tmp'}:{self.base}", "a foreign top level adds no ceiling")
+        self.assertFalse((foreign / "tmp").exists())
+
+    def test_a_linked_worktree_adds_its_own_tmp_to_the_ceiling(self) -> None:
+        eco = self.ecosystem()
+        sibling = eco / "juniper-sibling"
+        gitconfig = self.base / "gitconfig"
+        gitconfig.write_text("[user]\n\tname = Wake Test\n\temail = wake-test@example.invalid\n[commit]\n\tgpgsign = false\n", encoding="utf-8")
+        setup_env = {**self.env, "GIT_CONFIG_GLOBAL": str(gitconfig)}
+        subprocess.run(["git", "-C", str(sibling), "commit", "-q", "--allow-empty", "-m", "init"], env=setup_env, check=True, capture_output=True)
+        for worktree in (sibling / ".claude" / "worktrees" / "agent-x", eco / "worktrees" / "juniper-sibling--feature--x--20261026-1200--00000000"):
+            with self.subTest(worktree=str(worktree.relative_to(eco))):
+                subprocess.run(["git", "-C", str(sibling), "worktree", "add", "-q", str(worktree)], env=setup_env, check=True, capture_output=True)
+                self.env_log.unlink(missing_ok=True)
+                result = self.launch(eco / "juniper-ml" / "scripts" / "wake_the_claude.bash", worktree)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                got = self.received()
+                self.assertEqual(got["TMPDIR"], str(sibling / "tmp"), "TMPDIR is the PRIMARY checkout's tmp/")
+                self.assertEqual(got["GIT_CEILING_DIRECTORIES"], f"{sibling / 'tmp'}:{worktree / 'tmp'}:{self.base}")
+                self.assertFalse((worktree / "tmp").exists(), "the worktree's tmp/ is a ceiling; the launcher does not create it")
+
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root can write to chmod read-only directories")
+    def test_no_tmp_dir_means_no_launch(self) -> None:
+        eco = self.ecosystem()
+        ml = eco / "juniper-ml"
+        plain = self.base / "plain"
+        plain.mkdir()
+        ml.chmod(0o555)
+        try:
+            result = self.launch(ml / "scripts" / "wake_the_claude.bash", plain)
+        finally:
+            ml.chmod(0o755)
+        self.assertNotEqual(result.returncode, 0, msg=result.stdout)
+        self.assertIn("refusing to launch on the system temp dir", result.stderr)
+        self.assertEqual(self.received(), {}, "claude must not be launched")
+
+
 if __name__ == "__main__":
     unittest.main()

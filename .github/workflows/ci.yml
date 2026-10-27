@@ -166,6 +166,14 @@ jobs:
         # no more lines carrying the Linux home-path literal than the baseline allows it.
         run: python3 util/home_path_literal_check.py
 
+      - name: Check temp-dir path literals, whole scope (G-TMP)
+        # The 2026-10-26 repo tmp/ rule (notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md).
+        # The tmp-path-literal pre-commit hook sees only the changed files on a pull request; this step
+        # checks every tracked .bash/.sh/.py/.yml/.yaml/.toml/.service/.timer under util/, scripts/,
+        # tests/, conf/, .claude/ and the six sub-packages against conf/tmp_path_literal_baseline.json.
+        # A file may hold no more lines carrying a system temp-dir path literal than the baseline allows it.
+        run: python3 util/tmp_path_literal_check.py
+
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Tests: Run regression tests for scripts and tooling
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
@@ -1458,6 +1466,16 @@ jobs:
           # is backed up, a second run writes nothing; --check fails on an unpinned, unbound or rebound entry, and
           # every refusal writes nothing. Stdlib plus PyYAML (it reads .serena/project.yml); runs /bin/bash.
           python3 -m unittest -v tests/test_mcp_setup.py
+          # tests/test_tmp_path_literal_check.py: gate G-TMP (the 2026-10-26 repo tmp/ rule). util/tmp_path_literal_check.py
+          # fails a tracked .bash/.sh/.py/.yml/.yaml/.toml/.service/.timer under util/, scripts/, tests/, conf/, .claude/ or a
+          # sub-package holding more system temp-dir literal lines than conf/tmp_path_literal_baseline.json allows it;
+          # "# tmp-path-literal: allow" exempts a line. The brief's known answers; real git on temp repos; the committed
+          # baseline must match this checkout.
+          python3 -m unittest -v tests/test_tmp_path_literal_check.py
+          # tests/test_juniper_repo_tmp.py: util/juniper_repo_tmp.bash names a checkout's temp root, the PRIMARY checkout's
+          # gitignored tmp/ (a linked worktree resolves to its primary), creating it; a directory in no checkout exits 1 and
+          # falls back to nothing. Sourced, it defines juniper_repo_primary / juniper_repo_tmp and changes no shell option.
+          python3 -m unittest -v tests/test_juniper_repo_tmp.py
 
       - name: Run bash regression tests
         run: |
@@ -1964,6 +1982,7 @@ jobs:
             --exclude fixes \
             --exclude development \
             --exclude CHANGELOG.md \
+            --exclude tmp \
             --cross-repo skip
 
       # Structure, not links. An unbalanced fence does not go "missing" -- it silently absorbs

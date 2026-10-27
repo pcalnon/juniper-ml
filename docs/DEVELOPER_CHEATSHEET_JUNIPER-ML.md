@@ -23,7 +23,7 @@
 | `python3 -m unittest -v tests/test_publish_release_only_trigger.py` | All `publish*.yml` stay `release: published` only (no `push:`) |
 | `bash scripts/test_resume_file_safety.bash`            | Run resume file safety regression               |
 | `pre-commit run --all-files`                           | Run all pre-commit hooks                        |
-| `juniper-check-doc-links --cross-repo skip`            | Validate doc links (CI-parity mode; install via `pip install juniper-doc-tools`) |
+| `juniper-check-doc-links --exclude tmp --cross-repo skip` | Validate doc links (CI-parity mode, scratch `tmp/` skipped; install via `pip install juniper-doc-tools`) |
 | `util/juniper_plant_all.bash`                          | Start the host-level Juniper stack with health gates |
 | `util/get_cascor_status.bash`                          | Query host-mode cascor status (`CASCOR_HOST` / `CASCOR_PORT`, default `localhost:8201`) |
 | `util/juniper_chop_all.bash`                           | Stop the host-level stack from `JuniperProject.pid` |
@@ -90,7 +90,7 @@
 | `python util/fleet_triage/predict_merge.py --pr N --json` | Predicted-merge triage for one open PR (detached clone; never pushes) |
 | `python util/fleet_triage/predict_merge.py --batch --json` | Batch triage + same-file cluster map + merge order |
 | `python3 util/ad-hoc/2026-08-31_resident_gap_triage.py . --min-score 3` | Rank source comments that are hazard-shaped and resident nowhere |
-| `python3 util/ad-hoc/2026-08-31_resident_gap_triage.py ../juniper-cascor --self-check --agents /tmp/pre609.md` | Positive control: cascor `max_epochs` split must score ≥ 3 and rank top 5 |
+| `python3 util/ad-hoc/2026-08-31_resident_gap_triage.py ../juniper-cascor --self-check --agents tmp/pre609.md` | Positive control: cascor `max_epochs` split must score ≥ 3 and rank top 5 |
 | `python3 util/ad-hoc/2026-08-28_hazard_triage.py juniper-canopy --min-score 2` | Rank *already-resident* `AGENTS.md` blocks (`gh api` on GitHub `main`) |
 | `python util/snapshot_index.py --scan --root ROOT` | Append-only index of `ROOT/*.h5` (`snapshots_index.jsonl`) |
 | `python util/snapshot_index.py --root ROOT --stats` | Summarise the index (needs `--scan` first) |
@@ -298,9 +298,9 @@ See procedure V2 § "Phase 4 remote-branch deletion (script)".
 **Batch stale sweep** (centralized `…/Juniper/worktrees/` pool): survey → dry-run apply → apply. Survey treats gitignored debris as clean; apply still skips ignored-only `SAFE` rows unless you pass `--include-ignored` after review (decrypted-secrets class). Full contract: cleanup procedure V2 § "Batch Stale-Worktree Sweep".
 
 ```bash
-bash util/ad-hoc/worktree_sweep_survey.bash > /tmp/juniper-worktree-sweep.tsv
-bash util/ad-hoc/worktree_sweep_apply.bash --dry-run < /tmp/juniper-worktree-sweep.tsv
-bash util/ad-hoc/worktree_sweep_apply.bash --include-ignored < /tmp/juniper-worktree-sweep.tsv
+bash util/ad-hoc/worktree_sweep_survey.bash > tmp/juniper-worktree-sweep.tsv
+bash util/ad-hoc/worktree_sweep_apply.bash --dry-run < tmp/juniper-worktree-sweep.tsv
+bash util/ad-hoc/worktree_sweep_apply.bash --include-ignored < tmp/juniper-worktree-sweep.tsv
 ```
 
 **Before removing a worktree you did not just leave:** cwd-only liveness first, then the wider in-use probe (open files + argv). STRONG (cwd or an open fd inside the tree) exits 1 `REFUSE`. WEAK (cmdline substring) prints `CAUTION` and stays exit 0 — the probe's own argv used to report every tree `IN USE`. Empty argv exits 2 (the cwd-only probe exits 0 on that misuse).
@@ -367,8 +367,8 @@ Tip: `csv_import` refuses sources over 128 MiB with HTTP **422** until `dataset.
 | Shared-package CI      | Path-scoped `ci-<pkg>.yml` under `.github/workflows/` (six packages; see REFERENCE)         |
 | Open-PR budget alarm   | Daily 14:00 UTC `pr-budget-alarm.yml` (report-only); `gh workflow run pr-budget-alarm.yml`  |
 | Ruleset context audit  | `python util/ad-hoc/2026-08-10_ruleset_context_audit.py` (read-only; see tip below)         |
-| Doc links (CI parity)  | `juniper-check-doc-links --exclude templates --exclude history --exclude legacy --cross-repo skip` |
-| Doc links (full local) | `juniper-check-doc-links --cross-repo check`                                                |
+| Doc links (CI parity)  | `juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude tmp --cross-repo skip` |
+| Doc links (full local) | `juniper-check-doc-links --exclude tmp --cross-repo check`                                  |
 | Re-run main-verify     | `gh workflow run main-verify.yml --repo pcalnon/juniper-ml` (dispatch; catch-up BASE still applies) |
 | Sequence-safety (local) | `juniper-symbol-loss-check --base origin/main --head HEAD` (+ sibling `docs_additions_check.py`) |
 | Fleet predicted-merge  | `python util/fleet_triage/predict_merge.py --pr N` / `--batch` (exit 0 = report; 2 = misuse) |
@@ -613,7 +613,7 @@ Full contract: [REFERENCE — F-039 Store Probe](REFERENCE.md#f-039-store-probe)
 | `JUNIPER_E2E_CANOPY_URL`       | `http://127.0.0.1:8051` | Playwright dataset-driver target (not derived from `JUNIPER_E2E_CANOPY_PORT`) |
 | `JUNIPER_E2E_CANOPY_LOG`       | `/tmp/juniper-e2e/logs/juniper-canopy.log` | Server-log byte-offset reads for W6 stage/cancel evidence |
 | `JUNIPER_E2E_HEALTH_TIMEOUT`   | `60`               | Per-service health wait for isolated `--up` (2s poll; not `HEALTH_CHECK_INTERVAL`) |
-| `JUNIPER_E2E_RUN_DIR`          | `/tmp/juniper-e2e` | Scratch dir for data venv / logs / pidfiles |
+| `JUNIPER_E2E_RUN_DIR`          | `tmp/juniper-e2e` of the juniper-ml primary checkout | Scratch dir for data venv / logs / pidfiles; a FIXED default, never TMPDIR-derived (2026-10-26) |
 | `JUNIPER_E2E_CANOPY_URL`       | `http://127.0.0.1:8051` | Topology-driver target (Playwright) |
 | `JUNIPER_E2E_SEG17_RESULTS`    | `$JUNIPER_E2E_RUN_DIR/seg17_results.json` | Topology-driver merged JSON |
 | `JUNIPER_E2E_DATA_EXTRAS`      | `api`              | juniper-data pip extras (`api,mnist` for D2/I-5) |
@@ -624,12 +624,12 @@ Full contract: [REFERENCE — F-039 Store Probe](REFERENCE.md#f-039-store-probe)
 | `JUNIPER_E2E_CASCOR_PORT`      | `8202`             | Isolated-stack juniper-cascor port |
 | `JUNIPER_E2E_CANOPY_PORT`      | `8051`             | Isolated-stack juniper-canopy port |
 | `JUNIPER_E2E_HEALTH_TIMEOUT`   | `60`               | Per-service health wait for isolated `--up` |
-| `JUNIPER_E2E_RUN_DIR`          | `/tmp/juniper-e2e` | Scratch dir for data venv / logs / pidfiles |
+| `JUNIPER_E2E_RUN_DIR`          | `tmp/juniper-e2e` of the juniper-ml primary checkout | Scratch dir for data venv / logs / pidfiles; a FIXED default, never TMPDIR-derived (2026-10-26) |
 | `JUNIPER_E2E_DATA_EXTRAS`      | `api`              | juniper-data pip extras (`api,mnist` for D2/I-5) |
 | `JUNIPER_E2E_CONDA_DIR`        | `/opt/miniforge3`  | Conda root for isolated cascor/canopy activate |
 | `JUNIPER_EXP_RUN_ROOT`         | `~/.local/state/juniper-experiments` | Durable per-run root for `util/experiment_stack.bash` (not `/tmp`); also the query-time join for `snapshot_index.py --resolve-datasets` / `--dataset-id` |
 | `JUNIPER_SUITE_GRAFANA_BRIDGE` | unset              | `1`/`true`/`yes`/`on` adds `--grafana-bridge` to every suite `--up` (not a YAML key) |
-| `JUNIPER_EXP_LOCK_ROOT`        | `${XDG_RUNTIME_DIR:-/tmp}/juniper-experiments` | Ephemeral port lockdirs (`8110`–`8289`) |
+| `JUNIPER_EXP_LOCK_ROOT`        | `${XDG_RUNTIME_DIR}/juniper-experiments`, else juniper-ml's primary `tmp/juniper-experiments` | Ephemeral port lockdirs (`8110`–`8289`) |
 | `JUNIPER_EXP_PROJECT_DIR`      | parent of juniper-ml | Ecosystem root — **set in git worktrees** |
 | `JUNIPER_EXP_HEALTH_TIMEOUT`   | `90`               | Per-service health wait for experiment `--up` (cold-start sized) |
 | `JUNIPER_EXP_CONDA_DIR`        | `/opt/miniforge3`  | Conda root for experiment direct env-bin launch |
@@ -862,7 +862,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Isolated data health / GIL oddities | Confirm `PYTHON_GIL=0` in launch; check `$JUNIPER_E2E_RUN_DIR/logs/juniper-data.log`. |
 | Isolated `--up` unset-var / odd conda failure | Need #785 nounset restore; check `JUNIPER_E2E_CONDA_DIR`. |
 | Isolated ports still busy after `--down` | Re-run `--down` or kill the `pid=` from `ss -tlnpH`; `--dry-run` never kills. |
-| Isolated health timeout | Inspect `/tmp/juniper-e2e/logs/*.log` (or `$JUNIPER_E2E_RUN_DIR/logs`); raise `JUNIPER_E2E_HEALTH_TIMEOUT` only after fixing the service. |
+| Isolated health timeout | Inspect `$JUNIPER_E2E_RUN_DIR/logs/*.log` (default: juniper-ml's primary `tmp/juniper-e2e/logs`; a stack launched before 2026-10-26 logged under the system temp dir); raise `JUNIPER_E2E_HEALTH_TIMEOUT` only after fixing the service. |
 | E2E matrix neighbouring row now PASS | Hand-edit, or `set_verdicts` on a row with an escaped pipe. Use fill/rescore; dry-run first. See [REFERENCE](REFERENCE.md#canopy-e2e-matrix-writes). |
 | `set_verdicts` wrote with no prompt | No dry-run. Review `--from` / `--set` before invoking. |
 | Planned next segment from `e2e_row_coverage.py` | Estimator. Use `e2e_unfilled_rows.py` against the ledger. |

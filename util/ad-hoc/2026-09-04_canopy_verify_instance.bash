@@ -27,9 +27,12 @@
 # in a run-dir `*.pid` is one of the reaper's two protection keys. Leave it in
 # place for the life of the instance.
 #
-# ...BUT THE KEY ONLY COUNTS INSIDE A PROTECTED ROOT. The reaper scans exactly two
-# roots for `*.pid` files -- `JUNIPER_EXP_RUN_ROOT` and `JUNIPER_E2E_RUN_DIR`
-# (default `${TMPDIR:-/tmp}/juniper-e2e`), `reap_pytest_orphans.bash:88-103`. This
+# ...BUT THE KEY ONLY COUNTS INSIDE A PROTECTED ROOT. The reaper scans its protected
+# roots for `*.pid` files -- `JUNIPER_EXP_RUN_ROOT`, `JUNIPER_E2E_RUN_DIR` (since
+# 2026-10-26 the FIXED tmp/juniper-e2e of the juniper-ml primary checkout, never
+# TMPDIR-derived) and, read-only, the legacy `${TMPDIR:-<system temp dir>}/juniper-e2e`
+# (`reap_pytest_orphans.bash`, `collect_protected_pids`). Until 2026-10-26 there
+# were two roots, the second defaulting under the system temp dir. This
 # script's original default, `/tmp/juniper-canopy-verify`, was in NEITHER, so the
 # pid file it wrote protected nothing and the note above was false for every leg
 # launched from 2026-09-04 to 2026-09-08. The run dir now defaults to the isolated
@@ -50,7 +53,16 @@
 set -euo pipefail
 
 ACTION="${1:-}"
-RUN_DIR="${CANOPY_VERIFY_RUN_DIR:-${JUNIPER_E2E_RUN_DIR:-${TMPDIR:-/tmp}/juniper-e2e}}"
+# The default is the isolated stack's own FIXED run dir, tmp/juniper-e2e of the juniper-ml primary
+# checkout, which the reaper protects under any TMPDIR (2026-10-26 rule: never the system temp dir).
+# An explicit CANOPY_VERIFY_RUN_DIR (a guard group dir, say) or JUNIPER_E2E_RUN_DIR still wins.
+HERE="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+# shellcheck source=../juniper_repo_tmp.bash
+source "${HERE}/../juniper_repo_tmp.bash"
+RUN_DIR="${CANOPY_VERIFY_RUN_DIR:-${JUNIPER_E2E_RUN_DIR:-$(juniper_repo_tmp "${HERE}")/juniper-e2e}}" || {
+    echo "cannot create this checkout's tmp/ for the default run dir; set CANOPY_VERIFY_RUN_DIR" >&2
+    exit 1
+}
 
 case "$ACTION" in
 up)
