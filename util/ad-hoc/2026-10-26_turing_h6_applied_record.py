@@ -26,7 +26,8 @@ The edits:
         4. §18.2's H6 row: its status cell (applied);
         5. §18.2's H6 row: the deferral becomes the application record;
         6. §18.3: the new erratum E-H6-APPLY, after E-CUT;
-  the previous main handoff:  7. a pointer to its successor.
+        7. E-H6-APPLY: a pointer to its evidence script (added in the follow-up PR);
+  the previous main handoff:  8. a pointer to its successor.
 
 Exit 0 = every edit is present or applied (or would be, under --dry-run); 1 = an anchor is missing.
 """
@@ -42,6 +43,7 @@ HANDOFF_DIR = "prompts/thread-handoff_automated-prompts/"
 PREV_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md"
 THIS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-owner.md"
 APPLY = "util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py"
+EVIDENCE = "util/ad-hoc/2026-10-26_turing_h6_apply_evidence.py"
 BACKUP = "~/.local/state/juniper/quarantine/2026-10-26-vscode-mcp/"
 
 # ---------------------------------------------------------------------------------------------- the plan
@@ -130,6 +132,13 @@ ERRATUM = (
     "input.\n"
 )
 
+HOW_END = "at run time, so no secret sits in the repository.\n"
+EVIDENCE_LINE = (
+    f"  - **Evidence.** `{EVIDENCE}` prints the facts above without a value: how the installed workbench registers both "
+    "settings, the structural diff against the backup, the local-history counts, every client entry on turing that would "
+    "run Serena, and uv's cryptography wheels.\n"
+)
+
 # ---------------------------------------------------------------------------------------------- the handoff
 
 PREV_OLD = "\n\n- **From:** the 2026-10-26 session on turing named \"modular-meandering-crayon-bf\""
@@ -164,7 +173,8 @@ def edit_plan(text: str, report: list) -> str:
     text = edit(text, RULING_OLD, RULING_NEW, "- **H6 resumed (2026-10-26).**", "plan: §18.1 H6 resumed", report)
     text = edit(text, H6_CELL_OLD, H6_CELL_NEW, "| H6 | **done: applied** (AGENT, 2026-10-26)", "plan: §18.2 H6 row, status cell", report)
     text = edit(text, H6_TAIL_OLD, H6_TAIL_NEW, "**Applied** on turing at 2026-10-27T00:32:24Z", "plan: §18.2 H6 row, the record", report)
-    return edit(text, E_CUT_END, E_CUT_END + ERRATUM, "- **E-H6-APPLY (", "plan: §18.3 erratum E-H6-APPLY", report)
+    text = edit(text, E_CUT_END, E_CUT_END + ERRATUM, "- **E-H6-APPLY (", "plan: §18.3 erratum E-H6-APPLY", report)
+    return edit(text, HOW_END, HOW_END + EVIDENCE_LINE, f"  - **Evidence.** `{EVIDENCE}`", "plan: E-H6-APPLY, its evidence script", report)
 
 
 def main() -> int:
