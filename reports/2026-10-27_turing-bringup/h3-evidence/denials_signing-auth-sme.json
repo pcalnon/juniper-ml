@@ -1,0 +1,30 @@
+{
+ "tool_uses": 68,
+ "denied": [
+  {
+   "at": null,
+   "tool": "Bash",
+   "call": "cd /Users/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cached-enchanting-cosmos && git config --show-scope --show-origin --get-all user.email; echo \"rc=$?\"; git config --show-scope ",
+   "denied_by": "This session is isolated in the worktree",
+   "rule": null,
+   "result_head": "This session is isolated in the worktree /Users/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cached-enchanting-cosmos, but this command names"
+  },
+  {
+   "at": null,
+   "tool": "Bash",
+   "call": "gh api -X POST markdown -f text=h3-negative-test",
+   "denied_by": "juniper-agent-guard denied",
+   "rule": "GH-API-WRITE",
+   "result_head": "PreToolUse:Bash hook error: juniper-agent-guard denied this Bash call. Rule GH-API-WRITE: gh api with a write or field flag (-X / --method, -f / -F / --field / "
+  }
+ ],
+ "targets": [
+  {
+   "at": null,
+   "tool": "Bash",
+   "call": "gh api -X POST markdown -f text=h3-negative-test",
+   "denied_by": "juniper-agent-guard denied",
+   "rule": "GH-API-WRITE"
+  }
+ ]
+}

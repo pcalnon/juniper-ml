@@ -696,16 +696,18 @@ def _authenticated_root(sec: dict[str, Any]) -> Condition:
     return Condition("authenticated-root", "fail", first_line(text), "task C1 (owner): csrutil authenticated-root enable from recoveryOS")
 
 
-# socketfilterfw --getblockall, by the binary's strings: "Firewall is set to block all non-essential incoming
-# connections" when on ("is blocking all ..." is the State = 2 form of --getglobalstate, also accepted), "Firewall has
-# block all state set to disabled." when off (turing, 2026-10-25), and an unknown or undefined state otherwise.
-_BLOCKALL_ON_RE = re.compile(r"(?:is set to block|is blocking) all non-essential incoming connections")
+# socketfilterfw --getblockall prints "Firewall <state>." with one of the binary's four block-all states: "is blocking
+# all non-essential incoming connections" when on (turing, 2026-10-26, once the owner applied C2), "has block all state
+# set to disabled" when off (turing, 2026-10-25), "has unknown block all state" or "is in undefined block all state".
+# "Firewall is set to block all non-essential incoming connections" sits beside "Block all DISABLED!" in the strings,
+# the shape of --setblockall's on/off confirmations, and turing's getter never printed it: it is not judged.
+_BLOCKALL_ON = "is blocking all non-essential incoming connections"
 _BLOCKALL_OFF = "has block all state set to disabled"
 _C2_FIX = "task C2 (owner): sudo /usr/libexec/ApplicationFirewall/socketfilterfw {steps} (block all incoming connections while nothing inbound is needed; owner ruling 2026-10-25)"
 
 
 def _blocks_all(text: str) -> bool:
-    if _BLOCKALL_ON_RE.search(text):
+    if _BLOCKALL_ON in text:
         return True
     if _BLOCKALL_OFF in text:
         return False

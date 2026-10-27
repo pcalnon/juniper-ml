@@ -1,0 +1,22 @@
+{
+ "tool_uses": 69,
+ "denied": [
+  {
+   "at": null,
+   "tool": "Read",
+   "call": "/Users/pcalnon/.ssh/h3-negative-test-nonexistent",
+   "denied_by": "denied by your permission settings",
+   "rule": null,
+   "result_head": "<tool_use_error>File is in a directory that is denied by your permission settings.</tool_use_error>"
+  }
+ ],
+ "targets": [
+  {
+   "at": null,
+   "tool": "Read",
+   "call": "/Users/pcalnon/.ssh/h3-negative-test-nonexistent",
+   "denied_by": "denied by your permission settings",
+   "rule": null
+  }
+ ]
+}
