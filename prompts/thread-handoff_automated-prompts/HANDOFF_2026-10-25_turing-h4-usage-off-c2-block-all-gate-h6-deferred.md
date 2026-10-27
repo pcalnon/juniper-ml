@@ -1,5 +1,7 @@
 # Handoff — turing bring-up: H4's Serena usage report off; C2's block-all gate landed; H6 deferred; owner steps next
 
+- **Continued (2026-10-26, plan v1.4.8).** The "modular-meandering-crayon" session took this handoff. The owner applied C2 (the firewall on, blocking all, with stealth mode), and juniper-ml#2346 narrowed G-SEC's firewall condition to the sentence turing printed. The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`. The other owner steps below still stand.
+
 - **From:** the 2026-10-25 session on turing named "macos dev env setup" (9d4723; worktree `.claude/worktrees/cozy-snuggling-fountain`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md`. That handoff's author, "dev env macos" (014c35), could not be reached (HTTP 409), and no other session was on it.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.7.
   - §18.1 holds the three rulings of 2026-10-25.

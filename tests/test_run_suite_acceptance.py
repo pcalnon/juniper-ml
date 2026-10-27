@@ -46,6 +46,12 @@ spec = importlib.util.spec_from_file_location("run_suite_acceptance", MODULE_PAT
 run_suite = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(run_suite)
 
+# APD-ML-002: the cascor fixtures go through the REAL writer, so a change to its cascor block breaks them loudly.
+STATS_SUMMARY_PATH = REPO_ROOT / "util" / "experiments" / "stats_summary.py"
+_stats_spec = importlib.util.spec_from_file_location("stats_summary_for_acceptance_tests", STATS_SUMMARY_PATH)
+stats_summary = importlib.util.module_from_spec(_stats_spec)
+_stats_spec.loader.exec_module(stats_summary)
+
 SuiteError = run_suite.SuiteError
 
 # A driver-valid base config (the suite validates every materialised cell through the real driver's
@@ -128,6 +134,44 @@ def _write_stub_driver(path: Path, per_cell: dict) -> None:
         "sys.exit(0 if outcome == 'succeeded' else 1)\n"
     )
     path.chmod(path.stat().st_mode | stat.S_IEXEC)
+
+
+def _write_cascor_stub_driver(path: Path, per_cell: dict) -> None:
+    """``per_cell`` maps a config-text marker to the ``/v1/metrics`` body that cell's run ends with.
+
+    The stub writes a succeeded manifest and a stats.json built by the REAL writer,
+    ``stats_summary.build_stats(kind="cascor", metrics_final=...)``, imported by path -- the shape
+    ``CASCOR_HEADLINE_PATHS`` reads, produced the way the driver produces it.
+    """
+    path.write_text(
+        "#!/usr/bin/env python3\n"
+        "import importlib.util, json, sys, pathlib\n"
+        "args = dict(zip(sys.argv[1::2], sys.argv[2::2]))\n"
+        "run_dir = pathlib.Path(args['--run-dir'])\n"
+        "(run_dir / 'artifacts' / 'results').mkdir(parents=True, exist_ok=True)\n"
+        f"per_cell = {per_cell!r}\n"
+        "cfg = pathlib.Path(args['--config']).read_text()\n"
+        "final = next((v for marker, v in per_cell.items() if marker in cfg), {})\n"
+        f"spec = importlib.util.spec_from_file_location('stats_summary_stub', {str(STATS_SUMMARY_PATH)!r})\n"
+        "writer = importlib.util.module_from_spec(spec)\n"
+        "spec.loader.exec_module(writer)\n"
+        "manifest = {'outcome': 'succeeded', 'argv': sys.argv[1:]}\n"
+        "(run_dir / 'manifest.json').write_text(json.dumps(manifest))\n"
+        "(run_dir / 'artifacts' / 'results' / 'stats.json').write_text(json.dumps(writer.build_stats(manifest, kind='cascor', metrics_final=final)))\n"
+        "sys.exit(0)\n"
+    )
+    path.chmod(path.stat().st_mode | stat.S_IEXEC)
+
+
+def _cascor_headline(case: unittest.TestCase, **metrics_final: object) -> dict:
+    """``_headline_metrics`` of a run dir whose stats.json the real writer built from this ``/v1/metrics`` body."""
+    tmp = tempfile.TemporaryDirectory()
+    case.addCleanup(tmp.cleanup)
+    run_dir = Path(tmp.name) / "run"
+    (run_dir / "artifacts" / "results").mkdir(parents=True)
+    manifest = {"run_id": "r", "outcome": "succeeded", "experiment": {"name": "e"}}
+    (run_dir / "artifacts" / "results" / "stats.json").write_text(json.dumps(stats_summary.build_stats(manifest, kind="cascor", metrics_final=metrics_final)))
+    return run_suite._headline_metrics(run_dir)
 
 
 class ParseAcceptanceTest(unittest.TestCase):
@@ -413,6 +457,184 @@ class SuiteLoopAcceptanceTest(unittest.TestCase):
         self.assertEqual(rc, 0, msg=out)
         manifest = json.loads((suite_dir / "suite_manifest.json").read_text())
         self.assertEqual([len(c["acceptance"]) for c in manifest["cells"]], [0, 0, 2], "the bare base cell, the control row, the equities row")
+
+
+class CascorBandMetricsTest(unittest.TestCase):
+    """APD-ML-002 (owner rulings 1 and 2, 2026-10-26): which names a band may use, now that cascor has columns.
+
+    ``val_accuracy`` became a column (from ``stats["cascor"]["final"]``), so a band on it judges a number
+    instead of reading ``absent`` on every cascor cell; ``train_accuracy`` joined it. ``test_accuracy`` stays
+    ACCEPTED with no producer -- pending cascor's final evaluation (juniper-cascor#731) and the
+    labelled stats block juniper-ml#2064 adds -- and says so before any launch. ``final_accuracy`` exists
+    nowhere and is REFUSED.
+    """
+
+    def test_acceptance_metrics_is_the_union_of_the_path_tables_plus_the_pending_test_accuracy(self) -> None:
+        # Stated explicitly, then derived: the literal set is the contract, the union is why it is that set.
+        self.assertEqual(run_suite.ACCEPTANCE_METRICS, frozenset({"train_r2", "cv_r2", "cv_r2_std", "n_windows", "train_accuracy", "val_accuracy", "test_accuracy"}))
+        tables = {column for column, _ in run_suite.RECURRENCE_HEADLINE_PATHS} | {column for column, _ in run_suite.CASCOR_HEADLINE_PATHS}
+        self.assertEqual(run_suite.ACCEPTANCE_METRICS, frozenset(tables | {"test_accuracy"}))
+        self.assertEqual(set(run_suite.PENDING_ACCEPTANCE_METRICS), {"test_accuracy"})
+        self.assertNotIn("test_accuracy", tables, "no path reads test_accuracy until its producer lands")
+        self.assertEqual(dict(run_suite.CASCOR_HEADLINE_PATHS), {"train_accuracy": ("final", "train_accuracy"), "val_accuracy": ("final", "val_accuracy")})
+        self.assertNotIn("final_accuracy", run_suite.ACCEPTANCE_METRICS)
+
+    def test_final_accuracy_is_refused_with_its_reason_and_a_suite_naming_it_exits_two(self) -> None:
+        with self.assertRaises(SuiteError) as ctx:
+            run_suite.parse_acceptance([{"metric": "final_accuracy", "min": 0.9, "mode": "gate"}], "acceptance")
+        self.assertIn("acceptance[0].metric", str(ctx.exception))
+        self.assertIn("got 'final_accuracy' (removed 2026-10-26 (APD-ML-002): no writer has ever produced it", str(ctx.exception))
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "base.yaml").write_text(BASE_CONFIG)
+            suite = root / "suite.yaml"
+            suite.write_text(_suite_yaml(root / "base.yaml", root / "out", row_bands=[{"metric": "final_accuracy", "min": 0.9, "mode": "report"}]))
+            buf = io.StringIO()
+            with redirect_stdout(buf), redirect_stderr(buf):
+                rc = run_suite.main(["--suite", str(suite), "--dry-run"])
+            self.assertEqual(rc, 2, msg=buf.getvalue())
+            self.assertIn("include[1].acceptance[0].metric", buf.getvalue())
+            self.assertFalse((root / "out").exists())
+
+    def test_a_val_accuracy_band_passes_or_fails_and_is_never_absent(self) -> None:
+        metrics = _cascor_headline(self, train_accuracy=0.905, val_accuracy=0.91875, f1=0.9187)
+        self.assertEqual(metrics, {"train_accuracy": 0.905, "val_accuracy": 0.91875})
+        bands = [{"metric": "val_accuracy", "min": 0.9, "max": None, "mode": "gate"}, {"metric": "val_accuracy", "min": 0.95, "max": None, "mode": "gate"}, {"metric": "val_accuracy", "min": None, "max": 0.91875, "mode": "gate"}, {"metric": "train_accuracy", "min": 0.91, "max": None, "mode": "report"}]
+        results = run_suite.evaluate_acceptance(bands, metrics)
+        self.assertEqual([(r["result"], r["value"]) for r in results], [("pass", 0.91875), ("fail", 0.91875), ("pass", 0.91875), ("fail", 0.905)])
+        row: dict[str, Any] = {"outcome": "succeeded", "metrics": metrics}
+        run_suite.apply_acceptance(row, bands[:2])
+        self.assertEqual((row["outcome"], row["error"]), ("failed", "acceptance: val_accuracy=0.91875 outside >= 0.95 (gate)"))
+
+    def test_test_accuracy_is_accepted_and_reads_absent_until_its_producer_lands(self) -> None:
+        bands = run_suite.parse_acceptance([{"metric": "test_accuracy", "min": 0.5, "mode": "gate"}], "acceptance")
+        self.assertEqual(bands, [{"metric": "test_accuracy", "min": 0.5, "max": None, "mode": "gate"}])
+        # A full writer-built cascor block, eval scalars and all: still no test_accuracy anywhere.
+        metrics = _cascor_headline(self, train_accuracy=0.905, val_accuracy=0.91875, f1=0.9187, precision=0.92, recall=0.9175, roc_auc=0.9808)
+        row: dict[str, Any] = {"outcome": "succeeded", "metrics": metrics}
+        run_suite.apply_acceptance(row, bands)
+        self.assertEqual((row["outcome"], row["error"]), ("failed", "acceptance: test_accuracy absent (gate)"))
+        row = {"outcome": "succeeded", "metrics": metrics}
+        run_suite.apply_acceptance(row, [{**bands[0], "mode": "report"}])
+        self.assertEqual((row["outcome"], row["error"]), ("flagged", "acceptance: test_accuracy absent (report)"))
+
+    def test_a_band_on_test_accuracy_warns_once_before_anything_launches(self) -> None:
+        cells = [{"acceptance": [{"metric": "test_accuracy", "min": 0.5, "max": None, "mode": "gate"}, {"metric": "val_accuracy", "min": 0.5, "max": None, "mode": "gate"}]}, {"acceptance": [{"metric": "test_accuracy", "min": 0.6, "max": None, "mode": "report"}]}, {"acceptance": []}]
+        warnings = run_suite.pending_band_warnings(cells)
+        self.assertEqual(len(warnings), 1, warnings)
+        self.assertIn("names test_accuracy on 2 of 3 cell(s), and no run produces it yet", warnings[0])
+        self.assertIn("(juniper-cascor#731)", warnings[0])
+        self.assertIn("juniper-ml#2064", warnings[0])
+        self.assertIn("a `gate` band fails its cell", warnings[0])
+        self.assertEqual(run_suite.pending_band_warnings([{"acceptance": [{"metric": "val_accuracy", "min": 0.5, "max": None, "mode": "gate"}]}]), [])
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "base.yaml").write_text(BASE_CONFIG)
+            suite = root / "suite.yaml"
+            suite.write_text(_suite_yaml(root / "base.yaml", root / "out", suite_bands=[{"metric": "test_accuracy", "min": 0.5, "mode": "report"}]))
+            buf = io.StringIO()
+            with redirect_stdout(buf), redirect_stderr(buf):
+                rc = run_suite.main(["--suite", str(suite), "--dry-run"])
+            out = buf.getvalue()
+            self.assertEqual(rc, 0, msg=out)
+            self.assertEqual(out.count("[suite] warning: an acceptance band names test_accuracy on 3 of 3 cell(s)"), 1, out)
+            self.assertLess(out.index("[suite] warning:"), out.index("suite t-acc (cascor): 3 cells"), "the warning comes before the plan")
+
+
+class NonFiniteBandValueTest(unittest.TestCase):
+    """APD-ML-002 ruling 4 (2026-10-26): a NaN or infinite value fails ANY band.
+
+    The plain comparison let each of them through somewhere -- every comparison with NaN is false, so NaN
+    passed ``min`` and ``max`` alike; ``+inf`` passed a ``min`` band and ``-inf`` a ``max`` band.
+    """
+
+    BANDS = [{"metric": "val_accuracy", "min": 0.9, "max": None, "mode": "gate"}, {"metric": "val_accuracy", "min": None, "max": 0.99, "mode": "gate"}, {"metric": "val_accuracy", "min": 0.0, "max": 1.0, "mode": "gate"}]
+
+    def test_nan_and_both_infinities_fail_min_max_and_two_sided_bands(self) -> None:
+        for value in (float("nan"), float("inf"), float("-inf")):
+            with self.subTest(value=value):
+                results = run_suite.evaluate_acceptance(self.BANDS, {"val_accuracy": value})
+                self.assertEqual([r["result"] for r in results], ["fail", "fail", "fail"])
+                for result in results:
+                    self.assertIs(result["value"], value, "the value is kept so the report prints it, not blanked as absent")
+
+    def test_finite_values_still_compare_and_a_huge_int_does_not_overflow(self) -> None:
+        self.assertEqual([r["result"] for r in run_suite.evaluate_acceptance(self.BANDS, {"val_accuracy": 0.95})], ["pass", "pass", "pass"])
+        self.assertEqual([r["result"] for r in run_suite.evaluate_acceptance([{"metric": "n_windows", "min": 1.0, "max": None, "mode": "gate"}], {"n_windows": 10**400})], ["pass"])
+
+    def test_a_nan_fails_the_cell_under_gate_and_flags_it_under_report(self) -> None:
+        row: dict[str, Any] = {"outcome": "succeeded", "metrics": {"val_accuracy": float("nan")}}
+        run_suite.apply_acceptance(row, [self.BANDS[0]])
+        self.assertEqual((row["outcome"], row["error"]), ("failed", "acceptance: val_accuracy=nan outside >= 0.9 (gate)"))
+        row = {"outcome": "succeeded", "metrics": {"cv_r2": float("inf")}}
+        run_suite.apply_acceptance(row, [{"metric": "cv_r2", "min": -1.0, "max": None, "mode": "report"}])
+        self.assertEqual((row["outcome"], row["error"]), ("flagged", "acceptance: cv_r2=inf outside >= -1.0 (report)"))
+
+    def test_a_nan_in_stats_json_reaches_the_band_as_a_fail(self) -> None:
+        metrics = _cascor_headline(self, train_accuracy=0.9, val_accuracy=float("nan"))
+        self.assertEqual([r["result"] for r in run_suite.evaluate_acceptance([self.BANDS[0]], metrics)], ["fail"])
+
+
+class CascorSuiteLoopAcceptanceTest(unittest.TestCase):
+    """End to end through ``main`` on a CASCOR suite (stub launcher + a stub driver that writes stats.json with the real writer)."""
+
+    LIVE = {"epoch": 17, "train_loss": 0.067, "train_accuracy": 0.905, "val_loss": 0.069, "val_accuracy": 0.91875, "hidden_units": 16, "f1": 0.9187}
+    WEAK = {"epoch": 9, "train_loss": 0.21, "train_accuracy": 0.86, "val_loss": 0.24, "val_accuracy": 0.85, "hidden_units": 8, "f1": 0.84}
+
+    def _run(self, *, suite_bands: "list[dict]") -> "tuple[int, str, Path]":
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "base.yaml").write_text(BASE_CONFIG)
+        suite_dir = root / "suite-out"
+        (root / "suite.yaml").write_text(_suite_yaml(root / "base.yaml", suite_dir, suite_bands=suite_bands))
+        markers = root / "markers"
+        markers.mkdir()
+        run_root = root / "runroot"
+        run_root.mkdir()
+        _write_stub_launcher(root / "stub_launcher.bash", markers)
+        _write_cascor_stub_driver(root / "stub_driver.py", {CONTROL_MARKER: self.LIVE, EQUITIES_MARKER: self.WEAK})
+        env = {"JUNIPER_SUITE_LAUNCHER": str(root / "stub_launcher.bash"), "JUNIPER_SUITE_DRIVER": str(root / "stub_driver.py"), "JUNIPER_SUITE_PYTHON": sys.executable}
+        old_root = run_suite.DEFAULT_RUN_ROOT
+        run_suite.DEFAULT_RUN_ROOT = run_root  # type: ignore[attr-defined]
+        self.addCleanup(lambda: setattr(run_suite, "DEFAULT_RUN_ROOT", old_root))
+        old_env = {key: os.environ.get(key) for key in env}
+        os.environ.update(env)
+        buf = io.StringIO()
+        try:
+            with redirect_stdout(buf), redirect_stderr(buf):
+                rc = run_suite.main(["--suite", str(root / "suite.yaml")])
+        finally:
+            for key, value in old_env.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+        return rc, buf.getvalue(), suite_dir
+
+    def test_a_val_accuracy_gate_band_passes_and_fails_real_cascor_cells(self) -> None:
+        rc, out, suite_dir = self._run(suite_bands=[{"metric": "val_accuracy", "min": 0.9, "mode": "gate"}])
+        self.assertEqual(rc, 1, msg=out)
+        rows = {row["name"]: row for row in (json.loads(line) for line in (suite_dir / "registry.jsonl").read_text().splitlines())}
+        self.assertEqual(rows["control"]["metrics"], {"train_accuracy": 0.905, "val_accuracy": 0.91875})
+        self.assertEqual((rows["control"]["outcome"], [r["result"] for r in rows["control"]["acceptance"]]), ("succeeded", ["pass"]))
+        self.assertEqual((rows["equities"]["outcome"], rows["equities"]["error"]), ("failed", "acceptance: val_accuracy=0.85 outside >= 0.9 (gate)"))
+        with (suite_dir / "aggregate.csv").open(newline="", encoding="utf-8") as handle:
+            table = {row["name"]: row for row in csv.DictReader(handle)}
+        self.assertEqual((table["control"]["val_accuracy"], table["equities"]["val_accuracy"], table["equities"]["train_accuracy"]), ("0.91875", "0.85", "0.86"))
+        report = (suite_dir / "REPORT.md").read_text()
+        self.assertIn("| val_accuracy | >= 0.9 | gate | 0.91875 | pass |", report)
+        self.assertIn("| val_accuracy | >= 0.9 | gate | 0.85 | fail |", report)
+        self.assertNotIn("| absent |", report, "a cascor val_accuracy band never reads absent any more")
+
+    def test_a_test_accuracy_band_warns_before_the_first_launch_and_flags_every_cell(self) -> None:
+        rc, out, suite_dir = self._run(suite_bands=[{"metric": "test_accuracy", "min": 0.5, "mode": "report"}])
+        self.assertEqual(rc, 0, msg=out)
+        self.assertEqual(out.count("[suite] warning: an acceptance band names test_accuracy"), 1, out)
+        self.assertLess(out.index("[suite] warning:"), out.index(": running ("), "warned before the first cell launched")
+        outcomes = [json.loads(line)["outcome"] for line in (suite_dir / "registry.jsonl").read_text().splitlines()]
+        self.assertEqual(outcomes, ["flagged", "flagged", "flagged"])
+        self.assertIn("| test_accuracy | >= 0.5 | report |  | absent |", (suite_dir / "REPORT.md").read_text())
 
 
 class ShippedEHBandTest(unittest.TestCase):

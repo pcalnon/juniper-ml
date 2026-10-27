@@ -13,6 +13,7 @@ import csv
 import importlib.util
 import io
 import json
+import math
 import os
 import re
 import stat
@@ -20,8 +21,9 @@ import sys
 import tempfile
 import unittest
 import unittest.mock
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import ExitStack, redirect_stderr, redirect_stdout
 from pathlib import Path
+from typing import Any
 
 from tests.redacted_env import RedactedEnv
 
@@ -1156,6 +1158,290 @@ class HeadlineMetricsTest(unittest.TestCase):
         self.assertIn("-18081.0", report)
         self.assertIn("0.11632826498677562", report)
         self.assertIn("Cells: 2 total, 1 succeeded, 1 degraded, 0 failed/other, 0 not run.", report)
+
+
+# The `/v1/metrics` body of a real cascor run (run 20260916T002848Z-3959, its `metrics_final.json` top level;
+# the eval scalars are rounded). `build_stats` copies the six training fields into `cascor.final` and the four
+# eval scalars into `cascor.eval_scalars`.
+LIVE_CASCOR_METRICS = {"epoch": 17, "train_loss": 0.06737957149744034, "train_accuracy": 0.905, "val_loss": 0.06876520812511444, "val_accuracy": 0.91875, "hidden_units": 16, "f1": 0.9187, "precision": 0.92, "recall": 0.9175, "roc_auc": 0.9808}
+
+
+def _cascor_stats(**metrics_final: object) -> dict:
+    """A cascor stats dict made by the REAL writer, ``stats_summary.build_stats(kind="cascor", metrics_final=...)``,
+    round-tripped through JSON the way the driver writes it. ``metrics_final`` is the ``/v1/metrics`` body the
+    driver collects; going through the writer means a change to its cascor block breaks these fixtures loudly
+    instead of leaving them asserting a shape nothing produces -- the way APD-ML-002 began."""
+    manifest = {"run_id": "r", "experiment": {"name": "e"}, "timings": {"drive": 5.0}, "outcome": "succeeded", "acceptance": {"ok": True, "reasons": []}, "dataset": {"meta": {"n_train": 800, "n_test": 120, "n_features": 2, "n_classes": 2}}}
+    return json.loads(json.dumps(stats_summary.build_stats(manifest, kind="cascor", metrics_final=metrics_final)))
+
+
+def _stats_run_dir(case: unittest.TestCase, stats: "dict | None", parent: "Path | None" = None, name: str = "run") -> Path:
+    """A run dir holding ``stats`` as ``artifacts/results/stats.json`` (none when ``stats`` is None), under ``parent`` or a fresh tempdir."""
+    if parent is None:
+        tmp = tempfile.TemporaryDirectory()
+        case.addCleanup(tmp.cleanup)
+        parent = Path(tmp.name)
+    run_dir = parent / name
+    (run_dir / "artifacts" / "results").mkdir(parents=True)
+    if stats is not None:
+        (run_dir / "artifacts" / "results" / "stats.json").write_text(json.dumps(stats))
+    return run_dir
+
+
+class CascorHeadlineMetricsTest(unittest.TestCase):
+    """APD-ML-002 (owner rulings, 2026-10-26): the cascor half of ``_headline_metrics``.
+
+    It read ``final_accuracy`` / ``test_accuracy`` / ``val_accuracy`` off the TOP of ``stats["cascor"]``, where
+    ``build_stats`` never wrote anything, so all 439 cascor registry rows on the run corpus carried
+    ``metrics: {}`` and no cascor ``aggregate.csv`` had an accuracy column. It now reads ``final.train_accuracy``
+    and ``final.val_accuracy`` through ``CASCOR_HEADLINE_PATHS``. ``eval_scalars`` are deliberately NOT mapped
+    (live mid-training values; 19 corpus runs computed them on the TRAINING split), ``test_accuracy`` has no
+    producer yet, and ``final_accuracy`` is gone. Every fixture comes from the real writer.
+    """
+
+    def test_the_writer_shape_yields_exactly_train_and_val_accuracy(self) -> None:
+        # The exact dict: nothing else from `final` (epoch, the losses, hidden_units), nothing from `eval_scalars`.
+        metrics = run_suite._headline_metrics(_stats_run_dir(self, _cascor_stats(**LIVE_CASCOR_METRICS)))
+        self.assertEqual(metrics, {"train_accuracy": 0.905, "val_accuracy": 0.91875})
+
+    def test_a_zero_accuracy_is_kept(self) -> None:
+        # The truthiness trap: `if value:` would drop it, and 0.0 is a real (if dismal) result.
+        metrics = run_suite._headline_metrics(_stats_run_dir(self, _cascor_stats(train_accuracy=0.0, val_accuracy=0.0)))
+        self.assertEqual(metrics, {"train_accuracy": 0.0, "val_accuracy": 0.0})
+
+    def test_bool_none_and_strings_are_dropped(self) -> None:
+        cases = [((True, None), {}), (("0.9", False), {}), ((None, "0.91875"), {}), ((False, 0.5), {"val_accuracy": 0.5}), (("0.88", 1), {"val_accuracy": 1})]
+        for (train, val), expected in cases:
+            with self.subTest(train=train, val=val):
+                stats = _cascor_stats(train_accuracy=train, val_accuracy=val)
+                self.assertEqual(run_suite._headline_metrics(_stats_run_dir(self, stats)), expected)
+
+    def test_a_run_without_a_val_split_yields_train_accuracy_alone(self) -> None:
+        # 22 of 426 corpus cascor stats.json carry no number at final.val_accuracy: no column, not a zero.
+        metrics = run_suite._headline_metrics(_stats_run_dir(self, _cascor_stats(train_accuracy=0.88, val_accuracy=None, f1=0.9)))
+        self.assertEqual(metrics, {"train_accuracy": 0.88})
+
+    def test_the_dead_names_at_the_top_of_the_block_yield_nothing(self) -> None:
+        # The pre-fix reader looked HERE. A writer that also put them here, or a reader that fell back to them,
+        # would report the decoys; and the eval scalars never become a headline.
+        stats = _cascor_stats(epoch=3, f1=0.9, precision=0.9, recall=0.9, roc_auc=0.95)
+        stats["cascor"].update({"final_accuracy": 0.99, "test_accuracy": 0.98, "val_accuracy": 0.97, "train_accuracy": 0.96})
+        self.assertEqual(run_suite._headline_metrics(_stats_run_dir(self, stats)), {})
+
+    def test_a_non_finite_accuracy_is_kept_as_a_value(self) -> None:
+        # Kept, not dropped: a band must FAIL it (ruling 4), which it cannot do to a value it never sees.
+        metrics = run_suite._headline_metrics(_stats_run_dir(self, _cascor_stats(train_accuracy=float("nan"), val_accuracy=float("-inf"))))
+        self.assertEqual(sorted(metrics), ["train_accuracy", "val_accuracy"])
+        self.assertTrue(math.isnan(metrics["train_accuracy"]))
+        self.assertEqual(metrics["val_accuracy"], float("-inf"))
+
+    def test_a_stats_file_with_both_blocks_reads_both_tables(self) -> None:
+        stats = _cascor_stats(train_accuracy=0.7, val_accuracy=0.6)
+        stats["recurrence"] = _recurrence_stats(train_r2=0.5, cv_r2=0.25, cv_r2_std=0.05)["recurrence"]
+        self.assertEqual(run_suite._headline_metrics(_stats_run_dir(self, stats)), {"train_accuracy": 0.7, "val_accuracy": 0.6, "train_r2": 0.5, "cv_r2": 0.25, "cv_r2_std": 0.05, "n_windows": 1346})
+
+    def test_aggregate_csv_and_report_gain_the_cascor_columns(self) -> None:
+        live = _stats_run_dir(self, _cascor_stats(**LIVE_CASCOR_METRICS))
+        no_val = _stats_run_dir(self, _cascor_stats(train_accuracy=0.5, val_accuracy=None))
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        suite_dir = Path(tmp.name) / "suite"
+        suite_dir.mkdir()
+        rows = [
+            {"cell_id": "c000", "run_dir": str(live), "outcome": "succeeded", "metrics": run_suite._headline_metrics(live)},
+            {"cell_id": "c001", "run_dir": str(no_val), "outcome": "succeeded", "metrics": run_suite._headline_metrics(no_val)},
+        ]
+        (suite_dir / "registry.jsonl").write_text("".join(json.dumps(row) + "\n" for row in rows))
+        cells = [{"cell_id": "c000", "name": "live", "overrides": {}}, {"cell_id": "c001", "name": "no-val", "overrides": {}}]
+        self.assertEqual(run_suite.aggregate(suite_dir, {"name": "t", "description": "cascor headline columns"}, cells), 0)
+        with (suite_dir / "aggregate.csv").open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            header = list(reader.fieldnames or [])
+            csv_rows = list(reader)
+        self.assertEqual([column for column in header if column.endswith("_accuracy")], ["train_accuracy", "val_accuracy"], "no final_accuracy / test_accuracy column")
+        self.assertEqual((csv_rows[0]["train_accuracy"], csv_rows[0]["val_accuracy"]), ("0.905", "0.91875"))
+        self.assertEqual((csv_rows[1]["train_accuracy"], csv_rows[1]["val_accuracy"]), ("0.5", ""), "no val split -- an empty cell, not 0")
+        report = (suite_dir / "REPORT.md").read_text()
+        self.assertIn("| cell | outcome | step_count | mean step (ms) | wall (s) | train_accuracy | val_accuracy |", report)
+        self.assertIn("| 0.905 | 0.91875 |", report)
+        self.assertIn("Cells: 2 total, 2 succeeded, 0 degraded, 0 failed/other, 0 not run.", report)
+
+
+class RowMetricsTest(unittest.TestCase):
+    """``_row_metrics``: the run's stats.json while it is readable, the row's recorded ``metrics`` only when it is not."""
+
+    def test_a_readable_stats_file_wins_over_the_recorded_metrics(self) -> None:
+        # The pre-fix registry: `metrics: {}` beside a stats.json that always held the accuracies.
+        run_dir = _stats_run_dir(self, _cascor_stats(**LIVE_CASCOR_METRICS))
+        self.assertEqual(run_suite._row_metrics({"run_dir": str(run_dir), "metrics": {}}), {"train_accuracy": 0.905, "val_accuracy": 0.91875})
+
+    def test_a_readable_file_with_no_headline_is_empty_even_if_the_row_recorded_some(self) -> None:
+        run_dir = _stats_run_dir(self, {"schema": "juniper-experiment-stats/1"})
+        self.assertEqual(run_suite._row_metrics({"run_dir": str(run_dir), "metrics": {"val_accuracy": 0.5}}), {})
+
+    def test_a_pruned_or_unreadable_run_falls_back_to_the_recorded_metrics(self) -> None:
+        missing = _stats_run_dir(self, None)
+        corrupt = _stats_run_dir(self, None)
+        (corrupt / "artifacts" / "results" / "stats.json").write_text("{")
+        for run_dir in (str(missing), str(corrupt), str(missing / "gone")):
+            with self.subTest(run_dir=run_dir):
+                self.assertEqual(run_suite._row_metrics({"run_dir": run_dir, "metrics": {"val_accuracy": 0.5}}), {"val_accuracy": 0.5})
+
+    def test_no_run_dir_and_a_non_mapping_record_are_empty(self) -> None:
+        self.assertEqual(run_suite._row_metrics({}), {})
+        self.assertEqual(run_suite._row_metrics({"run_dir": None, "metrics": None}), {})
+        self.assertEqual(run_suite._row_metrics({"run_dir": "", "metrics": ["val_accuracy"]}), {})
+
+
+class ReaggregateTest(unittest.TestCase):
+    """APD-ML-002 ruling 3: ``--reaggregate SUITE_DIR`` re-renders ``aggregate.csv`` + ``REPORT.md`` from disk and LAUNCHES NOTHING.
+
+    The fixture is a cascor suite exactly as the pre-fix driver left it: every registry row ``metrics: {}``,
+    an ``aggregate.csv`` with no headline column, and run dirs whose ``stats.json`` held the accuracies all
+    along. ``--resume`` could not backfill it -- it would re-run every incomplete cell (29 of the corpus's 116
+    cascor suites have one) -- so every seam that could launch, materialise or append is patched to RECORD
+    and raise, and the files ``--reaggregate`` must not write are compared byte for byte.
+    """
+
+    CELLS: list[dict[str, Any]] = [
+        {"cell_id": "c000-aaaa1111", "index": 0, "name": None, "config_path": "/x/base.yaml", "overrides": {"training.params.max_hidden_units": 2}},
+        {"cell_id": "c001-bbbb2222", "index": 1, "name": None, "config_path": "/x/base.yaml", "overrides": {"training.params.max_hidden_units": 4}},
+    ]
+    PRE_FIX_CSV = "cell_id,name,run_id,outcome,exit_code,wall_seconds,step_count,mean_step_seconds,training.params.max_hidden_units,acceptance\n"
+
+    def _pre_fix_suite(self, accuracies: "tuple[tuple[float, float], ...]" = ((0.905, 0.91875), (0.8125, 0.8))) -> "tuple[Path, Path]":
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        run_root = Path(tmp.name) / "runroot"
+        suite_dir = run_root / "suites" / "t-suite-20261026T000000Z"
+        suite_dir.mkdir(parents=True)
+        manifest = {"schema": "juniper-experiment-suite/1", "suite_id": suite_dir.name, "suite": {"name": "t-suite", "description": "pre-fix cascor", "app": "cascor", "base_config": ["base.yaml"], "seed_policy": "fixed"}, "execution": {"mode": "sequential"}, "cells": self.CELLS, "suite_yaml_sha256": "0" * 64}
+        (suite_dir / "suite_manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+        rows: list[dict[str, Any]] = []
+        for cell, (train, val) in zip(self.CELLS, accuracies):
+            run_dir = _stats_run_dir(self, _cascor_stats(train_accuracy=train, val_accuracy=val, f1=0.9), parent=run_root, name=f"20261026T00000{cell['index']}Z-ab0{cell['index']}")
+            rows.append({"cell_id": cell["cell_id"], "name": None, "overrides": cell["overrides"], "run_id": run_dir.name, "outcome": "succeeded", "exit_code": 0, "error": None, "metrics": {}, "run_dir": str(run_dir), "wall_seconds": 100.0, "suite_id": suite_dir.name})
+        (suite_dir / "registry.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows))
+        (run_root / "index.jsonl").write_text("".join(json.dumps({"suite_id": suite_dir.name, "cell_id": row["cell_id"], "run_id": row["run_id"], "outcome": "succeeded", "run_dir": row["run_dir"]}) + "\n" for row in rows))
+        (suite_dir / "aggregate.csv").write_text(self.PRE_FIX_CSV + "".join(f"{row['cell_id']},,{row['run_id']},succeeded,0,100.0,,,{row['overrides']['training.params.max_hidden_units']},\n" for row in rows))
+        (suite_dir / "REPORT.md").write_text("# Suite report — t-suite\n")
+        return run_root, suite_dir
+
+    def _main(self, run_root: Path, *argv: str) -> "tuple[int, str, list]":
+        """``run_suite.main`` with every launch seam patched to record the call and raise."""
+        launched: list = []
+
+        def _launch(*args: object, **kwargs: object) -> None:
+            launched.append(args)
+            raise AssertionError(f"--reaggregate reached a launch seam: {args!r}")
+
+        buf = io.StringIO()
+        with ExitStack() as stack:
+            stack.enter_context(unittest.mock.patch.object(run_suite, "DEFAULT_RUN_ROOT", run_root))
+            for seam in ("execute_cell", "materialise_cell", "_driver_module", "_append_jsonl"):
+                stack.enter_context(unittest.mock.patch.object(run_suite, seam, _launch))
+            for seam in ("run", "Popen"):
+                stack.enter_context(unittest.mock.patch.object(run_suite.subprocess, seam, _launch))
+            stack.enter_context(redirect_stdout(buf))
+            stack.enter_context(redirect_stderr(buf))
+            rc = run_suite.main(list(argv))
+        return rc, buf.getvalue(), launched
+
+    @staticmethod
+    def _snapshot(run_root: Path, suite_dir: Path) -> "dict[str, bytes]":
+        return {name: path.read_bytes() for name, path in (("registry", suite_dir / "registry.jsonl"), ("manifest", suite_dir / "suite_manifest.json"), ("index", run_root / "index.jsonl"))}
+
+    def test_a_pre_fix_cascor_suite_gains_the_columns_and_nothing_launches(self) -> None:
+        run_root, suite_dir = self._pre_fix_suite()
+        before = self._snapshot(run_root, suite_dir)
+        rc, out, launched = self._main(run_root, "--reaggregate", str(suite_dir))
+        self.assertEqual(launched, [], "nothing may launch, materialise or append")
+        self.assertEqual(rc, 0, msg=out)
+        self.assertIn("launched nothing", out)
+        with (suite_dir / "aggregate.csv").open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            header = list(reader.fieldnames or [])
+            csv_rows = list(reader)
+        self.assertEqual(header[-3:], ["train_accuracy", "val_accuracy", "acceptance"], "the headline columns precede the LAST acceptance column")
+        self.assertEqual([(r["cell_id"], r["train_accuracy"], r["val_accuracy"]) for r in csv_rows], [("c000-aaaa1111", "0.905", "0.91875"), ("c001-bbbb2222", "0.8125", "0.8")])
+        report = (suite_dir / "REPORT.md").read_text()
+        self.assertIn("| training.params.max_hidden_units | train_accuracy | val_accuracy |", report)
+        self.assertIn("| 2 | 0.905 | 0.91875 |", report)
+        self.assertIn("Cells: 2 total, 2 succeeded, 0 degraded, 0 failed/other, 0 not run.", report)
+        self.assertEqual(self._snapshot(run_root, suite_dir), before, "registry.jsonl, suite_manifest.json and index.jsonl are read, never written")
+        self.assertFalse((suite_dir / "cells").exists(), "no cell is materialised")
+
+    def test_a_suite_id_resolves_under_the_run_root(self) -> None:
+        run_root, suite_dir = self._pre_fix_suite()
+        rc, out, launched = self._main(run_root, "--reaggregate", suite_dir.name)
+        self.assertEqual((rc, launched), (0, []), msg=out)
+        self.assertIn("val_accuracy", (suite_dir / "aggregate.csv").read_text().splitlines()[0])
+
+    def test_an_incomplete_suite_keeps_its_exit_code_and_is_not_rerun(self) -> None:
+        # The case --resume cannot serve: a failed cell. Re-rendering reports it; it never re-runs it.
+        run_root, suite_dir = self._pre_fix_suite()
+        rows = [json.loads(line) for line in (suite_dir / "registry.jsonl").read_text().splitlines()]
+        rows[1].update(outcome="failed", exit_code=1, error="driver exit 1")
+        (suite_dir / "registry.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows))
+        rc, out, launched = self._main(run_root, "--reaggregate", str(suite_dir))
+        self.assertEqual((rc, launched), (1, []), msg=out)
+        self.assertIn("Cells: 2 total, 1 succeeded, 0 degraded, 1 failed/other, 0 not run.", (suite_dir / "REPORT.md").read_text())
+
+    def test_a_pruned_run_dir_keeps_the_recorded_metrics(self) -> None:
+        run_root, suite_dir = self._pre_fix_suite()
+        rows = [json.loads(line) for line in (suite_dir / "registry.jsonl").read_text().splitlines()]
+        rows[1]["run_dir"] = str(run_root / "pruned-run")
+        rows[1]["metrics"] = {"val_accuracy": 0.75}
+        (suite_dir / "registry.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows))
+        rc, out, launched = self._main(run_root, "--reaggregate", str(suite_dir))
+        self.assertEqual((rc, launched), (0, []), msg=out)
+        with (suite_dir / "aggregate.csv").open(newline="", encoding="utf-8") as handle:
+            csv_rows = list(csv.DictReader(handle))
+        self.assertEqual([(r["train_accuracy"], r["val_accuracy"]) for r in csv_rows], [("0.905", "0.91875"), ("", "0.75")])
+
+    def test_compare_baseline_is_honoured(self) -> None:
+        run_root, suite_dir = self._pre_fix_suite()
+        with unittest.mock.patch.object(run_suite, "_run_comparison", lambda tag, directory: f"verdict: PASS  (baseline {tag!r}, {directory.name})"):
+            rc, out, launched = self._main(run_root, "--reaggregate", str(suite_dir), "--compare-baseline", "pf1")
+        self.assertEqual((rc, launched), (0, []), msg=out)
+        self.assertIn(f"verdict: PASS  (baseline 'pf1', {suite_dir.name})", (suite_dir / "REPORT.md").read_text())
+
+    def test_the_execution_flags_are_refused_before_anything_is_written(self) -> None:
+        for extra in (["--suite", "suite.yaml"], ["--dry-run"], ["--resume", "t-suite-20261026T000000Z"], ["--only", "c000-aaaa1111"], ["--shared-equities-cache", "/srv/equities-cache"]):
+            with self.subTest(extra=extra):
+                run_root, suite_dir = self._pre_fix_suite()
+                rc, out, launched = self._main(run_root, "--reaggregate", str(suite_dir), *extra)
+                self.assertEqual((rc, launched), (2, []), msg=out)
+                self.assertIn(f"takes no {extra[0]}", out)
+                self.assertNotIn("val_accuracy", (suite_dir / "aggregate.csv").read_text(), "a refused --reaggregate renders nothing")
+
+    def test_a_dir_without_a_usable_manifest_is_refused(self) -> None:
+        run_root, suite_dir = self._pre_fix_suite()
+        cases = {"missing": None, "not json": "{", "no suite name": json.dumps({"suite": {}, "cells": self.CELLS}), "no cells": json.dumps({"suite": {"name": "t"}, "cells": []}), "a cell without overrides": json.dumps({"suite": {"name": "t"}, "cells": [{"cell_id": "c000"}]}), "a malformed band": json.dumps({"suite": {"name": "t"}, "cells": [{"cell_id": "c000", "overrides": {}, "acceptance": [{"metric": "val_accuracy"}]}]})}
+        for label, text in cases.items():
+            with self.subTest(label=label):
+                manifest = suite_dir / "suite_manifest.json"
+                manifest.unlink(missing_ok=True)
+                if text is not None:
+                    manifest.write_text(text)
+                rc, out, launched = self._main(run_root, "--reaggregate", str(suite_dir))
+                self.assertEqual((rc, launched), (2, []), msg=out)
+                self.assertIn("suite error: --reaggregate", out)
+                self.assertNotIn("val_accuracy", (suite_dir / "aggregate.csv").read_text())
+
+    def test_a_missing_suite_dir_is_refused(self) -> None:
+        run_root, _suite_dir = self._pre_fix_suite()
+        rc, out, launched = self._main(run_root, "--reaggregate", "no-such-suite")
+        self.assertEqual((rc, launched), (2, []), msg=out)
+        self.assertIn("no such suite dir", out)
+
+    def test_without_suite_or_reaggregate_is_misuse(self) -> None:
+        # `--suite` stopped being an argparse `required=True` so --reaggregate can omit it; every other mode still needs it.
+        buf = io.StringIO()
+        with self.assertRaises(SystemExit) as ctx, redirect_stdout(buf), redirect_stderr(buf):
+            run_suite.main([])
+        self.assertEqual(ctx.exception.code, 2)
+        self.assertIn("--suite is required", buf.getvalue())
 
 
 # =====================================================================================
