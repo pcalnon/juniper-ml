@@ -391,7 +391,7 @@ Same class as isolated-stack `activate_conda` and the `experiment_stack.bash` OR
 rg -n -A12 '^safe_conda_activate' util/juniper_plant_all.bash
 ```
 
-Coverage: open juniper-ml#795 (`tests/test_juniper_plant_all.py` — `TestSafeCondaActivate`).
+Coverage: juniper-ml#795, merged 2026-07-27 (`tests/test_juniper_plant_all.py` — `TestSafeCondaActivate`).
 
 Troubleshooting:
 
@@ -984,7 +984,7 @@ A dynamic version is read-only from an **explicit** declaration (setuptools `[to
 python util/editable_install_drift_check.py --fix --dry-run --json
 ```
 
-Coverage: open juniper-ml#795 (`tests/test_editable_install_drift_check.py` — `test_discover_canonical_ambiguous_returns_none`, `test_fix_skips_when_canonical_ambiguous`).
+Coverage: juniper-ml#795, merged 2026-07-27 (`tests/test_editable_install_drift_check.py` — `test_discover_canonical_ambiguous_returns_none`, `test_fix_skips_when_canonical_ambiguous`).
 
 #### Live `--fix` actions (`FIXED` / `ERROR`)
 
@@ -1007,7 +1007,7 @@ python util/editable_install_drift_check.py --fix --dry-run --json
 python util/editable_install_drift_check.py --fix --json
 ```
 
-Coverage: open juniper-ml#802 (`test_run_fix_executes_and_reports_fixed`, `test_run_fix_reports_called_process_error`, `test_run_fix_reports_oserror`).
+Coverage: juniper-ml#802, merged 2026-07-27 (`test_run_fix_executes_and_reports_fixed`, `test_run_fix_reports_called_process_error`, `test_run_fix_reports_oserror`).
 
 The JuniperCascor1 editable finder maps every `juniper-cascor` import onto the primary checkout's `src`. That is why a live importer makes the primary unsafe to edit — see [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell).
 
@@ -1455,10 +1455,6 @@ Troubleshooting:
 | Unexpected `BELOW_FLOOR` after a partial upgrade | Multi-interpreter env may still have an older site-packages tree — the tool reports the **highest** installed version; upgrade every tree or remove the stale one. |
 | `MISSING` but `pip show` works | Checker reads `METADATA` on disk under the resolved dirs only — confirm `--env` / `--site-packages` matches the interpreter you inspected. |
 | Floor / editable green, `import torch` still fails | Those checkers never import torch. Classify the ABI/`_C` layout with [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5). |
-
-Do **not** point isolated ports at the host stack or run `--up` on ports `plant_all` already owns.
-
-Store-apply contradictions (correct `/api/topology` body, empty DOM) are a different class from bring-up failures — see [F-039 Store Probe](#f-039-store-probe).
 
 ---
 
@@ -3418,8 +3414,8 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_editable_install_drift_check.py` -- Tests for `util/editable_install_drift_check.py`: FRESH / WORKTREE_PINNED / ORPHANED classification, `*-DEPRECATED` env exclusion, `--env` filtering, dedup across interpreter trees, CLI exit codes (0/1/2), JSON output, and `--fix --dry-run` canonical-source resolution (synthetic conda-dir fixture; no real pip)
   - `VersionDriftTest` (version axis): static + dynamic version resolution (setuptools `attr` flat and `src/` layouts, hatch `path`), MATCH/STALE classification, orthogonality (a WORKTREE_PINNED install still gets a version verdict), STALE soft by default / hard under `--strict-version` with `--strict` unaffected, the summary+JSON version fields, and `--fix-stale` repairing in place (`drift: "stale-metadata"`, canonical == the recorded path) while ORPHANED repair still resolves canonically
   - Honesty pins in the same class: an undeclared `_version.py` is **never** guessed at (unrecognized backend → UNKNOWN, so no `STALE` can be manufactured from the wrong file), and an ORPHANED target is UNKNOWN rather than a fabricated comparison
-  - Ambiguous canonical SKIP (open #795): two non-worktree checkouts with the same `[project].name` → `discover_canonical` returns `(None, [..])`; `--fix --dry-run` emits `action=SKIP` with `ambiguous` in `reason` (never re-points to `candidates[0]`).
-  - Live `run_fix` (open #802): mocked `subprocess.run` covers `FIXED` on success, `ERROR` on `CalledProcessError`, and `ERROR` then `FIXED` when the first item raises `OSError` (plan continues).
+  - Ambiguous canonical SKIP (#795, merged 2026-07-27): two non-worktree checkouts with the same `[project].name` → `discover_canonical` returns `(None, [..])`; `--fix --dry-run` emits `action=SKIP` with `ambiguous` in `reason` (never re-points to `candidates[0]`).
+  - Live `run_fix` (#802, merged 2026-07-27): mocked `subprocess.run` covers `FIXED` on success, `ERROR` on `CalledProcessError`, and `ERROR` then `FIXED` when the first item raises `OSError` (plan continues).
 - `tests/test_env_floor_drift_check.py` -- Tests for `util/env_floor_drift_check.py` (I-2): floor parsing (juniper-* `>=` bound; skips non-juniper/floorless/self-ref; dedup-highest), numeric version compare (`0.10.0 > 0.9.0`), OK/BELOW_FLOOR/MISSING classification, exit codes (0/1/2, `--strict`), `--json` -- via a synthetic site-packages fixture (no real pip/conda); also asserts no hardcoded env name. Sole gate (`util/` not lint-gated); real-env scan is manual-verify.
   - `MalformedOperatorInputGuardTest` (juniper-ml#2001): a truthy non-mapping, non-UTF-8 bytes, or a non-string env key degrades instead of raising (one case end-to-end at exit 2), and a bad extra still keeps floors declared in `dependencies`.
   - #796 added `ResolveSiteDirsTest` (`--site-packages` wins, `--env` expand, ecosystem `used_by`, exit-2 reasons). #802 added `InstalledVersionsTest` (highest-across-dirs, malformed/unreadable skip, underscore normalize). Both merged 2026-07-27.
@@ -3735,7 +3731,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Operator surface: [Ruleset Scope Guard](#ruleset-scope-guard). Tests: `tests/test_ruleset_scope_guard.py`.
 - Documentation link validator now lives in [`juniper-doc-tools/`](juniper-doc-tools/) and is published to PyPI as `juniper-doc-tools` (Wave 4 of the doc-link migration plan; install with `pip install juniper-doc-tools` and invoke via `juniper-check-doc-links`).
 - X7 off-loop census (ad-hoc; lands with juniper-ml#1631) -- exploratory sibling of the canopy slice-1a gate. **Not the authority.** Operator surface: [§ X7 Off-Loop Census](#x7-off-loop-census). Do not quote v1 counts; do not reintroduce module-global expression exemptions.
-- `util/ad-hoc/e2e_seg17_topology_driver.py` -- `--step` is order-preserving on one browser page; `topostate` must run first or alone or M-TOPOLOGY-18 reports `INDETERMINATE`. The module docstring's `W4-01..17` / `W1-12..14` list is **correct** (matrix §4 steps); three of its step→row aliases are not. Operator surface: [§ Canopy E2E Topology Step Order and Blast-Radius IDs](#canopy-e2e-topology-step-order-and-blast-radius-ids). Scorer predicates remain in-flight docs #1675.
+- `util/ad-hoc/e2e_seg17_topology_driver.py` -- `--step` is order-preserving on one browser page; `topostate` must run first or alone or M-TOPOLOGY-18 reports `INDETERMINATE`. The module docstring's `W4-01..17` / `W1-12..14` list is **correct** (matrix §4 steps); three of its step→row aliases are not. Operator surface: [§ Canopy E2E Topology Step Order and Blast-Radius IDs](#canopy-e2e-topology-step-order-and-blast-radius-ids). Scorer predicates: [§ Predicates that landed with #1672](#predicates-that-landed-with-1672).
 - `util/ad-hoc/e2e_finding_triage.py` -- `pri_of` takes the first severity token anywhere in the bolded header body (not only the parenthetical). Do not name another severity in header prose. Dispositions, including WITHDRAWN, are [Canopy E2E Finding Triage](#canopy-e2e-finding-triage). Same section as the bullet above.
 - Canopy E2E matrix writes (ad-hoc) -- `e2e_matrix_fill.py` (dry-run default; `status` header per table; escaped-pipe split), `2026-09-02_matrix_set_verdicts.py` (**no dry-run**; `--from` + last-cell write; naive `line.split("|")`), `e2e_matrix_rescore.py` (named rows; missing ids warn and still write). Ledger reader: `e2e_unfilled_rows.py`. Do not plan from `e2e_row_coverage.py`. Operator surface: [§ Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes).
 - X7 off-loop census (`util/ad-hoc/2026-09-04_x7_offload_census_v2.py`) -- exploratory sibling of the canopy slice-1a gate. **Not the authority.** After canopy#567 the shipped count is **58**. Operator surface: [§ X7 Off-Loop Census](#x7-off-loop-census). Do not quote v1 counts; do not reintroduce module-global expression exemptions; a green `main.py` gate is not proof the adapter is clean.
@@ -3756,7 +3752,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Live `--fix` actions (juniper-ml#802 coverage): `run_fix` marks `FIXED` on successful `pip install -e <canonical> --no-deps --force-reinstall`; `OSError` / `CalledProcessError` become `action=ERROR` (stderr truncated to 500 chars) without aborting later plan items; after a non-dry run, `main` re-scans so exit `1` still reflects remaining orphans. Operator surface: `docs/REFERENCE.md` Editable Install Drift Check + cheatsheet tip.
 - `util/env_floor_drift_check.py` -- Floor-drift checker (gap I-2): reads each installed `juniper-*` version from its `*.dist-info/METADATA` and compares to the target repo's `pyproject.toml` floors -> `OK` / `BELOW_FLOOR` / `MISSING` -- the below-floor plain-wheel case the pins/editable checkers miss. Env selection is data-driven (`--site-packages`/`--env`/`ecosystem.yaml`); exit 1 on `BELOW_FLOOR` (`--strict` also `MISSING`); `--json`; structural CI gate. Tests: `tests/test_env_floor_drift_check.py`.
   - `resolve_site_dirs` precedence: `--site-packages` → `--env` → `ecosystem.yaml` `used_by` for `[project].name`; unresolved paths exit 2 with the reason string (never invent an env name). A truthy non-mapping in either hand-authored file degrades the same way (`_mapping`); it does not traceback. Operator surface: [Environment Floor Drift Check](#environment-floor-drift-check) ([Malformed operator input](#malformed-operator-input)).
-  - Multi-site / multi-interpreter: `installed_juniper_versions` keeps the **highest** version across site-packages dirs; malformed / unreadable `METADATA` and non-`juniper-*` are skipped. Coverage: open #796 / #802.
+  - Multi-site / multi-interpreter: `installed_juniper_versions` keeps the **highest** version across site-packages dirs; malformed / unreadable `METADATA` and non-`juniper-*` are skipped. Coverage: #796 / #802, both merged 2026-07-27.
 - `util/check_conda_env_torch.bash` -- Classifies a conda env's `import torch` / `torch._C` layout (P-5). Exit 0 healthy / 1 missing env / 2 free-threaded shadow / 3 other import fail / 4 namespace-package `_C` (May-7 regular-3.14 wheel class, or imported `_C` has no `__file__`). Does **not** rebuild. `JUNIPER_CONDA_DIR` default `/opt/miniforge3`. Tests: `tests/test_check_conda_env_torch.py`. Operator surface: [Conda Env Torch Shadow Diagnostic](#conda-env-torch-shadow-diagnostic-p-5).
 - `util/release_train/` -- PyPI release-train tooling (release-train plan §12). `registry.yaml`: the data-driven 18-package / 8-repo registry (§4.1). `detect.py`: the per-package "needs a PyPI deploy?" engine (§4.2/4.3, Phase 1, report-only) -- PyPI truth vs declared version, tag-matched diff base, `gh compare` (`--local-git` fallback past the 300-file cap), and a substantive-hunk SHIP filter discounting the notes-rename comment/docstring/link class; report-only, exit 0/1/2.
   - SHIP / SemVer edges: whitespace + pure comment deletion discounted; pure code deletion ships; `local_git_compare` A/D/R/**C** of a `.py` module is inherently substantive (no blob compare); Keep-a-Changelog `Security` → patch, `Changed`/`feat!`/`BREAKING CHANGE` → minor pre-1.0. Operator tables: release-train operator runbook §3.1.
@@ -4028,7 +4024,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Recurrence drive (Wave 2.3): health-gates `/v1/health/ready`, then the **synchronous** `POST /v1/train` (the response IS completion — no poll loop; the Q-2 budget is the request's socket timeout → `timed_out`), then optional `POST /v1/predict` (`predict.from_dataset_split`, default `test`) and `POST /v1/crossval` (same LMU hyperparams as `train:` for bench comparability); every phase refs the dataset by content-addressed `dataset_id` (H-8).
   - Null `train:` values are dropped before those recurrence POSTs, and the service fills every omitted field from its own defaults (an omitted `readout` is linear at `default_ridge`): [Recurrence Crossval Hyperparameters](#recurrence-crossval-hyperparameters). An error `detail` from the service is copied into the run record (its first 500 characters): [Recurrence Upstream Error Text](#recurrence-upstream-error-text).
   - A busy recurrence `POST /v1/train` is a `409` and exit 4; the driver neither stops the holder nor retries, and after a wall-clock timeout its own fit keeps the service's lock: [One caller per recurrence service](#one-caller-per-recurrence-service).
-  - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) saves the model the run trained and scored (juniper-ml#2211): `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, then a size-checked copy of `<snapshots_dir>/<id>.npz` to `.../model.npz`. A `409` (the service no longer holds this run's model) fails the phase, and nothing re-fits a substitute. Only a train response without an `operation_id` (a pre-W1.5 service) falls back to re-running the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` (the CLI has no `--params` flag, so the dataset_id ref is the only faithful form); `manifest.save_model.source` names the path.
+  - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) saves the model the run trained and scored (juniper-ml#2211): `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, then a size-checked copy of `<snapshots_dir>/<id>.npz` to `.../model.npz`. A `409` (the service no longer holds this run's model) fails the phase, and nothing re-fits a substitute. Only a train response without an `operation_id` (a pre-W1.5 service) falls back to re-running the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` (that pre-0.6.0 CLI has no `--params` flag — `train --params` / `--params-file` arrived with juniper-recurrence#190 in 0.6.0, the release that also returns an `operation_id` — so the dataset_id ref is the only faithful form); `manifest.save_model.source` names the path.
     That CLI is `ports.json` `recurrence_launch.cli` when the launcher recorded one (W1.9, F-D4; `shutil.which` on the driver's PATH otherwise), and rerun parity — the served process's interpreter and `juniper-recurrence-model` version — must hold, or the phase fails without running it.
     Every phase leaves a record in the manifest's `phases` block (`ok` / `failed` + `error` / `skipped` when not enabled / `not_reached`). `degraded` = train succeeded but an ENABLED predict, crossval or save_model phase did not; it is derived from those records, never from `acceptance.ok`, so a plot-only acceptance failure stays `succeeded`.
   - Collects `metrics_final.json` / `metrics_history.json` / `topology.json` / `decision_boundary.npz` (2-D input only) + optional `POST /v1/snapshots` (cascor), `train_response.json` / `predict_response.json` / `crossval_response.json` (recurrence); ALWAYS writes the §13.4 `manifest.json` (also for stalled / timed-out / failed runs) and prints a one-screen summary.
@@ -4826,7 +4822,7 @@ This is **not** the isolated E2E trio (`util/isolated_stack.bash` on `8101`/`820
 
 Before `serve`, the recurrence leg runs the scoped env check in [Recurrence Env Preflight](#recurrence-env-preflight) (W0.2, juniper-ml#2139): a green `/v1/health/ready` does not prove a `split="full"` request can run.
 
-Recurrence YAML still allow-lists `dataset.split` / `predict.from_dataset_split` as `{train, test, full}` — `"validation"` is exit 2. That is the shipped NPZ contract, not the closed design. Operator surface: [Train / Val / Test Partition Contract](#train--val--test-partition-contract).
+Recurrence YAML allow-lists `dataset.split` / `predict.from_dataset_split` as `{train, val, test, full}` (`RECURRENCE_SPLITS` in `util/experiments/run_experiment.py`) — `"validation"` is exit 2: the contract name is `val`. Operator surface: [Train / Val / Test Partition Contract](#train--val--test-partition-contract).
 
 ### Launcher (`util/experiment_stack.bash`)
 
@@ -5415,7 +5411,7 @@ Test seams (operator-visible): `JUNIPER_SUITE_LAUNCHER`, `JUNIPER_SUITE_DRIVER`,
 | `--status` says UNSCRAPED | Expected without `--grafana-bridge`; opt in only when `socat` + deploy `prometheus/targets/` are available. |
 | Driver exit `2` on YAML | Unknown block/key, missing `experiment.seed`, or rule-6 infra key — see stderr. |
 | Driver exit `2` `POST /v1/datasets rejected (422)` on csv_import | Source over the 128 MiB cap without opt-in — [CSV Import Byte Cap](#csv-import-byte-cap). |
-| Driver exit `2` `dataset.split` / `from_dataset_split` | Recurrence allow-list is `{train, test, full}`. `"validation"` is refused today; `X_val` is design-closed, not shipped. See [Partition Contract](#train--val--test-partition-contract). |
+| Driver exit `2` `dataset.split` / `from_dataset_split` | Recurrence allow-list is `{train, val, test, full}`. `"validation"` is refused: the contract name is `val` (`X_val` shipped with decision 11). See [Partition Contract](#train--val--test-partition-contract). |
 | Driver exit `1` `stalled` / `timed_out` | Cascor: raise `--stall-seconds` / `--max-wall-seconds` only after confirming the run is still progressing; recurrence `timed_out` is the train socket budget. |
 | Missing correlation / empty plot | Correlation is only in the driver's `metrics_series.csv` (not `/v1/metrics/history`). A `/metrics` 404 degrades sampling (G-3), not the run. |
 | `--down` deleted results | `--down` must keep `artifacts/`. If results are gone, you either pointed at the wrong `RUN_ROOT` or ran `list_runs.py --prune --yes` (that path deletes the whole `RUN_DIR`). |
@@ -6385,7 +6381,7 @@ Canopy and the CLI resolve the same way. A canopy recurrence fit is always linea
 | A hand-written `POST /v1/crossval` on an E-H listener returns eval r² around −2×10^4 while the suite cell is about −0.1 | The body omitted the `train:` keys, so every fold fitted a new linear model at the listener's `default_ridge` (0.0). The start log prints `readout=linear` when the field is absent. Send the `train:` block. |
 | Raised `Settings.default_ridge` (or `JUNIPER_RECURRENCE_DEFAULT_RIDGE`) and the stack still solves ridge 0 | The copied YAML `service.default_ridge: 0.0` ranks above both. Change the YAML. |
 | `service.default_ridge: 1.0` and an RFF request that omits `ridge` | RFF's omitted ridge is `gcv`. `default_ridge` is the linear fallback only. |
-| `train.theta: null` together with `service.default_theta: 91` | The null is dropped on the wire, and a JSON null would fall back to `default_theta` anyway, so every fold uses 91. `stats.json` still labels θ data-driven (it reads the YAML θ). Data-driven θ needs `default_theta: null`. |
+| `train.theta: null` together with `service.default_theta: 91` | The null is dropped on the wire, and a JSON null would fall back to `default_theta` anyway, so every fold uses 91. `stats.json` labels it `service default from service.default_theta; train.theta is unset`, value 91 (it reads the YAML `train:` and `service:` blocks; a `default_theta` the service takes from its own environment is not visible to it). Data-driven θ needs `default_theta: null`. |
 | Train r² quoted as the held-out result | `final_metrics` are in-sample. Held-out numbers are the crossval eval fields. |
 | `POST /v1/crossval` returns 409 | One crossval at a time per service. Wait and retry; `GET /v1/crossval/status` shows only the last completed run. |
 | `rff_features` set while `readout` is omitted | Schema 422. RFF knobs require `readout: rff`. |
@@ -6480,7 +6476,7 @@ jq '.stats_error' "$RUN_DIR/manifest.json"
 | `outcome.timings` | driver `_phase` | The honest duration map. Cascor keys include `health_wait` / `dataset_create` / `stage` / `start` / `drive`. Recurrence keys include `train` / `crossval` (driver-measured; `/v1/train` is synchronous) |
 | `cascor.training_step_duration` | last-row histogram + per-poll deltas from `metrics_series.csv` | Gateable **work** is `total_steps`. `p50_seconds` / `p95_seconds` are **per-poll means** (`delta-sum / delta-count`); true per-step quantiles are not recoverable from a sum/count exposition — `basis` says so |
 | `cascor.candidate_correlation` | same CSV | Best sampled correlation **per growth round** (round = a `current_hidden_units` increment). Sole source — `/v1/metrics/history` does not carry it |
-| `recurrence.*` | train / crossval payloads + YAML `train` | `n_epochs`, `stopped_reason`, `theta` (explicit vs data-driven), readout rung, CV folds. **No duration field in this block** — train/crossval seconds live under `outcome.timings` |
+| `recurrence.*` | train / crossval payloads + YAML `train` / `service` | `n_epochs`, `stopped_reason`, `theta` (explicit, service default, or data-driven), readout rung, CV folds. **No duration field in this block** — train/crossval seconds live under `outcome.timings` |
 | `provenance.metrics_scraped` | driver `_metrics_scraped` | Two facts, never collapsed — see below |
 | `provenance.degraded_notes` | manifest | G-3 sampling errors, collect failures, plot skips, eval-disabled, G-6 mismatch, a target summary the driver could not produce (W5.5) |
 
@@ -6528,7 +6524,7 @@ jq '.outcome.timings' "$RUN_DIR/artifacts/results/stats.json"
 jq '.recurrence.n_epochs, .dataset.shapes.n_windows' "$RUN_DIR/artifacts/results/stats.json"
 ```
 
-`theta.note` is `"data-driven (resolved from per-window elapsed time)"` when the YAML left `theta` unset, else `"explicit"`. Sequence `n_windows` is input size (pinned: `test_build_stats_sequence_shapes_and_summary`).
+`theta.note` is `"explicit"` when the YAML sets `train.theta`. When it does not, the service fills θ from its `default_theta`, so the note is `"service default from service.default_theta; train.theta is unset"` (value: that default) when the YAML sets `service.default_theta`, and `"data-driven (resolved from per-window elapsed time)"` (value: null) when it sets neither. Sequence `n_windows` is input size (pinned: `test_build_stats_sequence_shapes_and_summary`).
 
 ### `scrape_confirmed` is tri-state
 
@@ -6643,18 +6639,18 @@ util/experiment_stack.bash --up --recurrence --config path/to/csv-import.yaml
 
 In the YAML, put `allow_truncation` / `max_bytes` under `dataset.params`. `max_bytes` can only lower the deployment ceiling.
 
-### Still open: `equities` silent truncation
+### `equities`: the same ruling, bounded in symbols
 
-The csv_import ruling (truncation acceptable, **silence** not) has **not** been applied to `equities`. On juniper-data `main`, `EquitiesGenerator._resolve_symbols` does `ordered = ordered[: params.max_symbols]` at `generators/equities/generator.py:286` — a bare slice, no 422, no `DatasetMeta.truncation`. Defect-register `APD-DATA-018` still cites `:264`; that anchor drifted (line 264 is now CIK parsing). The cap *value* for equities is a separate owner call.
+The csv_import ruling (truncation acceptable, **silence** not) was applied to `equities` by [juniper-data#354](https://github.com/pcalnon/juniper-data/pull/354), first released in juniper-data 0.14.0. The bare `ordered = ordered[: params.max_symbols]` slice in `EquitiesGenerator._resolve_symbols` is deleted. An over-cap universe is refused with a 422 unless truncation is allowed, and an allowed cut is annotated in `DatasetMeta.truncation`, as for csv_import. The cap is in **symbols** (14), not bytes: see [Equities Symbol Cap](#equities-symbol-cap).
 
-The E-H suite YAML (`util/experiments/suites/p4/e-h-real-data.yaml`) uses `symbols: [AAPL]` and does **not** set `max_symbols`, so that cell is unaffected. A run that *does* set `max_symbols` is the trap: the dataset looks complete.
+The E-H suite YAML (`util/experiments/suites/p4/e-h-real-data.yaml`) uses `symbols: [AAPL]` and does **not** set `max_symbols`, so that cell stays inside the cap with no annotation.
 
 | Symptom | Check / Fix |
 |---------|-------------|
 | Driver exit `2` `POST /v1/datasets rejected (422)` on csv_import | Source over 128 MiB without opt-in. Set `dataset.params.allow_truncation: true`, or export `JUNIPER_DATA_CSV_IMPORT_ALLOW_TRUNCATION=true` before `--up`. Read `DatasetMeta.truncation` on the result — a truncated import is permanently annotated. |
 | `FileNotFoundError` / path-traversal `ValueError` | `file_path` is not under `JUNIPER_DATA_IMPORT_DIR`. Export a real on-host directory; do not assume `/data/imports` exists. |
 | Cascor YAML with `generator: csv_import` | Expected ConfigError — not in `STAGEABLE_GENERATOR_ALIASES`. Use a stageable generator, or the recurrence path. |
-| Equities run silently shorter than `symbols` / the S&P universe | `max_symbols` sliced the ticker list (`:286`). Not the csv_import 422 class. |
+| Equities `POST /v1/datasets` 422, or a universe shorter than `symbols` | The symbol cap, not the byte cap: an over-cap universe is refused unless truncation is allowed, and an allowed cut writes `DatasetMeta.truncation`. Not a silent `max_symbols` slice; that is deleted (juniper-data#354). See [Equities Symbol Cap](#equities-symbol-cap). |
 
 Do **not** raise `JUNIPER_DATA_CSV_IMPORT_MAX_BYTES` without a streaming loader — 128 MiB of 20-feature rows is ~700k dicts and several GB of peak objects.
 
@@ -7668,7 +7664,7 @@ The previous default — `EQUITIES_DEFAULT_MAX_SYMBOLS = None`, meaning all **50
 | `equities_seq` | reuses `EquitiesGenerator._resolve_symbols` | Inherits the bound **and** the annotation. `EquitiesSeqParams` subclasses `EquitiesParams`, so the knobs need no redeclaration. |
 | Cache | `JUNIPER_DATA_EQUITIES_CACHE_DIR` | `experiment_stack.bash` `data_up` sets this to `$RUN_DIR/equities-cache`. It does **not** set the two cap env vars — they inherit. |
 | Default universe | bundled `sp500_constituents.csv` (**503** tickers) when `symbols` is omitted | `_resolve_symbols` sorts the CSV keys. Index *titles* over-claim (Russell 3000 published 2,923; Wilshire 5000 published 3,414 as of the 2026-09-04 count). |
-| Boundary | `ordered = ordered[: params.max_symbols]` at `generators/equities/generator.py:286` | Bare slice. **No 422**, no `DatasetMeta.truncation`, no record of dropped tickers. Register `APD-DATA-018` still cites `:264` — that line is now CIK parsing in `_load_constituents`. |
+| Boundary | `EquitiesGenerator._resolve_symbols` (`generators/equities/generator.py`) | A list within the cap passes unchanged. Over it: `InputTooLargeError` (422) unless truncation is allowed, else the authorised cut above. The bare `ordered[: params.max_symbols]` slice that truncated with no record is deleted (data#354, first released in juniper-data 0.14.0). |
 | Features | 15 `float32` columns in `EQUITIES_FEATURE_COLUMNS` (`defaults.py`) | Indices 0–9 are `open, high, low, close, volume, week52_high, week52_low, total_shares, market_cap, cost_basis`; then `dividend` (10), `split_ratio` (11), `days_since_week52_high` (12), `days_since_week52_low` (13), `days_since_report` (14). `Adj Close` is downloaded (`auto_adjust=False`) and kept as `adj_close` for optional `basis_price_field`; it is not a column of `X` (APD-DATA-041). |
 | `seed` | defaulted (`DEFAULT_GENERATOR_SEED`) | Unused for the temporal split. Real non-reproducibility: `end_date` defaults to the wall clock. |
 | Shares fill | `fundamentals_fill` default `"nan"` (`EQUITIES_DEFAULT_FUNDAMENTALS_FILL`) | Missing SEC facts stay NaN. `"zero"` writes `total_shares` / `market_cap` (and `days_since_report`) as 0.0 and keeps the rows; `"drop"` removes them. This knob does not fill `dividend` / `split_ratio`. |
@@ -7707,8 +7703,8 @@ To raise the **deployment** ceiling (not the request), set `JUNIPER_DATA_EQUITIE
 | Driver exit `2` / API `422` on default `equities` | You asked for the full S&P 500. Set `symbols` to ≤14 names, or set `allow_truncation: true` and accept a permanent `DatasetMeta.truncation`. |
 | Requested `max_symbols: 50` still caps at 14 | A request may only *lower* the ceiling. Raise `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS` on the **service**, then re-request. |
 | Truncated dataset looks complete | Authorised cut writes `meta.truncation` (`reason=universe_exceeded_symbol_cap`). Count `ticker_vocab` against `imported`. The old silent slice is deleted. |
-| Dataset create hangs / client timeout on default `equities` | You asked for the full S&P 500. Set `symbols` to a short list. `max_symbols` also bounds the list but **truncates silently**. |
-| Equities run silently shorter than `symbols` / the S&P universe | `max_symbols` sliced at `:286`. The NPZ looks complete. Count `ticker_vocab`. |
+| Dataset create hangs / client timeout on default `equities` | The service's `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS` was raised, so the full S&P 500 fans out again. Set `symbols` to a short list. `max_symbols` also bounds the list; past the cap a request is refused or cut with an annotation, never sliced silently. |
+| Equities run shorter than `symbols` / the S&P universe | Not a `max_symbols` slice: that is deleted (data#354). A symbol-cap cut writes `meta.truncation` (row above). Count `ticker_vocab` against `symbols`. |
 | `total_shares` / `market_cap` are all zeros | SEC returned no facts for that CIK, then `fundamentals_fill: zero`. Use `nan` or `drop` if zeros would train. |
 | Cascor YAML with `generator: equities_seq` | Expected `ConfigError` — not in `STAGEABLE_GENERATOR_ALIASES`. Use the recurrence path, or flat `equities`. |
 | `501` / `equities` unavailable | Install `juniper-data[equities]` into the **serving** env (`JuniperData` for the experiment stack; `JuniperCascor1` for in-process bench). |

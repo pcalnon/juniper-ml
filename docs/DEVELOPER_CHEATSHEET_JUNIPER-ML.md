@@ -339,7 +339,7 @@ Full shipped-vs-design split: [REFERENCE — Train / Val / Test Partition Contra
 
 REST `base_url` (data / cascor / recurrence HTTP clients on GitHub main): strip, case-insensitive `http(s)://` default, require `hostname` (not `netloc`), drop trailing `/` and `/v1`. Hostless values raise `Juniper*ConfigurationError` at init. Cascor WS streams (`CascorTrainingStream` / `CascorControlStream`) and `FakeCascorClient` stay `rstrip("/")` only. Extras floors do not yet require the new wheels — see [REFERENCE — HTTP Client Base-URL](REFERENCE.md#http-client-base-url-contract).
 
-Tip: `csv_import` refuses sources over 128 MiB with HTTP **422** until `dataset.params.allow_truncation` or `JUNIPER_DATA_CSV_IMPORT_ALLOW_TRUNCATION`. `file_path` is relative to `JUNIPER_DATA_IMPORT_DIR` (default `/data/imports` — export a real directory before `experiment_stack --up`). Cascor cannot stage it. `equities` `max_symbols` still silent-slices (`generator.py:286`). [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap).
+Tip: `csv_import` refuses sources over 128 MiB with HTTP **422** until `dataset.params.allow_truncation` or `JUNIPER_DATA_CSV_IMPORT_ALLOW_TRUNCATION`. `file_path` is relative to `JUNIPER_DATA_IMPORT_DIR` (default `/data/imports` — export a real directory before `experiment_stack --up`). Cascor cannot stage it. `equities` is bounded in symbols (14), not bytes: an over-cap universe is a 422 or, with `allow_truncation`, an annotated cut — never a silent slice (juniper-data#354). [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap), [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap).
 
 ---
 
@@ -882,7 +882,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Dataset driver import dies with `_PyObject_NextNotImplemented` | Prefix `LD_LIBRARY_PATH=`. Not a Playwright failure. |
 | Experiment `--up` misuse / exit `2` | Need one action + `--cascor` and/or `--recurrence`. |
 | Experiment health timeout | Check `$RUN_DIR/logs/`; default wait is `90s` (cold recurrence). Set `JUNIPER_EXP_PROJECT_DIR` in worktrees. |
-| Default `equities` create hangs / 30 s client timeout | Omitted `symbols` → all 503 S&P names (~34 min). Set `dataset.params.symbols`. `max_symbols` is a **silent** slice (`generator.py:286`). See [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap). |
+| Default `equities` create hangs / 30 s client timeout | The data service's `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS` was raised, so an omitted `symbols` fans out over all 503 S&P names again (~34 min). Set `dataset.params.symbols`. At the default ceiling (14) the same request is refused at once with a 422, unless truncation is allowed. `max_symbols` only lowers the cap, and an over-cap list is refused or, with `allow_truncation`, cut and annotated — never sliced silently (juniper-data#354). See [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap). |
 | Experiment `bring-up failed` / partial stack | `do_up` already ran `teardown_run` — read `teardown.json` + logs; confirm lockdirs gone before retry. |
 | Suite report only useful number is `wall_seconds` | Pre-#1643 artifact — re-run on current `run_suite`; `wall_seconds` is de-ratified (~5% Grafana-bridge move). |
 | `--compare-baseline` FAIL / missing tag but suite exits 0 | Expected (reporting only). Read `REPORT.md`; run `compare_baseline.py` for its 0/1/2 exits. |
@@ -917,7 +917,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | F-037 `sha=None` / one session "green" | Walk-up root needs both sibling repos; sample size 11 is the finding (`1/1` is not a claim). |
 | `register_open_set.py` `FileNotFoundError` | Cwd is not the repo root — the register path is relative. `cd` to juniper-ml, or run `register_status_crosscheck.py`. |
 | Register `AGREE` but a §4 cell is still OPEN | Whole-file `table_fixed` scan, or an ID-free count/rank sentence. Read the §4 row. [Close protocol](REFERENCE.md#defect-register-close-protocol). |
-| Driver exit `2` `dataset.split` / `from_dataset_split` | Recurrence allow-list is `{train, test, full}`. `"validation"` is refused; `X_val` is design-closed, not shipped. See [REFERENCE — Partition Contract](REFERENCE.md#train--val--test-partition-contract). |
+| Driver exit `2` `dataset.split` / `from_dataset_split` | Recurrence allow-list is `{train, val, test, full}`. `"validation"` is refused: the contract name is `val` (`X_val` shipped with decision 11). See [REFERENCE — Partition Contract](REFERENCE.md#train--val--test-partition-contract). |
 | `chop_all` logs `ERROR: PID file is empty` | Zero-byte pidfile is the empty arm of the same early wire (cleanup then `exit 1`). Re-plant; do not hand-create an empty file. |
 | Missing/empty pidfile but workers still up | Early wire already invoked cleanup; set `KILL_WORKERS=1` on that chop to opt into the pgrep reap before abort. |
 | Chop WARNING `cmdline does not match … skipping` | Stale/reused PID — `validate_pid` refused the kill; not a stop failure. Pidfile still truncates when `STOP_FAILURES == 0`. |

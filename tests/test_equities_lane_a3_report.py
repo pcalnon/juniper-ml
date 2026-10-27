@@ -5,7 +5,7 @@ Project:     Juniper
 Sub-Project: juniper-ml
 Application: tests
 Author:      Paul Calnon
-Version:     0.1.0
+Version:     0.2.0
 License:     MIT License
 
 ``util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py`` ``checks`` is the numpy-only
@@ -24,7 +24,11 @@ What this pins:
 * ``y_reg`` is the target when ``y`` is also present; a non-finite target is not finite;
 * a NaN in ``X`` is not finite; an all-constant last step has no nonzero column std;
 * fold 0's eval median uses ``n // (n_folds + 1)`` and the embargo, so a cut that
-  ignores either one does not match.
+  ignores either one does not match;
+* every report returns 0 and prints its summary. Before script 0.3.1 an all-constant
+  last step wrote the JSON and then exited 1: the summary line formatted the null
+  min-nonzero std with ``.3e`` (``NoneType.__format__``). The summary now says
+  ``none``, and the CLI exits 0.
 """
 
 from __future__ import annotations
@@ -34,6 +38,8 @@ import hashlib
 import importlib.util
 import io
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 import warnings
@@ -98,7 +104,7 @@ def _save_splits(path: Path, arrays: dict) -> None:
 
 
 class LaneA3ReportTest(unittest.TestCase):
-    def _report(self, arrays: dict, *, meta: dict | None = None, meta_missing: bool = False, archive: dict | None = None, archive_missing: bool = False, tolerate_summary: bool = False) -> dict:
+    def _report(self, arrays: dict, *, meta: dict | None = None, meta_missing: bool = False, archive: dict | None = None, archive_missing: bool = False) -> dict:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             npz = root / "today.npz"
@@ -117,26 +123,18 @@ class LaneA3ReportTest(unittest.TestCase):
             elif archive_missing:
                 archive_npz = root / "no-such-archive.npz"
             args = argparse.Namespace(npz=npz, meta=meta_path, archive_npz=archive_npz, archive_meta=None, n_folds=N_FOLDS, embargo=EMBARGO, out=out)
-            summary_error = None
+            stdout = io.StringIO()
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", RuntimeWarning)
-                with redirect_stdout(io.StringIO()):
-                    try:
-                        rc = checks.cmd_checks(args)
-                    except TypeError as exc:
-                        # The summary line formats a null min-nonzero std with ``.3e`` and
-                        # raises after the JSON is written. The note reads the JSON.
-                        summary_error = exc
-                        rc = None
-            self.assertTrue(out.is_file(), summary_error)
-            if tolerate_summary:
-                self.assertTrue(rc == 0 or summary_error is not None)
-            else:
-                if summary_error is not None:
-                    raise summary_error
-                self.assertEqual(rc, 0)
+                with redirect_stdout(stdout):
+                    # No exception is tolerated: the summary is printed after the JSON is
+                    # written, and a summary that raised used to turn a valid report into exit 1.
+                    rc = checks.cmd_checks(args)
+            self.assertTrue(out.is_file())
+            self.assertEqual(rc, 0)
             report = json.loads(out.read_text())
             report["_sha256"] = hashlib.sha256(npz.read_bytes()).hexdigest()
+            report["_stdout"] = stdout.getvalue()
             return report
 
     def test_finite_report_uses_the_documented_fold_cut_and_names_the_constant_column(self) -> None:
@@ -162,6 +160,9 @@ class LaneA3ReportTest(unittest.TestCase):
         self.assertEqual(report["X_last_step_full_per_feature_std_float64"][0], float(last_step.std(axis=0)[0]))
         self.assertEqual(report["X_last_step_full_per_feature_std_float32"][0], float(last_step.astype(np.float32).std(axis=0)[0]))
         self.assertNotEqual(report["X_last_step_full_per_feature_std_float64"][0], report["X_last_step_full_per_feature_std_float32"][0])
+        # One column varies, so the summary prints the smallest nonzero std as a number.
+        self.assertEqual(report["X_last_step_std_min_nonzero"], report["X_last_step_full_per_feature_std_float64"][0])
+        self.assertIn(f"min-nonzero={report['X_last_step_std_min_nonzero']:.3e} ", report["_stdout"])
         fold_size = N // (N_FOLDS + 1)
         eval_start = fold_size
         eval_stop = 2 * fold_size
@@ -227,11 +228,28 @@ class LaneA3ReportTest(unittest.TestCase):
     def test_a_nan_in_x_is_not_finite_and_an_all_constant_last_step_has_no_nonzero_std(self) -> None:
         nan = self._report(_arrays(nan_x=True))
         self.assertFalse(nan["full_view"]["X_all_finite"])
-        constant = self._report(_arrays(constant=True), tolerate_summary=True)
+        constant = self._report(_arrays(constant=True))
         self.assertIsNone(constant["X_last_step_std_min_nonzero"])
         self.assertEqual(constant["X_last_step_n_zero_std_columns"], N_FEAT)
         self.assertEqual(constant["X_last_step_zero_std_columns_value"], [3.0, 7.0])
         self.assertTrue(constant["full_view"]["X_all_finite"])
+        # The summary names the absence, and the run reaches its last line.
+        self.assertIn("min-nonzero=none (no column has a std > 0) ", constant["_stdout"])
+        self.assertIn("written: ", constant["_stdout"])
+
+    def test_the_cli_exits_0_when_every_last_step_column_is_constant(self) -> None:
+        """The defect was the exit status: ``checks`` wrote its JSON, then exited 1 on ``NoneType.__format__``."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            npz = root / "constant.npz"
+            _save_splits(npz, _arrays(constant=True))
+            out = root / "report.json"
+            proc = subprocess.run([sys.executable, str(SCRIPT), "checks", "--npz", str(npz), "--out", str(out)], capture_output=True, text=True, check=False, timeout=300)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertNotIn("Traceback", proc.stderr)
+            self.assertIn("min-nonzero=none (no column has a std > 0) ", proc.stdout)
+            self.assertIn(f"written: {out}", proc.stdout)
+            self.assertIsNone(json.loads(out.read_text())["X_last_step_std_min_nonzero"])
 
 
 if __name__ == "__main__":
