@@ -31,6 +31,21 @@ uses a ``set``. A whole-file diff would drown a real signal in that noise. So
 this gate asserts **named guards**, each a small source marker that is present
 if and only if the guard is implemented.
 
+Scoped sites: one function's code, not the whole file
+-----------------------------------------------------
+A whole-file substring match is satisfied by marker TEXT wherever it sits
+(register ``APD-ML-008``): in a docstring, in a comment, or in another function
+that legitimately carries the same expression. So a site may name a ``scope`` --
+a dotted path to one definition, such as ``FailedAuthThrottle.check`` -- and its
+markers are then matched only against that definition's code, re-rendered by
+``ast.unparse`` with every docstring dropped, so neither prose nor formatting can
+satisfy them. A scoped site may also list ``forbidden`` markers, which must NOT
+occur in that code. ``throttle-check-never-inserts`` (``APD-ECO-015``) needs both:
+its regression is an inserting read inside ``check()``, written with an
+expression the same module's other methods use legitimately, and only a scope
+can say "not here". It is still a structural proxy -- it reads code, not
+behaviour.
+
 The KNOWN_GAP ledger is self-maintaining
 ----------------------------------------
 Guards the forks have *not* adopted are recorded with ``status=KNOWN_GAP`` and
@@ -44,12 +59,13 @@ Scope, cross-repo gating, and cadence mirror ``test_ci_tools_drift.py`` /
 ``test_doc_tools_drift.py``: the sibling-walking assertions run under
 ``GITHUB_ACTIONS=true`` (the weekly ``docs-full-check`` job clones the siblings)
 or locally with ``JUNIPER_DRIFT_TEST_FORCE_LOCAL=1``. The registry's own
-structural checks, the matcher's negative control and the shared package's own
+structural checks, the matchers' negative controls and the shared package's own
 sites (read from this checkout; ``SharedPackageGuardTest``) always run.
 """
 
 from __future__ import annotations
 
+import ast
 import os
 import unittest
 from dataclasses import dataclass
@@ -103,6 +119,17 @@ class ForkSite:
     #: other, and substring presence cannot express it -- both calls are present
     #: either way. First-occurrence order can.
     ordered: bool = False
+    #: A dotted path from module level to ONE definition (``"FailedAuthThrottle.check"``).
+    #:
+    #: When set, the markers are matched only against that definition's code --
+    #: its body re-rendered by ``ast.unparse`` with every docstring dropped -- never
+    #: against the whole file. The same text elsewhere in the module cannot satisfy
+    #: the guard, and neither can marker text moved into a docstring or a comment
+    #: (``APD-ML-008``). A scope that cannot be found reads as the guard being ABSENT.
+    scope: str | None = None
+    #: Markers that must NOT occur in the scoped code. Scoped sites only: across a
+    #: whole module they would match legitimate code in the other functions.
+    forbidden: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -125,6 +152,14 @@ _DATA_APP = "juniper_data/api/app.py"
 _CASCOR_APP = "src/api/app.py"
 _CANOPY_SECURITY = "src/security.py"
 _SERVICE_CORE_SECURITY = "juniper-service-core/juniper_service_core/security.py"
+
+# ``throttle-check-never-inserts`` (APD-ECO-015) asks the same thing of every copy:
+# inside ``check()``, the failure table is read through ``.get()`` and never
+# subscripted or ``setdefault``-ed. Both forbidden reads insert an entry (a
+# ``defaultdict`` subscript and ``setdefault`` alike); ``.get()`` never does.
+_THROTTLE_CHECK_SCOPE = "FailedAuthThrottle.check"
+_THROTTLE_CHECK_MARKERS = ("self._failures.get(",)
+_THROTTLE_CHECK_FORBIDDEN = ("self._failures[", "self._failures.setdefault(")
 
 
 GUARDS: tuple[Guard, ...] = (
@@ -235,6 +270,37 @@ GUARDS: tuple[Guard, ...] = (
         ),
     ),
     Guard(
+        guard_id="throttle-check-never-inserts",
+        summary=("FailedAuthThrottle.check() runs on every non-exempt request, BEFORE authentication, and must read the failure table without inserting into it. Pruning -- the age sweep and the 10,000-entry _MAX_ENTRIES cap -- runs only from record_failure(), so the inserting read all three copies carried until 2026-10-08 (a defaultdict subscript) grew the table by one entry per distinct source IP, forever, under open auth or valid-key traffic, where nothing records a failure."),
+        register_ids=("APD-ECO-015",),
+        status=ENFORCED,
+        canonical="juniper-service-core/juniper_service_core/security.py",
+        sites=(
+            # SCOPED to check() and matched against its code, because whole-file
+            # markers are vacuous here in both directions. record_failure() makes the
+            # same ``self._failures.get(`` read, so a regression confined to check()
+            # would still satisfy a whole-file marker; and _maybe_cleanup() and
+            # record_failure() subscript the table legitimately, so a whole-file
+            # ``self._failures[`` could never be forbidden. All three copies were fixed
+            # before this guard existed (ml#2187, juniper-cascor#710, juniper-data#476),
+            # so it entered ENFORCED and was never a KNOWN_GAP. juniper-canopy has no
+            # FailedAuthThrottle at all (APD-ECO-010, open), so it is not a site.
+            #
+            # Still a structural proxy: an alias (``failures = self._failures``) or a
+            # helper method that inserts would get past it. The behavioural pins are
+            # each repo's own test, and each fails on its pre-fix code with
+            # ``assert 1000 == 0``: service-core's
+            # test_failed_auth_throttle_check_does_not_track_unseen_ips, juniper-cascor's
+            # test_check_never_inserts_an_unseen_source_ip and juniper-data's
+            # test_check_never_allocates_an_entry. A behavioural arm here could reach the
+            # shared package only -- the forks are other repos -- and ci.yml installs no
+            # fastapi, which that module imports, so it would skip where it matters.
+            ForkSite("juniper-data", _DATA_SECURITY, _THROTTLE_CHECK_MARKERS, scope=_THROTTLE_CHECK_SCOPE, forbidden=_THROTTLE_CHECK_FORBIDDEN),
+            ForkSite("juniper-cascor", _CASCOR_SECURITY, _THROTTLE_CHECK_MARKERS, scope=_THROTTLE_CHECK_SCOPE, forbidden=_THROTTLE_CHECK_FORBIDDEN),
+            ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, _THROTTLE_CHECK_MARKERS, scope=_THROTTLE_CHECK_SCOPE, forbidden=_THROTTLE_CHECK_FORBIDDEN),
+        ),
+    ),
+    Guard(
         guard_id="cors-outside-auth",
         summary=("CORS must execute OUTSIDE SecurityMiddleware. add_middleware prepends, so the LAST registration runs outermost -- registering CORS first put auth in front of it and every browser preflight to a non-exempt path was answered 401. A preflight carries no X-API-Key by construction, so no browser client on a configured origin could reach a protected endpoint at all."),
         register_ids=("APD-CASCOR-001b", "APD-DATA-035"),
@@ -279,16 +345,80 @@ def markers_out_of_order(source: str, site: ForkSite) -> list[str]:
     return [site.markers[i] for i in range(1, len(positions)) if positions[i] < positions[i - 1]]
 
 
+_DEFINITION_TYPES = (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+
+
+def _is_docstring(statement: ast.stmt) -> bool:
+    return isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Constant) and isinstance(statement.value.value, str)
+
+
+def scoped_code(source: str, scope: str) -> str | None:
+    """Return the code of the one definition ``scope`` names in ``source``, else ``None``.
+
+    ``scope`` is a dotted path of class and function names from module level. Where
+    a name is defined twice in one body the LAST definition is taken, because that
+    is the one Python binds: a regression appended below a fixed method must not be
+    able to hide behind it. The body is re-rendered statement by statement with
+    ``ast.unparse`` after every docstring in it is dropped, so comments, docstrings
+    and formatting can neither satisfy a marker nor trip a forbidden one. A string
+    literal that is NOT a docstring is code to ``ast``, and is still matched. ``None``
+    -- the file does not parse, or holds no such definition -- means the guard is
+    ABSENT and must never be read as a pass.
+    """
+    try:
+        body: list[ast.stmt] = ast.parse(source).body
+    except SyntaxError:
+        return None
+    definition: ast.ClassDef | ast.FunctionDef | ast.AsyncFunctionDef | None = None
+    for name in scope.split("."):
+        matches = [child for child in body if isinstance(child, _DEFINITION_TYPES) and child.name == name]
+        if not matches:
+            return None
+        definition = matches[-1]
+        body = definition.body
+    if definition is None:
+        return None
+    for inner in [node for node in ast.walk(definition) if isinstance(node, _DEFINITION_TYPES)]:
+        if inner.body and _is_docstring(inner.body[0]):
+            placeholder: list[ast.stmt] = [ast.Pass()]
+            inner.body = inner.body[1:] or placeholder
+    return "\n".join(ast.unparse(statement) for statement in definition.body)
+
+
+def site_code(source: str, site: ForkSite) -> str | None:
+    """The text ``site``'s markers are matched against: the whole file, or its scoped code."""
+    return source if site.scope is None else scoped_code(source, site.scope)
+
+
+def site_requirement(site: ForkSite) -> str:
+    """What ``site`` asks of its file, in words, for the failure messages."""
+    words = f"markers {list(site.markers)}"
+    if site.ordered:
+        words += ", in order"
+    if site.scope is not None:
+        words += f", in the code of {site.scope} (docstrings and comments excluded)"
+    if site.forbidden:
+        words += f", and none of {list(site.forbidden)} there"
+    return words
+
+
 def guard_is_present(source: str, site: ForkSite) -> bool:
-    """Return True when every marker for ``site`` appears in ``source``.
+    """Return True when ``site``'s guard holds in ``source``.
 
     All markers must be present: a guard that needs two cooperating pieces (the
     stream read *and* the method gate) is not implemented by either alone. For
-    an ``ordered`` site they must additionally appear in the declared order.
+    an ``ordered`` site they must additionally appear in the declared order. For
+    a ``scope``d site all of that is judged on the scoped code alone, a scope that
+    cannot be found is a missing guard, and no ``forbidden`` marker may occur there.
     """
-    if not all(marker in source for marker in site.markers):
+    code = site_code(source, site)
+    if code is None:
         return False
-    return not markers_out_of_order(source, site)
+    if not all(marker in code for marker in site.markers):
+        return False
+    if any(marker in code for marker in site.forbidden):
+        return False
+    return not markers_out_of_order(code, site)
 
 
 def _site_path(site: ForkSite, juniper_ml_root: Path, ecosystem_root: Path | None) -> Path | None:
@@ -341,6 +471,13 @@ class GuardRegistryStructureTest(unittest.TestCase):
                         self.assertTrue(marker.strip(), "an empty marker matches everything")
                     if site.ordered:
                         self.assertGreaterEqual(len(site.markers), 2, "an ordered site needs two markers; one can never be out of order, so the flag would be decorative")
+                    if site.scope is not None:
+                        self.assertTrue(all(part.isidentifier() for part in site.scope.split(".")), f"scope {site.scope!r} must be a dotted path of names")
+                    if site.forbidden:
+                        self.assertIsNotNone(site.scope, "a forbidden marker needs a scope: across a whole module it matches legitimate code in the other functions")
+                        for marker in site.forbidden:
+                            self.assertTrue(marker.strip(), "an empty forbidden marker matches everything, so the guard could never hold")
+                        self.assertFalse(set(site.markers) & set(site.forbidden), "a marker both required and forbidden can never hold")
 
     def test_root_anchors_are_fork_repos(self):
         """The root is located by a SUBSET of the fork repos, never by a repo no site can name."""
@@ -395,6 +532,79 @@ class GuardRegistryStructureTest(unittest.TestCase):
         self.assertEqual(markers_out_of_order("alpha only", ordered), [])
         self.assertEqual(markers_out_of_order("beta then alpha", ordered), ["beta"])
 
+    # -- the scoped matcher: negative controls, always on ------------------------
+    #
+    # ``_SCOPED_FIXED`` is the fixed shape of ``FailedAuthThrottle`` in miniature;
+    # each control below breaks it the way a regression would and must read ABSENT.
+    _SCOPED_FIXED = "\n".join(
+        (
+            "class Throttle:",
+            "    def check(self, ip):",
+            '        """Read-only probe."""',
+            "        count = self._failures.get(ip, 0)",
+            "        return count",
+            "",
+            "    def record_failure(self, ip):",
+            "        count = self._failures.get(ip, 0)",
+            "        self._failures[ip] = count + 1",
+            "",
+        )
+    )
+    _SCOPED_SITE = ForkSite("juniper-data", "x.py", ("self._failures.get(",), scope="Throttle.check", forbidden=("self._failures[", "self._failures.setdefault("))
+
+    def test_scoped_matcher_holds_on_the_fixed_shape(self):
+        """Positive control: without it, every negative below could pass by matching nothing."""
+        self.assertTrue(guard_is_present(self._SCOPED_FIXED, self._SCOPED_SITE))
+
+    def test_scoped_matcher_reads_only_the_named_definition(self):
+        """record_failure() keeps the ``.get(`` read; it must not vouch for check()."""
+        regressed = self._SCOPED_FIXED.replace("        count = self._failures.get(ip, 0)\n        return count\n", "        return self._failures[ip]\n", 1)
+        self.assertNotEqual(regressed, self._SCOPED_FIXED)
+        whole_file = ForkSite("juniper-data", "x.py", ("self._failures.get(",))
+        self.assertTrue(guard_is_present(regressed, whole_file), "the whole-file form is fooled by record_failure -- the reason the site is scoped")
+        self.assertFalse(guard_is_present(regressed, self._SCOPED_SITE))
+
+    def test_scoped_matcher_ignores_docstrings_and_comments(self):
+        """Prose is not code, in either direction (the APD-ML-008 docstring move)."""
+        self.assertNotIn("Read-only probe", scoped_code(self._SCOPED_FIXED, "Throttle.check"), "a docstring reached the matched code")
+        # A required marker kept only in a docstring and a comment does not count ...
+        prose_only = self._SCOPED_FIXED.replace(
+            '        """Read-only probe."""\n        count = self._failures.get(ip, 0)\n',
+            '        """Reads self._failures.get(ip, 0)."""\n        # count = self._failures.get(ip, 0)\n        count = 0\n',
+        )
+        self.assertNotEqual(prose_only, self._SCOPED_FIXED)
+        self.assertFalse(guard_is_present(prose_only, ForkSite("juniper-data", "x.py", ("self._failures.get(",), scope="Throttle.check")))
+        # ... and a docstring that NAMES a forbidden read does not trip the guard.
+        warned = self._SCOPED_FIXED.replace('"""Read-only probe."""', '"""Never self._failures[ip] or self._failures.setdefault(ip)."""')
+        self.assertNotEqual(warned, self._SCOPED_FIXED)
+        self.assertTrue(guard_is_present(warned, self._SCOPED_SITE))
+
+    def test_scoped_matcher_refuses_forbidden_code(self):
+        """``.get()`` alongside an inserting read is still an inserting check()."""
+        for insert in ("        self._failures.setdefault(ip, 0)\n", "        self._failures[ip] = count\n"):
+            with self.subTest(insert=insert.strip()):
+                regressed = self._SCOPED_FIXED.replace("        return count\n", insert + "        return count\n", 1)
+                self.assertNotEqual(regressed, self._SCOPED_FIXED)
+                self.assertFalse(guard_is_present(regressed, self._SCOPED_SITE))
+
+    def test_scoped_matcher_reads_the_definition_python_binds(self):
+        """A second ``check`` below the first replaces it at runtime, so it is the one judged."""
+        shadowed = self._SCOPED_FIXED + "\n    def check(self, ip):\n        return self._failures[ip]\n"
+        self.assertFalse(guard_is_present(shadowed, self._SCOPED_SITE))
+
+    def test_scoped_matcher_reads_a_missing_scope_as_absent(self):
+        """A renamed method, a moved class or a file that no longer parses is not a pass."""
+        cases = {
+            "method renamed": self._SCOPED_FIXED.replace("def check(", "def probe("),
+            "class renamed": self._SCOPED_FIXED.replace("class Throttle:", "class Limiter:"),
+            "does not parse": self._SCOPED_FIXED.replace("def check(self, ip):", "def check(self, ip:"),
+        }
+        for name, source in cases.items():
+            with self.subTest(case=name):
+                self.assertNotEqual(source, self._SCOPED_FIXED)
+                self.assertIsNone(scoped_code(source, "Throttle.check"))
+                self.assertFalse(guard_is_present(source, self._SCOPED_SITE))
+
 
 class ServiceForkDriftTest(unittest.TestCase):
     """Assert each guard's real state in each fork's working tree."""
@@ -432,12 +642,24 @@ class ServiceForkDriftTest(unittest.TestCase):
                     source = self._read_site(site)
                     if source is None:
                         self.skipTest(f"{site.repo}/{site.path} not readable")
-                    missing = [m for m in site.markers if m not in source]
+                    code = site_code(source, site)
+                    self.assertIsNotNone(
+                        code,
+                        f"Guard '{guard.guard_id}' is missing from {site.repo}/{site.path}: it is scoped to {site.scope}, and the file holds no such definition or does not parse. " f"Until the registry's scope is corrected the guard checks nothing there. Register: {', '.join(guard.register_ids)}. " f"What it protects: {guard.summary}",
+                    )
+                    missing = [m for m in site.markers if m not in code]
+                    present = [m for m in site.forbidden if m in code]
+                    scope_note = f"; matched against the code of {site.scope} only" if site.scope else ""
+                    scope_note += f"; forbidden code there too: {present}" if present else ""
                     self.assertFalse(
                         missing,
-                        f"Guard '{guard.guard_id}' is missing from {site.repo}/{site.path} " f"(absent markers: {missing}). This guard is ENFORCED because it was " f"already fixed there; its disappearance is a regression of " f"{', '.join(guard.register_ids)}. Canonical implementation: {guard.canonical}. " f"What it protects: {guard.summary}",
+                        f"Guard '{guard.guard_id}' is missing from {site.repo}/{site.path} " f"(absent markers: {missing}{scope_note}). This guard is ENFORCED because it was " f"already fixed there; its disappearance is a regression of " f"{', '.join(guard.register_ids)}. Canonical implementation: {guard.canonical}. " f"What it protects: {guard.summary}",
                     )
-                    disordered = markers_out_of_order(source, site)
+                    self.assertFalse(
+                        present,
+                        f"Guard '{guard.guard_id}' is broken in {site.repo}/{site.path}: the code of {site.scope} contains {present}, which the guard forbids there. " f"This is a regression of {', '.join(guard.register_ids)}. Canonical implementation: {guard.canonical}. " f"What it protects: {guard.summary}",
+                    )
+                    disordered = markers_out_of_order(code, site)
                     self.assertFalse(
                         disordered,
                         f"Guard '{guard.guard_id}' has all its markers in {site.repo}/{site.path} " f"but in the WRONG ORDER (first out of place: {disordered}). For an ordered " f"site the sequence IS the guard -- every marker being present proves nothing. " f"This is a regression of {', '.join(guard.register_ids)}. " f"What it protects: {guard.summary}",
@@ -496,7 +718,7 @@ class SharedPackageGuardTest(unittest.TestCase):
                 if guard.status == ENFORCED:
                     self.assertTrue(
                         guard_is_present(source, site),
-                        f"Guard '{guard.guard_id}' is missing from the shared package's {site.path} " f"(markers {list(site.markers)}{', in order' if site.ordered else ''}). juniper-recurrence imports " f"this copy, so the regression reaches it without any change of its own. " f"Register: {', '.join(guard.register_ids)}. What it protects: {guard.summary}",
+                        f"Guard '{guard.guard_id}' is missing from the shared package's {site.path} " f"(required: {site_requirement(site)}). juniper-recurrence imports " f"this copy, so the regression reaches it without any change of its own. " f"Register: {', '.join(guard.register_ids)}. What it protects: {guard.summary}",
                     )
                 else:
                     self.assertFalse(

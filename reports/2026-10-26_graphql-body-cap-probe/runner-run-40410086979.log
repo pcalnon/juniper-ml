@@ -1,0 +1,210 @@
+GraphQL body-cap probe	Set up job	﻿2026-10-26T22:08:27.7078788Z Current runner version: '2.338.0'
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7105766Z ##[group]Runner Image Provisioner
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7106654Z Hosted Compute Agent
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7107267Z Version: 20261021.618
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7107856Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7108495Z Build Date: 2026-10-21T00:45:21Z
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7109183Z Worker ID: {adc05135-d837-490c-b925-1f15747d561c}
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7109815Z Region: southcentralus
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7110359Z Cloud: Azure
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7110894Z ##[endgroup]
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7112770Z ##[group]Operating System
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7113455Z Ubuntu
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7113910Z 24.04.5
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7114405Z LTS
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7114921Z ##[endgroup]
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7115404Z ##[group]Runner Image
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7115984Z Image: ubuntu-24.04
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7116485Z Version: 20261012.334.1
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7117452Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7119217Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7120177Z ##[endgroup]
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7121178Z ##[group]GITHUB_TOKEN Permissions
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7123370Z Contents: read
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7123889Z Metadata: read
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7124388Z ##[endgroup]
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7126532Z Secret source: Actions
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7127339Z Cache mode: write
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7128058Z Prepare workflow directory
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7389423Z Prepare all required actions
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.7423137Z Getting action download info
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:27.9737513Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+GraphQL body-cap probe	Set up job	2026-10-26T22:08:28.1127097Z Complete job name: GraphQL body-cap probe
+GraphQL body-cap probe	Checkout	﻿2026-10-26T22:08:28.1687751Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1688338Z with:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1688589Z   persist-credentials: false
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1688887Z   repository: pcalnon/juniper-ml
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1690979Z   token: ***
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1691220Z   ssh-strict: true
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1691595Z   ssh-user: git
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1691835Z   clean: true
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1692089Z   sparse-checkout-cone-mode: true
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1692384Z   fetch-depth: 1
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1692626Z   fetch-tags: false
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1692878Z   show-progress: true
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1693131Z   lfs: false
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1693369Z   submodules: false
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1693631Z   set-safe-directory: true
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1693918Z   allow-unsafe-pr-checkout: false
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.1694285Z ##[endgroup]
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2393280Z Syncing repository: pcalnon/juniper-ml
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2394484Z ##[group]Getting Git version info
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2394968Z Working directory is '/home/runner/work/juniper-ml/juniper-ml'
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2395578Z [command]/usr/bin/git version
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2439731Z git version 2.55.0
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2453145Z ##[endgroup]
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2460217Z Temporarily overriding HOME='/home/runner/work/_temp/86922d45-5ad6-4ca6-ac9b-4ce1565d8e3d' before making global git config changes
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2464076Z Adding repository directory to the temporary git global config as a safe directory
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2464984Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/juniper-ml/juniper-ml
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2502724Z Deleting the contents of '/home/runner/work/juniper-ml/juniper-ml'
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2505131Z ##[group]Determining repository object format
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2506294Z ##[endgroup]
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2506965Z ##[group]Initializing the repository
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2509411Z [command]/usr/bin/git init /home/runner/work/juniper-ml/juniper-ml
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2599235Z hint: Using 'master' as the name for the initial branch. This default branch name
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2600140Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2600656Z hint: to use in all of your new repositories, which will suppress this warning,
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2601070Z hint: call:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2601301Z hint:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2601704Z hint: 	git config --global init.defaultBranch <name>
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2602047Z hint:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2602366Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2602881Z hint: 'development'. The just-created branch can be renamed via this command:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2603292Z hint:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2603528Z hint: 	git branch -m <name>
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2603791Z hint:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2604143Z hint: Disable this message with "git config set advice.defaultBranchName false"
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2642536Z Initialized empty Git repository in /home/runner/work/juniper-ml/juniper-ml/.git/
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2678067Z [command]/usr/bin/git remote add origin https://github.com/pcalnon/juniper-ml
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2679639Z ##[endgroup]
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2680275Z ##[group]Disabling automatic garbage collection
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2681922Z [command]/usr/bin/git config --local gc.auto 0
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2708105Z ##[endgroup]
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2708954Z ##[group]Setting up auth
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2709420Z Removing SSH command configuration
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2712855Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.2737166Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3003302Z Removing HTTP extra header
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3007623Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3032306Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3234277Z Removing includeIf entries pointing to credentials config files
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3238828Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3263150Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3442894Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3473629Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/juniper-ml/juniper-ml/.git.path /home/runner/work/_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3498967Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/juniper-ml/juniper-ml/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3525559Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3549261Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3571156Z ##[endgroup]
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3571775Z ##[group]Fetching the repository
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:28.3576547Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +cafc4c1eb7473a4e7e33a25c729999365b98f654:refs/remotes/pull/2361/merge
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:31.5415004Z From https://github.com/pcalnon/juniper-ml
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:31.5416013Z  * [new ref]         cafc4c1eb7473a4e7e33a25c729999365b98f654 -> pull/2361/merge
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:31.5423546Z ##[endgroup]
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:31.5423919Z ##[group]Determining the checkout info
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:31.5424275Z ##[endgroup]
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:31.5428859Z [command]/usr/bin/git sparse-checkout disable
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:31.5464610Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:31.5489942Z ##[group]Checking out the ref
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:31.5490319Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/2361/merge
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5554685Z Updating files:  99% (5520/5526)
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5555376Z Updating files: 100% (5526/5526)
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5555708Z Updating files: 100% (5526/5526), done.
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5592300Z Note: switching to 'refs/remotes/pull/2361/merge'.
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5592656Z 
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5592878Z You are in 'detached HEAD' state. You can look around, make experimental
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5593291Z changes and commit them, and you can discard any commits you make in this
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5593859Z state without impacting any branches by switching back to a branch.
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5594182Z 
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5594404Z If you want to create a new branch to retain commits you create, you may
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5594837Z do so (now or later) by using -c with the switch command. Example:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5595096Z 
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5595228Z   git switch -c <new-branch-name>
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5595416Z 
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5595543Z Or undo this operation with:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5595760Z 
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5595853Z   git switch -
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5595988Z 
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5596209Z Turn off this advice by setting config variable advice.detachedHead to false
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5596487Z 
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5596845Z HEAD is now at cafc4c1 Merge 968aac653e0a06644c2ae446e44398e15db0453d into a829804b6500b1f1616c49f2f4c65d75956cfcf1
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.5966198Z ##[endgroup]
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6002935Z [command]/usr/bin/git log -1 --format=%H
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6022638Z cafc4c1eb7473a4e7e33a25c729999365b98f654
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6029306Z ##[group]Removing auth
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6029597Z Removing SSH command configuration
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6032427Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6055743Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6232406Z Removing HTTP extra header
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6234610Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6259634Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6436663Z Removing includeIf entries pointing to credentials config files
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6438698Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6461430Z includeif.gitdir:/home/runner/work/juniper-ml/juniper-ml/.git.path
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6462028Z includeif.gitdir:/home/runner/work/juniper-ml/juniper-ml/.git/worktrees/*.path
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6462315Z includeif.gitdir:/github/workspace/.git.path
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6462587Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6468981Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/juniper-ml/juniper-ml/.git.path
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6487357Z /home/runner/work/_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6496410Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/juniper-ml/juniper-ml/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-3c0c8532\-f771\-4035\-9539\-6a0e3affa36f\.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6533866Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/juniper-ml/juniper-ml/.git/worktrees/*.path
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6551509Z /home/runner/work/_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6557794Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/juniper-ml/juniper-ml/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-3c0c8532\-f771\-4035\-9539\-6a0e3affa36f\.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6584571Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6602407Z /github/runner_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6608084Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-3c0c8532\-f771\-4035\-9539\-6a0e3affa36f\.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6638204Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6656156Z /github/runner_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6661657Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-3c0c8532\-f771\-4035\-9539\-6a0e3affa36f\.config
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6688090Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6863772Z Removing credentials config '/home/runner/work/_temp/git-credentials-3c0c8532-f771-4035-9539-6a0e3affa36f.config'
+GraphQL body-cap probe	Checkout	2026-10-26T22:08:32.6871860Z ##[endgroup]
+GraphQL body-cap probe	Probe	﻿2026-10-26T22:08:32.7036954Z ##[group]Run python3 -I util/ad-hoc/2026-10-26_graphql_body_cap_probe.py --mode both --bisect --sizes 100000,125000,130000,131000,140000,262144,524288,1048576,2097152,4194304,8388608,16777216
+GraphQL body-cap probe	Probe	2026-10-26T22:08:32.7037747Z [36;1mpython3 -I util/ad-hoc/2026-10-26_graphql_body_cap_probe.py --mode both --bisect --sizes 100000,125000,130000,131000,140000,262144,524288,1048576,2097152,4194304,8388608,16777216[0m
+GraphQL body-cap probe	Probe	2026-10-26T22:08:32.7247693Z shell: /usr/bin/bash -e {0}
+GraphQL body-cap probe	Probe	2026-10-26T22:08:32.7247985Z env:
+GraphQL body-cap probe	Probe	2026-10-26T22:08:32.7249864Z   GITHUB_TOKEN: ***
+GraphQL body-cap probe	Probe	2026-10-26T22:08:32.7250025Z ##[endgroup]
+GraphQL body-cap probe	Probe	2026-10-26T22:08:33.1111191Z GraphQL body-cap probe (GitHub-hosted runner; https://api.github.com/graphql; timeout 60s)
+GraphQL body-cap probe	Probe	2026-10-26T22:08:33.1112001Z   comment     100,000 B  HTTP 200     0.34s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:33.4025567Z   comment     125,000 B  HTTP 200     0.29s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:33.6988891Z   comment     130,000 B  HTTP 200     0.30s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:34.0279526Z   comment     131,000 B  HTTP 200     0.33s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:34.3978553Z   comment     140,000 B  HTTP 200     0.37s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:34.7675650Z   comment     262,144 B  HTTP 200     0.37s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:35.1838811Z   comment     524,288 B  HTTP 200     0.41s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:35.7258582Z   comment   1,048,576 B  HTTP 200     0.54s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:36.5417173Z   comment   2,097,152 B  HTTP 200     0.81s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:37.4650693Z   comment   4,194,304 B  HTTP 200     0.91s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:39.3521880Z   comment   8,388,608 B  HTTP 200     1.87s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:42.6678650Z   comment  16,777,216 B  HTTP 200     3.29s  ACCEPTED 
+GraphQL body-cap probe	Probe	2026-10-26T22:08:42.6679111Z   comment: largest accepted 16,777,216 B; nothing refused
+GraphQL body-cap probe	Probe	2026-10-26T22:08:42.9935150Z   variable    100,000 B  HTTP 200     0.33s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:43.2850058Z   variable    125,000 B  HTTP 200     0.29s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:43.5833007Z   variable    130,000 B  HTTP 200     0.30s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:43.8934919Z   variable    131,000 B  HTTP 200     0.31s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:44.1998061Z   variable    140,000 B  HTTP 200     0.31s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:44.5624429Z   variable    262,144 B  HTTP 200     0.36s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:44.9745788Z   variable    524,288 B  HTTP 200     0.41s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:45.4397954Z   variable  1,048,576 B  HTTP 200     0.46s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:45.9823363Z   variable  2,097,152 B  HTTP 200     0.54s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:46.6688742Z   variable  4,194,304 B  HTTP 200     0.68s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:48.0298341Z   variable  8,388,608 B  HTTP 200     1.35s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:49.4541613Z   variable 16,777,216 B  HTTP 200     1.40s  ACCEPTED Variable $pad is declared by anonymous query but not used
+GraphQL body-cap probe	Probe	2026-10-26T22:08:49.4542419Z   variable: largest accepted 16,777,216 B; nothing refused
+GraphQL body-cap probe	Post Checkout	﻿2026-10-26T22:08:49.4728737Z Post job cleanup.
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5340961Z [command]/usr/bin/git version
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5372413Z git version 2.55.0
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5396318Z Temporarily overriding HOME='/home/runner/work/_temp/3fd6a30a-6b6d-4585-8bc8-4297a4421143' before making global git config changes
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5397413Z Adding repository directory to the temporary git global config as a safe directory
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5400398Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/juniper-ml/juniper-ml
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5429734Z Removing SSH command configuration
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5434852Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5462467Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5646307Z Removing HTTP extra header
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5650983Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5679986Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5860019Z Removing includeIf entries pointing to credentials config files
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5865809Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+GraphQL body-cap probe	Post Checkout	2026-10-26T22:08:49.5894403Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+GraphQL body-cap probe	Complete job	﻿2026-10-26T22:08:49.6202026Z Cleaning up orphan processes
