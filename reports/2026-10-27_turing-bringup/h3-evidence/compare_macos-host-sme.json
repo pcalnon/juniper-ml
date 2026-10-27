@@ -1,0 +1,169 @@
+{
+ "report": "reports/2026-10-27_turing-bringup/2026-10-27T0135Z_macos-host-sme.md",
+ "independent_probe": "independent probe, 2026-10-27T01:20:54Z",
+ "independent_collected_at": "2026-10-27T01:20:54Z",
+ "agent_collected_at": "2026-10-27T01:22:11Z",
+ "delta_seconds": 77,
+ "within_window": true,
+ "gates": [
+  {
+   "gate": "G-ALIAS",
+   "check_status": "fail",
+   "check_conditions": [
+    "origins"
+   ],
+   "row": "| G-ALIAS | fail | `1 of 3 fail: origins` | origins | none | aliases, keys |",
+   "report_status": "fail",
+   "report_conditions": [
+    "origins"
+   ],
+   "columns": "labelled",
+   "report_pass": [
+    "aliases",
+    "keys"
+   ],
+   "check_pass": [
+    "aliases",
+    "keys"
+   ],
+   "verdict": "agree"
+  },
+  {
+   "gate": "G-SIGN",
+   "check_status": "fail",
+   "check_conditions": [
+    "integration"
+   ],
+   "row": "| G-SIGN | fail | `1 of 5 fail: integration` | integration | none | signing-config, pinentry, agent-socket, external-cache |",
+   "report_status": "fail",
+   "report_conditions": [
+    "integration"
+   ],
+   "columns": "labelled",
+   "report_pass": [
+    "agent-socket",
+    "external-cache",
+    "pinentry",
+    "signing-config"
+   ],
+   "check_pass": [
+    "agent-socket",
+    "external-cache",
+    "pinentry",
+    "signing-config"
+   ],
+   "verdict": "agree"
+  },
+  {
+   "gate": "G-SEC",
+   "check_status": "fail",
+   "check_conditions": [
+    "key-exports",
+    "sip"
+   ],
+   "row": "| G-SEC | fail | `2 of 6 fail: sip, key-exports` | sip, key-exports | none | authenticated-root, firewall, filevault, key-modes |",
+   "report_status": "fail",
+   "report_conditions": [
+    "key-exports",
+    "sip"
+   ],
+   "columns": "labelled",
+   "report_pass": [
+    "authenticated-root",
+    "filevault",
+    "firewall",
+    "key-modes"
+   ],
+   "check_pass": [
+    "authenticated-root",
+    "filevault",
+    "firewall",
+    "key-modes"
+   ],
+   "verdict": "agree"
+  },
+  {
+   "gate": "G-TOOLS",
+   "check_status": "fail",
+   "check_conditions": [
+    "kubectl"
+   ],
+   "row": "| G-TOOLS | fail | `1 of 2 fail: kubectl` | kubectl | none | local-bin |",
+   "report_status": "fail",
+   "report_conditions": [
+    "kubectl"
+   ],
+   "columns": "labelled",
+   "report_pass": [
+    "local-bin"
+   ],
+   "check_pass": [
+    "local-bin"
+   ],
+   "verdict": "agree"
+  },
+  {
+   "gate": "G-ENV",
+   "check_status": "fail",
+   "check_conditions": [
+    "parent-agents-md"
+   ],
+   "row": "| G-ENV | fail | `1 of 2 fail: parent-agents-md` | parent-agents-md | none | conda-envs |",
+   "report_status": "fail",
+   "report_conditions": [
+    "parent-agents-md"
+   ],
+   "columns": "labelled",
+   "report_pass": [
+    "conda-envs"
+   ],
+   "check_pass": [
+    "conda-envs"
+   ],
+   "verdict": "agree"
+  },
+  {
+   "gate": "G-NET",
+   "check_status": "fail",
+   "check_conditions": [
+    "address",
+    "link",
+    "throughput"
+   ],
+   "row": "| G-NET | fail | `3 of 3 fail: link, address, throughput` | link, address, throughput | none | none |",
+   "report_status": "fail",
+   "report_conditions": [
+    "address",
+    "link",
+    "throughput"
+   ],
+   "columns": "labelled",
+   "report_pass": [],
+   "check_pass": [],
+   "verdict": "agree"
+  },
+  {
+   "gate": "G-MEM",
+   "check_status": "fail",
+   "check_conditions": [
+    "docker",
+    "memory",
+    "swap"
+   ],
+   "row": "| G-MEM | fail | `3 of 3 fail: memory, swap, docker` | memory, swap, docker | none | none |",
+   "report_status": "fail",
+   "report_conditions": [
+    "docker",
+    "memory",
+    "swap"
+   ],
+   "columns": "labelled",
+   "report_pass": [],
+   "check_pass": [],
+   "verdict": "agree"
+  }
+ ],
+ "contradictions": 0,
+ "missing": 0,
+ "ambiguous": 0
+}

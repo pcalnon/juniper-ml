@@ -14,6 +14,12 @@ a fixed conclusion set, and can hand the PR to ``util/safe_merge.py --execute``.
 wrong status match merges during an outage; a wider conclusion set re-runs a green
 workflow; ``--no-merge`` that still calls safe_merge merges a PR the operator
 asked to leave. Nothing here talks to GitHub or the status page.
+
+Since helper 0.3.0 a status payload of the wrong shape reads as ``unknown (...)``
+instead of raising out of ``main``. The status page serves ``components`` as a list
+of objects (Statuspage API v2), so a dict there is unreadable input: it must never
+read as operational, and it must not abort the wait either. The wait polls on and
+gives up with exit 2, re-running and merging nothing.
 """
 
 from __future__ import annotations
@@ -173,10 +179,37 @@ class ActionsStatusTest(unittest.TestCase):
         self.assertEqual(self._status({"components": []}), "unknown (no Actions component)")
         self.assertEqual(self._status({}), "unknown (no Actions component)")
         self.assertEqual(self._status({"components": [{"name": "Actions"}]}), "None")
-        # The component walk sits outside the status-page try, so a components value that is
-        # not a list of objects aborts. It must not be readable as operational.
-        with self.assertRaises(AttributeError):
-            self._status({"components": {"Actions": {"status": "operational"}}})
+        # A components value that is not a list of objects reads as unknown (0.3.0). Until then
+        # the walk sat outside the status-page try and this raised out of the wait.
+        status = self._status({"components": {"Actions": {"status": "operational"}}})
+        self.assertEqual(status, "unknown (components is dict, not a list)")
+
+    def test_a_payload_of_the_wrong_shape_is_unknown_never_operational(self) -> None:
+        """0.3.0: the status page serves ``components`` as a list of objects. Every other shape is unknown.
+
+        Until 0.3.0 the component walk sat outside the status-page try, so a dict-shaped
+        ``components`` raised AttributeError out of ``main`` and aborted the wait. Most
+        shapes below carry an "operational" that must not be read.
+        """
+        cases = [
+            ({"components": {"Actions": {"status": "operational"}}}, "unknown (components is dict, not a list)"),
+            ({"components": "operational"}, "unknown (components is str, not a list)"),
+            ({"components": None}, "unknown (components is NoneType, not a list)"),
+            ([{"name": "Actions", "status": "operational"}], "unknown (payload is list, not an object)"),
+            ("operational", "unknown (payload is str, not an object)"),
+            (None, "unknown (payload is NoneType, not an object)"),
+            ({"components": ["Actions", "operational"]}, "unknown (a component is str, not an object)"),
+            # A non-object entry makes the whole list unreadable, wherever it sits: even a
+            # well-formed "operational" Actions object beside it is not read.
+            ({"components": [{"name": "Actions", "status": "operational"}, None]}, "unknown (a component is NoneType, not an object)"),
+            ({"components": [7, {"name": "Actions", "status": "operational"}]}, "unknown (a component is int, not an object)"),
+            ({"components": [["Actions", "operational"]]}, "unknown (a component is list, not an object)"),
+        ]
+        for payload, expected in cases:
+            with self.subTest(payload=payload):
+                status = self._status(payload)
+                self.assertEqual(status, expected)
+                self.assertNotEqual(status, "operational")
 
     def test_a_status_page_failure_is_not_operational(self) -> None:
         with patch.object(rerun.urllib.request, "urlopen", side_effect=urllib.error.URLError("operational")):
@@ -330,6 +363,39 @@ class WaitGateTest(unittest.TestCase):
                 self.assertEqual(calls["run"], [])
                 self.assertEqual(clock.slept, [5.0])
                 self.assertIn("GAVE UP", out)
+
+    def test_an_unreadable_status_payload_keeps_waiting_and_never_touches_gh(self) -> None:
+        """0.3.0, through the real ``actions_status``: a dict-shaped ``components`` used to raise out of ``main``.
+
+        Now it reads as unknown, so the wait polls on, gives up with 2 at the budget, and
+        nothing is re-run or merged. The payload's "operational" is never read.
+        """
+        clock = _Clock()
+        body = _Body(json.dumps({"components": {"Actions": {"status": "operational"}}}).encode())
+
+        def forbidden(*args: object, **kwargs: object) -> None:
+            raise AssertionError(f"called during an unreadable-status wait: {args!r}")
+
+        stdout = io.StringIO()
+        argv = ["rerun", "--repo", "juniper-ml", "--pr", "2164", "--merge", "--max-wait-seconds", "10", "--poll-seconds", "10"]
+        with (
+            patch.object(rerun.urllib.request, "urlopen", return_value=body) as opened,
+            patch.object(rerun, "gh", forbidden),
+            patch.object(rerun.subprocess, "run", forbidden),
+            patch.object(rerun.time, "time", clock.time),
+            patch.object(rerun.time, "sleep", clock.sleep),
+            patch.object(sys, "argv", argv),
+            contextlib.redirect_stdout(stdout),
+        ):
+            code = rerun.main()
+        self.assertEqual(code, 2)
+        self.assertEqual(clock.slept, [10.0, 10.0])
+        self.assertEqual(opened.call_count, 3)
+        out = stdout.getvalue()
+        self.assertIn("GAVE UP", out)
+        self.assertIn("Actions still unknown (components is dict, not a list)", out)
+        self.assertNotIn("(accepted)", out)
+        self.assertNotIn("handing off", out)
 
     def test_merge_and_no_merge_are_required_and_exclusive(self) -> None:
         for argv in (

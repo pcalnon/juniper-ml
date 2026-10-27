@@ -51,6 +51,7 @@
 | `python util/experiments/run_suite.py --suite PATH --compare-baseline TAG` | Same, plus a reporting-only comparator verdict in `REPORT.md` (FAIL still exits 0) |
 | `python util/experiments/run_suite.py --suite PATH --dry-run` | Preview suite expansion + `--up` / drive / `--down` (writes nothing) |
 | `python util/experiments/run_suite.py --suite PATH --resume SUITE_ID` | Re-run non-`succeeded` cells only |
+| `python util/experiments/run_suite.py --reaggregate SUITE_DIR` | Re-render a finished suite's `aggregate.csv` + `REPORT.md` from disk; launches nothing (APD-ML-002 backfill) |
 | `jq '{outcome, phases}' "$RUN_DIR/manifest.json"` | Recurrence phase record (W0.3): `degraded` vs a plot-only exit 1 |
 | `python util/experiments/read_run_metrics.py --run RUN_DIR --json` | Read ratified perf metrics; recurrence → `work_countable: false` (use JSON; the table is cascor-shaped) |
 | `jq '.outcome.timings' $RUN_DIR/artifacts/results/stats.json` | Read Wave 2.6 timings; recurrence train/crossval live here, not under `.recurrence` |
@@ -339,7 +340,7 @@ Full shipped-vs-design split: [REFERENCE — Train / Val / Test Partition Contra
 
 REST `base_url` (data / cascor / recurrence HTTP clients on GitHub main): strip, case-insensitive `http(s)://` default, require `hostname` (not `netloc`), drop trailing `/` and `/v1`. Hostless values raise `Juniper*ConfigurationError` at init. Cascor WS streams (`CascorTrainingStream` / `CascorControlStream`) and `FakeCascorClient` stay `rstrip("/")` only. Extras floors do not yet require the new wheels — see [REFERENCE — HTTP Client Base-URL](REFERENCE.md#http-client-base-url-contract).
 
-Tip: `csv_import` refuses sources over 128 MiB with HTTP **422** until `dataset.params.allow_truncation` or `JUNIPER_DATA_CSV_IMPORT_ALLOW_TRUNCATION`. `file_path` is relative to `JUNIPER_DATA_IMPORT_DIR` (default `/data/imports` — export a real directory before `experiment_stack --up`). Cascor cannot stage it. `equities` `max_symbols` still silent-slices (`generator.py:286`). [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap).
+Tip: `csv_import` refuses sources over 128 MiB with HTTP **422** until `dataset.params.allow_truncation` or `JUNIPER_DATA_CSV_IMPORT_ALLOW_TRUNCATION`. `file_path` is relative to `JUNIPER_DATA_IMPORT_DIR` (default `/data/imports` — export a real directory before `experiment_stack --up`). Cascor cannot stage it. `equities` is bounded in symbols (14), not bytes: an over-cap universe is a 422 or, with `allow_truncation`, an annotated cut — never a silent slice (juniper-data#354). [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap), [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap).
 
 ---
 
@@ -701,7 +702,7 @@ Full contract: [REFERENCE — Perf-Lane Split Comparator](REFERENCE.md#perf-lane
 Tip: `run_suite` `aggregate.csv` / `REPORT.md` now carry both gate inputs (`step_count` WORK, mean step SPEED) beside de-ratified `wall_seconds`. `--compare-baseline TAG` pastes a verdict but **does not** change the suite exit code (P1 §6 still open). Report table is milliseconds; CSV is seconds. See [REFERENCE — Suite Report Gate Inputs](REFERENCE.md#suite-report-gate-inputs).
 
 Tip: a recurrence cell that trained but lost an enabled predict / crossval / `save_model` phase is `degraded` (W0.3): never counted as succeeded, re-run by `--resume`, suite exit 1.
-`train_r2` is `stats.recurrence.final_metrics.r2` and `cv_r2` is `crossval.eval_aggregate.r2` — blank, not 0, when crossval is null; `0.0` and `-18081.0` are real values. Cascor headline accuracy columns stay empty (`APD-ML-002`).
+`train_r2` is `stats.recurrence.final_metrics.r2` and `cv_r2` is `crossval.eval_aggregate.r2` — blank, not 0, when crossval is null; `0.0` and `-18081.0` are real values. Cascor cells carry `train_accuracy` / `val_accuracy` from `stats.cascor.final` since 2026-10-26 (`APD-ML-002`); `val_accuracy` is selected-on, not held out. `test_accuracy` has no producer yet, so a band on it reads `absent`; `final_accuracy` is refused. A NaN or infinite value fails any band. Backfill an older suite with `run_suite.py --reaggregate SUITE_DIR`, which launches nothing.
 See [REFERENCE — Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics).
 
 Tip: on a failed `*_up` leg, `do_up` auto-calls `teardown_run` (because `ports.json` is written before launches). Expect `bring-up failed — tearing the partial run back down`, then inspect `$RUN_DIR/logs/` + `teardown.json` before retrying. Pidfile refuse → kill-by-port on the recorded port only (open #923).
@@ -882,7 +883,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Dataset driver import dies with `_PyObject_NextNotImplemented` | Prefix `LD_LIBRARY_PATH=`. Not a Playwright failure. |
 | Experiment `--up` misuse / exit `2` | Need one action + `--cascor` and/or `--recurrence`. |
 | Experiment health timeout | Check `$RUN_DIR/logs/`; default wait is `90s` (cold recurrence). Set `JUNIPER_EXP_PROJECT_DIR` in worktrees. |
-| Default `equities` create hangs / 30 s client timeout | Omitted `symbols` → all 503 S&P names (~34 min). Set `dataset.params.symbols`. `max_symbols` is a **silent** slice (`generator.py:286`). See [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap). |
+| Default `equities` create hangs / 30 s client timeout | The data service's `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS` was raised, so an omitted `symbols` fans out over all 503 S&P names again (~34 min). Set `dataset.params.symbols`. At the default ceiling (14) the same request is refused at once with a 422, unless truncation is allowed. `max_symbols` only lowers the cap, and an over-cap list is refused or, with `allow_truncation`, cut and annotated — never sliced silently (juniper-data#354). See [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap). |
 | Experiment `bring-up failed` / partial stack | `do_up` already ran `teardown_run` — read `teardown.json` + logs; confirm lockdirs gone before retry. |
 | Suite report only useful number is `wall_seconds` | Pre-#1643 artifact — re-run on current `run_suite`; `wall_seconds` is de-ratified (~5% Grafana-bridge move). |
 | `--compare-baseline` FAIL / missing tag but suite exits 0 | Expected (reporting only). Read `REPORT.md`; run `compare_baseline.py` for its 0/1/2 exits. |
@@ -917,7 +918,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | F-037 `sha=None` / one session "green" | Walk-up root needs both sibling repos; sample size 11 is the finding (`1/1` is not a claim). |
 | `register_open_set.py` `FileNotFoundError` | Cwd is not the repo root — the register path is relative. `cd` to juniper-ml, or run `register_status_crosscheck.py`. |
 | Register `AGREE` but a §4 cell is still OPEN | Whole-file `table_fixed` scan, or an ID-free count/rank sentence. Read the §4 row. [Close protocol](REFERENCE.md#defect-register-close-protocol). |
-| Driver exit `2` `dataset.split` / `from_dataset_split` | Recurrence allow-list is `{train, test, full}`. `"validation"` is refused; `X_val` is design-closed, not shipped. See [REFERENCE — Partition Contract](REFERENCE.md#train--val--test-partition-contract). |
+| Driver exit `2` `dataset.split` / `from_dataset_split` | Recurrence allow-list is `{train, val, test, full}`. `"validation"` is refused: the contract name is `val` (`X_val` shipped with decision 11). See [REFERENCE — Partition Contract](REFERENCE.md#train--val--test-partition-contract). |
 | `chop_all` logs `ERROR: PID file is empty` | Zero-byte pidfile is the empty arm of the same early wire (cleanup then `exit 1`). Re-plant; do not hand-create an empty file. |
 | Missing/empty pidfile but workers still up | Early wire already invoked cleanup; set `KILL_WORKERS=1` on that chop to opt into the pgrep reap before abort. |
 | Chop WARNING `cmdline does not match … skipping` | Stale/reused PID — `validate_pid` refused the kill; not a stop failure. Pidfile still truncates when `STOP_FAILURES == 0`. |
@@ -1035,6 +1036,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Suite `--resume` re-ran a failure | Expected — only `succeeded` is skipped. |
 | Cell printed `degraded (crossval failed: …)`, suite exit 1 | Train succeeded; an enabled phase did not (W0.3). Read `phases` in `manifest.json`. An `X_full` 422 is F-E1 (a model without `derive_full_split`), not a science result. |
 | Recurrence `cv_r2` cell is blank in `aggregate.csv` | Crossval was null, disabled, or failed. Blank is not 0. `train_r2` still comes from `final_metrics.r2`. |
+| Cascor `aggregate.csv` has no accuracy column | Aggregated before 2026-10-26 (`APD-ML-002`). `run_suite.py --reaggregate SUITE_DIR` re-renders it and launches nothing; `--resume` would re-run incomplete cells. |
 | Suite bridged vs unbridged hashes differ | Use `JUNIPER_SUITE_GRAFANA_BRIDGE=1`; do not put the bridge in the YAML. |
 | `residuals.png` has only 2 panels | Optional `target_dt_*` missing or length-mismatched — pred/truth still plotted; not a SKIP. |
 | PF-1 `--dry-run` shows ≠5 cells or mixed budgets | Repeats leaked into `include`, or the 4000/4000 epoch pair was split. Stop. |

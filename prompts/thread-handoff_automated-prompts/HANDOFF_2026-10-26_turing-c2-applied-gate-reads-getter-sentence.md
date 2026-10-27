@@ -1,5 +1,7 @@
 # Handoff — turing bring-up: the owner applied C2; G-SEC's firewall condition reads the sentence turing printed; owner steps next
 
+- **Continued (2026-10-26, plan v1.4.9).** Two sessions took this handoff. "cached-enchanting-cosmos-84" (760fde) took H3. "c9-landed-h6-audited-owner-decides" (bd4cfc) applied H6 on turing once the owner resumed it, and its handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-owner.md`, is now the arc's main handoff. The other owner steps below still stand; H6's item under Agent next is done.
+
 - **From:** the 2026-10-26 session on turing named "modular-meandering-crayon-bf" (f5e44f; worktree `.claude/worktrees/modular-meandering-crayon`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-h4-usage-off-c2-block-all-gate-h6-deferred.md`. That handoff's author, "macos dev env setup" (9d4723), was idle, and no other session was on it.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.8.
   - §18.2 holds the C2 row, now applied.

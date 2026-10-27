@@ -30,6 +30,9 @@ Honesty notes baked into the output:
   (ddof=0), and ``finite_fraction`` counts NaN / ±Inf against the split instead of dropping
   them silently. The driver reads the arrays from the dataset artifact (lazy numpy); when it
   cannot, the stats say why in a degraded-mode note rather than omitting the block.
+* ``recurrence.theta.note`` names where θ came from: the YAML ``train.theta`` (``explicit``), the
+  YAML ``service.default_theta`` (the service default an unset ``train.theta`` resolves to), or
+  neither (data-driven). Before, a ``service.default_theta`` run was labelled data-driven.
 
 Stdlib only (loaded by ``run_experiment.py`` through the same sibling-module file-path
 loader as the plot modules, but with no matplotlib/numpy dependency, so stats render on
@@ -52,6 +55,11 @@ CORRELATION_COLUMN = "juniper_cascor_candidate_correlation"
 HIDDEN_COLUMN = "current_hidden_units"
 STEP_SUM_COLUMN = "juniper_cascor_training_step_duration_seconds_sum"
 STEP_COUNT_COLUMN = "juniper_cascor_training_step_duration_seconds_count"
+
+#: ``recurrence.theta.note``: where the fit's θ came from (see :func:`theta_block`).
+THETA_NOTE_EXPLICIT = "explicit"
+THETA_NOTE_SERVICE_DEFAULT = "service default from service.default_theta; train.theta is unset"
+THETA_NOTE_DATA_DRIVEN = "data-driven (resolved from per-window elapsed time)"
 
 
 def _to_float(raw: Any) -> Optional[float]:
@@ -230,6 +238,25 @@ def _degraded_notes(manifest: Mapping[str, Any], kind: str, metrics_final: Optio
     return notes
 
 
+def theta_block(train_config: Optional[Mapping[str, Any]], service_config: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
+    """Where the fit's θ came from, for ``stats["recurrence"]["theta"]``.
+
+    juniper-recurrence resolves an omitted ``theta`` as ``settings.default_theta`` when that is set,
+    and data-drivenly only when it is not (``routers/training.py``: ``req.theta if req.theta is not
+    None else settings.default_theta``). The run's YAML ``service:`` block reaches those settings
+    (``JUNIPER_RECURRENCE_CONFIG_FILE``), so ``service.default_theta`` turns an unset ``train.theta``
+    into that fixed value. Labelling it data-driven, as this did before, named the wrong θ.
+    A ``default_theta`` the service takes from its own environment is not visible here.
+    """
+    train = train_config if isinstance(train_config, Mapping) else {}
+    service = service_config if isinstance(service_config, Mapping) else {}
+    if train.get("theta") is not None:
+        return {"value": train.get("theta"), "note": THETA_NOTE_EXPLICIT}
+    if service.get("default_theta") is not None:
+        return {"value": service.get("default_theta"), "note": THETA_NOTE_SERVICE_DEFAULT}
+    return {"value": None, "note": THETA_NOTE_DATA_DRIVEN}
+
+
 def build_stats(
     manifest: Mapping[str, Any],
     kind: str,
@@ -240,12 +267,14 @@ def build_stats(
     train_config: Optional[Mapping[str, Any]] = None,
     target_summary: Optional[Mapping[str, Any]] = None,
     target_summary_error: Optional[str] = None,
+    service_config: Optional[Mapping[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Assemble the SS8.3 stats dict from the manifest + kind-specific collected payloads.
 
     ``target_summary`` is :func:`regression_target_summary`'s result for the run's dataset artifact
     (W5.5) and lands under ``dataset.target_summary``; ``target_summary_error`` is the driver's
-    reason when it could not produce one and becomes a degraded-mode note.
+    reason when it could not produce one and becomes a degraded-mode note. ``service_config`` is the
+    run's YAML ``service:`` block; :func:`theta_block` reads its ``default_theta``.
     """
     git_block = {}
     for repo, info in (manifest.get("git") or {}).items():
@@ -308,7 +337,7 @@ def build_stats(
             "n_epochs": train.get("n_epochs"),
             "stopped_reason": train.get("stopped_reason"),
             "dataset_descriptor": train.get("dataset"),
-            "theta": {"value": cfg.get("theta"), "note": "data-driven (resolved from per-window elapsed time)" if cfg.get("theta") is None else "explicit"},
+            "theta": theta_block(cfg, service_config),
             "readout": {"rung": cfg.get("readout") or "linear", "hyperparameters": {key: value for key, value in cfg.items() if key not in {"readout"} and value is not None}},
             "crossval": cv_block,
         }
