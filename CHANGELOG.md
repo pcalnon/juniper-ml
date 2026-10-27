@@ -45,6 +45,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` still apply.
   - turing's firewall condition passes. G-SEC still fails, on SIP (task C1) and the key exports (task C3).
 
+### Fixed
+
+- **Cascor suites carry headline columns: `aggregate.csv` and `REPORT.md` gain `train_accuracy` and `val_accuracy`, a
+  finished suite gains them without re-running, and a NaN or infinite value fails every acceptance band** (register row
+  `APD-ML-002`; the owner's four rulings of 2026-10-26; juniper-ml#2369). `util/experiments/run_suite.py`'s
+  `_headline_metrics` read `final_accuracy` / `test_accuracy` / `val_accuracy` off the TOP of `stats["cascor"]`, where
+  `stats_summary.build_stats` never wrote anything, so every cascor cell recorded `metrics: {}` (0 of 439 cascor
+  registry rows on the run corpus) and a W5.4 band on those names (juniper-ml#2262) read `absent` on every cascor cell.
+  The recurrence half was fixed by juniper-ml#2145 on 2026-10-04.
+  - `CASCOR_HEADLINE_PATHS` reads both columns from `stats["cascor"]["final"]`. `val_accuracy` keeps its name and is
+    selected-on: the VAL split drove early stopping. `eval_scalars` stay unmapped: live mid-training values, which 19
+    corpus runs computed on the TRAINING split and juniper-ml#2064 will redefine.
+  - `ACCEPTANCE_METRICS` is the union of the two path tables plus `test_accuracy`. That name stays accepted with no
+    producer until cascor's final evaluation computes it (juniper-cascor#731) and juniper-ml#2064's labelled
+    stats block carries it: a band on it reads `absent`, and `run_suite` warns once before any launch.
+    `final_accuracy` existed nowhere and is refused (exit 2), with that reason.
+  - `evaluate_acceptance` fails a NaN or infinite value against any band. Before, NaN passed every band, `+inf` a
+    `min` band and `-inf` a `max` band.
+  - New `run_suite.py --reaggregate SUITE_DIR` re-renders `aggregate.csv` + `REPORT.md` from `suite_manifest.json`,
+    `registry.jsonl` and each run's `stats.json`. It launches nothing, and writes neither the registry, `index.jsonl`
+    nor the manifest; `aggregate` now re-reads every headline column from the run dir (the recorded `metrics` only
+    when the run dir is gone). The 110 cascor suites aggregated before this gain the columns. `--resume` was no
+    substitute: it re-runs incomplete cells, and 29 of the corpus's 116 cascor suites have one.
+  - 32 new tests in `tests/test_run_suite.py` (`CascorHeadlineMetricsTest`, `RowMetricsTest`, `ReaggregateTest`) and
+    `tests/test_run_suite_acceptance.py` (`CascorBandMetricsTest`, `NonFiniteBandValueTest`,
+    `CascorSuiteLoopAcceptanceTest`); `util/ad-hoc/2026-10-26_apd_ml_002_mutation_check.py` kills 25 of 25 mutants,
+    each by its own pin test.
+
 ## [0.11.3] - 2026-10-26
 
 ### Fixed
