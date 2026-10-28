@@ -9,8 +9,9 @@ is the gate.
 This suite never talks to a live Duplicati server or mutates the real user
 systemd. PATH stubs cover mountpoint / duplicati-cli / journalctl / notify-send /
 loginctl / systemctl. Destination, state dir, and local-DB path live in a
-TemporaryDirectory. /proc is walked only to prove the db-holder skip leaves our
-unique path alone.
+TemporaryDirectory on a disk-backed filesystem (``_lane_tmpdir``), because the
+runner refuses to stage volumes in a RAM-backed one (Guard 3b). /proc is walked
+only to prove the db-holder skip leaves our unique path alone.
 """
 
 from __future__ import annotations
@@ -70,6 +71,52 @@ def _bash_n(script: Path) -> subprocess.CompletedProcess[str]:
         text=True,
         timeout=SCRIPT_TIMEOUT_SECONDS,
     )
+
+
+# The runner's Guard 3b refuses a tmpfs or ramfs staging dir, and the fixture stages under its
+# root (dest_mount/_duplicati_tmp). On 2026-10-27 some GitHub runners began to serve the system
+# temp dir from tmpfs, as this repo's Linux host already does, so a bare TemporaryDirectory()
+# failed every test that gets past Guards 1-3 there. The fixture's root is therefore chosen the
+# way the guard reads it.
+_RAM_BACKED_FSTYPES = frozenset({"tmpfs", "ramfs"})
+
+
+def _fstype(path: Path) -> str:
+    """The filesystem type as Guard 3b reads it (``stat -f -c %T``); "unknown" if stat fails, which the guard accepts too."""
+    proc = subprocess.run(
+        ["stat", "-f", "-c", "%T", str(path)],
+        capture_output=True,
+        text=True,
+        timeout=SCRIPT_TIMEOUT_SECONDS,
+    )
+    return proc.stdout.strip() if proc.returncode == 0 else "unknown"
+
+
+def _lane_tmpdir() -> tempfile.TemporaryDirectory[str]:
+    """A TemporaryDirectory for _LaneFixture on a filesystem Guard 3b accepts.
+
+    Candidates, in order: the system temp dir (``tempfile.gettempdir()``), ``$RUNNER_TEMP``
+    and this repo's own ``tmp/`` (created if missing). The first whose type is not tmpfs or
+    ramfs wins. If none qualifies the test is skipped with every candidate named, never
+    passed silently.
+    """
+    repo_tmp = REPO_ROOT / "tmp"
+    candidates = [Path(tempfile.gettempdir())]
+    if os.environ.get("RUNNER_TEMP"):
+        candidates.append(Path(os.environ["RUNNER_TEMP"]))
+    candidates.append(repo_tmp)
+    tried = []
+    for root in candidates:
+        if root == repo_tmp:
+            root.mkdir(exist_ok=True)
+        if not root.is_dir():
+            tried.append(f"{root} (missing)")
+            continue
+        fstype = _fstype(root)
+        if fstype not in _RAM_BACKED_FSTYPES:
+            return tempfile.TemporaryDirectory(dir=root)
+        tried.append(f"{root} ({fstype})")
+    raise unittest.SkipTest("no disk-backed root for the lane fixture (Guard 3b refuses tmpfs/ramfs staging); tried " + ", ".join(tried))
 
 
 class _LaneFixture:
@@ -311,7 +358,7 @@ class TestRunnerRefuseClosed(unittest.TestCase):
     """Guards 1–3b: refuse rather than write an archive nobody can open / restore."""
 
     def test_empty_passphrase_refuses_and_stamps_failed(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             env = fx.env()
             env.pop("PASSPHRASE", None)
@@ -323,7 +370,7 @@ class TestRunnerRefuseClosed(unittest.TestCase):
             self.assertFalse(fx.cli_log.exists())
 
     def test_short_passphrase_refuses(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             result = fx.run_runner(fx.env(PASSPHRASE=_SHORT_PASSPHRASE))
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
@@ -333,7 +380,7 @@ class TestRunnerRefuseClosed(unittest.TestCase):
             self.assertFalse(fx.cli_log.exists())
 
     def test_unmounted_destination_refuses(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             fx._write_stub_mountpoint(rc=1)
             result = fx.run_runner()
@@ -344,7 +391,7 @@ class TestRunnerRefuseClosed(unittest.TestCase):
             self.assertFalse(fx.cli_log.exists())
 
     def test_missing_dest_path_refuses(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             missing = fx.dest_mount / "does-not-exist"
             result = fx.run_runner(fx.env(DUPLICATI_DEST_PATH=str(missing)))
@@ -354,7 +401,7 @@ class TestRunnerRefuseClosed(unittest.TestCase):
             self.assertIn("does not exist", status["reason"])
 
     def test_unwritable_dest_path_refuses(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             fx.dest_path.chmod(0o555)
             try:
@@ -367,7 +414,7 @@ class TestRunnerRefuseClosed(unittest.TestCase):
             self.assertIn("is not writable", status["reason"])
 
     def test_nonempty_dest_without_duplicati_volumes_refuses(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             (fx.dest_path / "not-ours.txt").write_text("wrong filesystem\n", encoding="utf-8")
             result = fx.run_runner()
@@ -401,7 +448,7 @@ class TestSkipOrFail(unittest.TestCase):
     """A skip is not silently successful: stale / never-OK must escalate to OnFailure."""
 
     def test_lock_held_with_recent_ok_skips_and_does_not_stamp_ok(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             fx.status_file.write_text("result=OK\nwhen=now\nreason=\nlog=\n", encoding="utf-8")
             fd = _hold_exclusive_lock(fx.lock_file)
@@ -417,7 +464,7 @@ class TestSkipOrFail(unittest.TestCase):
             self.assertFalse(fx.cli_log.exists())
 
     def test_lock_held_with_stale_ok_escalates(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             fx.status_file.write_text("result=OK\nwhen=old\nreason=\nlog=\n", encoding="utf-8")
             age = time.time() - (5 * 86400)
@@ -434,7 +481,7 @@ class TestSkipOrFail(unittest.TestCase):
             self.assertIn("escalating", status["reason"])
 
     def test_lock_held_with_no_prior_ok_escalates(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             fd = _hold_exclusive_lock(fx.lock_file)
             try:
@@ -450,7 +497,7 @@ class TestSkipOrFail(unittest.TestCase):
 
 class TestCliOutcome(unittest.TestCase):
     def test_success_stamps_ok_and_preserves_no_auto_compact(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             (fx.dest_path / "duplicati-existing.dblock.zip.aes").write_bytes(b"x")
             result = fx.run_runner()
@@ -464,7 +511,7 @@ class TestCliOutcome(unittest.TestCase):
             self.assertIn("--encryption-module=gpg", args)
 
     def test_cli_failure_stamps_failed_and_exits_nonzero(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             fx._write_stub_duplicati_cli(rc=7)
             result = fx.run_runner()
@@ -476,7 +523,7 @@ class TestCliOutcome(unittest.TestCase):
 
 class TestFailureReporter(unittest.TestCase):
     def test_missing_status_still_writes_failures_log_and_exits_zero(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             self.assertFalse(fx.status_file.exists())
             result = fx.run_reporter()
@@ -487,7 +534,7 @@ class TestFailureReporter(unittest.TestCase):
             self.assertIn("journal-stub-line", log)
 
     def test_notify_send_failure_does_not_change_exit_or_drop_the_record(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             fx.status_file.write_text("result=FAILED\nwhen=now\nreason=boom\nlog=\n", encoding="utf-8")
             fx._write_stub_notify_send(rc=1)
@@ -517,7 +564,7 @@ class TestInstallerBehavioral(unittest.TestCase):
         return cred
 
     def test_missing_cred_file_exits_1_and_does_not_enable_timer(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             home = fx.root / "home"
             home.mkdir()
@@ -530,7 +577,7 @@ class TestInstallerBehavioral(unittest.TestCase):
             self.assertFalse(installed.is_symlink())
 
     def test_cred_mode_not_600_exits_1(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             home = fx.root / "home"
             home.mkdir()
@@ -541,7 +588,7 @@ class TestInstallerBehavioral(unittest.TestCase):
             self.assertFalse(fx.systemctl_log.exists())
 
     def test_cred_without_passphrase_key_exits_1(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             home = fx.root / "home"
             home.mkdir()
@@ -551,7 +598,7 @@ class TestInstallerBehavioral(unittest.TestCase):
             self.assertIn("has no PASSPHRASE= entry", result.stderr)
 
     def test_linger_not_yes_exits_1_and_does_not_enable_timer(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             fx._write_stub_loginctl(linger="no")
             home = fx.root / "home"
@@ -563,7 +610,7 @@ class TestInstallerBehavioral(unittest.TestCase):
             self.assertFalse(fx.systemctl_log.exists())
 
     def test_success_copies_units_reloads_and_does_not_enable_now(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with _lane_tmpdir() as tmp:
             fx = _LaneFixture(tmp)
             home = fx.root / "home"
             home.mkdir()
