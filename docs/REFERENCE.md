@@ -2161,17 +2161,6 @@ LD_LIBRARY_PATH= /opt/miniforge3/envs/JuniperCanopy1/bin/python \
 
 No step exists for **M-TOPOLOGY-11** (box/lasso — driver gap, do not file as a product defect) or **M-TOPOLOGY-16** (cascade-add glow; needs an unsaturated fixture). W1-12..14 and W4-* live in the matrix/ledger, not in this driver.
 
-### Three predicates that can PASS the easier half
-
-These are the **shipped** scorers on `main`. An `OR` over two independent claims scores the easier one. [juniper-ml#1672](https://github.com/pcalnon/juniper-ml/pull/1672) tightens them; that change is **not** on `main` — do not treat the tightened predicates as current.
-
-| Row | What `main` actually asserts | What a PASS can hide |
-|-----|------------------------------|----------------------|
-| **M-TOPOLOGY-06** (`topo`) | `idiom is not None` **and** (`label == "{k} of {N}"` **OR** `counts["hidden"] == want`) | Stats bar filtered, label still `"0 of 40"`. F-CANOPY-042's rest-state label was invisible to this row. |
-| **M-TOPOLOGY-07** (`topo`) | Depth-slider **container** `display` is not `none` | Comment says the label should read `"all"`. The scorer **records** `label` and does not assert it. A rest-state `"0 of 40"` still PASSes. |
-| **M-TOPOLOGY-12** (`topoevents`) | After a real empty-space click, `-selection-info` hides or its text is empty → PASS; else FAIL. BLOCKED only when nothing was selected (vacuous clear). | plotly emits `plotly_click` only for POINT hits. `plotly_click_events=0` is recorded; the row still FAIL-scores the withdrawn empty-space gesture. |
-
-Observation discipline the driver already encodes (do not regress it): poll for **transitions** (not "label ≠ all", which is true at rest because the slider sits at `0`); verify every widget write by its **effect** (figure hash, not "the DOM moved"); settle the figure before a gesture (rebuild is 1.5–31 s); never cap a capture buffer.
 ### Predicates that landed with #1672
 
 An earlier scorer used `OR` / display-only / empty-space-as-FAIL. That let a `topo` PASS hide a rest-state `"0 of 40"` label (F-CANOPY-042) and made `topoevents` FAIL-score a gesture plotly never emits (F-CANOPY-046). Those predicates are **gone**. What `main` asserts now:
@@ -2284,7 +2273,7 @@ Default `--steps 1,2,4,7` **cancels** the stage. To open the restart modal, pass
 | `JUNIPER_E2E_REBUILD_STOP_AFTER` | `3` | `rebuildprobe` stop |
 | `JUNIPER_E2E_QUIET_WAIT_S` | `90` | `quietread` wait |
 
-There is **no** unittest for this driver on `main`. A second-instance A/B launcher (`2026-09-04_canopy_verify_instance.bash`) is proposed in #1672; it is **not** on `main` — do not invoke it as a shipped entry point.
+There is **no** unittest for `e2e_w6_dataset_driver.py` on `main`. The second-instance A/B launcher, `util/ad-hoc/2026-09-04_canopy_verify_instance.bash`, has been on `main` since juniper-ml#1672 merged (2026-09-04); its contract is in [§ Second-instance verify launcher](#second-instance-verify-launcher).
 
 ### Operator pitfalls
 
@@ -7786,7 +7775,7 @@ The previous default — `EQUITIES_DEFAULT_MAX_SYMBOLS = None`, meaning all **50
 | `seed` | defaulted (`DEFAULT_GENERATOR_SEED`) | Unused for the temporal split. Real non-reproducibility: `end_date` defaults to the wall clock. |
 | Shares fill | `fundamentals_fill` default `"nan"` (`EQUITIES_DEFAULT_FUNDAMENTALS_FILL`) | Missing SEC facts stay NaN. `"zero"` writes `total_shares` / `market_cap` (and `days_since_report`) as 0.0 and keeps the rows; `"drop"` removes them. This knob does not fill `dividend` / `split_ratio`. |
 
-Failed Yahoo downloads still skip. Missing SEC facts + `fundamentals_fill="zero"` still write `0.0`. The generator never calls `Ticker.info`.
+A symbol lost to a failed Yahoo download (or with nothing in range) is handled two ways, depending on the release. Through juniper-data 0.17.1, the latest release, it is skipped without a record. On juniper-data `main` since juniper-data#486 (W5.7, merged 2026-10-19, in no release as of 2026-10-27), a symbol the request NAMED is refused with a 422 unless `allow_truncation` opens the gate. Past the gate, the dataset is minted without it and records it under `DatasetMeta.data_quality.dropped_symbols`. A lost symbol of the default universe is recorded, not refused. A symbol whose shares no rescue path resolves has been refused by default since juniper-data 0.13.0 (juniper-data#366): `fundamentals_fill="zero"` writes `0.0` only past the gate, with `incomplete_rows="accept"`. The generator never calls `Ticker.info`.
 
 ### What this means on a juniper-ml experiment stack
 
