@@ -1458,6 +1458,12 @@ jobs:
           # is backed up, a second run writes nothing; --check fails on an unpinned, unbound or rebound entry, and
           # every refusal writes nothing. Stdlib plus PyYAML (it reads .serena/project.yml); runs /bin/bash.
           python3 -m unittest -v tests/test_mcp_setup.py
+          # tests/test_stats_summary_eval_blocks.py: juniper-ml#2064 -- a cascor run's eval scalars are cascor's FINAL evaluation (`eval_metrics.final`), labelled with its
+          # split, n and `held_out` (true only on test), in stats.json (`juniper-experiment-stats/2`), summary.md and eval_metrics.png;
+          # the in-loop values stay beside them as `eval_scalars_in_loop`, labelled. A run with no final evaluation (disabled, a
+          # null final, a service before juniper-cascor#614) says why and never borrows the in-loop numbers. Fixtures are real
+          # `/v1/metrics` bodies from the run corpus (`tests/cascor_eval_fixtures.py`).
+          python3 -m unittest -v tests/test_stats_summary_eval_blocks.py
 
       - name: Run bash regression tests
         run: |

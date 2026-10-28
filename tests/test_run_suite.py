@@ -25,6 +25,7 @@ from contextlib import ExitStack, redirect_stderr, redirect_stdout
 from pathlib import Path
 from typing import Any
 
+from tests.cascor_eval_fixtures import METRICS_FINAL_NULL_FINAL, METRICS_FINAL_PRE_SWITCH, METRICS_FINAL_TEST_SPLIT, METRICS_FINAL_VALIDATION_SPLIT, V1_STATS_CASCOR, with_final_accuracy
 from tests.redacted_env import RedactedEnv
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -1442,6 +1443,118 @@ class ReaggregateTest(unittest.TestCase):
             run_suite.main([])
         self.assertEqual(ctx.exception.code, 2)
         self.assertIn("--suite is required", buf.getvalue())
+
+
+def _v1_run_dir(case: unittest.TestCase, metrics_final: "dict | None", parent: "Path | None" = None, name: str = "run") -> Path:
+    """A run dir as a driver before juniper-ml#2064 left it: a ``juniper-experiment-stats/1`` stats.json (the real cascor
+    block, its ``eval_scalars`` the unlabelled in-loop values) and, when given, the ``metrics_final.json`` beside it."""
+    run_dir = _stats_run_dir(case, {"schema": "juniper-experiment-stats/1", "cascor": json.loads(json.dumps(V1_STATS_CASCOR))}, parent=parent, name=name)
+    if metrics_final is not None:
+        (run_dir / "artifacts" / "results" / "metrics_final.json").write_text(json.dumps(metrics_final))
+    return run_dir
+
+
+class CascorHeldOutColumnsTest(unittest.TestCase):
+    """juniper-ml#2064 (APD-ML-002 ruling 1's "test later"): the held-out ``test_*`` headline columns.
+
+    They come from the labelled final-evaluation block (``stats["cascor"]["eval_scalars"]``) and ONLY when it scored
+    the ``test`` split. With no test split loaded cascor scores validation, which early stopping read, and that block
+    fills no ``test_*`` column; neither do the in-loop values nor a run with no final evaluation. A stats.json written
+    before juniper-ml#2064 has no such block, so the reader re-derives it from the run's ``metrics_final.json`` -- the
+    path ``--reaggregate`` gives an older suite its columns by, without rewriting a single run file.
+    """
+
+    TEST_COLUMNS_BEFORE_731 = {"test_f1": 0.899749373433584, "test_precision": 0.9020979020979021, "test_recall": 0.8994165045846069, "test_roc_auc": 0.9605445957210336}
+    TRAIN_AND_VAL = {"train_accuracy": 0.905, "val_accuracy": 0.91875}
+
+    def test_a_test_split_final_evaluation_yields_every_test_column(self) -> None:
+        metrics = run_suite._headline_metrics(_stats_run_dir(self, _cascor_stats(**with_final_accuracy(METRICS_FINAL_TEST_SPLIT, 0.9))))
+        self.assertEqual(metrics, {**self.TRAIN_AND_VAL, "test_accuracy": 0.9, **self.TEST_COLUMNS_BEFORE_731})
+
+    def test_a_service_before_juniper_cascor_731_yields_every_test_column_but_accuracy(self) -> None:
+        metrics = run_suite._headline_metrics(_stats_run_dir(self, _cascor_stats(**METRICS_FINAL_TEST_SPLIT)))
+        self.assertEqual(metrics, {**self.TRAIN_AND_VAL, **self.TEST_COLUMNS_BEFORE_731})
+
+    def test_a_validation_split_final_evaluation_fills_no_test_column(self) -> None:
+        # Its accuracy is a real number: a reader that did not check the split would put a selected-on score in test_accuracy.
+        metrics = run_suite._headline_metrics(_stats_run_dir(self, _cascor_stats(**with_final_accuracy(METRICS_FINAL_VALIDATION_SPLIT, 0.35))))
+        self.assertEqual(metrics, {"train_accuracy": 0.571875, "val_accuracy": 0.35})
+
+    def test_no_final_evaluation_and_the_in_loop_values_fill_no_test_column(self) -> None:
+        disabled = json.loads(json.dumps(METRICS_FINAL_TEST_SPLIT))
+        disabled["eval_metrics"].update(enabled=False, final=None)
+        cases = [("a service before the final evaluation", METRICS_FINAL_PRE_SWITCH, {"train_accuracy": 0.505}), ("a null final", METRICS_FINAL_NULL_FINAL, {"train_accuracy": 0.48333333333333334}), ("eval metrics disabled", disabled, self.TRAIN_AND_VAL)]
+        for label, body, expected in cases:
+            with self.subTest(label):
+                self.assertEqual(run_suite._headline_metrics(_stats_run_dir(self, _cascor_stats(**body))), expected)
+
+    def test_undefined_bool_and_non_finite_test_values(self) -> None:
+        # An undefined accuracy (None, with cascor's reason) and a bool are no column; NaN is a column, so a band FAILS it (ruling 4).
+        body = with_final_accuracy(METRICS_FINAL_TEST_SPLIT, None, "empty_batch")
+        body["eval_metrics"]["final"].update(f1=True, roc_auc=float("nan"))
+        metrics = run_suite._headline_metrics(_stats_run_dir(self, _cascor_stats(**body)))
+        self.assertEqual(sorted(column for column in metrics if column.startswith("test_")), ["test_precision", "test_recall", "test_roc_auc"])
+        self.assertTrue(math.isnan(metrics["test_roc_auc"]))
+        self.assertEqual([r["result"] for r in run_suite.evaluate_acceptance([{"metric": "test_roc_auc", "min": 0.5, "max": None, "mode": "gate"}], metrics)], ["fail"])
+
+    def test_a_schema_1_stats_json_re_derives_the_block_from_metrics_final_json(self) -> None:
+        # Run 20260916T002848Z-3959 as the /1 driver left it: its eval_scalars (f1 0.9187, in-loop) must appear nowhere.
+        metrics = run_suite._headline_metrics(_v1_run_dir(self, METRICS_FINAL_TEST_SPLIT))
+        self.assertEqual(metrics, {**self.TRAIN_AND_VAL, **self.TEST_COLUMNS_BEFORE_731})
+        self.assertNotIn(V1_STATS_CASCOR["eval_scalars"]["f1"], metrics.values())
+
+    def test_a_schema_1_stats_json_without_a_test_block_beside_it_fills_nothing(self) -> None:
+        for label, body in (("a validation final block", METRICS_FINAL_VALIDATION_SPLIT), ("no final block", METRICS_FINAL_PRE_SWITCH), ("no metrics_final.json", None)):
+            with self.subTest(label):
+                self.assertEqual(run_suite._headline_metrics(_v1_run_dir(self, body)), self.TRAIN_AND_VAL)
+
+    def test_a_labelled_stats_json_is_never_overruled_by_metrics_final_json(self) -> None:
+        # The writer already derived the block, and it found none. A test-split metrics_final.json beside it is not read.
+        run_dir = _stats_run_dir(self, _cascor_stats(**METRICS_FINAL_PRE_SWITCH))
+        (run_dir / "artifacts" / "results" / "metrics_final.json").write_text(json.dumps(with_final_accuracy(METRICS_FINAL_TEST_SPLIT, 0.9)))
+        self.assertEqual(run_suite._headline_metrics(run_dir), {"train_accuracy": 0.505})
+
+    def test_row_metrics_re_derives_for_a_schema_1_row(self) -> None:
+        run_dir = _v1_run_dir(self, METRICS_FINAL_TEST_SPLIT)
+        self.assertEqual(run_suite._row_metrics({"run_dir": str(run_dir), "metrics": {}}), {**self.TRAIN_AND_VAL, **self.TEST_COLUMNS_BEFORE_731})
+
+    def test_reaggregate_backfills_a_schema_1_suite_and_rewrites_no_run_file(self) -> None:
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        run_root = Path(tmp.name) / "runroot"
+        suite_dir = run_root / "suites" / "t-v1-suite-20260920T000000Z"
+        suite_dir.mkdir(parents=True)
+        cells = [{"cell_id": "c000-aaaa1111", "index": 0, "name": "test-split", "config_path": "/x/base.yaml", "overrides": {"training.params.max_hidden_units": 16}}, {"cell_id": "c001-bbbb2222", "index": 1, "name": "validation-split", "config_path": "/x/base.yaml", "overrides": {"training.params.max_hidden_units": 2}}]
+        (suite_dir / "suite_manifest.json").write_text(json.dumps({"schema": "juniper-experiment-suite/1", "suite_id": suite_dir.name, "suite": {"name": "t-v1-suite", "description": "a cascor suite run before juniper-ml#2064", "app": "cascor"}, "cells": cells}))
+        rows = []
+        for cell, body in zip(cells, (METRICS_FINAL_TEST_SPLIT, METRICS_FINAL_VALIDATION_SPLIT)):
+            run_dir = _v1_run_dir(self, body, parent=run_root, name=f"2026092000000{cell['index']}Z-ab0{cell['index']}")
+            rows.append({"cell_id": cell["cell_id"], "name": cell["name"], "overrides": cell["overrides"], "run_id": run_dir.name, "outcome": "succeeded", "exit_code": 0, "error": None, "metrics": {}, "run_dir": str(run_dir), "wall_seconds": 30.0, "suite_id": suite_dir.name})
+        (suite_dir / "registry.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows))
+        before = {str(path): path.read_bytes() for path in sorted(run_root.rglob("*")) if path.is_file()}
+
+        def _launch(*args: object, **kwargs: object) -> None:
+            raise AssertionError(f"--reaggregate reached a launch seam: {args!r}")
+
+        buf = io.StringIO()
+        with ExitStack() as stack:
+            stack.enter_context(unittest.mock.patch.object(run_suite, "DEFAULT_RUN_ROOT", run_root))
+            for seam in ("execute_cell", "materialise_cell", "_driver_module", "_append_jsonl"):
+                stack.enter_context(unittest.mock.patch.object(run_suite, seam, _launch))
+            stack.enter_context(redirect_stdout(buf))
+            stack.enter_context(redirect_stderr(buf))
+            rc = run_suite.main(["--reaggregate", str(suite_dir)])
+        self.assertEqual(rc, 0, msg=buf.getvalue())
+        with (suite_dir / "aggregate.csv").open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            header = list(reader.fieldnames or [])
+            table = {row["name"]: row for row in reader}
+        self.assertEqual([column for column in header if column.startswith("test_")], ["test_f1", "test_precision", "test_recall", "test_roc_auc"], "no test_accuracy: these bodies predate juniper-cascor#731")
+        self.assertEqual([table["test-split"][column] for column in ("test_f1", "test_roc_auc", "val_accuracy")], ["0.899749373433584", "0.9605445957210336", "0.91875"])
+        self.assertEqual([table["validation-split"][column] for column in ("test_f1", "test_precision", "test_recall", "test_roc_auc")], ["", "", "", ""], "a validation block fills no test_* column")
+        self.assertIn("| test_f1 | test_precision | test_recall | test_roc_auc |", (suite_dir / "REPORT.md").read_text())
+        after = {str(path): path.read_bytes() for path in sorted(run_root.rglob("*")) if path.is_file() and path.name not in ("aggregate.csv", "REPORT.md")}
+        self.assertEqual(after, before, "no stats.json, metrics_final.json, registry or manifest is written -- only the two rendered files change")
 
 
 # =====================================================================================

@@ -27,6 +27,7 @@ something), so the driver itself stays importable without matplotlib.
 
 from __future__ import annotations
 
+import textwrap
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
@@ -190,18 +191,81 @@ def render_candidate_correlation(series_rows: List[Mapping[str, str]], title: st
     return _finish(fig, out_path)
 
 
-def render_eval_metrics(metrics_final: Mapping[str, Any], title: str, out_path: Path) -> Path:
-    """SS8.1 ``eval_metrics.png``: F1 / precision / recall / ROC-AUC bars from the ``/v1/metrics`` scalar block."""
-    pairs = [(name, metrics_final.get(name)) for name in ("f1", "precision", "recall", "roc_auc")]
-    present: Dict[str, float] = {name: float(value) for name, value in pairs if isinstance(value, (int, float))}
-    if not present:
-        raise ValueError("no scalar eval metrics present (JUNIPER_CASCOR_EVAL_METRICS_ENABLED off, or none computed)")
-    fig, ax = plt.subplots(figsize=(6, 4.5))
-    names = list(present)
-    ax.bar(names, [present[name] for name in names], color="tab:blue", alpha=0.8)
-    ax.set_ylim(0.0, 1.05)
-    for idx, name in enumerate(names):
-        ax.text(idx, present[name] + 0.02, f"{present[name]:.3f}", ha="center", fontsize=9)
+#: juniper-ml#2064: the bars ``eval_metrics.png`` can carry, in order. ``accuracy`` exists only in the final evaluation.
+EVAL_PLOT_METRICS = ("accuracy", "f1", "precision", "recall", "roc_auc")
+FINAL_EVAL_ROLE = "final evaluation"
+IN_LOOP_ROLE = "in-loop"
+
+
+def _eval_caption(block: Mapping[str, Any]) -> str:
+    """``test split, n=120, held out``. Mirrors ``stats_summary.eval_caption`` for a labelled block; a test pins the two together."""
+    split = block.get("split")
+    n_samples = block.get("n_samples")
+    if block.get("held_out"):
+        status = "held out"
+    elif split == "validation":
+        status = "NOT held out: the in-loop split"
+    elif split == "training":
+        status = "NOT held out: the training split"
+    else:
+        status = "NOT held out"
+    return f"{split or 'unknown'} split, n={n_samples if n_samples is not None else 'unknown'}, {status}"
+
+
+def eval_metrics_series(eval_blocks: Mapping[str, Any]) -> "tuple[List[str], List[tuple[str, str, Dict[str, float]]], str]":
+    """juniper-ml#2064: what ``eval_metrics.png`` draws -- ``(metric names, [(role, label, values)], subtitle)``.
+
+    ``eval_blocks`` holds ``eval_scalars`` (the final evaluation: the run's eval scalars) and
+    ``eval_scalars_in_loop``, the two labelled blocks ``stats_summary.cascor_eval_blocks`` builds; a stats.json
+    ``cascor`` block holds both. Each block that has a number becomes one series, labelled with its split, its n
+    and whether it is held out. The subtitle names the run's eval scalars. With no final evaluation it says so,
+    and why, and the in-loop series keeps its own label: it is never drawn as the run's eval scalars.
+    """
+    final = eval_blocks.get("eval_scalars") if isinstance(eval_blocks, Mapping) else None
+    in_loop = eval_blocks.get("eval_scalars_in_loop") if isinstance(eval_blocks, Mapping) else None
+    series: List[tuple[str, str, Dict[str, float]]] = []
+    for role, block in ((FINAL_EVAL_ROLE, final), (IN_LOOP_ROLE, in_loop)):
+        if not isinstance(block, Mapping) or "split" not in block or block.get("absent"):
+            continue
+        values = {name: float(block[name]) for name in EVAL_PLOT_METRICS if isinstance(block.get(name), (int, float)) and not isinstance(block.get(name), bool)}
+        if values:
+            series.append((role, f"{role}: {_eval_caption(block)}", values))
+    if isinstance(final, Mapping) and "split" in final and not final.get("absent"):
+        subtitle = f"eval scalars = the final evaluation ({_eval_caption(final)})"
+        if not any(role == FINAL_EVAL_ROLE for role, _, _ in series):
+            subtitle += "; it defined no metric"
+    else:
+        reason = final.get("absent") if isinstance(final, Mapping) and final.get("absent") else "no labelled final-evaluation block"
+        subtitle = f"no final evaluation ({reason}): the in-loop bars are NOT the run's eval scalars"
+    names = [name for name in EVAL_PLOT_METRICS if any(name in values for _, _, values in series)]
+    return names, series, subtitle
+
+
+def render_eval_metrics(eval_blocks: Mapping[str, Any], title: str, out_path: Path) -> Path:
+    """SS8.1 ``eval_metrics.png``: the final evaluation's bars beside the in-loop ones, each labelled (juniper-ml#2064).
+
+    Takes the labelled blocks (see :func:`eval_metrics_series`), not the raw ``/v1/metrics`` body: until
+    juniper-ml#2064 this drew the body's top-level in-loop fields, unlabelled, as the run's eval scalars.
+    ``ValueError`` when neither block holds a number (eval metrics disabled, or none computed), which
+    ``run_experiment.py`` records as a per-plot skip.
+    """
+    names, series, subtitle = eval_metrics_series(eval_blocks)
+    if not series:
+        raise ValueError(f"no eval metrics to plot: {subtitle}; no in-loop values either")
+    fig, ax = plt.subplots(figsize=(8, 5))
+    positions = np.arange(len(names), dtype=float)
+    width = 0.8 / len(series)
+    styles = {FINAL_EVAL_ROLE: {"color": "tab:blue", "alpha": 0.85}, IN_LOOP_ROLE: {"color": "tab:gray", "alpha": 0.55, "hatch": "//"}}
+    for idx, (role, label, values) in enumerate(series):
+        drawn = [(positions[i] - 0.4 + width * (idx + 0.5), values[name]) for i, name in enumerate(names) if name in values]
+        ax.bar([x for x, _ in drawn], [y for _, y in drawn], width=width, label=label, **styles[role])
+        for x, y in drawn:
+            ax.text(x, y + 0.02, f"{y:.3f}", ha="center", fontsize=8)
+    ax.set_xticks(positions)
+    ax.set_xticklabels(names)
+    ax.set_ylim(0.0, 1.15)
     ax.set_ylabel("score")
-    ax.set_title(title)
+    ax.set_title(f"{title}\n{textwrap.fill(subtitle, 100)}", fontsize=9)
+    # Below the axes: inside, it covered the bars' lower part.
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.08), fontsize=8)
     return _finish(fig, out_path)
