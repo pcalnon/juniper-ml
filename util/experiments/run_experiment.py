@@ -96,7 +96,8 @@ client-side from the collected payloads via ``plots_cascor.py`` (lazily loaded -
 importable without matplotlib): ``dataset`` (the fetched NPZ artifact; 2-feature generators only),
 ``decision_boundary`` (the collected grid + sample overlay), ``training_history`` (history rows with
 hidden-unit-insertion markers), ``candidate_correlation`` (from the driver's own metrics_series.csv --
-the sole source), and ``eval_metrics`` (scalar bars). Structurally-unavailable data is a recorded
+the sole source), and ``eval_metrics`` (the final evaluation's bars beside the in-loop ones, each labelled
+with its split and n -- juniper-ml#2064). Structurally-unavailable data is a recorded
 per-plot SKIP (exit 0); a render error / failed fetch / missing matplotlib on a requested plot is an
 acceptance failure (exit 1). The recurrence set (SS8.2, Wave 2.5 -- closes G-5) renders the same way
 via ``plots_recurrence.py``: ``dataset_overview`` / ``dt_histogram`` from the fetched 3-D NPZ
@@ -111,7 +112,8 @@ Stats (Wave 2.6, SS8.3): every run also writes ``artifacts/results/stats.json`` 
 blocks from the manifest, the cascor candidate-correlation-per-round and step-duration p50/p95 stats
 from the driver's own ``metrics_series.csv`` (the sole source; the duration quantiles are honestly
 labeled per-poll means -- true per-step quantiles are not recoverable from a sum/count exposition),
-the recurrence train/CV/theta/readout block, and the degraded-mode notes. Written for every outcome;
+the cascor eval scalars as cascor's labelled final evaluation beside the labelled in-loop values
+(juniper-ml#2064), the recurrence train/CV/theta/readout block, and the degraded-mode notes. Written for every outcome;
 a stats failure is recorded on the manifest (``stats_error``), never fatal. W5.5 (F-D8 of the equities
 end-to-end plan) adds ``dataset.target_summary``: after the dataset phase the driver fetches the artifact
 once (``GET /v1/datasets/<id>/artifact``, the body the plot set reads) and summarises every
@@ -1508,7 +1510,9 @@ def _render_cascor_plots(
                 if not isinstance(metrics_final, dict):
                     _skip(name, "metrics_final unavailable")
                     continue
-                _done(name, plots.render_eval_metrics(metrics_final, title, plots_dir / "eval_metrics.png"))
+                # juniper-ml#2064: the labelled blocks stats.json carries, from the one derivation in stats_summary.
+                eval_blocks = _load_sibling("stats_summary.py").cascor_eval_blocks(metrics_final)
+                _done(name, plots.render_eval_metrics(eval_blocks, title, plots_dir / "eval_metrics.png"))
             else:  # pragma: no cover - load_config validates plot-name membership
                 _skip(name, "unknown plot name")
         except ValueError as exc:

@@ -72,6 +72,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `tests/test_run_suite_acceptance.py` (`CascorBandMetricsTest`, `NonFiniteBandValueTest`,
     `CascorSuiteLoopAcceptanceTest`); `util/ad-hoc/2026-10-26_apd_ml_002_mutation_check.py` kills 25 of 25 mutants,
     each by its own pin test.
+- **A cascor run's eval scalars are cascor's final evaluation, labelled with its split and n, and `aggregate.csv` /
+  `REPORT.md` gain the held-out `test_*` columns from it** (juniper-ml#2064; it follows juniper-ml#2369 and is
+  `APD-ML-002` ruling 1's "test later"). `stats.json`'s `cascor.eval_scalars`, `summary.md`'s "Eval scalars" and
+  `eval_metrics.png` reported the `/v1/metrics` body's top-level `f1` / `precision` / `recall` / `roc_auc`. Those are
+  the IN-LOOP values, on the split early stopping reads, and nothing labelled them. The held-out
+  `eval_metrics.final` (juniper-cascor#614) was never surfaced. On run `20260916T002848Z-3959` the summary said f1
+  0.9187 / roc_auc 0.9808 on 160 validation rows; the final evaluation of 120 test rows says 0.8997 / 0.9605.
+  - `util/experiments/stats_summary.py`: new `cascor_eval_blocks` is the one derivation for `stats.json`,
+    `summary.md`, `eval_metrics.png` and `run_suite`. `cascor.eval_scalars` is the final block, with its `split`,
+    `n_samples` and `held_out` (true only on `test`: with no test split loaded cascor scores `validation`, the
+    in-loop split), `accuracy` (juniper-cascor#731) and cascor's `undefined` reasons. The in-loop values move,
+    labelled, to `cascor.eval_scalars_in_loop`. A run with no final evaluation (eval metrics disabled, a null final,
+    a service before the switch, a failed collect) leaves every value `null` and says why in `absent`; it never falls
+    back to the in-loop values. `summary.md` heads each block with its split, n and held-out status, or prints the
+    reason and no number. `eval_scalars` changed meaning, so the schema is `juniper-experiment-stats/2`; `/1` files
+    are not rewritten.
+  - `util/experiments/plots_cascor.py`: `render_eval_metrics` takes the labelled blocks and draws the final
+    evaluation's bars beside the hatched in-loop ones, each labelled, under a subtitle that names the eval scalars or
+    says why there are none. `util/experiments/run_experiment.py` hands it `cascor_eval_blocks(metrics_final)`.
+  - `util/experiments/run_suite.py`: `CASCOR_TEST_COLUMNS` adds `test_accuracy`, `test_f1`, `test_precision`,
+    `test_recall` and `test_roc_auc`, read from that block only when its `split` is `test`. A `validation` block,
+    the in-loop values and a run without a final evaluation fill none. A `/1` stats.json re-derives the block from
+    the run's `metrics_final.json` with the same function, so `run_suite.py --reaggregate` backfills an older suite
+    and rewrites no run file: on the run corpus, 84 cells in 16 of 116 cascor suites gain the columns. `test_accuracy`
+    leaves `PENDING_ACCEPTANCE_METRICS`, now empty, so its pre-launch warning is gone. It needs a cascor service that
+    carries juniper-cascor#731, which is in no release on 2026-10-27 (PyPI's latest is 0.12.0).
+  - Tests: new `tests/test_stats_summary_eval_blocks.py` (23) over real `/v1/metrics` bodies from the run corpus
+    (`tests/cascor_eval_fixtures.py`); `CascorHeldOutColumnsTest` (10) in `tests/test_run_suite.py`;
+    `EvalScalarsEndToEndTest` (4) in `tests/test_run_experiment.py`; in `tests/test_run_suite_acceptance.py`, two new
+    tests and three that pinned `test_accuracy` as pending, rewritten for its column. The pending-metric facility
+    keeps its coverage through a stand-in name. `util/ad-hoc/2026-10-27_issue_2064_eval_blocks_mutation_check.py`
+    kills 36 of 36 mutants, each by its own pin test; `util/ad-hoc/2026-10-27_issue_2064_corpus_eval_blocks_survey.py`
+    measures the corpus figures, read-only.
 
 ## [0.11.3] - 2026-10-26
 

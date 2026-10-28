@@ -15,6 +15,8 @@
 
 ## 1. Summary
 
+**Status, 2026-10-27.** Phase C has run, and Tier 2 has written and verified its first set since 2026-08-28 (AC-10); both are recorded in §6.3.1. Tier 3 wrote and verified its first `full` set the same evening. Tier 1 is still down, and Phase D (§6.4) is next. The owner's rulings to date are in §6.6. The numbered summary below is the 2026-10-03 measurement.
+
 1. **The host has had no working backup of any kind since 2026-09-18.** Tier 1 (Duplicati, `/home/pcalnon` → `sda1`) last succeeded at 14:12 UTC that day; fourteen scheduled runs have since been missed. Tier 2 (tar + gpg to two USB sticks) has been unable to find its drives since 2026-09-07. Tier 3 (offline external drive) was never built. The only lane still running is T0, the daily server-database snapshot — and it copies the abandoned, key-locked database into a source tree that nothing backs up.
 2. **The host is byte-for-byte where the 2026-09-24 handoffs left it, with five exceptions against D and four against the branch** (§3.1): the three long-lived `duplicati`-uid sessions have closed (the branch's note sink-b already records this), the service `.env` was rewritten on 09-22 19:17 CDT and now carries **two** active keys, the live wrapper symlink has resolved to wrapper v2 since 09-22 12:56, both Tier 2 drives are plugged in (and unmounted), and — the important
    one — **not one of the host actions the owner released on 2026-09-24 has been performed.** A sixth change happened by itself: logrotate has pruned the `/var/log/syslog*` copies of the 09-20 secret echoes (§3.1 item 6).
@@ -280,6 +282,67 @@ All of these were released by the owner on 2026-09-24 (note 10.1g) and none has 
 
 Still **held** by the owner's own ruling until Phase B lands and clears the STOP: P0.5a items 2 and 4, P0, P0.5b, P1, P2, P4.
 
+### 6.3.1 What ran, 2026-10-25 to 2026-10-27, and what it found
+
+Recorded 2026-10-27 from the two handoffs that carried it (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_backup-phase-c-lines-3-to-8-then-drives-then-phase-d.md`, juniper-ml#2344, and `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_backup-phase-c-lines-0-8-done-drives-then-phase-d.md`, juniper-ml#2371) and from the 2026-10-27 session's own measurements.
+The owner ran each Phase C line in a root shell, and the sessions checked it read-only afterwards. "Line N" is the sessions' numbering; the §6.3 item is in brackets. No step of §6.4 is changed here.
+
+| Line | Result |
+| --- | --- |
+| 0 [9] | `yamaguchi-server-db-snapshot.timer` reads `disabled` (O-10). |
+| 1 [1] | `/usr/lib/duplicati` and `/etc/default/duplicati` are `root:root`; `/home/duplicati/bin` is gone. |
+| 2 [2] | `duplicati`'s shell is `/usr/sbin/nologin`. The server (pid 1397393, up since 2026-09-20) is that user's only process. |
+| 3 [4] | `sqlite3` `3.46.1-9ubuntu0.3`. PostgreSQL was considered and rejected: Phase D edits Duplicati's own SQLite files, and 2.4.0.0 ships SQLite providers only. |
+| 4 [5] | Count-only: root `.bash_history` 2, `.viminfo` 3; duplicati `.bash_history` 20, `.viminfo` 10; root, `dbpath` alone, 0 and 0. Nothing was printed or wiped. |
+| 5 [6] | `/usr/lib/duplicati/data/` holds `BMXWPAOGLP.sqlite` (09-18 09:12:56 CDT, the last Tier 1 backup), `Duplicati-server.sqlite` (09-18 21:03:34.670), `OVFDREJHJT.sqlite` (08-25 04:00:33), `control_dir_v2/`, `installation.txt` and `machineid.txt`, and **no `-wal`, `-shm` or `-journal`**. |
+| 6 [7] | The four duplicati-home copies read `600`. CUPS `PreserveJobFiles` is unset, so documents are kept one day. |
+| 6b [new] | Five orphaned spool documents with no `c…` file: three copies of the escrow sheet printed 08-30, and two test pages. The owner shredded all five on 10-26. |
+| 7 [3a] | `PASSPHRASE` and `PASSPHRASE_OLD` match their 08-25 fingerprints and the live credential file (`util/ad-hoc/2026-10-10_s7_env_reconcile.py`). The S-7 `.env` was removed; its worktree stays. |
+| 8 [3b, 3c] | `/mnt/Backups/Ubuntu/_yamaguchi_keys/` is `0700` and its files `0600`, all `pcalnon:pcalnon`: the copying shell lacked gid 139, so `cp -a` dropped group `duplicati`. `cmp`: SAME. The Dropbox `env` is `0600`. |
+| [7, transcripts] | Not run yet. The owner ruled to build the tool now (§6.6): `util/ad-hoc/2026-10-28_transcript_secret_count.py` (new) reads the values from the credential files by path, counts them by value and prints counts only. The owner runs it before §6.4 step 9, the last point at which the service `.env` holds its values (D note sink-c). |
+| [8] | Tier 2, 2026-10-27: below. |
+
+**Tier 2 (item 8; D AC-10), 2026-10-27.** Every acceptance step passed.
+
+- Installed at 17:24 CDT from a checkout at `05b716b5`; the shared reporter went from 1.0.0 to 1.1.0. The timer's first window is Sun 2026-11-01 03:14 CST; the fresh install made no catch-up run.
+- The OK run, both sticks mounted, 17:25:58 to 17:38:43 CDT: set `801a3ef5-57b8-48ec-9d07-767193ce97da`, ten archives, 918,941,308 bytes (876 MiB) per stick, "20 of 20 expected archive copies". Both stamps were written and the failure unit never started. The 2026-08-28 live-tree set was 577 MiB.
+- The runner verifies each copy seconds after writing it, so that read is served from the page cache. `util/ad-hoc/2026-10-27_backup_set_media_readback.py` (new) read all 20 copies back with `O_DIRECT`: every copy complete, the two copies of each archive byte-identical, 1,837,882,616 bytes in 56 s.
+- With no stick mounted the lane read `SKIPPED` (17:55:25 and 17:55:26, both started by the unmount through the `.path` unit), not `FAILED`, because the lane had succeeded.
+- The class-1 drill (`util/ad-hoc/2026-08-26_backup_restore_drill.bash`) passed seven of seven checks, its negative control included.
+- The owner decrypted a real archive (`juniper-slacker`) with a YubiKey: `pipe: 0 0 0`. Which of the two keys did it is not recorded, so the other is untested on a real archive.
+
+**Tier 3 (D §7.9, D-5; AC-11), 2026-10-27.** Installed at 20:32 CDT. The drive was already mounted, so no mount event came, and the first set was started by hand at 20:32:13; it ended `OK` at 21:24:46 (52 min 33 s).
+
+- Set `ce92857f-852d-468e-9688-125ff7753226`: 15 archives, 14,905,974,648 bytes, "15 of 15 expected archive copies". `juniper-legacy` alone is 13.8 GB, its 17 GB barely compressing. The stamp was written and the failure unit never started.
+- The read-back script found all 15 complete on the drive (2026-10-28, about 2½ minutes).
+- The timer's first window is Sun 2026-11-01 04:00 CST plus up to 15 minutes. A set falls due 30 days after the last success, so that window reads `SKIPPED`, attached or not.
+- **AC-11 is owed** (owner): restore `backups` (226 files, unchanged since the set began, nothing in it excluded) into an empty directory and `diff -r` it against the live tree.
+
+**Findings.**
+
+1. **Note 1's key-free source does not exist** (D §4.2 note 1). No side file exists, which is note 1's own test. The server database's mtime (21:03:34.670) comes 1 ms before the folder's (21:03:34.671): a final write, then a side file's removal. The folder never changed again, although `control_dir_v2` shows the 21:08 starts used it, so those starts only read (an inference). Recovery is Procedure A on a probe match (O-1, O-2), otherwise A0; A2 and Procedure B remain the fallbacks.
+2. **The encryption window narrows** to "by 21:03:34.67", from D §4.1 and §4.2's "between 21:03:27 and 21:08:06" (an inference from the same timestamps).
+3. **D §5.3's last lead is negative.** Root's retained history holds no `dbpath` line. Agent sessions write no `.bash_history`, so the 2026-08-25 Claude Code transcripts are the one source nobody has examined; a search there counts and timestamps, never prints. It gates nothing.
+4. **`OVFDREJHJT.sqlite`** (last written 08-25 04:00:33, the morning the job was recreated) is in neither document. D §5.2 read backup 2 `Yamaguchi` as pointing at `BMXWPAOGLP.sqlite`, so this is likely a deleted job 1's index (an inference). Phase D reads the scratch copy's `Backup` table and records what it finds; the freeze takes the whole folder meanwhile.
+5. **The credential file A0 reads still holds the 08-25 passphrases.** `~/.config/duplicati-backup/env` was rewritten 2026-09-18 20:45 CDT, after the fingerprints were recorded, and the rewrite changed neither passphrase (Line 7).
+6. **The T0 snapshot has held the empty server's database since 2026-10-09 08:45 CDT**: ml#2199 re-pointed the script, and the root timer ran the primary checkout's copy. §6.4 step 5's "copy today's snapshot aside" is moot; the freeze of `/usr/lib/duplicati/data` is the recovery source.
+7. **The watchdog's `--backup-id 2` deploy ran** on 2026-10-05 19:03 CDT (drop-in `backup-id.conf`). Its daily 401 is expected until §6.4 step 11.
+8. **A0's scripts and the freeze.** Their job-database default lies inside the step-5 freeze (`0700 duplicati`), and under sudo-rs `HOME=/root`. Pass `YAMAGUCHI_ENV_FILE`, `YAMAGUCHI_JOB_DB` and `YAMAGUCHI_WORKDIR` through `sudo env`, with the work directory on ext4. `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash` needs a positional restore directory and refuses one inside `/home/pcalnon`, the backup source.
+9. **The settings-key probe ignores `SETTINGS_ENCRYPTION_KEY_OLD`.** `util/ad-hoc/2026-09-21_duplicati_settings_key_hash_probe.py` takes the active line's 64-character value; the `_OLD` value's 32 characters match the length of the key the 2026-09-21 probe already excluded (note 3a; an inference).
+10. **The journal no longer holds the 09-20 secret echoes.** It holds one boot, and journald keeps moving its first entry forward (2026-10-18 08:22:47 CDT on 10-26; 12:42:13 on 10-27). For §6.4 step 2: take the AC-8 counts first (expect 0). The `--rotate` and `--vacuum-time=1s` would now delete only unrelated history, so the owner ruled to skip them when the counts read 0 (§6.6).
+11. **The CUPS sink was real, and is closed** (D §6's CUPS row). `lpr` hands CUPS its own copy of a document, so the `shred -u` in `notes/backup_tests_pre-and-post_reboot.md` destroyed only the source.
+    A document whose `c…` file is gone is never purged by the one-day default (`d00045-001` dated from 2025-09-23). A count-only verbatim check read 0 on all five, because the sheet lays the values out differently; the owner identified them by inspection. On 2026-10-27 the spool holds no `c…` or `d…` file, and CUPS's temporary directory only an empty `cups-dbus-notifier-lockfile` (00:18:15, the second the nightly `logrotate.service` failed).
+12. **Two defects in D §6's checklist.** The CUPS row's `grep` needs `sudo` (`/etc/cups/cupsd.conf` is `0640 root:lp`). The server-database-copies row omits the top-level `Duplicati.GUI.TrayIcon-crashlog.txt` (`0777`), which Line 6 chmodded.
+13. **B9 is closed.** CI's gitleaks had loaded zero rules since 2026-08-13; juniper-ml#2203 restored the defaults and added the content rule and the hook, and the fleet followed (juniper-ml#2327 and #2329, juniper-deploy#259, juniper-data#490, juniper-canopy#764). `secret_scanning_non_provider_patterns` returns 200 on `PATCH` but stays `disabled`: it is not offered for this repository, so B9's third element is unavailable rather than owed.
+14. **The Tier 3 lane** landed as juniper-ml#2331 (`900eb93a`): the installer's `--lane full` and the four `juniper-backup-full.*` units.
+15. **The `.path` units fire only for mount points udisks creates** (D §7.8's test, 2026-10-27). They watch `PathChanged=/run/media/pcalnon`, which sees an entry there created or removed. udisks creates and removes its own mount points; an `/etc/fstab` mount point persists.
+    Since the owner's fstab lines (2026-10-24) the sticks remount through fstab, and at 18:00:59 `DFF3-2782` was unmounted and remounted with no run. So plugging in a drive starts nothing while its fstab line exists; the timers (Tier 2 weekly, Tier 3 monthly) are the triggers. A physical re-plug is untested.
+16. **The runner archives each repository's `tmp/`**: its exclude list predates the 2026-10-26 temporary-files convention. About 320 MB raw on 2026-10-27, encrypted with the rest. The owner ruled to keep it (§6.6).
+17. **No reboot before §6.4.** On 2026-10-27 at 17:55:25 a root process (`umount -a` or similar, not confirmed) unmounted the filesystems not in use: 299 snap mounts, `debugfs`, `tracefs`, `configfs`, `fusectl`, `hugetlbfs`, `mqueue`, `binfmt_misc`, the desktop's FUSE mounts and ExpressVPN's cgroup, and both sticks, which finding 15 draws on.
+    It was repaired without a reboot (`systemctl start snapd.mounts.target` and the six unit-file mounts). A reboot was not a remedy and is not one before Phase D: `duplicati.service` is enabled, so a reboot restarts Tier 1 (§1 item 3).
+
+**Still open** (owner): AC-11's restore drill; the transcript count, before §6.4 step 9; O-11's rotation; D-12, the one item §6.6 lists as unruled; and two B9 fleet follow-ups from the 2026-10-25 survey — juniper-recurrence runs no secret scan, and juniper-data allow-lists a UUID-shaped `ARC_AGI_API` value that its comment calls a public identifier, which nobody has verified.
+
 ### 6.4 Phase D — the P0 recovery session (owner with `sudo` and the escrowed passphrase, one sitting)
 
 A checklist against D §8's step numbers. Only the deltas from D are spelled out; everything else is "as D says". Before starting: Phase B merged and the STOP cleared; Phase C done; the passphrase from the printed sheet or the password manager, **not** the Dropbox copy.
@@ -373,6 +436,34 @@ A checklist against D §8's step numbers. Only the deltas from D are spelled out
 | O-12 | `.env` mode: `0640 root:duplicati` (D's recommendation; the service user cannot rewrite its own tunables) vs `0600 duplicati:duplicati` | 0640 root-owned, at `/etc/duplicati/env` (B8); OPEN — the installer (1.5.1) accepts either form | B |
 | O-13 | S-8: keep `additional-report-url` (the deferred cloud report) and allow-list its warning under `IPAddressDeny=`, or clear it | clear it until a reporter exists; record the bearer JWT as retired | D |
 | O-14 | `--aes-version` pin for the first post-recovery run: 2 (the format of the 877 existing volumes) or 3 (2.4.0.0's default) | 2 until §10.2 rewrites every volume anyway; move to 3 in the rotation and record it | D |
+
+**Owner rulings, 2026-10-25 to 2026-10-28**, recorded 2026-10-27 and 10-28. The 2026-10-08 retention ruling is §6.0 item 5. The last column says where a ruling departs from the Recommendation column above.
+
+| # | Ruling | Ruled | Against the recommendation? |
+| --- | --- | --- | --- |
+| O-1, O-2 | After the freeze, probe the 64-character `SETTINGS_ENCRYPTION_KEY` from the moved-aside service `.env` offline. A match → Procedure A plus P0.5b's two-start re-key to a fresh `/etc/credstore` key; no match → A0. No history-candidate search (B11 is not built). Both `.env` keys are then superseded and the `.env` shredded. | 10-25 | partly (a) |
+| O-9 | Re-encrypt the frozen set and the old dlists as a second pass of the rotation (D §10.2). | 10-25 | no |
+| O-10 | Disable the snapshot timer now. Done (§6.3.1, Line 0). | 10-25 | no |
+| O-11 | The owner rotates the TestPyPI token (I-31). Open. | 10-25 | no |
+| O-12 | `/etc/duplicati/env` is `0640 root:duplicati`. | 10-25 | no |
+| O-13 | **Keep** `additional-report-url`; its per-run warning under `IPAddressDeny=` is expected and allow-listed. | 10-25 | **yes** (b) |
+| O-14 | `--aes-version=2` until the rotation. | 10-25 | no |
+| O-5: D-3, D-7, D-11, D-13 | D's recommendations stand. | 10-25 | no |
+| O-5: D-5 | Tier 3 is D §7.9's default: the ten repositories, `juniper-legacy` and the parent's `notes/ prompts/ util/ backups/`; label `full`; monthly while the drive is attached; keep the last three sets, deleting an older one only after a restore drill of the newest. Target `Juniper/Backups` on "Blackbox Part 1" (UUID `dee46823-4119-4914-ac15-08194ee27d81`). | 10-25 | no |
+| O-5: D-10 | Tier 2 runs weekly and keeps everything. | 10-25 | **yes** (c) |
+| drives | `/etc/fstab` is the primary reference for external drives; `extruder` is not a backup target; `/mnt/JuniperArchive` is deprecated. | 10-25 | — |
+| `sqlite3` | Keep `sqlite3` for Phase D; PostgreSQL rejected (§6.3.1, Line 3). | 10-26 | — |
+| spool | Remove the orphaned spool documents (§6.3.1, Line 6b). Done. | 10-26 | — |
+| `tmp/` | The Tier 2 and Tier 3 archives keep each repository's `tmp/` (§6.3.1, finding 16): "for now" on 10-27, final on 10-28. | 10-28 | no |
+| transcripts | Build the count-only transcript tool now; the owner runs it before §6.4 step 9 (§6.3.1). | 10-28 | no |
+| history files | Wipe root's and duplicati's shell-history files at the §10.2 rotation. | 10-28 | **yes** (d) |
+| journal | Skip §6.4 step 2's `--rotate` and `--vacuum-time=1s` when its AC-8 counts read 0 (§6.3.1, finding 10). | 10-28 | no |
+
+- **(a)** O-1/O-2 adds the probe and, on a match, Procedure A, because the owner wants to keep the root-era history. Its end state is still the recommendation's: a fresh credstore key, with both `.env` keys retired. O-7 follows from it: P0.5b runs on a match only, as O-7's row recommends.
+- **(b)** The recommendation was to clear the URL until a reporter exists.
+- **(c)** D's D-10 row recommends pruning sets older than eight weeks after a drill. At 2026-10-27's 0.86 GiB a set, `DFF3-2782`'s 65 GiB free holds about 75 more weekly sets, fewer as the tree grows; a full stick turns every run PARTIAL (rc 4), which reads `FAILED`.
+- **(d)** O-2 left the history files without a wipe trigger: D §6's history rows wipe them "once P0 step 3 has tested what they hold", and O-2 removed that test. The recommendation was §6.4 step 14, after AC-4's first drill, keeping them as a fallback source for the root-era key until a restore has passed. The ruling keeps them longer, until the rotation retires any passphrase they hold.
+- **Not yet ruled**: D-12 (O-5 recommends that D's recommendation stand).
 
 ### 6.7 Where consensus validation is spent, and where it is not
 
@@ -562,3 +653,4 @@ No eighth round ran: round 7 found no DEFECT.
 | 2026-10-03 (later) | **Phase B built** — B1, B3, B4, B5, B7, B8 and B10 in one change; B2 (ml#2115) and B6 (ml#2114) on their own; B9 and B11 open. The STOP is cleared in D (note 8a holds the residue; D's §12 row and note 12c name every file). The contract's repository copy is `util/systemd/duplicati-env.contract`, because `.gitignore` ignores `*.env`. §6.4 step 4 says seven paths, not six. **Changed**: this file, D, and the files note 12c names. |
 | 2026-10-04 | **Round 2 folded in; Phase B lands** (§8), with ml#2115's two defects fixed forward by ml#2134. Real file names in B4, B10 and B11; note 6a (`rm` + `daemon-reload`); note 5b against the round-4 record (I-41); §6.3 step 8 (both sticks); §6.4 steps 0, 9, 10 and 11–12. **Changed**: this file; D; the files D's note 12c names. **Added**: `JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md`. |
 | 2026-10-08 | **Rounds 3 and 4 folded in** (§8; prose, and the artifact lanes' changes described), under the owner's retention ruling: §6.0 item 5; notes 5b, 6b, 6c; I-36; §6.3 step 6; §6.4 steps 8–11, 13, 14; §7; §8. **Changed**: this file; D; `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py`. **Added**: `tests/test_clear_stop_backup_design.py`; `retention_table.py` and `guard_fence_probe.bash` in `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/`; round 4 also changed the two A0 scripts. |
+| 2026-10-27, 10-28 | **Execution record and owner rulings.** §6.3.1 (new): Phase C, Tier 2's acceptance (AC-10) and Tier 3's first set, both read back from the media, and seventeen findings. §6.6: the rulings of 10-25 to 10-28, three against the recommendation; D-12 unruled. §1: a status line. No §6.4 step changed. **Changed**: this file. **Added**: `util/ad-hoc/2026-10-27_backup_set_media_readback.py`, `util/ad-hoc/2026-10-28_transcript_secret_count.py`. |
