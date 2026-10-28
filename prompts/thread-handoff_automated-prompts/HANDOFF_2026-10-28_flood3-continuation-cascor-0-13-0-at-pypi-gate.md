@@ -14,7 +14,7 @@
 
 ## Goal
 
-Nothing is owed unless the owner asks. What remains is the owner's (Remaining work, items 1-3), plus item 4 if an agent's PR did not land. The owner's rulings of 2026-10-27:
+Nothing is owed unless the owner asks. What remains is the owner's (Remaining work, items 1-3), and the merges that follow from them (items 2 and 4). The owner's rulings of 2026-10-27:
 
 - the release: "Cut it now";
 - the cleanup: "Yes, remove them".
@@ -47,7 +47,13 @@ Nothing is owed unless the owner asks. What remains is the owner's (Remaining wo
 3. **Owner decisions:**
    - Codecov: add `CODECOV_TOKEN`, to the Dependabot store too, or drop the step.
    - cascor `ci.yml:659`: `continue-on-error: ${{ github.event_name != 'pull_request' }}` or leave it.
-4. **ml#2064.** A subagent of this session was implementing it in lane worktree `.claude/worktrees/agent-af4830ffb939894cb` and had not reported when this file was written. Look for its PR with `gh pr list --repo pcalnon/juniper-ml --search "2064"`. If there is none, the work is undone. The issue says what to build; it follows juniper-ml#2369.
+4. **ml#2064 is juniper-ml#2381**, open at head `edbe25c1`, from the `agent-af4830ffb939894cb` lane.
+   - **CI:** red only on the five inherited duplicati tests. The 3.13 leg ran every suite, this PR's included, and passed.
+   - **Merge:** after #2376 lands and the branch is updated, with `util/safe_merge.py`. It also edits `ci.yml`, `AGENTS.md`, `docs/REFERENCE.md` and `CHANGELOG.md`, so whichever of it and #2360 merges second needs a re-sync.
+   - **For the owner to see:**
+     - it bumps `stats.json` to `juniper-experiment-stats/2`, because `eval_scalars` now means the held-out final block;
+     - `test_*` columns fill only when that block's split is `test`;
+     - register row `APD-ML-002` is left for the owner's close procedure, once cascor 0.13.0 is on PyPI.
 5. **After 0.13.0 reaches PyPI:**
    - Check `/pypi/juniper-cascor/0.13.0/json` returns 200.
    - Probe the installed wheel's `compute_classification_accuracy` with `importlib.import_module`.
@@ -70,7 +76,7 @@ Nothing in this inventory has been removed. It needs an owner signal plus an API
 - **Lane worktrees under `.claude/worktrees/`:**
   - `agent-a8ac272b0d644d1b6`;
   - `agent-a84219c62702dc20b`, whose `tmp/` holds PR bodies and check-watch output;
-  - `agent-af4830ffb939894cb`, still live as ml#2064's lane.
+  - `agent-af4830ffb939894cb`, #2381's lane. Keep it until #2381 merges; its `tmp/issue2064/` holds the evidence.
 - **This session's worktree**, `whimsical-leaping-glacier`, is locked while the session lives.
 - **Keep:**
   - `juniper-ml/tmp/release-cascor-0.13.0/`: manifests, the notes preview, the ceremony logs and the pytest 9.2.0 venv. Keep until PyPI publish is verified.
@@ -98,7 +104,7 @@ gh pr view 2376 --repo pcalnon/juniper-ml --json state --jq .state
 ## Residue: the four remaining-work items of `HANDOFF_2026-10-27_…backlog.md`
 
 1. **A juniper-cascor release:** cut. It is at the gate (item 1 above).
-2. **ml#2064:** in flight (item 4 above).
+2. **ml#2064:** juniper-ml#2381 is open (item 4 above).
 3. **The open §4 rows:** all four are fixed, open in #2378, or carried. Both leads are checked.
 4. **The cleanup:** done.
 
@@ -107,7 +113,11 @@ gh pr view 2376 --repo pcalnon/juniper-ml --json state --jq .state
 - **This file's PR:**
   - this file (new);
   - `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` (header, §4, §6, §8, §9).
-- **Other PRs:** juniper-ml#2378 (`docs/REFERENCE.md`) and #2379 (`notes/releases/RELEASE_NOTES_juniper-cascor_v0.13.0.md`). The record's §9 lists the sibling repos' files.
+- **Other PRs:**
+  - juniper-ml#2378: `docs/REFERENCE.md`.
+  - juniper-ml#2379: `notes/releases/RELEASE_NOTES_juniper-cascor_v0.13.0.md`.
+  - juniper-ml#2381: `util/experiments/{stats_summary,plots_cascor,run_experiment,run_suite}.py`, four test suites (two new), two new `util/ad-hoc/2026-10-27_issue_2064_*` scripts, `.github/workflows/ci.yml`, `docs/REFERENCE.md`, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, `CHANGELOG.md`, `AGENTS.md`.
+  - The record's §9 lists the sibling repos' files.
 - **Unversioned:** `juniper-ml/tmp/worktree-cleanup-2026-10-27/REMOVED.tsv` (one appended record).
 - **Referenced:**
   - `HANDOFF_2026-10-27_…backlog.md`;
