@@ -34,6 +34,7 @@ import stat
 import sys
 import tempfile
 import unittest
+import unittest.mock
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from typing import Any
@@ -463,20 +464,25 @@ class CascorBandMetricsTest(unittest.TestCase):
     """APD-ML-002 (owner rulings 1 and 2, 2026-10-26): which names a band may use, now that cascor has columns.
 
     ``val_accuracy`` became a column (from ``stats["cascor"]["final"]``), so a band on it judges a number
-    instead of reading ``absent`` on every cascor cell; ``train_accuracy`` joined it. ``test_accuracy`` stays
-    ACCEPTED with no producer -- pending cascor's final evaluation (juniper-cascor#731) and the
-    labelled stats block juniper-ml#2064 adds -- and says so before any launch. ``final_accuracy`` exists
-    nowhere and is REFUSED.
+    instead of reading ``absent`` on every cascor cell; ``train_accuracy`` joined it. ``test_accuracy`` stayed
+    ACCEPTED with no producer, pending cascor's final evaluation (juniper-cascor#731) and the labelled
+    stats block juniper-ml#2064 adds, and said so before any launch. Since juniper-ml#2064 it is a column
+    (``CASCOR_TEST_COLUMNS``, with ``test_f1`` / ``test_precision`` / ``test_recall`` / ``test_roc_auc``),
+    read only from a final evaluation of the ``test`` split, so it no longer warns. ``final_accuracy``
+    exists nowhere and is REFUSED.
     """
 
-    def test_acceptance_metrics_is_the_union_of_the_path_tables_plus_the_pending_test_accuracy(self) -> None:
+    def test_acceptance_metrics_is_the_union_of_the_column_tables_plus_the_pending_names(self) -> None:
         # Stated explicitly, then derived: the literal set is the contract, the union is why it is that set.
-        self.assertEqual(run_suite.ACCEPTANCE_METRICS, frozenset({"train_r2", "cv_r2", "cv_r2_std", "n_windows", "train_accuracy", "val_accuracy", "test_accuracy"}))
-        tables = {column for column, _ in run_suite.RECURRENCE_HEADLINE_PATHS} | {column for column, _ in run_suite.CASCOR_HEADLINE_PATHS}
-        self.assertEqual(run_suite.ACCEPTANCE_METRICS, frozenset(tables | {"test_accuracy"}))
-        self.assertEqual(set(run_suite.PENDING_ACCEPTANCE_METRICS), {"test_accuracy"})
-        self.assertNotIn("test_accuracy", tables, "no path reads test_accuracy until its producer lands")
+        # Until juniper-ml#2064 test_accuracy was the one PENDING name; it now has a column, and the pending set is empty.
+        self.assertEqual(run_suite.ACCEPTANCE_METRICS, frozenset({"train_r2", "cv_r2", "cv_r2_std", "n_windows", "train_accuracy", "val_accuracy", "test_accuracy", "test_f1", "test_precision", "test_recall", "test_roc_auc"}))
+        tables = {column for column, _ in run_suite.RECURRENCE_HEADLINE_PATHS} | {column for column, _ in run_suite.CASCOR_HEADLINE_PATHS} | {column for column, _ in run_suite.CASCOR_TEST_COLUMNS}
+        self.assertEqual(run_suite.ACCEPTANCE_METRICS, frozenset(tables) | frozenset(run_suite.PENDING_ACCEPTANCE_METRICS))
+        self.assertEqual(run_suite.PENDING_ACCEPTANCE_METRICS, {}, "test_accuracy, the only pending name, has a column since juniper-ml#2064")
+        self.assertIn("test_accuracy", tables)
         self.assertEqual(dict(run_suite.CASCOR_HEADLINE_PATHS), {"train_accuracy": ("final", "train_accuracy"), "val_accuracy": ("final", "val_accuracy")})
+        self.assertEqual(dict(run_suite.CASCOR_TEST_COLUMNS), {"test_accuracy": "accuracy", "test_f1": "f1", "test_precision": "precision", "test_recall": "recall", "test_roc_auc": "roc_auc"})
+        self.assertEqual(run_suite.CASCOR_HELD_OUT_SPLIT, "test")
         self.assertNotIn("final_accuracy", run_suite.ACCEPTANCE_METRICS)
 
     def test_final_accuracy_is_refused_with_its_reason_and_a_suite_naming_it_exits_two(self) -> None:
@@ -518,15 +524,10 @@ class CascorBandMetricsTest(unittest.TestCase):
         run_suite.apply_acceptance(row, [{**bands[0], "mode": "report"}])
         self.assertEqual((row["outcome"], row["error"]), ("flagged", "acceptance: test_accuracy absent (report)"))
 
-    def test_a_band_on_test_accuracy_warns_once_before_anything_launches(self) -> None:
-        cells = [{"acceptance": [{"metric": "test_accuracy", "min": 0.5, "max": None, "mode": "gate"}, {"metric": "val_accuracy", "min": 0.5, "max": None, "mode": "gate"}]}, {"acceptance": [{"metric": "test_accuracy", "min": 0.6, "max": None, "mode": "report"}]}, {"acceptance": []}]
-        warnings = run_suite.pending_band_warnings(cells)
-        self.assertEqual(len(warnings), 1, warnings)
-        self.assertIn("names test_accuracy on 2 of 3 cell(s), and no run produces it yet", warnings[0])
-        self.assertIn("(juniper-cascor#731)", warnings[0])
-        self.assertIn("juniper-ml#2064", warnings[0])
-        self.assertIn("a `gate` band fails its cell", warnings[0])
-        self.assertEqual(run_suite.pending_band_warnings([{"acceptance": [{"metric": "val_accuracy", "min": 0.5, "max": None, "mode": "gate"}]}]), [])
+    def test_a_band_on_test_accuracy_no_longer_warns(self) -> None:
+        # juniper-ml#2064 gave test_accuracy a column, so it left the pending set and its pre-launch warning went with it.
+        cells = [{"acceptance": [{"metric": "test_accuracy", "min": 0.5, "max": None, "mode": "gate"}]}, {"acceptance": [{"metric": "test_f1", "min": 0.6, "max": None, "mode": "report"}]}]
+        self.assertEqual(run_suite.pending_band_warnings(cells), [])
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "base.yaml").write_text(BASE_CONFIG)
@@ -537,8 +538,32 @@ class CascorBandMetricsTest(unittest.TestCase):
                 rc = run_suite.main(["--suite", str(suite), "--dry-run"])
             out = buf.getvalue()
             self.assertEqual(rc, 0, msg=out)
-            self.assertEqual(out.count("[suite] warning: an acceptance band names test_accuracy on 3 of 3 cell(s)"), 1, out)
-            self.assertLess(out.index("[suite] warning:"), out.index("suite t-acc (cascor): 3 cells"), "the warning comes before the plan")
+            self.assertIn("suite t-acc (cascor): 3 cells", out)
+            self.assertNotIn("[suite] warning", out)
+
+    def test_a_pending_name_warns_once_before_anything_launches(self) -> None:
+        # The facility outlives its first name (test_accuracy, until juniper-ml#2064): a name a ruling accepts ahead of
+        # its producer still warns once per metric, before the plan, under --dry-run. `future_accuracy` stands in for it.
+        pending = {"future_accuracy": "a ruling accepted it ahead of its producer"}
+        with unittest.mock.patch.dict(run_suite.PENDING_ACCEPTANCE_METRICS, pending), unittest.mock.patch.object(run_suite, "ACCEPTANCE_METRICS", run_suite.ACCEPTANCE_METRICS | frozenset(pending)):
+            cells = [{"acceptance": [{"metric": "future_accuracy", "min": 0.5, "max": None, "mode": "gate"}, {"metric": "val_accuracy", "min": 0.5, "max": None, "mode": "gate"}]}, {"acceptance": [{"metric": "future_accuracy", "min": 0.6, "max": None, "mode": "report"}]}, {"acceptance": []}]
+            warnings = run_suite.pending_band_warnings(cells)
+            self.assertEqual(len(warnings), 1, warnings)
+            self.assertIn("names future_accuracy on 2 of 3 cell(s), and no run produces it yet: a ruling accepted it ahead of its producer", warnings[0])
+            self.assertIn("a `gate` band fails its cell", warnings[0])
+            self.assertEqual(run_suite.pending_band_warnings([{"acceptance": [{"metric": "val_accuracy", "min": 0.5, "max": None, "mode": "gate"}]}]), [])
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                (root / "base.yaml").write_text(BASE_CONFIG)
+                suite = root / "suite.yaml"
+                suite.write_text(_suite_yaml(root / "base.yaml", root / "out", suite_bands=[{"metric": "future_accuracy", "min": 0.5, "mode": "report"}]))
+                buf = io.StringIO()
+                with redirect_stdout(buf), redirect_stderr(buf):
+                    rc = run_suite.main(["--suite", str(suite), "--dry-run"])
+                out = buf.getvalue()
+                self.assertEqual(rc, 0, msg=out)
+                self.assertEqual(out.count("[suite] warning: an acceptance band names future_accuracy on 3 of 3 cell(s)"), 1, out)
+                self.assertLess(out.index("[suite] warning:"), out.index("suite t-acc (cascor): 3 cells"), "the warning comes before the plan")
 
 
 class NonFiniteBandValueTest(unittest.TestCase):
@@ -580,8 +605,13 @@ class CascorSuiteLoopAcceptanceTest(unittest.TestCase):
 
     LIVE = {"epoch": 17, "train_loss": 0.067, "train_accuracy": 0.905, "val_loss": 0.069, "val_accuracy": 0.91875, "hidden_units": 16, "f1": 0.9187}
     WEAK = {"epoch": 9, "train_loss": 0.21, "train_accuracy": 0.86, "val_loss": 0.24, "val_accuracy": 0.85, "hidden_units": 8, "f1": 0.84}
+    # juniper-ml#2064: `/v1/metrics` bodies carrying cascor's final evaluation, keyed as juniper-cascor main's
+    # `_compute_final_eval_metrics` builds it (#731 adds `accuracy`). LIVE's final block scored the TEST split; WEAK's
+    # scored VALIDATION (no test split loaded), with an accuracy that would pass the band below if it were misread.
+    LIVE_HELD_OUT = {**LIVE, "eval_metrics": {"enabled": True, "average": "macro", "split": "validation", "n_samples": 160, "n_classes": 2, "undefined": {}, "final": {"f1": 0.8997, "precision": 0.902, "recall": 0.8994, "roc_auc": 0.9605, "average": "macro", "n_samples": 120, "n_classes": 2, "undefined": {}, "accuracy": 0.9, "split": "test", "final": True}}}
+    WEAK_VALIDATION_ONLY = {**WEAK, "eval_metrics": {"enabled": True, "average": "macro", "split": "validation", "n_samples": 80, "n_classes": 2, "undefined": {}, "final": {"f1": 0.96, "precision": 0.96, "recall": 0.96, "roc_auc": 0.99, "average": "macro", "n_samples": 80, "n_classes": 2, "undefined": {}, "accuracy": 0.97, "split": "validation", "final": True}}}
 
-    def _run(self, *, suite_bands: "list[dict]") -> "tuple[int, str, Path]":
+    def _run(self, *, suite_bands: "list[dict]", bodies: "dict | None" = None) -> "tuple[int, str, Path]":
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         root = Path(tmp.name)
@@ -593,7 +623,7 @@ class CascorSuiteLoopAcceptanceTest(unittest.TestCase):
         run_root = root / "runroot"
         run_root.mkdir()
         _write_stub_launcher(root / "stub_launcher.bash", markers)
-        _write_cascor_stub_driver(root / "stub_driver.py", {CONTROL_MARKER: self.LIVE, EQUITIES_MARKER: self.WEAK})
+        _write_cascor_stub_driver(root / "stub_driver.py", bodies if bodies is not None else {CONTROL_MARKER: self.LIVE, EQUITIES_MARKER: self.WEAK})
         env = {"JUNIPER_SUITE_LAUNCHER": str(root / "stub_launcher.bash"), "JUNIPER_SUITE_DRIVER": str(root / "stub_driver.py"), "JUNIPER_SUITE_PYTHON": sys.executable}
         old_root = run_suite.DEFAULT_RUN_ROOT
         run_suite.DEFAULT_RUN_ROOT = run_root  # type: ignore[attr-defined]
@@ -627,14 +657,37 @@ class CascorSuiteLoopAcceptanceTest(unittest.TestCase):
         self.assertIn("| val_accuracy | >= 0.9 | gate | 0.85 | fail |", report)
         self.assertNotIn("| absent |", report, "a cascor val_accuracy band never reads absent any more")
 
-    def test_a_test_accuracy_band_warns_before_the_first_launch_and_flags_every_cell(self) -> None:
+    def test_a_test_accuracy_band_reads_absent_without_a_held_out_block_and_flags_every_cell(self) -> None:
+        # LIVE / WEAK carry in-loop scalars and no final evaluation: test_accuracy is absent on every cell. Until
+        # juniper-ml#2064 this also printed a pending-metric warning; test_accuracy has a column now, so it does not.
         rc, out, suite_dir = self._run(suite_bands=[{"metric": "test_accuracy", "min": 0.5, "mode": "report"}])
         self.assertEqual(rc, 0, msg=out)
-        self.assertEqual(out.count("[suite] warning: an acceptance band names test_accuracy"), 1, out)
-        self.assertLess(out.index("[suite] warning:"), out.index(": running ("), "warned before the first cell launched")
+        self.assertNotIn("[suite] warning", out)
         outcomes = [json.loads(line)["outcome"] for line in (suite_dir / "registry.jsonl").read_text().splitlines()]
         self.assertEqual(outcomes, ["flagged", "flagged", "flagged"])
         self.assertIn("| test_accuracy | >= 0.5 | report |  | absent |", (suite_dir / "REPORT.md").read_text())
+
+    def test_a_test_accuracy_band_judges_the_held_out_test_block_and_never_a_validation_one(self) -> None:
+        # juniper-ml#2064: the band judges the final evaluation of the TEST split. The validation-split block's 0.97
+        # would pass the band; it must read absent instead, so the gate fails that cell.
+        rc, out, suite_dir = self._run(suite_bands=[{"metric": "test_accuracy", "min": 0.85, "mode": "gate"}], bodies={CONTROL_MARKER: self.LIVE_HELD_OUT, EQUITIES_MARKER: self.WEAK_VALIDATION_ONLY})
+        self.assertEqual(rc, 1, msg=out)
+        self.assertNotIn("[suite] warning", out)
+        rows = {row["name"]: row for row in (json.loads(line) for line in (suite_dir / "registry.jsonl").read_text().splitlines())}
+        self.assertEqual(rows["control"]["metrics"], {"train_accuracy": 0.905, "val_accuracy": 0.91875, "test_accuracy": 0.9, "test_f1": 0.8997, "test_precision": 0.902, "test_recall": 0.8994, "test_roc_auc": 0.9605})
+        self.assertEqual((rows["control"]["outcome"], [r["result"] for r in rows["control"]["acceptance"]]), ("succeeded", ["pass"]))
+        self.assertEqual(rows["equities"]["metrics"], {"train_accuracy": 0.86, "val_accuracy": 0.85}, "a validation block fills no test_* column")
+        self.assertEqual((rows["equities"]["outcome"], rows["equities"]["error"]), ("failed", "acceptance: test_accuracy absent (gate)"))
+        with (suite_dir / "aggregate.csv").open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            header = list(reader.fieldnames or [])
+            table = {row["name"]: row for row in reader}
+        self.assertEqual([column for column in header if column.startswith("test_")], ["test_accuracy", "test_f1", "test_precision", "test_recall", "test_roc_auc"])
+        self.assertEqual([table["control"][column] for column in ("test_accuracy", "test_f1", "test_roc_auc")], ["0.9", "0.8997", "0.9605"])
+        self.assertEqual([table["equities"][column] for column in ("test_accuracy", "test_f1", "test_precision", "test_recall", "test_roc_auc")], ["", "", "", "", ""])
+        report = (suite_dir / "REPORT.md").read_text()
+        self.assertIn("| test_accuracy | >= 0.85 | gate | 0.9 | pass |", report)
+        self.assertIn("| test_accuracy | >= 0.85 | gate |  | absent |", report, "the validation block's 0.97 reaches no column and no band")
 
 
 class ShippedEHBandTest(unittest.TestCase):

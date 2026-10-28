@@ -155,6 +155,9 @@ class _ScriptedState:
         # subsequent polls fail immediately with Connection refused (mid-drive tear-down).
         self.status_die_after: int | None = None
         self.eval_metrics_present = True
+        # juniper-ml#2064: the `/v1/metrics` body's `eval_metrics` block (the live labels plus cascor's `final`
+        # evaluation). None keeps the flat-scalars-only body every other test was written against.
+        self.eval_metrics_block: "dict | None" = None
         self.artifact_kind = "tabular"
         # Recurrence create_dataset path. 201 is the happy path; 422 is the csv_import
         # byte-cap class (ConfigError / exit 2); any other 5xx must stay RunFailed.
@@ -353,9 +356,11 @@ class _StubHandler(BaseHTTPRequestHandler):
             if state.metrics_final_status != 200:
                 self._send(state.metrics_final_status, json.dumps({"detail": "metrics final stub error"}).encode("utf-8"))
                 return
-            payload = {"epoch": 3, "train_loss": 0.1, "train_accuracy": 0.95, "hidden_units": 2}
+            payload: "dict[str, object]" = {"epoch": 3, "train_loss": 0.1, "train_accuracy": 0.95, "hidden_units": 2}
             if state.eval_metrics_present:
                 payload.update({"f1": 0.9, "precision": 0.88, "recall": 0.91, "roc_auc": 0.97})
+            if state.eval_metrics_block is not None:
+                payload["eval_metrics"] = state.eval_metrics_block
             self._send(200, _envelope(payload))
         elif path == "/v1/metrics/history":
             if state.metrics_history_status != 200:
@@ -1023,7 +1028,13 @@ class HappyPathTest(_StubTestCase):
         self.assertIn("artifacts/results/stats.json", manifest["artifacts"])
         self.assertIn("artifacts/results/summary.md", manifest["artifacts"])
         stats = json.loads((results / "stats.json").read_text(encoding="utf-8"))
-        self.assertEqual(stats["schema"], "juniper-experiment-stats/1")
+        # `/2` since juniper-ml#2064: `cascor.eval_scalars` is the labelled final evaluation, no longer the in-loop values.
+        self.assertEqual(stats["schema"], "juniper-experiment-stats/2")
+        # This stub body has the flat in-loop scalars and no eval_metrics block, so there is no final evaluation:
+        # the eval scalars say why, and the in-loop values stay in their own, labelled block.
+        self.assertEqual(stats["cascor"]["eval_scalars"]["absent"], "the /v1/metrics body carries no eval_metrics block")
+        self.assertIsNone(stats["cascor"]["eval_scalars"]["f1"])
+        self.assertEqual({name: stats["cascor"]["eval_scalars_in_loop"][name] for name in ("f1", "precision", "recall", "roc_auc", "held_out", "absent")}, {"f1": 0.9, "precision": 0.88, "recall": 0.91, "roc_auc": 0.97, "held_out": False, "absent": None})
         self.assertEqual(stats["identity"]["run_id"], "20260730T000000Z-beef")
         self.assertEqual(stats["dataset"]["shapes"], {"kind": "tabular", "n_train": 800, "n_test": 200, "n_features": 2, "n_classes": 2})
         correlation = stats["cascor"]["candidate_correlation"]
@@ -2348,6 +2359,65 @@ class CascorPlotsTest(_StubTestCase):
 
 
 @unittest.skipUnless(HAVE_NUMPY and HAVE_MPL, "numpy + matplotlib required for the SS8.1 plot set")
+class EvalScalarsEndToEndTest(_StubTestCase):
+    """juniper-ml#2064 through the real driver: stats.json, summary.md and eval_metrics.png report cascor's FINAL
+    evaluation as the run's eval scalars, labelled with its split and n, and keep the in-loop values labelled as such.
+
+    The ``eval_metrics`` blocks are keyed exactly as juniper-cascor main builds them: the live labels in
+    ``get_metrics`` and ``final`` from ``_compute_final_eval_metrics`` (``accuracy`` from #731). Their numbers are
+    run 20260916T002848Z-3959's, whose final block scored the test split.
+    """
+
+    LIVE_LABELS = {"enabled": True, "average": "macro", "split": "validation", "n_samples": 160, "n_classes": 2, "undefined": {}}
+    FINAL_TEST = {"f1": 0.899749373433584, "precision": 0.9020979020979021, "recall": 0.8994165045846069, "roc_auc": 0.9605445957210336, "average": "macro", "n_samples": 120, "n_classes": 2, "undefined": {}, "accuracy": 0.9, "split": "test", "final": True}
+
+    def _run(self, eval_metrics_block: dict) -> "tuple[dict, str, dict]":
+        self.state.eval_metrics_block = eval_metrics_block
+        cfg = _base_config()
+        cfg["outputs"]["plots"] = ["eval_metrics"]
+        code, _ = _invoke(_write_config(self.tmp, cfg), self.run_dir)
+        self.assertEqual(code, rx.EXIT_SUCCESS)
+        results = self.run_dir / "artifacts" / "results"
+        return json.loads((results / "stats.json").read_text(encoding="utf-8")), (results / "summary.md").read_text(encoding="utf-8"), _manifest(self.run_dir)
+
+    def test_a_test_split_final_evaluation_is_the_runs_eval_scalars_in_all_three_outputs(self) -> None:
+        stats, summary, manifest = self._run({**self.LIVE_LABELS, "final": self.FINAL_TEST})
+        held, in_loop = stats["cascor"]["eval_scalars"], stats["cascor"]["eval_scalars_in_loop"]
+        self.assertEqual({key: held[key] for key in ("split", "n_samples", "held_out", "absent", "accuracy", "f1", "roc_auc")}, {"split": "test", "n_samples": 120, "held_out": True, "absent": None, "accuracy": 0.9, "f1": 0.899749373433584, "roc_auc": 0.9605445957210336})
+        # The stub's flat fields are the in-loop values; they keep their own label and never become the eval scalars.
+        self.assertEqual({key: in_loop[key] for key in ("split", "n_samples", "held_out", "absent", "f1", "roc_auc")}, {"split": "validation", "n_samples": 160, "held_out": False, "absent": None, "f1": 0.9, "roc_auc": 0.97})
+        self.assertIn("### Eval scalars (final evaluation: test split, n=120, held out)\n\n- accuracy: 0.9\n- f1: 0.899749\n", summary)
+        self.assertIn("### In-loop eval scalars (validation split, n=160, NOT held out: the in-loop split)\n\n- f1: 0.9\n", summary)
+        self.assertEqual(manifest["driver"]["plots"]["rendered"], ["eval_metrics"])
+        raw = (self.run_dir / "artifacts" / "plots" / "eval_metrics.png").read_bytes()
+        self.assertTrue(raw.startswith(PNG_MAGIC))
+        self.assertGreater(len(raw), 1500)
+
+    def test_a_validation_split_final_evaluation_is_labelled_not_held_out(self) -> None:
+        stats, summary, _ = self._run({**self.LIVE_LABELS, "final": {**self.FINAL_TEST, "split": "validation", "n_samples": 160}})
+        self.assertEqual({key: stats["cascor"]["eval_scalars"][key] for key in ("split", "n_samples", "held_out", "accuracy")}, {"split": "validation", "n_samples": 160, "held_out": False, "accuracy": 0.9})
+        self.assertIn("### Eval scalars (final evaluation: validation split, n=160, NOT held out: the in-loop split)", summary)
+
+    def test_no_final_evaluation_says_why_and_borrows_nothing(self) -> None:
+        # A service before juniper-cascor#614 sends no `final` key at all: the eval scalars stay empty, with the reason.
+        stats, summary, manifest = self._run(dict(self.LIVE_LABELS))
+        held = stats["cascor"]["eval_scalars"]
+        self.assertEqual(held["absent"], "the service predates the final evaluation (juniper-cascor#614): eval_metrics has no final block")
+        self.assertEqual([held[name] for name in ("accuracy", "f1", "precision", "recall", "roc_auc")], [None] * 5, "never the in-loop values")
+        self.assertIn("### Eval scalars (final evaluation: none)\n\n(none: the service predates the final evaluation (juniper-cascor#614)", summary)
+        self.assertEqual(manifest["driver"]["plots"]["rendered"], ["eval_metrics"], "the in-loop bars are still drawn, under their own label")
+
+    def test_disabled_eval_metrics_say_so_and_the_plot_is_a_skip(self) -> None:
+        self.state.eval_metrics_present = False
+        stats, summary, manifest = self._run({**self.LIVE_LABELS, "enabled": False, "split": None, "n_samples": None, "final": None})
+        for key in ("eval_scalars", "eval_scalars_in_loop"):
+            self.assertEqual(stats["cascor"][key]["absent"], "eval metrics disabled (JUNIPER_CASCOR_EVAL_METRICS_ENABLED)", key)
+        self.assertIn("(none: eval metrics disabled (JUNIPER_CASCOR_EVAL_METRICS_ENABLED)", summary)
+        self.assertEqual(manifest["driver"]["plots"]["rendered"], [])
+        self.assertIn("no eval metrics to plot", manifest["driver"]["plots"]["skipped"][0]["reason"])
+
+
+@unittest.skipUnless(HAVE_NUMPY and HAVE_MPL, "numpy + matplotlib required for the SS8.1 plot set")
 class PlotRendererUnitTest(unittest.TestCase):
     """Unit arms for plots_cascor.py: synthetic payloads in, non-degenerate PNGs (or ValueError) out."""
 
@@ -2366,8 +2436,12 @@ class PlotRendererUnitTest(unittest.TestCase):
             self.plots.render_training_history([], "t", self.tmp / "history.png")
 
     def test_render_eval_metrics_rejects_all_null(self) -> None:
-        with self.assertRaises(ValueError):
-            self.plots.render_eval_metrics({"f1": None, "precision": None}, "t", self.tmp / "eval.png")
+        # Since juniper-ml#2064 the renderer takes the labelled blocks, so the all-null body goes through the real derivation.
+        blocks = rx._load_sibling("stats_summary.py").cascor_eval_blocks({"f1": None, "precision": None})
+        with self.assertRaises(ValueError) as ctx:
+            self.plots.render_eval_metrics(blocks, "t", self.tmp / "eval.png")
+        self.assertIn("no eval metrics to plot", str(ctx.exception))
+        self.assertFalse((self.tmp / "eval.png").exists())
 
     def test_render_candidate_correlation_rejects_empty_cells(self) -> None:
         rows = [{"ts_unix": "1.0", "juniper_cascor_candidate_correlation": "", "current_hidden_units": "0"}]
