@@ -33,6 +33,11 @@ Honesty notes baked into the output:
 * ``recurrence.theta.note`` names where θ came from: the YAML ``train.theta`` (``explicit``), the
   YAML ``service.default_theta`` (the service default an unset ``train.theta`` resolves to), or
   neither (data-driven). Before, a ``service.default_theta`` run was labelled data-driven.
+* A cascor run's eval scalars (juniper-ml#2064) are cascor's FINAL evaluation (``eval_metrics.final``), labelled
+  with the ``split`` and ``n_samples`` it scored and ``held_out`` -- true only on the ``test`` split. The
+  in-loop values, which ``cascor.eval_scalars`` held unlabelled until then, are kept beside them in
+  ``cascor.eval_scalars_in_loop``, labelled with their own split and n. A run with no final evaluation says
+  why in ``absent`` and never falls back to the in-loop values. See :func:`cascor_eval_blocks`.
 
 Stdlib only (loaded by ``run_experiment.py`` through the same sibling-module file-path
 loader as the plot modules, but with no matplotlib/numpy dependency, so stats render on
@@ -45,7 +50,19 @@ from __future__ import annotations
 import math
 from typing import Any, Dict, Iterable, List, Mapping, Optional
 
-STATS_SCHEMA = "juniper-experiment-stats/1"
+#: ``/2`` since juniper-ml#2064 (2026-10-27), because ``cascor.eval_scalars`` CHANGED MEANING: under ``/1`` it held
+#: the in-loop values, unlabelled; under ``/2`` it is the labelled final evaluation, and the in-loop values moved
+#: to ``cascor.eval_scalars_in_loop``. Files written under ``/1`` are not rewritten, so compare eval scalars
+#: across the boundary only after checking this (juniper-ml#2034: provenance, not convention).
+STATS_SCHEMA = "juniper-experiment-stats/2"
+
+#: juniper-ml#2064: the scalars of the final-evaluation block, in report order. ``accuracy`` is new in
+#: juniper-cascor#731; a service without it reports none, so the key stays ``None`` with no ``undefined`` reason.
+CASCOR_FINAL_EVAL_METRICS = ("accuracy", "f1", "precision", "recall", "roc_auc")
+#: The in-loop scalars: the flat ``/v1/metrics`` fields the live block fills. The live block has no accuracy.
+CASCOR_IN_LOOP_METRICS = ("f1", "precision", "recall", "roc_auc")
+CASCOR_FINAL_EVAL_BASIS = "eval_metrics.final: the finished model, scored once after the last weight update on the split named here; held out only when that split is test (with no test split loaded, cascor scores validation, the in-loop split)"
+CASCOR_IN_LOOP_BASIS = "in-loop: the live eval_metrics block, the last mid-training evaluation on the split named here; a progress signal, never held out"
 
 #: W5.5 (F-D8): the canonical split order of the target summary; other splits follow, sorted.
 TARGET_SPLIT_ORDER = ("train", "val", "test")
@@ -257,6 +274,98 @@ def theta_block(train_config: Optional[Mapping[str, Any]], service_config: Optio
     return {"value": None, "note": THETA_NOTE_DATA_DRIVEN}
 
 
+def _labelled_eval_block(basis: str, metric_names: Iterable[str], values: Optional[Mapping[str, Any]], meta: Optional[Mapping[str, Any]], held_out: bool, absent: Optional[str]) -> Dict[str, Any]:
+    """One labelled eval block. The keys are the same whether or not it holds anything, so a reader never guards."""
+    values = values if isinstance(values, Mapping) else {}
+    meta = meta if isinstance(meta, Mapping) else {}
+    undefined = meta.get("undefined")
+    block: Dict[str, Any] = {"basis": basis, "split": meta.get("split"), "n_samples": meta.get("n_samples"), "held_out": held_out, "absent": absent}
+    block.update({name: values.get(name) for name in metric_names})
+    block.update({"n_classes": meta.get("n_classes"), "average": meta.get("average"), "undefined": dict(undefined) if isinstance(undefined, Mapping) else {}})
+    return block
+
+
+def _final_eval_absent(body: Optional[Mapping[str, Any]], live: Optional[Mapping[str, Any]]) -> Optional[str]:
+    """Why a cascor ``/v1/metrics`` body carries no final evaluation, or ``None`` when it carries one."""
+    if body is None:
+        return "no /v1/metrics body was collected"
+    if live is None:
+        return "the /v1/metrics body carries no eval_metrics block"
+    if live.get("enabled") is False:
+        return "eval metrics disabled (JUNIPER_CASCOR_EVAL_METRICS_ENABLED)"
+    if "final" not in live:
+        return "the service predates the final evaluation (juniper-cascor#614): eval_metrics has no final block"
+    final = live.get("final")
+    if final is None:
+        return "eval_metrics.final is null: cascor scores the finished model only after a run that completes successfully with a test or validation split loaded"
+    if not isinstance(final, Mapping):
+        return f"eval_metrics.final is not an object ({type(final).__name__})"
+    return None
+
+
+def cascor_eval_blocks(metrics_final: Optional[Mapping[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    """juniper-ml#2064: a cascor run's two labelled eval blocks, from the ``/v1/metrics`` body the driver collects.
+
+    ``eval_scalars`` is the run's eval scalars: cascor's ``eval_metrics.final`` (juniper-cascor#614), the
+    finished model scored ONCE after the last weight update, with the ``split`` and ``n_samples`` it was scored
+    on. ``held_out`` is true only when that split is ``test``. With no test split loaded cascor scores
+    ``validation``, the in-loop split early stopping reads, so that block is selected-on and ``held_out`` is
+    false. ``accuracy`` comes with juniper-cascor#731; ``undefined`` is cascor's own metric -> reason map.
+
+    ``eval_scalars_in_loop`` keeps the flat ``f1`` / ``precision`` / ``recall`` / ``roc_auc`` fields, the
+    live mid-training values ``eval_scalars`` held, unlabelled, until juniper-ml#2064. They are labelled with
+    the live block's own ``split`` and ``n_samples``, and are never held out.
+
+    A run with no final evaluation keeps every ``eval_scalars`` value ``None`` and says why in ``absent``:
+    eval metrics disabled, a run that did not complete successfully, no test or validation split loaded, or
+    a service that predates the final evaluation. It never falls back to the in-loop values, which are a
+    different quantity on different rows. This one derivation feeds ``stats.json``, ``summary.md`` and
+    ``eval_metrics.png``, and ``run_suite`` re-derives the final block from a run's ``metrics_final.json`` when
+    its stats.json was written before the block existed.
+    """
+    body = metrics_final if isinstance(metrics_final, Mapping) else None
+    live = body.get("eval_metrics") if body is not None else None
+    live = live if isinstance(live, Mapping) else None
+    absent = _final_eval_absent(body, live)
+    final = live.get("final") if live is not None and absent is None else None
+    held = _labelled_eval_block(CASCOR_FINAL_EVAL_BASIS, CASCOR_FINAL_EVAL_METRICS, final, final, isinstance(final, Mapping) and final.get("split") == "test", absent)
+    if body is None:
+        in_loop_absent: Optional[str] = "no /v1/metrics body was collected"
+    elif live is not None and live.get("enabled") is False:
+        in_loop_absent = "eval metrics disabled (JUNIPER_CASCOR_EVAL_METRICS_ENABLED)"
+    elif all(body.get(name) is None for name in CASCOR_IN_LOOP_METRICS):
+        in_loop_absent = "the service reported no in-loop eval scalars"
+    else:
+        in_loop_absent = None
+    in_loop = _labelled_eval_block(CASCOR_IN_LOOP_BASIS, CASCOR_IN_LOOP_METRICS, body if in_loop_absent is None else None, live if in_loop_absent is None else None, False, in_loop_absent)
+    return {"eval_scalars": held, "eval_scalars_in_loop": in_loop}
+
+
+def is_labelled_eval_block(block: Any) -> bool:
+    """True for a block :func:`cascor_eval_blocks` writes. A ``juniper-experiment-stats/1`` file's
+    ``cascor.eval_scalars`` is the four in-loop values with no ``split``, so it is not one."""
+    return isinstance(block, Mapping) and "split" in block and "absent" in block
+
+
+def eval_caption(block: Any) -> str:
+    """``test split, n=120, held out`` -- what ``summary.md`` prints beside a labelled eval block's heading."""
+    if not is_labelled_eval_block(block):
+        return "unlabelled: a juniper-experiment-stats/1 block, the in-loop values"
+    if block.get("absent"):
+        return "none"
+    split = block.get("split")
+    n_samples = block.get("n_samples")
+    if block.get("held_out"):
+        status = "held out"
+    elif split == "validation":
+        status = "NOT held out: the in-loop split"
+    elif split == "training":
+        status = "NOT held out: the training split"
+    else:
+        status = "NOT held out"
+    return f"{split or 'unknown'} split, n={n_samples if n_samples is not None else 'unknown'}, {status}"
+
+
 def build_stats(
     manifest: Mapping[str, Any],
     kind: str,
@@ -311,7 +420,9 @@ def build_stats(
         final = metrics_final if isinstance(metrics_final, Mapping) else {}
         stats["cascor"] = {
             "final": {name: final.get(name) for name in ("epoch", "train_loss", "train_accuracy", "val_loss", "val_accuracy", "hidden_units")},
-            "eval_scalars": {name: final.get(name) for name in ("f1", "precision", "recall", "roc_auc")},
+            # juniper-ml#2064: `eval_scalars` is the labelled FINAL evaluation, `eval_scalars_in_loop` the live
+            # values it held, unlabelled, under juniper-experiment-stats/1. Neither stands in for the other.
+            **cascor_eval_blocks(metrics_final),
             "completion_reason": manifest.get("completion_reason"),
             "candidate_correlation": correlation_per_round(rows),
             "training_step_duration": step_duration_stats(rows),
@@ -357,6 +468,30 @@ def _metric_lines(block: Optional[Mapping[str, Any]]) -> List[str]:
     return lines or ["(none)"]
 
 
+def _eval_lines(block: Any, metric_names: Iterable[str], absent_rider: str = "") -> List[str]:
+    """A labelled eval block's lines: each metric in report order, an undefined one with cascor's reason, then the basis.
+
+    An absent block prints its reason and nothing else. A ``juniper-experiment-stats/1`` block (no labels)
+    renders as it always did, and the heading :func:`eval_caption` writes says what it is.
+    """
+    if not is_labelled_eval_block(block):
+        return _metric_lines(block)
+    if block.get("absent"):
+        return [f"(none: {block['absent']}{absent_rider})"]
+    undefined = block.get("undefined") if isinstance(block.get("undefined"), Mapping) else {}
+    lines: List[str] = []
+    for name in metric_names:
+        value = block.get(name)
+        if value is not None:
+            lines.append(f"- {name}: {_fmt(value)}")
+        elif name in undefined:
+            lines.append(f"- {name}: undefined ({undefined[name]})")
+        else:
+            lines.append(f"- {name}: not reported")
+    lines.append(f"- basis: {block.get('basis')}")
+    return lines
+
+
 def render_summary_md(stats: Mapping[str, Any]) -> str:
     """Render the human-readable SS8.3 ``summary.md`` from a :func:`build_stats` dict."""
     identity = stats.get("identity") or {}
@@ -399,8 +534,14 @@ def render_summary_md(stats: Mapping[str, Any]) -> str:
         cascor = stats["cascor"] or {}
         lines += ["", "## cascor", "", "### Final metrics", ""]
         lines += _metric_lines(cascor.get("final"))
-        lines += ["", "### Eval scalars", ""]
-        lines += _metric_lines(cascor.get("eval_scalars"))
+        # juniper-ml#2064: the run's eval scalars are the labelled final evaluation; the in-loop values follow
+        # under their own label. A run without a final evaluation says so here and borrows nothing.
+        held, in_loop = cascor.get("eval_scalars"), cascor.get("eval_scalars_in_loop")
+        lines += ["", f"### Eval scalars ({'final evaluation: ' if is_labelled_eval_block(held) else ''}{eval_caption(held)})", ""]
+        lines += _eval_lines(held, CASCOR_FINAL_EVAL_METRICS, "; the in-loop values below are not the run's eval scalars")
+        if in_loop is not None or is_labelled_eval_block(held):
+            lines += ["", f"### In-loop eval scalars ({eval_caption(in_loop)})", ""]
+            lines += _eval_lines(in_loop, CASCOR_IN_LOOP_METRICS)
         correlation = cascor.get("candidate_correlation") or {}
         lines += ["", "### Candidate correlation (per growth round; from metrics_series.csv)", ""]
         rounds = correlation.get("per_round") or []
