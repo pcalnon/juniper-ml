@@ -37,6 +37,18 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict, Optional
 
+# The module's exports. The test suites import these names, so nothing in this file reads them, and
+# CodeQL's py/unused-global-variable reads a module-level name nothing in its module uses as unused
+# unless __all__ lists it.
+__all__ = [
+    "METRICS_FINAL_NULL_FINAL",
+    "METRICS_FINAL_PRE_SWITCH",
+    "METRICS_FINAL_TEST_SPLIT",
+    "METRICS_FINAL_VALIDATION_SPLIT",
+    "V1_STATS_CASCOR",
+    "with_final_accuracy",
+]
+
 METRICS_FINAL_TEST_SPLIT: Dict[str, Any] = {
     "dataset_shortfall": None,
     "epoch": 17,
