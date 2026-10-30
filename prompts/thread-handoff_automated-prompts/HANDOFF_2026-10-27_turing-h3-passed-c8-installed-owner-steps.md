@@ -1,5 +1,7 @@
 # Handoff — turing bring-up: H3 passed (3 of 3 agree, 3 of 3 denials) once the owner installed C8; owner steps next
 
+- **Continued (2026-10-30, plan v1.4.11).** "t1" (8161e3) landed "Agent next" item 2, the check's wording (juniper-ml#2392). The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_turing-check-wording-fixed-owner-steps.md`, which carries this file's owner steps forward.
+
 - **From:** the 2026-10-26/27 session on turing named "cached-enchanting-cosmos-84" (760fde; worktree `.claude/worktrees/cached-enchanting-cosmos`), which the user later renamed "c2-applied-gate-reads-getter-sentence".
   - It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`.
   - "c9-landed-h6-audited-owner-decides" (bd4cfc) continued from that file too and applied H6 (plan v1.4.9). The two sessions split the work by cross-session message: H3 here, H6 there.
