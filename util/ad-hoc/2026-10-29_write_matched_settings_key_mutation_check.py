@@ -9,7 +9,8 @@ Author: Paul Calnon
 Created: 2026-10-29
 Status: ad-hoc — investigation (Phase D round-1 fold-in: the mutants lane B found surviving)
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: tests/test_write_matched_settings_key.py; Phase D's design, round 1 (lane B, B-3 and its mutation table)
+Related: tests/test_write_matched_settings_key.py; Phase D's design, round 1 (lane B, B-3 and its mutation table),
+         and rounds 2 to 4 (lanes R2-A, R3 and R4), which added mutants
 
 Each mutant is applied to a COPY of the tool inside a private copy of the files the suite reads, never to the
 checkout, and the copied suite runs from the copy's root with bytecode writing off (a stale .pyc would run the
@@ -69,6 +70,17 @@ MUTANTS = (
     ("defer SIGTERM only", "DEFERRED = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGQUIT)", "DEFERRED = (signal.SIGTERM,)"),
     ("defer all but SIGHUP", "DEFERRED = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGQUIT)", "DEFERRED = (signal.SIGINT, signal.SIGTERM, signal.SIGQUIT)"),
     ("leave core dumps on", "    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))\n", "    pass\n"),
+    # Round 4 (lane R4, R4-3): the block before the create, the core limit before the key is read, the flush before
+    # the unblock. The first two survived round 3's suite.
+    ("block only after the create",
+     "        old_mask = signal.pthread_sigmask(signal.SIG_BLOCK, DEFERRED)\n        try:\n            write_exclusive(dfd, args.out.name, value.encode(\"utf-8\"))\n",
+     "        write_exclusive(dfd, args.out.name, value.encode(\"utf-8\"))\n        old_mask = signal.pthread_sigmask(signal.SIG_BLOCK, DEFERRED)\n        try:\n"),
+    ("set the core limit after the key is read",
+     "    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))\n    dfd = None\n    try:\n        dfd = open_out_dir(args.out)\n        key = active_key(args.env)\n",
+     "    dfd = None\n    try:\n        dfd = open_out_dir(args.out)\n        key = active_key(args.env)\n        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))\n"),
+    ("do not flush before the unblock",
+     "            sys.stdout.flush()\n            sys.stderr.flush()\n            signal.pthread_sigmask(signal.SIG_SETMASK, old_mask)\n",
+     "            signal.pthread_sigmask(signal.SIG_SETMASK, old_mask)\n"),
 )
 
 

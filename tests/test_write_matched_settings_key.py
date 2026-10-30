@@ -388,12 +388,13 @@ class TestNeverOverwritesOrLeavesAKeyBehind(_Scratch):
                             self.assertEqual(tool.main(["tool", "--env", str(env), "--db", str(db), "--out", str(self.out)]), 1)
                 self.assertFalse(os.path.lexists(self.out))
 
-    def test_a_termination_during_the_read_back_lands_after_the_decision(self):
-        """1.2.0 (R2A-2) and round 3 (R3-2, R3-6): SIGTERM, SIGHUP, SIGINT and SIGQUIT wait from before the create until
-        the key is verified or removed. A driver sends each, in turn, to the tool's own process in the middle of its
-        read-back. With the deferral the read-back finishes, the verified key stays and its line is printed before
-        the signal ends the process; without it -- for any one of the four -- the process dies mid-read-back and
-        leaves an unverified key and no such line. And no SIGQUIT core file reaches the working directory."""
+    def test_a_termination_during_the_write_or_the_read_back_lands_after_the_decision(self):
+        """1.2.0 (R2A-2), round 3 (R3-2, R3-6) and round 4 (R4-3, R4-4): SIGTERM, SIGHUP, SIGINT and SIGQUIT wait from
+        before the create until the key is verified or removed. A driver sends each, in turn, to the tool's own process
+        inside the write (from its first fsync, after the create) and in the middle of its read-back. With the deferral
+        the decision is made, the verified key stays and its line is printed before the signal ends the process; without
+        it -- for any one of the four, or with the block moved after the create -- the process dies before the decision
+        and prints no such line. The core limit is (0, 0) before the key is read, so no core can carry it."""
         env, db = self.env_file(f"SETTINGS_ENCRYPTION_KEY={KEY_MARKER}\n"), self.server_db(KEY_MARKER)
         driver = self.tmp / "driver.py"
         driver_lines = (
@@ -401,33 +402,63 @@ class TestNeverOverwritesOrLeavesAKeyBehind(_Scratch):
             f"spec = importlib.util.spec_from_file_location('tool', {str(TOOL)!r})",
             "tool = importlib.util.module_from_spec(spec)",
             "spec.loader.exec_module(tool)",
-            "real = tool.read_back",
-            "which = sys.argv[1]",
-            "def interrupted_mid_read_back(*args, **kwargs):",
+            "which, where = sys.argv[1], sys.argv[2]",
+            "# Inherited dispositions must not decide the result: nohup hands SIGHUP over ignored, and a background job",
+            "# starts with SIGINT and SIGQUIT ignored (lane R4, R4-4). Restore what a terminal session starts with.",
+            "SIGNALS = [signal.SIGTERM, signal.SIGINT, signal.SIGHUP, signal.SIGQUIT]",
+            "for number in SIGNALS:",
+            "    signal.signal(number, signal.default_int_handler if number == signal.SIGINT else signal.SIG_DFL)",
+            "signal.pthread_sigmask(signal.SIG_UNBLOCK, SIGNALS)",
+            "core_limits_set = []",
+            "real_setrlimit = resource.setrlimit",
+            "def recording_setrlimit(limit, values):",
+            "    if limit == resource.RLIMIT_CORE:",
+            "        core_limits_set.append(tuple(values))",
+            "    return real_setrlimit(limit, values)",
+            "resource.setrlimit = recording_setrlimit",
+            "real_active_key = tool.active_key",
+            "def recording_active_key(*args, **kwargs):",
+            "    print('before the key is read:', core_limits_set, resource.getrlimit(resource.RLIMIT_CORE), flush=True)",
+            "    return real_active_key(*args, **kwargs)",
+            "tool.active_key = recording_active_key",
+            "def interrupt():",
             "    if which != 'NONE':",
             "        os.kill(os.getpid(), getattr(signal, which))",
-            "    return real(*args, **kwargs)",
-            "tool.read_back = interrupted_mid_read_back",
-            "rc = tool.main(['tool'] + sys.argv[2:])",
+            "real_fsync, real_read_back = os.fsync, tool.read_back",
+            "def interrupted_mid_write(fd):",
+            "    os.fsync = real_fsync",
+            "    interrupt()",
+            "    return real_fsync(fd)",
+            "def interrupted_mid_read_back(*args, **kwargs):",
+            "    interrupt()",
+            "    return real_read_back(*args, **kwargs)",
+            "if where == 'write':",
+            "    os.fsync = interrupted_mid_write",
+            "else:",
+            "    tool.read_back = interrupted_mid_read_back",
+            "rc = tool.main(['tool'] + sys.argv[3:])",
             "print('core-limit', resource.getrlimit(resource.RLIMIT_CORE))",
             "sys.exit(rc)",
         )
         driver.write_text("\n".join(driver_lines) + "\n")
         cwd = self.tmp / "cwd"
         cwd.mkdir()
-        # Every deferred signal, and a run with none (which shows the core limit the tool set). A SIGQUIT would dump
-        # core into the working directory but for the tool's RLIMIT_CORE of 0, so the directory must stay empty.
-        for which in ("SIGTERM", "SIGINT", "SIGHUP", "SIGQUIT", "NONE"):
-            with self.subTest(signal=which):
+        # Every deferred signal in both places, and a run with none (which shows the core limit the tool left). The pins
+        # on the core limit are the two (0, 0) lines; the empty working directory is a backstop, since at the usual
+        # inherited soft limit of 0 no core would land there anyway (R4-3).
+        cases = [(where, which) for where in ("write", "read-back") for which in ("SIGTERM", "SIGINT", "SIGHUP", "SIGQUIT")]
+        for where, which in cases + [("read-back", "NONE")]:
+            with self.subTest(where=where, signal=which):
                 if self.out.exists():
                     self.out.unlink()
-                cmd = [sys.executable, str(driver), which, "--env", str(env), "--db", str(db), "--out", str(self.out)]
+                cmd = [sys.executable, str(driver), which, where, "--env", str(env), "--db", str(db), "--out", str(self.out)]
                 r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, check=False, timeout=120)
                 self.assert_no_leak(r.stdout + r.stderr)
                 expected = 0 if which == "NONE" else -getattr(signal, which)
                 self.assertEqual(r.returncode, expected, r.stderr)
                 self.assertIn("both match the database's key hash", r.stdout)
                 self.assertEqual(self.out.read_bytes(), KEY_MARKER.encode("utf-8"))
+                self.assertIn("before the key is read: [(0, 0)] (0, 0)", r.stdout)
                 if which == "NONE":
                     self.assertIn("core-limit (0, 0)", r.stdout)
                 self.assertEqual(list(cwd.iterdir()), [], "no core file")

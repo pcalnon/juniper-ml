@@ -8,7 +8,7 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-29
-Version: 1.3.0 (2026-10-29: Phase D round-3 fold-in -- see HISTORY)
+Version: 1.3.1 (2026-10-30: Phase D round-4 fold-in -- see HISTORY)
 Status: ad-hoc — recovery (Phase D, Procedure A only)
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md
@@ -64,8 +64,9 @@ is either verified or removed, so an interruption -- a closed terminal, a Ctrl-C
 decision, never between the create and it. Only SIGKILL cannot be deferred. So trust the tool's last DECISION
 line, whatever follows it (a traceback, a signal's exit status): "wrote ... both match" means written and
 verified; "removed ..." means nothing is left. A run ended by a signal (status 128 or more) with neither line
-printed was a SIGKILL inside the window: `ls -la` the directory and remove a key file there before a re-run,
-because it is unverified. Core dumps are off for the whole run (RLIMIT_CORE 0), so a SIGQUIT -- whose default
+printed was killed before a decision -- by a SIGKILL inside the window, a deferred signal that arrived before it,
+or a signal this tool does not defer: `ls -la` the directory and remove a key file there before a re-run, because
+it is unverified. Core dumps are off for the whole run (RLIMIT_CORE 0), so a SIGQUIT -- whose default
 action dumps core into the working directory, here the checkout -- cannot write the key's memory to disk.
 
 WHAT IT PRINTS: candidate labels, counts, the matched variant labels, the value's length and the outcome --
@@ -97,6 +98,8 @@ HISTORY
   1.3.0  2026-10-29  Phase D round-3 fold-in (lane R3): core dumps off for the run (R3-6: SIGQUIT's default action
                      dumped core, with the key in memory, into the working directory); the docstring's "last
                      decision line" rule (R3-3).
+  1.3.1  2026-10-30  Phase D round-4 fold-in (lane R4): "killed before a decision", not "a SIGKILL inside the
+                     window" (R4-5: a deferred signal before the window, or an undeferred one, looks the same).
 """
 import argparse
 import hashlib

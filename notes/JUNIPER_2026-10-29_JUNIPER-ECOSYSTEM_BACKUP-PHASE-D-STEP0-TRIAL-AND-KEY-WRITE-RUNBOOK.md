@@ -2,8 +2,8 @@
 
 **Author**: Paul Calnon (drafted by Claude Code, session `backup-ac11-passed-transcript-count-zero-then-phase-d`)
 **Date**: 2026-10-29
-**Status**: validated in four rounds (seven lanes); owner rulings of 2026-10-29 recorded in §3. To be run by the owner
-in Phase D's sitting.
+**Status**: validated in four rounds (seven lanes). §3 records the owner's rulings of 2026-10-30 and the departures not
+yet put to the owner, which the sitting asks about before step 0. To be run by the owner in Phase D's sitting.
 **Related**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-29_backup-ac11-passed-transcript-count-zero-then-phase-d.md`
 (juniper-ml#2387); `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6.4;
 `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` §7.3.2 and §8
@@ -12,9 +12,9 @@ This is the design the sitting follows for the commands no earlier document gave
 assessment's §6.4, with the handoff's deltas. What actually runs is recorded at the end of Phase D, in the assessment's
 running record (the handoff's "Continue", item 6), not here.
 
-Rounds 1 to 3 are folded in, and §6 maps each finding to where it landed. Round 1 had three lanes (A re-probe, B
+Rounds 1 to 4 are folded in, and §6 maps each finding to where it landed. Round 1 had three lanes (A re-probe, B
 adversarial code, C consequence and omission); round 2 had two (R2-A code delta, R2-B runbook delta); round 3 had one,
-on round 2's delta (R3).
+on round 2's delta (R3); round 4 had one, on round 3's delta and the 10-30 handoff to the sitting (R4; §6).
 
 Session continuing `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-29_backup-ac11-passed-transcript-count-zero-then-phase-d.md`
 ("the handoff"; juniper-ml#2387). The phase plan is
@@ -26,9 +26,9 @@ Artifacts this design adds or changes (one signed PR, to merge before step 0 is 
 | Path | What |
 | --- | --- |
 | `util/ad-hoc/2026-10-29_duplicati-trial-override.conf` | NEW. Step 0(b)'s drop-in. |
-| `util/ad-hoc/2026-10-29_write_matched_settings_key.py` | NEW, 1.3.0. Procedure A's key write: dry run at step 7, the write at step 9. |
+| `util/ad-hoc/2026-10-29_write_matched_settings_key.py` | NEW, 1.3.1. Procedure A's key write: dry run at step 7, the write at step 9. |
 | `tests/test_write_matched_settings_key.py` | NEW, 26 tests; wired into `.github/workflows/ci.yml` and `docs/REFERENCE.md` (`AGENTS.md`'s count 226 to 227). |
-| `util/ad-hoc/2026-10-29_write_matched_settings_key_mutation_check.py` | NEW. 30 mutants of the tool, each to be killed by the suite. |
+| `util/ad-hoc/2026-10-29_write_matched_settings_key_mutation_check.py` | NEW. 33 mutants of the tool, each to be killed by the suite. |
 | `util/ad-hoc/2026-10-29_password_init_env_mutation_check.py` | NEW. 5 mutants of the helper's 1.4.0 environment. |
 | `util/ad-hoc/2026-10-03_rekey_settings_key.bash` | 1.3.0 to 1.4.0: step 9's VACUUM under `PRAGMA temp_store=MEMORY`. |
 | `util/ad-hoc/2026-10-03_password_init_hand_start.bash` | 1.3.0 to 1.4.0: the server runs under the unit's three `Environment=` values and `TMPDIR=<data folder>`. |
@@ -36,6 +36,9 @@ Artifacts this design adds or changes (one signed PR, to merge before step 0 is 
 
 ## 0. Shells, checkout and temporary space
 
+- **If a tool, path or flag is not where this document, the handoff, the assessment or D says, stop and report it;
+  never substitute one** (the handoff's Continue item 1). Where this document departs from them on purpose (§3), it
+  wins, once the owner has ruled on that departure.
 - **Root shell** for every command below except where it says "pcalnon shell". In it, `~` is `/root`; write `~pcalnon`.
   **Never type `sudo` inside the root shell**: `sudo` resets the environment, which drops the `TMPDIR` set below.
 - **Checkout**: the primary, `~pcalnon/Development/python/Juniper/juniper-ml`, at `origin/main` **including this design's PR**.
@@ -384,9 +387,10 @@ SIGQUIT from just before the create until it has decided. So:
 
 - `wrote … both match …` means written and verified;
 - `removed …` means nothing is left;
-- a run **ended by a signal** (exit status 128 or more) with neither line printed was a SIGKILL inside the window, the
-  one signal that cannot wait. The file is then unverified: `ls -la /etc/credstore`, shred any `duplicati-settings-key`
-  there, and re-run. A `REFUSED: … already exists` is not this case: that file predates the run, so look at it first.
+- a run **ended by a signal** (exit status 128 or more) with neither line printed was killed before a decision: by a
+  SIGKILL inside the window (the one signal that cannot wait), by a deferred signal that arrived before the window, or
+  by a signal the tool does not defer. Any file left is unverified: `ls -la /etc/credstore`, shred any
+  `duplicati-settings-key` there, and re-run. A `REFUSED: … already exists` is not this case: that file predates the run, so look at it first.
 
 **On any non-zero exit, run `ls -la /etc/credstore` and say what is there**: a failed removal prints a WARNING and still
 exits 1. The `.env` is kept, and nothing further runs until the owner rules.
@@ -454,13 +458,25 @@ already go to `/root/.cache/duplicati-rekey` (root's home on `/`).
 8. **A failed trial pauses Phase D at step 0** (§1.4). The documents carry no such branch. The fix PR, then a re-run of
    step 0, step 1 and step 3's stage gate, all come before step 6.
 
-**Owner rulings, 2026-10-29** (asked by the designing session, answered before the design PR):
+**Owner rulings, 2026-10-30** (asked by the designing session at 2026-10-29 23:19 CDT, before round 3 reported; answered
+2026-10-30 03:18 CDT):
 
-- **The trial's form:** approved, as a runtime unit plus the drop-in (item 1).
-- **Every other departure:** approved (items 2 to 8).
+- **The trial's form (item 1):** approved as the question put it: the runtime copy plus one drop-in carrying the
+  handoff's six overrides, `Restart=no`, console logging and the planted marker.
+- **Items 5 to 8, and item 4's redirect:** approved. These are the five departures the question listed.
 - **The no-`/tmp` directive:** `PrivateTmp=yes` is accepted for Phase D and recorded (§4).
 - **The sitting** (steps 0 to 14) runs in a fresh thread, from this document and the handoff this design's PR lands.
-- **Still open:** AC-14's Phase E ruling (§5).
+
+**Not yet put to the owner** (lane R4, R4-1). The sitting asks about all three before step 0:
+
+- item 2's later parts: the trial's inputs under `/usr/local/lib/duplicati-trial/` (added by round 3, R3-1, after the
+  question was written), and the drop-in's `DUPLICATI_ENV_FILE` and `Description=`;
+- item 3: the throwaway key under `/etc/credstore`;
+- item 4's other parts: the glob copy, the `Backup` listing and the two added trust conditions.
+
+A ruling against one of them changes this document first: a fix PR, then step 0, as for a failed trial (item 8).
+
+**Still open:** AC-14's Phase E ruling (§5).
 
 ## 4. Temporary files: the observations for an owner ruling (the 2026-10-26 no-`/tmp` directive)
 
@@ -470,7 +486,7 @@ already go to `/root/.cache/duplicati-rekey` (root's home on `/`).
 - **(b) The real unit's `PrivateTmp=yes`, like the trial's, gives the service two systemd-private directories**,
   `/tmp/systemd-private-<boot>-<unit>-*` and its `/var/tmp` twin. `/usr/lib/tmpfiles.d/systemd-tmp.conf` excludes both
   from aging (`x` lines) and clears them at boot (`R!` lines). systemd removes the trial's at its stop (§1.5).
-- **Ruled 2026-10-29: (b) is accepted for Phase D and recorded.** The directive's reasons are aging and reboot loss,
+- **Ruled 2026-10-30: (b) is accepted for Phase D and recorded.** The directive's reasons are aging and reboot loss,
   and neither bites a namespace systemd manages.
 - **Phase E options:**
   - `PrivateTmp=disconnected` (systemd 259 has it) moves the private directories off `/tmp` and `/var/tmp`; it is a
@@ -499,7 +515,7 @@ already go to `/root/.cache/duplicati-rekey` (root's home on `/`).
 Step 2's AC-8 count uses `grep -c 'Settings Encryption Key:'` **case-sensitively**. After step 0, the journal holds the
 trial wrapper's lower-case `settings encryption key: systemd credential …` line, which `-i` would count.
 
-## 6. Rounds 1 and 2: each finding and where it landed
+## 6. Rounds 1 to 4: each finding and where it landed
 
 | Lane finding | Where |
 | --- | --- |
@@ -537,4 +553,12 @@ trial wrapper's lower-case `settings encryption key: systemd credential …` lin
 | R3-1 `/run` is `noexec` here | drop-in; §1.4 (`/usr/local/lib/duplicati-trial/`, the `findmnt` check, the 203 row); §1.5; §3 item 1 |
 | R3-2 only SIGTERM was tested | the deferral test runs SIGTERM, SIGINT, SIGHUP and SIGQUIT; two mutants |
 | R3-3, R3-4, R3-5 the "last line" wording; "neither line"; the `TMPDIR` check's place | tool 1.3.0 docstring; §2.3 |
-| R3-6 a SIGQUIT core with the key in memory | tool 1.3.0 (`RLIMIT_CORE` 0); the deferral test's empty working directory |
+| R3-6 a SIGQUIT core with the key in memory | tool 1.3.0 (`RLIMIT_CORE` 0); the deferral test's two `(0, 0)` checks (R4-3) |
+| R4-1 §3 and the 10-30 handoff (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_backup-phase-d-design-merged-then-sitting.md`) overstated the rulings: three departures were never put to the owner, and the date was 10-29 | §3 (the rulings as asked and answered, 2026-10-30; the rest pending, asked before step 0); the 10-30 handoff |
+| R4-2 the 10-30 handoff dropped the handoff's stop-and-report rule, its snap-mount verify line and its Remaining §2 | the 10-30 handoff; §0 (the rule) |
+| R4-3 two probe mutants survived: the block after the create; the core limit after the key is read | the deferral test also signals inside the write (from the first `fsync`) and records the core limit as `active_key` is entered; three mutants added (33) |
+| R4-4 the signal test fails under `nohup` or in a background job, which inherit ignored signals | the test's driver restores the four signals' defaults and unblocks them |
+| R4-5 "a SIGKILL inside the window" claimed more than "neither line" shows | tool 1.3.1 docstring; §2.3 ("killed before a decision") |
+| R4-6 the status, the body and this heading lagged round 3; no round-4 rows | the status line; the body; this table |
+| R4-7 the 10-30 handoff's "changed nothing on the host" left out the memory edits and the primary checkout's `tmp/claude-1000/` files | the 10-30 handoff |
+| R4-8 bare "§6.4", "§6.7" and "#2387" in the 10-30 handoff | the 10-30 handoff |
