@@ -62,7 +62,7 @@ PR rather than waiving the budget gate.
 ```bash
 # Install locally: pip install -e ".[<extra>]" -- extras are in pyproject.toml; ".[all]" is multi-GB (pulls torch via worker)
 
-# Run all tests -- the full ordered list of 226 `python3 -m unittest`
+# Run all tests -- the full ordered list of 227 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
 # § Test Suite Reference. It is generated from ci.yml's regression step, which is
 # the authoritative list; tests/test_ci_test_wiring_drift.py gates that every suite
