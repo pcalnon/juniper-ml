@@ -1,0 +1,22 @@
+# Ad-hoc one-cell suite (2026-10-30, recurrence x equities arc; the owner asked for the run that day):
+# does a cascor that serves juniper-cascor#731 fill the suite's `test_accuracy` column (juniper-ml#2381;
+# register row APD-ML-002, notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md)?
+#
+# The cell is spiral-smoke as written (test_ratio 0.2, so the final evaluation runs on `test`). The
+# launcher's default cascor src/ is the cascor PRIMARY's, which carries #731 since 2026-10-29 20:48:58Z
+# (e8e8bf4d). Run it with the ecosystem root named, so base_config rebases onto the canonical layout from
+# a session worktree too (run_suite._resolve_base_config):
+#
+#   JUNIPER_EXP_PROJECT_DIR=/home/pcalnon/Development/python/Juniper \
+#     python3 util/experiments/run_suite.py --suite util/ad-hoc/2026-10-30_test_accuracy_731_smoke_suite.yaml
+#
+# Retained as provenance (owner policy 2026-08-25).
+schema_version: 1
+suite:
+  name: test-accuracy-731-smoke
+  description: "One spiral-smoke cell on the cascor primary (cascor#731): does test_accuracy fill?"
+  app: cascor
+  base_config: [../../../juniper-cascor/conf/experiments/spiral-smoke.yaml]
+  seed_policy: fixed
+execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 1200}
+outputs: {suite_dir: null, aggregate: [csv, markdown]}
