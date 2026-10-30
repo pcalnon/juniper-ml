@@ -664,5 +664,19 @@ class DryRunHermetic(unittest.TestCase):
         self.assertIn("honoured under --dry-run only", r.stderr)
 
 
+class VacuumTempStore(unittest.TestCase):
+    """1.4.0: step 9's `sudo -u duplicati` carries no TMPDIR, so the VACUUM's temporary copy of the database
+    must stay in memory -- set BEFORE the VACUUM in the same heredoc -- rather than land in /var/tmp once it
+    outgrows the ~2 MB page cache. Static: SQLite unlinks that file at once, so only strace or inotify sees it,
+    and only for a database larger than the cache (Phase D's lane B measured both)."""
+
+    def test_the_vacuum_heredoc_sets_temp_store_memory_before_vacuum(self):
+        text = REKEY.read_text(encoding="utf-8")
+        start = text.index("sudo -u duplicati -- python3 - \"${DB}\" <<'PY'")
+        block = text[start : text.index("\nPY\n", start)]
+        self.assertIn('con.execute("PRAGMA temp_store=MEMORY")', block)
+        self.assertLess(block.index("PRAGMA temp_store=MEMORY"), block.index('con.execute("VACUUM")'))
+
+
 if __name__ == "__main__":
     unittest.main()

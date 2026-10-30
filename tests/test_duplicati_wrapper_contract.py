@@ -665,6 +665,46 @@ class RecoveryHelperGates(_Scratch):
                 self.assertEqual(list(self.data.glob(".password-init-*")), [], "the parameters file must be shredded")
                 self.assertNotIn("dummy", r.stderr + r.stdout)
 
+    def test_password_init_runs_the_server_with_the_units_environment_and_its_own_tmpdir(self):
+        """1.4.0 (Phase D lane A, A-8): `sudo -u` drops the unit's DO_NOT_TRACK / USAGEREPORTER / AUTOUPDATER lines,
+        and the server starts its usage reporter before the 102 return; TMPDIR keeps .NET's socket out of /tmp. The
+        three are removed from the test's own environment first, so an inherited value cannot pass for the script's."""
+        stub = self.tmp / "server-env"
+        report = self.tmp / "seen-env"
+        stub.write_text("#!/usr/bin/env bash\n" 'printf "%s\\n" "DO_NOT_TRACK=${DO_NOT_TRACK:-}" "USAGEREPORTER_Duplicati_LEVEL=${USAGEREPORTER_Duplicati_LEVEL:-}" ' '"AUTOUPDATER_Duplicati_SKIP_UPDATE=${AUTOUPDATER_Duplicati_SKIP_UPDATE:-}" "TMPDIR=${TMPDIR:-}" > "$STUB_REPORT"\n' "exit 102\n")
+        stub.chmod(0o700)
+        env = RedactedEnv(os.environ, DUPLICATI_RUN_AS=self.me, DUPLICATI_SERVER=str(stub), STUB_REPORT=str(report), TMPDIR=str(self.tmp))
+        for name in ("DO_NOT_TRACK", "USAGEREPORTER_Duplicati_LEVEL", "AUTOUPDATER_Duplicati_SKIP_UPDATE"):
+            env.pop(name, None)
+        cmd = ["bash", str(PASSWORD_INIT), "--data-folder", str(self.data), "--settings-key-file", str(self.key), "--ui-password-file", str(self.pw), "--port", "1"]
+        r = _run(cmd, env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        seen = report.read_text().splitlines()
+        self.assertEqual(seen, ["DO_NOT_TRACK=1", "USAGEREPORTER_Duplicati_LEVEL=none", "AUTOUPDATER_Duplicati_SKIP_UPDATE=1", f"TMPDIR={self.data}"])
+        dry = self.pwinit()
+        self.assertIn(f"env DO_NOT_TRACK=1 USAGEREPORTER_Duplicati_LEVEL=none AUTOUPDATER_Duplicati_SKIP_UPDATE=1 TMPDIR={self.data} ", dry.stderr)
+
+    def test_password_init_root_branch_hands_the_server_the_units_environment_through_sudo(self):
+        """Phase D round 2 (R2A-3): the SAME_USER test cannot see the ROOT branch, where `sudo -u` resets the
+        environment -- so RUN_ENV placed before `sudo`, or emptied unless SAME_USER, passed. Here a PATH-stub `id`
+        reports root and a PATH-stub `sudo` resets the environment as sudo's env_reset does, then runs the command."""
+        fakebin = self.tmp / "fakebin"
+        fakebin.mkdir()
+        (fakebin / "id").write_text('#!/bin/sh\ncase "$*" in\n  -un) echo root ;;\n  -u) echo 0 ;;\n  *) exec /usr/bin/id "$@" ;;\nesac\n')
+        (fakebin / "sudo").write_text("#!/bin/sh\n" '[ "$1" = -u ] && [ "$3" = -- ] || { echo "stub sudo: unexpected argv" >&2; exit 99; }\n' "shift 3\n" 'exec /usr/bin/env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin STUB_REPORT="$STUB_REPORT" "$@"\n')
+        stub = self.tmp / "server-env"
+        report = self.tmp / "seen-env"
+        stub.write_text("#!/bin/sh\n" 'printf "%s\\n" "DO_NOT_TRACK=${DO_NOT_TRACK:-}" "USAGEREPORTER_Duplicati_LEVEL=${USAGEREPORTER_Duplicati_LEVEL:-}" ' '"AUTOUPDATER_Duplicati_SKIP_UPDATE=${AUTOUPDATER_Duplicati_SKIP_UPDATE:-}" "TMPDIR=${TMPDIR:-}" > "$STUB_REPORT"\n' "exit 102\n")
+        for f in (fakebin / "id", fakebin / "sudo", stub):
+            f.chmod(0o755)
+        env = RedactedEnv(os.environ, PATH=f"{fakebin}:{os.environ['PATH']}", DUPLICATI_RUN_AS=self.me, DUPLICATI_SERVER=str(stub), STUB_REPORT=str(report), TMPDIR=str(self.tmp))
+        for name in ("DO_NOT_TRACK", "USAGEREPORTER_Duplicati_LEVEL", "AUTOUPDATER_Duplicati_SKIP_UPDATE"):
+            env.pop(name, None)
+        cmd = ["bash", str(PASSWORD_INIT), "--data-folder", str(self.data), "--settings-key-file", str(self.key), "--ui-password-file", str(self.pw), "--port", "1"]
+        r = _run(cmd, env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(report.read_text().splitlines(), ["DO_NOT_TRACK=1", "USAGEREPORTER_Duplicati_LEVEL=none", "AUTOUPDATER_Duplicati_SKIP_UPDATE=1", f"TMPDIR={self.data}"])
+
     def test_password_init_refuses_a_secret_with_edge_whitespace(self):
         """The server trims every parameters-file line, so a value with edge whitespace would not survive verbatim."""
         self.pw.write_text(" dummy \n")
