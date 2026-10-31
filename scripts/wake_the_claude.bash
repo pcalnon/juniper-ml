@@ -114,6 +114,9 @@ if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
     REQUIRE_SAVED_SESSION_ID="${FALSE}"
 fi
 
+# Define array variable to save script input parameters as they are parsed
+declare -a UPDATED_PARAMS=()
+
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 SESSIONS_DIR="${WTC_SESSIONS_DIR:-${REPO_ROOT}/scripts/sessions}"
@@ -327,8 +330,9 @@ VALID_PROMPT_PARAM="${FALSE}"
 # Add session id flags
 function parse_session_id_flags() {
     debug_log "Parsing session id flags"
-    local SESSION_ID="${1}"
-    local RETURN_VALUE=0
+    local SESSION_ID="${1}" && shift
+    local CURRENT_PARAMS=("${@}")
+    local RETURN_VALUE="${FALSE}"
     local RESULT=0
 
     # Parse and init Session ID param unless Resume Previous Session is in progress
@@ -354,7 +358,7 @@ function parse_session_id_flags() {
             RESULT="$?"
             if [[ ( "${RESULT}" != "${TRUE}" ) || ( "${SESSION_ID}" == "" ) ]]; then
                 debug_log "Error: Failed to generate a valid UUID for Session ID."
-                usage "${FALSE}"
+                usage "${RESULT}"
             fi
         fi
         CLAUDE_SESSION_ID_VALUE=("${CLAUDE_SESSION_ID_FLAGS}" "${SESSION_ID}")
@@ -362,10 +366,10 @@ function parse_session_id_flags() {
         RESULT="$?"
         if [[ "${RESULT}" == "${UNSAFE_TARGET}" ]]; then
             debug_log "Error: Refusing to save Session ID to an unsafe (symlink) target. Exiting..."
-            usage "${FALSE}"
+            usage "${RESULT}"
         elif [[ ( "${RESULT}" != "${TRUE}" ) && ( "${REQUIRE_SAVED_SESSION_ID}" == "${TRUE}" ) ]]; then
             debug_log "Error: Failed to Save Session ID value. Exiting..."
-            usage "${FALSE}"
+            usage "${RESULT}"
         elif [[ "${RESULT}" != "${TRUE}" ]]; then
             debug_log "Warning: Failed to Save Session ID value."
         fi
@@ -377,6 +381,12 @@ function parse_session_id_flags() {
             shift
         fi
     fi
+    debug_log "Updating Current Params"
+    CURRENT_PARAMS=("${@}")
+    debug_log "Current Params: $(redact_uuid "${CURRENT_PARAMS[@]}")"
+    UPDATED_PARAMS=("${CURRENT_PARAMS[@]}")
+    debug_log "Updated Params: $(redact_uuid "${UPDATED_PARAMS[@]}")"
+    return "${RESULT}"
 }
 
 # Parse Prompt File Path Flag
@@ -880,8 +890,6 @@ else
 fi
 debug_log "Completed verifying that input parameters have been provided"
 
-# Define array variable to save script input parameters as they are parsed
-declare -a UPDATED_PARAMS=()
 
 debug_log "Parse input parameters"
 while (( ${#*} > 0 )); do
