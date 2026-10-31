@@ -319,23 +319,15 @@ VALID_PROMPT_PARAM="${FALSE}"
 
 ########################################################################################################################################################################
 # Define functions for wake_the_claude.bash script
-#
-#     TODO: Consider having a data structure defined as an array of all valid patterns that can be used to match against each parameter flag
-#           add a new function that receives current element and loops over all valid patterns, calling matches_pattern() for each pattern and the current element
-#           new function should return the index into the valid patterns array of the pattern that matches the current element
-#           new function should return -1 if no pattern matches the current element
-#           the return value ov the new function can be evaluated as a case statement to determine the appropriate action to take for an element of each pattern type
 ########################################################################################################################################################################
 
 ########################################################################################################################################################################
 # Define functions to parse and process each input parameter flag type
 
 # Add session id flags
-# EXIT_AFTER_USAGE_DEFAULT="${TRUE}"
 function parse_session_id_flags() {
     debug_log "Parsing session id flags"
     local SESSION_ID="${1}"
-    # local SESSION_ID_PARAM="${2}"
     local RETURN_VALUE=0
     local RESULT=0
 
@@ -424,32 +416,29 @@ function parse_prompt_path_flags() {
     fi
 }
 
-# parse_resume_flags(): Parse resume flags
-function parse_resume_flags() {
-    debug_log "Parsing resume flags"
-    # if [[ ( "${1}" != "" ) && ( "${1:0:3}" != "${SPACER_FLAGS} " ) && ( "${1:0:1}" != "-" ) && ( "${1}" != "${FALSE}" ) ]]; then
-    if [[ ( "${1}" != "" ) && ( "${1:0:1}" != "-" ) && ( "${1}" != "${FALSE}" ) ]]; then
-        SESSION_ID="${1}"
+# Parse prompt file flag
+function parse_prompt_file_flags() {
+    debug_log "Parsing prompt file flags"
+    if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
+        FILE_NAME="${1}"
         shift
-        debug_log "Validating Session ID"
-        SESSION_ID="$(validate_session_id "${SESSION_ID}")"
-        RETURN_VALUE=$?
-        if [[ ( "${RETURN_VALUE}" == "${TRUE}" ) && ( "${SESSION_ID}" != "" ) ]]; then
-            debug_log "Session ID validated: $(redact_uuid "${SESSION_ID}")"
-            CLAUDE_RESUME_VALUE=("${CLAUDE_RESUME_FLAGS}" "${SESSION_ID}")
-            CLAUDE_SESSION_ID_VALUE=()
-        else
-            debug_log "Session ID provided with Resume parameter is invalid. Deferring check for valid Session ID to parsing of Session ID command line arguments"
-        #     # debug_log "Error: Session ID is invalid. Exiting..."
-        #     # usage "${FALSE}"
-        #     continue
-        fi
     else
-        debug_log "Session ID is not provided with Resume parameter. Deferring check for valid Session ID to parsing of Session ID command line arguments"
-        # debug_log "Session ID is invalid, Deferring check for valid Session ID to parsing of Session ID command line arguments"
-        # debug_log "Error: Received Resume Flag but no Valid Session ID to Resume. Exiting..."
-        # usage "${FALSE}"
-        # continue
+        debug_log "Error: Received File Flag but no File Value. Exiting..."
+        usage "${FALSE}"
+    fi
+    if [[ -f "${FILE_NAME}" ]]; then
+        VALID_FILE_PARAM="${TRUE}"
+        PROMPT_FILE="${FILE_NAME}"
+        debug_log "Provided Filename is a valid file"
+    elif [[ ( "${PATH_NAME}" != "" ) && ( -f "${PATH_NAME}/${FILE_NAME}" ) ]]; then
+        VALID_FILE_PARAM="${TRUE}"
+        PROMPT_FILE="${PATH_NAME}/${FILE_NAME}"
+        debug_log "Combined Pathname and Filename is a valid file"
+    elif [[ ${PATH_NAME} == "" ]]; then
+        debug_log "Filename not yet valid, Pathname has not yet been parsed"
+    else
+        debug_log "Error: received an invalid Prompt File. Exiting..."
+        usage "${FALSE}"
     fi
 }
 
@@ -474,6 +463,27 @@ function parse_add_model_flags() {
     fi
 }
 
+# parse_resume_flags(): Parse resume flags
+function parse_resume_flags() {
+    debug_log "Parsing resume flags"
+    if [[ ( "${1}" != "" ) && ( "${1:0:1}" != "-" ) && ( "${1}" != "${FALSE}" ) ]]; then
+        SESSION_ID="${1}"
+        shift
+        debug_log "Validating Session ID"
+        SESSION_ID="$(validate_session_id "${SESSION_ID}")"
+        RETURN_VALUE=$?
+        if [[ ( "${RETURN_VALUE}" == "${TRUE}" ) && ( "${SESSION_ID}" != "" ) ]]; then
+            debug_log "Session ID validated: $(redact_uuid "${SESSION_ID}")"
+            CLAUDE_RESUME_VALUE=("${CLAUDE_RESUME_FLAGS}" "${SESSION_ID}")
+            CLAUDE_SESSION_ID_VALUE=()
+        else
+            debug_log "Session ID provided with Resume parameter is invalid. Deferring check for valid Session ID to parsing of Session ID command line arguments"
+        fi
+    else
+        debug_log "Session ID is not provided with Resume parameter. Deferring check for valid Session ID to parsing of Session ID command line arguments"
+    fi
+}
+
 # Add worktree flag
 function parse_add_worktree_flags() {
     debug_log "Parsing add worktree flags"
@@ -493,33 +503,6 @@ function parse_add_worktree_flags() {
     fi
 }
 
-# Add Remote Control flag
-function parse_add_remote_control_flags() {
-    debug_log "Parsing add remote control flags"
-    if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-        REMOTE_CONTROL_VALUE="${1}"
-        shift
-        debug_log "Received Remote Control Value: \"${REMOTE_CONTROL_VALUE}\""
-        CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}" "${REMOTE_CONTROL_VALUE}")
-    else
-        debug_log "Warning: Received Remote Control Flag but no Remote Control Name. Letting Claude Code assign one."
-        CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}")
-    fi
-}
-
-# Add Effort Flag
-function parse_add_effort_flags() {
-    debug_log "Parsing effort flags"
-    if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) || ( "${1}" == "${EFFORT_XHIGH}" ) || ( "${1}" == "${EFFORT_MAX}" ) || ( "${1}" == "${EFFORT_AUTO}" ) ) ]]; then
-        CLAUDE_EFFORT_VALUE=("${CLAUDE_EFFORT_FLAGS}" "${1}")
-        shift
-    else
-        debug_log "Error: Received Effort Flag but no valid Effort Value. Exiting..."
-        usage "${FALSE}"
-    fi
-}
-
-
 # Parse Command Line Provided Prompt
 function parse_prompt_cli_flags() {
     debug_log "Parsing cli prompt flags"
@@ -531,32 +514,6 @@ function parse_prompt_cli_flags() {
         debug_log "Received prompt [${#PROMPT_VALUE} chars]"
     else
         debug_log "Error: Did not receive a valid prompt string. Exiting..."
-        usage "${FALSE}"
-    fi
-}
-
-# Parse prompt file flag
-function parse_prompt_file_flags() {
-    debug_log "Parsing prompt file flags"
-    if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-        FILE_NAME="${1}"
-        shift
-    else
-        debug_log "Error: Received File Flag but no File Value. Exiting..."
-        usage "${FALSE}"
-    fi
-    if [[ -f "${FILE_NAME}" ]]; then
-        VALID_FILE_PARAM="${TRUE}"
-        PROMPT_FILE="${FILE_NAME}"
-        debug_log "Provided Filename is a valid file"
-    elif [[ ( "${PATH_NAME}" != "" ) && ( -f "${PATH_NAME}/${FILE_NAME}" ) ]]; then
-        VALID_FILE_PARAM="${TRUE}"
-        PROMPT_FILE="${PATH_NAME}/${FILE_NAME}"
-        debug_log "Combined Pathname and Filename is a valid file"
-    elif [[ ${PATH_NAME} == "" ]]; then
-        debug_log "Filename not yet valid, Pathname has not yet been parsed"
-    else
-        debug_log "Error: received an invalid Prompt File. Exiting..."
         usage "${FALSE}"
     fi
 }
@@ -589,6 +546,32 @@ function parse_script_version_flags() {
     RESULT="$?"
     echo -ne "\n${VERSION_BIN}" "${CLAUDE_VERSION_FLAGS}\n\n"
     exit "$RESULT"
+}
+
+# Add Remote Control flag
+function parse_add_remote_control_flags() {
+    debug_log "Parsing add remote control flags"
+    if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
+        REMOTE_CONTROL_VALUE="${1}"
+        shift
+        debug_log "Received Remote Control Value: \"${REMOTE_CONTROL_VALUE}\""
+        CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}" "${REMOTE_CONTROL_VALUE}")
+    else
+        debug_log "Warning: Received Remote Control Flag but no Remote Control Name. Letting Claude Code assign one."
+        CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}")
+    fi
+}
+
+# Add Effort Flag
+function parse_add_effort_flags() {
+    debug_log "Parsing effort flags"
+    if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) || ( "${1}" == "${EFFORT_XHIGH}" ) || ( "${1}" == "${EFFORT_MAX}" ) || ( "${1}" == "${EFFORT_AUTO}" ) ) ]]; then
+        CLAUDE_EFFORT_VALUE=("${CLAUDE_EFFORT_FLAGS}" "${1}")
+        shift
+    else
+        debug_log "Error: Received Effort Flag but no valid Effort Value. Exiting..."
+        usage "${FALSE}"
+    fi
 }
 
 # Add headless flag
@@ -872,7 +855,7 @@ function usage() {
 
 
 ########################################################################################################################################################################
-# Parse input parameters
+# Begin Main Script Execution
 #
 # Example:
 #   ./scripts/wake_the_claude.bash --id 0 --worktree 0 --model opus --effort max --file prompts/thread-handoff_automated-prompts/HANDOFF_2026-06-21_precommit-testing-audit-remediation.md -- --dangerously-skip-permissions --remote-control
@@ -882,6 +865,10 @@ function usage() {
 #   input parameters cannot include both --prompt and --path
 #   if input parameters include both --file and --path, the --path value and --file value are assumed to be the full path to the file
 #
+########################################################################################################################################################################
+
+########################################################################################################################################################################
+# Parse input parameters
 ########################################################################################################################################################################
 debug_log "Verify that input parameters have been provided"
 if [[ "${*}" != "" ]]; then
@@ -893,10 +880,10 @@ else
 fi
 debug_log "Completed verifying that input parameters have been provided"
 
+# Define array variable to save script input parameters as they are parsed
 declare -a UPDATED_PARAMS=()
 
 debug_log "Parse input parameters"
-# while [[ "${TRUE}" != "${FALSE}" ]]; do
 while (( ${#*} > 0 )); do
 
     # Parse current input param flag and break when all params complete
@@ -943,289 +930,6 @@ while (( ${#*} > 0 )); do
     set "${UPDATED_PARAMS[@]}"
     debug_log "Completed Parsing: \"${CURRENT_ELEMENT}\""
 done
-
-
-    ##########################################################################################################################
-    #
-    # TODO: if resume flag isn't provided with a session id, then the script will check for a session id passed as a command line argument
-    #       and if the session id is a valid uuid, then the script will resume the session
-    #
-    # TODO: turn each if/elif section into a function
-    #
-    ##########################################################################################################################
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${RESUME_FLAGS}"; then
-    #     debug_log "Parsing resume flags"
-    #     # if [[ ( "${1}" != "" ) && ( "${1:0:3}" != "${SPACER_FLAGS} " ) && ( "${1:0:1}" != "-" ) && ( "${1}" != "${FALSE}" ) ]]; then
-    #     if [[ ( "${1}" != "" ) && ( "${1:0:1}" != "-" ) && ( "${1}" != "${FALSE}" ) ]]; then
-    #         SESSION_ID="${1}"
-    #         shift
-    #         debug_log "Validating Session ID"
-    #         SESSION_ID="$(validate_session_id "${SESSION_ID}")"
-    #         RETURN_VALUE=$?
-    #         if [[ ( "${RETURN_VALUE}" == "${TRUE}" ) && ( "${SESSION_ID}" != "" ) ]]; then
-    #             debug_log "Session ID validated: $(redact_uuid "${SESSION_ID}")"
-    #             CLAUDE_RESUME_VALUE=("${CLAUDE_RESUME_FLAGS}" "${SESSION_ID}")
-    #             CLAUDE_SESSION_ID_VALUE=()
-    #         else
-    #             debug_log "Session ID provided with Resume parameter is invalid. Deferring check for valid Session ID to parsing of Session ID command line arguments"
-    #         #     # debug_log "Error: Session ID is invalid. Exiting..."
-    #         #     # usage "${FALSE}"
-    #         #     continue
-    #         fi
-    #     else
-    #         debug_log "Session ID is not provided with Resume parameter. Deferring check for valid Session ID to parsing of Session ID command line arguments"
-    #         # debug_log "Session ID is invalid, Deferring check for valid Session ID to parsing of Session ID command line arguments"
-    #         # debug_log "Error: Received Resume Flag but no Valid Session ID to Resume. Exiting..."
-    #         # usage "${FALSE}"
-    #         # continue
-    #     fi
-    #     continue
-    ##########################################################################################################################
-
-    ##########################################################################################################################
-    # Add Session ID flag
-    #
-    # TODO: if resume flag isn't provided with a session id, then the script will check for a session id passed as a command line argument
-    #       and if the session id is a valid uuid, then the script will resume the session
-    #
-    # TODO: turn each if/elif section into a function
-    #
-    ##########################################################################################################################
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${SESSION_ID_FLAGS}"; then
-    #     debug_log "Parsing session id flags"
-    #
-    #     # Parse and init Session ID param unless Resume Previous Session is in progress
-    #     debug_log "Handle Session ID edge cases"
-    #     SESSION_ID="${1}"
-    #     if [[ ( ( "${CLAUDE_RESUME_VALUE[*]}" == "" ) || ( "${#CLAUDE_RESUME_VALUE[@]}" == "0" ) ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
-    #         # Handle session id bool flag edge case
-    #         if [[ "${SESSION_ID}" == "${TRUE}" ]]; then
-    #             shift
-    #             SESSION_ID=""
-    #         fi
-    #
-    #         # Validate Session ID
-    #         debug_log "Validating Session ID"
-    #         SESSION_ID="$(validate_session_id "${SESSION_ID}")"
-    #         RETURN_VALUE=$?
-    #         if [[ ( "${RETURN_VALUE}" == "${TRUE}" ) && ( "${SESSION_ID}" != "" ) ]]; then
-    #             debug_log "Session ID validated: $(redact_uuid "${SESSION_ID}")"
-    #             shift
-    #         else
-    #             debug_log "Warning: Received Session ID Flag but no Valid Session ID Name."
-    #             debug_log "Session ID Value not Provided, Assigning a new UUID as Session ID."
-    #             SESSION_ID="$(generate_uuid)"
-    #             RESULT="$?"
-    #             if [[ ( "${RESULT}" != "${TRUE}" ) || ( "${SESSION_ID}" == "" ) ]]; then
-    #                 debug_log "Error: Failed to generate a valid UUID for Session ID."
-    #                 usage "${FALSE}"
-    #             fi
-    #         fi
-    #         CLAUDE_SESSION_ID_VALUE=("${CLAUDE_SESSION_ID_FLAGS}" "${SESSION_ID}")
-    #         save_session_id "${CLAUDE_SESSION_ID_VALUE[@]}"
-    #         RESULT="$?"
-    #         if [[ "${RESULT}" == "${UNSAFE_TARGET}" ]]; then
-    #             debug_log "Error: Refusing to save Session ID to an unsafe (symlink) target. Exiting..."
-    #             usage "${FALSE}"
-    #         elif [[ ( "${RESULT}" != "${TRUE}" ) && ( "${REQUIRE_SAVED_SESSION_ID}" == "${TRUE}" ) ]]; then
-    #             debug_log "Error: Failed to Save Session ID value. Exiting..."
-    #             usage "${FALSE}"
-    #         elif [[ "${RESULT}" != "${TRUE}" ]]; then
-    #             debug_log "Warning: Failed to Save Session ID value."
-    #         fi
-    #     else
-    #         CLAUDE_SESSION_ID_VALUE=()
-    #         debug_log "Warning: Ignoring Session ID Value Param since ID Flagged as False or Resume Previous Thread has been specified."
-    #         # Consume the ignored session-id value (if present) so it does not fall through as an unknown param.
-    #         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-    #             shift
-    #         fi
-    #     fi
-    ##########################################################################################################################
-    #
-    # Add worktree flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${WORKTREE_FLAGS}"; then
-    #     debug_log "Parsing worktree flags"
-    #     WORKTREE_VALUE="${1}"
-    #     if [[ "${WORKTREE_VALUE}" == "${FALSE}" ]]; then
-    #         CLAUDE_WORKTREE_VALUE=()
-    #     elif [[ ( "${WORKTREE_VALUE}" == "" ) || ( "${1:0:2}" == "${SPACER_FLAGS}" ) || ( "${WORKTREE_VALUE}" == "${TRUE}" ) ]]; then
-    #         # Handle Edgecase of worktree boolean true value
-    #         debug_log "Warning: Received Worktree Flag but no valid Worktree Name. Letting Claude Code assign one."
-    #         if [[ "${WORKTREE_VALUE}" == "${TRUE}" ]]; then
-    #             shift
-    #         fi
-    #         CLAUDE_WORKTREE_VALUE=("${CLAUDE_WORKTREE_FLAGS}")
-    #     else
-    #         shift
-    #         CLAUDE_WORKTREE_VALUE=("${CLAUDE_WORKTREE_FLAGS}" "${WORKTREE_VALUE}")
-    #     fi
-    #
-    # # Add Remote Control flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${REMOTE_CONTROL_FLAGS}"; then
-    #     debug_log "Parsing remote control flags"
-    #     if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-    #         REMOTE_CONTROL_VALUE="${1}"
-    #         shift
-    #         debug_log "Received Remote Control Value: \"${REMOTE_CONTROL_VALUE}\""
-    #         CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}" "${REMOTE_CONTROL_VALUE}")
-    #     else
-    #         debug_log "Warning: Received Remote Control Flag but no Remote Control Name. Letting Claude Code assign one."
-    #         CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}")
-    #     fi
-    #
-    # # Add Effort Flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${EFFORT_FLAGS}"; then
-    #     debug_log "Parsing effort flags"
-    #     if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) || ( "${1}" == "${EFFORT_XHIGH}" ) || ( "${1}" == "${EFFORT_MAX}" ) || ( "${1}" == "${EFFORT_AUTO}" ) ) ]]; then
-    #         CLAUDE_EFFORT_VALUE=("${CLAUDE_EFFORT_FLAGS}" "${1}")
-    #         shift
-    #     else
-    #         debug_log "Error: Received Effort Flag but no valid Effort Value. Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #
-    # # Add Model Flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${MODEL_FLAGS}"; then
-    #     debug_log "Parsing model flags"
-    #     if [[ "${1}" != "" ]]; then
-    #         CLAUDE_MODEL_NAME="${1}"
-    #         validate_model "${CLAUDE_MODEL_NAME}"
-    #         VALID_MODEL_NAME="$?"
-    #         if [[ "${VALID_MODEL_NAME}" != "${TRUE}" ]]; then
-    #             debug_log "Error: Received an Invalid Model Name. Exiting..."
-    #             usage "${FALSE}"
-    #         fi
-    #         debug_log "Selected Model Name Validated"
-    #         debug_log "Selected Claude Model: ${CLAUDE_MODEL_NAME}"
-    #         CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${CLAUDE_MODEL_NAME}")
-    #         shift
-    #     else
-    #         debug_log "Error: Received Model Flag but no Model Name. Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #
-    # # Add headless flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${HEADLESS_FLAGS}"; then
-    #     debug_log "Parsing headless flags"
-    #     CLAUDE_HEADLESS_VALUE=("${CLAUDE_HEADLESS_FLAGS}")
-    #
-    # # Add fork session flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${FORK_SESSION_FLAGS}"; then
-    #     debug_log "Parsing fork session flags"
-    #     CLAUDE_FORK_SESSION_VALUE=("${CLAUDE_FORK_SESSION_FLAGS}")
-    #
-    # # Add Permissions Flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${PERMISSIONS_FLAGS}"; then
-    #     debug_log "Parsing permissions flags"
-    #     CLAUDE_PERMISSIONS_VALUE=("${CLAUDE_PERMISSIONS_FLAGS}")
-    #
-    # # Parse Command Line Provided Prompt
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${PROMPT_FLAGS}"; then
-    #     debug_log "Parsing prompt flags"
-    #     if [[ "${1}" != "" ]]; then
-    #         PROMPT_VALUE="${1}"
-    #         shift
-    #         VALID_PROMPT_PARAM="${TRUE}"
-    #         debug_log "Received prompt [${#PROMPT_VALUE} chars]"
-    #     else
-    #         debug_log "Error: Did not receive a valid prompt string. Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #
-    # # Parse prompt file flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${FILE_FLAGS}"; then
-    #     debug_log "Parsing file flags"
-    #     if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-    #         FILE_NAME="${1}"
-    #         shift
-    #     else
-    #         debug_log "Error: Received File Flag but no File Value. Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #
-    #     if [[ -f "${FILE_NAME}" ]]; then
-    #         VALID_FILE_PARAM="${TRUE}"
-    #         PROMPT_FILE="${FILE_NAME}"
-    #         debug_log "Provided Filename is a valid file"
-    #     elif [[ ( "${PATH_NAME}" != "" ) && ( -f "${PATH_NAME}/${FILE_NAME}" ) ]]; then
-    #         VALID_FILE_PARAM="${TRUE}"
-    #         PROMPT_FILE="${PATH_NAME}/${FILE_NAME}"
-    #         debug_log "Combined Pathname and Filename is a valid file"
-    #     elif [[ ${PATH_NAME} == "" ]]; then
-    #         debug_log "Filename not yet valid, Pathname has not yet been parsed"
-    #         continue
-    #     else
-    #         debug_log "Error: received an invalid Prompt File. Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #
-    # # Parse Prompt File Path Flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${PATH_FLAGS}"; then
-    #     debug_log "Parsing path flags"
-    #     if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-    #         PATH_NAME="${1}"
-    #         shift
-    #     else
-    #         debug_log "Error: Received Path Flag but no Path Value. Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #     debug_log "Completed Parsing path value"
-    #     if [[ "${PATH_NAME: -1}" == "/" ]]; then
-    #         PATH_NAME="${PATH_NAME%\/*}"
-    #         debug_log "Removed trailing slash from path"
-    #     fi
-    #     if [[ -f "${PATH_NAME}" ]]; then
-    #         VALID_PATH_PARAM="${TRUE}"
-    #         PROMPT_FILE="${PATH_NAME}"
-    #         debug_log "Provided Pathname is a valid file"
-    #     elif [[ -d "${PATH_NAME}" ]]; then
-    #         debug_log "Provided Pathname is a valid directory"
-    #         if [[ ( "${FILE_NAME}" != "" ) && ( -f "${PATH_NAME}/${FILE_NAME}" ) ]]; then
-    #             VALID_PATH_PARAM="${TRUE}"
-    #             PROMPT_FILE="${PATH_NAME}/${FILE_NAME}"
-    #             debug_log "Combined Pathname and Filename is a valid file"
-    #         elif [[ "${FILE_NAME}" == "" ]]; then
-    #             debug_log "Filename has not yet been parsed"
-    #             continue
-    #         else
-    #             debug_log "Error: Prompt file is invalid when Pathname is combined with Filename. Exiting..."
-    #             usage "${FALSE}"
-    #         fi
-    #     else
-    #         debug_log "Error: received an invalid Prompt File Path. Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #
-    # # Skip input param Spacer flag
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${SPACER_FLAGS}"; then
-    #     debug_log "Received Spacer Flag"
-    #     continue
-    #
-    # # Print claude version and exit
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${VERSION_FLAGS}"; then
-    #     debug_log "Parsing version flags"
-    #     VERSION_BIN="$(type -P claude 2>/dev/null || true)"
-    #     if [[ "${VERSION_BIN}" == "" ]] || [[ ! -x "${VERSION_BIN}" ]]; then
-    #         debug_log "Error: claude command not found in PATH"
-    #         exit 1
-    #     fi
-    #     "${VERSION_BIN}" "${CLAUDE_VERSION_FLAGS}"
-    #     exit "$?"
-    #
-    # # Print script usage and exit with fail
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${USAGE_FLAGS}"; then
-    #     usage "${FALSE}"
-    #
-    # # Print script usage (help) and exit with success
-    # elif matches_pattern "${CURRENT_ELEMENT}" "${HELP_FLAGS}"; then
-    #     usage "${TRUE}"
-    #
-    # # Print script usage and exit with fail
-    # else
-    #     debug_log "Error: Received Invalid Input Param: \"${CURRENT_ELEMENT}\""
-    #     usage "${FALSE}"
-    # fi
 
 CLAUDE_CODE_PARAMS+=("${CLAUDE_RESUME_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_VALUE[@]}")
