@@ -830,7 +830,9 @@ def _kubectl(ctx: Context) -> Condition:
     cfg = ctx.expected["gates"]["G-TOOLS"]["kubectl"]
     cluster = cfg["cluster"]
     skew = cfg["max_minor_skew"]
-    fix = f"task D4: kubectl {cluster}.x; it needs re-planning under the D6 ruling (erratum E-D6)"
+    # Decision D7: Docker Desktop installs its own /usr/local/bin/kubectl (turing's 1.22.4 is Docker.app's), so task D3,
+    # its upgrade, runs before task D4 (erratum E-H3).
+    fix = f"task D3 (owner) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl {cluster}.x, which needs re-planning under the D6 ruling (erratum E-D6)"
     cap = get_capture(ctx.probe["tools"], "kubectl_version", "kubectl version")
     if cap is not None and not cap.get("found"):
         return Condition("kubectl", "fail", "kubectl not found", fix)
@@ -1070,8 +1072,8 @@ def gate_mem(ctx: Context) -> list[Condition]:
         need = vm_mib + reserve
         detail = f"(VM {vm_mib} MiB from {source}; reserve {reserve} MiB)"
         if avail >= need:
-            return Condition("memory", "pass", f"free + inactive {avail} MiB >= {need} MiB required {detail}")
-        return Condition("memory", "fail", f"free + inactive {avail} MiB < {need} MiB required {detail}", headroom)
+            return Condition("memory", "pass", f"free + speculative + inactive {avail} MiB >= {need} MiB required {detail}")
+        return Condition("memory", "fail", f"free + speculative + inactive {avail} MiB < {need} MiB required {detail}", headroom)
 
     def swap() -> Condition:
         used, token = parse_swap_used_mib(stdout_of(get_capture(mem, "swapusage", "sysctl vm.swapusage"), "sysctl vm.swapusage"))

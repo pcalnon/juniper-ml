@@ -22,6 +22,8 @@ G-SIGN, G-SEC, G-TOOLS, G-ENV, G-NET and G-MEM of §9.3). The suite pins:
   getter printed once the owner applied C2 (2026-10-26). ``--setblockall``'s confirmation sentence and an
   unknown block-all state cannot be judged, unless the firewall is off, which fails anyway. The fix names
   only the missing steps, and stealth mode is reported, not gated;
+- the wording task H3 found wanting (erratum E-H3): G-TOOLS kubectl's fix puts task D3 before task D4, as
+  decision D7 does, and G-MEM's memory message names the three vm_stat counts its figure adds;
 - identity: a probe of another machine exits 2;
 - G-MEM's verdicts equal ``util/macvm_ctl.bash status``'s on the same vm_stat, swap and pgrep output,
   rounding included, because the gate is that script's gate;
@@ -396,7 +398,7 @@ FAILURES: list[tuple[str, dict[str, Any], dict[str, Any], str, str, str, str]] =
     ("no throughput record (task F2)", {}, {"gates.G-NET.throughput": None}, "G-NET", "throughput", "fail", "not measured"),
     ("a slow link", {}, {"gates.G-NET.throughput.mbps": 412.5}, "G-NET", "throughput", "fail", "412.5 Mb/s on 2026-10-27 is below 800 Mb/s"),
     ("ifconfig failed", {"network.ifconfig": cap("", rc=1, stderr="ifconfig: boom\n")}, {}, "G-NET", "link", "error", "ifconfig: boom"),
-    ("too little memory", {"memory.vm_stat": cap(vm_stat(free=4241, inactive=1335016, speculative=16843))}, {}, "G-MEM", "memory", "fail", "free + inactive 5297 MiB < 10240 MiB required"),
+    ("too little memory", {"memory.vm_stat": cap(vm_stat(free=4241, inactive=1335016, speculative=16843))}, {}, "G-MEM", "memory", "fail", "free + speculative + inactive 5297 MiB < 10240 MiB required"),
     ("swap in use (turing)", {"memory.swapusage": cap(swap("9989.50M"))}, {}, "G-MEM", "swap", "fail", "swap used 9990 MiB > 2048 MiB allowed (used = 9989.50M)"),
     ("Docker Desktop running (turing)", {"memory.docker.0.pgrep": cap("682\n"), "memory.docker.2.pgrep": cap("674\n")}, {}, "G-MEM", "docker", "fail", "com.docker.backend (pid 682), Docker (pid 674)"),
     ("pgrep failed", {"memory.docker.1.pgrep": cap("", rc=3, stderr="pgrep: boom\n")}, {}, "G-MEM", "docker", "error", "pgrep: boom"),
@@ -445,6 +447,28 @@ class FailureTest(CheckTestCase):
         self.assertIn("FAIL  G-SEC  1 of 6 fail: firewall", out)
         self.assertIn("  FAIL  firewall           Firewall is disabled. (State = 0); Firewall has block all state set to disabled.; Firewall stealth mode is on -- fix: task C2 (owner)", out)
         self.assertIn("readiness: 6 of 7 gates pass (G-ALIAS, G-SIGN, G-TOOLS, G-ENV, G-NET, G-MEM); 1 fail: G-SEC", out)
+
+    def test_the_kubectl_fix_puts_task_d3_before_d4(self) -> None:
+        # Decision D7: Docker Desktop installs its own /usr/local/bin/kubectl, so its upgrade (D3) runs before D4.
+        for name, capture in (("kubectl 1.22 (turing)", cap(TURING_KUBECTL)), ("kubectl missing", cap(found=False, argv=("kubectl", "version")))):
+            with self.subTest(name):
+                set_path(self.probe, "tools.kubectl_version", capture)
+                _, result = self.result()
+                self.assertEqual(
+                    self.condition(result, "G-TOOLS", "kubectl")["remediation"],
+                    "task D3 (owner) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl 1.36.x, which needs re-planning under the D6 ruling (erratum E-D6)",
+                )
+
+    def test_the_memory_figure_names_every_count_it_adds(self) -> None:
+        # vm_stat's free + speculative + inactive pages, as util/macvm_ctl.bash adds them; "free + inactive" hid the
+        # speculative pages (erratum E-H3).
+        for status, text in (("pass", vm_stat(free=2000000, inactive=1000000, speculative=16843)), ("fail", vm_stat(free=4241, inactive=1335016, speculative=16843))):
+            with self.subTest(status):
+                set_path(self.probe, "memory.vm_stat", cap(text))
+                _, result = self.result()
+                cond = self.condition(result, "G-MEM", "memory")
+                self.assertEqual(cond["status"], status)
+                self.assertTrue(cond["message"].startswith("free + speculative + inactive "), cond["message"])
 
 
 class FirewallTest(CheckTestCase):
