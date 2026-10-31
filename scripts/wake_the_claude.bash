@@ -43,15 +43,15 @@
 #
 #    echo "0. Script Call"
 #    echo "1. Initial Script Params: \"${*}\""
-#    
+#
 #    declare -a PARAMS=("${@}")
 #    echo "2. Script Params: \"${PARAMS[*]}\""
-#    
+#
 #    declare -a PPARAMS=()
 #    declare -a SPPARAMS=()
 #    declare -a FPARAMS=()
 #    declare -a SFPARAMS=()
-#    
+#
 #    echo "3. Function Definition"
 #    function bla() {
 #        FPARAMS=("${@}")
@@ -239,9 +239,9 @@ FORK_SESSION_FLAGS="--fork | ${CLAUDE_FORK_SESSION_FLAGS} | --resume-fork | --re
 ########################################################################################################################################################################
 debug_log "Define Index values for Valid Patterns Array"
 INITIAL_INDEX=0
-MODEL_FLAGS_INDEX="${INITIAL_INDEX}" && INITIAL_INDEX=$((INITIAL_INDEX + 1))
-EFFORT_FLAGS_INDEX="${INITIAL_INDEX}" && INITIAL_INDEX=$((INITIAL_INDEX + 1))
-WORKTREE_FLAGS_INDEX="${INITIAL_INDEX}" && INITIAL_INDEX=$((INITIAL_INDEX + 1))
+MODEL_FLAGS_INDEX="${INITIAL_INDEX}"          && INITIAL_INDEX=$((INITIAL_INDEX + 1))
+EFFORT_FLAGS_INDEX="${INITIAL_INDEX}"         && INITIAL_INDEX=$((INITIAL_INDEX + 1))
+WORKTREE_FLAGS_INDEX="${INITIAL_INDEX}"       && INITIAL_INDEX=$((INITIAL_INDEX + 1))
 REMOTE_CONTROL_FLAGS_INDEX="${INITIAL_INDEX}" && INITIAL_INDEX=$((INITIAL_INDEX + 1))
 SESSION_ID_FLAGS_INDEX="${INITIAL_INDEX}"     && INITIAL_INDEX=$((INITIAL_INDEX + 1))
 PERMISSIONS_FLAGS_INDEX="${INITIAL_INDEX}"    && INITIAL_INDEX=$((INITIAL_INDEX + 1))
@@ -326,20 +326,6 @@ VALID_PROMPT_PARAM="${FALSE}"
 #           new function should return -1 if no pattern matches the current element
 #           the return value ov the new function can be evaluated as a case statement to determine the appropriate action to take for an element of each pattern type
 ########################################################################################################################################################################
-
-# get_pattern_index(): Get the index into the valid patterns array of the pattern that matches the current element
-function get_pattern_index() {
-    local current_element="$1"
-    local pattern_index=-1
-    for pattern in "${VALID_PATTERNS[@]}"; do
-        if matches_pattern "${current_element}" "${pattern}"; then
-            pattern_index=$((pattern_index + 1))
-            break
-        fi
-    done
-    echo "${pattern_index}"
-    return "${pattern_index}"
-}
 
 ########################################################################################################################################################################
 # Define functions to parse and process each input parameter flag type
@@ -550,7 +536,7 @@ function parse_prompt_cli_flags() {
 }
 
 # Parse prompt file flag
-function parse_prompt_file_flags() { 
+function parse_prompt_file_flags() {
     debug_log "Parsing prompt file flags"
     if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
         FILE_NAME="${1}"
@@ -641,6 +627,20 @@ function parse_help_flags() {
 
 ########################################################################################################################################################################################################################################
 # Define general purpose functions
+
+# get_pattern_index(): Get the index into the valid patterns array of the pattern that matches the current element
+function get_pattern_index() {
+    local current_element="$1"
+    local pattern_index=-1
+    for pattern in "${VALID_PATTERNS[@]}"; do
+        if matches_pattern "${current_element}" "${pattern}"; then
+            pattern_index=$((pattern_index + 1))
+            break
+        fi
+    done
+    echo "${pattern_index}"
+    return "${pattern_index}"
+}
 
 # matches_pattern(): Match a value against a pipe-delimited pattern string
 function matches_pattern() {
@@ -916,23 +916,23 @@ while (( ${#*} > 0 )); do
     # Add Resume previous session flag
     PATTERN_INDEX="$(get_pattern_index "${CURRENT_ELEMENT}")"
     case "${PATTERN_INDEX}" in
-        "${MODEL_FLAGS_INDEX}")          parse_add_model_flags          "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${EFFORT_FLAGS_INDEX}")         parse_add_effort_flags         "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${WORKTREE_FLAGS_INDEX}")       parse_add_worktree_flags       "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${REMOTE_CONTROL_FLAGS_INDEX}") parse_add_remote_control_flags "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${SESSION_ID_FLAGS_INDEX}")     parse_session_id_flags         "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${FILE_FLAGS_INDEX}")           parse_prompt_file_flags        "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${FORK_SESSION_FLAGS_INDEX}")   parse_add_fork_session_flags   "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${HEADLESS_FLAGS_INDEX}")       parse_add_headless_flags       "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${HELP_FLAGS_INDEX}")           parse_help_flags               "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${MODEL_FLAGS_INDEX}")          parse_add_model_flags          "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${MODEL_VERSION_FLAGS_INDEX}")  parse_model_version_flags      "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${PERMISSIONS_FLAGS_INDEX}")    parse_add_permissions_flags    "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${RESUME_FLAGS_INDEX}")         parse_resume_flags             "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${SPACER_FLAGS_INDEX}")         parse_spacer_flags             "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${PROMPT_FLAGS_INDEX}")         parse_prompt_cli_flags         "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${PATH_FLAGS_INDEX}")           parse_prompt_path_flags        "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${FILE_FLAGS_INDEX}")           parse_prompt_file_flags        "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${HEADLESS_FLAGS_INDEX}")       parse_add_headless_flags       "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${FORK_SESSION_FLAGS_INDEX}")   parse_add_fork_session_flags   "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${MODEL_VERSION_FLAGS_INDEX}")  parse_model_version_flags      "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${REMOTE_CONTROL_FLAGS_INDEX}") parse_add_remote_control_flags "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${RESUME_FLAGS_INDEX}")         parse_resume_flags             "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${SCRIPT_VERSION_FLAGS_INDEX}") parse_script_version_flags     "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${HELP_FLAGS_INDEX}")           parse_help_flags               "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${SESSION_ID_FLAGS_INDEX}")     parse_session_id_flags         "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${SPACER_FLAGS_INDEX}")         parse_spacer_flags             "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${USAGE_FLAGS_INDEX}")          parse_usage_flags              "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${WORKTREE_FLAGS_INDEX}")       parse_add_worktree_flags       "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         *)
             debug_log "Error: Invalid pattern index: ${PATTERN_INDEX}"
             usage "${FALSE}"
