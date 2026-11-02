@@ -222,16 +222,19 @@ CLAUDE_ARGS=""
 # Pass through any additional arguments from the caller
 if (( $# > 0 )); then
     CLAUDE_ARGS+=("${@}")
-    [[ "${DEBUG}" == "${TRUE}" ]] && echo "$("${CLAUDE_ARGS[*]}" | xargs)" || true
+    # [[ "${DEBUG}" == "${TRUE}" ]] && echo "$(echo "${CLAUDE_ARGS[@]}" | xargs)" || true
+    [[ "${DEBUG}" == "${TRUE}" ]] && echo "${CLAUDE_ARGS[@]}" || true
 fi
 
 
 ########################################################################################################################################################################################################
 # Call Wake The Claude script with params
 echo "Launching Default Interactive session with Claude Code"
-[[ "${DEBUG}" == "${TRUE}" ]] && echo "${WAKE_THE_CLAUDE_SCRIPT} $(echo "${CLAUDE_ARGS[*]}" | xargs)" || true
+# [[ "${DEBUG}" == "${TRUE}" ]] && echo "${WAKE_THE_CLAUDE_SCRIPT} $(echo "${CLAUDE_ARGS[*]}" | xargs)" || true
+[[ "${DEBUG}" == "${TRUE}" ]] && echo "${WAKE_THE_CLAUDE_SCRIPT} ${CLAUDE_ARGS[*]}" || true
 
-eval "${WAKE_THE_CLAUDE_SCRIPT} $(echo "${CLAUDE_ARGS[*]}" | xargs)"
+# eval "${WAKE_THE_CLAUDE_SCRIPT} $(echo "${CLAUDE_ARGS[*]}" | xargs)"
+eval "${WAKE_THE_CLAUDE_SCRIPT} ${CLAUDE_ARGS[*]}"
 
 echo "Closed Default Interactive session with Claude Code"
 
