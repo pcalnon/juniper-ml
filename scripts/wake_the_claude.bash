@@ -276,10 +276,10 @@ EFFORT_ARRAY+=("${EFFORT_AUTO}")
 ########################################################################################################################################################################
 # Define prompt parameter values
 debug_log "Define Parsed Param values"
-PATH_NAME=""
-FILE_NAME=""
-PROMPT_FILE=""
-PROMPT_VALUE=""
+export PATH_NAME=""
+export FILE_NAME=""
+export PROMPT_FILE=""
+export PROMPT_VALUE=""
 
 PROMPT_VALUE_DEFAULT="Hello World, Claude!"
 export PROMPT_VALUE_DEFAULT
@@ -345,8 +345,7 @@ CLAUDE_HEADLESS_FLAGS="--print"
 CLAUDE_RESUME_FLAGS="--resume"
 CLAUDE_EFFORT_FLAGS="--effort"
 CLAUDE_MODEL_FLAGS="--model"
-CLAUDE_PROMPT_FLAGS="--prompt"
-
+export CLAUDE_PROMPT_FLAGS="--prompt"
 
 ########################################################################################################################################################################
 # Define all valid Script Input parameter flags:
