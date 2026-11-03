@@ -1884,5 +1884,3 @@ fi
 
 debug_log "Completed Executing Claude Code"
 exit 0
-
-
