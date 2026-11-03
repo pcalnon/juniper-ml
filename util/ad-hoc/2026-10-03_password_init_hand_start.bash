@@ -6,7 +6,7 @@
 # Sub-Project: ad-hoc tooling
 # Author:     Paul Calnon
 # Created:    2026-10-03
-# Version:    1.3.0 (2026-10-08: Phase B round-4 fold-in -- see HISTORY)
+# Version:    1.4.0 (2026-10-29: the server runs with the unit's environment and a private TMPDIR -- see HISTORY)
 # Status:     ad-hoc -- recovery (the assessment's B10; issues I-19, I-37)
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md
@@ -33,8 +33,10 @@
 # (TargetURL, Source paths, job options) are still as placed, and `encrypted-fields` is still False
 # (or absent). The full re-encryption happens
 # at the UNIT'S FIRST START, which does reach line 324. Verify `encrypted-fields=True` THERE
-# (assessment step 13), never after this run. No socket is bound on the 102 path either: the
-# interface/port/hostnames options below are passed for safety and are inert.
+# (assessment step 13), never after this run. No TCP listener is bound on the 102 path either: the
+# interface/port/hostnames options below are passed for safety and are inert. The usage reporter, though, IS
+# started before the 102 return (Program.cs 284), so the run carries the unit's DO_NOT_TRACK, USAGEREPORTER and
+# AUTOUPDATER environment, which `sudo -u` would otherwise drop (1.4.0).
 # Exit 200 means another server instance holds the single-instance lock (Program.cs 949/960):
 # the unit is still running -- stop it first.
 #
@@ -71,6 +73,11 @@
 #                      refused (R3C N-2); the header names everything the 102 run writes and the log
 #                      line no longer claims a listener (R3A N-3).
 #   1.3.0  2026-10-08  round-4 fold-in: a NUL in a secret file refused (R4C NIT-6).
+#   1.4.0  2026-10-29  Phase D round 1 (lane A, A-8): the server runs under `env DO_NOT_TRACK=1
+#                      USAGEREPORTER_Duplicati_LEVEL=none AUTOUPDATER_Duplicati_SKIP_UPDATE=1 TMPDIR=<data folder>`.
+#                      `sudo -u` dropped the unit's three Environment= lines, and the usage reporter starts
+#                      before the 102 return with no IPAddressDeny= behind it; without TMPDIR the .NET runtime's
+#                      diagnostic socket went to /tmp (the 2026-10-26 directive).
 set -euo pipefail
 
 DATA_FOLDER=""
@@ -176,7 +183,7 @@ write_params ""
 
 if (( DRY_RUN )); then
     log "dry run: gates passed; would write a 0600 parameters file carrying --settings-encryption-key and --webservice-password-init (values from ${KEY_FILE} and ${PW_FILE}, never printed), then run:"
-    log "  ${SERVER} --server-datafolder=${DATA_FOLDER} --parameters-file=<file> --webservice-interface=loopback --webservice-port=${PORT} --webservice-allowed-hostnames=localhost  (as ${RUN_AS})"
+    log "  env DO_NOT_TRACK=1 USAGEREPORTER_Duplicati_LEVEL=none AUTOUPDATER_Duplicati_SKIP_UPDATE=1 TMPDIR=${DATA_FOLDER} ${SERVER} --server-datafolder=${DATA_FOLDER} --parameters-file=<file> --webservice-interface=loopback --webservice-port=${PORT} --webservice-allowed-hostnames=localhost  (as ${RUN_AS})"
     log "  expecting exit 102 (password set; the unit's first start encrypts the rest) -- 103 means the database already had a real password (Procedure A0: do not use this script); 200 means a server instance is still running"
     exit 0
 fi
@@ -185,12 +192,18 @@ umask 077
 write_params "${PARAMS}"
 (( SAME_USER )) || chown "${RUN_AS}:${RUN_AS}" "${PARAMS}"
 chmod 0600 "${PARAMS}"
-log "running the server once as ${RUN_AS} with --webservice-port=${PORT}, inert on the 102 path: no socket is bound (parameters file $(stat -c '%a' "${PARAMS}"), data folder ${DATA_FOLDER})"
+log "running the server once as ${RUN_AS} with --webservice-port=${PORT}, inert on the 102 path: no TCP listener is bound (parameters file $(stat -c '%a' "${PARAMS}"), data folder ${DATA_FOLDER})"
 
 AS_USER=(sudo -u "${RUN_AS}" --)
 (( SAME_USER )) && AS_USER=()
+# The unit's three Environment= lines, which `sudo -u` drops, and which nothing here backs with IPAddressDeny=:
+# the server starts its usage reporter BEFORE the 102 return (Program.cs 284, then AdjustApplicationSettings at
+# 286), and a release build reports unless one of these says not to. TMPDIR: the .NET runtime puts its
+# diagnostic socket there, and otherwise in /tmp (the 2026-10-26 directive); the data folder is the one directory
+# this script has already proved is the service user's own, mode 0700.
+RUN_ENV=(env DO_NOT_TRACK=1 USAGEREPORTER_Duplicati_LEVEL=none AUTOUPDATER_Duplicati_SKIP_UPDATE=1 "TMPDIR=${DATA_FOLDER}")
 set +e
-"${AS_USER[@]}" "${SERVER}" \
+"${AS_USER[@]}" "${RUN_ENV[@]}" "${SERVER}" \
     "--server-datafolder=${DATA_FOLDER}" \
     "--parameters-file=${PARAMS}" \
     --webservice-interface=loopback \

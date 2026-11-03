@@ -7,7 +7,7 @@
 # Sub-Project: ad-hoc tooling
 # Author:     Paul Calnon
 # Created:    2026-10-03
-# Version:    1.3.0 (2026-10-08: Phase B round-4 fold-in -- see HISTORY)
+# Version:    1.4.0 (2026-10-29: the VACUUM's temporary copy stays in memory -- see HISTORY)
 # Status:     ad-hoc -- recovery (the assessment's B4; issues I-15, I-28, I-38, I-39)
 # Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md
@@ -69,7 +69,9 @@
 #      `encrypted-fields` is True and every `enc-v1:` blob in all five encrypted columns carries
 #      sha256(new key); only counts are printed; and no drop-in is present;
 #   9. `PRAGMA wal_checkpoint(TRUNCATE); VACUUM;` on the live database with the server STOPPED, so no
-#      cleartext page survives in free pages or the WAL (D section 7.3.5);
+#      cleartext page survives in free pages or the WAL (D section 7.3.5) -- under `temp_store=MEMORY`,
+#      because `sudo -u duplicati` drops TMPDIR and VACUUM's temporary copy, once it outgrows the page cache,
+#      would otherwise land in /var/tmp;
 #  10. start the unit; API `resume`; `serverstate` must read Running.
 #
 # IF IT DIES. An EXIT trap reports what is ON DISK, not what the script believed (round 3: R3A D-4,
@@ -116,6 +118,10 @@
 #                      dry run no longer says the decrypt start happened; REKEY_INSTALLED_UNIT.
 #   1.3.0  2026-10-08  round-4 fold-in: the pre-flight count also refuses orphaned Option/Source blobs
 #                      (through the gate, R4C DEFECT-2); REKEY_CREDSTORE_DIR (dry run only, R4C NIT-8).
+#   1.4.0  2026-10-29  step 9's VACUUM runs under `PRAGMA temp_store=MEMORY`: its `sudo -u duplicati`
+#                      carries no TMPDIR, so SQLite's temporary copy of a database above the ~2 MB page
+#                      cache would go to /var/tmp (the 2026-10-26 no-/tmp directive; Phase D's design,
+#                      before step 0; at 240 KiB today the copy stays in the cache, so this is a guard).
 set -euo pipefail
 
 UNIT=duplicati.service
@@ -457,6 +463,12 @@ else
     sudo -u duplicati -- python3 - "${DB}" <<'PY'
 import sqlite3, sys
 con = sqlite3.connect(sys.argv[1])
+# VACUUM rebuilds the database in a transient temporary database. `sudo -u` resets the environment, so with no
+# TMPDIR, once that copy outgrows SQLite's page cache (about 2 MB; the server database was 240 KiB on 09-21), it
+# is created under /var/tmp (the 2026-10-26 directive: no file under /tmp or /var/tmp). MEMORY keeps it in this
+# process whatever the size: this host's SQLite, 3.46.1, is built with TEMP_STORE=1, so the pragma is honoured
+# (measured 2026-10-29 with `pragma compile_options` from /usr/bin/python3, and by Phase D's lane B under strace).
+con.execute("PRAGMA temp_store=MEMORY")
 con.execute("PRAGMA wal_checkpoint(TRUNCATE)")
 con.execute("VACUUM")
 con.close()

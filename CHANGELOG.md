@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`agents-md-touch-up.yml` pins `actions/checkout` to a commit SHA (owner ruling 2026-11-03).** It checked out with
+  the `v7.0.1` tag, the only tag-only `actions/checkout` in `.github/workflows/`. It now uses
+  `3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1`, the commit that tag resolves to and the pin every other
+  workflow here uses, so behaviour is unchanged. A census of the nine Juniper repositories' `main` on 2026-11-01 found
+  249 `actions/checkout` uses, 242 pinned to that SHA; the seven tag-only ones were this workflow's copies, one per
+  repository. juniper-data#503 pinned juniper-data's, and this change is one of the seven that pin the rest.
 - **The release-train ceremony's archive cap rises from 125,000 B to 1,000,000 B** (owner ruling 2026-10-26, on the
   runner-side measurement that the 2026-10-18 ruling called for; a follow-up to juniper-ml#2227).
   `util/release_train/ceremony.py`'s `ARCHIVE_B64_MAX_DEFAULT` bounds a release-notes archive's base64, because the
@@ -105,6 +111,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     keeps its coverage through a stand-in name. `util/ad-hoc/2026-10-27_issue_2064_eval_blocks_mutation_check.py`
     kills 36 of 36 mutants, each by its own pin test; `util/ad-hoc/2026-10-27_issue_2064_corpus_eval_blocks_survey.py`
     measures the corpus figures, read-only.
+- **G-TOOLS kubectl's fix names task D3, and G-MEM's memory message names the speculative pages its figure counts**
+  (turing bring-up; erratum E-H3 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`,
+  from task H3's `macos-host-sme` report). Neither changes a verdict.
+  - `util/host_state_check.py`'s kubectl fix said only "task D4". Docker Desktop installs its own
+    `/usr/local/bin/kubectl` (decision D7), and turing's v1.22.4 client is that link, so the fix now puts the
+    owner's Docker Desktop upgrade (task D3) first, then D4, which still needs re-planning under the D6 ruling
+    (erratum E-D6).
+  - The memory message said "free + inactive", but the figure also adds vm_stat's speculative pages, as
+    `util/macvm_ctl.bash` does (88 MiB of turing's 6161 MiB on 2026-10-27). It now reads "free + speculative +
+    inactive". `util/macvm_ctl.bash` keeps its label: its status block shows "free" as Pages free + Pages
+    speculative.
+  - `tests/test_host_state_check.py`: `FailureTest` gains 2 tests, which pin the kubectl fix exactly and the
+    memory figure's label on a pass and on a failure, and the failure table's memory case reads the new label (63
+    tests across the two G1 suites). `util/ad-hoc/2026-10-30_turing_check_wording_mutation_check.py` (new)
+    kills 4 of 4 mutants through the G1 engine, and `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py`
+    still kills 57 of 57.
 
 ## [0.11.3] - 2026-10-26
 

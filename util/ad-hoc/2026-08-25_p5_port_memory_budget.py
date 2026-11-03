@@ -4,7 +4,7 @@ Project:     Juniper
 Sub-Project: juniper-ml
 Application: ad-hoc
 Author:      Paul Calnon
-Version:     0.1.0
+Version:     0.1.1
 License:     MIT License
 Created:     2026-08-25
 Status:      ad-hoc -- migration (P5 fleet rollout)
@@ -19,10 +19,14 @@ Two adaptations are needed, and BOTH fail in ways that do not point at themselve
 
 **Repo root depth.** juniper-ml keeps tests at ``tests/`` so the root is
 ``parents[1]``. canopy and cascor keep them at ``src/tests/`` (``testpaths``), so
-the root is ``parents[2]``. Getting this wrong does not raise -- ``REPO_ROOT``
-silently resolves to ``src/`` and the suite fails later looking for
-``src/conf/memory_budget.json``, which reads like a missing config rather than a
-bad path.
+the root is ``parents[2]``. Getting this wrong raises at COLLECTION, before any test
+runs: ``REPO_ROOT`` resolves to ``src/``, and the module-level loader's
+``exec_module`` raises ``FileNotFoundError`` for ``src/util/memory_budget_check.py``
+("1 error during collection"), which reads like a missing helper rather than a bad
+root. (Until 2026-10-29 this said a wrong depth "does not raise" and fails later on
+``src/conf/memory_budget.json``; reproduced false on a ``src/tests/`` copy of the
+suite, flood-3 record §4.) A suite moved one level deeper again, as juniper-cascor#734
+moved cascor's to ``src/tests/unit/``, needs ``parents[3]``.
 
 **Bandit strictness differs across the fleet.** The byte-identical file passes
 juniper-ml's bandit and FAILS juniper-cascor's on B603/B607 at three subprocess

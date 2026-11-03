@@ -686,6 +686,12 @@ jobs:
           # EXIT-trap state (round 3, R3C D-5), against PATH stubs and a fake server on a
           # scratch database; the real exit gate judges the copy. Touches no /etc, /run or unit.
           python3 -m unittest -v tests/test_backup_rekey_real_path.py
+          # tests/test_write_matched_settings_key.py: Procedure A's key write (Phase D step 9)
+          # writes the probe's matched form -- a quoted raw match keeps its quotes, a noquote
+          # match drops them, a newline or edge-whitespace match is refused -- never over an
+          # existing path, verified by the gate's read_key and bash's $(<file), accepted by the
+          # real wrapper; its labels equal the probe's own verdict on the same inputs.
+          python3 -m unittest -v tests/test_write_matched_settings_key.py
           # tests/test_a0_restore_scripts.py: Procedure A0's two scripts hand duplicati-cli
           # a COPY of the frozen job index with its -wal/-journal beside it under the copy's
           # name (round 5, R5A F22/F23); passphrase by environment only. duplicati-cli is a
