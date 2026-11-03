@@ -117,13 +117,24 @@ if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
     export REQUIRE_SAVED_SESSION_ID="${FALSE}"
 fi
 
+SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
+# set -x
+# PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): ${PS4}: "
+# PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): "
+# export PS4
+# set +x
 
 ########################################################################################################################################################################
 # Early function definitions (must precede top-level calls below)
 ########################################################################################################################################################################
+function get_line_number() {
+    [[ "${1:-""}" != "" ]] && { echo "${1%% *}" && return 0; } || { echo "-1" && return 1; }
+}
+
 function debug_log() {
     if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
-        echo "wake_the_claude: ${*}" 1>&2
+        local line && line="$( get_line_number "$( caller )" )"
+        echo "${SCRIPT_NAME}: ${FUNCNAME[1]}(${line}): ${*}" 1>&2
     fi
 }
 
@@ -147,7 +158,7 @@ LOGS_DIR="${WTC_LOGS_DIR:-${REPO_ROOT}/logs}"
 
 PROMPT_DIR_NAME_DEFAULT="prompts"
 PROMPT_DIR_DEFAULT="${WTC_PROMPT_DIR_DEFAULT:-${REPO_ROOT}/${PROMPT_DIR_NAME_DEFAULT}}"
-
+export PROMPT_DIR_DEFAULT
 
 mkdir -p "${SESSIONS_DIR}" "${LOGS_DIR}"
 
@@ -291,6 +302,8 @@ declare -a CLAUDE_SESSION_ID_VALUE
 declare -a CLAUDE_PERMISSIONS_VALUE
 declare -a CLAUDE_RESUME_VALUE
 declare -a CLAUDE_PROMPT_VALUE
+declare -a CLAUDE_PROMPT_FILE_VALUE
+declare -a CLAUDE_PROMPT_PATH_VALUE
 declare -a CLAUDE_HEADLESS_VALUE
 declare -a CLAUDE_FORK_SESSION_VALUE
 
@@ -322,14 +335,17 @@ export PROMPT_DEFAULT
 debug_log "Define Claude Code parameter flags"
 CLAUDE_PERMISSIONS_FLAGS="--dangerously-skip-permissions"
 CLAUDE_REMOTE_CONTROL_FLAGS="--remote-control"
-CLAUDE_SESSION_ID_FLAGS="--session-id"
 CLAUDE_FORK_SESSION_FLAGS="--fork-session"
+CLAUDE_PROMPT_FILE_FLAGS="--prompt-file"
+CLAUDE_PROMPT_PATH_FLAGS="--prompt-path"
+CLAUDE_SESSION_ID_FLAGS="--session-id"
 CLAUDE_WORKTREE_FLAGS="--worktree"
 CLAUDE_VERSION_FLAGS="--version"
 CLAUDE_HEADLESS_FLAGS="--print"
 CLAUDE_RESUME_FLAGS="--resume"
 CLAUDE_EFFORT_FLAGS="--effort"
 CLAUDE_MODEL_FLAGS="--model"
+CLAUDE_PROMPT_FLAGS="--prompt"
 
 
 ########################################################################################################################################################################
@@ -473,6 +489,44 @@ function generate_uuid() {
 }
 
 ########################################################################################################################################################################
+# is_valid_file(): Check if a file is valid
+function is_valid_file() {
+    debug_log "Checking if file is valid"
+    local current_file="${1:-""}"
+    debug_log "Current File: \"${current_file}\""
+    local result_value="${TRUE}"
+
+    if [[ ! -f "${current_file}" ]]; then
+        debug_log "File is not valid: \"${current_file}\""
+        result_value="${FALSE}"
+    else
+        debug_log "File is valid: \"${current_file}\""
+    fi
+    debug_log "Result Value: \"${result_value}\""
+
+    return "${result_value}"
+}
+
+########################################################################################################################################################################
+# is_valid_dir(): Check if a directory is valid
+function is_valid_dir() {
+    debug_log "Checking if directory is valid"
+    local current_dir="${1:-""}"
+    debug_log "Current Directory: \"${current_dir}\""
+    local result_value="${TRUE}"
+
+    if [[ ! -d "${current_dir}" ]]; then
+        debug_log "Directory is not valid: \"${current_dir}\""
+        result_value="${FALSE}"
+    else
+        debug_log "Directory is valid: \"${current_dir}\""
+    fi
+    debug_log "Result Value: \"${result_value}\""
+
+    return "${result_value}"
+}
+
+########################################################################################################################################################################
 # get_valid_session_id_file(): Get a valid session id file path to save current session id
 function get_valid_session_id_file() {
     local session_id="$1" && shift
@@ -586,22 +640,28 @@ function validate_session_id() {
 ########################################################################################################################################################################
 # Validate Model parameter value
 function validate_model() {
-    MODEL_PARAM="${1,,}"
-    VALID_MODEL="${FALSE}"
-    debug_log "Validate Claude Code Model Param Value: ${MODEL_PARAM}"
-    for CURRENT_MODEL in "${MODEL_TEST_ARRAY[@]}"; do
-        if [[ "${MODEL_PARAM}" == "${CURRENT_MODEL,,}" ]]; then
-            debug_log "Model Validated: ${MODEL_PARAM}"
-            VALID_MODEL="${TRUE}"
+    debug_log "Validating Model parameter value"
+    local model_param="${1,,}"
+    debug_log "Model parameter value: ${model_param}"
+    local valid_model="${TRUE}"
+    debug_log "1. Valid Model parameter value: ${valid_model}"
+
+    debug_log "Validate Claude Code Model Param Value: ${model_param}"
+    for current_model in "${MODEL_TEST_ARRAY[@]}"; do
+        if [[ "${model_param}" == "${current_model,,}" ]]; then
+            debug_log "Model Validated: ${model_param}"
             break
         fi
     done
-    if [[ "${VALID_MODEL}" != "${TRUE}" ]]; then
-        debug_log "Error: Specified Model is not Valid: ${MODEL_PARAM}"
-        usage "${FALSE}"
+    debug_log "2. Valid Model parameter value: ${valid_model}"
+    if [[ "${valid_model}" != "${TRUE}" ]]; then
+        debug_log "Error: Specified Model is not Valid: ${model_param}"
+        valid_model="${FALSE}"
+    else
+        debug_log "Successfully Validated Claude Code Model Param Value: ${model_param}"
     fi
-    debug_log "Validated Claude Code Model Param Value: ${MODEL_PARAM}"
-    return "${VALID_MODEL}"
+    debug_log "3. Valid Model parameter value: ${valid_model}"
+    return "${valid_model}"
 }
 
 ########################################################################################################################################################################
@@ -690,7 +750,7 @@ function parse_session_id_flags() {
             debug_log "New Session ID generated and validated: $(redact_uuid "${session_id}")"
         fi
     # Scenario 3: this scenario means: we have received a valid session id
-    elif [[ "$(validate_session_id "${session_id}")" == "${TRUE}" ]]; then
+    elif validate_session_id "${session_id}"; then
         debug_log "Session ID validated: $(redact_uuid "${session_id}")"
         shift 2  # shift to consume the session id flag and valid session id value
     # Scenario 4: this scenario means: we have received an invalid but non-edgecase session id
@@ -781,7 +841,7 @@ function parse_resume_flags() {
             debug_log "Session ID already assigned: $(redact_uuid "${CLAUDE_SESSION_ID_VALUE[@]}")"
             session_id="${CLAUDE_SESSION_ID_VALUE[PARAM_VALUE_INDEX]}"
             debug_log "Validating Session ID: $(redact_uuid "${session_id}")"
-            if [[ "$(validate_session_id "${session_id}")" == "${TRUE}" ]]; then
+            if validate_session_id "${session_id}"; then
                 debug_log "Session ID validated: $(redact_uuid "${session_id}")"
                 CLAUDE_RESUME_VALUE=("${CLAUDE_RESUME_FLAGS}" "${session_id}")
                 debug_log "Resume Value: $(redact_uuid "${CLAUDE_RESUME_VALUE[@]}")"
@@ -795,7 +855,7 @@ function parse_resume_flags() {
         fi
         debug_log "Initialized Claude Code Resume Parameters Array: $(redact_uuid "${CLAUDE_RESUME_VALUE[@]}")"
     # Scenario 5: this scenario means: we have received a valid resume value
-    elif [[ ( "${resume_value:0:1}" != "-" ) && ( "$(validate_session_id "${resume_value}")" == "${TRUE}" ) ]]; then
+    elif [[ ( "${resume_value:0:1}" != "-" ) ]] && validate_session_id "${resume_value}"; then
         debug_log "Session ID validated: $(redact_uuid "${resume_value}")"
         shift 2 # shift to consume the resume flag and resume value
         CLAUDE_RESUME_VALUE=("${CLAUDE_RESUME_FLAGS}" "${resume_value}")
@@ -858,12 +918,13 @@ function parse_add_model_flags() {
         debug_log "Setting Claude Model Value: \"${CLAUDE_MODEL_FLAGS}\" \"${current_model}\""
         CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${current_model}")
         debug_log "Claude Model Value: [${CLAUDE_MODEL_VALUE[*]}]"
-    elif [[ "$(validate_model "${current_model}")" == "${TRUE}" ]]; then
+    elif validate_model "${current_model}"; then
+        # TODO: this check succeeds in validate_model() function but is failing here
         debug_log "Selected Model Name validated: \"${current_model}\""
-        CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${current_model}") && shift  # shift to consume the model name
+        CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${current_model}") && shift 2 # shift to consume the model flag and model name
     else
         debug_log "Warning: Received an Invalid but Non-Edgecase Model Name: \"${current_model}\"."
-        current_model="${MODEL_DEFAULT}"
+        current_model="${MODEL_DEFAULT}" && shift 2 # shift to consume the model flag and invalid model name
         debug_log "Setting Default Model Name: \"${current_model}\""
         debug_log "Setting Claude Model Value: \"${CLAUDE_MODEL_FLAGS}\" \"${current_model}\""
         CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${current_model}")
@@ -899,7 +960,7 @@ function parse_add_effort_flags() {
         debug_log "Error: Received Empty Effort Flag. Exiting..."
         result_value="${UNSAFE_TARGET}"
         CLAUDE_EFFORT_VALUE=()
-    elif [[ "$(matches_pattern "${current_flag}" "${CLAUDE_EFFORT_FLAGS}")" ]]; then
+    elif matches_pattern "${current_flag}" "${CLAUDE_EFFORT_FLAGS}"; then
         debug_log "Received a Valid Effort Flag"
         shift  # shift to consume the effort flag
 
@@ -914,7 +975,7 @@ function parse_add_effort_flags() {
             current_effort="${EFFORT_DEFAULT}"
             debug_log "Setting Claude Effort Value: \"${CLAUDE_EFFORT_FLAGS}\" \"${current_effort}\""
             CLAUDE_EFFORT_VALUE=("${CLAUDE_EFFORT_FLAGS}" "${current_effort}")
-        elif [[ "$(validate_effort "${current_effort}")" == "${TRUE}" ]]; then
+        elif validate_effort "${current_effort}"; then
             debug_log "Current Effort Name validated: \"${current_effort}\""
             CLAUDE_EFFORT_VALUE=("${CLAUDE_EFFORT_FLAGS}" "${current_effort}") && shift  # shift to consume the effort name
         else
@@ -958,7 +1019,7 @@ function parse_add_permissions_flags() {
         debug_log "Error: Received Empty Permissions Flag."
         result_value="${UNSAFE_TARGET}"
         CLAUDE_PERMISSIONS_VALUE=()
-    elif [[ "$(matches_pattern "${current_flag}" "${PERMISSIONS_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${PERMISSIONS_FLAGS}"; then
         debug_log "Received Valid Permissions Flag: \"${current_flag}\""
         shift  # shift to consume the permissions flag
         if [[ "${current_permissions}" == "" ]]; then
@@ -967,7 +1028,7 @@ function parse_add_permissions_flags() {
         elif [[ "${current_permissions:0:2}" == "${SPACER_FLAGS}" ]]; then
             debug_log "Warning: Received Spacer Flags as Permissions Value."
             # Do not shift parameters: Current Permissions Value is a spacer flag
-        elif [[ "$(matches_pattern "${current_permissions}" "${PERMISSIONS_FLAGS}")" == "${TRUE}" ]]; then
+        elif matches_pattern "${current_permissions}" "${PERMISSIONS_FLAGS}"; then
             debug_log "Received Valid Permissions Value: \"${current_permissions}\""
             shift  # shift to consume the permissions value
         else
@@ -978,7 +1039,7 @@ function parse_add_permissions_flags() {
     else
         debug_log "Warning: Received an Invalid Permissions Flag: \"${current_flag}\"."
         result_value="${FALSE}" && shift  # shift to consume the permissions flag
-        if [[ "$(matches_pattern "${current_permissions}" "${PERMISSIONS_FLAGS}")" == "${TRUE}" ]]; then
+        if matches_pattern "${current_permissions}" "${PERMISSIONS_FLAGS}"; then
             debug_log "Received Valid Permissions Value: \"${current_permissions}\""
             shift  # shift to consume the permissions value
             CLAUDE_PERMISSIONS_VALUE=("${CLAUDE_PERMISSIONS_FLAGS}")
@@ -1043,7 +1104,7 @@ function parse_add_worktree_flags() {
             shift  # shift to consume the worktree boolean true value
         fi
         CLAUDE_WORKTREE_VALUE=("${CLAUDE_WORKTREE_FLAGS}")
-    elif [[ "$(validate_worktree "${worktree_value}")" == "${TRUE}" ]]; then
+    elif validate_worktree "${worktree_value}"; then
         debug_log "Selected Worktree Name validated: \"${worktree_value}\""
         CLAUDE_WORKTREE_VALUE=("${CLAUDE_WORKTREE_FLAGS}" "${worktree_value}") && shift 2  # shift to consume the worktree flag and worktree name
     else
@@ -1074,7 +1135,7 @@ function parse_add_remote_control_flags() {
     if [[ "${current_flag}" == "" ]]; then
         debug_log "Error: Received Empty Remote Control Flag."
         result_value="${UNSAFE_TARGET}"
-    elif [[ "$(matches_pattern "${current_flag}" "${REMOTE_CONTROL_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${REMOTE_CONTROL_FLAGS}"; then
         debug_log "Received Remote Control Flag: \"${current_flag}\""
         shift  # shift to consume the remote control flag
     else
@@ -1112,7 +1173,7 @@ function parse_add_headless_flags() {
     if [[ "${current_flag}" == "" ]]; then
         debug_log "Error: Received Empty Headless Flag. Exiting..."
         result_value="${UNSAFE_TARGET}"
-    elif [[ "$(matches_pattern "${current_flag}" "${HEADLESS_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${HEADLESS_FLAGS}"; then
         debug_log "Received Headless Flag: \"${current_flag}\""
         shift  # shift to consume the headless flag
     else
@@ -1149,7 +1210,7 @@ function parse_add_fork_session_flags() {
     if [[ "${current_flag}" == "" ]]; then
         debug_log "Error: Received Empty Fork Session Flag."
         result_value="${UNSAFE_TARGET}"
-    elif [[ "$(matches_pattern "${current_flag}" "${FORK_SESSION_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${FORK_SESSION_FLAGS}"; then
         debug_log "Received Fork Session Flag: \"${current_flag}\""
         shift  # shift to consume the fork session flag
     else
@@ -1186,7 +1247,7 @@ function parse_spacer_flags() {
     if [[ "${current_flag}" == "" ]]; then
         debug_log "Error: Received Empty Spacer Flag."
         result_value="${UNSAFE_TARGET}"
-    elif [[ "$(matches_pattern "${current_flag}" "${SPACER_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${SPACER_FLAGS}"; then
         debug_log "Received Spacer Flag: \"${current_flag}\""
         shift  # shift to consume the spacer flag
     else
@@ -1207,6 +1268,7 @@ function parse_spacer_flags() {
 
 ########################################################################################################################################################################
 # Parse Command Line Provided Prompt
+# NOTE: the "--prompt" flag is not added to updated Claude Code params because it's not a valid flag for claude code
 function parse_prompt_value_flags() {
     debug_log "Parsing prompt value flags"
     local current_flag="${1:-""}"
@@ -1219,7 +1281,7 @@ function parse_prompt_value_flags() {
         debug_log "Error: Received Empty Prompt Value Flag."
         result_value="${UNSAFE_TARGET}"
         CLAUDE_PROMPT_VALUE=()
-    elif [[ "$(matches_pattern "${current_flag}" "${PROMPT_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${PROMPT_FLAGS}"; then
         debug_log "Received Prompt Value Flag: \"${current_flag}\""
         shift  # shift to consume the prompt value flag
 
@@ -1234,11 +1296,13 @@ function parse_prompt_value_flags() {
             fi
             debug_log "Warning: Received an Edge Case Prompt Value: \"${current_prompt}\"."
             debug_log "Setting Default Prompt Value: \"${PROMPT_VALUE_DEFAULT}\""
-            CLAUDE_PROMPT_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_VALUE_DEFAULT}")
+            # CLAUDE_PROMPT_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_VALUE_DEFAULT}")
+            CLAUDE_PROMPT_VALUE=("${PROMPT_VALUE_DEFAULT}")
         else
             debug_log "Received an apparent valid Prompt Value: \"${current_prompt}\"."
             debug_log "Setting Prompt Value: \"${current_prompt}\""
-            CLAUDE_PROMPT_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_prompt}") && shift  # shift to consume the prompt flag and prompt value
+            # CLAUDE_PROMPT_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_prompt}") && shift  # shift to consume the prompt value
+            CLAUDE_PROMPT_VALUE=("${current_prompt}") && shift  # shift to consume the prompt value
         fi
     else
         debug_log "Error: Received an Invalid Prompt Flag: \"${current_flag}\"."
@@ -1259,6 +1323,7 @@ function parse_prompt_value_flags() {
 
 ########################################################################################################################################################################
 # Parse Prompt File Path Flag
+# TODO: cat the output of the prompt file into the prompt value
 function parse_prompt_path_flags() {
     debug_log "Parsing prompt path flags"
     local current_flag="${1:-""}"
@@ -1272,7 +1337,7 @@ function parse_prompt_path_flags() {
         debug_log "Error: Received Empty Prompt Path Flag."
         result_value="${UNSAFE_TARGET}"
         CLAUDE_PROMPT_PATH_VALUE=()
-    elif [[ "$(matches_pattern "${current_flag}" "${PROMPT_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${PROMPT_FLAGS}"; then
         debug_log "Received Prompt Value Flag: \"${current_flag}\""
         shift  # shift to consume the prompt value flag
 
@@ -1287,31 +1352,31 @@ function parse_prompt_path_flags() {
             fi
             debug_log "Warning: Received an Edge Case Prompt Path: \"${current_path}\"."
             debug_log "Setting Default Prompt Path: \"${PROMPT_PATH_DEFAULT}\""
-            CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_PATH_DEFAULT}")
-        elif [[ "$(is_valid_file "${current_path}")" == "${TRUE}" ]]; then
+            CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_PATH_FLAGS}" "${PROMPT_PATH_DEFAULT}") && shift  # shift to consume the prompt flag and prompt path value
+        elif is_valid_file "${current_path}"; then
             debug_log "Received an apparent valid Prompt Path: \"${current_path}\"."
             debug_log "Setting Prompt Path: \"${current_path}\""
-            CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_path}") && shift  # shift to consume the prompt flag and prompt path value
-        elif [[ "$(is_valid_dir "${current_path}")" == "${TRUE}" ]]; then
+            CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_PATH_FLAGS}" "${current_path}") && shift  # shift to consume the prompt flag and prompt path value
+        elif is_valid_dir "${current_path}"; then
             debug_log "Received a valid Prompt directory Path: \"${current_path}\"."
             current_file_name="${PROMPT_FILE_NAME_DEFAULT}"
             debug_log "Using default prompt file name: \"${current_file_name}\""
             current_prompt_path="${current_path}/${current_file_name}"
             debug_log "Current Prompt Path: \"${current_prompt_path}\""
-            if [[ "$(is_valid_file "${current_prompt_path}")" == "${TRUE}" ]]; then
+            if is_valid_file "${current_prompt_path}"; then
                 debug_log "Found default prompt file name: \"${current_file_name}\" in the provided prompt directory: \"${current_path}\"."
                 debug_log "Setting Prompt Path: \"${current_prompt_path}\""
-                CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_prompt_path}") && shift  # shift to consume the prompt flag and prompt path value
+                CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_PATH_FLAGS}" "${current_prompt_path}") && shift  # shift to consume the prompt flag and prompt path value
             else
                 debug_log "Warning: Unable to find default prompt file name: \"${current_file_name}\" in the provided prompt directory: \"${current_path}\"."
                 result_value="${FALSE}"
-                CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_PATH_DEFAULT}") && shift  # shift to consume the invalid prompt path value
+                CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_PATH_FLAGS}" "${PROMPT_PATH_DEFAULT}") && shift  # shift to consume the invalid prompt path value
             fi
         else
             debug_log "Warning: Received an Invalid Prompt Path: \"${current_path}\"."
             result_value="${FALSE}"
             debug_log "Setting Default Prompt Path: \"${PROMPT_PATH_DEFAULT}\""
-            CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_PATH_DEFAULT}") && shift  # shift to consume the invalid prompt path value
+            CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_PATH_FLAGS}" "${PROMPT_PATH_DEFAULT}") && shift  # shift to consume the invalid prompt path value
         fi
     else
         debug_log "Error: Received an Invalid Prompt Flag: \"${current_flag}\"."
@@ -1332,6 +1397,7 @@ function parse_prompt_path_flags() {
 
 ########################################################################################################################################################################
 # Parse prompt file flag
+# TODO: cat the output of the prompt file into the prompt value
 function parse_prompt_file_flags() {
     debug_log "Parsing prompt file flags"
     local current_flag="${1:-""}"
@@ -1345,7 +1411,7 @@ function parse_prompt_file_flags() {
         debug_log "Error: Received Empty Prompt File Flag."
         result_value="${UNSAFE_TARGET}"
         CLAUDE_PROMPT_FILE_VALUE=()
-    elif [[ "$(matches_pattern "${current_flag}" "${PROMPT_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${PROMPT_FLAGS}"; then
         debug_log "Received Prompt Value Flag: \"${current_flag}\""
         shift  # shift to consume the prompt value flag
 
@@ -1360,31 +1426,31 @@ function parse_prompt_file_flags() {
             fi
             debug_log "Warning: Received an Edge Case Prompt File: \"${current_file}\"."
             debug_log "Setting Default Prompt File: \"${PROMPT_FILE_DEFAULT}\""
-            CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_FILE_DEFAULT}")
-        elif [[ "$(is_valid_file "${current_file}")" == "${TRUE}" ]]; then
+            CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FILE_FLAGS}" "${PROMPT_FILE_DEFAULT}") && shift  # shift to consume the prompt flag and prompt file value
+        elif is_valid_file "${current_file}"; then
             debug_log "Received an apparent valid Prompt File: \"${current_file}\"."
             debug_log "Setting Prompt File: \"${current_file}\""
-            CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_file}") && shift  # shift to consume the prompt flag and prompt file value
-        elif [[ "$(is_valid_dir "${current_file}")" == "${TRUE}" ]]; then
+            CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FILE_FLAGS}" "${current_file}") && shift  # shift to consume the prompt flag and prompt file value
+        elif is_valid_dir "${current_file}"; then
             debug_log "Received a valid Prompt directory File: \"${current_file}\"."
             current_file_name="${PROMPT_FILE_NAME_DEFAULT}"
             debug_log "Using default prompt file name: \"${current_file_name}\""
             current_prompt_file="${current_file}/${current_file_name}"
             debug_log "Current Prompt File: \"${current_prompt_file}\""
-            if [[ "$(is_valid_file "${current_prompt_file}")" == "${TRUE}" ]]; then
+            if is_valid_file "${current_prompt_file}"; then
                 debug_log "Found default prompt file name: \"${current_file_name}\" in the provided prompt directory: \"${current_file}\"."
                 debug_log "Setting Prompt File: \"${current_prompt_file}\""
-                CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_prompt_file}") && shift  # shift to consume the prompt flag and prompt file value
+                CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FILE_FLAGS}" "${current_prompt_file}") && shift  # shift to consume the prompt flag and prompt file value
             else
                 debug_log "Warning: Unable to find default prompt file name: \"${current_file_name}\" in the provided prompt directory: \"${current_file}\"."
                 result_value="${FALSE}"
-                CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_FILE_DEFAULT}") && shift  # shift to consume the invalid prompt file value
+                CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FILE_FLAGS}" "${PROMPT_FILE_DEFAULT}") && shift  # shift to consume the invalid prompt file value
             fi
         else
             debug_log "Warning: Received an Invalid Prompt File: \"${current_file}\"."
             result_value="${FALSE}"
             debug_log "Setting Default Prompt File: \"${PROMPT_FILE_DEFAULT}\""
-            CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_FILE_DEFAULT}") && shift  # shift to consume the invalid prompt file value
+            CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FILE_FLAGS}" "${PROMPT_FILE_DEFAULT}") && shift  # shift to consume the invalid prompt file value
         fi
     else
         debug_log "Error: Received an Invalid Prompt Flag: \"${current_flag}\"."
@@ -1420,7 +1486,7 @@ function parse_model_version_flags() {
     if [[ "${current_flag}" == "" ]]; then
         debug_log "Error: Received Empty Model Version Flag. Exiting..."
         result_value="${UNSAFE_TARGET}"
-    elif [[ "$(matches_pattern "${current_flag}" "${CLAUDE_VERSION_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${CLAUDE_VERSION_FLAGS}"; then
         debug_log "Received Model Version Flag: \"${current_flag}\""
         shift
         if [[ ( "${version_bin}" == "" ) || ( ! -x "${version_bin}" ) ]]; then
@@ -1475,7 +1541,7 @@ function parse_script_version_flags() {
         debug_log "Error: Unable to retrieve Script Version."
         shift  # shift to consume the script version flag
         result_value="${FALSE}"
-    elif [[ "$(matches_pattern "${current_flag}" "${SCRIPT_VERSION_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${SCRIPT_VERSION_FLAGS}"; then
         debug_log "Received Script Version Flag: \"${current_flag}\""
         shift  # shift to consume the script version flag
     else
@@ -1513,7 +1579,7 @@ function parse_usage_flags() {
     if [[ "${current_flag}" == "" ]]; then
         debug_log "Error: Received Empty Usage Flag."
         result_value="${UNSAFE_TARGET}"
-    elif [[ "$(matches_pattern "${current_flag}" "${USAGE_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${USAGE_FLAGS}"; then
         debug_log "Received Usage Flag: \"${current_flag}\""
         shift
     else
@@ -1547,7 +1613,7 @@ function parse_help_flags() {
         debug_log "Error: Received Empty Help Flag."
         result_value="${UNSAFE_TARGET}"
     # Verify that the current flag is the help flag
-    elif [[ "$(matches_pattern "${current_flag}" "${HELP_FLAGS}")" == "${TRUE}" ]]; then
+    elif matches_pattern "${current_flag}" "${HELP_FLAGS}"; then
         debug_log "Received Help Flag: \"${current_flag}\""
         shift
     # If the current flag is not the help flag, return an error
@@ -1602,7 +1668,7 @@ function get_pattern_index() {
 #     TODO: this needs to be updated to add the new flags and their descriptions
 function usage() {
     INPUT_PARAM="$1"
-    SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
+    # SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
     EXIT_AFTER="${EXIT_AFTER_USAGE_DEFAULT}"
     if [[ ( "${INPUT_PARAM}" == "${TRUE}") || ( "${INPUT_PARAM}" == "${FALSE}" ) ]]; then
         EXIT_AFTER="${INPUT_PARAM}"
@@ -1672,7 +1738,7 @@ function usage() {
 debug_log "Verify that input parameters have been provided"
 if [[ "${*}" != "" ]]; then
     debug_log "Input Params: [${#} args]"
-    echo "Input Params: \"${*}\""
+    # echo "Input Params: \"${*}\""
 else
     debug_log "No input params provided."
     usage "${FALSE}"
@@ -1717,7 +1783,7 @@ while (( ${#*} > 0 )); do
         "${MODEL_FLAGS_INDEX}")          parse_add_model_flags          "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${MODEL_VERSION_FLAGS_INDEX}")  parse_model_version_flags      "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${PERMISSIONS_FLAGS_INDEX}")    parse_add_permissions_flags    "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${PROMPT_FLAGS_INDEX}")         parse_prompt_value_flags       "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${PROMPT_FLAGS_INDEX}")         parse_prompt_value_flags       "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[*]}" ;;
         "${PATH_FLAGS_INDEX}")           parse_prompt_path_flags        "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${REMOTE_CONTROL_FLAGS_INDEX}") parse_add_remote_control_flags "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${RESUME_FLAGS_INDEX}")         parse_resume_flags             "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
@@ -1739,15 +1805,18 @@ while (( ${#*} > 0 )); do
     debug_log "Remaining Params: size: ${#*}, values: [${*}]" || return "${FALSE}"
 done
 
+CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_VALUE[@]}")
+CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_RESUME_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_WORKTREE_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_REMOTE_CONTROL_VALUE[@]}")
-CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_VALUE[@]}")
-CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_HEADLESS_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_FORK_SESSION_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_PERMISSIONS_VALUE[@]}")
+CLAUDE_CODE_PARAMS+=("${CLAUDE_PROMPT_VALUE[@]}")
+CLAUDE_CODE_PARAMS+=("${CLAUDE_PROMPT_FILE_VALUE[@]}")
+CLAUDE_CODE_PARAMS+=("${CLAUDE_PROMPT_PATH_VALUE[@]}")
 
 debug_log "Completed Appending Claude Code Params: ${#CLAUDE_CODE_PARAMS[@]}"
 debug_log "Claude Code Params: ${CLAUDE_CODE_PARAMS[*]}"
@@ -1793,7 +1862,8 @@ if [[ "${CLAUDE_HEADLESS_VALUE[*]}" != "" ]]; then
         if touch "${NOHUP_LOG_CANDIDATE}" 2>/dev/null; then
             NOHUP_LOG_FILE="${NOHUP_LOG_CANDIDATE}"
         else
-            echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}" >&2
+            # echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}" >&2
+            debug_log "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}"
             exit 1
         fi
     fi
