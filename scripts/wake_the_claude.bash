@@ -145,6 +145,10 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 SESSIONS_DIR="${WTC_SESSIONS_DIR:-${REPO_ROOT}/scripts/sessions}"
 LOGS_DIR="${WTC_LOGS_DIR:-${REPO_ROOT}/logs}"
 
+PROMPT_DIR_NAME_DEFAULT="prompts"
+PROMPT_DIR_DEFAULT="${WTC_PROMPT_DIR_DEFAULT:-${REPO_ROOT}/${PROMPT_DIR_NAME_DEFAULT}}"
+
+
 mkdir -p "${SESSIONS_DIR}" "${LOGS_DIR}"
 
 
@@ -194,6 +198,9 @@ MODEL_OPUS_ALIAS="opus"
 MODEL_SONNET_ALIAS="sonnet"
 MODEL_HAIKU_ALIAS="haiku"
 
+MODEL_DEFAULT="${MODEL_OPUS_ALIAS}"
+export MODEL_DEFAULT
+
 
 ########################################################################################################################################################
 # Define Model Alias Array
@@ -236,6 +243,8 @@ EFFORT_AUTO="auto"
 
 # EFFORT_DEFAULT="${EFFORT_MAX}"
 EFFORT_DEFAULT="${EFFORT_AUTO}"
+export EFFORT_DEFAULT
+
 
 ########################################################################################################################################################################
 # Define Claude Code Effort Array
@@ -260,6 +269,15 @@ PATH_NAME=""
 FILE_NAME=""
 PROMPT_FILE=""
 PROMPT_VALUE=""
+
+PROMPT_VALUE_DEFAULT="Hello World, Claude!"
+export PROMPT_VALUE_DEFAULT
+
+PROMPT_FILE_DEFAULT="./${PROMPT_FILE_NAME_DEFAULT}"
+export PROMPT_FILE_DEFAULT
+
+PROMPT_PATH_DEFAULT="${PROMPT_PATH_DIR_DEFAULT}/${PROMPT_FILE_NAME_DEFAULT}"
+export PROMPT_PATH_DEFAULT
 
 
 ########################################################################################################################################################################
@@ -290,6 +308,9 @@ debug_log "Define Valid Prompt Boolean Flags"
 VALID_FILE_PARAM="${FALSE}"
 VALID_PATH_PARAM="${FALSE}"
 VALID_PROMPT_PARAM="${FALSE}"
+
+PROMPT_DEFAULT="Hello World, Claude!"
+export PROMPT_DEFAULT
 
 
 ########################################################################################################################################################################
@@ -833,7 +854,7 @@ function parse_add_model_flags() {
             result_value="${FALSE}"
         fi
         debug_log "Setting Default Model Name: \"${current_model}\""
-        current_model="${MODEL_NAME_DEFAULT}"
+        current_model="${MODEL_DEFAULT}"
         debug_log "Setting Claude Model Value: \"${CLAUDE_MODEL_FLAGS}\" \"${current_model}\""
         CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${current_model}")
         debug_log "Claude Model Value: [${CLAUDE_MODEL_VALUE[*]}]"
@@ -842,7 +863,7 @@ function parse_add_model_flags() {
         CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${current_model}") && shift  # shift to consume the model name
     else
         debug_log "Warning: Received an Invalid but Non-Edgecase Model Name: \"${current_model}\"."
-        current_model="${MODEL_NAME_DEFAULT}"
+        current_model="${MODEL_DEFAULT}"
         debug_log "Setting Default Model Name: \"${current_model}\""
         debug_log "Setting Claude Model Value: \"${CLAUDE_MODEL_FLAGS}\" \"${current_model}\""
         CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${current_model}")
@@ -890,7 +911,7 @@ function parse_add_effort_flags() {
             if [[ "${current_effort}" == "${TRUE}" ]]; then
                 shift  # shift to consume the effort boolean true value
             fi
-            current_effort="${EFFORT_NAME_DEFAULT}"
+            current_effort="${EFFORT_DEFAULT}"
             debug_log "Setting Claude Effort Value: \"${CLAUDE_EFFORT_FLAGS}\" \"${current_effort}\""
             CLAUDE_EFFORT_VALUE=("${CLAUDE_EFFORT_FLAGS}" "${current_effort}")
         elif [[ "$(validate_effort "${current_effort}")" == "${TRUE}" ]]; then
@@ -898,7 +919,7 @@ function parse_add_effort_flags() {
             CLAUDE_EFFORT_VALUE=("${CLAUDE_EFFORT_FLAGS}" "${current_effort}") && shift  # shift to consume the effort name
         else
             debug_log "Warning: Received an Invalid but Non-empty Edge Case Effort Name: \"${current_effort}\"."
-            current_effort="${EFFORT_NAME_DEFAULT}"
+            current_effort="${EFFORT_DEFAULT}"
             debug_log "Setting Claude Effort Value: \"${CLAUDE_EFFORT_FLAGS}\" \"${current_effort}\""
             CLAUDE_EFFORT_VALUE=("${CLAUDE_EFFORT_FLAGS}" "${current_effort}")
             result_value="${FALSE}"
@@ -1184,131 +1205,47 @@ function parse_spacer_flags() {
     return "${result_value}"
 }
 
+########################################################################################################################################################################
 # Parse Command Line Provided Prompt
-function parse_prompt_cli_flags() {
+function parse_prompt_value_flags() {
+    debug_log "Parsing prompt value flags"
+    local current_flag="${1:-""}"
+    debug_log "Current Flag: \"${current_flag}\""
+    local current_prompt="${2:-""}"
+    debug_log "Current Prompt: \"${current_prompt}\""
+    local result_value="${TRUE}"
 
-########################################################################################################################################################################
-    # debug_log "Parsing add model flags"
-    # local CURRENT_FLAG="${1}" && shift
-    # debug_log "Current Flag: ${CURRENT_FLAG}"
-    # local CURRENT_MODEL="${1}"
-    # if [[ "${CURRENT_FLAG}" == "" ]]; then
-    #     debug_log "Error: Received Empty Model Flag. Exiting..."
-    #     usage "${UNSAFE_TARGET}"
-    # elif [[ "$(matches_pattern "${CURRENT_MODEL}" "${MODEL_NAME_ARRAY[@]}")" == "${TRUE}" ]]; then
-    #     debug_log "Selected Model Name pattern matches: \"${CURRENT_MODEL}\""
-    #     validate_model "${CURRENT_MODEL}"
-    #     VALID_MODEL_NAME="$?"
-    #     debug_log "Selected Model Name: ${CURRENT_MODEL}, Validated: ${VALID_MODEL_NAME}"
-    #     if [[ "${VALID_MODEL_NAME}" != "${TRUE}" ]]; then
-    #         debug_log "Error: Received an Invalid Model Name: \"${CURRENT_MODEL}\". Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #     debug_log "Selected Model Name Validated: \"${CURRENT_MODEL}\""
-    #     shift
-    #     CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${CURRENT_MODEL}")
-    # else
-    #     debug_log "Error: Received Model Flag but no Valid Model Name: \"${CURRENT_MODEL}\". Exiting..."
-    #     usage "${FALSE}"
-    # fi
-    # debug_log "Updating Current Params"
-    # CURRENT_PARAMS=("${@}")
-    # debug_log "Current Params: size: ${#CURRENT_PARAMS[*]}, values: [${CURRENT_PARAMS[*]}]"
-    # UPDATED_PARAMS=("${CURRENT_PARAMS[@]}")
-    # debug_log "Updated Params: size: ${#UPDATED_PARAMS[@]}, values: [${UPDATED_PARAMS[*]}]"
-    # return "${TRUE}"
+    if [[ "${current_flag}" == "" ]]; then
+        debug_log "Error: Received Empty Prompt Value Flag."
+        result_value="${UNSAFE_TARGET}"
+        CLAUDE_PROMPT_VALUE=()
+    elif [[ "$(matches_pattern "${current_flag}" "${PROMPT_FLAGS}")" == "${TRUE}" ]]; then
+        debug_log "Received Prompt Value Flag: \"${current_flag}\""
+        shift  # shift to consume the prompt value flag
 
-
-
-    debug_log "Parsing cli prompt flags"
-    if [[ "${1}" != "" ]]; then
-        PROMPT_VALUE="${1}" && shift
-        VALID_PROMPT_PARAM="${TRUE}"
-        CLAUDE_PROMPT_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_VALUE}")
-        # debug_log "Received prompt [${#PROMPT_VALUE} chars]"
-        debug_log "Received prompt [${#CLAUDE_PROMPT_VALUE[*]} chars]"
-    else
-        debug_log "Error: Did not receive a valid prompt string. Exiting..."
-        usage "${FALSE}"
-    fi
-    debug_log "Updating Current Params"
-    CURRENT_PARAMS=("${@}")
-    debug_log "Current Params: size: ${#CURRENT_PARAMS[*]}, values: [${CURRENT_PARAMS[*]}]"
-    UPDATED_PARAMS=("${CURRENT_PARAMS[@]}")
-    debug_log "Updated Params: size: ${#UPDATED_PARAMS[@]}, values: [${UPDATED_PARAMS[*]}]"
-    return "${TRUE}"
-}
-
-
-# Parse Prompt File Path Flag
-function parse_prompt_path_flags() {
-
-
-########################################################################################################################################################################
-    # debug_log "Parsing add model flags"
-    # local CURRENT_FLAG="${1}" && shift
-    # debug_log "Current Flag: ${CURRENT_FLAG}"
-    # local CURRENT_MODEL="${1}"
-    # if [[ "${CURRENT_FLAG}" == "" ]]; then
-    #     debug_log "Error: Received Empty Model Flag. Exiting..."
-    #     usage "${UNSAFE_TARGET}"
-    # elif [[ "$(matches_pattern "${CURRENT_MODEL}" "${MODEL_NAME_ARRAY[@]}")" == "${TRUE}" ]]; then
-    #     debug_log "Selected Model Name pattern matches: \"${CURRENT_MODEL}\""
-    #     validate_model "${CURRENT_MODEL}"
-    #     VALID_MODEL_NAME="$?"
-    #     debug_log "Selected Model Name: ${CURRENT_MODEL}, Validated: ${VALID_MODEL_NAME}"
-    #     if [[ "${VALID_MODEL_NAME}" != "${TRUE}" ]]; then
-    #         debug_log "Error: Received an Invalid Model Name: \"${CURRENT_MODEL}\". Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #     debug_log "Selected Model Name Validated: \"${CURRENT_MODEL}\""
-    #     shift
-    #     CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${CURRENT_MODEL}")
-    # else
-    #     debug_log "Error: Received Model Flag but no Valid Model Name: \"${CURRENT_MODEL}\". Exiting..."
-    #     usage "${FALSE}"
-    # fi
-    # debug_log "Updating Current Params"
-    # CURRENT_PARAMS=("${@}")
-    # debug_log "Current Params: size: ${#CURRENT_PARAMS[*]}, values: [${CURRENT_PARAMS[*]}]"
-    # UPDATED_PARAMS=("${CURRENT_PARAMS[@]}")
-    # debug_log "Updated Params: size: ${#UPDATED_PARAMS[@]}, values: [${UPDATED_PARAMS[*]}]"
-    # return "${TRUE}"
-
-
-    debug_log "Parsing prompt path flags"
-    if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-        PATH_NAME="${1}"
-        shift
-    else
-        debug_log "Error: Received Path Flag but no Path Value. Exiting..."
-        usage "${FALSE}"
-    fi
-    debug_log "Completed Parsing path value"
-    if [[ "${PATH_NAME: -1}" == "/" ]]; then
-        PATH_NAME="${PATH_NAME%\/*}"
-        debug_log "Removed trailing slash from path"
-    fi
-    if [[ -f "${PATH_NAME}" ]]; then
-        VALID_PATH_PARAM="${TRUE}"
-        PROMPT_FILE="${PATH_NAME}"
-        debug_log "Provided Pathname is a valid file"
-    elif [[ -d "${PATH_NAME}" ]]; then
-        debug_log "Provided Pathname is a valid directory"
-        if [[ ( "${FILE_NAME}" != "" ) && ( -f "${PATH_NAME}/${FILE_NAME}" ) ]]; then
-            VALID_PATH_PARAM="${TRUE}"
-            PROMPT_FILE="${PATH_NAME}/${FILE_NAME}"
-            debug_log "Combined Pathname and Filename is a valid file"
-        elif [[ "${FILE_NAME}" == "" ]]; then
-            debug_log "Filename has not yet been parsed"
+        if [[ "${current_prompt}" == "${FALSE}" ]]; then
+            debug_log "Warning: Received False Prompt Value."
+            result_value="${UNSAFE_TARGET}"
+            CLAUDE_PROMPT_VALUE=() && shift  # shift to consume the prompt boolean false value
+        elif [[ ( "${current_prompt}" == "${TRUE}" ) || ( "${current_prompt}" == "" ) || ( "${current_prompt:0:2}" == "${SPACER_FLAGS}" ) ]]; then
+            debug_log "Warning: Received an Edge Case Prompt Value: \"${current_prompt}\"."
+            if [[ "${current_prompt}" == "${TRUE}" ]]; then
+                shift  # shift to consume the prompt boolean true value
+            fi
+            debug_log "Warning: Received an Edge Case Prompt Value: \"${current_prompt}\"."
+            debug_log "Setting Default Prompt Value: \"${PROMPT_VALUE_DEFAULT}\""
+            CLAUDE_PROMPT_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_VALUE_DEFAULT}")
         else
-            debug_log "Error: Prompt file is invalid when Pathname is combined with Filename. Exiting..."
-            usage "${FALSE}"
+            debug_log "Received an apparent valid Prompt Value: \"${current_prompt}\"."
+            debug_log "Setting Prompt Value: \"${current_prompt}\""
+            CLAUDE_PROMPT_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_prompt}") && shift  # shift to consume the prompt flag and prompt value
         fi
     else
-        debug_log "Error: received an invalid Prompt File Path. Exiting..."
-        usage "${FALSE}"
+        debug_log "Error: Received an Invalid Prompt Flag: \"${current_flag}\"."
+        result_value="${FALSE}"
+        CLAUDE_PROMPT_VALUE=() && shift  # shift to consume the invalid prompt flag
     fi
+    debug_log "Prompt Value: \"${CLAUDE_PROMPT_VALUE[*]}\""
     debug_log "Result Value: \"${result_value}\""
 
     debug_log "Updating Current Params"
@@ -1320,70 +1257,150 @@ function parse_prompt_path_flags() {
     return "${result_value}"
 }
 
-# Parse prompt file flag
-function parse_prompt_file_flags() {
-
-
 ########################################################################################################################################################################
-    # debug_log "Parsing add model flags"
-    # local CURRENT_FLAG="${1}" && shift
-    # debug_log "Current Flag: ${CURRENT_FLAG}"
-    # local CURRENT_MODEL="${1}"
-    # if [[ "${CURRENT_FLAG}" == "" ]]; then
-    #     debug_log "Error: Received Empty Model Flag. Exiting..."
-    #     usage "${UNSAFE_TARGET}"
-    # elif [[ "$(matches_pattern "${CURRENT_MODEL}" "${MODEL_NAME_ARRAY[@]}")" == "${TRUE}" ]]; then
-    #     debug_log "Selected Model Name pattern matches: \"${CURRENT_MODEL}\""
-    #     validate_model "${CURRENT_MODEL}"    debug_log "Claude Code Parameters Array: $(redact_uuid "${CLAUDE_SESSION_ID_VALUE[@]}")"
-    #     VALID_MODEL_NAME="$?"
-    #     debug_log "Selected Model Name: ${CURRENT_MODEL}, Validated: ${VALID_MODEL_NAME}"
-    #     if [[ "${VALID_MODEL_NAME}" != "${TRUE}" ]]; then
-    #         debug_log "Error: Received an Invalid Model Name: \"${CURRENT_MODEL}\". Exiting..."
-    #         usage "${FALSE}"
-    #     fi
-    #     debug_log "Selected Model Name Validated: \"${CURRENT_MODEL}\""
-    #     shift
-    #     CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${CURRENT_MODEL}")
-    # else
-    #     debug_log "Error: Received Model Flag but no Valid Model Name: \"${CURRENT_MODEL}\". Exiting..."
-    #     usage "${FALSE}"
-    # fi
-    # debug_log "Updating Current Params"
-    # CURRENT_PARAMS=("${@}")
-    # debug_log "Current Params: size: ${#CURRENT_PARAMS[*]}, values: [${CURRENT_PARAMS[*]}]"
-    # UPDATED_PARAMS=("${CURRENT_PARAMS[@]}")
-    # debug_log "Updated Params: size: ${#UPDATED_PARAMS[@]}, values: [${UPDATED_PARAMS[*]}]"
-    # return "${TRUE}"
+# Parse Prompt File Path Flag
+function parse_prompt_path_flags() {
+    debug_log "Parsing prompt path flags"
+    local current_flag="${1:-""}"
+    debug_log "Current Flag: \"${current_flag}\""
+    local current_path="${2:-""}"
+    debug_log "Current Path: \"${current_path}\""
+    local current_file_name=""
+    local result_value="${TRUE}"
 
+    if [[ "${current_flag}" == "" ]]; then
+        debug_log "Error: Received Empty Prompt Path Flag."
+        result_value="${UNSAFE_TARGET}"
+        CLAUDE_PROMPT_PATH_VALUE=()
+    elif [[ "$(matches_pattern "${current_flag}" "${PROMPT_FLAGS}")" == "${TRUE}" ]]; then
+        debug_log "Received Prompt Value Flag: \"${current_flag}\""
+        shift  # shift to consume the prompt value flag
 
-    debug_log "Parsing prompt file flags"
-    if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-        FILE_NAME="${1}"
-        shift
+        if [[ "${current_prompt}" == "${FALSE}" ]]; then
+            debug_log "Warning: Received False Prompt Path."
+            result_value="${UNSAFE_TARGET}"
+            CLAUDE_PROMPT_PATH_VALUE=() && shift  # shift to consume the prompt path boolean false value
+        elif [[ ( "${current_path}" == "${TRUE}" ) || ( "${current_path}" == "" ) || ( "${current_path:0:2}" == "${SPACER_FLAGS}" ) ]]; then
+            debug_log "Warning: Received an Edge Case Prompt Path: \"${current_path}\"."
+            if [[ "${current_path}" == "${TRUE}" ]]; then
+                shift  # shift to consume the prompt path boolean true value
+            fi
+            debug_log "Warning: Received an Edge Case Prompt Path: \"${current_path}\"."
+            debug_log "Setting Default Prompt Path: \"${PROMPT_PATH_DEFAULT}\""
+            CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_PATH_DEFAULT}")
+        elif [[ "$(is_valid_file "${current_path}")" == "${TRUE}" ]]; then
+            debug_log "Received an apparent valid Prompt Path: \"${current_path}\"."
+            debug_log "Setting Prompt Path: \"${current_path}\""
+            CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_path}") && shift  # shift to consume the prompt flag and prompt path value
+        elif [[ "$(is_valid_dir "${current_path}")" == "${TRUE}" ]]; then
+            debug_log "Received a valid Prompt directory Path: \"${current_path}\"."
+            current_file_name="${PROMPT_FILE_NAME_DEFAULT}"
+            debug_log "Using default prompt file name: \"${current_file_name}\""
+            current_prompt_path="${current_path}/${current_file_name}"
+            debug_log "Current Prompt Path: \"${current_prompt_path}\""
+            if [[ "$(is_valid_file "${current_prompt_path}")" == "${TRUE}" ]]; then
+                debug_log "Found default prompt file name: \"${current_file_name}\" in the provided prompt directory: \"${current_path}\"."
+                debug_log "Setting Prompt Path: \"${current_prompt_path}\""
+                CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_prompt_path}") && shift  # shift to consume the prompt flag and prompt path value
+            else
+                debug_log "Warning: Unable to find default prompt file name: \"${current_file_name}\" in the provided prompt directory: \"${current_path}\"."
+                result_value="${FALSE}"
+                CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_PATH_DEFAULT}") && shift  # shift to consume the invalid prompt path value
+            fi
+        else
+            debug_log "Warning: Received an Invalid Prompt Path: \"${current_path}\"."
+            result_value="${FALSE}"
+            debug_log "Setting Default Prompt Path: \"${PROMPT_PATH_DEFAULT}\""
+            CLAUDE_PROMPT_PATH_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_PATH_DEFAULT}") && shift  # shift to consume the invalid prompt path value
+        fi
     else
-        debug_log "Error: Received File Flag but no File Value. Exiting..."
-        usage "${FALSE}"
+        debug_log "Error: Received an Invalid Prompt Flag: \"${current_flag}\"."
+        result_value="${FALSE}"
+        CLAUDE_PROMPT_PATH_VALUE=() && shift  # shift to consume the invalid prompt path flag
     fi
-    if [[ -f "${FILE_NAME}" ]]; then
-        VALID_FILE_PARAM="${TRUE}"
-        PROMPT_FILE="${FILE_NAME}"
-        debug_log "Provided Filename is a valid file"
-    elif [[ ( "${PATH_NAME}" != "" ) && ( -f "${PATH_NAME}/${FILE_NAME}" ) ]]; then
-        VALID_FILE_PARAM="${TRUE}"
-        PROMPT_FILE="${PATH_NAME}/${FILE_NAME}"
-        debug_log "Combined Pathname and Filename is a valid file"
-    elif [[ ${PATH_NAME} == "" ]]; then
-        debug_log "Filename not yet valid, Pathname has not yet been parsed"
-    else
-        debug_log "Error: received an invalid Prompt File. Exiting..."
-        usage "${FALSE}"
-    fi
+    debug_log "Prompt Path: \"${CLAUDE_PROMPT_PATH_VALUE[*]}\""
+    debug_log "Result Value: \"${result_value}\""
+
     debug_log "Updating Current Params"
     CURRENT_PARAMS=("${@}")
     debug_log "Current Params: size: ${#CURRENT_PARAMS[*]}, values: [${CURRENT_PARAMS[*]}]"
     UPDATED_PARAMS=("${CURRENT_PARAMS[@]}")
     debug_log "Updated Params: size: ${#UPDATED_PARAMS[@]}, values: [${UPDATED_PARAMS[*]}]"
-    return "${TRUE}"
+
+    return "${result_value}"
+}
+
+########################################################################################################################################################################
+# Parse prompt file flag
+function parse_prompt_file_flags() {
+    debug_log "Parsing prompt file flags"
+    local current_flag="${1:-""}"
+    debug_log "Current Flag: \"${current_flag}\""
+    local current_file="${2:-""}"
+    debug_log "Current File: \"${current_file}\""
+    local current_file_name=""
+    local result_value="${TRUE}"
+
+    if [[ "${current_flag}" == "" ]]; then
+        debug_log "Error: Received Empty Prompt File Flag."
+        result_value="${UNSAFE_TARGET}"
+        CLAUDE_PROMPT_FILE_VALUE=()
+    elif [[ "$(matches_pattern "${current_flag}" "${PROMPT_FLAGS}")" == "${TRUE}" ]]; then
+        debug_log "Received Prompt Value Flag: \"${current_flag}\""
+        shift  # shift to consume the prompt value flag
+
+        if [[ "${current_prompt}" == "${FALSE}" ]]; then
+            debug_log "Warning: Received False Prompt File."
+            result_value="${UNSAFE_TARGET}"
+            CLAUDE_PROMPT_FILE_VALUE=() && shift  # shift to consume the prompt file boolean false value
+        elif [[ ( "${current_file}" == "${TRUE}" ) || ( "${current_file}" == "" ) || ( "${current_file:0:2}" == "${SPACER_FLAGS}" ) ]]; then
+            debug_log "Warning: Received an Edge Case Prompt File: \"${current_file}\"."
+            if [[ "${current_file}" == "${TRUE}" ]]; then
+                shift  # shift to consume the prompt file boolean true value
+            fi
+            debug_log "Warning: Received an Edge Case Prompt File: \"${current_file}\"."
+            debug_log "Setting Default Prompt File: \"${PROMPT_FILE_DEFAULT}\""
+            CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_FILE_DEFAULT}")
+        elif [[ "$(is_valid_file "${current_file}")" == "${TRUE}" ]]; then
+            debug_log "Received an apparent valid Prompt File: \"${current_file}\"."
+            debug_log "Setting Prompt File: \"${current_file}\""
+            CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_file}") && shift  # shift to consume the prompt flag and prompt file value
+        elif [[ "$(is_valid_dir "${current_file}")" == "${TRUE}" ]]; then
+            debug_log "Received a valid Prompt directory File: \"${current_file}\"."
+            current_file_name="${PROMPT_FILE_NAME_DEFAULT}"
+            debug_log "Using default prompt file name: \"${current_file_name}\""
+            current_prompt_file="${current_file}/${current_file_name}"
+            debug_log "Current Prompt File: \"${current_prompt_file}\""
+            if [[ "$(is_valid_file "${current_prompt_file}")" == "${TRUE}" ]]; then
+                debug_log "Found default prompt file name: \"${current_file_name}\" in the provided prompt directory: \"${current_file}\"."
+                debug_log "Setting Prompt File: \"${current_prompt_file}\""
+                CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${current_prompt_file}") && shift  # shift to consume the prompt flag and prompt file value
+            else
+                debug_log "Warning: Unable to find default prompt file name: \"${current_file_name}\" in the provided prompt directory: \"${current_file}\"."
+                result_value="${FALSE}"
+                CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_FILE_DEFAULT}") && shift  # shift to consume the invalid prompt file value
+            fi
+        else
+            debug_log "Warning: Received an Invalid Prompt File: \"${current_file}\"."
+            result_value="${FALSE}"
+            debug_log "Setting Default Prompt File: \"${PROMPT_FILE_DEFAULT}\""
+            CLAUDE_PROMPT_FILE_VALUE=("${CLAUDE_PROMPT_FLAGS}" "${PROMPT_FILE_DEFAULT}") && shift  # shift to consume the invalid prompt file value
+        fi
+    else
+        debug_log "Error: Received an Invalid Prompt Flag: \"${current_flag}\"."
+        result_value="${FALSE}"
+        CLAUDE_PROMPT_FILE_VALUE=() && shift  # shift to consume the invalid prompt file flag
+    fi
+    debug_log "Prompt File: \"${CLAUDE_PROMPT_FILE_VALUE[*]}\""
+    debug_log "Result Value: \"${result_value}\""
+
+    debug_log "Updating Current Params"
+    CURRENT_PARAMS=("${@}")
+    debug_log "Current Params: size: ${#CURRENT_PARAMS[*]}, values: [${CURRENT_PARAMS[*]}]"
+    UPDATED_PARAMS=("${CURRENT_PARAMS[@]}")
+    debug_log "Updated Params: size: ${#UPDATED_PARAMS[@]}, values: [${UPDATED_PARAMS[*]}]"
+
+    return "${result_value}"
 }
 
 
@@ -1700,7 +1717,7 @@ while (( ${#*} > 0 )); do
         "${MODEL_FLAGS_INDEX}")          parse_add_model_flags          "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${MODEL_VERSION_FLAGS_INDEX}")  parse_model_version_flags      "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${PERMISSIONS_FLAGS_INDEX}")    parse_add_permissions_flags    "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
-        "${PROMPT_FLAGS_INDEX}")         parse_prompt_cli_flags         "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
+        "${PROMPT_FLAGS_INDEX}")         parse_prompt_value_flags       "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${PATH_FLAGS_INDEX}")           parse_prompt_path_flags        "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${REMOTE_CONTROL_FLAGS_INDEX}") parse_add_remote_control_flags "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
         "${RESUME_FLAGS_INDEX}")         parse_resume_flags             "${CURRENT_ELEMENT}" "${UPDATED_PARAMS[@]}" ;;
