@@ -203,26 +203,27 @@ CLAUDE_ID_PARAM="${CLAUDE_ID:-${DEFAULT_ID}}"
 ########################################################################################################################################################################################################
 # Define the full parameter list for the Claude Code interactive session
 ########################################################################################################################################################################################################
-CLAUDE_ARGS=""
+# Built as an array and passed to wake_the_claude.bash as-is (no eval): every value stays exactly one argument, so a
+# multi-word prompt arrives as one prompt with no literal quote characters, and no value is re-parsed by the shell.
+CLAUDE_ARGS=()
 
-[[ "${CLAUDE_MODEL_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+="${CLAUDE_MODEL_FLAG} ${CLAUDE_MODEL_PARAM} "                                               # Add the model alias parameter if provided
-[[ "${CLAUDE_EFFORT_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+="${CLAUDE_EFFORT_FLAG} ${CLAUDE_EFFORT_PARAM} "                                            # Add the effort parameter if provided
-[[ "${CLAUDE_ID_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+="${CLAUDE_ID_FLAG} ${CLAUDE_ID_PARAM} "                                                        # Add the id parameter if provided
-[[ "${CLAUDE_WORKTREE_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+="${CLAUDE_WORKTREE_FLAG} ${CLAUDE_WORKTREE_PARAM} "                                      # Add the worktree parameter if provided
+[[ "${CLAUDE_MODEL_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+=("${CLAUDE_MODEL_FLAG}" "${CLAUDE_MODEL_PARAM}")                                            # Add the model alias parameter if provided
+[[ "${CLAUDE_EFFORT_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+=("${CLAUDE_EFFORT_FLAG}" "${CLAUDE_EFFORT_PARAM}")                                         # Add the effort parameter if provided
+[[ "${CLAUDE_ID_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+=("${CLAUDE_ID_FLAG}" "${CLAUDE_ID_PARAM}")                                                     # Add the id parameter if provided
+[[ "${CLAUDE_WORKTREE_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+=("${CLAUDE_WORKTREE_FLAG}" "${CLAUDE_WORKTREE_PARAM}")                                   # Add the worktree parameter if provided
 
-[[ "${CLAUDE_ARGS}" != "" ]] && CLAUDE_ARGS+="${CLAUDE_SEPERATOR_FLAG} "                                                                                # Add the seperator flag if any "[--flag <parameter>]" arguments have been added
+(( ${#CLAUDE_ARGS[@]} > 0 )) && CLAUDE_ARGS+=("${CLAUDE_SEPERATOR_FLAG}")                                                                              # Add the seperator flag if any "[--flag <parameter>]" arguments have been added
 
-[[ "${CLAUDE_REMOTE_CONTROL_PARAM}" == "${TRUE}" ]] && CLAUDE_ARGS+="${CLAUDE_REMOTE_CONTROL_FLAG} "                                                    # Opt in to --remote-control when requested
-[[ "${CLAUDE_RESUME_PARAM}" == "${TRUE}" ]] && CLAUDE_ARGS+="${CLAUDE_RESUME_FLAG} "                                                                    # Opt in to --resume when requested
-[[ "${DEBUG}" == "${TRUE}" || "${CLAUDE_SKIP_PERMISSIONS_PARAM}" == "${TRUE}" ]] && CLAUDE_ARGS+="${CLAUDE_SKIP_PERMISSIONS_FLAG} "                     # Opt in to --dangerously-skip-permissions only when explicitly requested or in debug mode
-[[ "${CLAUDE_PROMPT_PARAM}" != "" && "${CLAUDE_PROMPT_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+="${CLAUDE_PROMPT_FLAG} \\\"${CLAUDE_PROMPT_PARAM}\\\" "  # Add the initial prompt if provided
+[[ "${CLAUDE_REMOTE_CONTROL_PARAM}" == "${TRUE}" ]] && CLAUDE_ARGS+=("${CLAUDE_REMOTE_CONTROL_FLAG}")                                                  # Opt in to --remote-control when requested
+[[ "${CLAUDE_RESUME_PARAM}" == "${TRUE}" ]] && CLAUDE_ARGS+=("${CLAUDE_RESUME_FLAG}" "${TRUE}")                                                        # Opt in to --resume when requested (wake_the_claude.bash needs a session id or a boolean after --resume)
+[[ "${DEBUG}" == "${TRUE}" || "${CLAUDE_SKIP_PERMISSIONS_PARAM}" == "${TRUE}" ]] && CLAUDE_ARGS+=("${CLAUDE_SKIP_PERMISSIONS_FLAG}")                   # Opt in to --dangerously-skip-permissions only when explicitly requested or in debug mode
+[[ "${CLAUDE_PROMPT_PARAM}" != "" && "${CLAUDE_PROMPT_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+=("${CLAUDE_PROMPT_FLAG}" "${CLAUDE_PROMPT_PARAM}")      # Add the initial prompt if provided
 
 
 ########################################################################################################################################################################################################
 # Pass through any additional arguments from the caller
 if (( $# > 0 )); then
     CLAUDE_ARGS+=("${@}")
-    # [[ "${DEBUG}" == "${TRUE}" ]] && echo "$(echo "${CLAUDE_ARGS[@]}" | xargs)" || true
     [[ "${DEBUG}" == "${TRUE}" ]] && echo "${CLAUDE_ARGS[@]}" || true
 fi
 
@@ -230,11 +231,9 @@ fi
 ########################################################################################################################################################################################################
 # Call Wake The Claude script with params
 echo "Launching Default Interactive session with Claude Code"
-# [[ "${DEBUG}" == "${TRUE}" ]] && echo "${WAKE_THE_CLAUDE_SCRIPT} $(echo "${CLAUDE_ARGS[*]}" | xargs)" || true
 [[ "${DEBUG}" == "${TRUE}" ]] && echo "${WAKE_THE_CLAUDE_SCRIPT} ${CLAUDE_ARGS[*]}" || true
 
-# eval "${WAKE_THE_CLAUDE_SCRIPT} $(echo "${CLAUDE_ARGS[*]}" | xargs)"
-eval "${WAKE_THE_CLAUDE_SCRIPT} ${CLAUDE_ARGS[*]}"
+"${WAKE_THE_CLAUDE_SCRIPT}" "${CLAUDE_ARGS[@]}"
 
 echo "Closed Default Interactive session with Claude Code"
 
