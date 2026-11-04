@@ -1596,6 +1596,41 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
             self.assertEqual(argv, ["--resume", VALID_UUID, "--", front_matter_prompt])
 
+    def test_a_prompt_value_starting_with_dashes_is_the_prompt_not_a_flag(self) -> None:
+        """The word after a prompt flag is the prompt, whatever it starts with (juniper-ml#2438 review).
+
+        A value starting with ``--`` was left in the input and parsed as a flag, and the default prompt was sent instead:
+        ``--prompt --dangerously-skip-permissions`` skipped permissions, and ``--prompt --print`` launched headless.
+        """
+        cases = (
+            (["--prompt", "--dangerously-skip-permissions"], ["--resume", VALID_UUID, "--", "--dangerously-skip-permissions"]),
+            (["-p", "--print"], ["--resume", VALID_UUID, "--", "--print"]),
+            (["--prompt-string", "--remote-control"], ["--resume", VALID_UUID, "--", "--remote-control"]),
+        )
+        for prompt_args, expected in cases:
+            with self.subTest(prompt_args=prompt_args):
+                self.assertEqual(self._launch_and_get_args(["--resume", VALID_UUID, *prompt_args]), expected)
+
+        front_matter_prompt = "---\nname: handoff\n---\nContinue."
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, env = self._install_fake_claude(temp_dir)
+            result, argv = self._launch_and_get_exact_args(["--resume", VALID_UUID, "--prompt", front_matter_prompt], temp_dir, env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertEqual(argv, ["--resume", VALID_UUID, "--", front_matter_prompt])
+
+    def test_prompt_flag_booleans_and_a_missing_or_empty_value(self) -> None:
+        """``0`` or nothing after ``--prompt`` sends the default prompt and ``1`` none; an empty value no longer ends parsing."""
+        default_prompt = "Hello World, Claude!"
+        cases = (
+            (["--prompt", "0"], ["--", default_prompt]),
+            (["--worktree", "--prompt"], ["--worktree", "--", default_prompt]),
+            (["--prompt", "1", "--worktree"], ["--worktree"]),
+            (["--prompt", "", "--worktree"], ["--worktree", "--", default_prompt]),
+        )
+        for prompt_args, expected_tail in cases:
+            with self.subTest(prompt_args=prompt_args):
+                self.assertEqual(self._launch_and_get_args(["--resume", VALID_UUID, *prompt_args]), ["--resume", VALID_UUID, *expected_tail])
+
     def test_printed_command_line_shows_the_prompt_as_one_quoted_argument(self) -> None:
         """The command line the script prints quotes the prompt, as claude receives it: one argument, quotes and all."""
         with tempfile.TemporaryDirectory() as temp_dir:

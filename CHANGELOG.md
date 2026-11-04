@@ -111,15 +111,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   says `error: unknown option '---name: x'`, and a prompt file's YAML front matter starts `---`. The `--` ends Claude
   Code's options. The printed command line now quotes each argument, so the prompt shows as the one argument it is.
   - `-V` and `--claude-version` exited 1: the parser compared them with `--version` alone.
+  - A `--prompt` value starting with `--` never reached the `--`. The parser left it in the input to be read as a flag,
+    and sent the default prompt: `--prompt --dangerously-skip-permissions` skipped permissions, and `--prompt --print`
+    launched headless. The word after a prompt flag is now the prompt, whatever it starts with. `0` or nothing after
+    the flag still sends the default prompt and `1` none, and an empty value no longer ends parsing (found in
+    juniper-ml#2438's review).
   - A `--file` / `--path` prompt file that was empty or unreadable launched Claude Code without a prompt. It now stops
     the launch with an error on stderr.
   - In `claude_interactive.bash`, `-m`, `-e`, `--id` or `--prompt` with nothing after it looped forever: `shift 2`
     on one remaining argument fails without shifting. It now exits 1 with the usage text. `-w --prompt hi` named the
     worktree `--prompt`; `-w`'s name is optional now.
-  - 13 new tests and one rewritten, in `tests/test_wake_the_claude.py` and `tests/test_claude_interactive.py`, and 26
+  - 16 new tests and one rewritten, in `tests/test_wake_the_claude.py` and `tests/test_claude_interactive.py`, and 26
     expected argv lists in the former gain the `--`. `ClaudeInteractiveEndToEndTests` runs claudey and the real
     `wake_the_claude.bash` against a stub `claude`, where the other claudey tests stop at the argv a stub
-    `wake_the_claude.bash` recorded. Against the scripts as juniper-ml#2405 left them, 42 of the 104 tests fail, all 14
+    `wake_the_claude.bash` recorded. Against the scripts as juniper-ml#2405 left them, 45 of the 107 tests fail, all 17
     new or rewritten ones among them; the hangs end in the tests' 60-second timeout.
 - **A cascor run's eval scalars are cascor's final evaluation, labelled with its split and n, and `aggregate.csv` /
   `REPORT.md` gain the held-out `test_*` columns from it** (juniper-ml#2064; it follows juniper-ml#2369 and is

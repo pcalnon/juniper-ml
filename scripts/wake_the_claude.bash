@@ -1207,16 +1207,18 @@ function parse_prompt_value_flags() {
         debug_log "Received Prompt Value Flag: \"${current_flag}\""
         shift  # shift to consume the prompt value flag
 
-        if [[ "${current_prompt}" == "${FALSE}" ]]; then
+        # The word after a prompt flag is the prompt, whatever it starts with. It is consumed as opaque text and sent after "--",
+        # so a prompt such as "--dangerously-skip-permissions" or "--print" is never read as a flag, here or by Claude Code. It
+        # once was here: a value starting with "--" was left in the input to be parsed as a flag, and the default prompt sent.
+        if (( $# == 0 )); then
+            debug_log "Warning: Received a Prompt Flag at the end of the input. Setting Default Prompt Value: \"${PROMPT_VALUE_DEFAULT}\""
+            PROMPT_VALUE="${PROMPT_VALUE_DEFAULT}" && VALID_PROMPT_PARAM="${TRUE}"
+        elif [[ "${current_prompt}" == "${FALSE}" ]]; then
             debug_log "Warning: Received False Prompt Value. No prompt string will be sent."
             PROMPT_VALUE="" && VALID_PROMPT_PARAM="${FALSE}" && shift  # shift to consume the prompt boolean false value
-        elif [[ ( "${current_prompt}" == "${TRUE}" ) || ( "${current_prompt}" == "" ) || ( "${current_prompt:0:2}" == "${SPACER_FLAGS}" ) ]]; then
-            debug_log "Warning: Received an Edge Case Prompt Value: \"${current_prompt}\"."
-            if [[ "${current_prompt}" == "${TRUE}" ]]; then
-                shift  # shift to consume the prompt boolean true value
-            fi
-            debug_log "Setting Default Prompt Value: \"${PROMPT_VALUE_DEFAULT}\""
-            PROMPT_VALUE="${PROMPT_VALUE_DEFAULT}" && VALID_PROMPT_PARAM="${TRUE}"
+        elif [[ ( "${current_prompt}" == "${TRUE}" ) || ( "${current_prompt}" == "" ) ]]; then
+            debug_log "Warning: Received an Edge Case Prompt Value: \"${current_prompt}\". Setting Default Prompt Value: \"${PROMPT_VALUE_DEFAULT}\""
+            PROMPT_VALUE="${PROMPT_VALUE_DEFAULT}" && VALID_PROMPT_PARAM="${TRUE}" && shift  # shift to consume the boolean true value or the empty prompt
         else
             debug_log "Received an apparent valid Prompt Value [${#current_prompt} chars]."
             PROMPT_VALUE="${current_prompt}" && VALID_PROMPT_PARAM="${TRUE}" && shift  # shift to consume the prompt value
@@ -1630,6 +1632,7 @@ function usage() {
     echo -ne "\t\tFlags that fork the resumed session into a new session id (use together with --resume; the original session is left untouched).\n"
     echo -ne "\t ${PROMPT_FLAGS}:\n"
     echo -ne "\t\tFlags that allow a prompt string to be specified for use by the Claude Code model.\n"
+    echo -ne "\t\tNOTE: The word after a prompt flag is the prompt, even one starting with -; ${TRUE} sends the default prompt, ${FALSE} none.\n"
     echo -ne "\t\tNOTE: The prompt, from whichever flag, is sent as Claude Code's last argument, after ${CLAUDE_END_OF_OPTIONS_FLAG}, with no prompt flag.\n"
     echo -ne "\t\tNOTE: Prompt string can be provided either as a string of text or as a file name or pathname to a file containing the prompt string.\n"
     echo -ne "\t ${MODEL_FLAGS}:\n"

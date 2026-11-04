@@ -512,6 +512,14 @@ class ClaudeInteractiveEndToEndTests(unittest.TestCase):
                 else:
                     self.assertEqual(after_worktree, worktree_name)
 
+    def test_a_prompt_that_reads_like_a_flag_does_not_undo_an_opt_out(self) -> None:
+        """``--no-remote-control --prompt --remote-control`` keeps remote control off: the prompt is text (juniper-ml#2438 review)."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result, argv = self._launch(temp_dir, ["--no-remote-control", "--prompt", "--remote-control"])
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertEqual(argv[-2:], ["--", "--remote-control"])
+            self.assertNotIn("--remote-control", argv[:-2])
+
 
 if __name__ == "__main__":
     unittest.main()
