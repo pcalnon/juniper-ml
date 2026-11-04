@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.84
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -816,6 +816,10 @@ Tip: a non-ASCII `X-API-Key` is a **401** on HTTP and close **4001** on a WebSoc
 
 Tip: juniper-service-core invariants — `RequestBodyLimitMiddleware` always stream-caps POST/PUT/PATCH (`Content-Length` is a hint only); auth runs before rate limiting and 429s must pass `exc.headers` through; control-WS reject logs stay single-line via `_sanitize_for_log`; `ws_control_rate_limit_per_sec=0` yields `retry_after=3600` instead of dividing by zero; `/ws/workers` closes **4001** on bad auth and **4008** on a bad registration shape. See [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core).
 
+Tip: a `/ws/control` or `/ws/workers` text frame of exactly **65536** characters is delivered (`len` of the decoded string). One more character closes control **1009** `Message too large` (next frame unread, rate limiter uncharged) or worker registration **4005**; the worker message loop reports the error and stays open.
+
+`/ws/training` does not measure text length. A binary frame of exactly 100 MiB is submitted; stock uvicorn stops a frame at `ws_max_size` (16 MiB) first. See [REFERENCE — a frame of 65536 characters](REFERENCE.md#a-websocket-text-frame-that-fills-65536-characters-is-delivered).
+
 Tip: REST client `base_url` on GitHub-main data/cascor/recurrence clients is normalised (case-insensitive scheme, `hostname` required, trailing `/v1` stripped). `HTTPS://host` on an older wheel silently becomes `http://HTTPS://host`. Cascor WS streams stay rstrip-only. Host cascor is `:8201`, constructor default is `:8200`. See [REFERENCE — HTTP Client Base-URL](REFERENCE.md#http-client-base-url-contract).
 
 Tip: `predict_merge --pr` **hard-fails** (exit `2`) when `gh` exits nonzero or returns non-JSON, while `--batch` soft-`ERROR`s that row and keeps going. A deleted `.py` stays in `true_delta` for the symbol screen but is filtered out of the pre-commit battery, so a pure-deletion PR can be gate-clean and still `DAMAGED-FIX-FIRST`.
@@ -1183,6 +1187,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.84
 **Maintainer:** Paul Calnon

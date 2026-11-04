@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.84
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -80,6 +80,7 @@
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
 - [Ruleset Scope Guard](#ruleset-scope-guard)
 - [Sibling Packages](#sibling-packages)
+- [A WebSocket text frame that fills 65536 characters is delivered](#a-websocket-text-frame-that-fills-65536-characters-is-delivered)
 - [Version History](#version-history)
 - [Build and Release](#build-and-release)
 - [Flood-Remediation CI Gates](#flood-remediation-ci-gates)
@@ -4691,6 +4692,9 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - **Control-WS log sanitizing** — reject logs that interpolate untrusted Origin/command text; go through the module-local `_sanitize_for_log` helpers (`control_security` strips `\r`/`\n`; `control_stream` also drops other C0 controls, keeping tabs) so CRLF cannot forge multi-line control-plane records. Sanitizing changes log records only, never handshake outcomes or ack JSON.
 - **Zero rate limit** — `ws_control_rate_limit_per_sec=0` builds a `LeakyBucket` with no refill; `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop.
 - **`/ws/workers` fail-closed** — a bad/missing `X-API-Key` closes **4001** without accepting; a non-object or shape-invalid registration closes **4008** with no `registration_ack`; `submit_result` rejects wrong-worker / unassigned results before the protocol parse; binary attachments over 100 MB get `Binary frame too large`. A clean disconnect and a mid-result transport abort (expected-binary-got-text / oversize) **requeue** the in-flight task rather than leaving it assigned until `task_reassignment_timeout`. Control receive rejects malformed / non-object JSON with close **1003** rather than an `AttributeError`.
+- **A text frame of 65536 characters is delivered** — `/ws/control` and `/ws/workers` compare `len` of the decoded string with `65536` using `>`. Equality is a normal message.
+  One more character is over: control acks `Message too large` and closes **1009** without reading another frame and without spending a rate-limit token; worker registration closes **4005**; the worker message loop sends the error and keeps the socket. `/ws/training` does not measure text length.
+  Operator surface: [A WebSocket text frame that fills 65536 characters is delivered](#a-websocket-text-frame-that-fills-65536-characters-is-delivered).
 - **WS tunables are declared, not implicit** — `websocket/tunables.py` holds all eleven settings fields the WebSocket handlers read, each with its default and a `security` flag. Six are security controls: the Origin allowlist, the control-endpoint kill switch, the control rate limit, and the three handshake-cooldown parameters. Call sites pass only a name; the default lives in the registry.
   - The `getattr`-based decoupling is deliberate and kept — the shared package still never imports a consuming service's settings class. What changes is that a miss which looks like a misspelling now logs a WARNING naming both spellings, instead of silently reverting a security control to a library default forever (`ws_control_rate_limit_per_second` vs `..._per_sec`).
   - `resolve()` on an undeclared name raises rather than defaulting; `audit(settings)` is the boot-time counterpart, reporting defaulted security controls and suspected typos. Closes APD-SVCCORE-003 / -010. `tests/test_ws_tunables.py` pins the pre-refactor defaults byte-for-byte and source-scans both handlers so registry and call sites cannot drift.
@@ -8389,6 +8393,31 @@ A client seeing a very large `retry_after` on a zero limit is the expected hard-
 
 Repeated *rejected handshakes* are throttled separately by `HandshakeCooldown`, which tracks rejections per client IP: more than `max_rejections` (default **10**) within `window_sec` (default **60**) blocks that IP for `block_sec` (default **300**, i.e. 5 minutes) and closes further attempts with **4029** `Too many rejected handshakes`. The state is in memory only, so a server restart clears it — a deliberate NAT-hostile escape hatch, since many clients can share a single egress IP.
 
+#### A WebSocket text frame that fills 65536 characters is delivered
+
+`/ws/control` (`control_stream.py`, `_MAX_MESSAGE_SIZE`) and `/ws/workers` JSON (`worker_stream.py`, `_MAX_JSON_SIZE`) both use `len(raw) > 65536`. A decoded text frame of **exactly 65536 characters** is handled. A frame of **65537 characters** is over the cap. `len` counts Unicode code points of the string `receive_text()` already built. 65536 `é` characters pass this check and are 131072 UTF-8 bytes.
+
+The length check cannot run before that string exists. This package does not set uvicorn's `ws_max_size`. `uvicorn.config.Config` defaults it to `16 * 1024 * 1024` (16 MiB; confirmed on uvicorn 0.54.0). A frame above that default never reaches these `len` checks.
+
+| Channel | 65536 characters | 65537 characters |
+|---------|------------------|------------------|
+| `/ws/control` | The command is dispatched (`success` when the executor accepts it). A `pong` sets the keepalive event and spends no rate-limit token. | `command_response` with `data.error` `Message too large`, then close **1009** `Message too large`. The following frame on that socket stays unread. The command bucket is not charged. An over-cap `pong` takes this close, so it does not refresh the keepalive. |
+| `/ws/workers` registration | Valid JSON registers and the server sends `registration_ack`. | `error` `Registration message too large`, close **4005** `Message too large`. No `registration_ack`. |
+| `/ws/workers` message loop | A heartbeat (and any other in-cap JSON) is handled. | `error` `Message too large`, and the socket stays open. The next frame is read. |
+| `/ws/training` | `training_stream.py` does not measure text length. The server `ws_max_size` is the limit. | Same. |
+
+Binary attachments on `/ws/workers` use the same `>` test, on `len(bytes)`:
+
+| Check | Admitted | Over the cap |
+|-------|----------|--------------|
+| One frame | `len == 104857600` (`100 * 1024 * 1024`) is kept and can be submitted | One more byte: `Binary frame too large`, and `release_worker_tasks(..., free_worker=True)` runs |
+| Sum of one result | `total == 104857600` is submitted. `_MAX_TOTAL_BINARY_SIZE` equals the per-frame cap and is a separate constant | One byte over: `Binary attachments exceed total size limit`. That return leaves the task assigned |
+| Declared names | Exactly **32** attachments are received | **33** is `Too many binary attachments` before the first binary `receive()` |
+
+On a stock uvicorn the 100 MiB constants do not run: the server has already refused the frame at 16 MiB. The per-frame allocation that can actually happen is `ws_max_size`.
+
+Shipped tests pin the control over-cap close (`"x" * (65536 + 1)` → 1009) and that a second over-cap frame is never read (`test_recv_loop_rejects_oversized_message`, `test_oversized_frame_cannot_be_repeated_on_one_connection` in `juniper-service-core/tests/test_websocket_control_stream.py`). They leave the equality arm to the `>` comparison above.
+
 #### `/ws/workers` contracts
 
 The handshake runs **Origin → auth → per-source rate limit → accept → registration → message loop**, so four of the five close codes fire *before* `accept()`:
@@ -8404,7 +8433,7 @@ The handshake runs **Origin → auth → per-source rate limit → accept → re
 - **Auth fail-closed.** The socket is never accepted on an auth failure — the close happens before `accept()`, so a client that sees a connection "open" has already passed auth.
 - **Registration shape.** After accept, registration requires a pattern-valid string `worker_id` and a dict `capabilities`; a non-object frame or a shape failure closes **4008** with no `registration_ack` (distinct from the malformed-JSON close). The client-supplied id is display-only — the server assigns `worker-{uuid12}`.
 - **Result ownership.** `WorkerCoordinator.submit_result` rejects wrong-worker / unassigned results before the protocol parse.
-- **Binary frame cap.** Attachments over `_MAX_BINARY_SIZE` (100 MB) get `Binary frame too large` before `submit_result`.
+- **Binary frame cap.** Attachments over `_MAX_BINARY_SIZE` (100 MB) get `Binary frame too large` before `submit_result`. A frame of exactly that many bytes is submitted. Stock uvicorn refuses the frame earlier, at `ws_max_size` (default 16 MiB). See [A WebSocket text frame that fills 65536 characters is delivered](#a-websocket-text-frame-that-fills-65536-characters-is-delivered).
 - **Unknown lifecycle frames.** `build_frame_sink` maps unknown or missing frame types onto the generic `event` envelope rather than dropping or raising.
 
 Control receives rejects malformed/non-object JSON with close **1003** rather than an `AttributeError`.
@@ -8420,6 +8449,9 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Worker WS closes 4003 immediately | The client sent an `Origin` header — workers are not browsers; drop it from the client's WS options. |
 | Worker WS closes 4029 before accept | `HandshakeCooldown` or the per-source worker rate limiter is throttling that IP; back off, or restart the server to clear the in-memory block. |
 | Worker WS closes 4004 | Server-side: `worker_coordinator` / `worker_registry` never initialized — check the service's worker-pool startup, not the client. |
+| `/ws/control` closes 1009 `Message too large` | The decoded text was longer than 65536 characters. A frame of exactly 65536 characters is delivered. The close spends no rate-limit token, and the next frame on that socket is not read. An over-cap `pong` closes the same way. |
+| Worker JSON says `Message too large` and the socket stays up | That is the message loop. Registration is the close: **4005** `Message too large`, error text `Registration message too large`. |
+| A huge worker binary never returns `Binary frame too large` | Stock uvicorn drops the frame at `ws_max_size` (default 16 MiB) before the 100 MiB check. |
 | Worker TLS "enabled" but presents no chain | Half-config — `TLSConfig` raises `ValueError` when only one of `cert_file` / `key_file` is set; supply both. |
 | One noisy IP throttles authenticated clients | Expected only for unauthenticated traffic — `RateLimiter` keys authenticated requests as `key:<api_key>`, so confirm the caller is actually sending `X-API-Key`. |
 | Two `task_assign` frames while the first task runs | A mid-task heartbeat must ack without dispatching — confirm the idle guard. |
@@ -8465,6 +8497,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.84  | 2026-11-04 | WebSocket text cap: a decoded frame of exactly 65536 characters is delivered on `/ws/control` and `/ws/workers`. One more character closes control **1009** (next frame unread, rate limiter uncharged) or registration **4005**; the worker message loop stays open. Binary equality is admitted; stock uvicorn stops a frame at `ws_max_size` (16 MiB), so the 100 MiB constant does not run. `/ws/training` does not measure text length. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +8997,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.84
 **Maintainer:** Paul Calnon
