@@ -4,10 +4,10 @@
 **Sub-Project**: juniper-ecosystem (juniper-data → juniper-data-client → juniper-cascor / canopy / recurrence / ml)
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.2.0
+**Version**: 0.2.1
 **Document Type**: SPECIFICATION
-**Last Updated**: 2026-09-23
-**Status**: SPEC v2 — DRAFT, **not ratifiable**. v1 (0.1.0, merged in juniper-ml#2043) was rated **UNSOUND** by consensus review round 1 in its identity, versioning and legality layers. v2 folds all fourteen of that round's findings into §1–§13; §14 records where each one went. **Review round 2 (§15, 2026-09-23) found v2 not ready for ratification**: round 1's blockers are fixed, but ten clusters of MAJOR findings remain, in versioning, identity, the OQ-1 dependency and the release plan. §1–§13 below are v2 as that round reviewed them, left unedited. v3 folds §15's findings, and a round 3 reviews it before the owner rules on anything.
+**Last Updated**: 2026-11-04
+**Status**: SPEC v2 — DRAFT, **not ratifiable**. v1 (0.1.0, merged in juniper-ml#2043) was rated **UNSOUND** by consensus review round 1 in its identity, versioning and legality layers. v2 folds all fourteen of that round's findings into §1–§13; §14 records where each one went. **Review round 2 (§15, 2026-09-23) found v2 not ready for ratification**: round 1's blockers are fixed, but ten clusters of MAJOR findings remain, in versioning, identity, the OQ-1 dependency and the release plan. §1–§13 below are v2 as that round reviewed them, left unedited except for one change: v0.2.1 (2026-11-04) renumbers the data-client releases, W5 to 0.7.0 and W11 to 0.7.1, by the owner's ruling of 2026-11-03 (§11.2, §16), and §14 and §15 still quote the numbers as reviewed. v3 folds §15's findings, and a round 3 reviews it before the owner rules on anything.
 **History**: Decision 12 was ruled on 2026-09-03. On 2026-09-22 the owner asked for it to be **specified before it is built**. No producer or gate code has moved. §12 lists six questions: OQ-4 is answered by a fix, and the other five belong to the owner. This document recommends an answer to each and decides none of them. §8.3 and §9.4 are written for both answers to OQ-2.
 
 **Tracks**: [juniper-data#423](https://github.com/pcalnon/juniper-data/issues/423)
@@ -50,7 +50,7 @@ The ruling fixed *what* the block declares and *that* one gate checks it. This d
    - integrity failure: refuse, never overridable;
    - legality failure: refuse by default, with a recorded opt-in, if OQ-2 is answered as recommended;
    - unknown digest scheme: tolerate as `unverifiable`; a block this gate may not judge for legality: `integrity_only`.
-8. **Rollout: gate first** (§11). The client ships the gate as 0.6.0, after two `<0.6.0` caps are widened. Consumers wire it in while it is still a no-op. The producer ships last, and its CI runs every generator's artifact through the published gate. The table that lets the gate refuse a stripped block is filled in **after** the producer's release, from what it actually shipped (W11).
+8. **Rollout: gate first** (§11). The client ships the gate as 0.7.0, after two `<0.7.0` caps are widened (§11.2; 0.6.0 was taken by P12's W1.13). Consumers wire it in while it is still a no-op. The producer ships last, and its CI runs every generator's artifact through the published gate. The table that lets the gate refuse a stripped block is filled in **after** the producer's release, from what it actually shipped (W11).
 9. **Two defects found while grounding v1** (§3.2), both now fixed on `main` and not yet released:
    - F-1: no consumer could load an `arc_agi` artifact. Fixed by juniper-data#430, which also bumps arc_agi to `4.0.0`.
    - F-2: both external stores normalised before they carved. Fixed by juniper-data#422 (`ce436819`).
@@ -524,16 +524,17 @@ Either order is safe for today's consumers, because none of them breaks on an ex
 
 ### 11.2 Versions, floors and caps
 
-- **juniper-data-client 0.5.0 → 0.6.0.** A MINOR bump, because it adds public API.
-  - Both consumer caps are `<0.6.0`: canopy (`juniper-canopy/pyproject.toml:192`) and recurrence (`juniper-recurrence/pyproject.toml:54`).
-  - Both are widened to `<0.7.0` **before** the Release. The owner ruled on 2026-09-05 that a downstream cap never lowers a SemVer bump (juniper-cascor-client#155, juniper-canopy#584).
+- **juniper-data-client 0.6.x → 0.7.0 (W5).** A MINOR bump, because it adds public API.
+  - **Renumbered in v0.2.1** by the owner's ruling of 2026-11-03 (`JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` §6 A9). v0.2.0 numbered W5 0.6.0 and W11 0.6.1, but P12's W1.13 took 0.6.0 (cut 2026-10-10), and R-DC-PATCH-6, the forward-ported F-S10 fix, takes 0.6.1.
+  - Both consumer caps were `<0.6.0` at the pins: canopy (`juniper-canopy/pyproject.toml:192`) and recurrence (`juniper-recurrence/pyproject.toml:54`). P12 widened both to `<0.7.0` for its 0.6.0: on `main` on 2026-11-04, canopy's `juniper-data` extra reads `>=0.5.0,<0.7.0` and recurrence's dependency `>=0.6.0,<0.7.0`.
+  - Both are widened to `<0.8.0` **before** the Release. The owner ruled on 2026-09-05 that a downstream cap never lowers a SemVer bump (juniper-cascor-client#155, juniper-canopy#584).
   - The release train proposes those ceiling PRs for any pre-1.0 MINOR bump (`util/release_train/propose.py:930`).
   - Floors rise only once the wheel is on PyPI.
-- **juniper-data-client 0.6.0 → 0.6.1 (W11).** A PATCH: filling `FIRST_EMITTING_VERSION` refuses only artifacts whose block was stripped, and a genuine artifact at or above its generator's first emitting version always carries one (W6's fleet test). The `<0.7.0` caps admit it.
-- **juniper-data 0.15.0 → 0.16.0.** MINOR, because it adds an artifact key. Its `test` extra's client floor rises to `>=0.6.0`.
-- **cascor.** Its client pin has no cap: `juniper-data-client>=0.3.0` in the `juniper-data` extra (`juniper-cascor/pyproject.toml:118`). The floor rises to `>=0.6.0` together with the call sites.
+- **juniper-data-client 0.7.0 → 0.7.1 (W11).** A PATCH: filling `FIRST_EMITTING_VERSION` refuses only artifacts whose block was stripped, and a genuine artifact at or above its generator's first emitting version always carries one (W6's fleet test). The `<0.8.0` caps admit it.
+- **juniper-data 0.15.0 → 0.16.0.** MINOR, because it adds an artifact key. Its `test` extra's client floor rises to `>=0.7.0`. v0.2.1 does not renumber juniper-data: PyPI serves 0.16.0, 0.17.0 and 0.17.1 (2026-11-04), and 0.18.0 is R-DATA-2's, so W6's number is still to be set.
+- **cascor.** Its client pin has no cap: `juniper-data-client>=0.3.0` in the `juniper-data` extra (`juniper-cascor/pyproject.toml:118`). The floor rises to `>=0.7.0` together with the call sites.
 - **juniper-ml meta-package**, after both releases are published:
-  - `[clients]`: `juniper-data-client>=0.6.0` (`pyproject.toml:67`);
+  - `[clients]`: `juniper-data-client>=0.7.0` (`pyproject.toml:67`);
   - `[servers]`: `juniper-data>=0.16.0` (`:86`), so that `pip install juniper-ml[all]` installs a producer that emits the block.
 
 ### 11.3 Work items
@@ -546,14 +547,14 @@ Sizes: S is one PR in under a day; M is one or two PRs over a few days; L is sev
 | W1 | data | The stores emit three partitions. **Done: juniper-data#422**, merged 2026-09-23 as `ce436819` | — | — |
 | W2 | data | F-2: the stores fit on train, after the carve (OQ-4). **Done inside W1** | — | W1 |
 | W3 | ml | Ratify this spec and rule on OQ-1 to OQ-6, **recorded in §16** of this document and mirrored as a comment on juniper-data#423 | S | §15's round passing |
-| W4 | canopy, recurrence | Widen the `juniper-data-client` caps to `<0.7.0` | S each | W3 |
-| W5 | data-client | `provenance.py`: decode, digest, gate, class map, exception, `FIRST_EMITTING_VERSION` **empty**. The `testing` fakes emit blocks, and **mint their dataset ids from the block's re-derivation** instead of `uuid4` (`testing/fake_client.py:417`), or every fake-backed test fails G4. Golden and refusal vectors as tests. Release 0.6.0 | M | W3, W4 |
+| W4 | canopy, recurrence | Widen the `juniper-data-client` caps to `<0.8.0` (P12 already took them to `<0.7.0`) | S each | W3 |
+| W5 | data-client | `provenance.py`: decode, digest, gate, class map, exception, `FIRST_EMITTING_VERSION` **empty**. The `testing` fakes emit blocks, and **mint their dataset ids from the block's re-derivation** instead of `uuid4` (`testing/fake_client.py:417`), or every fake-backed test fails G4. Golden and refusal vectors as tests. Release 0.7.0 | M | W3, W4 |
 | W6 | data | See the list below; ends with Release 0.16.0 | L | W0, W2, W5 |
-| W7 | cascor | The three call sites (§9.5); the setting `allow_illegal_partition_provenance` / `JUNIPER_CASCOR_ALLOW_ILLEGAL_PARTITION_PROVENANCE` (default false; only under OQ-2's recommended answer); the gate status on `get_status()`; floor `juniper-data-client>=0.6.0` | M | W5 |
-| W8 | canopy | The two call sites (OQ-5); floor `juniper-data-client>=0.6.0` | S | W5 |
-| W9 | recurrence | The client call site; a docstring on `load_sequence_npz` saying it performs no provenance check (§9.5); floor `juniper-data-client>=0.6.0` | S | W5 |
+| W7 | cascor | The three call sites (§9.5); the setting `allow_illegal_partition_provenance` / `JUNIPER_CASCOR_ALLOW_ILLEGAL_PARTITION_PROVENANCE` (default false; only under OQ-2's recommended answer); the gate status on `get_status()`; floor `juniper-data-client>=0.7.0` | M | W5 |
+| W8 | canopy | The two call sites (OQ-5); floor `juniper-data-client>=0.7.0` | S | W5 |
+| W9 | recurrence | The client call site; a docstring on `load_sequence_npz` saying it performs no provenance check (§9.5); floor `juniper-data-client>=0.7.0` | S | W5 |
 | W10 | ml | The meta-package floors (§11.2) | S | W5 and W6 published |
-| W11 | data-client | Fill `FIRST_EMITTING_VERSION` with the versions W6's release **actually** shipped, read from the published wheel, and release 0.6.1 | S | W6 published |
+| W11 | data-client | Fill `FIRST_EMITTING_VERSION` with the versions W6's release **actually** shipped, read from the published wheel, and release 0.7.1 | S | W6 published |
 | W12 | ml | The two plot loaders run the gate and record its status; they never refuse (§9.5) | S | W5 |
 
 W6 (juniper-data) covers:
@@ -619,7 +620,7 @@ The first three items carry forward the limits in `…TRAIN-EVAL-TEST-PARTITION-
    - **The limit.** The block names the method; it does not measure dependence between partitions.
 8. **Legacy artifacts stay unverifiable.** Every artifact minted before the producer ships reports `absent`, and none is backfilled: rewriting a content-addressed artifact would change its bytes under an unchanged id.
 9. **The gate sees only what a consumer passes it.** A reader that bypasses the client stays unchecked unless it calls the gate itself: juniper-recurrence-model's `load_sequence_npz`, ad-hoc scripts (several of juniper-ml's `util/ad-hoc/` scripts read store files from disk), and notebooks.
-10. **The stripped-block refusal starts late.** Until W11 ships and consumers pick up 0.6.1, a stripped block reads as `absent`.
+10. **The stripped-block refusal starts late.** Until W11 ships and consumers pick up 0.7.1, a stripped block reads as `absent`.
 11. **Cross-snapshot comparability** is not obtained (§9.6.1 of the same design) and is not a goal.
 
 ## 14. Review round 1 — findings and their disposition
@@ -709,6 +710,7 @@ Consensus review round 2 ran on 2026-09-23 against v2 as committed (juniper-ml#2
 | OQ-4 | answered by juniper-data#422 | 2026-09-23 | §12 |
 | OQ-5 canopy | — | — | — |
 | OQ-6 enforce from the first release | — | — | — |
+| The data-client numbers (not an OQ) | W5 is 0.7.0 and W11 0.7.1; 0.6.0 is P12's W1.13 and 0.6.1 is R-DC-PATCH-6 (§11.2) | 2026-11-03 | `JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` §6 A9 |
 
 ## 17. References
 
