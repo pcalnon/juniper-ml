@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.71
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -977,6 +977,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Lockfile PR, pin lines unchanged | Expected. Diff `grep -v '^#'` of the new `conf/*_<timestamp>.*` snapshot against the untimestamped file. The snapshot is the pre-rewrite copy. |
 | `test_ci_tools_drift` red after a ci-tools bump | Widen the `<Y` ceiling in `lockfile-update.yml` + `ci.yml` + `docs-full-check.yml` in the same PR. |
 | `Verify AGENTS.md Last Updated` fails | You changed `AGENTS.md` without bumping `**Last Updated**:`. Set it to today's UTC date and push. |
+| G-SEC fails while the state-2 line says it is blocking all | Block-all is the `security.blockall` capture (`socketfilterfw --getblockall`). State 2's `--getglobalstate` line contains the same sentence. A disabled capture names `--setblockall on`. See [REFERENCE](REFERENCE.md#g-sec-block-all-is-the-getblockall-capture). |
 | Soak `--dry-run` exits 2 with no preview | Pre-#1690 refuse-before-dry-run. After #1690 a terminal verdict still previews (NOTE on stderr). Do not pass `--force` just to see the preview. |
 | Soak real run exits 2 with `REFUSING` | Ledger is `BET-FAILING` / `HOLDS-AT-*`. `--force` overrides a real run only; disable the timer if the pooled question is done. |
 | Soak `--probe-id P19` → `no such probe` | Use the full slug (`P19-port-check-fail-opens`). |
@@ -1175,6 +1176,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.71
 **Maintainer:** Paul Calnon
