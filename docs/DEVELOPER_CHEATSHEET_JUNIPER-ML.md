@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.84
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -671,6 +671,11 @@ Full contract: [REFERENCE — Isolated Stack E2E](REFERENCE.md#isolated-stack-e2
 
 Tip: a CAN-015 replay replaces that cascor's network. Bring the stack up with `util/ad-hoc/2026-10-04_replay_redrive_stack.bash` (`JUNIPER_REDRIVE_ECO` outside the primary tree; ports `8113`/`8214`/`8063`). Replay an explicit `POST /v1/snapshots`. An automatic `create_snapshot` has `length=0`. [REFERENCE — CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive).
 
+Tip: the shared `ReplaySession` (`POST /v1/snapshots/{id}/replay/control`) clamps speed to [-10, 10]. A magnitude below 0.1 stays `paused: false` and leaves the index.
+The thread sleeps `min(1/abs(speed), 0.5)`, so speed `1` advances every 0.5 s. Range `end` is exclusive, and an inverted range collapses.
+A `fit` that returns while the lifecycle is PAUSED leaves that status and writes `monitor.status` `completed`. Resume then reports STARTED with the thread already gone.
+[REFERENCE — Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion).
+
 Tip: F-CANOPY-027 is **12-slot dash-renderer starvation**, not missing wiring (FIXED canopy#507/#509/#511). Terminal render callbacks lose `sortPriority` DESC arbitration.
 Do **not** add a new Interval/poller (F-027 rule; canopy#524 shared `metrics-panel-metrics-store`). Isolated stack only (`JuniperCanopy1`; empty `LD_LIBRARY_PATH`).
 Queues/ready/slots inherit `JUNIPER_E2E_CANOPY_URL` (no `--base-url`). See [REFERENCE — F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes).
@@ -1160,6 +1165,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) -- W0.8/W0.9 replay and matrix; exit 0 is not a passing crossval
 - [F-039 Store Probe](REFERENCE.md#f-039-store-probe) -- apply / soak / report / revert; read the whole series; `--target topology` refuses
 - [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) -- throwaway wrapper on `8113`/`8214`/`8063`; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start
+- [Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion) -- shared replay clamps speed to [-10, 10]; below 0.1 the index stays; a fit that returns while paused leaves the machine PAUSED and the monitor `completed`
 - [Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- exit **2** is P-5 free-threaded; exit **4** is May-7 wheel layout
 - [Environment Floor Drift — Malformed Input](REFERENCE.md#malformed-operator-input) -- a truthy non-mapping exits 2 with a reason; a bad extra does not drop `dependencies` floors
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local `MEMORY.md` gate; hook-not-line; CI cannot see `~/.claude`
@@ -1183,6 +1189,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.84
 **Maintainer:** Paul Calnon

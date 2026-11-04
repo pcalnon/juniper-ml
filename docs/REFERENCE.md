@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.84
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -28,6 +28,7 @@
 - [Agent Suite Doctor](#agent-suite-doctor)
 - [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities)
 - [CAN-015 Replay Re-drive](#can-015-replay-re-drive)
+- [Replay speed, range, and a paused completion](#replay-speed-range-and-a-paused-completion)
 - [F-039 Store Probe](#f-039-store-probe)
 - [Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes)
 - [F-CANOPY-027 Poller Starvation Probes](#f-canopy-027-poller-starvation-probes)
@@ -1828,6 +1829,94 @@ The driver opens the snapshot's `Load` menu (the replay item is a dropdown item;
 | The range readout is one past the last frame | `range.end` or `snapshot_window.end_epoch` was used as an inclusive index. |
 | `--down` stopped the shared trio | The ports were `8101` / `8202` / `8051`. Use the wrapper: it refuses those ports and refuses a pid it did not record. |
 | `--up` refuses port `8223` | That port is in the wrapper's listener set. Recurrence is not started, and the port still has to be free. |
+
+The shared `ReplaySession` in this repo (the speed clamp, the half-second tick cap, and a fit that returns while paused) is [Replay speed, range, and a paused completion](#replay-speed-range-and-a-paused-completion).
+
+---
+
+## Replay speed, range, and a paused completion
+
+`ReplaySession` (`juniper-service-core/juniper_service_core/lifecycle/replay.py`) plays a snapshot's metric history for `POST /v1/snapshots/{id}/replay` and `POST /v1/snapshots/{id}/replay/control`. The session starts paused at frame 0. The body is `ReplayControlRequest`: `action`, plus `value` for speed, `time_index` for seek, and `start` / `end` for range. An unknown action is HTTP 422. No active session is HTTP 409. Snapshots disabled is HTTP 501.
+
+`create_app` mounts this router from `juniper_service_core.routes.snapshots`. The canopy re-drive in [CAN-015 Replay Re-drive](#can-015-replay-re-drive) talks to cascor's own player.
+
+### Speed
+
+`action: "speed"` stores `max(-10.0, min(10.0, float(value)))`. Omitting `value` leaves the current speed. The default is `1.0`. A request of `50` comes back as `10.0`; `-50` comes back as `-10.0`.
+
+`step()` moves one frame when the session is playing and `abs(speed) >= 0.1`. Exactly `0.1` and `-0.1` move. `0.099` and `-0.099` leave the index where it is and leave `paused` false. The playback thread treats that same test as idle: it waits on the wake event for at most `MAX_TICK_SECONDS` (`0.5`) and does not take the `1/abs(speed)` sleep.
+
+While a frame does advance, the thread sleeps `min(1/abs(speed), 0.5)` afterwards. The cap is there so pause and stop are noticed within half a second.
+
+| `speed` | Sleep after each frame that advances |
+|---------|--------------------------------------|
+| `±10` (the clamp) | `0.1` s |
+| `±2` | `0.5` s |
+| `±1` (the default) | `0.5` s |
+| `±0.1` (slowest speed that still moves) | `0.5` s |
+
+From absolute value `0.1` through `2`, the cadence is 2 Hz. At the clamp it is 10 Hz. A client value past the clamp never reaches the thread.
+
+```bash
+curl -s -X POST "$BASE/v1/snapshots/$ID/replay/control" \
+  -H 'content-type: application/json' \
+  -d '{"action":"speed","value":50}'
+```
+
+`replay.speed` in the response is `10.0`.
+
+### Range
+
+The range is half-open `[start, end)`. The last index that plays is `end - 1`. `start` is clamped into `[0, length]`, then `end` is clamped into `[start, length]`, so an inverted pair collapses to a point. On a history of length 10, `start: 5, end: 1` becomes `{"start": 5, "end": 5}` and the index is pulled to `5`. A negative start becomes `0`. An end past `length` becomes `length`.
+
+A step that would land outside does not change the index. It sets `paused` true. Forward does that when the next index would be `>= end`. Reverse does it when the next index would be `< start`. The first step of a collapsed range pauses in either direction.
+
+`seek` uses the same clamp. On `[1, 4)` a seek to `10` lands on `3`.
+
+```bash
+curl -s -X POST "$BASE/v1/snapshots/$ID/replay/control" \
+  -H 'content-type: application/json' \
+  -d '{"action":"range","start":5,"end":1}'
+```
+
+When the history has at least 5 frames, `replay.range` is `{"start": 5, "end": 5}` and a following play does not advance.
+
+`action: "pause"` and `action: "play"` change the session flag. The lifecycle status stays `REPLAYING`. `action: "stop"` stops the session and `RESET`s the lifecycle to `STOPPED`.
+
+### A fit that returns while paused
+
+`POST /v1/training/pause` is HTTP 409, detail `Training cannot be paused in the current state`, unless the lifecycle status is `STARTED`. `REPLAYING`, `INVESTIGATING`, and `RESUME_READY` take that 409. `mark_completed` and `mark_failed` also return false from those three, and the status stays.
+
+Pause from `STARTED` saves the current phase in `paused_phase` and blocks the training thread at its next event (`_pause_event.wait()` in `_handle_event`). A model that emits another event stays inside that wait until resume or stop.
+
+`mark_completed` returns true only from `STARTED`. If `fit` returns while the status is still `PAUSED` (the pause happened after the last event, so the wait never ran), the call returns false and both `phase` and `paused_phase` stay. A probed run that had paused in phase `candidate` was still `PAUSED` / `candidate` / `paused_phase: candidate` after `fit` returned. `mark_failed` from `PAUSED` returns true: status `FAILED`, phase `idle`, `paused_phase` cleared.
+
+The training thread does not read `mark_completed`'s return. On that path `_train_thread_target` still writes the monitor context as `status: completed`, `phase: idle`. `get_status()` then reports both:
+
+| Field | After `fit` returns while paused |
+|-------|----------------------------------|
+| `state_machine.status` | `PAUSED` |
+| `state_machine.phase` / `paused_phase` | the phase saved at pause (`candidate` in the probe) |
+| `monitor.status` | `completed` |
+| `monitor.phase` | `idle` |
+| `training_active` | true (`is_active()` is `STARTED` or `PAUSED`) |
+| training thread | already exited |
+
+`POST /v1/training/resume` still accepts that state. The probe's resume moved the machine to `STARTED`, restored `phase` to `candidate`, cleared `paused_phase`, set `monitor.status` to `running`, and left `training_active` true. The thread stayed exited. Resume does not start another `fit`.
+
+### What to check
+
+| Symptom | What it is |
+|---------|------------|
+| The `speed` you sent is not the `speed` you get | Values outside `[-10, 10]` are clamped. `50` is stored as `10`. |
+| `paused` is false and the index never moves | `abs(speed) < 0.1`, including `0`. The session is idle. Send `value` of `0.1` or greater. |
+| Speed `1` advances twice a second | The sleep is capped at `0.5` s. Speeds from `0.1` through `2` share that cadence. |
+| Playback stops one frame before `end` | `end` is exclusive. The last index is `end - 1`. |
+| An inverted range jumps the index and will not play | `end` is raised to `start`, so the range is empty. Send `end` greater than `start`. |
+| Status stays `PAUSED` after the model finished, and `monitor.status` is `completed` | `fit` returned during the pause. `mark_completed` does not apply from `PAUSED`, and the monitor write ignores that return. Resume reports `STARTED` and does not start a thread. |
+| `POST /v1/training/pause` during a replay is 409 | Training pause requires `STARTED`. Pause the playback with `POST /v1/snapshots/{id}/replay/control` and `"action": "pause"`. |
+
+On `main`, `juniper-service-core/tests/test_t2_replay.py` covers a speed of `2`, a seek clamped into `[1, 4)`, and the forward auto-pause at the last index (`test_replay_controls_are_synchronous`, `test_replay_step_auto_pauses_at_boundary`). The clamp at `±10`, the `0.1` floor, the collapsed range, and the paused-completion rows above were run against this checkout's `ReplaySession`, `LifecycleStateMachine`, and `ServiceLifecycleManager`.
 
 ---
 
@@ -4691,6 +4780,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - **Control-WS log sanitizing** — reject logs that interpolate untrusted Origin/command text; go through the module-local `_sanitize_for_log` helpers (`control_security` strips `\r`/`\n`; `control_stream` also drops other C0 controls, keeping tabs) so CRLF cannot forge multi-line control-plane records. Sanitizing changes log records only, never handshake outcomes or ack JSON.
 - **Zero rate limit** — `ws_control_rate_limit_per_sec=0` builds a `LeakyBucket` with no refill; `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop.
 - **`/ws/workers` fail-closed** — a bad/missing `X-API-Key` closes **4001** without accepting; a non-object or shape-invalid registration closes **4008** with no `registration_ack`; `submit_result` rejects wrong-worker / unassigned results before the protocol parse; binary attachments over 100 MB get `Binary frame too large`. A clean disconnect and a mid-result transport abort (expected-binary-got-text / oversize) **requeue** the in-flight task rather than leaving it assigned until `task_reassignment_timeout`. Control receive rejects malformed / non-object JSON with close **1003** rather than an `AttributeError`.
+- **Replay speed and a paused completion** — `ReplaySession` clamps speed to `[-10, 10]`, a magnitude below `0.1` leaves the index where it is, and a `fit` that returns while the lifecycle is `PAUSED` leaves that status while the monitor says `completed`. Operator surface: [Replay speed, range, and a paused completion](#replay-speed-range-and-a-paused-completion).
 - **WS tunables are declared, not implicit** — `websocket/tunables.py` holds all eleven settings fields the WebSocket handlers read, each with its default and a `security` flag. Six are security controls: the Origin allowlist, the control-endpoint kill switch, the control rate limit, and the three handshake-cooldown parameters. Call sites pass only a name; the default lives in the registry.
   - The `getattr`-based decoupling is deliberate and kept — the shared package still never imports a consuming service's settings class. What changes is that a miss which looks like a misspelling now logs a WARNING naming both spellings, instead of silently reverting a security control to a library default forever (`ws_control_rate_limit_per_second` vs `..._per_sec`).
   - `resolve()` on an undeclared name raises rather than defaulting; `audit(settings)` is the boot-time counterpart, reporting defaulted security controls and suspected typos. Closes APD-SVCCORE-003 / -010. `tests/test_ws_tunables.py` pins the pre-refactor defaults byte-for-byte and source-scans both handlers so registry and call sites cannot drift.
@@ -8412,6 +8502,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Symptom | Check / Fix |
 |---------|-------------|
 | HTTP 429 arrives without `Retry-After` | `SecurityMiddleware` must pass `exc.headers` into the `JSONResponse` — RateLimiter unit tests alone do not cover that catch path. |
+| Replay index frozen while `paused` is false, or status stays `PAUSED` after `fit` with `monitor.status` `completed` | [Replay speed, range, and a paused completion](#replay-speed-range-and-a-paused-completion). |
 | A health probe gets 429 | Health/docs/metrics are exempt in service-core — check an upstream proxy or a non-exempt path. |
 | A large POST is accepted despite the body limit | The mutating-method stream cap must be unconditional; a `Content-Length`-only fast path is the bypass class. |
 | Multi-line or forged log record after a bad Origin/command | `_sanitize_for_log` regression — never interpolate unsanitized Origin/command into logger format strings. |
@@ -8465,6 +8556,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.84  | 2026-11-04 | Shared replay: speed clamps to [-10, 10], a magnitude below 0.1 does not move the index, the inter-frame sleep is capped at 0.5 s, and a fit that returns while PAUSED leaves the machine PAUSED while the monitor says completed. Header skips 0.6.64–0.6.83 (in-flight docs PRs). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +9056,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.84
 **Maintainer:** Paul Calnon
