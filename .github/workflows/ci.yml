@@ -1458,6 +1458,10 @@ jobs:
           # (R-G1, the X2 class) exits 2; G-MEM's verdicts equal util/macvm_ctl.bash status's; the real
           # probe feeds the check; the committed turing file agrees with macvm_ctl, hosttools and conda-envs.
           python3 -m unittest -v tests/test_host_state_check.py
+          # tests/test_host_state_gate_boundaries.py: G-TOOLS kubectl passes at exactly max_minor_skew
+          # (either direction, and with kubectl's trailing '+' on the minor) and fails one minor past it;
+          # a skew of 0 admits only the cluster minor. G-NET throughput equal to min_mbps passes.
+          python3 -m unittest -v tests/test_host_state_gate_boundaries.py
           # tests/test_mcp_setup.py: turing bring-up H4. util/mcp_setup.bash writes a checkout's .mcp.json Serena
           # entry: pinned to a full commit from conf/hosts/<host>/mcp.json (D10), bound with --project (audit
           # A2-F1), on a context whose excluded_tools hold the shell tool. Other servers are kept, a changed file
