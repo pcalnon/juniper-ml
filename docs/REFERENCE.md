@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.82
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -5499,7 +5499,42 @@ Every check is `<python> -s …` run from `/`: `-s` keeps a `~/.local` package f
    A line outside pip's grammar is a finding when its first token is a closure name, so a reworded closure conflict cannot read as clean; otherwise it prints as `pip check also said (not a finding)`. A non-zero `pip check` that yields neither a recognised line nor a closure line is itself a finding (`pip check could not run`).
 2. **Pins the installed app declares.** Only `juniper-recurrence-model` and `juniper-service-core`, read from `importlib.metadata.requires("juniper-recurrence")` in the judged interpreter — for an editable install, its `pyproject.toml` as of the last `pip install -e`, not the checkout's current file. Evaluated with `packaging`, else `pip._vendor.packaging`, with `prereleases=True`.
    A violated pin, a missing dependency, an installed version that is not PEP 440, and missing `juniper-recurrence` metadata (`is this the env serve runs from?`) are findings. A requirement whose marker is false with `extra=""` (`extra == "torch"`) is not a pin. With neither `packaging` copy importable, the probe says so and does not refuse.
+   `juniper-model-core` is in the pip-check closure and absent from this pin list. A model-core version the installed app's own metadata still accepts is clean here. [Crossval 500 with model-core 0.2.0](#crossval-500-with-model-core-020) is that case.
 3. **Import.** `from juniper_recurrence_model.data import derive_full_split`. A failure records the last non-empty line of the interpreter's output.
+
+### Crossval 500 with model-core 0.2.0
+
+`juniper-recurrence` 0.8.0 passes `groups=` on every `POST /v1/crossval`, including a series whose `ticker_code` is missing.
+That keyword first exists on `juniper-model-core` 0.3.0.
+Tag `juniper-model-core-v0.2.0` defines `walk_forward_folds(n_samples, *, n_folds, scheme, min_train, embargo, order)` and nothing further, so the call raises `TypeError: walk_forward_folds() got an unexpected keyword argument 'groups'`.
+The route maps `ValueError` from `build_folds` to HTTP 422 and leaves this `TypeError` unhandled, which is an HTTP 500.
+`/v1/health/ready` stays 200: the 0.2.0 function imports; it fails at the call.
+
+Verified against tags, not against a live stack:
+
+| Fact | Where |
+|------|--------|
+| 0.8.0 always passes `groups=` | `juniper-recurrence` tag `juniper-recurrence-v0.8.0`, `juniper_recurrence/_folds.py` (`walk_forward_folds(..., order=order, groups=groups)`) |
+| `groups` arrives in 0.3.0 | This repo, tag `juniper-model-core-v0.3.0`, `juniper-model-core/juniper_model_core/crossval/splits.py` |
+| 0.8.0 still allows 0.2.0 | Tag `juniper-recurrence-v0.8.0`, `juniper-recurrence/pyproject.toml`: `juniper-model-core[crossval]>=0.2.0,<0.4.0` |
+| The route's 422 mapping is `ValueError` only | Tag `juniper-recurrence-v0.8.0`, `juniper_recurrence/routers/crossval.py` (`except ValueError` around `build_folds`) |
+| The pin probe ignores model-core | `util/recurrence_env_preflight.bash` `PINNED_DISTS` is `juniper-recurrence-model` and `juniper-service-core`. `juniper-model-core` is only in `CLOSURE`, so `pip check` judges it against the floor the installed app declares |
+
+0.8.0's declared floor matches 0.2.0, so scoped `pip check` is clean and the preflight prints `ENV PREFLIGHT OK`.
+
+juniper-recurrence#229 (merged 2026-11-04, squash `2a467adb`, tag `juniper-recurrence-v0.8.1`) raises the floor to `juniper-model-core[crossval]>=0.3.0,<0.4.0` on recurrence `main`.
+On 2026-11-04 PyPI's latest `juniper-recurrence` was **0.8.0** (`/pypi/juniper-recurrence/0.8.1/json` returned 404).
+`pip install -U juniper-recurrence` therefore stays on 0.8.0 until that wheel is published.
+`juniper-ml`'s `[recurrence]` extra is `juniper-recurrence>=0.8.0,<0.9.0`, which accepts 0.8.0, so installing the meta-package does not force the bump either.
+
+The repair that fits the published 0.8.0 range is model-core 0.3.x. PyPI's latest `juniper-model-core` on that date was 0.3.2, which has `groups`. An env already on 0.3.0, 0.3.1, or 0.3.2 never takes this path.
+
+```bash
+python -m pip install -U "juniper-model-core[crossval]>=0.3.0,<0.4.0"
+python -m pip check
+```
+
+After 0.8.1 is on PyPI, an env left on model-core 0.2.0 fails scoped `pip check` and the preflight refuses before `serve`. The pin probe still will not name model-core. The release-notes archive is juniper-ml#2454; the wheel publish is a separate step, and this page was checked against PyPI on 2026-11-04.
 
 ### Exit codes, and where the report goes
 
@@ -5526,6 +5561,7 @@ tail -n 80 "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/<RUN
 | Symptom | What it is |
 |---------|------------|
 | `/v1/health/ready` is 200, then `POST /v1/crossval` is 422 missing `X_full` | F-E1's shape; readiness does not import `derive_full_split`. The launch passed `--skip-env-preflight`, or `serve` was started outside these two launchers (Compose has no launcher preflight; plan W3.0b would add the check to readiness). |
+| `/v1/health/ready` is 200, preflight prints `ENV PREFLIGHT OK`, and every `POST /v1/crossval` raises `TypeError: walk_forward_folds() got an unexpected keyword argument 'groups'` | The served app is `juniper-recurrence` 0.8.0 beside `juniper-model-core` 0.2.0. The declared floor still accepts 0.2.0, so none of the three checks fire. [Crossval 500 with model-core 0.2.0](#crossval-500-with-model-core-020). |
 | `ENV PREFLIGHT REFUSED` with `FINDING:` lines naming the model pin, the service-core pin, or `derive_full_split` | The interpreter `serve` would use failed the closure check. The repair is W0.1. Lines marked `unrelated to recurrence` are not the refusal. |
 | CUDA `pip check` lines on stdout, exit 0 | Unrelated; printed as `unrelated to recurrence (not a finding)`. |
 | `WARNING: ENV PREFLIGHT SKIPPED —` and the service still reaches ready | The emergency override, recorded in `launch.log`. A skipped `derive_full_split` finding still 422s every `split="full"` request. |
@@ -8465,6 +8501,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.82  | 2026-11-04 | Recurrence crossval 500: 0.8.0 passes `groups=` while declaring model-core `>=0.2.0`, so preflight stays OK. Published repair is model-core `>=0.3.0,<0.4.0` until 0.8.1 is on PyPI (juniper-recurrence#229). Header skips 0.6.64–0.6.81 (in-flight docs PRs). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +9001,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.82
 **Maintainer:** Paul Calnon

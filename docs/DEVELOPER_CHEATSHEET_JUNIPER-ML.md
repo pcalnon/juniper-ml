@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.82
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -679,7 +679,9 @@ Tip: `util/experiment_stack.bash` is the **per-run** launcher (data `8110–8139
 
 Tip: before `serve`, the recurrence leg of both launchers runs `bash util/recurrence_env_preflight.bash` (scoped `pip check`, the installed app's model / service-core pins, the `derive_full_split` import). A finding refuses the leg and tears the partial stack down; read `$RUN_DIR/logs/launch.log`.
 `--skip-env-preflight` warns and still serves. `run_suite.py` cannot pass it: export `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` (`isolated_stack.bash` reads `JUNIPER_E2E_SKIP_ENV_PREFLIGHT`). CUDA `pip check` lines are not findings.
-Full contract: [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight).
+`juniper-recurrence` 0.8.0 with `juniper-model-core` 0.2.0 still prints `ENV PREFLIGHT OK`, then every `POST /v1/crossval` raises `TypeError: walk_forward_folds() got an unexpected keyword argument 'groups'` (HTTP 500).
+The pin probe does not read model-core, and 0.8.0 declares `>=0.2.0`. Until 0.8.1 is on PyPI, `python -m pip install -U "juniper-model-core[crossval]>=0.3.0,<0.4.0"`.
+Full contract: [REFERENCE — Crossval 500 with model-core 0.2.0](REFERENCE.md#crossval-500-with-model-core-020).
 
 Tip: `outputs.save_model: true` saves the recurrence model the run scored: `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, copied to `model.npz` (juniper-ml#2211); a 409 is `outcome: degraded` (exit 1) with no re-fit. Only a service that returns no `operation_id` gets the old re-fit, which re-runs the `juniper-recurrence` CLI the launcher recorded (`ports.json` `recurrence_launch.cli`, W1.9), and only under rerun parity: the same interpreter and `juniper-recurrence-model` version that `serve` ran. A mismatch is `outcome: degraded` (exit 1) and the CLI is not started.
 `recurrence_up` exports `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots` (W1.10); a YAML `service:` key still outranks it and the two log knobs. Full contract: [REFERENCE — Recurrence launch record](REFERENCE.md#recurrence-launch-record-and-service-env).
@@ -1139,6 +1141,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default 503-name universe, per-request cost, silent `max_symbols` slice
 - [Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) -- PF-5/6/7 report-only; `work_countable` third state; baseline/compare refuse
 - [Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) -- W0.2 (juniper-ml#2139): scoped `pip check`, installed pins, `derive_full_split` before recurrence `serve`; CUDA noise does not refuse; `--skip-env-preflight` warns
+- [Crossval 500 with model-core 0.2.0](REFERENCE.md#crossval-500-with-model-core-020) -- 0.8.0 plus model-core 0.2.0 stays `ENV PREFLIGHT OK` and 500s every `POST /v1/crossval`; install model-core `>=0.3.0,<0.4.0` until 0.8.1 is on PyPI
 - [Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters) -- omitted readout is linear at `default_ridge` (0.0, and the E-H YAML pins it); omitted RFF ridge is `gcv`; crossval fits a fresh model per fold
 - [Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text) -- a 502 `detail` can contain a rejected data API key; the driver copies it into the run record
 - [One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service) -- one `train_lock` and one model per service; a busy train is a `409` (exit 4)
@@ -1183,6 +1186,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.82
 **Maintainer:** Paul Calnon
