@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.55
+**Version:** 0.2.73
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -105,6 +105,7 @@
 | **Read the release-train detect summary / Slack** | [REFERENCE — Detect Summary and Slack](REFERENCE.md#release-train-detect-summary-and-slack)                             | docs/    |
 | **Understand the AGENTS.md date check** | [REFERENCE — AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check)                                                             | docs/    |
 | **Audit `claude.yml` access safeguards**| [REFERENCE — Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) + [ANTHROPIC API key walkthrough](../notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md) | docs/ + notes/ |
+| **Launch a local Claude Code session** | [REFERENCE — Local Claude Launcher](REFERENCE.md#local-claude-launcher) (`./claudey`: prompt last after `--`, bare `--worktree` and `--remote-control`, `DEBUG=TRUE` forces skip-permissions; wake `--version` is Claude Code's version) | docs/ |
 | **Operate the GitHub `@claude` assistant** | [REFERENCE — Claude Code Action](REFERENCE.md#claude-code-action) (live pin, `@claude` `if:`, template-snapshot drift) | docs/ |
 | **Debug service-core middleware / control-WS / workers** | [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core); a non-ASCII `X-API-Key` is a 401 on `main` (published 0.7.0 still 500s), and Sentry does not capture frame locals: [Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) | docs/    |
 | **Create or clean a worktree**          | [Worktree setup](../notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md) / [cleanup V2](../notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md) + [REFERENCE — in-use probe](REFERENCE.md#wider-second-opinion-open-files-and-argv) | notes/ + docs/ |
@@ -124,7 +125,7 @@
 |----------------------------------------|------------|--------------------------------------------------------------------------------------------------|
 | **DOCUMENTATION_OVERVIEW.md**          | Overview   | This file -- navigation index                                                                    |
 | **QUICK_START.md**                     | Tutorial   | Install Juniper packages in under a minute                                                       |
-| **REFERENCE.md**                       | Reference  | Extras, compatibility, host-stack / isolated-stack / experiment-stack ops, Duplicati backup, project-tree / external-media backup, agent-suite doctor, post-merge main-verify, YubiKey GPG pointer, fleet triage / sequence-safety, shared-package CI + publish pipelines (Gate 1 poll; release-only trigger), scheduled security-scan / lockfile-update, docs-full-check, release-train detect summary, AGENTS.md date check, `claude.yml` access validation, Claude Code Action (`@claude` assistant), sibling packages (incl. service-core), release-workflow, flood CI gates, open-PR budget alarm, X7 off-loop census, PF scenario suites, P4 campaign suites, perf-lane work gate, memory-budget planning slack, `MEMORY.md` index check, conda torch-shadow diagnostic, equities 14-symbol refuse, canopy topology step order / blast-radius IDs, and the F-039 store-apply probe |
+| **REFERENCE.md**                       | Reference  | Extras, compatibility, host-stack / isolated-stack / experiment-stack ops, Duplicati backup, project-tree / external-media backup, agent-suite doctor, post-merge main-verify, YubiKey GPG pointer, fleet triage / sequence-safety, shared-package CI + publish pipelines (Gate 1 poll; release-only trigger), scheduled security-scan / lockfile-update, docs-full-check, release-train detect summary, AGENTS.md date check, `claude.yml` access validation, local Claude launcher (`claudey` / `wake_the_claude.bash`), Claude Code Action (`@claude` assistant), sibling packages (incl. service-core), release-workflow, flood CI gates, open-PR budget alarm, X7 off-loop census, PF scenario suites, P4 campaign suites, perf-lane work gate, memory-budget planning slack, `MEMORY.md` index check, conda torch-shadow diagnostic, equities 14-symbol refuse, canopy topology step order / blast-radius IDs, and the F-039 store-apply probe |
 | **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | Cheatsheet | Quick-reference card for common development, host-stack, backup-lane, CI guardrail and hygiene tasks, signing-ceremony tasks, service-core contracts, experiment-stack tasks, X7 census pitfalls, PF-suite scrapeability / epoch-pair traps, P4 campaign-suite catalog, perf-lane work-gate reads, memory-budget slack vs CI headroom, `MEMORY.md` index limits, conda torch-shadow triage, equities symbol-cap operator surface, topology step order / W-id facts, and the F-039 store-apply probe |
 
 > The deprecated monolithic cheatsheet (`DEVELOPER_CHEATSHEET-ORIGINAL.md`)
@@ -252,6 +253,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.2.55
+**Last Updated:** 2026-11-04
+**Version:** 0.2.73
 **Maintainer:** Paul Calnon
