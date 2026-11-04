@@ -118,6 +118,9 @@ if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
 fi
 
 SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
+# This script's own version, as its header states, for -v. Assigned unconditionally: claude_interactive.bash exports
+# SCRIPT_VERSION as its own version, which this script would otherwise inherit and report as its own.
+SCRIPT_VERSION="1.0.0"
 # set -x
 # PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): ${PS4}: "
 # PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): "
@@ -283,12 +286,6 @@ export PROMPT_VALUE=""
 
 PROMPT_VALUE_DEFAULT="Hello World, Claude!"
 export PROMPT_VALUE_DEFAULT
-
-PROMPT_FILE_DEFAULT="./${PROMPT_FILE_NAME_DEFAULT}"
-export PROMPT_FILE_DEFAULT
-
-PROMPT_PATH_DEFAULT="${PROMPT_PATH_DIR_DEFAULT}/${PROMPT_FILE_NAME_DEFAULT}"
-export PROMPT_PATH_DEFAULT
 
 
 ########################################################################################################################################################################
@@ -1036,32 +1033,40 @@ function parse_add_worktree_flags() {
 }
 
 ########################################################################################################################################################################################################################################
-# Add Remote Control flag
+# Add Remote Control flag: Claude Code's --remote-control takes an optional session name, as --worktree takes an optional worktree name
 function parse_add_remote_control_flags() {
     debug_log "Parsing add remote control flags"
-    local current_flag="${1:-""}"
-    debug_log "Current Flag: \"${current_flag}\""
+    local remote_control_flag="${1:-""}"
+    debug_log "Remote Control Flag: \"${remote_control_flag}\""
+    local remote_control_value="${2:-""}"
+    debug_log "Remote Control Value: \"${remote_control_value}\""
     local result_value="${TRUE}"
 
-    if [[ "${current_flag}" == "" ]]; then
+    if [[ "${remote_control_flag}" == "" ]]; then
         debug_log "Error: Received Empty Remote Control Flag."
         result_value="${UNSAFE_TARGET}"
-    elif matches_pattern "${current_flag}" "${REMOTE_CONTROL_FLAGS}"; then
-        debug_log "Received Remote Control Flag: \"${current_flag}\""
-        shift  # shift to consume the remote control flag
-    else
-        debug_log "Error: Received an Invalid Remote Control Flag: \"${current_flag}\"."
+        CLAUDE_REMOTE_CONTROL_VALUE=()
+    elif ! matches_pattern "${remote_control_flag}" "${REMOTE_CONTROL_FLAGS}"; then
+        debug_log "Error: Received an Invalid Remote Control Flag: \"${remote_control_flag}\"."
         result_value="${FALSE}" && shift  # shift to consume the invalid remote control flag
-    fi
-    debug_log "Result Value: \"${result_value}\""
-
-    if [[ "${result_value}" == "${TRUE}" ]]; then
-        debug_log "Remote Control parameter Flag Value: \"${current_flag}\""
+        CLAUDE_REMOTE_CONTROL_VALUE=()
+    elif [[ "${remote_control_value}" == "${FALSE}" ]]; then
+        debug_log "Warning: Received False Remote Control Value."
+        shift 2  # shift to consume the remote control flag and remote control boolean false value
+        CLAUDE_REMOTE_CONTROL_VALUE=()
+    # No session name: a true boolean value, the end of the input, or a flag next. Claude Code assigns the name.
+    elif [[ ( "${remote_control_value}" == "${TRUE}" ) || ( "${remote_control_value}" == "" ) || ( "${remote_control_value:0:1}" == "-" ) ]]; then
+        debug_log "Warning: Received Remote Control Flag without a Remote Control Name. Letting Claude Code assign one."
+        shift  # shift to consume the remote control flag
+        if [[ "${remote_control_value}" == "${TRUE}" ]]; then
+            shift  # shift to consume the remote control boolean true value
+        fi
         CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}")
     else
-        debug_log "Warning: Received an Invalid Remote Control Flag: \"${current_flag}\". Setting Remote Control parameter Flag Value to empty array."
-        CLAUDE_REMOTE_CONTROL_VALUE=()
+        debug_log "Selected Remote Control Name: \"${remote_control_value}\""
+        CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}" "${remote_control_value}") && shift 2  # shift to consume the remote control flag and remote control name
     fi
+    debug_log "Result Value: \"${result_value}\""
     debug_log "Remote Control Value: \"${CLAUDE_REMOTE_CONTROL_VALUE[*]}\""
 
     debug_log "Updating Current Params"
@@ -1732,8 +1737,9 @@ debug_log "Completed building prompt, ${#CLAUDE_CODE_PARAMS[@]} total args"
 debug_log "Executing claude with ${#CLAUDE_CODE_PARAMS[@]} args"
 
 CLAUDE_BIN="$(type -P claude 2>/dev/null || true)"
+# The errors that end the launch below go to stderr, not debug_log: with debug output off (WTC_DEBUG=1) they would leave a bare exit 1.
 if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
-    debug_log "Error: claude command not found in PATH"
+    echo "Error: claude command not found in PATH" >&2
     exit 1
 fi
 
@@ -1747,8 +1753,7 @@ if [[ "${CLAUDE_HEADLESS_VALUE[*]}" != "" ]]; then
         if touch "${NOHUP_LOG_CANDIDATE}" 2>/dev/null; then
             NOHUP_LOG_FILE="${NOHUP_LOG_CANDIDATE}"
         else
-            # echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}" >&2
-            debug_log "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}"
+            echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}" >&2
             exit 1
         fi
     fi
