@@ -1412,6 +1412,68 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
+    # Parser regressions found on juniper-ml#2396: each of these passed through the per-flag parse functions
+    # silently wrong while every test above it stayed green or failed for an unrelated reason.
+
+    def _launch_and_get_args(self, args: list[str]) -> list[str]:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(args, cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            return self._extract_args(invocations[-1])
+
+    def test_every_effort_alias_is_forwarded(self) -> None:
+        """``-e`` / ``--effort-type`` / ``--effort-level`` were matched against ``--effort`` alone and dropped."""
+        for effort_flag in ("-e", "--effort", "--effort-type", "--effort-level"):
+            with self.subTest(effort_flag=effort_flag):
+                args = self._launch_and_get_args(["--resume", VALID_UUID, effort_flag, "high", "--prompt", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "high", "hello"])
+
+    def test_prompt_does_not_swallow_the_flags_after_it(self) -> None:
+        """The prompt parser once received the remaining input joined into one string and took all of it."""
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--prompt", "hello", "--model", "opus", "--print"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--model", "opus", "--print", "hello"])
+
+    def test_worktree_name_is_forwarded_and_a_following_flag_is_not_consumed(self) -> None:
+        """A named worktree reached an undefined ``validate_worktree``; an unnamed one ate the next flag."""
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--worktree", "feature-tree", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "feature-tree", "hello"])
+
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--worktree", "--effort", "high", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "--effort", "high", "hello"])
+
+    def test_resume_true_resumes_the_earlier_session_id_or_lets_claude_pick(self) -> None:
+        """``--resume 0`` (boolean true) resumes the session id given before it, else passes a bare ``--resume``."""
+        args = self._launch_and_get_args(["--id", VALID_UUID, "--resume", "0", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "hello"])
+
+        args = self._launch_and_get_args(["--resume", "0", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", "hello"])
+
+    def test_model_boolean_values_omit_or_default_the_model(self) -> None:
+        """``--model 1`` (false) omits the model; ``--model 0`` (true) sends the script's default model."""
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--model", "1", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "hello"])
+
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--model", "0", "--prompt", "hello"])
+        self.assertEqual(args[2], "--model")
+        self.assertIn(args[3], {"fable", "opus", "sonnet", "haiku"})
+
+    def test_prompt_file_that_never_resolves_fails_without_invoking_claude(self) -> None:
+        """A ``--file`` whose directory never arrives must not launch claude without the requested prompt."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(["--resume", VALID_UUID, "--file", "missing.md"], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("invalid Prompt File", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
 
 class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
     """Runtime tests for default interactive launcher argument behavior."""
