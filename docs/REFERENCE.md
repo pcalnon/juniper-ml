@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.73
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -3553,7 +3553,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`: `load_suite` plus oversize-stall / wall-pin / timeout-ordering, the last against each cell's worst-case driver budget since juniper-ml#2210 ([§ Suite timeout budget](#suite-timeout-budget)). Operator surface: [P4 Campaign Suites](#p4-campaign-suites).
 - `tests/test_run_suite.py` -- Behavioral suite-driver coverage, including P2 item 1.4 (`GateInputsInAggregateTest` / `ComparisonReportingTest`): `aggregate.csv` must carry both gate inputs beside `wall_seconds`; `REPORT.md` must say `wall_seconds` is DE-RATIFIED and print work-invariant / single-workload; `--compare-baseline` is reporting-only (missing tag and FAIL verdict still exit 0). `PerRunTimeoutBudgetTest` (juniper-ml#2210): a `per_run_timeout_seconds` at or below a cell's worst-case driver budget exits 2 before any `--up`, naming the largest cell and its terms; `ExecuteCellTimeoutTest` drives the subprocess kill itself (a `timed_out` row with no `run_dir`, phases or metrics, and the stack still torn down). Operator surface: [Suite Report Gate Inputs](#suite-report-gate-inputs).
   W0.3 / W0.4 (`DegradedSuiteTest` / `OutcomeLineTest` / `HeadlineMetricsTest`): a `degraded` cell is counted on its own in the summary line, listed under `## Degraded cells`, printed `degraded (crossval failed: …)`, re-run by `--resume` and keeps the exit at `1`; `_headline_metrics` surfaces `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` on the plan's four fixtures (audited `crossval: null`, successful, `0.0`, `-18081.0`).
-  APD-ML-002 (`CascorHeadlineMetricsTest` / `RowMetricsTest` / `ReaggregateTest`, fixtures from the real `build_stats(kind="cascor")`): exactly `train_accuracy` / `val_accuracy` from `cascor.final` (`0.0` kept; `bool` / `None` / strings and the top-level dead names yield nothing; `eval_scalars` unmapped); a cascor `aggregate.csv` / REPORT gains both columns; `aggregate` re-reads `stats.json` and falls back to the recorded `metrics` only for a gone run dir; `--reaggregate` adds the columns to a pre-fix cascor suite with every launch / materialise / append seam patched to raise, leaves `registry.jsonl` / `suite_manifest.json` / `index.jsonl` byte-identical, refuses the execution flags and a bad manifest (exit 2), and `--suite` is still required otherwise.
+  APD-ML-002 (`CascorHeadlineMetricsTest` / `RowMetricsTest` / `ReaggregateTest`, fixtures from the real `build_stats(kind="cascor")`): exactly `train_accuracy` / `val_accuracy` from `cascor.final` (`0.0` kept; `bool` / `None` / strings and the top-level dead names yield nothing; `eval_scalars` unmapped); a cascor `aggregate.csv` / REPORT gains both columns; `aggregate` re-reads a JSON-object `stats.json` (an object with no headline, including `{}`, wins over recorded `metrics`) and falls back to the recorded `metrics` when the file is missing, unreadable, invalid, or not an object ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file)); `--reaggregate` adds the columns to a pre-fix cascor suite with every launch / materialise / append seam patched to raise, leaves `registry.jsonl` / `suite_manifest.json` / `index.jsonl` byte-identical, refuses the execution flags and a bad manifest (exit 2), and `--suite` is still required otherwise.
   juniper-ml#2064 (`CascorHeldOutColumnsTest`, real `/v1/metrics` bodies from `tests/cascor_eval_fixtures.py`): the five `test_*` columns come from the labelled final-evaluation block only when it scored `test` (`test_accuracy` too, from juniper-cascor#731; without it the other four); a `validation` block, a null or missing final block, disabled eval metrics and the in-loop values fill none; an undefined value or a `bool` is no column and NaN is kept, so a band fails it; a `juniper-experiment-stats/1` stats.json re-derives the block from its `metrics_final.json` (its in-loop `eval_scalars` appear nowhere), a labelled one is never overruled by it, and `--reaggregate` gives a `/1` suite the columns while every run file stays byte-identical.
   W1.5 (`TestDatasetBudgetReachesDriverAndService`, read back from a stub launcher's own environment): `execution.dataset_create_timeout_seconds` reaches the driver as `--dataset-create-timeout-seconds` and a recurrence `--up` as `JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS`, and the registry row as `service_env`; a cell's own `outputs` key reaches `--up` while the driver reads it from the YAML; the suite key wins; with neither, nothing is exported and an operator's own export passes through; a cascor suite gets the flag and no recurrence env; bad values refuse the suite before any launch; `_seconds_text` produces the launcher's `data_timeout_re` form, read from the script.
 - `tests/test_experiment_suite_yamls.py` -- Drift gate (R-6) over the shipped suites in `util/experiments/suites/**`, which no test loaded before it: every suite must pass `run_suite.load_suite` (catching the unknown-`execution:`-key / `stall_second` typo class that otherwise surfaces hours into a GPU campaign), and any oversize `app: cascor` suite must declare an `execution.stall_seconds` above the driver's `DEFAULT_STALL_SECONDS` (read from the driver source, not hardcoded).
@@ -4051,7 +4051,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - A suite could always reach the budget through a dotted `outputs.max_wall_seconds` override (`suites/p4/e-i-cascor-cap-ceiling.yaml:71` does exactly that), but before this key, an un-overridden cell silently inherited `base_config`'s value — 3600 s for `spiral-baseline` — with no signal. Both mechanisms are accepted by the R-6 gate. Tests: `tests/test_run_suite.py`.
   - `degraded` (W0.3) is in `TERMINAL_OUTCOMES` but never a success: the summary line counts it on its own, `REPORT.md` lists it under `## Degraded cells`, the console prints `degraded (crossval failed: …)` from the manifest's `phases` record, `--resume` re-runs it and the exit stays `1`.
   - `_headline_metrics` (W0.4) reads `final_metrics.r2` → `train_r2`, `crossval.eval_aggregate.r2` → `cv_r2`, `crossval.eval_std.r2` → `cv_r2_std` and `dataset_descriptor.n_windows` → `n_windows` from `stats["recurrence"]`; a null `crossval` writes no `cv_*` value. Since 2026-10-26 (APD-ML-002) it reads `final.train_accuracy` → `train_accuracy` and `final.val_accuracy` → `val_accuracy` (selected-on) from `stats["cascor"]`, and `final_accuracy` is refused. Since juniper-ml#2064 it reads `test_accuracy` / `test_f1` / `test_precision` / `test_recall` / `test_roc_auc` from the labelled final-evaluation block `cascor.eval_scalars`, only when its `split` is `test` (`CASCOR_TEST_COLUMNS`); a `juniper-experiment-stats/1` stats.json re-derives that block from the run's `metrics_final.json`.
-  - `--reaggregate SUITE_DIR` (APD-ML-002) re-renders `aggregate.csv` + `REPORT.md` from `suite_manifest.json`, `registry.jsonl` and each run's `stats.json`, launching nothing; `aggregate` re-reads every headline column from the run dir. A NaN or infinite value fails any acceptance band. [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
+  - `--reaggregate SUITE_DIR` (APD-ML-002) re-renders `aggregate.csv` + `REPORT.md` from `suite_manifest.json`, `registry.jsonl` and each run's `stats.json`, launching nothing; `aggregate` re-reads every headline column from a JSON-object `stats.json` and falls back to recorded `metrics` when that read is not an object ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file)). A NaN or infinite value fails any acceptance band. [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
   - **`include` does not inherit `matrix`.** Empty matrix still yields one cell per `base_config`. P4 catalog + the cap-128 n=2 trap: [P4 Campaign Suites](#p4-campaign-suites).
 - `util/experiments/read_run_metrics.py` -- Canonical reader for the cascor perf-lane gate inputs (P2 item 0.4). Reads the last `metrics_series.csv` step-duration row (`step_count` / `step_sum`); `summarise().work_invariant` is true iff every cell shares one count.
   - `timings.drive` and `aggregate.csv` `wall_seconds` are de-ratified. `--sweep` is docstring-only, not a flag.
@@ -5907,7 +5907,7 @@ Design of record: [`notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN
 | `REPORT.md` **Gate inputs** | States `wall_seconds` is DE-RATIFIED, then two suite-level verdicts (computed independently, not via `summarise()`). |
 | `REPORT.md` **Baseline comparison** | Only when `--compare-baseline TAG` is passed. The text is `compare_baseline.render(...)`. |
 | Recurrence headline columns (W0.4) | `train_r2`, `cv_r2`, `cv_r2_std`, `n_windows` in both files, read from `stats.json`'s nested `recurrence` block. A cell whose crossval failed or was disabled leaves the `cv_*` cells **empty**, never `0`. |
-| Cascor headline columns (APD-ML-002, 2026-10-26) | `train_accuracy`, `val_accuracy` in both files, read from `stats.json`'s `cascor.final` block; `val_accuracy` is selected-on. Every headline column is re-read from the cell's `stats.json` at each aggregation, so a suite aggregated before a column existed gains it with `run_suite.py --reaggregate SUITE_DIR`, which launches nothing. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). |
+| Cascor headline columns (APD-ML-002, 2026-10-26) | `train_accuracy`, `val_accuracy` in both files, read from `stats.json`'s `cascor.final` block; `val_accuracy` is selected-on. Every headline column is re-read from the cell's `stats.json` when that file is a JSON object, so a suite aggregated before a column existed gains it with `run_suite.py --reaggregate SUITE_DIR`, which launches nothing. An object with no headline does not fall back to recorded `metrics` ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file)). See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). |
 | Cascor held-out columns (juniper-ml#2064, 2026-10-27) | `test_accuracy`, `test_f1`, `test_precision`, `test_recall`, `test_roc_auc` in both files, from the labelled final-evaluation block `cascor.eval_scalars`, and only when its `split` is `test`: a cell whose final evaluation scored validation, or that has none, leaves them **empty**. A `juniper-experiment-stats/1` stats.json re-derives the block from the run's `metrics_final.json`, so `--reaggregate` adds the columns to an older suite without rewriting a run file. See [Held-out `test_*` columns](#held-out-test_-columns-juniper-ml2064). |
 | `REPORT.md` summary line + **Degraded cells** (W0.3) | `Cells: N total, X succeeded, Y degraded, Z failed/other, W not run.` A degraded cell is never counted as succeeded; each one is listed with the phase it lost. |
 
@@ -6097,6 +6097,7 @@ Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor par
 | Cell printed `degraded (crossval failed: …)`, suite exit `1` | Train succeeded but an enabled phase did not (W0.3). Read the cell's `phases` in `registry.jsonl` / `manifest.json`. A crossval `422` naming `X_full` means the recurrence env serves a model without `derive_full_split` — F-E1 of [the equities audit plan](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md). |
 | `--only` one cell, exit `1`, cell succeeded | Aggregate scores the full expansion; unselected cells are not-run. |
 | A cascor `aggregate.csv` with no accuracy column | Aggregated before 2026-10-26 (APD-ML-002). `run_suite.py --reaggregate SUITE_DIR` re-renders it and launches nothing; do not `--resume` for this, which re-runs incomplete cells. |
+| `aggregate.csv` blank while `registry.jsonl` `metrics` are set | `stats.json` parsed as a JSON object and that object has no headline (`{}` and a schema-only object both do this). A missing, invalid, or non-object file would have printed the recorded metrics. [An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file). |
 | `--dry-run` still listed cells you `--only`'d out | Dry-run prints the full product. |
 | Bridged vs unbridged PF-1 hashes differ | Do not put the bridge in the suite YAML. Use `JUNIPER_SUITE_GRAFANA_BRIDGE=1`. |
 | Worktree ran worktree cascor against primary YAML | Set `JUNIPER_EXP_PROJECT_DIR` — the override wins over a resolving literal. |
@@ -6154,7 +6155,10 @@ A crossval `422` whose error names `X_full` is F-E1 of the plan: the env serves 
 
 ### Headline metrics (W0.4)
 
-`_headline_metrics` reads `artifacts/results/stats.json` and puts numeric columns on the registry row (`metrics`) when the cell runs; `aggregate` re-reads the same file for both `aggregate.csv` and the `REPORT.md` cell table, and uses the recorded `metrics` only when the run dir is gone. The recurrence paths are inside `stats["recurrence"]`, the block `stats_summary.build_stats` writes from the train response and the crossval payload:
+`_headline_metrics` reads `artifacts/results/stats.json` and puts numeric columns on the registry row (`metrics`) when the cell runs.
+`aggregate` re-reads the same file for both `aggregate.csv` and the `REPORT.md` cell table.
+It uses the recorded `metrics` when that read is not a JSON object, and the object's own headline when it is, including an object with no headline keys ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file)).
+The recurrence paths are inside `stats["recurrence"]`, the block `stats_summary.build_stats` writes from the train response and the crossval payload:
 
 | Column | Path under `stats.recurrence` |
 |--------|-------------------------------|
@@ -6165,7 +6169,10 @@ A crossval `422` whose error names `X_full` is F-E1 of the plan: the env serves 
 
 `dataset_descriptor` is the **train** response's `dataset` object — the same `n_windows` that `read_run_metrics._recurrence_fields` puts on the gate row and that `REPORT.md` prints on the recurrence **reported instead** line. It is not `stats.dataset.shapes.n_windows`, which is `meta.n_samples` over every partition: on the audited `equities_seq` AAPL cell the two were 1,346 (the train partition) and 1,698 (the `full` view the crossval ran on).
 
-A null or missing `crossval` writes **no** `cv_*` key, so the CSV cell is empty, not `0`. The test is `isinstance(value, (int, float))` with `bool` excluded, so `0.0` and `-18081.0` both reach the report; `None` and strings are dropped, and a missing, unreadable or non-object `stats.json` yields no columns at all.
+A null or missing `crossval` writes **no** `cv_*` key, so the CSV cell is empty, not `0`.
+The test is `isinstance(value, (int, float))` with `bool` excluded, so `0.0` and `-18081.0` both reach the report; `None` and strings are dropped.
+On the registry row written when the cell runs, a missing, unreadable, or non-object `stats.json` yields no columns: `_headline_metrics` returns `{}`.
+`aggregate` follows the other rule in [An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file).
 
 W0.4 fixed the recurrence half of register row `APD-ML-002` in [`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`](../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md); the cascor half is below.
 
@@ -6190,7 +6197,9 @@ The cascor train / val half of register row `APD-ML-002` was fixed on 2026-10-26
 - **`final_accuracy` is gone.** It existed nowhere; a band naming it is refused at load (exit `2`), with that reason.
 - **NaN and ±inf fail any band**, and the columns print them as `nan` / `inf` (ruling 4).
 
-**Backfill.** `aggregate` re-reads every headline column from each cell's `stats.json` while the run dir is on disk (`_row_metrics`), the rule `_gate_metrics` already followed for `step_count`, so a suite aggregated before a column existed gains it without re-running anything:
+**Backfill.** `aggregate` re-reads every headline column from each cell's `stats.json` when that file is a JSON object (`_row_metrics`), the rule `_gate_metrics` already followed for `step_count`, so a suite aggregated before a column existed gains it without re-running anything.
+A readable object with no headline leaves the cells empty.
+A missing, unreadable, invalid, or non-object file prints the recorded `metrics` instead ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file)):
 
 ```bash
 python util/experiments/run_suite.py --reaggregate "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/suites/<SUITE_ID>"
@@ -6201,6 +6210,34 @@ python util/experiments/run_suite.py --reaggregate "${JUNIPER_EXP_RUN_ROOT:-$HOM
 - Outcomes and band results are the ones recorded when each cell ran. It re-renders; it does not re-judge.
 - `--compare-baseline TAG` is honoured. `--suite`, `--dry-run`, `--resume`, `--only` and `--shared-equities-cache` are refused (exit `2`), as is a dir without a usable `suite_manifest.json`.
 - It is not `--resume`, which re-runs every incomplete cell: 29 of the corpus's 116 cascor suites have one.
+
+#### An empty stats.json is not a missing file
+
+`aggregate` and `--reaggregate` print `_row_metrics`. `_read_stats` chooses the source. It returns the parsed value only when `artifacts/results/stats.json` exists, `json.loads` succeeds, and the value is a JSON object. Every other outcome is `None`: the file is absent, the run dir is gone, the text is not JSON (a lone `{`), or the value is JSON and not an object (`[]`, `[1]`, `null`, `0`, `"stats"`, `true`).
+
+| What `_read_stats` returns | What `aggregate` prints |
+|----------------------------|-------------------------|
+| a dict, including `{}` and an object whose headline paths are absent | that object's headline. The registry row's `metrics` are not consulted. No headline keys means empty cells. |
+| `None` | the row's `metrics` when that value is a dict, otherwise `{}`. |
+
+`_headline_metrics` writes `metrics` when the cell runs. It never reads the registry.
+A `None` read becomes `{}` on that new row, and a readable object is reduced to its headline, which is `{}` when no headline key is present.
+`_row_metrics` returns that same headline for a readable object.
+It returns the registry's `metrics` only when the read is `None` and that value is a dict.
+A report can therefore show numbers the current file does not contain, and it can show an empty headline beside a registry row that still holds numbers.
+
+`{}` is falsy in Python. `[1]`, `"stats"`, and `true` are truthy. A `stats or None` selection treats a readable empty object as missing, and it passes a truthy non-object into `_stats_headline`, which calls `.get` on it. The implementation branches on `isinstance(stats, dict)` in `_read_stats`.
+
+A readable object wins when its only key is `schema`. `{"schema": "juniper-experiment-stats/1"}` beside a registry `metrics` of `{"val_accuracy": 0.5}` prints an empty headline. Deleting that file, or replacing it with `[]` or `null`, prints `0.5`.
+
+Pins in `tests/test_run_suite.py`, class `RowMetricsTest`: `test_a_readable_stats_file_wins_over_the_recorded_metrics`, `test_a_readable_file_with_no_headline_is_empty_even_if_the_row_recorded_some` (the schema-only object), `test_a_pruned_or_unreadable_run_falls_back_to_the_recorded_metrics` (missing file, `{`, gone directory), and `test_no_run_dir_and_a_non_mapping_record_are_empty`.
+
+```bash
+jq -r 'type' "$RUN_DIR/artifacts/results/stats.json"
+jq -c '.metrics' "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/suites/<SUITE_ID>/registry.jsonl"
+```
+
+`object` with no headline is an empty report. `array`, `null`, `number`, `string`, or `boolean` is the missing-file case, and the report used the registry's `metrics`.
 
 ```bash
 jq '{train_accuracy: .cascor.final.train_accuracy, val_accuracy: .cascor.final.val_accuracy}' "$RUN_DIR/artifacts/results/stats.json"
@@ -6246,6 +6283,7 @@ jq '.cascor.eval_scalars | {split, n_samples, held_out, absent, accuracy, f1, ro
 | Plot skipped / matplotlib missing, outcome still `succeeded`, exit 1 | An acceptance failure that is not a phase. Not `degraded`. |
 | `make_baseline` refuses a degraded recurrence cell | Expected (`outcome != succeeded`); recurrence is not countable anyway. |
 | Cascor cell, headline accuracy columns empty | The suite was aggregated before 2026-10-26: re-render it with `--reaggregate SUITE_DIR` (see above). A cell whose run dir is gone keeps its recorded, empty `metrics`. |
+| `aggregate.csv` blank while the registry `metrics` are set | `stats.json` is a JSON object with no headline, including `{}`. A missing, invalid, or non-object file prints the recorded metrics. [An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file). |
 | A `test_*` band reads `absent` and fails the cell | The cell has no final evaluation of the test split: no test split was loaded (a `validation` block), there is no final evaluation, or, for `test_accuracy` alone, the cascor service predates juniper-cascor#731. Read `split` / `absent` in its `stats.json` `cascor.eval_scalars`. Use `mode: report` where that is expected. |
 | Cascor `test_*` columns empty on an older suite | `--reaggregate SUITE_DIR` re-derives them from each run's `metrics_final.json`. They stay empty where the final block scored validation or does not exist. |
 | A `final_accuracy` band refuses the suite, exit `2` | Removed 2026-10-26: no writer ever produced it. `val_accuracy` exists, and is selected-on. |
@@ -8448,6 +8486,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.73  | 2026-11-04 | An empty `stats.json` is a readable object: `aggregate` keeps its empty headline and does not substitute the registry's recorded `metrics`. A missing, unreadable, invalid, or non-object file does. Skipped 0.6.64–0.6.72 (in-flight; #2428 holds 0.6.72). |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -8964,6 +9003,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.73
 **Maintainer:** Paul Calnon
