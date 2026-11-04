@@ -2,7 +2,7 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.47
+**Version:** 0.3.48
 **Status:** Active
 **Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
