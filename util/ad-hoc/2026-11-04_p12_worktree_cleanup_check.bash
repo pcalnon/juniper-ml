@@ -17,7 +17,8 @@
 # For each target it prints the branch, the uncommitted files (tmp/ is gitignored and
 # already archived), the commits not on origin/main, and the branch's PR state.
 # Squash merges leave origin/main..HEAD non-empty even after the PR merged, so a tree
-# is REMOVABLE when it is clean AND (it has no unique commits OR its PR is MERGED).
+# is REMOVABLE when it is clean AND (it has no unique commits OR a PR on its branch is
+# MERGED and none is still OPEN). A git or gh read that fails keeps the tree (fail closed).
 #
 # Usage
 # -----
@@ -58,19 +59,34 @@ for entry in "${TARGETS[@]}"; do
         continue
     fi
     git -C "$path" fetch -q origin main || echo "   (fetch failed; origin/main may be stale)"
-    branch=$(git -C "$path" rev-parse --abbrev-ref HEAD)
-    dirty=$(git -C "$path" status --porcelain)
-    unique=$(git -C "$path" log --oneline origin/main..HEAD)
-    pr=$(gh pr list --repo "pcalnon/$repo" --head "$branch" --state all --json number,state --jq 'map("#\(.number) \(.state)") | join(", ")' 2>/dev/null)
+    if ! branch=$(git -C "$path" rev-parse --abbrev-ref HEAD); then
+        echo "   KEEP: cannot read the branch"
+        continue
+    fi
+    if ! dirty=$(git -C "$path" status --porcelain); then
+        echo "   KEEP: git status failed"
+        continue
+    fi
+    if ! unique=$(git -C "$path" log --oneline origin/main..HEAD); then
+        echo "   KEEP: cannot resolve origin/main..HEAD"
+        continue
+    fi
+    pr_ok=1
+    pr=$(gh pr list --repo "pcalnon/$repo" --head "$branch" --state all --json number,state --jq 'map("#\(.number) \(.state)") | join(", ")' 2>/dev/null) || pr_ok=0
     echo "   branch:  $branch"
-    echo "   PR(s):   ${pr:-none}"
+    echo "   PR(s):   ${pr:-none}$( (( pr_ok )) || echo ' (gh failed)')"
     echo "   dirty:   $([[ -z "$dirty" ]] && echo no || echo YES)"
     [[ -n "$dirty" ]] && sed 's/^/            /' <<<"$dirty"
     echo "   unique commits vs origin/main: $(grep -c . <<<"$unique")"
     [[ -n "$unique" ]] && sed 's/^/            /' <<<"$unique"
 
+    # Merged only when gh answered, a PR on the branch is MERGED and none is still OPEN.
+    merged=0
+    if (( pr_ok )) && grep -q "MERGED" <<<"$pr" && ! grep -q "OPEN" <<<"$pr"; then
+        merged=1
+    fi
     removable=0
-    if [[ -z "$dirty" ]] && { [[ -z "$unique" ]] || grep -q "MERGED" <<<"$pr"; }; then
+    if [[ -z "$dirty" ]] && { [[ -z "$unique" ]] || (( merged )); }; then
         removable=1
     fi
     if (( removable )); then
