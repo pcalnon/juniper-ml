@@ -1729,7 +1729,7 @@ jobs:
           set -uo pipefail
           set +e # this step handles the screen exit codes manually
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - Per-PR Sequence-Safety Screens         ║"
+          echo "║       juniper-ml - Per-PR Sequence-Safety Screens          ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           if [ "$EVENT_NAME" = "pull_request" ]; then base="$PR_BASE_SHA"; else base="$MG_BASE_SHA"; fi
           if [ -z "$base" ]; then
