@@ -184,7 +184,7 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` cannot take it as a value.
 `--remote-control` never takes a value. On wake, `--version` / `-V` / `--claude-version` print Claude Code's version;
 `-v` / `--script-version` print `wake_the_claude.bash 1.0.0`. `-u` prints the usage text and exits 1. `./claudey -v` and
-`./claudey --version` print `0.1.1` and return before calling wake. Both scripts treat `0` as true and `1` as false.
+`./claudey --version` print `0.1.1` and return before calling wake. Both scripts treat `0` as true and `1` as false. On wake, the word after `--prompt` / `-p` / `--prompt-string` is the prompt even when it starts with `--`: `0` or a missing word sends `Hello World, Claude!`, `1` sends none, and an empty word sends the default without ending the parse. `./claudey --prompt` still exits 1 when the word is missing; `./claudey --prompt --print` is a prompt, and the launch stays interactive.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 
@@ -1149,7 +1149,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- `degraded` is not a success (exit 1); `train_r2` / `cv_r2` from nested `stats.recurrence`; cascor accuracy columns empty
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
-- [Local Claude launcher prompt and defaults](REFERENCE.md#local-claude-launcher-prompt-and-defaults) -- `./claudey` worktree and remote control, prompt after `--`, version flags, `-u` exits 1
+- [Local Claude launcher prompt and defaults](REFERENCE.md#local-claude-launcher-prompt-and-defaults) -- `./claudey` worktree and remote control, prompt after `--` (a `--prompt` value starting with `--` is text), version flags, `-u` exits 1
 - [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence, bare `open()` blocks merge
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy gate is authority for `main.py` (count 58); v1 is the name-matching negative example
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments; PF-1 matched epoch pair + matrix-axis repeats; PF-4/PF-8 are not driver suites

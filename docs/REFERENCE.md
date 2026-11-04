@@ -8446,10 +8446,12 @@ Shipped defaults are the uncommented `export DEFAULT_*` lines in `scripts/claude
 | `--no-worktree`, or `CLAUDE_WORKTREE=1` | Omits `--worktree`. `CLAUDE_WORKTREE=0` is the default (on). |
 | `--no-remote-control`, or `CLAUDE_REMOTE_CONTROL=1` | Omits `--remote-control`. `--remote-control` / `-rc` / `CLAUDE_REMOTE_CONTROL=0` ask for it, and none of them take a session name. |
 | `-m` / `--model`, `-e` / `--effort`, `--id` / `-s` / `-i`, `-p` / `--prompt` | Each requires a value. With nothing after the flag, the script prints `Missing value for <flag>` and exits 1. A missing value used to spin: `shift 2` on one remaining argument never moved the loop. |
+| `./claudey --prompt --print` | The following word is the prompt text, even when it starts with `--`. `--print` here is text, so the launch stays interactive. `./claudey --no-remote-control --prompt --remote-control` leaves remote control off. |
 | A bare word (`./claudey sonnet`) | `Unknown argument: sonnet` on stdout, exit 1. Model and effort are flags. `wake_the_claude.bash` is not called. |
 | `./claudey --remote-control laptop-session` | Same unknown-argument exit. claudey does not forward a name, and wake would refuse that word too. |
 
 `DEBUG=TRUE` is assigned in the script (`export DEBUG="${TRUE}"`), so every `./claudey` launch adds `--dangerously-skip-permissions`. An environment `DEBUG=1` does not clear that assignment. With the script's `DEBUG` flipped to `FALSE`, `CLAUDE_SKIP_PERMISSIONS=0` adds the flag and `CLAUDE_SKIP_PERMISSIONS=1` leaves it off.
+The owner kept that skip-permissions flag and the default `--remote-control` together (2026-11-04).
 
 `./claudey -v` and `./claudey --version` print `0.1.1` (this script's `SCRIPT_VERSION`) and return before calling wake. They do not print Claude Code's version.
 
@@ -8459,9 +8461,25 @@ The older `default_interactive_session_claude_code.bash` still passes `--id --wo
 
 The prompt is Claude Code's last argument, after `--`, and no prompt flag is forwarded. Claude Code's own `-p` is `--print`. The text comes from `--prompt` / `-p` / `--prompt-string`, or from the contents of a `--file` / `--path` file (a `--path` directory plus a `--file` name join).
 
+The word after `-p`, `--prompt`, or `--prompt-string` is that prompt, including a word that starts with `-` or `--`. Wake takes the word before any later flag is read, then sends it after `--`. `0` and a missing word both send the default prompt `Hello World, Claude!`. `1` sends no prompt. An empty word sends the default and the parse continues, so `--prompt "" --worktree` still passes `--worktree`.
+
+Any other word is the prompt text. `--prompt --print` stays interactive, and `--prompt --dangerously-skip-permissions` leaves permissions as the rest of the command set them. A prompt whose text is YAML front matter (a leading `---`) is that text, after `--`.
+
+| Word after `-p` / `--prompt` / `--prompt-string` | What `claude` receives |
+|--------------------------------------------------|------------------------|
+| Nothing left on the command line | `--` and `Hello World, Claude!` |
+| `0` | `--` and `Hello World, Claude!` |
+| `1` | no prompt argument |
+| `""` | `--` and `Hello World, Claude!`, and later flags still apply |
+| Any other word (`--print`, `--remote-control`, `---`) | `--` and that word, as one argument |
+
+`./claudey --prompt` still requires a word: a missing word prints `Missing value for --prompt` and exits 1. When the word is present, claudey passes it through unchanged, so `./claudey --prompt --print` is the same text prompt. `./claudey --prompt 1` omits the prompt (`1` is false). `./claudey --prompt 0` forwards `0`, and wake sends the default text.
+
 Claude Code parses its command line with commander. An option with an optional value takes the next word: `--worktree [name]`, `--remote-control [name]`, and `--resume [value]`.
 
-Without the `--`, `wake_the_claude.bash --worktree --prompt hello` became `claude --worktree hello`: a worktree named `hello`, and no prompt. A prompt that starts with `-`, including a prompt file whose YAML front matter starts `---`, is an unknown option unless it follows `--`. That refusal was measured on Claude Code 2.1.318: `claude '---name: x' --bogus-zzz` reports `error: unknown option '---name: x'`.
+Without the `--`, `wake_the_claude.bash --worktree --prompt hello` became `claude --worktree hello`: a worktree named `hello`, and no prompt. Wake supplies that `--` before the prompt, including when the prompt text starts with `-`.
+
+Claude Code treats a prompt that starts with `-`, including a prompt file whose YAML front matter starts `---`, as an unknown option when that `--` is absent. That refusal was measured on Claude Code 2.1.318: `claude '---name: x' --bogus-zzz` reports `error: unknown option '---name: x'`.
 
 ```bash
 bash scripts/wake_the_claude.bash --prompt hello --worktree --remote-control
@@ -8504,7 +8522,7 @@ A `--file` or `--path` that names an empty, whitespace-only, or unreadable file 
 
 Interactive runs exec `claude` in the foreground. Headless runs `nohup` and returns while that process stays up.
 
-Gates: `python3 -m unittest -v tests/test_wake_the_claude.py` and `python3 -m unittest -v tests/test_claude_interactive.py`. The cheatsheet table is the short form: [Claude Code Session Script](DEVELOPER_CHEATSHEET_JUNIPER-ML.md#claude-code-session-script).
+Gates: `python3 -m unittest -v tests/test_wake_the_claude.py` and `python3 -m unittest -v tests/test_claude_interactive.py`. Prompt-word coverage: `test_a_prompt_value_starting_with_dashes_is_the_prompt_not_a_flag`, `test_prompt_flag_booleans_and_a_missing_or_empty_value`, and `ClaudeInteractiveEndToEndTests.test_a_prompt_that_reads_like_a_flag_does_not_undo_an_opt_out`. The cheatsheet table is the short form: [Claude Code Session Script](DEVELOPER_CHEATSHEET_JUNIPER-ML.md#claude-code-session-script).
 
 ---
 
@@ -8585,7 +8603,7 @@ Gates: `python3 -m unittest -v tests/test_wake_the_claude.py` and `python3 -m un
 | 0.4.0   | 2026-04-09 | Added service orchestration utilities, worktree cleanup tooling, and updated package pins                                                                                |
 | 0.2.0   | 2026-02-27 | Added CLAUDE.md, raised Python to >=3.12, renamed from "juniper"                                                                                                         |
 | 0.1.0   | 2026-02-22 | Initial release with TestPyPI + PyPI publishing                                                                                                                          |
-| 0.6.76  | 2026-11-04 | Local Claude launcher (juniper-ml#2438): `./claudey` starts a bare `--worktree` and `--remote-control`; the prompt is `claude`'s last argument after `--`; `--remote-control` takes no name; `--version` / `-V` / `--claude-version` are Claude Code's version and `-v` / `--script-version` are the script; `-u` exits 1. Skipped 0.6.64–0.6.75 (in-flight docs PRs). |
+| 0.6.76  | 2026-11-04 | Local Claude launcher (juniper-ml#2438): `./claudey` starts a bare `--worktree` and `--remote-control`; the prompt is `claude`'s last argument after `--`, and the word after a prompt flag is that prompt even when it starts with `--`; `--remote-control` takes no name; `--version` / `-V` / `--claude-version` are Claude Code's version and `-v` / `--script-version` are the script; `-u` exits 1. Skipped 0.6.64–0.6.75 (in-flight docs PRs). |
 
 ---
 
