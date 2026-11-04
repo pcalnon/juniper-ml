@@ -1461,6 +1461,77 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         self.assertEqual(args[2], "--model")
         self.assertIn(args[3], {"fable", "opus", "sonnet", "haiku"})
 
+    def test_effort_boolean_values_omit_or_default_the_effort(self) -> None:
+        """``--effort 1`` (false) omits effort; ``--effort 0`` (true) sends the script default, ``auto``."""
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--effort", "1", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "hello"])
+
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--effort", "0", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "auto", "hello"])
+
+    def test_missing_effort_value_fails_without_invoking_claude(self) -> None:
+        """A bare ``--effort``, or one whose next token is a flag, must not launch claude."""
+        cases = (
+            ["--resume", VALID_UUID, "--effort"],
+            ["--resume", VALID_UUID, "--effort", "--prompt", "hello"],
+        )
+        for script_args in cases:
+            with self.subTest(script_args=script_args):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    invocations_log, env = self._install_fake_claude(temp_dir)
+                    result = self._run_script(script_args, cwd=temp_dir, env=env)
+                    self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                    combined_output = result.stdout + result.stderr
+                    self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+                    invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+                    self.assertEqual(invocations, [])
+
+    def test_worktree_boolean_values_omit_or_let_claude_name(self) -> None:
+        """``--worktree 1`` drops the flag; ``--worktree 0`` is a bare ``--worktree`` and keeps the prompt."""
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--worktree", "1", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "hello"])
+
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--worktree", "0", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "hello"])
+
+    def test_remote_control_aliases_forward_canonical_flag_without_consuming_the_next(self) -> None:
+        """Every remote alias is ``--remote-control`` and leaves the prompt in place; a near-miss does not launch."""
+        for remote_flag in ("-c", "--remote", "--control", "--remote-control"):
+            with self.subTest(remote_flag=remote_flag):
+                args = self._launch_and_get_args(["--resume", VALID_UUID, remote_flag, "--prompt", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "hello"])
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--remote-controls", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertEqual((result.stdout + result.stderr).count("usage: wake_the_claude.bash"), 1)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
+    def test_permission_aliases_forward_canonical_flag_without_consuming_the_next(self) -> None:
+        """Skip-permission aliases forward the canonical flag and do not treat the prompt as a permission level."""
+        for permissions_flag in ("-s", "--skip", "--skip-permissions", "--dangerously-skip-permissions"):
+            with self.subTest(permissions_flag=permissions_flag):
+                args = self._launch_and_get_args(["--resume", VALID_UUID, permissions_flag, "--prompt", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--dangerously-skip-permissions", "hello"])
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--dangerously-skip-permission", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertEqual((result.stdout + result.stderr).count("usage: wake_the_claude.bash"), 1)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
     def test_prompt_file_that_never_resolves_fails_without_invoking_claude(self) -> None:
         """A ``--file`` whose directory never arrives must not launch claude without the requested prompt."""
         with tempfile.TemporaryDirectory() as temp_dir:
