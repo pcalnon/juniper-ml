@@ -134,6 +134,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             "CLAUDE_ID",
             "CLAUDE_WORKTREE",
             "CLAUDE_PROMPT",
+            "CLAUDE_RESUME",
             "BASH_ENV",
             "ENV",
         ):
@@ -368,6 +369,164 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
 
             args = self._extract_logged_args(args_log)
             self.assertEqual(args[args.index("--resume") + 1], SCRIPT_TRUE)
+
+    def test_boolean_flags_do_not_consume_the_following_prompt(self) -> None:
+        """Permission, resume, and remote-control flags shift once, so the prompt after them still arrives whole.
+
+        With DEBUG off, ``--dangerously-skip-permissions`` is added only when one of these flags asks for it.
+        A ``shift 2`` on any of them would swallow ``-p`` and either launch without that prompt or not launch at all.
+        """
+        prompt = 'two words "quoted" $(echo injected)'
+        cases = (
+            ("-sp", True, False, False),
+            ("--skip-permissions", True, False, False),
+            ("--dangerously-skip-permissions", True, False, False),
+            ("-r", False, True, False),
+            ("--resume", False, True, False),
+            ("-rs", False, True, False),
+            ("-rc", False, False, True),
+            ("--remote-control", False, False, True),
+            ("--remote-control-session", False, False, True),
+        )
+        for flag, expect_skip, expect_resume, expect_remote in cases:
+            with self.subTest(flag=flag), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, [flag, "-p", prompt])
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertEqual(args[args.index("--prompt") + 1], prompt)
+                self.assertEqual(args[-1], prompt)
+                self.assertLess(args.index("--effort"), args.index("--"))
+                self.assertLess(args.index("--"), args.index("--prompt"))
+                if expect_skip:
+                    skip_at = args.index("--dangerously-skip-permissions")
+                    self.assertLess(args.index("--"), skip_at)
+                    self.assertNotEqual(args[skip_at + 1], prompt)
+                else:
+                    self.assertNotIn("--dangerously-skip-permissions", args)
+                if expect_resume:
+                    self.assertEqual(args[args.index("--resume") + 1], SCRIPT_TRUE)
+                else:
+                    self.assertNotIn("--resume", args)
+                if expect_remote:
+                    remote_at = args.index("--remote-control")
+                    self.assertLess(args.index("--"), remote_at)
+                    self.assertNotEqual(args[remote_at + 1], prompt)
+                else:
+                    self.assertNotIn("--remote-control", args)
+
+    def test_boolean_false_omits_the_option_instead_of_substituting_the_default(self) -> None:
+        """``1`` is FALSE here: the option is omitted, and the shipped default is not put in its place.
+
+        ``CLAUDE_RESUME=0`` still forwards ``--resume 0``. No valued option was added, so the ``--`` separator,
+        which is inserted only in front of those, is absent.
+        """
+        flag_args = ["--model", SCRIPT_FALSE, "--effort", SCRIPT_FALSE, "--id", SCRIPT_FALSE, "--worktree", SCRIPT_FALSE, "-p", SCRIPT_FALSE]
+        env_false = {
+            "CLAUDE_MODEL": SCRIPT_FALSE,
+            "CLAUDE_EFFORT": SCRIPT_FALSE,
+            "CLAUDE_ID": SCRIPT_FALSE,
+            "CLAUDE_WORKTREE": SCRIPT_FALSE,
+            "CLAUDE_PROMPT": SCRIPT_FALSE,
+        }
+        cases = (
+            ("flags", flag_args, {}),
+            ("environment", [], env_false),
+            ("resume-env", [], {**env_false, "CLAUDE_RESUME": SCRIPT_TRUE}),
+        )
+        defaults = shipped_defaults("DEFAULT_MODEL", "DEFAULT_EFFORT", "DEFAULT_PROMPT")
+        for name, extra_args, env_extra in cases:
+            with self.subTest(source=name), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                env.update(env_extra)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertIn("__CALL__", args_log.read_text(encoding="utf-8"))
+
+                args = self._extract_logged_args(args_log)
+                for value in defaults.values():
+                    self.assertNotIn(value, args)
+                self.assertNotIn("--model", args)
+                self.assertNotIn("--effort", args)
+                self.assertNotIn("--id", args)
+                self.assertNotIn("--worktree", args)
+                self.assertNotIn("--prompt", args)
+                self.assertNotIn("--", args)
+                if name == "resume-env":
+                    self.assertEqual(args, ["--resume", SCRIPT_TRUE])
+                else:
+                    self.assertEqual(args, [])
+
+    def test_environment_values_are_one_argument_and_a_flag_overrides_only_that_setting(self) -> None:
+        """Environment values reach wake_the_claude.bash unsplit; ``-m`` replaces the model and leaves the rest."""
+        prompt = 'env "prompt" $(echo injected) *.txt'
+        for extra_args, expected_model in (([], "haiku"), (["-m", "sonnet"], "sonnet")):
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                env["CLAUDE_MODEL"] = "haiku"
+                env["CLAUDE_EFFORT"] = "low"
+                env["CLAUDE_PROMPT"] = prompt
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertEqual(args[args.index("--model") + 1], expected_model)
+                self.assertEqual(args[args.index("--effort") + 1], "low")
+                self.assertEqual(args[args.index("--prompt") + 1], prompt)
+                self.assertEqual(args[-1], prompt)
+                self.assertLess(args.index("--effort"), args.index("--"))
+                self.assertLess(args.index("--"), args.index("--prompt"))
+
+    def test_version_flag_reports_this_scripts_own_version_and_does_not_launch(self) -> None:
+        """``-v`` prints the version in this script's header, not a ``SCRIPT_VERSION`` inherited from the environment.
+
+        The assignment is unconditional, including when ``-v`` is not the first argument, and it must not start a session.
+        """
+        header = re.search(r"^# Version:\s+(\S+)\s*$", LAUNCHER_SRC.read_text(encoding="utf-8"), re.MULTILINE)
+        self.assertIsNotNone(header, msg="claude_interactive.bash's header must state its version")
+        assert header is not None
+        self.assertEqual(shipped_defaults("SCRIPT_VERSION")["SCRIPT_VERSION"], header.group(1))
+        inherited_version = "9.9.9-inherited-from-the-environment"
+        invocations = (
+            (["-v"], None),
+            (["--version"], None),
+            (["-m", "sonnet", "-v"], inherited_version),
+            (["-v"], inherited_version),
+        )
+        for extra_args, inherited in invocations:
+            with self.subTest(extra_args=extra_args, inherited=inherited), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=True)
+                env = self._base_env(args_log)
+                env.pop("SCRIPT_VERSION", None)
+                if inherited is not None:
+                    env["SCRIPT_VERSION"] = inherited
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertEqual(result.stdout, f"{header.group(1)}\n")
+                if inherited is not None:
+                    self.assertNotIn(inherited, result.stdout)
+                self.assertFalse(args_log.exists(), "wake_the_claude.bash must not be invoked")
+
+    def test_help_flags_print_usage_and_do_not_launch(self) -> None:
+        """``--help`` exits 0 with the usage text and does not start a session, including after another flag."""
+        for extra_args in (["--help"], ["-h"], ["-?"], ["-m", "sonnet", "--help"]):
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=True)
+                env = self._base_env(args_log)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertIn("Usage: wake_the_claude.bash", result.stdout)
+                self.assertNotIn("Unknown argument", result.stdout)
+                self.assertFalse(args_log.exists(), "wake_the_claude.bash must not be invoked")
 
 
 if __name__ == "__main__":
