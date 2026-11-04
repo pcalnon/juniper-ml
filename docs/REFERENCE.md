@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.68
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -6600,7 +6600,22 @@ Both blocks always carry the same keys. With no final evaluation, every `eval_sc
 | `eval_metrics.final is null: cascor scores the finished model only after a run that completes successfully with a test or validation split loaded` | a run that stopped or failed, or one with no reportable split (cascor's golden `metrics_post_train.json` is this case) |
 | `the /v1/metrics body carries no eval_metrics block` / `no /v1/metrics body was collected` | an older service, or a failed collect |
 
-`summary.md` heads the section `### Eval scalars (final evaluation: test split, n=120, held out)`, or `(final evaluation: none)` with the reason and no number under it, and follows it with `### In-loop eval scalars (validation split, n=160, NOT held out: the in-loop split)`. A metric cascor could not compute prints `undefined (<reason>)`, and one the service does not report, such as `accuracy` before juniper-cascor#731, prints `not reported`. `eval_metrics.png` draws the final evaluation's bars beside the hatched in-loop ones, each labelled with the same caption, under a subtitle naming the eval scalars. With no final evaluation the subtitle gives the reason and says the in-loop bars are not the run's eval scalars. The plot is a recorded skip only when neither block holds a number.
+`summary.md` heads the section `### Eval scalars (final evaluation: test split, n=120, held out)`, or `(final evaluation: none)` with the reason and no number under it, and follows it with `### In-loop eval scalars (validation split, n=160, NOT held out: the in-loop split)`. A metric cascor could not compute prints `undefined (<reason>)`, and one the service does not report, such as `accuracy` before juniper-cascor#731, prints `not reported`. `eval_metrics.png` draws the final evaluation's bars beside the hatched in-loop ones, each labelled with the same caption, under a subtitle naming the eval scalars. With no final evaluation the subtitle gives the reason and says the in-loop bars are not the run's eval scalars. The plot is a recorded skip only when neither block holds a number. A reported `0` stays on all three surfaces — [A zero is a measured value](#a-zero-is-a-measured-value).
+
+### A zero is a measured value
+
+`summary.md`, `eval_metrics.png`, and the suite columns keep a score of `0` or `0.0`. The summary line test is `value is not None` (`stats_summary._eval_lines`). The plot and the columns use `isinstance(value, (int, float))` and then exclude `bool`, because `bool` is a subclass of `int` (`plots_cascor.eval_metrics_series`, `run_suite._is_metric`). `_fmt` prints a float with `.6g`, so `0.0` renders as `0`. A bar label uses `.3f`, so the same zero is `0.000`.
+
+| Value in a labelled eval block | `summary.md` | `eval_metrics.png` | `aggregate.csv` / `REPORT.md` |
+|--------------------------------|--------------|--------------------|-------------------------------|
+| `0` or `0.0` | `- accuracy: 0` | a bar of height 0 | the column is kept, including a `test_*` column when `split` is `test` |
+| `False` or `True` | the words `False` or `True` | no bar (`True` is not a score of 1) | dropped |
+| `None` | `not reported`, or `undefined (<reason>)` when that name is in `undefined` | omitted from that series | dropped |
+| NaN or ±inf | `nan` or `inf` | included (they are floats) | kept, and any acceptance band fails them |
+
+`n_samples: 0` stays in the caption (`test split, n=0, held out`). A missing `n_samples` is the word `unknown`. A block whose values are only `None` or `bool` contributes no series; `0.0` does. The plot raises `ValueError` (a recorded skip) only when neither block contributes a series.
+
+`tests/test_stats_summary_eval_blocks.py` pins both plot edges: `EvalMetricsPlotTest.test_a_bool_or_a_null_is_no_bar` (`True` and an undefined accuracy are not bars) and `test_a_final_evaluation_with_every_metric_undefined_says_so` (a final block with `n_samples: 0` and every metric undefined keeps the caption `n=0` and draws only the in-loop series). Headline `0.0` is the `_is_metric` contract in [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
 
 **The boundary.** `cascor.eval_scalars` changed meaning, so the schema moved to `juniper-experiment-stats/2`. Files written as `/1` are not rewritten, and their `eval_scalars` are in-loop values. Check `schema` before comparing eval scalars across runs ([juniper-ml#2034](https://github.com/pcalnon/juniper-ml/issues/2034): provenance, not convention). `run_suite` re-derives a `/1` run's final block from its `metrics_final.json` for the `test_*` columns.
 
@@ -6629,7 +6644,7 @@ jq '.outcome.timings' "$RUN_DIR/artifacts/results/stats.json"
 jq '.recurrence.n_epochs, .dataset.shapes.n_windows' "$RUN_DIR/artifacts/results/stats.json"
 ```
 
-`theta.note` is `"explicit"` when the YAML sets `train.theta`. When it does not, the service fills θ from its `default_theta`, so the note is `"service default from service.default_theta; train.theta is unset"` (value: that default) when the YAML sets `service.default_theta`, and `"data-driven (resolved from per-window elapsed time)"` (value: null) when it sets neither. Sequence `n_windows` is input size (pinned: `test_build_stats_sequence_shapes_and_summary`).
+`theta.note` is `"explicit"` when the YAML sets `train.theta`. When it does not, the service fills θ from its `default_theta`, so the note is `"service default from service.default_theta; train.theta is unset"` (value: that default) when the YAML sets `service.default_theta`, and `"data-driven (resolved from per-window elapsed time)"` (value: null) when it sets neither. `theta_block` tests `is not None`, so `train.theta` of `0` or `0.0` is `"explicit"` and outranks `service.default_theta` (`summary.md` prints `theta: 0 (explicit)`). An unset `train.theta` with `service.default_theta: 0.0` is that service-default note and the value `0.0`. Data-driven is only the third branch. Sequence `n_windows` is input size (pinned: `test_build_stats_sequence_shapes_and_summary`).
 
 ### `scrape_confirmed` is tri-state
 
@@ -6665,6 +6680,9 @@ The driver now reports two named facts (`JUNIPER_EXP_PROMETHEUS_URL`, default `h
 | Compare `cascor.eval_scalars` across runs | Check `schema` first. A `/1` file's `eval_scalars` are the in-loop values; a `/2` file's are the final evaluation |
 | Treat `cascor.eval_scalars` as held out | Only when `held_out` is true (`split: test`). A `validation` final block is selected-on |
 | Read the in-loop block when `eval_scalars` is empty | It is a different quantity. `absent` says why there is no final evaluation |
+| Treat accuracy `0` as a missing score | `summary.md` prints `- accuracy: 0`, the plot draws a bar of height 0, and the suite column is kept. See [A zero is a measured value](#a-zero-is-a-measured-value) |
+| Read `precision: False` in `summary.md` as a score of 0 | The summary stringifies a bool. The plot and `aggregate.csv` drop every bool |
+| Read `theta: 0 (explicit)` as the service default | `train.theta` of `0` outranks `service.default_theta`. A default of `0.0` with `train.theta` unset is the service-default note |
 
 Coverage: `tests/test_run_experiment.py` (`StatsSummaryUnitTest` + e2e stats assertions for both kinds, `EvalScalarsEndToEndTest`), `tests/test_stats_summary_eval_blocks.py` (the labelled eval blocks). `util/` is not pre-commit-lint-gated; those unittests are the gate.
 
@@ -8465,6 +8483,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.68  | 2026-11-04 | A zero stays measured: `summary.md` prints `- accuracy: 0` and `theta: 0 (explicit)`; `eval_metrics.png` draws a bar of height 0 and drops `bool`; suite columns keep `0.0` and drop `bool`. `n_samples: 0` stays `n=0`. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +8983,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.68
 **Maintainer:** Paul Calnon
