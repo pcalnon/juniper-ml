@@ -366,6 +366,12 @@ jobs:
           # No network / gh / git / repo writes; dry-run is byte-identical. util/ is not
           # pre-commit-lint-gated, so this unittest is the gate.
           python3 -m unittest -v tests/test_release_train_ceremony.py
+          # tests/test_release_train_exact_caps.py: the archive base64 cap and the proposal
+          # PR-body cap at equality. An archive whose encoding equals the cap is planned;
+          # one byte over halts before a write. A body of exactly 65,536 UTF-8 bytes keeps
+          # its notes and still opens; one byte over drops the notes and is refused before
+          # any write. Far-from-the-cap cases live in the ceremony and propose suites.
+          python3 -m unittest -v tests/test_release_train_exact_caps.py
           # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
           # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
           # provenance envelope, and the test_status cold_cache/empty distinction. util/ is
