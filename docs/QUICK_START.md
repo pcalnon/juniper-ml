@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.42
+**Version:** 0.3.43
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -179,6 +179,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Release-Train Detect Summary and Slack](REFERENCE.md#release-train-detect-summary-and-slack) -- action set vs the ceremonial class, hard-fail banner
 - [AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check) -- verifies `**Last Updated**:` was bumped on PRs touching `AGENTS.md`
 - [Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) -- L2/L3 `ANTHROPIC_API_KEY` safeguards + `DEFAULT_REPOS` fan-out
+- [Local Claude Code Launcher](REFERENCE.md#local-claude-code-launcher) -- `./claudey` vs `wake_the_claude.bash`; `0` is true; shipped `DEBUG` forces `--dangerously-skip-permissions`
 - [juniper-service-core](REFERENCE.md#juniper-service-core) -- body limit, 429 headers, control-WS sanitizer, `/ws/workers` contracts
 - [Non-ASCII API keys and Sentry frame locals](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) -- a non-ASCII `X-API-Key` is a 401 (WebSocket close 4001) on `main`; published service-core 0.7.0 still 500s, and that 500 can send the configured key to Sentry in a frame local
 - [HTTP Client Base-URL Contract](REFERENCE.md#http-client-base-url-contract) -- shared REST `_normalize_url`, TLS-downgrade pitfall, WS streams still rstrip-only
@@ -203,6 +204,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.3.41
+**Last Updated:** 2026-11-04
+**Version:** 0.3.43
 **Status:** Active
