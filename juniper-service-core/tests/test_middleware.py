@@ -481,3 +481,43 @@ def test_failed_auth_throttle_prunes_expired_entries():
     for i in range(FailedAuthThrottle._CLEANUP_INTERVAL + 10):
         throttle.record_failure(f"10.0.0.{i % 255}")
     assert len(throttle._failures) <= FailedAuthThrottle._MAX_ENTRIES
+
+
+def test_failed_auth_throttle_caps_live_entries_by_dropping_the_oldest(monkeypatch):
+    """A burst of distinct failing IPs inside the window is capped; expiry does not do it.
+
+    ``test_failed_auth_throttle_prunes_expired_entries`` uses ``window_seconds=0``, so every
+    bucket is already expired and ``len <= _MAX_ENTRIES`` stays true if the hard-cap branch
+    is deleted. A source that fails once from a new address on every request keeps every
+    bucket inside ``2 * window``. Only ``_MAX_ENTRIES`` bounds that table, and it drops the
+    oldest window starts, so a source that just filled its budget stays blocked.
+
+    Cleanup runs at the start of every ``_CLEANUP_INTERVAL``-th ``record_failure``, before
+    that call is stored. One interval past a full table therefore leaves ``cap + 1`` rows:
+    the cap's survivors, plus the call that triggered the trim.
+    """
+    throttle = FailedAuthThrottle(max_failures=1, window_seconds=3600)
+    cap = FailedAuthThrottle._MAX_ENTRIES
+    interval = FailedAuthThrottle._CLEANUP_INTERVAL
+    total = cap + interval  # the call that finds the table already over the cap
+    clock = {"now": 1_700_000_000.0}
+
+    def fake_time() -> float:
+        # Distinct timestamps, all inside 2 * window, so the expiry pass deletes nothing.
+        clock["now"] += 0.5
+        return clock["now"]
+
+    monkeypatch.setattr("juniper_service_core.security.time.time", fake_time)
+    for i in range(total):
+        throttle.record_failure(f"ip{i}")
+
+    # The trim sees cap + interval - 1 live rows and keeps the newest `cap` of them.
+    n_dropped = interval - 1
+    newest = f"ip{total - 1}"
+    assert len(throttle._failures) == cap + 1
+    assert f"ip{n_dropped - 1}" not in throttle._failures
+    assert f"ip{n_dropped}" in throttle._failures
+    assert newest in throttle._failures
+    assert throttle.check(newest)[0] is True
+    assert throttle.check("ip0") == (False, 0)
+    assert "ip0" not in throttle._failures  # a miss does not reinsert the evicted source
