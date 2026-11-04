@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.79
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -1064,6 +1064,9 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | A probe gets 429 on `/v1/health` | Health/docs/metrics are exempt in service-core — check an upstream proxy or a non-exempt path. |
 | Large POST accepted despite the body limit | The mutating-method stream cap must be unconditional; a `Content-Length`-only fast path is the bypass. |
 | Control-WS reject log spans multiple lines | `_sanitize_for_log` regression — never interpolate raw Origin/command into logger format strings. |
+| `/ws/control` takes a burst, then `rate_limited` | Token bucket. Idle time does not bank more than `ws_control_rate_limit_per_sec` tokens. A denial does not spend one. [REFERENCE](REFERENCE.md#control-channel-burst-origin-match-and-cooldown-edges). |
+| `/ws/control` is HTTP 403 | Pre-accept close. The log has 1013 (disabled), 4029 (cooldown), 4001 (auth), or 4003 (origin). |
+| Control IP blocked on the 10th bad handshake | Default `>= 10` inside 60 s, then 300 s. A rejection aged exactly 60 s does not count. The block lifts at `blocked_until`. |
 | Worker WS closes 4001 / 4008 | 4001 = API-key auth enabled (send `X-API-Key`); 4008 = registration shape (string `worker_id` + dict `capabilities`). |
 | Non-ASCII `X-API-Key` is a 500 | Published `juniper-service-core` 0.7.0: `hmac.compare_digest` raises on a non-ASCII `str`, which is not an `HTTPException`. `main` compares UTF-8 bytes (`surrogatepass`, juniper-ml#2086, unreleased). Do not catch the `TypeError`; do not re-enable Sentry locals. |
 | `--batch` row `verdict=ERROR` | Soft-fail for that tip only; the other PRs in the report remain valid. `--pr` would have exited `2` instead. |
@@ -1175,6 +1178,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.79
 **Maintainer:** Paul Calnon
