@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.80
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -4690,6 +4690,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - **429 header passthrough** — `RateLimiter` raises `HTTPException` carrying `Retry-After` + `X-RateLimit-*`; `SecurityMiddleware.dispatch` must rebuild `JSONResponse(..., headers=exc.headers)`. RateLimiter unit tests alone do not exercise that catch path.
 - **Control-WS log sanitizing** — reject logs that interpolate untrusted Origin/command text; go through the module-local `_sanitize_for_log` helpers (`control_security` strips `\r`/`\n`; `control_stream` also drops other C0 controls, keeping tabs) so CRLF cannot forge multi-line control-plane records. Sanitizing changes log records only, never handshake outcomes or ack JSON.
 - **Zero rate limit** — `ws_control_rate_limit_per_sec=0` builds a `LeakyBucket` with no refill; `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop.
+- **A measured zero heartbeat overwrites** — `None` (an omitted key or JSON `null`) keeps the prior enriched field; `0`, `0.0`, and `[]` replace it. `is_alive` is a strict `<` against `heartbeat_timeout` (default 30 s), so a heartbeat aged exactly one timeout is stale. The scrape emits a reported `0.0`, clamps a future heartbeat age at 0, and omits percentiles for a one-sample window. Operator surface: [A measured zero heartbeat overwrites](#a-measured-zero-heartbeat-overwrites).
 - **`/ws/workers` fail-closed** — a bad/missing `X-API-Key` closes **4001** without accepting; a non-object or shape-invalid registration closes **4008** with no `registration_ack`; `submit_result` rejects wrong-worker / unassigned results before the protocol parse; binary attachments over 100 MB get `Binary frame too large`. A clean disconnect and a mid-result transport abort (expected-binary-got-text / oversize) **requeue** the in-flight task rather than leaving it assigned until `task_reassignment_timeout`. Control receive rejects malformed / non-object JSON with close **1003** rather than an `AttributeError`.
 - **WS tunables are declared, not implicit** — `websocket/tunables.py` holds all eleven settings fields the WebSocket handlers read, each with its default and a `security` flag. Six are security controls: the Origin allowlist, the control-endpoint kill switch, the control rate limit, and the three handshake-cooldown parameters. Call sites pass only a name; the default lives in the registry.
   - The `getattr`-based decoupling is deliberate and kept — the shared package still never imports a consuming service's settings class. What changes is that a miss which looks like a misspelling now logs a WARNING naming both spellings, instead of silently reverting a security control to a library default forever (`ws_control_rate_limit_per_second` vs `..._per_sec`).
@@ -8423,9 +8424,48 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Worker TLS "enabled" but presents no chain | Half-config — `TLSConfig` raises `ValueError` when only one of `cert_file` / `key_file` is set; supply both. |
 | One noisy IP throttles authenticated clients | Expected only for unauthenticated traffic — `RateLimiter` keys authenticated requests as `key:<api_key>`, so confirm the caller is actually sending `X-API-Key`. |
 | Two `task_assign` frames while the first task runs | A mid-task heartbeat must ack without dispatching — confirm the idle guard. |
+| GPU or last-task duration stays hot after the worker went idle | The heartbeat omitted the field or sent JSON `null`. A reported `0` replaces the prior reading. [A measured zero heartbeat overwrites](#a-measured-zero-heartbeat-overwrites). |
+| Idle count still includes a worker aged exactly one timeout | `is_alive` is strict `<`. That worker is in `get_stale_workers`. The health monitor deregisters it; `get_next_assignment` can still hand it a task until that sweep. |
+| p50 is missing and there is no malformed-snapshot log | The duration window has fewer than two samples. One sample is not a percentile. |
+| Heartbeat age is 0 while the worker clock is ahead | The collector clamps `now - last_heartbeat` at 0. |
+| `pending_tasks` is absent, or it reads 0 | Absent means no `pending_tasks_source`. A wired source that returns 0 emits 0. |
 | Non-ASCII `X-API-Key` returns 500 | Published `juniper-service-core` 0.7.0 compares keys as `str`; `hmac.compare_digest` raises `TypeError`, which is not an `HTTPException`. Fixed on `main` (UTF-8 bytes, `surrogatepass`; juniper-ml#2086, unreleased). Do not catch the `TypeError`. |
 | Non-ASCII key flood never 429s | `FailedAuthThrottle` records only HTTP 401s, so the 500 was never counted (default 10 failures / 60 s / source IP, then 429 with `Retry-After`). WebSocket closes are not on this throttle. Same fix. |
 | Sentry event contains the configured API key | Frame locals were captured: the scrubber redacts `api_key` by name, not the local holding the configured key. `configure_sentry` on `main` passes `include_local_variables=False` with no switch to re-enable; published `juniper-observability` 0.4.0 still uses the SDK default. |
+
+#### A measured zero heartbeat overwrites
+
+`WorkerRegistration.record_heartbeat` (`juniper_service_core.workers.registry`) updates a field only when the argument is not `None`. `WorkerRegistry.heartbeat` uses the same rule. `/ws/workers` forwards each enriched field with `msg.get` (`websocket/worker_stream.py`), so a missing key and JSON `null` both arrive as `None` and the prior reading stays. A present `0`, `0.0`, or `[]` is not `None`, so it replaces that reading. A later heartbeat that omits the field keeps the zero.
+
+| Reported value | What is stored |
+|----------------|----------------|
+| key omitted, or JSON `null` | the previous value |
+| `0` / `0.0` on `in_flight_tasks`, `rss_mb`, `tasks_completed`, `tasks_failed`, `last_task_duration_seconds`, `last_task_completed_at`, `gpu_utilization_pct` | that number |
+| `[]` on `recent_task_durations_seconds` | an empty window (a copy, not the caller's list) |
+
+`health_score` is `tasks_completed / (tasks_completed + tasks_failed)`, or `1.0` when both counters are 0. A tick that reports `tasks_completed: 0` and `tasks_failed: 4` scores `0.0`. A later tick that reports both counters as `0` scores `1.0`. Leaving the old failure count in place would keep a quiet worker looking failed. `get_idle_workers` sorts by this score, highest first.
+
+**Liveness.** `is_alive` is `(now - last_heartbeat) < timeout`. `WorkerRegistry` defaults `heartbeat_timeout` to `30.0` seconds. A heartbeat aged exactly one timeout is stale: `get_idle_workers` and `available_worker_count` omit that worker, and `get_stale_workers` includes it. One microsecond inside the window is still alive.
+
+`WorkerCoordinator._check_stale_workers` deregisters workers from that list and reassigns their task. It re-checks `is_alive` under the coordinator lock, so a heartbeat that landed after the snapshot is kept. `get_next_assignment` does not call `is_alive`. It assigns while the registration still exists, so a worker aged exactly one timeout can take one more task until that sweep removes it.
+
+**Scrape.** `WorkerRegistryCollector.collect` (default prefix `juniper_service`) reads `snapshot_for_metrics`:
+
+- Heartbeat age is always emitted: `max(0.0, now - last_heartbeat)`. A timestamp ahead of the scrape clock is age `0`, not a negative series.
+- `<prefix>_worker_last_task_duration_seconds` and `<prefix>_worker_gpu_utilization_pct` are emitted when the field is not `None`, including `0.0`. `None` omits the series. A missing series means the worker has not reported the field. A `0` means it reported idle.
+- `<prefix>_worker_recent_task_duration_seconds_p50` and `_p95` are emitted only when the window has at least two samples. One sample is omitted, and it is not logged as a malformed snapshot. `statistics.quantiles` raises `StatisticsError` below two points; that exception is what the per-snapshot handler logs as a malformed snapshot, which is why the length check comes first. A two-sample window of `0.0` emits `0.0` for both percentiles (`n=20`, `method="inclusive"`, indexes 9 and 18).
+- `<prefix>_pending_tasks` is emitted only when a `pending_tasks_source` is wired. A source that returns `0` emits `0`. No source omits the gauge. A source that raises skips the gauge and logs the exception.
+- `rss_mb` and `in_flight_tasks` stay on the registration. They are not in the metrics snapshot, so this collector does not scrape them.
+
+A heartbeat that finds the worker busy still only acks. The idle guard that prevents a second `task_assign` is a separate check (`reg.idle` before `_try_dispatch_task`). It does not decide whether a reported `0` is stored.
+
+```json
+{"type": "heartbeat", "gpu_utilization_pct": 0, "last_task_duration_seconds": 0, "recent_task_durations_seconds": [], "in_flight_tasks": 0, "tasks_completed": 0, "tasks_failed": 0}
+```
+
+That tick stores the zeros, clears the duration window, and scores `1.0` because both task counters are 0. The next tick, `{"type": "heartbeat"}`, leaves those zeros in place.
+
+Source: `juniper-service-core/juniper_service_core/workers/registry.py` (`record_heartbeat`, `is_alive`, `get_idle_workers`, `get_stale_workers`, `snapshot_for_metrics`), `workers/metrics.py` (`collect`), `workers/coordinator.py` (`_check_stale_workers`, `get_next_assignment`), `websocket/worker_stream.py` (the `msg.get` forward). The preserve-on-`None` cases are `juniper-service-core/tests/test_registry_heartbeat_preserve.py`.
 
 ---
 
@@ -8465,6 +8505,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.80  | 2026-11-04 | A measured zero heartbeat overwrites the prior reading (`0`, `0.0`, `[]`); `None` keeps it. `is_alive` is a strict `<`, so age equal to `heartbeat_timeout` (default 30 s) is stale. The scrape emits a reported `0.0`, clamps a future heartbeat age at 0, and omits percentiles for a one-sample window. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
