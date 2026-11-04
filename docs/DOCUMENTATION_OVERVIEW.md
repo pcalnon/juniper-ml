@@ -2,7 +2,7 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.68
+**Version:** 0.2.69
 **Status:** Active
 **Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -254,5 +254,5 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 ---
 
 **Last Updated:** 2026-11-04
-**Version:** 0.2.68
+**Version:** 0.2.69
 **Maintainer:** Paul Calnon
