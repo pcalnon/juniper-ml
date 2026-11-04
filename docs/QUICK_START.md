@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.42
+**Version:** 0.3.55
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -196,6 +196,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop; do not run n≈8–10; `--force` is an open owner decision; full slugs; `--class` on miss
 - [Requirements Snapshot Consolidation](REFERENCE.md#requirements-snapshot-consolidation) -- refresh `notes/requirements/` from `by-area` (never from the ledger); `--check-roundtrip` then `--check-views`
 - [Canopy E2E Unfilled-Rows Ledger](REFERENCE.md#canopy-e2e-unfilled-rows-ledger) -- plan matrix re-drives from `e2e_unfilled_rows.py` (status cells), not the TSV estimator
+- [Worker Result Anomaly Detector](REFERENCE.md#worker-result-anomaly-detector) -- a fast, perfect, stale, or duplicate score is a warning; the result is still accepted. A missing duration is timed as `0.0` s
 - [juniper-observability README](../juniper-observability/README.md) -- shared observability primitives
 - [juniper-data-client Quick Start](https://github.com/pcalnon/juniper-data-client) -- dataset client usage
 - [juniper-cascor-client Quick Start](https://github.com/pcalnon/juniper-cascor-client) -- training client usage
@@ -203,6 +204,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.3.41
+**Last Updated:** 2026-11-04
+**Version:** 0.3.55
 **Status:** Active
