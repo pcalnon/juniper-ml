@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.76
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -166,7 +166,7 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 ## Claude Code Session Script
 
-> See: `scripts/claude_interactive.bash` | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
+> See: `scripts/claude_interactive.bash` | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash` | [REFERENCE — Local Claude launcher prompt and defaults](REFERENCE.md#local-claude-launcher-prompt-and-defaults)
 
 | Entry Point                                                 | Behavior                                                                                                                        |
 |-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
@@ -182,8 +182,9 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 `wake_the_claude.bash` sends the prompt (from `--prompt`, or the contents of a `--file` / `--path` prompt file) as Claude
 Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` cannot take it as a value.
-`--remote-control` never takes a value. `--version` prints Claude Code's version; `-v` / `--script-version` print the
-script's. `-u` prints the usage text and exits 1.
+`--remote-control` never takes a value. On wake, `--version` / `-V` / `--claude-version` print Claude Code's version;
+`-v` / `--script-version` print `wake_the_claude.bash 1.0.0`. `-u` prints the usage text and exits 1. `./claudey -v` and
+`./claudey --version` print `0.1.1` and return before calling wake. Both scripts treat `0` as true and `1` as false. On wake, the word after `--prompt` / `-p` / `--prompt-string` is the prompt even when it starts with `--`: `0` or a missing word sends `Hello World, Claude!`, `1` sends none, and an empty word sends the default without ending the parse. `./claudey --prompt` still exits 1 when the word is missing; `./claudey --prompt --print` is a prompt, and the launch stays interactive.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 
@@ -197,7 +198,7 @@ bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."        
 
 **Safety:** `--id` refuses symlink targets. Resume filenames must be `.txt` basenames (no `/`). File contents must be a valid UUID. Invalid/missing files are preserved.
 
-**Known pitfall:** `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`; prompt strings may split on spaces. Run regression tests after changes.
+**Prompt quoting:** `claude` is invoked as `"${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}"`, so a prompt with spaces stays one argument, and the line the script prints quotes it. The `--` immediately before that prompt is the one Claude Code sees. A `--` earlier in `./claudey`'s debug echo is a spacer `wake_the_claude.bash` discards. Run `python3 -m unittest -v tests/test_wake_the_claude.py tests/test_claude_interactive.py` after launcher changes.
 
 ### Resume And Fork Alias Forwarding
 
@@ -212,7 +213,7 @@ Example (alias input to canonical output):
 
 ```bash
 bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --fork --prompt "hello"
-# Forwards args to claude as: --resume <uuid> --fork-session "hello"
+# claude argv: --resume <uuid> --fork-session -- hello
 ```
 
 This behavior is regression-tested in `tests/test_wake_the_claude.py`:
@@ -1148,6 +1149,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- `degraded` is not a success (exit 1); `train_r2` / `cv_r2` from nested `stats.recurrence`; cascor accuracy columns empty
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
+- [Local Claude launcher prompt and defaults](REFERENCE.md#local-claude-launcher-prompt-and-defaults) -- `./claudey` worktree and remote control, prompt after `--` (a `--prompt` value starting with `--` is text), version flags, `-u` exits 1
 - [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence, bare `open()` blocks merge
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy gate is authority for `main.py` (count 58); v1 is the name-matching negative example
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments; PF-1 matched epoch pair + matrix-axis repeats; PF-4/PF-8 are not driver suites
@@ -1183,6 +1185,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.76
 **Maintainer:** Paul Calnon

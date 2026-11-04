@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.42
+**Version:** 0.3.55
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -122,6 +122,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 ## 3. Next Steps
 
 - [Documentation Overview](DOCUMENTATION_OVERVIEW.md) -- navigation index
+- [Local Claude launcher](REFERENCE.md#local-claude-launcher-prompt-and-defaults) -- `./claudey` starts a worktree and remote control; the prompt is Claude Code's last argument, after `--`, and the word after `--prompt` is that prompt even when it starts with `--`
 - [Reference](REFERENCE.md) -- extras, compatibility, and version reference
 - [Host Orchestration Utilities](REFERENCE.md#host-orchestration-utilities) -- run services on-host with `util/juniper_plant_all.bash` and `util/juniper_chop_all.bash`
 - [Conda Env Torch Shadow Diagnostic](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- classify `import torch` / `torch._C` (exit **2** = P-5 free-threaded; exit **4** = May-7; does not rebuild)
@@ -203,6 +204,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.3.41
+**Last Updated:** 2026-11-04
+**Version:** 0.3.55
 **Status:** Active
