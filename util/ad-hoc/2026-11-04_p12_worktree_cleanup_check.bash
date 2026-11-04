@@ -17,16 +17,21 @@
 # For each target it prints the branch, the uncommitted files (tmp/ is gitignored and
 # already archived), the commits not on origin/main, and the branch's PR state.
 # Squash merges leave origin/main..HEAD non-empty even after the PR merged, so a tree
-# is REMOVABLE when it is clean AND (it has no unique commits OR a PR on its branch is
-# MERGED and none is still OPEN). A git or gh read that fails keeps the tree (fail closed).
+# is REMOVABLE when it is clean, has no ignored path outside the archived tmp/, tmp/
+# is empty or the archive holds a file, AND (it has no unique commits OR a PR on its
+# branch is MERGED and none is still OPEN). A git or gh read that fails keeps the
+# tree (fail closed).
 #
 # Usage
 # -----
 #   bash util/ad-hoc/2026-11-04_p12_worktree_cleanup_check.bash            # report only
 #   bash util/ad-hoc/2026-11-04_p12_worktree_cleanup_check.bash --remove   # also remove REMOVABLE trees
 #
-# --remove uses `git worktree remove` WITHOUT --force, so git itself refuses a dirty
-# tree, and then `git worktree prune`. It never deletes a branch.
+# --remove uses `git worktree remove` WITHOUT --force, then `git worktree prune`.
+# It never deletes a branch. On git 2.43, `worktree remove` deletes ignored files
+# without --force, and when status.showUntrackedFiles=no it also deletes untracked
+# files. Probes and the remove itself force status.showUntrackedFiles=normal.
+# Ignored paths outside the archived tmp/ are KEEP.
 
 set -u
 
@@ -47,6 +52,31 @@ TARGETS=(
     "$ML/declarative-snuggling-sparrow|juniper-ml|ml--declarative-snuggling-sparrow"
 )
 
+# Portable (bash 3.2 / macOS find): true when root contains at least one regular file.
+has_regular_file() {
+    local root="$1" found
+    [[ -d "$root" ]] || return 1
+    found=$(find "$root" -type f | head -n 1)
+    [[ -n "$found" ]]
+}
+
+# Ignored porcelain lines whose path is not the archived tmp/ tree.
+extra_ignored_outside_tmp() {
+    local line rel
+    while IFS= read -r line; do
+        [[ "$line" == '!! '* ]] || continue
+        rel="${line#!! }"
+        if [[ "$rel" == \"*\" ]]; then
+            rel=${rel#\"}
+            rel=${rel%\"}
+        fi
+        case "$rel" in
+            tmp | tmp/*) ;;
+            *) printf '%s\n' "$line" ;;
+        esac
+    done
+}
+
 for entry in "${TARGETS[@]}"; do
     IFS='|' read -r path repo archive <<<"$entry"
     echo "== $path"
@@ -58,15 +88,26 @@ for entry in "${TARGETS[@]}"; do
         echo "   KEEP: no archive at $ARCHIVE/$archive"
         continue
     fi
-    git -C "$path" fetch -q origin main || echo "   (fetch failed; origin/main may be stale)"
+    if ! git -C "$path" fetch -q origin main; then
+        echo "   KEEP: fetch of origin/main failed (refusing to treat that as no unique commits)"
+        continue
+    fi
     if ! branch=$(git -C "$path" rev-parse --abbrev-ref HEAD); then
         echo "   KEEP: cannot read the branch"
         continue
     fi
-    if ! dirty=$(git -C "$path" status --porcelain); then
+    # -uall so an untracked file inside a directory is visible. -c overrides a
+    # local or global status.showUntrackedFiles=no, which makes plain porcelain
+    # empty while `worktree remove` still deletes those files.
+    if ! dirty=$(git -C "$path" -c status.showUntrackedFiles=normal --no-optional-locks status --porcelain -uall); then
         echo "   KEEP: git status failed"
         continue
     fi
+    if ! ignored=$(git -C "$path" -c status.showUntrackedFiles=normal --no-optional-locks status --porcelain --ignored -uall); then
+        echo "   KEEP: git status --ignored failed"
+        continue
+    fi
+    extra_ignored=$(printf '%s\n' "$ignored" | extra_ignored_outside_tmp)
     if ! unique=$(git -C "$path" log --oneline origin/main..HEAD); then
         echo "   KEEP: cannot resolve origin/main..HEAD"
         continue
@@ -77,7 +118,9 @@ for entry in "${TARGETS[@]}"; do
     echo "   PR(s):   ${pr:-none}$( (( pr_ok )) || echo ' (gh failed)')"
     echo "   dirty:   $([[ -z "$dirty" ]] && echo no || echo YES)"
     [[ -n "$dirty" ]] && sed 's/^/            /' <<<"$dirty"
-    echo "   unique commits vs origin/main: $(grep -c . <<<"$unique")"
+    echo "   ignored outside archived tmp/: $([[ -z "$extra_ignored" ]] && echo no || echo YES)"
+    [[ -n "$extra_ignored" ]] && sed 's/^/            /' <<<"$extra_ignored"
+    echo "   unique commits vs origin/main: $(grep -c . <<<"$unique" || true)"
     [[ -n "$unique" ]] && sed 's/^/            /' <<<"$unique"
 
     # Merged only when gh answered, a PR on the branch is MERGED and none is still OPEN.
@@ -85,17 +128,34 @@ for entry in "${TARGETS[@]}"; do
     if (( pr_ok )) && grep -q "MERGED" <<<"$pr" && ! grep -q "OPEN" <<<"$pr"; then
         merged=1
     fi
+    archive_ok=1
+    if has_regular_file "$path/tmp"; then
+        if ! has_regular_file "$ARCHIVE/$archive"; then
+            archive_ok=0
+            echo "   KEEP: tmp/ has files but the archive has none"
+        fi
+    fi
     removable=0
-    if [[ -z "$dirty" ]] && { [[ -z "$unique" ]] || (( merged )); }; then
+    if [[ -z "$dirty" && -z "$extra_ignored" && "$archive_ok" == 1 ]] && { [[ -z "$unique" ]] || (( merged )); }; then
         removable=1
     fi
     if (( removable )); then
         echo "   -> REMOVABLE"
         if (( REMOVE )); then
-            main_repo=$(git -C "$path" rev-parse --path-format=absolute --git-common-dir)
-            git --git-dir="$main_repo" worktree remove "$path" && echo "   removed" && git --git-dir="$main_repo" worktree prune
+            if ! main_repo=$(git -C "$path" rev-parse --path-format=absolute --git-common-dir); then
+                echo "   KEEP: cannot resolve the git common dir"
+                continue
+            fi
+            # Same override as the probe: a repo-local showUntrackedFiles=no would
+            # otherwise let `worktree remove` delete untracked files without --force.
+            if git -c status.showUntrackedFiles=normal --git-dir="$main_repo" worktree remove "$path"; then
+                echo "   removed"
+                git -c status.showUntrackedFiles=normal --git-dir="$main_repo" worktree prune || echo "   (worktree prune failed)"
+            else
+                echo "   KEEP: git worktree remove refused"
+            fi
         fi
     else
-        echo "   -> KEEP (dirty, or unique commits without a merged PR): needs a look"
+        echo "   -> KEEP (dirty, ignored files outside archived tmp/, empty archive, or unique commits without a merged PR)"
     fi
 done

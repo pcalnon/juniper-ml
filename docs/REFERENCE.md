@@ -3137,6 +3137,7 @@ python3 -m unittest -v tests/test_worktree_cleanup.py
 python3 -m unittest -v tests/test_worktree_activate.py
 python3 -m unittest -v tests/test_worktree_sweep_scripts.py
 python3 -m unittest -v tests/test_p5_worktree_cleanup.py
+python3 -m unittest -v tests/test_p12_worktree_cleanup_check.py
 python3 -m unittest -v tests/test_yubikey_test_pinentry.py
 python3 -m unittest -v tests/test_cleanup_session_worktrees.py
 python3 -m unittest -v tests/test_cleanup_open_remove_stale_worktrees.py
@@ -3377,6 +3378,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_worktree_cleanup.py` -- Tests for `util/worktree_cleanup.bash` argument parsing, dry-run, and error handling; Phase 1 dirty porcelain exit-1 gate (juniper-ml#747) and clean push / Phase 2 path-collision arms (open #753) drive fixture repos via sourced `phase_1_save_and_push` / `phase_2_create_new_worktree`
 - `tests/test_worktree_sweep_scripts.py` -- Tests for `util/ad-hoc/worktree_sweep_*.bash`: survey/apply row compatibility, `SAFE`-only removal, and unknown-repo skips
 - `tests/test_p5_worktree_cleanup.py` -- Hermetic gate for `util/ad-hoc/2026-08-28_p5_worktree_cleanup.py` (the sweeper that deletes trees; `#1632` pins only the independent in-use probe): `pr_state` empty/`null` → `NO-PR-ON-HEAD` and three `gh` failures → `LOOKUP-FAILED` (never conflated); `undisposable` treats `*.log` as disposable including nested `logs/system.log` but a `logs/` directory and `.h5` block; `occupied` is cwd-only and prefix-safe; `harvest` copies and does not delete the source. Fake `proc_root`; no live `/proc` or `gh`.
+- `tests/test_p12_worktree_cleanup_check.py` -- Hermetic gate for `util/ad-hoc/2026-11-04_p12_worktree_cleanup_check.bash`: `--remove` keeps ignored files outside archived `tmp/`, untracked WIP under `status.showUntrackedFiles=no`, and `tmp/` when the archive is empty. A failed fetch or `origin/main..HEAD` read keeps the tree. Archived-tmp-only trees are removed; the branch is kept. An open PR beside a merged one is not removable. Stub `gh`; no network.
 - `tests/test_cleanup_session_worktrees.py` -- Hermetic tests for `scripts/cleanup_session_worktrees.py`: `_has_merged_pr` fail-closed (gh fail / bad JSON), dirty/unmerged/detached keeps, self-cwd skip, and `--dry-run` remove of main-ancestor / MERGED-PR clean tips. `LockGateTest` pins the 2026-08-21 liveness gate against real locked worktrees: an otherwise-removable locked tree is kept, the `--dry-run` plan does not promise to remove it, unlocking the same tree makes it removable again (proving the lock is what held it), and an anti-resurrection arm asserts the source never passes `--force`/`-f` to `worktree remove`
 - `tests/test_reap_pytest_orphans.py` -- Tests for `util/reap_pytest_orphans.bash` dry-run, live-parent safety, orphan detection, and isolated kill invocation
   - `TestLiveExperimentProtection`: the P1 pidfile + P2 cmdline keys, reproducing the three shapes a 2026-08-16 dry run would have killed (service/orchestrator/watchdog); the load-bearing live-mode arm proving a genuine orphan still dies while the protected service does not; stale-pidfile conservatism; and a malformed pidfile not aborting the sweep under `set -euo pipefail`
@@ -4180,6 +4182,7 @@ juniper-ml/
 │   ├── test_worktree_cleanup.py          # Worktree cleanup script tests (225 lines)
 │   ├── test_worktree_sweep_scripts.py    # Ad-hoc sweep script safety/contract tests
 │   ├── test_p5_worktree_cleanup.py       # P5 worktree sweeper: PR-lookup naming, disposable vs harvest, cwd-only occupancy
+│   ├── test_p12_worktree_cleanup_check.py # P12 worktree cleanup: ignored/untracked/archive/fetch fail closed
 │   ├── test_cleanup_session_worktrees.py # Session .claude/worktrees cleaner (merged-PR fail-closed + dry-run)
 │   ├── test_reap_pytest_orphans.py       # Orphan pytest process reaper tests
 │   ├── test_soak_ledger.py               # Pointer-follow soak ledger (seeded arm, Wilson verdicts, escalations)
