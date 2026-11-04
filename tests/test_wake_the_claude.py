@@ -123,7 +123,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--", "hello"])
 
     def test_resume_alias_flag_passes_session_id_to_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -139,7 +139,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--", "hello"])
 
     def test_session_id_trailing_alias_flag_passes_value_to_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -158,7 +158,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--session-id", VALID_UUID, "hello"])
+            self.assertEqual(last_invocation_args, ["--session-id", VALID_UUID, "--", "hello"])
 
     def test_permissions_trailing_alias_flag_is_forwarded_to_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -182,7 +182,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(
                 last_invocation_args,
-                ["--resume", VALID_UUID, "--dangerously-skip-permissions", "hello"],
+                ["--resume", VALID_UUID, "--dangerously-skip-permissions", "--", "hello"],
             )
 
     def test_resume_with_filename_loads_uuid_and_preserves_file(self) -> None:
@@ -203,7 +203,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--", "hello"])
 
     def test_resume_with_symlink_session_file_follows_target(self) -> None:
         """Resume reads through a symlink (``[[ -f ]]`` + ``cat``); save refuses to write one.
@@ -232,7 +232,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--", "hello"])
 
     def test_resume_with_invalid_uuid_fails_once_without_invoking_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -383,7 +383,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--", "hello"])
 
     def test_resume_flag_without_value_fails_without_invoking_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -482,7 +482,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--", prompt_text])
             self.assertNotIn("--model", last_invocation_args)
 
     def test_session_id_without_value_uses_uuid_fallback_when_uuidgen_fails(self) -> None:
@@ -510,7 +510,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--session-id", fallback_uuid, "hello"])
+            self.assertEqual(last_invocation_args, ["--session-id", fallback_uuid, "--", "hello"])
 
     def test_session_id_without_value_uses_python_fallback_when_uuidgen_and_proc_fail(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -537,7 +537,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--session-id", python_fallback_uuid, "hello"])
+            self.assertEqual(last_invocation_args, ["--session-id", python_fallback_uuid, "--", "hello"])
 
     def test_session_id_without_value_fails_when_all_uuid_fallbacks_invalid(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -709,8 +709,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             effort_index = last_invocation_args.index("--effort")
             self.assertLess(effort_index + 1, len(last_invocation_args))
             self.assertEqual(last_invocation_args[effort_index + 1], "high")
-            prompt_tokens = [token.strip('"') for token in last_invocation_args[effort_index + 2 :]]
-            self.assertEqual(" ".join(prompt_tokens), "Hello World, Claude!")
+            self.assertEqual(last_invocation_args[effort_index + 2 :], ["--", "Hello World, Claude!"])
 
     @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root can write to chmod read-only directories")
     def test_non_writable_cwd_falls_back_to_home_log_and_still_launches(self) -> None:
@@ -740,7 +739,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--print", "hello"])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--print", "--", "hello"])
 
     @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root can write to chmod read-only directories")
     def test_no_writable_log_location_fails_without_silent_success(self) -> None:
@@ -1159,7 +1158,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
-            self.assertEqual(args, ["--resume", VALID_UUID, "hello"])
+            self.assertEqual(args, ["--resume", VALID_UUID, "--", "hello"])
             # In interactive mode, no nohup log should be created in the logs dir
             self.assertFalse((Path(temp_dir) / "logs" / "wake_the_claude.nohup.log").exists())
 
@@ -1176,7 +1175,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
-            self.assertEqual(args, ["--resume", VALID_UUID, "--print", "hello"])
+            self.assertEqual(args, ["--resume", VALID_UUID, "--print", "--", "hello"])
             # In headless mode, nohup log should be created in the logs dir
             self.assertTrue((Path(temp_dir) / "logs" / "wake_the_claude.nohup.log").exists())
 
@@ -1326,7 +1325,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
-            self.assertEqual(args, ["--resume", VALID_UUID, "--fork-session", "hello"])
+            self.assertEqual(args, ["--resume", VALID_UUID, "--fork-session", "--", "hello"])
 
     def test_all_fork_session_flag_variants_forward_canonical_flag(self) -> None:
         """HIGH: Verify legacy and canonical fork flags normalize to --fork-session."""
@@ -1343,7 +1342,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
                 invocations = self._wait_for_invocations(invocations_log)
                 self.assertTrue(invocations)
                 args = self._extract_args(invocations[-1])
-                self.assertEqual(args, ["--resume", VALID_UUID, "--fork-session", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--fork-session", "--", "hello"])
 
     def test_path_flag_with_file_argument_resolves_correctly(self) -> None:
         """Verify --path with a file argument (not directory) sets prompt correctly."""
@@ -1380,7 +1379,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
-            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from path+file"])
+            self.assertEqual(args, ["--resume", VALID_UUID, "--", "prompt from path+file"])
 
     def test_path_then_file_flags_resolve_combined_prompt_file(self) -> None:
         """Verify --path <dir> then --file <name> resolves prompt file."""
@@ -1399,7 +1398,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
-            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from combined path-then-file"])
+            self.assertEqual(args, ["--resume", VALID_UUID, "--", "prompt from combined path-then-file"])
 
     def test_path_directory_and_filename_resolve_prompt_when_file_precedes_path(self) -> None:
         """Verify --file <name> + --path <dir> works when file is parsed first."""
@@ -1438,7 +1437,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
-            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from combined file-then-path"])
+            self.assertEqual(args, ["--resume", VALID_UUID, "--", "prompt from combined file-then-path"])
 
     def test_path_directory_and_missing_filename_fail_without_invoking_claude(self) -> None:
         """Verify invalid --path/--file combination fails early and never launches claude."""
@@ -1477,52 +1476,233 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         for effort_flag in ("-e", "--effort", "--effort-type", "--effort-level"):
             with self.subTest(effort_flag=effort_flag):
                 args = self._launch_and_get_args(["--resume", VALID_UUID, effort_flag, "high", "--prompt", "hello"])
-                self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "high", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "high", "--", "hello"])
 
     def test_prompt_does_not_swallow_the_flags_after_it(self) -> None:
         """The prompt parser once received the remaining input joined into one string and took all of it."""
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--prompt", "hello", "--model", "opus", "--print"])
-        self.assertEqual(args, ["--resume", VALID_UUID, "--model", "opus", "--print", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--model", "opus", "--print", "--", "hello"])
 
     def test_worktree_name_is_forwarded_and_a_following_flag_is_not_consumed(self) -> None:
         """A named worktree reached an undefined ``validate_worktree``; an unnamed one ate the next flag."""
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--worktree", "feature-tree", "--prompt", "hello"])
-        self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "feature-tree", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "feature-tree", "--", "hello"])
 
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--worktree", "--effort", "high", "--prompt", "hello"])
-        self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "--effort", "high", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "--effort", "high", "--", "hello"])
 
-    def test_remote_control_name_is_forwarded_and_a_following_flag_is_not_consumed(self) -> None:
-        """``--remote-control [name]`` lost its optional name in the rewrite, though the usage text still describes it."""
+    def test_remote_control_goes_bare_and_refuses_a_value(self) -> None:
+        """``--remote-control`` never takes a value (owner ruling, 2026-11-04): a word after it is refused, not forwarded.
+
+        Claude Code reads a word after ``--remote-control`` as the session's name. A following flag or the end of the input
+        leaves the flag bare; ``0`` (true) turns it on and ``1`` (false) off, as for the other flags here.
+        """
         for remote_flag in ("-c", "--remote", "--control", "--remote-control"):
             with self.subTest(remote_flag=remote_flag):
-                args = self._launch_and_get_args(["--resume", VALID_UUID, remote_flag, "laptop-session", "--prompt", "hello"])
-                self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "laptop-session", "hello"])
+                args = self._launch_and_get_args(["--resume", VALID_UUID, remote_flag, "--effort", "high", "--prompt", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "--effort", "high", "--", "hello"])
 
-        args = self._launch_and_get_args(["--resume", VALID_UUID, "--remote-control", "--effort", "high", "--prompt", "hello"])
-        self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "--effort", "high", "hello"])
-
-        # As with --worktree: 0 (true) asks for remote control under a name Claude Code assigns, 1 (false) for none.
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--remote-control", "0", "--effort", "high", "--prompt", "hello"])
-        self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "--effort", "high", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "--effort", "high", "--", "hello"])
 
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--remote-control", "1", "--effort", "high", "--prompt", "hello"])
-        self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "high", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "high", "--", "hello"])
+
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--prompt", "hello", "--remote-control"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "--", "hello"])
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(["--resume", VALID_UUID, "--remote-control", "laptop-session", "--prompt", "hello"], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertEqual((result.stdout + result.stderr).count("usage: wake_the_claude.bash"), 1)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
+    def test_a_bare_optional_valued_flag_cannot_take_the_prompt(self) -> None:
+        """The prompt follows ``--``, so a bare flag with an optional value cannot claim it as that value.
+
+        Claude Code parses its command line with commander, where an option declared with an optional value -- ``--worktree
+        [name]``, ``--remote-control [name]`` and ``--resume [value]`` in ``claude --help`` -- takes the next word as the value.
+        Each argv here once ended ``<flag>, "hello"``: a worktree named ``hello``, a remote-control session named ``hello``, or a
+        resume of a session called ``hello``, and no prompt. The stub claude records argv, so this pins the ``--`` that prevents it.
+        """
+        cases = (
+            (["--worktree", "--prompt", "hello"], ["--worktree", "--", "hello"]),
+            (["--remote-control", "--prompt", "hello"], ["--remote-control", "--", "hello"]),
+            (["--resume", "0", "--prompt", "hello"], ["--resume", "--", "hello"]),
+            (["--prompt", "hello", "--worktree", "--remote-control"], ["--worktree", "--remote-control", "--", "hello"]),
+        )
+        for script_args, expected in cases:
+            with self.subTest(script_args=script_args):
+                self.assertEqual(self._launch_and_get_args(script_args), expected)
+
+    def _launch_and_get_exact_args(self, args: list[str], temp_dir: str, env: dict[str, str]) -> tuple[subprocess.CompletedProcess[str], list[str]]:
+        """Run the script against a stub claude that records argv NUL-separated, so a multi-line argument survives intact.
+
+        The shared stub writes one ``ARG=`` line per argument, which keeps only the first line of a multi-line prompt.
+        Interactive launches only: claude runs in the foreground, so the record is complete when the script returns.
+        """
+        argv_log = Path(temp_dir) / "claude_argv.nul"
+        argv_log.unlink(missing_ok=True)
+        fake_claude = Path(temp_dir) / "bin" / "claude"
+        fake_claude.write_text('#!/usr/bin/env bash\nprintf \'%s\\0\' "$@" >> "$CLAUDE_ARGV_NUL_LOG"\n', encoding="utf-8")
+        fake_claude.chmod(0o755)
+        env["CLAUDE_ARGV_NUL_LOG"] = str(argv_log)
+        result = self._run_script(args, cwd=temp_dir, env=env)
+        recorded = argv_log.read_bytes().decode("utf-8").split("\0")[:-1] if argv_log.exists() else []
+        return result, recorded
+
+    def test_every_prompt_source_reaches_claude_last_and_without_a_prompt_flag(self) -> None:
+        """``--prompt`` / ``--file`` / ``--path`` each give claude the prompt TEXT as one argument, last, after ``--``.
+
+        No prompt flag is forwarded: Claude Code has none, and its ``-p`` is ``--print``. The prompt flag comes FIRST in each
+        input here, so "last" is the script's ordering and not the caller's.
+        """
+        prompt_text = "Line one of the prompt.\nIt's line two, with a quote."
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, env = self._install_fake_claude(temp_dir)
+            prompts_dir = Path(temp_dir) / "prompts"
+            prompts_dir.mkdir()
+            (prompts_dir / "prompt.md").write_text(prompt_text + "\n", encoding="utf-8")
+            sources = {
+                "--prompt": ["--prompt", prompt_text],
+                "-p": ["-p", prompt_text],
+                "--prompt-string": ["--prompt-string", prompt_text],
+                "--file": ["--file", str(prompts_dir / "prompt.md")],
+                "--path": ["--path", str(prompts_dir / "prompt.md")],
+                "--path and --file": ["--path", str(prompts_dir), "--file", "prompt.md"],
+            }
+            for source, prompt_args in sources.items():
+                with self.subTest(source=source):
+                    result, argv = self._launch_and_get_exact_args([*prompt_args, "--resume", VALID_UUID, "--worktree", "--effort", "high"], temp_dir, env)
+                    self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                    self.assertEqual(argv, ["--resume", VALID_UUID, "--worktree", "--effort", "high", "--", prompt_text])
+
+    def test_a_prompt_starting_with_a_dash_is_not_read_as_an_option(self) -> None:
+        """A prompt starting with ``-`` reaches claude as the prompt; a prompt file's YAML front matter starts ``---``.
+
+        Measured on Claude Code 2.1.318: ``claude '---name: x' --bogus-zzz`` fails ``error: unknown option '---name: x'``.
+        """
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--prompt", "-v is the flag that broke"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--", "-v is the flag that broke"])
+
+        front_matter_prompt = "---\nname: handoff\n---\n\nContinue the arc."
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, env = self._install_fake_claude(temp_dir)
+            prompt_file = Path(temp_dir) / "handoff.md"
+            prompt_file.write_text(front_matter_prompt + "\n", encoding="utf-8")
+            result, argv = self._launch_and_get_exact_args(["--resume", VALID_UUID, "--file", str(prompt_file)], temp_dir, env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertEqual(argv, ["--resume", VALID_UUID, "--", front_matter_prompt])
+
+    def test_printed_command_line_shows_the_prompt_as_one_quoted_argument(self) -> None:
+        """The command line the script prints quotes the prompt, as claude receives it: one argument, quotes and all."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, env = self._install_fake_claude(temp_dir)
+            result, _ = self._launch_and_get_exact_args(["--resume", VALID_UUID, "--prompt", "Hello World, Claude!"], temp_dir, env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertIn(f"claude --resume {VALID_UUID} -- 'Hello World, Claude!'\n", result.stdout)
+
+            result, _ = self._launch_and_get_exact_args(["--resume", VALID_UUID, "--prompt", "It's two\nlines"], temp_dir, env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertIn("-- 'It'\\''s two\nlines'\n", result.stdout)
+
+    def test_a_prompt_file_that_is_unreadable_or_empty_fails_without_invoking_claude(self) -> None:
+        """``--file`` / ``--path`` send the file's prompt or stop: ``$(cat ...)`` once turned either into no prompt at all."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_files = []
+            for name, content in (("empty.md", ""), ("blank.md", "  \n\t\n")):
+                prompt_file = Path(temp_dir) / name
+                prompt_file.write_text(content, encoding="utf-8")
+                prompt_files.append(prompt_file)
+            if not (hasattr(os, "geteuid") and os.geteuid() == 0):  # root reads a mode-000 file
+                unreadable = Path(temp_dir) / "unreadable.md"
+                unreadable.write_text("a prompt nobody can read", encoding="utf-8")
+                unreadable.chmod(0)
+                prompt_files.append(unreadable)
+            for prompt_file in prompt_files:
+                for flag in ("--file", "--path"):
+                    with self.subTest(prompt_file=prompt_file.name, flag=flag):
+                        result = self._run_script(["--resume", VALID_UUID, flag, str(prompt_file)], cwd=temp_dir, env=env)
+                        self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                        self.assertIn("could not be read, or holds no prompt", result.stderr)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
+    def test_usage_flag_prints_usage_and_exits_with_failure(self) -> None:
+        """``-u`` / ``--usage`` print the usage text and exit 1 (owner ruling, 2026-11-04); ``-h`` / ``--help`` exit 0."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            for flag, expected_status in (("-u", 1), ("--usage", 1), ("-h", 0), ("--help", 0)):
+                with self.subTest(flag=flag):
+                    result = self._run_script([flag], cwd=temp_dir, env=env)
+                    self.assertEqual(result.returncode, expected_status, msg=result.stdout + result.stderr)
+                    self.assertEqual(result.stdout.count("usage: wake_the_claude.bash"), 1)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
+    def test_version_flags_report_claude_codes_version_only(self) -> None:
+        """``--version``, ``-V`` and ``--claude-version`` report Claude Code's version, never this script's (owner ruling, 2026-11-04).
+
+        ``--version`` once sat in this script's version pattern as well, and ``-V`` / ``--claude-version`` were checked against
+        ``--version`` alone, so both exited 1.
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            for flag in ("--version", "-V", "--claude-version"):
+                with self.subTest(flag=flag):
+                    result = self._run_script([flag], cwd=temp_dir, env=env)
+                    self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                    self.assertIn("claude-test-version", result.stdout)
+                    self.assertNotIn("wake_the_claude.bash", result.stdout)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
+    @staticmethod
+    def _flags_in_two_patterns(script_text: str) -> dict[str, list[str]]:
+        """Map each input flag that two VALID_PATTERNS entries share to their names, resolving ``${CLAUDE_*_FLAGS}`` with bash."""
+        pattern_names = re.findall(r'^VALID_PATTERNS\[\w+\]="\$\{(\w+)\}"$', script_text, re.MULTILINE)
+        definitions = [line for line in script_text.splitlines() if re.match(r'^(export )?[A-Z][A-Z0-9_]*_FLAGS="[^"`]*"$', line)]
+        probe = "\n".join(definitions) + "\n" + "\n".join(f'printf "%s\\n" "${{{name}}}"' for name in pattern_names)
+        resolved = subprocess.run(["/bin/bash", "-c", probe], capture_output=True, text=True, check=True).stdout.splitlines()
+        owners: dict[str, list[str]] = {}
+        for name, value in zip(pattern_names, resolved, strict=True):
+            for flag in (token.strip() for token in value.split("|")):
+                owners.setdefault(flag, []).append(name)
+        assert len(pattern_names) > 10, f"found only {len(pattern_names)} VALID_PATTERNS entries"
+        return {flag: names for flag, names in owners.items() if len(names) > 1}
+
+    def test_no_input_flag_selects_two_parsers(self) -> None:
+        """Each input flag belongs to one pattern: ``--version`` once sat in two, and whichever came first won."""
+        self.assertEqual(self._flags_in_two_patterns(SCRIPT_PATH.read_text(encoding="utf-8")), {})
+
+    def test_the_pattern_overlap_check_reports_the_old_version_overlap(self) -> None:
+        """Positive control: restoring ``--version`` to this script's version pattern is reported."""
+        script_text = SCRIPT_PATH.read_text(encoding="utf-8")
+        current = 'SCRIPT_VERSION_FLAGS="-v | --script-version"'
+        self.assertIn(current, script_text)
+        overlap = self._flags_in_two_patterns(script_text.replace(current, 'SCRIPT_VERSION_FLAGS="-v | --version"'))
+        self.assertEqual(overlap, {"--version": ["MODEL_VERSION_FLAGS", "SCRIPT_VERSION_FLAGS"]})
 
     def test_script_version_flag_reports_this_scripts_own_version(self) -> None:
-        """``-v`` read a ``SCRIPT_VERSION`` that only claudey exports, as claudey's version: run directly, it exited 1."""
+        """``-v`` / ``--script-version`` report this script's version.
+
+        ``-v`` read a ``SCRIPT_VERSION`` that only claudey exports, as claudey's version: run directly, it exited 1.
+        """
         header = re.search(r"^# Version: (\S+)$", SCRIPT_PATH.read_text(encoding="utf-8"), re.MULTILINE)
         self.assertIsNotNone(header, msg="wake_the_claude.bash's header must state its version")
         assert header is not None
         inherited_version = "9.9.9-inherited-from-claudey"
-        for inherited in (False, True):
-            with self.subTest(inherited_script_version=inherited):
+        for flag, inherited in ((flag, inherited) for flag in ("-v", "--script-version") for inherited in (False, True)):
+            with self.subTest(flag=flag, inherited_script_version=inherited):
                 with tempfile.TemporaryDirectory() as temp_dir:
                     invocations_log, env = self._install_fake_claude(temp_dir)
                     env.pop("SCRIPT_VERSION", None)
                     if inherited:
                         env["SCRIPT_VERSION"] = inherited_version
-                    result = self._run_script(["-v"], cwd=temp_dir, env=env)
+                    result = self._run_script([flag], cwd=temp_dir, env=env)
                     self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
                     self.assertIn(f"wake_the_claude.bash {header.group(1)}\n", result.stdout)
                     self.assertNotIn(inherited_version, result.stdout)
@@ -1533,15 +1713,15 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
     def test_resume_true_resumes_the_earlier_session_id_or_lets_claude_pick(self) -> None:
         """``--resume 0`` (boolean true) resumes the session id given before it, else passes a bare ``--resume``."""
         args = self._launch_and_get_args(["--id", VALID_UUID, "--resume", "0", "--prompt", "hello"])
-        self.assertEqual(args, ["--resume", VALID_UUID, "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--", "hello"])
 
         args = self._launch_and_get_args(["--resume", "0", "--prompt", "hello"])
-        self.assertEqual(args, ["--resume", "hello"])
+        self.assertEqual(args, ["--resume", "--", "hello"])
 
     def test_model_boolean_values_omit_or_default_the_model(self) -> None:
         """``--model 1`` (false) omits the model; ``--model 0`` (true) sends the script's default model."""
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--model", "1", "--prompt", "hello"])
-        self.assertEqual(args, ["--resume", VALID_UUID, "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--", "hello"])
 
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--model", "0", "--prompt", "hello"])
         self.assertEqual(args[2], "--model")

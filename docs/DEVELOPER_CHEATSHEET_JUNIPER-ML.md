@@ -166,16 +166,24 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 ## Claude Code Session Script
 
-> See: `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
+> See: `scripts/claude_interactive.bash` | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
 
-| Entry Point                             | Behavior                                                      |
-|-----------------------------------------|---------------------------------------------------------------|
-| `./claudey`                             | Default interactive session (`--id --worktree --effort high`) |
-| `./claudey --prompt "..."`              | Custom prompt, default flags                                  |
-| `CLAUDE_SKIP_PERMISSIONS=1 ./claudey`   | Adds `--dangerously-skip-permissions`                         |
-| `bash scripts/wake_the_claude.bash ...` | Direct launcher with full flag control                        |
+| Entry Point                                                 | Behavior                                                                                                                        |
+|-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `./claudey`                                                 | Interactive session: the model and effort defaults in `scripts/claude_interactive.bash`, a bare `--worktree` and `--remote-control` |
+| `./claudey --prompt "..."`                                  | Custom prompt, default flags                                                                                                    |
+| `./claudey -w <name>`                                       | Names the worktree; a bare `-w` lets Claude Code name it                                                                        |
+| `./claudey --no-worktree --no-remote-control`               | Turns off the worktree and remote control, which are on by default                                                             |
+| `bash scripts/default_interactive_session_claude_code.bash` | Older default session (`--id --worktree --effort high`); `CLAUDE_SKIP_PERMISSIONS=1` adds `--dangerously-skip-permissions`      |
+| `bash scripts/wake_the_claude.bash ...`                     | Direct launcher with full flag control                                                                                          |
 
-The wrapper does **not** include `--dangerously-skip-permissions` unless `CLAUDE_SKIP_PERMISSIONS=1` is set.
+`claude_interactive.bash` ships `DEBUG=TRUE`, which adds `--dangerously-skip-permissions` to every launch.
+`default_interactive_session_claude_code.bash` adds it only when `CLAUDE_SKIP_PERMISSIONS=1` is set.
+
+`wake_the_claude.bash` sends the prompt (from `--prompt`, or the contents of a `--file` / `--path` prompt file) as Claude
+Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` cannot take it as a value.
+`--remote-control` never takes a value. `--version` prints Claude Code's version; `-v` / `--script-version` print the
+script's. `-u` prints the usage text and exits 1.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 
