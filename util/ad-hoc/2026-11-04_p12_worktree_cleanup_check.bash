@@ -24,8 +24,12 @@
 #   bash util/ad-hoc/2026-11-04_p12_worktree_cleanup_check.bash            # report only
 #   bash util/ad-hoc/2026-11-04_p12_worktree_cleanup_check.bash --remove   # also remove REMOVABLE trees
 #
-# --remove uses `git worktree remove` WITHOUT --force, so git itself refuses a dirty
-# tree, and then `git worktree prune`. It never deletes a branch.
+# --remove uses `git worktree remove` WITHOUT --force, and then `git worktree prune`.
+# It never deletes a branch. `worktree remove` is not a sufficient dirt backstop:
+# it deletes ignored files without --force, and when status.showUntrackedFiles=no
+# it also deletes untracked files (git 2.43). Probes and the remove itself force
+# status.showUntrackedFiles=normal. Ignored paths outside the archived tmp/ are
+# KEEP. A failed fetch, status, or origin/main comparison is KEEP, not "clean".
 
 set -u
 
@@ -46,6 +50,31 @@ TARGETS=(
     "$ML/declarative-snuggling-sparrow|juniper-ml|ml--declarative-snuggling-sparrow"
 )
 
+# Portable (bash 3.2 / macOS find): true when root contains at least one regular file.
+has_regular_file() {
+    local root="$1" found
+    [[ -d "$root" ]] || return 1
+    found=$(find "$root" -type f | head -n 1)
+    [[ -n "$found" ]]
+}
+
+# Ignored porcelain lines whose path is not the archived tmp/ tree.
+extra_ignored_outside_tmp() {
+    local line rel
+    while IFS= read -r line; do
+        [[ "$line" == '!! '* ]] || continue
+        rel="${line#!! }"
+        if [[ "$rel" == \"*\" ]]; then
+            rel=${rel#\"}
+            rel=${rel%\"}
+        fi
+        case "$rel" in
+            tmp|tmp/*) ;;
+            *) printf '%s\n' "$line" ;;
+        esac
+    done
+}
+
 for entry in "${TARGETS[@]}"; do
     IFS='|' read -r path repo archive <<<"$entry"
     echo "== $path"
@@ -57,29 +86,74 @@ for entry in "${TARGETS[@]}"; do
         echo "   KEEP: no archive at $ARCHIVE/$archive"
         continue
     fi
-    git -C "$path" fetch -q origin main || echo "   (fetch failed; origin/main may be stale)"
-    branch=$(git -C "$path" rev-parse --abbrev-ref HEAD)
-    dirty=$(git -C "$path" status --porcelain)
-    unique=$(git -C "$path" log --oneline origin/main..HEAD)
-    pr=$(gh pr list --repo "pcalnon/$repo" --head "$branch" --state all --json number,state --jq 'map("#\(.number) \(.state)") | join(", ")' 2>/dev/null)
+    if ! git -C "$path" fetch -q origin main; then
+        echo "   KEEP: fetch of origin/main failed (refusing to treat that as no unique commits)"
+        continue
+    fi
+    if ! branch=$(git -C "$path" rev-parse --abbrev-ref HEAD); then
+        echo "   KEEP: cannot read HEAD"
+        continue
+    fi
+    # -uall so an untracked file inside a directory is visible. -c overrides a
+    # local or global status.showUntrackedFiles=no, which makes plain porcelain
+    # empty while `worktree remove` still deletes those files.
+    if ! dirty=$(git -C "$path" -c status.showUntrackedFiles=normal --no-optional-locks status --porcelain -uall); then
+        echo "   KEEP: git status failed (refusing to treat that as clean)"
+        continue
+    fi
+    if ! ignored=$(git -C "$path" -c status.showUntrackedFiles=normal --no-optional-locks status --porcelain --ignored -uall); then
+        echo "   KEEP: git status --ignored failed"
+        continue
+    fi
+    extra_ignored=$(printf '%s\n' "$ignored" | extra_ignored_outside_tmp)
+    if ! unique=$(git -C "$path" log --oneline origin/main..HEAD); then
+        echo "   KEEP: cannot compare HEAD to origin/main (refusing to treat that as no unique commits)"
+        continue
+    fi
+    if ! pr=$(gh pr list --repo "pcalnon/$repo" --head "$branch" --state all --json number,state --jq 'map("#\(.number) \(.state)") | join(", ")'); then
+        pr=""
+        echo "   (pr lookup failed; a merged PR will not be assumed)"
+    fi
     echo "   branch:  $branch"
     echo "   PR(s):   ${pr:-none}"
     echo "   dirty:   $([[ -z "$dirty" ]] && echo no || echo YES)"
     [[ -n "$dirty" ]] && sed 's/^/            /' <<<"$dirty"
-    echo "   unique commits vs origin/main: $(grep -c . <<<"$unique")"
+    echo "   ignored outside archived tmp/: $([[ -z "$extra_ignored" ]] && echo no || echo YES)"
+    [[ -n "$extra_ignored" ]] && sed 's/^/            /' <<<"$extra_ignored"
+    echo "   unique commits vs origin/main: $(grep -c . <<<"$unique" || true)"
     [[ -n "$unique" ]] && sed 's/^/            /' <<<"$unique"
 
+    archive_ok=1
+    if has_regular_file "$path/tmp"; then
+        if ! has_regular_file "$ARCHIVE/$archive"; then
+            archive_ok=0
+            echo "   KEEP: tmp/ has files but the archive has none"
+        fi
+    fi
+
     removable=0
-    if [[ -z "$dirty" ]] && { [[ -z "$unique" ]] || grep -q "MERGED" <<<"$pr"; }; then
-        removable=1
+    if [[ -z "$dirty" && -z "$extra_ignored" && "$archive_ok" == 1 ]]; then
+        if [[ -z "$unique" ]]; then
+            removable=1
+        elif grep -q "MERGED" <<<"$pr"; then
+            removable=1
+        fi
     fi
     if (( removable )); then
         echo "   -> REMOVABLE"
         if (( REMOVE )); then
-            main_repo=$(git -C "$path" rev-parse --path-format=absolute --git-common-dir)
-            git --git-dir="$main_repo" worktree remove "$path" && echo "   removed" && git --git-dir="$main_repo" worktree prune
+            if ! main_repo=$(git -C "$path" rev-parse --path-format=absolute --git-common-dir); then
+                echo "   KEEP: cannot resolve the git common dir"
+                continue
+            fi
+            if git -c status.showUntrackedFiles=normal --git-dir="$main_repo" worktree remove "$path"; then
+                echo "   removed"
+                git -c status.showUntrackedFiles=normal --git-dir="$main_repo" worktree prune
+            else
+                echo "   KEEP: git worktree remove refused"
+            fi
         fi
     else
-        echo "   -> KEEP (dirty, or unique commits without a merged PR): needs a look"
+        echo "   -> KEEP (dirty, ignored files outside archived tmp/, empty archive, or unique commits without a merged PR)"
     fi
 done

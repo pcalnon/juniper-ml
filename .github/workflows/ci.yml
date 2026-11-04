@@ -245,6 +245,11 @@ jobs:
           # cannot see: NO-PR vs LOOKUP-FAILED, disposable vs harvest, cwd-only
           # occupancy. Fake proc_root; never walks host /proc or live gh.
           python3 -m unittest -v tests/test_p5_worktree_cleanup.py
+          # tests/test_p12_worktree_cleanup_check.py: --remove on
+          # util/ad-hoc/2026-11-04_p12_worktree_cleanup_check.bash must not
+          # treat ignored files, showUntrackedFiles=no, an empty tmp archive,
+          # or a failed origin/main comparison as a clean tree.
+          python3 -m unittest -v tests/test_p12_worktree_cleanup_check.py
           # tests/test_yubikey_test_pinentry.py: Assuan OK greeting/BYE + GETPIN
           # class routing for util/ad-hoc/2026-08-03_yubikey_test_pinentry.bash
           # (#914 regression: non-OK greeting -> gpg-agent "No pinentry").
