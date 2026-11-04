@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.64
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -166,57 +166,56 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 ## Claude Code Session Script
 
-> See: `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
+> See: [REFERENCE — Local Claude Code Launcher](REFERENCE.md#local-claude-code-launcher) | `scripts/claude_interactive.bash` | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
 
-| Entry Point                             | Behavior                                                      |
-|-----------------------------------------|---------------------------------------------------------------|
-| `./claudey`                             | Default interactive session (`--id --worktree --effort high`) |
-| `./claudey --prompt "..."`              | Custom prompt, default flags                                  |
-| `CLAUDE_SKIP_PERMISSIONS=1 ./claudey`   | Adds `--dangerously-skip-permissions`                         |
-| `bash scripts/wake_the_claude.bash ...` | Direct launcher with full flag control                        |
+`0` is true and `1` is false in these scripts. `./claudey` is `scripts/claude_interactive.bash`. The flags `--id --worktree --effort high` belong to `scripts/default_interactive_session_claude_code.bash`, which `./claudey` does not run.
 
-The wrapper does **not** include `--dangerously-skip-permissions` unless `CLAUDE_SKIP_PERMISSIONS=1` is set.
+| Entry point | What it launches |
+|-------------|------------------|
+| `./claudey` | `--model` / `--effort` / `--prompt` from the uncommented `DEFAULT_*` exports (`opus`, `max`, `Hello World, Claude!` as of #2396), plus `--dangerously-skip-permissions` |
+| `./claudey -m sonnet -e high -p 'two words'` | Those flags; a bare `./claudey sonnet high` exits `1` and does not call `wake_the_claude.bash` |
+| `./claudey -i 0 -w feature-tree` | Opt-in session id and worktree. Both stay off otherwise |
+| `CLAUDE_SKIP_PERMISSIONS=1 ./claudey` | Still sends skip-permissions while shipped `DEBUG` is true (`0`). `1` means false on this wrapper |
+| `CLAUDE_SKIP_PERMISSIONS=1 bash scripts/default_interactive_session_claude_code.bash` | The older wrapper: `--id --worktree --effort high`, and `1` is the skip-permissions opt-in |
+| `bash scripts/wake_the_claude.bash ...` | Direct launcher. A rejected flag exits `1` and does not start `claude` |
 
-**Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
+Shipped `DEBUG=0` on `claudey` forces `--dangerously-skip-permissions`. The opt-in comment in that script is the behavior only after `DEBUG` is set false; then `CLAUDE_SKIP_PERMISSIONS=0` adds the flag.
+
+**Interactive** (no headless flag): `claude` in the foreground. The exec is `"${CLAUDE_CODE_PARAMS[@]}"`, so a prompt with spaces stays one argument. The echo line above it joins with spaces for display. **Headless** (`--print`, also `-a` / `--agent` / `--silent` / `--headless`): `nohup`, log `<repo>/logs/wake_the_claude.nohup.log`, else `$HOME/wake_the_claude.nohup.log`.
 
 ### Session ID and Resume
 
 ```bash
-bash scripts/wake_the_claude.bash --id --prompt "hello"                                      # generate session ID
+bash scripts/wake_the_claude.bash --id --prompt "hello"                                        # generate session ID
 bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --prompt "..." # resume by UUID
-bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."                       # resume by file
+bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."                       # basename *.txt in scripts/sessions/
+bash scripts/wake_the_claude.bash --id 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --resume 0 --prompt "hello"
+# claude receives: --resume <uuid> hello
 ```
 
-**Safety:** `--id` refuses symlink targets. Resume filenames must be `.txt` basenames (no `/`). File contents must be a valid UUID. Invalid/missing files are preserved.
+`--id` refuses a symlink target. Resume filenames are `.txt` basenames (no `/`) whose contents are a UUID. `--resume` with no value fails. `--resume 0` resumes an earlier `--id`, or passes a bare `--resume` when there is none. `--model 0` sends `MODEL_DEFAULT` (`opus`); `--model 1` omits the flag. `--effort 0` sends `auto`.
 
-**Known pitfall:** `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`; prompt strings may split on spaces. Run regression tests after changes.
+### Alias Forwarding
 
-### Resume And Fork Alias Forwarding
-
-`scripts/wake_the_claude.bash` accepts multiple alias flags, but always forwards canonical Claude CLI flags:
-
-| Input Alias Family | Accepted Aliases | Forwarded Canonical Flag |
-|--------------------|------------------|--------------------------|
-| Resume             | `-r`, `--resume`, `--resume-thread`, `--resume-session` | `--resume` |
-| Fork session       | `--fork`, `--fork-session`, `--resume-fork`, `--resume-fork_session` | `--fork-session` |
-
-Example (alias input to canonical output):
+`wake_the_claude.bash` accepts aliases and forwards Claude Code's flag names. `--prompt` becomes the last positional argument. `--` is dropped.
 
 ```bash
 bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --fork --prompt "hello"
-# Forwards args to claude as: --resume <uuid> --fork-session "hello"
+# claude receives: --resume <uuid> --fork-session hello
 ```
 
-This behavior is regression-tested in `tests/test_wake_the_claude.py`:
-- `test_resume_alias_flag_passes_session_id_to_claude`
-- `test_fork_session_alias_forwards_canonical_flag`
+`-s` on `wake_the_claude.bash` is skip-permissions. `-s` on `./claudey` is a session-id alias (`--id`).
 
-| Resume Symptom                  | Cause                                | Fix                                                      |
-|---------------------------------|--------------------------------------|----------------------------------------------------------|
-| `Session ID is invalid`         | Bad UUID or file content             | Verify UUID format                                       |
-| `no Valid Session ID to Resume` | Missing value after `--resume`       | Provide UUID or `.txt` basename                          |
-| File resume fails immediately   | Path separator, wrong ext, wrong dir | Use basename `*.txt` in `scripts/sessions/`              |
-| Alias not recognized            | Parsing regression                   | Run `python3 -m unittest -v tests/test_wake_the_claude.py`, verify alias lists and canonical forwarding |
+Regression: `python3 -m unittest -v tests/test_claude_interactive.py tests/test_wake_the_claude.py`.
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `Session ID is invalid` | Bad UUID or file content | Use a UUID, or a `*.txt` basename that contains one |
+| `no Valid Session ID to Resume` | `--resume` with no value | Pass a UUID, a `*.txt` basename, or `0` |
+| File resume fails immediately | Path separator, wrong ext, wrong dir | Basename `*.txt` in `scripts/sessions/` |
+| `./claudey` skipped permissions unexpectedly | Shipped `DEBUG` is true | Expected while `DEBUG="${TRUE}"`. `CLAUDE_SKIP_PERMISSIONS=1` does not turn it off |
+| `./claudey sonnet high` prints usage | Model and effort are flags | `./claudey -m sonnet -e high` |
+| Prompt looked split in the echo line | Display uses `[*]` | The exec is a quoted array; globs and `$()` in the prompt are not expanded |
 
 ---
 
@@ -594,8 +593,8 @@ Full contract: [REFERENCE — F-039 Store Probe](REFERENCE.md#f-039-store-probe)
 |--------------------------------|--------------------|---------------------------------------------------------|
 | `WTC_SESSIONS_DIR`             | `scripts/sessions` | Session ID file storage directory                       |
 | `WTC_LOGS_DIR`                 | `logs/`            | Headless mode log directory                             |
-| `WTC_DEBUG`                    | `0`                | Enable launcher debug output                            |
-| `CLAUDE_SKIP_PERMISSIONS`      | `0`                | Add `--dangerously-skip-permissions` to default wrapper |
+| `WTC_DEBUG`                    | `0` (on)           | `0` is true: debug log on. `WTC_DEBUG=1` quiets it and makes a failed session-id save abort. A symlink target is always refused |
+| `CLAUDE_SKIP_PERMISSIONS`      | wrapper-specific   | `./claudey`: shipped `DEBUG` forces skip-permissions; `0` opts in only when `DEBUG` is false. Older wrapper: `1` opts in |
 | `JUNIPER_CONDA_DIR`            | `/opt/miniforge3`  | Conda root for `util/check_conda_env_torch.bash` (and plant/floor defaults) |
 | `JUNIPER_CASCOR_HOST`          | `localhost`        | Host stack cascor bind host for `util/juniper_plant_all.bash` |
 | `JUNIPER_CASCOR_PORT`          | `8201`             | Host stack cascor listen port for `util/juniper_plant_all.bash` |
@@ -776,8 +775,8 @@ Tip: scheduled `security-scan.yml` keeps `pip-audit --strict --desc on` (no `--s
 
 Tip: two clone/audit lists move together. `docs-full-check.yml` `env.ECOSYSTEM_REPOS` decides which siblings are *cloned*; `DEFAULT_REPOS` in `util/validate_claude_yaml_access.bash` decides which cloned checkouts the `claude.yml` auditor *opens*. Both are "registry publishing repos plus `juniper-deploy`" — adding a sibling to one only leaves a silent gap. See [REFERENCE — Docs Full Check](REFERENCE.md#docs-full-check) and [Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation).
 
-**Claude Code Action (`claude.yml`):** GitHub `@claude` assistant, not the local `claudey` /
-`wake_the_claude.bash` launcher. SHA-pinned `anthropics/claude-code-action` (`# vX.Y.Z` comment);
+**Claude Code Action (`claude.yml`):** GitHub `@claude` assistant. The local `claudey` /
+`wake_the_claude.bash` launcher is [REFERENCE — Local Claude Code Launcher](REFERENCE.md#local-claude-code-launcher). SHA-pinned `anthropics/claude-code-action` (`# vX.Y.Z` comment);
 only input is `secrets.ANTHROPIC_API_KEY` (a **repo** secret). The job `if:` requires the literal
 `@claude` on every `on:` event. Dependabot groups only `codeql-action` — an ungrouped
 `claude-code-action` SHA bump is the healthy PR. Do not overwrite the live file with
@@ -1175,6 +1174,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.64
 **Maintainer:** Paul Calnon

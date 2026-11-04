@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.64
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -75,6 +75,7 @@
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
+- [Local Claude Code Launcher](#local-claude-code-launcher)
 - [Claude Code Action](#claude-code-action)
 - [CodeQL Analysis](#codeql-analysis)
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
@@ -4443,7 +4444,7 @@ With the `SLACK_WEBHOOK_URL` repo secret present (owner-provisioned incoming web
 
 ### Claude Code Action (`claude.yml`)
 
-GitHub `@claude` assistant (`anthropics/claude-code-action`). Event-driven (comments/reviews/issues), SHA-pinned, **not** a required check and **not** the local `claudey` launcher. Operator surface: [Claude Code Action](#claude-code-action). Access audit: [Claude.yml Access Validation](#claudeyml-access-validation).
+GitHub `@claude` assistant (`anthropics/claude-code-action`). Event-driven (comments/reviews/issues), SHA-pinned, **not** a required check. The local `claudey` launcher is [Local Claude Code Launcher](#local-claude-code-launcher). Operator surface for this workflow: [Claude Code Action](#claude-code-action). Access audit: [Claude.yml Access Validation](#claudeyml-access-validation).
 
 ### CodeQL Analysis (`codeql.yml`)
 
@@ -8068,9 +8069,99 @@ The bash auditor covers L2/L3 structure only; juniper-ml's own `on:` event matri
 
 ---
 
+## Local Claude Code Launcher
+
+The local session entry points are `./claudey`, `scripts/claude_interactive.bash` (the symlink target), `scripts/default_interactive_session_claude_code.bash`, and `scripts/wake_the_claude.bash` (the script that execs the `claude` binary). The GitHub Actions assistant is a different surface: [Claude Code Action](#claude-code-action).
+
+juniper-ml#2396 repaired the parser. A rejected model, effort, resume value, or prompt file exits `1` and does not start `claude`. These scripts use bash-success booleans: `0` is true and `1` is false.
+
+### `./claudey` (`scripts/claude_interactive.bash`)
+
+`claudey` is a symlink to `scripts/claude_interactive.bash`. With no arguments it forwards `--model`, `--effort`, a `--` spacer, `--dangerously-skip-permissions`, and `--prompt`, taken from the uncommented `DEFAULT_MODEL`, `DEFAULT_EFFORT`, and `DEFAULT_PROMPT` exports. As of #2396 those exports are `opus`, `max`, and `Hello World, Claude!`. Read the live `export` lines before assuming a later billing switch left them there. Session id, worktree, resume, and remote control stay off unless a flag or the matching `CLAUDE_*` variable turns them on.
+
+Shipped `DEBUG="${TRUE}"` (`TRUE` is `0`). That forces `--dangerously-skip-permissions` on every `./claudey` launch, including when `CLAUDE_SKIP_PERMISSIONS=1`. The comment above the opt-in line describes the flag as opt-in; the `DEBUG` term in the same condition is what actually runs. With `DEBUG` flipped to false, `CLAUDE_SKIP_PERMISSIONS=0` adds the flag and `CLAUDE_SKIP_PERMISSIONS=1` leaves it off.
+
+```bash
+./claudey
+# wake_the_claude.bash receives:
+#   --model opus --effort max -- --dangerously-skip-permissions --prompt 'Hello World, Claude!'
+# claude receives (the spacer and the --prompt flag are dropped; the text is positional):
+#   --effort max --model opus --dangerously-skip-permissions 'Hello World, Claude!'
+
+./claudey -m sonnet -e high -p 'two words'
+./claudey -i 0 -w feature-tree    # opt in: --id 0 (generate) and --worktree feature-tree
+./claudey -r                      # forwards --resume 0
+./claudey sonnet high             # exit 1, usage, wake_the_claude.bash is not called
+```
+
+Model and effort are flags only (`-m` / `--model` / `--model-alias`, `-e` / `--effort` / `--effort-level`). A bare positional word is `Unknown argument` and exit `1`. `-i` / `--id` and `-w` / `--worktree` forward their values. `-r` / `--resume` forwards `--resume 0` (boolean true), because `wake_the_claude.bash` rejects a `--resume` with nothing after it. `--remote-control`, `-rc`, or `CLAUDE_REMOTE_CONTROL=0` adds `--remote-control`.
+
+The wrapper builds a bash array and passes `"${CLAUDE_ARGS[@]}"`. A multi-word prompt, including quotes and `$(...)`, arrives as one argument. The script does not `eval` that array.
+
+### Older wrapper (`default_interactive_session_claude_code.bash`)
+
+`scripts/default_interactive_session_claude_code.bash` is a separate entry. It always calls `wake_the_claude.bash` with `--id --worktree --effort high --prompt "Hello World, Claude!"`. `CLAUDE_SKIP_PERMISSIONS=1` (the digit one) is the opt-in for `--dangerously-skip-permissions` on this file. `./claudey` does not run it.
+
+### `wake_the_claude.bash`
+
+No arguments prints usage and exits `1`. A parser that rejects its flag does the same, once, and the `claude` binary is not executed. `claude` must be an executable found by `type -P`; a shell function of that name is not enough. A missing binary exits `1`.
+
+Flags are normalized to Claude Code's own names. The prompt flag is consumed here: `claude` receives the prompt text as the last positional argument, with no `--prompt`. A `--` spacer is dropped. Options go out in this order, then the prompt: `--resume`, `--session-id`, `--worktree`, `--remote-control`, `--effort`, `--model`, `--print`, `--fork-session`, `--dangerously-skip-permissions`.
+
+| Input | Forwarded |
+|-------|-----------|
+| `-m`, `--model`, `--llm-model`, `--ai-model`, `--model-type` | `--model` |
+| `-e`, `--effort`, `--effort-type`, `--effort-level` | `--effort` |
+| `-r`, `--resume`, `--resume-thread`, `--resume-session` | `--resume` |
+| `--fork`, `--fork-session`, `--resume-fork`, `--resume-fork_session` | `--fork-session` |
+| `-a`, `--print`, `--agent`, `--silent`, `--headless` | `--print` (headless `nohup`) |
+| `-s`, `--skip`, `--skip-permissions`, `--dangerously-skip-permissions` | `--dangerously-skip-permissions` |
+| `-i`, `--id`, `--session`, `--session-id`, `--thread`, … | `--session-id` |
+| `-p`, `--prompt`, `--prompt-string` | positional prompt text |
+
+Accepted model text (compared case-insensitively; the typed text is what is forwarded): aliases `fable`, `opus`, `sonnet`, `haiku`, and full names `claude-fable-5`, `claude-opus-5`, `claude-sonnet-4-6`, `claude-haiku-4-5`. Effort text: `low`, `medium`, `high`, `xhigh`, `max`, `auto`.
+
+Boolean values on this script:
+
+| Flag value | Effect |
+|------------|--------|
+| `--model 0` | `--model` plus `MODEL_DEFAULT` (the active alias, `opus`) |
+| `--model 1` | omit `--model` |
+| `--effort 0` | `--effort` plus `EFFORT_DEFAULT` (`auto`) |
+| `--effort 1` | omit `--effort` |
+| `--resume 0` after `--id <uuid>` | `--resume <that uuid>`, and no `--session-id` |
+| `--resume 0` with no earlier id | a bare `--resume` (Claude Code offers a session) |
+| `--resume 1` | omit `--resume` |
+| `--resume` with no value, or a following flag | exit `1`, no launch |
+| `--worktree`, `--worktree 0`, or `--worktree` before another flag | a bare `--worktree` (Claude Code assigns the name) |
+| `--worktree 1` | omit `--worktree` |
+| `--worktree <name>` | `--worktree <name>` |
+| `--id` or `--id 0` | generate a UUID, pass `--session-id`, write `scripts/sessions/<uuid>.txt` |
+| `--prompt 0`, or `--prompt` with no text | positional `Hello World, Claude!` |
+| `--prompt 1` | no prompt text |
+| `--prompt` whose text starts with `--` | that token is not the prompt; it is parsed as the next flag, and the prompt becomes the default string |
+
+`--id` refuses to write through a symlink (`UNSAFE_TARGET`, exit `1`). Resume follows a symlink. Any other save failure aborts only when `REQUIRE_SAVED_SESSION_ID` is true. Shipped `DEBUG` is true, so `WTC_DEBUG` defaults to `0` and a failed save is a warning that still launches. `WTC_DEBUG=1` quiets the debug log and makes a failed save abort. Resume by file takes a `*.txt` basename in `scripts/sessions/` (no `/`); the file must contain a UUID, and `claude` receives that UUID. An invalid or missing file is left in place.
+
+`--path <dir> --file <name>` and `--file <name> --path <dir>` both load the file. `--path` to an existing file loads that file. A `--file` whose directory never arrives, or a directory plus a missing name, exits `1` with `invalid Prompt File` and does not launch. A `--path` that is neither a file nor a directory exits `1` the same way.
+
+`--print` (and the other headless aliases) runs `nohup` and appends to `<repo>/logs/wake_the_claude.nohup.log`, or `$HOME/wake_the_claude.nohup.log` when the repo log cannot be created. If neither path can be opened, the script exits `1`. Interactive mode execs `"${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}"` in the foreground and returns Claude's status. The line printed before that exec joins the arguments with spaces for display; the exec itself does not re-split them.
+
+On `wake_the_claude.bash`, `-s` is skip-permissions. On `./claudey`, `-s` is a session-id alias and is rewritten to `--id` before `wake_the_claude.bash` sees it.
+
+### Checks
+
+```bash
+python3 -m unittest -v tests/test_claude_interactive.py tests/test_wake_the_claude.py
+```
+
+`tests/test_claude_interactive.py` pins the shipped `DEBUG` force, the `0`/`1` env convention, opt-in id / worktree / remote control, and the rejection of bare positionals. `tests/test_wake_the_claude.py` pins alias forwarding, the prompt as one argument, prompt-file resolution, and the #2396 parser repairs (effort aliases, prompt not swallowing later flags, worktree not consuming the next flag, `--resume 0`, `--model 0`/`1`).
+
+---
+
 ## Claude Code Action
 
-`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher (`scripts/wake_the_claude.bash` / `claudey`). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
+`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. The local CLI launcher is [Local Claude Code Launcher](#local-claude-code-launcher) (`scripts/wake_the_claude.bash` / `claudey`). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
 
 The job is **not** a required status check and is **not** in Quality Gate `needs:`. It has no `push` or `pull_request` trigger, so a commit to `main` does not start it.
 
@@ -8465,6 +8556,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.64  | 2026-11-04 | Local Claude launcher (juniper-ml#2396): `./claudey` is `claude_interactive.bash` (`0` is true; shipped `DEBUG` forces skip-permissions; id and worktree are opt-in). `wake_the_claude.bash` refuses a bad model, effort, resume, or unresolved prompt file and does not launch. `default_interactive_session_claude_code.bash` still passes `--id --worktree --effort high` and treats `CLAUDE_SKIP_PERMISSIONS=1` as opt-in. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +9056,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.64
 **Maintainer:** Paul Calnon
