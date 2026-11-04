@@ -2,7 +2,7 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.84
+**Version:** 0.6.85
 **Status:** Active
 **Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -8497,7 +8497,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
-| 0.6.84  | 2026-11-04 | WebSocket text cap: a decoded frame of exactly 65536 characters is delivered on `/ws/control` and `/ws/workers`. One more character closes control **1009** (next frame unread, rate limiter uncharged) or registration **4005**; the worker message loop stays open. Binary equality is admitted; stock uvicorn stops a frame at `ws_max_size` (16 MiB), so the 100 MiB constant does not run. `/ws/training` does not measure text length. |
+| 0.6.85  | 2026-11-04 | WebSocket text cap: a decoded frame of exactly 65536 characters is delivered on `/ws/control` and `/ws/workers`. One more character closes control **1009** (next frame unread, rate limiter uncharged) or registration **4005**; the worker message loop stays open. Binary equality is admitted; stock uvicorn stops a frame at `ws_max_size` (16 MiB), so the 100 MiB constant does not run. `/ws/training` does not measure text length. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8998,5 +8998,5 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 ---
 
 **Last Updated:** 2026-11-04
-**Version:** 0.6.84
+**Version:** 0.6.85
 **Maintainer:** Paul Calnon
