@@ -21,6 +21,11 @@ GitHub never returns a secret's value, so the token cannot be copied from the Ac
 on stdin only. A value that is not a 36-character UUID (the shape every Codecov upload log here reports, "Token length: 36")
 is refused before anything is set. Afterwards each store is re-read with a ``gh api`` GET and its ``updated_at`` printed.
 Exit 0 when every repository holds the secret, 1 otherwise.
+
+The owner's run of record (2026-11-04, all nine SET at 11:18:42Z-11:18:49Z) used the first version. On a failure it printed
+``gh``'s stderr, and its refusal message gave the value's length; neither happened, as every set succeeded. juniper-ml#2423's
+CodeQL flagged that stderr print as clear-text logging of the secret (the process had received it on stdin), so the set call
+is now ``put()``, which keeps only the exit status. Behaviour on success is unchanged.
 """
 
 from __future__ import annotations
@@ -40,8 +45,13 @@ UUID = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}
 def ask(prompt: str) -> str:
     value = getpass.getpass(prompt).strip()
     if value and not UUID.match(value):
-        raise SystemExit(f"refused: the value is {len(value)} characters and not a UUID; nothing was set")
+        raise SystemExit("refused: the value is not a UUID; nothing was set")
     return value
+
+
+def put(repo: str, value: str) -> bool:
+    """Set the secret; return only whether ``gh`` exited 0. Nothing from that process is kept or printed."""
+    return subprocess.run(["gh", "secret", "set", NAME, "--app", "dependabot", "-R", f"pcalnon/{repo}"], input=value, capture_output=True, text=True).returncode == 0  # nosec B603 B607
 
 
 def stored(repo: str) -> str | None:
@@ -77,11 +87,13 @@ def main() -> int:
         if args.dry_run:
             print(f"{repo}\tDRY-RUN (valid UUID, not set)")
             continue
-        p = subprocess.run(["gh", "secret", "set", NAME, "--app", "dependabot", "-R", f"pcalnon/{repo}"], input=tokens[repo], capture_output=True, text=True)  # nosec B603 B607
+        set_ok = put(repo, tokens[repo])
         when = stored(repo)
-        ok = p.returncode == 0 and when is not None
-        failed += not ok
-        print(f"{repo}\t{'SET' if ok else 'FAILED'}\tupdated_at={when}" + ("" if ok else f"\t{p.stderr.strip()[:160]}"))
+        if set_ok and when is not None:
+            print(f"{repo}\tSET\tupdated_at={when}")
+        else:
+            failed += 1
+            print(f"{repo}\tFAILED (gh exit non-zero or secret absent on re-read; re-run `gh secret set {NAME} --app dependabot -R pcalnon/{repo}` by hand to see why)")
     return 1 if failed else 0
 
 
