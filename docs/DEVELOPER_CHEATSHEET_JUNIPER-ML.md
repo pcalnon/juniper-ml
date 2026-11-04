@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.74
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -802,6 +802,8 @@ Tip: the NPZ contract is SIX keys — `X_val` / `y_val`, never `X_eval`. Decisio
 
 Tip: a renderer `ValueError` is a per-plot SKIP (exit `0`, no PNG); missing matplotlib, a failed payload fetch, or any other render exception is SKIP **and** acceptance failure (exit `1`). Inspect `jq '.driver.plots' $RUN_DIR/manifest.json`. See [REFERENCE — Plot SKIP vs acceptance](REFERENCE.md#plot-skip-vs-acceptance-valueerror-contract).
 
+Tip: a `/ws/workers` close **4029** `Rate limited` is `ConnectionRateLimiter`, and only when `attach_worker_pool` was given one. Refill is `max_connections_per_minute / 60` tokens per second and stops at `burst_size` (defaults 10/min and 3). A refusal keeps the fractional token. The source is the client host, or `unknown`. `Too many rejected handshakes` is `HandshakeCooldown`, the other 4029. See [REFERENCE — worker connection bucket](REFERENCE.md#the-worker-connection-bucket-refills-only-up-to-its-burst).
+
 Tip: PF-1 repeats are a **matrix axis**, not `include` entries (`include` does not inherit `matrix`). `max_epochs` and `output_epochs` must both be `4000`. `scrape_confirmed` is not `target_file_written` — five bridged PF-1 runs wrote the file while Prometheus held zero series. Thresholds are unratified; PF-4/PF-8 are not driver suites. See [REFERENCE — PF Scenario Suites](REFERENCE.md#pf-scenario-suites).
 
 Tip: a non-ASCII `X-API-Key` is a **401** on HTTP and close **4001** on a WebSocket, never a 500 — on `main`. Published `juniper-service-core` **0.7.0** still compares keys as `str` (`hmac.compare_digest` raises `TypeError`, a 500 that `FailedAuthThrottle` never counts). Do not catch that error, and do not turn Sentry frame locals back on — the comparison frame's locals hold the configured key. Published `juniper-observability` **0.4.0** still captures locals. See [REFERENCE — Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
@@ -1129,6 +1131,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Defect Register Close Protocol](REFERENCE.md#defect-register-close-protocol) -- `**FIXED` token, cwd pitfall, third reading vs the two §4 counters
 - [Train / Val / Test Partition Contract](REFERENCE.md#train--val--test-partition-contract) -- shipped `*_full` vs design-closed `X_val`
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default 503-name universe, per-request cost, silent `max_symbols` slice
+- [Worker connection bucket](REFERENCE.md#the-worker-connection-bucket-refills-only-up-to-its-burst) -- `/ws/workers` 4029 `Rate limited`; refill stops at `burst_size`; a refusal keeps the fractional token
 - [Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) -- PF-5/6/7 report-only; `work_countable` third state; baseline/compare refuse
 - [Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) -- W0.2 (juniper-ml#2139): scoped `pip check`, installed pins, `derive_full_split` before recurrence `serve`; CUDA noise does not refuse; `--skip-env-preflight` warns
 - [Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters) -- omitted readout is linear at `default_ridge` (0.0, and the E-H YAML pins it); omitted RFF ridge is `gcv`; crossval fits a fresh model per fold
@@ -1175,6 +1178,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.74
 **Maintainer:** Paul Calnon
