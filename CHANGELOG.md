@@ -78,6 +78,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `tests/test_run_suite_acceptance.py` (`CascorBandMetricsTest`, `NonFiniteBandValueTest`,
     `CascorSuiteLoopAcceptanceTest`); `util/ad-hoc/2026-10-26_apd_ml_002_mutation_check.py` kills 25 of 25 mutants,
     each by its own pin test.
+- **`scripts/wake_the_claude.bash`: `-v`, `--remote-control <name>` and two fatal errors, after the juniper-ml#2396
+  parser rewrite.** `-v` read a `SCRIPT_VERSION` the script never set, so it exited 1, except where the environment
+  carried the `SCRIPT_VERSION` that `claude_interactive.bash` exports as claudey's version (in any session claudey
+  started, for one): there it printed claudey's version. The script now sets its own, `1.0.0` as its header states. `--remote-control` forwards an optional session name again, as Claude Code's
+  `--remote-control [name]` and the usage text describe, and takes `0` / `1` as `--worktree` does. The nohup-log
+  error, which juniper-ml#2396 moved to `debug_log`, and the "claude command not found" error, which had always used
+  it, said nothing with debug output off (`WTC_DEBUG=1`); both print to stderr again. `PROMPT_FILE_DEFAULT` and
+  `PROMPT_PATH_DEFAULT` are gone: nothing read them, and they were built from names nothing assigns, so they expanded
+  to `./` and `/`.
+  - 6 new tests in `tests/test_wake_the_claude.py`, among them `LauncherScriptVariableTests`, which checks that every
+    name the four launcher scripts expand is assigned or expanded with a default. Shellcheck's SC2154 skips
+    all-uppercase names, so it reported neither unassigned name. Against `main`, 5 of the 6 fail; the sixth is the
+    scan's positive control.
 - **A cascor run's eval scalars are cascor's final evaluation, labelled with its split and n, and `aggregate.csv` /
   `REPORT.md` gain the held-out `test_*` columns from it** (juniper-ml#2064; it follows juniper-ml#2369 and is
   `APD-ML-002` ruling 1's "test later"). `stats.json`'s `cascor.eval_scalars`, `summary.md`'s "Eval scalars" and

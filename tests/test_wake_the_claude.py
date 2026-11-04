@@ -830,6 +830,54 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
+    def test_missing_claude_binary_is_reported_with_debug_output_off(self) -> None:
+        """The error went through ``debug_log`` alone, so with ``WTC_DEBUG=1`` a missing claude was a bare exit 1."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            isolated_bin = Path(temp_dir) / "isolated-bin"
+            isolated_bin.mkdir(parents=True, exist_ok=True)
+            bash_path = shutil.which("bash")
+            self.assertIsNotNone(bash_path, msg="bash must be discoverable for this test")
+            assert bash_path is not None
+            os.symlink(str(Path(bash_path)), str(isolated_bin / "bash"))
+
+            env = RedactedEnv(os.environ)
+            env["PATH"] = str(isolated_bin)
+            env["HOME"] = temp_dir
+            env["WTC_SESSIONS_DIR"] = str(Path(temp_dir) / "sessions")
+            env["WTC_LOGS_DIR"] = str(Path(temp_dir) / "logs")
+            env["WTC_DEBUG"] = "1"
+
+            result = self._run_script(["--resume", VALID_UUID, "--prompt", "hello"], cwd=temp_dir, env=env)
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("claude command not found in PATH", result.stderr)
+
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root can write to chmod read-only directories")
+    def test_no_writable_log_location_is_reported_with_debug_output_off(self) -> None:
+        """juniper-ml#2396 moved the nohup-log error to ``debug_log``: with ``WTC_DEBUG=1`` a headless launch exited 1 unexplained."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["WTC_DEBUG"] = "1"
+            read_only_logs = Path(temp_dir) / "read-only-logs"
+            read_only_home = Path(temp_dir) / "read-only-home"
+            for read_only_dir in (read_only_logs, read_only_home):
+                read_only_dir.mkdir(parents=True, exist_ok=True)
+                read_only_dir.chmod(0o555)
+            env["WTC_LOGS_DIR"] = str(read_only_logs)
+            env["HOME"] = str(read_only_home)
+
+            try:
+                result = self._run_script(["--resume", VALID_UUID, "--print", "--prompt", "hello"], cwd=temp_dir, env=env)
+            finally:
+                for read_only_dir in (read_only_logs, read_only_home):
+                    read_only_dir.chmod(0o755)
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("Failed to open nohup log file", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
     def test_resume_with_generated_filename_but_invalid_content_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
@@ -1444,6 +1492,44 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--worktree", "--effort", "high", "--prompt", "hello"])
         self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "--effort", "high", "hello"])
 
+    def test_remote_control_name_is_forwarded_and_a_following_flag_is_not_consumed(self) -> None:
+        """``--remote-control [name]`` lost its optional name in the rewrite, though the usage text still describes it."""
+        for remote_flag in ("-c", "--remote", "--control", "--remote-control"):
+            with self.subTest(remote_flag=remote_flag):
+                args = self._launch_and_get_args(["--resume", VALID_UUID, remote_flag, "laptop-session", "--prompt", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "laptop-session", "hello"])
+
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--remote-control", "--effort", "high", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "--effort", "high", "hello"])
+
+        # As with --worktree: 0 (true) asks for remote control under a name Claude Code assigns, 1 (false) for none.
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--remote-control", "0", "--effort", "high", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "--effort", "high", "hello"])
+
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--remote-control", "1", "--effort", "high", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "high", "hello"])
+
+    def test_script_version_flag_reports_this_scripts_own_version(self) -> None:
+        """``-v`` read a ``SCRIPT_VERSION`` that only claudey exports, as claudey's version: run directly, it exited 1."""
+        header = re.search(r"^# Version: (\S+)$", SCRIPT_PATH.read_text(encoding="utf-8"), re.MULTILINE)
+        self.assertIsNotNone(header, msg="wake_the_claude.bash's header must state its version")
+        assert header is not None
+        inherited_version = "9.9.9-inherited-from-claudey"
+        for inherited in (False, True):
+            with self.subTest(inherited_script_version=inherited):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    invocations_log, env = self._install_fake_claude(temp_dir)
+                    env.pop("SCRIPT_VERSION", None)
+                    if inherited:
+                        env["SCRIPT_VERSION"] = inherited_version
+                    result = self._run_script(["-v"], cwd=temp_dir, env=env)
+                    self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                    self.assertIn(f"wake_the_claude.bash {header.group(1)}\n", result.stdout)
+                    self.assertNotIn(inherited_version, result.stdout)
+
+                    invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+                    self.assertEqual(invocations, [])
+
     def test_resume_true_resumes_the_earlier_session_id_or_lets_claude_pick(self) -> None:
         """``--resume 0`` (boolean true) resumes the session id given before it, else passes a bare ``--resume``."""
         args = self._launch_and_get_args(["--id", VALID_UUID, "--resume", "0", "--prompt", "hello"])
@@ -1570,6 +1656,74 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
 
             args = self._extract_logged_args(args_log)
             self.assertEqual(args[-len(passthrough_args) :], passthrough_args)
+
+
+# The launcher scripts named in AGENTS.md: claudey's claude_interactive.bash and the two other launchers all start wake_the_claude.bash.
+LAUNCHER_SCRIPT_NAMES = ("wake_the_claude.bash", "claude_interactive.bash", "default_interactive_session_claude_code.bash", "resume_session.bash")
+_BASH_NAME = r"[A-Za-z_][A-Za-z0-9_]*"
+# NAME=, NAME+= and NAME[i]=, bare or after export / local / declare / readonly / typeset and their options
+_BASH_ASSIGNMENT = re.compile(rf"(?:^|[\s;&|(])(?:(?:export|local|declare|readonly|typeset)(?:\s+-[A-Za-z]+)*\s+)?({_BASH_NAME})(?:\[[^\]]*\])?\+?=")
+# A declaration without a value, such as "export NAME", "local a b" or "declare -a NAME"
+_BASH_DECLARATION = re.compile(rf"\b(?:export|local|declare|readonly|typeset)(?:\s+-[A-Za-z]+)*((?:\s+{_BASH_NAME})+)\s*$")
+# The names "for NAME in", "read -r NAME", "mapfile -t NAME" and "printf -v NAME" assign
+_BASH_IMPLICIT_ASSIGNMENT = re.compile(rf"\b(?:for|read(?:\s+-[A-Za-z]+)*|mapfile(?:\s+-[A-Za-z]+)*|printf\s+-v)\s+({_BASH_NAME})")
+# $NAME and ${NAME...}; group 2 is set when the expansion supplies or tests a default (:- - := = :? ? :+ +)
+_BASH_EXPANSION = re.compile(rf"(?<!\\)\$(?:\{{[#!]?({_BASH_NAME})(?:\[[^\]]*\])?(:?[-=?+])?|({_BASH_NAME}))")
+# Names bash itself sets, or that every login environment carries
+_BASH_PROVIDED_NAMES = frozenset({"BASH_REMATCH", "BASH_SOURCE", "BASH_VERSION", "BASHPID", "EUID", "FUNCNAME", "HOME", "HOSTNAME", "IFS", "LINENO", "OPTARG", "OPTIND", "OSTYPE", "PATH", "PIPESTATUS", "PPID", "PWD", "RANDOM", "SECONDS", "UID", "USER"})
+
+
+def _unassigned_expansions(script_text: str) -> dict[str, list[int]]:
+    """Map each name ``script_text`` expands without a default, and never assigns, to the line numbers that expand it.
+
+    A heuristic rather than a bash parser: full-line comments are skipped, and an assignment anywhere counts for the whole script.
+    """
+    code = [(number, line) for number, line in enumerate(script_text.splitlines(), 1) if not line.lstrip().startswith("#")]
+    assigned: set[str] = set()
+    for _, line in code:
+        assigned.update(match.group(1) for match in _BASH_ASSIGNMENT.finditer(line))
+        assigned.update(match.group(1) for match in _BASH_IMPLICIT_ASSIGNMENT.finditer(line))
+        declaration = _BASH_DECLARATION.search(line)
+        if declaration:
+            assigned.update(declaration.group(1).split())
+    unassigned: dict[str, list[int]] = {}
+    for number, line in code:
+        for match in _BASH_EXPANSION.finditer(line):
+            name = match.group(1) or match.group(3)
+            if match.group(2) or name in assigned or name in _BASH_PROVIDED_NAMES:
+                continue
+            unassigned.setdefault(name, []).append(number)
+    return unassigned
+
+
+class LauncherScriptVariableTests(unittest.TestCase):
+    """Every name a launcher script expands must be assigned in that script, or expanded with a default.
+
+    ``-v`` read ``SCRIPT_VERSION``, and two prompt defaults read ``PROMPT_FILE_NAME_DEFAULT`` and ``PROMPT_PATH_DIR_DEFAULT``;
+    ``wake_the_claude.bash`` assigned none of the three. Shellcheck's SC2154 cannot report them, because it takes an
+    all-uppercase name to be an environment variable. A name read from the environment on purpose is expanded with a
+    default, ``${NAME:-}``, which also tells the reader where it comes from.
+    """
+
+    def test_every_expanded_name_is_assigned_or_has_a_default(self) -> None:
+        for script_name in LAUNCHER_SCRIPT_NAMES:
+            with self.subTest(script=script_name):
+                script_text = (REPO_ROOT / "scripts" / script_name).read_text(encoding="utf-8")
+                self.assertEqual(_unassigned_expansions(script_text), {}, msg=f"{script_name} expands names it never assigns (name: line numbers)")
+
+    def test_the_scan_reports_an_unassigned_name_and_nothing_else(self) -> None:
+        """A positive control: of the names below, only ``NEVER_ASSIGNED`` is expanded without ever being assigned."""
+        script_text = "\n".join(
+            [
+                "#!/usr/bin/env bash",
+                "# ${IN_A_COMMENT} is not code",
+                'ASSIGNED="x"',
+                'echo "${ASSIGNED} ${NEVER_ASSIGNED} ${FROM_THE_ENVIRONMENT:-fallback} ${HOME}"',
+                'for item in a b; do echo "$item"; done',
+                'echo "$NEVER_ASSIGNED"',
+            ]
+        )
+        self.assertEqual(_unassigned_expansions(script_text), {"NEVER_ASSIGNED": [4, 6]})
 
 
 class WakeTheClaudeGitignoreTests(unittest.TestCase):
