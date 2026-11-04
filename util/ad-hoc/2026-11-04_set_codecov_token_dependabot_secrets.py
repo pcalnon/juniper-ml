@@ -25,14 +25,15 @@ Exit 0 when every repository holds the secret, 1 otherwise.
 The owner's run of record (2026-11-04, all nine SET at 11:18:42Z-11:18:49Z) used the first version. On a failure it printed
 ``gh``'s stderr, and its refusal message gave the value's length; neither happened, as every set succeeded. juniper-ml#2423's
 CodeQL flagged that stderr print as clear-text logging of the secret (the process had received it on stdin), so the set call
-is now ``put()``, which keeps only the exit status. Behaviour on success is unchanged.
+is now ``put()``, which keeps only the exit status. CodeQL then flagged the SET line's ``updated_at``, which ``stored()`` read
+from the listing's ``secrets`` field (a sensitive-named source, though the API never returns a value), so ``gh --jq`` now
+extracts the timestamp. Behaviour on success is unchanged.
 """
 
 from __future__ import annotations
 
 import argparse
 import getpass
-import json
 import re
 import subprocess  # nosec B404 - fixed gh argv, no shell
 import sys
@@ -55,13 +56,10 @@ def put(repo: str, value: str) -> bool:
 
 
 def stored(repo: str) -> str | None:
-    p = subprocess.run(["gh", "api", f"repos/pcalnon/{repo}/dependabot/secrets"], capture_output=True, text=True)  # nosec B603 B607
-    if p.returncode != 0:
-        return None
-    for s in json.loads(p.stdout).get("secrets", []):
-        if s["name"] == NAME:
-            return s["updated_at"]
-    return None
+    """The store's ``updated_at`` for NAME, or None. ``gh --jq`` extracts the timestamp, so no secrets-listing field is handled here."""
+    p = subprocess.run(["gh", "api", f"repos/pcalnon/{repo}/dependabot/secrets", "--jq", f'.secrets[] | select(.name == "{NAME}") | .updated_at'], capture_output=True, text=True)  # nosec B603 B607
+    stamp = p.stdout.strip()
+    return stamp if p.returncode == 0 and stamp else None
 
 
 def main() -> int:
