@@ -8320,8 +8320,8 @@ Publish and CI constraints:
 | Field | Value |
 |-------|-------|
 | **PyPI name** | `juniper-config-tools` |
-| **Published version** | `0.1.0` (PyPI JSON and wheel file list, checked 2026-11-04) |
-| **Tree version** | `0.1.0` in `pyproject.toml` and `juniper_config_tools/_version.py` |
+| **Published version** | `0.1.1` (PyPI JSON and the 0.1.1 wheel file list, checked 2026-11-04). `0.1.0` remains on the index and has no `py.typed` |
+| **Tree version** | `0.1.1` on `main`, in `pyproject.toml` and `juniper_config_tools/_version.py` |
 | **Python** | `>=3.10` |
 | **Import** | `juniper_config_tools` |
 | **Public API** | `env_with_legacy_alias`, `__version__` (`__all__`) |
@@ -8373,7 +8373,7 @@ if value is None:
     value = env_with_legacy_alias("MID", "OLD")
 ```
 
-#### The published 0.1.0 wheel is untyped
+#### PyPI 0.1.1 ships `py.typed`; 0.1.0 does not
 
 PEP 561 needs a `py.typed` marker inside the installed distribution. The git tree has had all three of these since juniper-ml#1237:
 
@@ -8385,7 +8385,7 @@ The file alone does not reach a wheel. These packages have no `MANIFEST.in`, and
 
 The wheel on PyPI at `juniper-config-tools==0.1.0` (file list checked 2026-11-04) contains `__init__.py`, `__main__.py`, `_env_aliases.py`, `_version.py`, and dist-info. It does not contain `py.typed`. That release's classifiers do not include `Typing :: Typed`. A type checker then skips the module (`import-untyped`) and `env_with_legacy_alias` is `Any`, even though `_env_aliases.py` annotates the function.
 
-`pip install juniper-ml[tools]` accepts `>=0.1.0,<0.2.0`, so it still resolves that wheel. A wheel built from the current tree includes the marker; the published 0.1.0 artifact was built before #1237. The in-flight release juniper-ml#2408 bumps the package to 0.1.1 so the next publish is distinguishable from that artifact. An editable install of this repo already has the marker on disk.
+`juniper-config-tools==0.1.1` (GitHub Release `juniper-config-tools-v0.1.1`, 2026-11-04) adds `juniper_config_tools/py.typed` and the classifier `Typing :: Typed`. The helper's behavior is unchanged. `pip install juniper-ml[tools]` accepts `>=0.1.0,<0.2.0` and resolves `0.1.1`, the newest match, so a fresh install is typed. A pin to `==0.1.0` still installs the untyped wheel. An editable install of this repo already has the marker on disk.
 
 ```bash
 python3 -m pytest juniper-config-tools/tests
@@ -8527,7 +8527,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0.6.66  | 2026-11-04 | juniper-config-tools: `""` is set, `DeprecationWarning` is silent outside `__main__`, do not chain hops with `or`, and the PyPI 0.1.0 wheel has no `py.typed` (juniper-ml#1237 / #2408) |
+| 0.6.66  | 2026-11-04 | juniper-config-tools: `""` is set, `DeprecationWarning` is silent outside `__main__`, do not chain hops with `or`. PyPI `0.1.1` ships `py.typed`; the still-published `0.1.0` wheel does not (juniper-ml#1237 / #2408) |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |

@@ -101,11 +101,13 @@ The source is annotated, and the tree ships a PEP 561 marker:
 no `MANIFEST.in`, so an undeclared `py.typed` never reaches a wheel
 (`tests/test_subpackage_py_typed.py`).
 
-The wheel published as `juniper-config-tools==0.1.0` does not contain
-`py.typed` (PyPI file list, checked 2026-11-04). A type checker then
-skips the package (`import-untyped`) and `env_with_legacy_alias` is
-`Any`. A wheel built from this tree includes the marker. An editable
-install does too, because the file is already in the package directory.
+The wheel published as `juniper-config-tools==0.1.1` contains
+`py.typed` (PyPI file list, checked 2026-11-04) and its classifiers
+include `Typing :: Typed`. The `0.1.0` wheel, still on the index, does
+not contain `py.typed`. A type checker skips that older package
+(`import-untyped`) and `env_with_legacy_alias` is `Any`. A fresh
+`pip install` resolves `0.1.1`. An editable install includes the marker
+because the file is already in the package directory.
 
 ## API
 

@@ -123,7 +123,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 - [Documentation Overview](DOCUMENTATION_OVERVIEW.md) -- navigation index
 - [Reference](REFERENCE.md) -- extras, compatibility, and version reference
-- [juniper-config-tools](REFERENCE.md#juniper-config-tools) -- `env_with_legacy_alias`: `""` is set, the deprecation warning is silent outside `__main__`, and the PyPI 0.1.0 wheel has no `py.typed`
+- [juniper-config-tools](REFERENCE.md#juniper-config-tools) -- `env_with_legacy_alias`: `""` is set, the deprecation warning is silent outside `__main__`, and PyPI `0.1.1` ships `py.typed` (the `0.1.0` wheel does not)
 - [Host Orchestration Utilities](REFERENCE.md#host-orchestration-utilities) -- run services on-host with `util/juniper_plant_all.bash` and `util/juniper_chop_all.bash`
 - [Conda Env Torch Shadow Diagnostic](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- classify `import torch` / `torch._C` (exit **2** = P-5 free-threaded; exit **4** = May-7; does not rebuild)
 - [Environment Floor Drift — Malformed Input](REFERENCE.md#malformed-operator-input) -- `env_floor_drift_check.py` exit 2 is a resolution failure, including a truthy non-mapping in `ecosystem.yaml`; a bad extra does not drop `dependencies` floors

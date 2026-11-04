@@ -107,7 +107,7 @@
 | **Audit `claude.yml` access safeguards**| [REFERENCE — Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) + [ANTHROPIC API key walkthrough](../notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md) | docs/ + notes/ |
 | **Operate the GitHub `@claude` assistant** | [REFERENCE — Claude Code Action](REFERENCE.md#claude-code-action) (live pin, `@claude` `if:`, template-snapshot drift) | docs/ |
 | **Debug service-core middleware / control-WS / workers** | [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core); a non-ASCII `X-API-Key` is a 401 on `main` (published 0.7.0 still 500s), and Sentry does not capture frame locals: [Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) | docs/    |
-| **Read a canonical env var with a legacy alias** | [REFERENCE — juniper-config-tools](REFERENCE.md#juniper-config-tools) (`""` is set; the deprecation warning is silent outside `__main__`; the PyPI 0.1.0 wheel has no `py.typed`) | docs/    |
+| **Read a canonical env var with a legacy alias** | [REFERENCE — juniper-config-tools](REFERENCE.md#juniper-config-tools) (`""` is set; the deprecation warning is silent outside `__main__`; PyPI `0.1.1` ships `py.typed`; the `0.1.0` wheel does not) | docs/    |
 | **Create or clean a worktree**          | [Worktree setup](../notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md) / [cleanup V2](../notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md) + [REFERENCE — in-use probe](REFERENCE.md#wider-second-opinion-open-files-and-argv) | notes/ + docs/ |
 | **Check a worktree is idle before removing it** | [REFERENCE — Worktree Divergence](REFERENCE.md#worktree-divergence-is-a-memory-cost) (cwd-only liveness, then STRONG cwd/fd vs WEAK cmdline) | docs/ |
 | **Understand the project**              | [README.md](../README.md)                                                                                                        | Root     |
@@ -244,7 +244,7 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 - **juniper-doc-tools** -- [Local docs](../juniper-doc-tools/README.md) (markdown link validator)
 - **juniper-ci-tools** -- [Local docs](../juniper-ci-tools/README.md) (dep-docs / coverage-gap / env-drift CLIs)
 - **juniper-service-core** -- [Local docs](../juniper-service-core/README.md) + [REFERENCE](REFERENCE.md#juniper-service-core) (shared FastAPI / WebSocket service tier, worker pool)
-- **juniper-config-tools** -- [Local docs](../juniper-config-tools/README.md) + [REFERENCE](REFERENCE.md#juniper-config-tools) (stdlib env-var alias helper; published 0.1.0 wheel is untyped)
+- **juniper-config-tools** -- [Local docs](../juniper-config-tools/README.md) + [REFERENCE](REFERENCE.md#juniper-config-tools) (stdlib env-var alias helper; PyPI `0.1.1` ships `py.typed`; the `0.1.0` wheel does not)
 
 ### Upstream Services
 
