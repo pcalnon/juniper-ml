@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.75
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -41,6 +41,7 @@
 - [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost)
 - [Post-Merge Main Verification](#post-merge-main-verification)
 - [Experiment Stack Utilities](#experiment-stack-utilities)
+- [A failed snapshot save does not re-fit](#a-failed-snapshot-save-does-not-re-fit)
 - [Recurrence Env Preflight](#recurrence-env-preflight)
 - [PF Scenario Suites](#pf-scenario-suites)
 - [Perf-Lane Work Gate](#perf-lane-work-gate)
@@ -4024,6 +4025,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - A busy recurrence `POST /v1/train` is a `409` and exit 4; the driver neither stops the holder nor retries, and after a wall-clock timeout its own fit keeps the service's lock: [One caller per recurrence service](#one-caller-per-recurrence-service).
   - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) saves the model the run trained and scored (juniper-ml#2211): `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, then a size-checked copy of `<snapshots_dir>/<id>.npz` to `.../model.npz`. A `409` (the service no longer holds this run's model) fails the phase, and nothing re-fits a substitute. Only a train response without an `operation_id` (a pre-W1.5 service) falls back to re-running the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` (that pre-0.6.0 CLI has no `--params` flag — `train --params` / `--params-file` arrived with juniper-recurrence#190 in 0.6.0, the release that also returns an `operation_id` — so the dataset_id ref is the only faithful form); `manifest.save_model.source` names the path.
     That CLI is `ports.json` `recurrence_launch.cli` when the launcher recorded one (W1.9, F-D4; `shutil.which` on the driver's PATH otherwise), and rerun parity — the served process's interpreter and `juniper-recurrence-model` version — must hold, or the phase fails without running it.
+    Any other snapshot failure — a status other than 201, a dropped connection or socket timeout, a snapshot id that is not a usable path token, a missing or disagreeing `size_bytes`, or an `OSError` on the copy — fails the phase the same way and does not re-fit ([A failed snapshot save does not re-fit](#a-failed-snapshot-save-does-not-re-fit)).
     Every phase leaves a record in the manifest's `phases` block (`ok` / `failed` + `error` / `skipped` when not enabled / `not_reached`). `degraded` = train succeeded but an ENABLED predict, crossval or save_model phase did not; it is derived from those records, never from `acceptance.ok`, so a plot-only acceptance failure stays `succeeded`.
   - Collects `metrics_final.json` / `metrics_history.json` / `topology.json` / `decision_boundary.npz` (2-D input only) + optional `POST /v1/snapshots` (cascor), `train_response.json` / `predict_response.json` / `crossval_response.json` (recurrence); ALWAYS writes the §13.4 `manifest.json` (also for stalled / timed-out / failed runs) and prints a one-screen summary.
   - **409 preempt (§3.4)**: `start_fresh: true` does NOT stop a live run — the lifecycle lock is held, so the 409 is raised before `start_fresh` is consulted, and after a driver-side stall/budget abort the naive re-run dies on `Training already in progress`. A 409 now gets ONE preemption attempt: `POST /v1/training/stop`; wait for the lifecycle to leave the active set; retry starting once.
@@ -4948,6 +4950,8 @@ The rewrite goes through the same `write_ports_json` that wrote the file before 
 
 Since juniper-ml#2211 the driver's `save_model` saves the scored model through `POST /v1/model/snapshots` whenever `POST /v1/train` returned an `operation_id`, and copies it from `recurrence_launch.snapshots_dir` (`$RUN_DIR/snapshots` when the record has none) to `artifacts/results/model.npz`. `manifest.save_model` names the snapshot, the copy and its `sha256`, or says why no copy was made. The CLI re-run is the fallback for a service that returns no `operation_id`.
 
+A failure on that snapshot path does not fall through to the CLI. See [A failed snapshot save does not re-fit](#a-failed-snapshot-save-does-not-re-fit).
+
 The driver's `save_model` re-run executes `recurrence_launch.cli`. `shutil.which` on the driver's `PATH` is the fallback only when no CLI is recorded, and a recorded CLI that has gone missing fails the phase rather than falling back. Before the CLI runs, **rerun parity** must hold:
 
 - the CLI's interpreter, resolved exactly as the launcher resolves it, is `recurrence_launch.python` (compared as resolved paths, so `bin/python` and the `bin/python3.14` it links to are one interpreter);
@@ -4985,6 +4989,27 @@ jq '{outcome, phase: .phases.save_model, save: .save_model, rerun: .save_model_r
 | `.npz` files under `$RUN_DIR/recurrence-snapshots` | `JUNIPER_RECURRENCE_SNAPSHOTS_DIR` did not reach the service's settings: a run brought up before W1.10, a service not started by `recurrence_up`, or a staged YAML `service.snapshots_dir` (which outranks the env var). |
 | `--up` stops before `serve` and `launch.log` says the launch could not be recorded | `ports.json` could not be rewritten. Repair the run dir and bring the stack up again. |
 | Preflight refused, and `ports.json` has no `recurrence_launch` | Expected: a refused env records nothing. |
+| `phases.save_model` is `failed`, `save_model.source` is `snapshot`, and `save_model_rerun` is null | The snapshot save failed and the CLI did not run. `outcome` is `degraded` (exit 1). Read `phases.save_model.error` in [A failed snapshot save does not re-fit](#a-failed-snapshot-save-does-not-re-fit). |
+
+##### A failed snapshot save does not re-fit
+
+When `POST /v1/train` returned an `operation_id`, `save_model` calls `_save_model_snapshot` and nothing else. The CLI re-fit (`_save_model_rerun`) runs only in the other branch, where train returned no usable `operation_id`. A failed snapshot therefore leaves `save_model_rerun` null. The phase status is `failed`, `derive_recurrence_outcome` reports `degraded`, and the process exits 1 (`EXIT_ACCEPTANCE`). `acceptance.reasons` contains `save_model snapshot failed:` plus `phases.save_model.error`.
+
+`_save_model_snapshot` catches `ServiceUnreachable`, and `RequestTimeout` is a subclass of it. A dropped connection, or a socket timeout on `POST /v1/model/snapshots` (the timeout argument is the run's wall budget), becomes that phase error. It does not propagate to the run-level handler, so the outcome is not `torn_down_early` (exit 3) and not `timed_out`.
+
+The local copy is `artifacts/results/model.npz`. The service's `<snapshots_dir>/<id>.npz` is removed only by the service. This phase deletes the local path only after a copy that it cannot vouch for.
+
+| `phases.save_model.error` | Local `model.npz` |
+|---------------------------|-------------------|
+| Starts `HTTP ` (the status was not 201). Example: `HTTP 500: …`. A 409 also sets `save_model.note` (the identity refusal in the table above). | Not written by this attempt. A file already there is left in place, and it is not added to `artifacts`. |
+| Starts `POST ` and names `/v1/model/snapshots`, and is not the "usable snapshot id" row. No HTTP status came back. A timeout includes the words `timed out`. | Not touched. |
+| `POST /v1/model/snapshots answered 201 without a usable snapshot id` | Not copied. A usable id matches `[A-Za-z0-9][A-Za-z0-9_-]{0,63}` end to end, so it is one path segment. `service_path` is absent. |
+| Starts `copied ` and names `size_bytes`. The value is `repr`'d, so a missing field reads `size_bytes None`. | Deleted, including a file an earlier invocation left. The field is not defaulted to the copy's size. |
+| Starts `cannot copy snapshot` | `shutil.copyfile` or the following `stat` raised `OSError`. The local path is deleted. |
+
+The phase does not re-fit after any of these. Fitting another model is a separate train.
+
+Gate: `tests/test_recurrence_operation_identity_and_dataset_budget.py` (`SaveModelSnapshotTest`). The 409, the disagreeing `size_bytes`, and the unusable id are pinned there; the CLI re-fit is patched to fail the test if it runs while an `operation_id` was returned. The connection, timeout, missing-`size_bytes`, and `OSError` rows are the same function's other returns.
 
 #### F-6 listener pid rule (binding)
 
@@ -5064,7 +5089,9 @@ Kind selection from YAML shape: `training:` → cascor path; `train:` / `crossva
 
 Always writes §13.4 `manifest.json` (including stalled / timed-out / failed runs). Also writes `artifacts/results/stats.json` + `summary.md` (Wave 2.6; stats failure → `stats_error` on the manifest, never fatal). Plots (Wave 2.4/2.5) render client-side when `outputs.plots` requests them — structurally unavailable data is a per-plot SKIP; render errors / missing matplotlib on a requested plot fail acceptance.
 
-Cascor path polls `GET /v1/training/status` and samples loopback `/metrics` (redirect-following — bare `/metrics` 307s) into `metrics_series.csv`; candidate correlation exists **only** there. Recurrence path uses synchronous `POST /v1/train` (response IS completion; Q-2 budget = socket timeout → `timed_out`). `outputs.save_model: true` re-runs `juniper-recurrence train --dataset <dataset_id> … --out …/model.npz` (G-18), using the launcher-recorded CLI under rerun parity (W1.9; [Recurrence launch record and service env](#recurrence-launch-record-and-service-env)).
+Cascor path polls `GET /v1/training/status` and samples loopback `/metrics` (redirect-following — bare `/metrics` 307s) into `metrics_series.csv`; candidate correlation exists **only** there. Recurrence path uses synchronous `POST /v1/train` (response IS completion; Q-2 budget = socket timeout → `timed_out`).
+
+`outputs.save_model: true` saves the scored model by `operation_id` (juniper-ml#2211). The CLI re-fit runs only when that response had no `operation_id`. A failed snapshot save does not re-fit ([A failed snapshot save does not re-fit](#a-failed-snapshot-save-does-not-re-fit); the re-fit's parity rules are [Recurrence launch record and service env](#recurrence-launch-record-and-service-env)).
 
 Coverage: `tests/test_run_experiment.py`.
 
@@ -8465,6 +8492,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.75  | 2026-11-04 | A failed snapshot save does not re-fit: with an `operation_id`, a non-201, a dropped connection, a missing or disagreeing `size_bytes`, or a copy `OSError` stays `degraded` (exit 1) and leaves `save_model_rerun` null. A bad copy deletes `model.npz`. Skipped 0.6.64–0.6.74 (in-flight; #2433 holds 0.6.74). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +8992,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.75
 **Maintainer:** Paul Calnon
