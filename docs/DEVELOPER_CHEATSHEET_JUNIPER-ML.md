@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.65
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -166,7 +166,7 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 ## Claude Code Session Script
 
-> See: `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
+> See: [REFERENCE — Wake the Claude version, remote control, and launch errors](REFERENCE.md#wake-the-claude-version-remote-control-and-launch-errors) | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
 
 | Entry Point                             | Behavior                                                      |
 |-----------------------------------------|---------------------------------------------------------------|
@@ -175,7 +175,7 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 | `CLAUDE_SKIP_PERMISSIONS=1 ./claudey`   | Adds `--dangerously-skip-permissions`                         |
 | `bash scripts/wake_the_claude.bash ...` | Direct launcher with full flag control                        |
 
-The wrapper does **not** include `--dangerously-skip-permissions` unless `CLAUDE_SKIP_PERMISSIONS=1` is set.
+The `./claudey` row above is `scripts/default_interactive_session_claude_code.bash`: `--id --worktree --effort high`, and `CLAUDE_SKIP_PERMISSIONS=1` is that file's skip-permissions opt-in. `./claudey` is `scripts/claude_interactive.bash`. With no arguments it sends `--model opus`, `--effort max`, the prompt `Hello World, Claude!`, and `--dangerously-skip-permissions`, because shipped `DEBUG` is `0` (true). It does not pass `--id` or `--worktree`, and it does not forward a remote-control name.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 
@@ -189,7 +189,7 @@ bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."        
 
 **Safety:** `--id` refuses symlink targets. Resume filenames must be `.txt` basenames (no `/`). File contents must be a valid UUID. Invalid/missing files are preserved.
 
-**Known pitfall:** `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`; prompt strings may split on spaces. Run regression tests after changes.
+**Known pitfall:** the line printed before exec joins `${CLAUDE_CODE_PARAMS[*]}` with spaces. The exec is `"${CLAUDE_CODE_PARAMS[@]}"`, so a prompt with spaces stays one argument. Run regression tests after changes.
 
 ### Resume And Fork Alias Forwarding
 
@@ -217,6 +217,22 @@ This behavior is regression-tested in `tests/test_wake_the_claude.py`:
 | `no Valid Session ID to Resume` | Missing value after `--resume`       | Provide UUID or `.txt` basename                          |
 | File resume fails immediately   | Path separator, wrong ext, wrong dir | Use basename `*.txt` in `scripts/sessions/`              |
 | Alias not recognized            | Parsing regression                   | Run `python3 -m unittest -v tests/test_wake_the_claude.py`, verify alias lists and canonical forwarding |
+| `-v` exits 1, or prints `0.1.1` | `./claudey -v`, or an old `wake_the_claude.bash` that read claudey's exported `SCRIPT_VERSION` | `WTC_DEBUG=1 bash scripts/wake_the_claude.bash -v` prints `wake_the_claude.bash 1.0.0`. `./claudey -v` is `0.1.1` and does not launch |
+| `--version` printed a binary path, or exited 1 with no text | `--version` runs `claude --version`. `-V` and `--claude-version` exit 1, and with `WTC_DEBUG=1` that exit is silent | Use `-v` for this script's version |
+| Headless or direct launch exits 1 and says nothing | `WTC_DEBUG=1` hides `debug_log`. It does not hide the two launch failures below | stderr is `claude command not found in PATH`, or `Failed to open nohup log file` |
+| `./claudey --remote-control my-session` | claudey only turns remote control on | Pass the name to `wake_the_claude.bash`. `--remote-control 0` is a bare flag; `--remote-control 1` omits it |
+
+### Version, remote control, and launch errors (juniper-ml#2405)
+
+```bash
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash -v
+# wake_the_claude.bash 1.0.0
+
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash --remote-control laptop-session --prompt hello
+# claude receives: --remote-control laptop-session hello
+```
+
+`-c`, `--remote`, and `--control` forward the same way. A following flag is not taken as the name. `./claudey` cannot pass a name: `--remote-control`, `-rc`, and `CLAUDE_REMOTE_CONTROL=0` add a bare `--remote-control` only. Full table: [REFERENCE](REFERENCE.md#wake-the-claude-version-remote-control-and-launch-errors).
 
 ---
 
@@ -594,7 +610,7 @@ Full contract: [REFERENCE — F-039 Store Probe](REFERENCE.md#f-039-store-probe)
 |--------------------------------|--------------------|---------------------------------------------------------|
 | `WTC_SESSIONS_DIR`             | `scripts/sessions` | Session ID file storage directory                       |
 | `WTC_LOGS_DIR`                 | `logs/`            | Headless mode log directory                             |
-| `WTC_DEBUG`                    | `0`                | Enable launcher debug output                            |
+| `WTC_DEBUG`                    | `0` (on)           | `0` is true, so the debug log is on. `1` quiets it. A missing `claude` and a failed nohup log still print to stderr |
 | `CLAUDE_SKIP_PERMISSIONS`      | `0`                | Add `--dangerously-skip-permissions` to default wrapper |
 | `JUNIPER_CONDA_DIR`            | `/opt/miniforge3`  | Conda root for `util/check_conda_env_torch.bash` (and plant/floor defaults) |
 | `JUNIPER_CASCOR_HOST`          | `localhost`        | Host stack cascor bind host for `util/juniper_plant_all.bash` |
@@ -1140,6 +1156,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- `degraded` is not a success (exit 1); `train_r2` / `cv_r2` from nested `stats.recurrence`; cascor accuracy columns empty
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
+- [Wake the Claude version, remote control, and launch errors](REFERENCE.md#wake-the-claude-version-remote-control-and-launch-errors) -- `-v` is `wake_the_claude.bash 1.0.0`; `--version` is Claude's; a remote-control name is not a `./claudey` argument
 - [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence, bare `open()` blocks merge
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy gate is authority for `main.py` (count 58); v1 is the name-matching negative example
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments; PF-1 matched epoch pair + matrix-axis repeats; PF-4/PF-8 are not driver suites
@@ -1175,6 +1192,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.65
 **Maintainer:** Paul Calnon

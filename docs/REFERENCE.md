@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.65
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -75,6 +75,7 @@
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
+- [Wake the Claude version, remote control, and launch errors](#wake-the-claude-version-remote-control-and-launch-errors)
 - [Claude Code Action](#claude-code-action)
 - [CodeQL Analysis](#codeql-analysis)
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
@@ -8068,6 +8069,76 @@ The bash auditor covers L2/L3 structure only; juniper-ml's own `on:` event matri
 
 ---
 
+## Wake the Claude version, remote control, and launch errors
+
+juniper-ml#2405, on `scripts/wake_the_claude.bash`. Three flags that look like they belong to `./claudey` do not. `0` is true and `1` is false in this script. Shipped debug is on: `WTC_DEBUG` defaults to `0`, and `WTC_DEBUG=1` quiets `debug_log` only.
+
+### Script version is `-v`
+
+```bash
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash -v
+# stdout:
+# wake_the_claude.bash 1.0.0
+```
+
+`-v` prints that line, exits `0`, and does not exec `claude`. The text is the `# Version:` line in the script header (`SCRIPT_VERSION="1.0.0"`, assigned in the script). An exported `SCRIPT_VERSION` is ignored, including the `0.1.1` that `scripts/claude_interactive.bash` exports. Without `WTC_DEBUG=1` the same command also writes the debug trace to stderr; the version line stays on stdout.
+
+`./claudey -v` and `./claudey --version` print `0.1.1` and return before `wake_the_claude.bash` runs. That is claudey's own version.
+
+On `wake_the_claude.bash`, `--version` does not print `1.0.0`. The flag string is listed on both the model-version pattern and the script-version pattern, and the first match wins, so `--version` runs `claude --version` and prints:
+
+```text
+<absolute path to claude> <claude's version text>
+```
+
+`-V` and `--claude-version` hit that same pattern. The handler then accepts only the exact token `--version`, so both exit `1`. With `WTC_DEBUG=1` the rejection is silent: it is `debug_log` only, and there is no stderr line. The same silence applies to `--version` when `type -P claude` finds nothing.
+
+### Remote-control session name
+
+A session name is an argument of `wake_the_claude.bash`, not of `./claudey`. Accepted aliases: `-c`, `--remote`, `--control`, `--remote-control`. The value is forwarded as Claude Code's `--remote-control`.
+
+| Input | What `claude` receives |
+|-------|------------------------|
+| `--remote-control laptop-session` (same for `-c`, `--remote`, `--control`) | `--remote-control laptop-session` |
+| `--remote-control`, `--remote-control 0`, or `--remote-control` immediately before another flag | `--remote-control` (Claude Code assigns the name) |
+| `--remote-control 1` | the flag is omitted |
+
+```bash
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash --remote-control laptop-session --prompt hello
+# claude receives: --remote-control laptop-session hello
+
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash --remote-control --effort high --prompt hello
+# claude receives: --remote-control --effort high hello
+```
+
+`./claudey` (`-rc`, `--remote-control`, `--remote-control-session`, or `CLAUDE_REMOTE_CONTROL=0`) only appends a bare `--remote-control`. It does not read a following name. `./claudey --remote-control laptop-session` exits `1` with `Unknown argument: laptop-session` and does not call `wake_the_claude.bash`.
+
+### Launch errors that stay visible with debug off
+
+These two failures print to stderr and exit `1` even when `WTC_DEBUG=1`:
+
+| Stderr | When |
+|--------|------|
+| `Error: claude command not found in PATH` | `type -P claude` found no executable. A shell function named `claude` does not count |
+| `Error: Failed to open nohup log file at <logs dir> or <HOME>` | Headless mode (`--print`, also `-a` / `--agent` / `--silent` / `--headless`) could not create `<repo>/logs/wake_the_claude.nohup.log` or `$HOME/wake_the_claude.nohup.log` |
+
+`--version` and `-V` are not in that pair. With debug off and no `claude` binary they are a bare exit `1`.
+
+### Checks
+
+```bash
+python3 -m unittest -v \
+  tests.test_wake_the_claude.WakeTheClaudeSecurityTests.test_script_version_flag_reports_this_scripts_own_version \
+  tests.test_wake_the_claude.WakeTheClaudeSecurityTests.test_remote_control_name_is_forwarded_and_a_following_flag_is_not_consumed \
+  tests.test_wake_the_claude.WakeTheClaudeResumeTests.test_missing_claude_binary_is_reported_with_debug_output_off \
+  tests.test_wake_the_claude.WakeTheClaudeResumeTests.test_no_writable_log_location_is_reported_with_debug_output_off \
+  tests.test_wake_the_claude.LauncherScriptVariableTests
+```
+
+`LauncherScriptVariableTests` checks that every name the four launcher scripts expand is assigned in that script or expanded with a default. Shellcheck's SC2154 skips all-uppercase names, so it does not catch an expansion of an unset `SCRIPT_VERSION`.
+
+---
+
 ## Claude Code Action
 
 `.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher (`scripts/wake_the_claude.bash` / `claudey`). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
@@ -8465,6 +8536,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.65  | 2026-11-04 | `wake_the_claude.bash` (juniper-ml#2405): `-v` prints this script's `1.0.0` and ignores an exported `SCRIPT_VERSION`; `--version` runs `claude --version`. `--remote-control` takes an optional name, and `0` / `1` match `--worktree`. A missing `claude` and a failed nohup log print to stderr when `WTC_DEBUG=1`. `./claudey -v` is still claudey's `0.1.1` and does not forward a remote-control name. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +9036,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.65
 **Maintainer:** Paul Calnon
