@@ -3249,6 +3249,7 @@ python3 -m unittest -v tests/test_compare_baseline.py
 python3 -m unittest -v tests/test_make_baseline.py
 python3 -m unittest -v tests/test_experiment_config_schemas.py
 python3 -m unittest -v tests/test_run_suite.py
+python3 -m unittest -v tests/test_per_run_timeout_boundary.py
 python3 -m unittest -v tests/test_list_runs.py
 python3 -m unittest -v tests/test_snapshot_index.py
 python3 -m unittest -v tests/test_snapshot_classify.py
