@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.55
+**Version:** 0.2.80
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -85,6 +85,7 @@
 | **Run / score a pointer-follow soak probe** | [REFERENCE — Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) (least-covered vs characterisation; `--dry-run` is exempt from the terminal-verdict stop) | docs/    |
 | **Refresh the requirements snapshot** | [REFERENCE — Requirements Snapshot Consolidation](REFERENCE.md#requirements-snapshot-consolidation) (`by-area` is the corpus of record; ledger has no `detail`; `--check-roundtrip` then `--check-views`) | docs/    |
 | **See which E2E matrix rows are still empty** | [REFERENCE — Unfilled-Rows Ledger](REFERENCE.md#canopy-e2e-unfilled-rows-ledger) (`e2e_unfilled_rows.py`; do not plan from the TSV estimator) | docs/    |
+| **See whether a braced path still names `.ssh`** | [REFERENCE — brace cap](REFERENCE.md#a-brace-list-of-64-alternatives-still-names-ssh) (64 alternatives still deny; alternative 65 is allowed; `{1..64}` includes both ends) | docs/    |
 | **Quick-reference dev tasks**           | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md)                                                         | docs/    |
 | **Operate the PyPI release train**      | [Release-train operator runbook](../notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md)                 | notes/   |
 | **Understand flood CI gates / main-verify** | [REFERENCE.md § Flood-Remediation CI Gates](REFERENCE.md#flood-remediation-ci-gates) + [flood analysis](../notes/JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md) | docs/ + notes/ |
@@ -252,6 +253,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.2.55
+**Last Updated:** 2026-11-06
+**Version:** 0.2.80
 **Maintainer:** Paul Calnon
