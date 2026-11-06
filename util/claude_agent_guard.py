@@ -269,7 +269,9 @@ GPG_SIGN_LONG = ("sign", "clearsign", "clear-sign", "detach-sign", "decrypt", "d
 GPG_SIGN_SHORT = "sbd"
 GPG_SHORT_WITH_ARG = "oruRzNfF"
 GPG_EXACT_ALLOWED = ("export",)
-GPG_MIN_ABBREV = 4
+# Shortest prefix GnuPG 2.4 will actually run for a denied option. ``--cl`` is
+# clear-sign and ``--ls`` is lsign-key; one character is ambiguous for every denied option.
+GPG_MIN_ABBREV = 2
 GPG_AGENT_COMMANDS = ("gpg-connect-agent",)
 GPG_AGENT_DENIED = ("learn", "scd")
 GIT_SIGN_SUBCOMMANDS = ("commit", "merge", "rebase", "cherry-pick", "revert", "am", "pull", "commit-tree")
@@ -1020,7 +1022,7 @@ def _gh_action(words: list, opts_with_arg: tuple):
 
 
 def _gpg_option(name: str, table: tuple) -> bool:
-    """GnuPG accepts unambiguous abbreviations of long options, so a long-enough prefix counts."""
+    """GnuPG accepts unambiguous abbreviations of long options, so a prefix of at least ``GPG_MIN_ABBREV`` counts."""
     return any(opt == name or (len(name) >= GPG_MIN_ABBREV and opt.startswith(name)) for opt in table)
 
 
