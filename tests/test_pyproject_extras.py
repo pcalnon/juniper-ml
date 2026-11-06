@@ -86,6 +86,29 @@ _COMPAT_ROW_RE = re.compile(r"^\|\s*`(?P<pkg>juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\
 _REQUIREMENT_EXTRAS_RE = re.compile(r"^(?P<name>[A-Za-z0-9][A-Za-z0-9._-]*)(?:\[(?P<extras>[^\]]*)\])?")
 # The lead-in sentence that introduces that table, naming the package's own version.
 _COMPAT_LEAD_RE = re.compile(r"^The pyproject pins matching `juniper-ml` (?P<version>[0-9][^:]*):$", re.MULTILINE)
+# docs/REFERENCE.md Package Overview cell: | **Version** | `0.11.4` |
+_VERSION_CELL_RE = re.compile(r"^\|\s*\*\*Version\*\*\s*\|\s*`(?P<version>[^`]+)`\s*\|", re.MULTILINE)
+# The sentence above REFERENCE's matrix. propose.py rewrites README's lead-in and leaves this one.
+_DECLARES_RE = re.compile(r"`juniper-ml` (?P<version>\d+\.\d+\.\d+) declares the following pins\.")
+# The clause that names the recurrence pins, which have no matrix column. History uses "published",
+# not "sets them to", so an older floor in the same paragraph is not this release's pin.
+_SETS_THEM_RE = re.compile(r"(?P<version>\d+\.\d+\.\d+) sets them to (?P<body>(?:`juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\])?>=[^`]+`(?:, | and )?)+)")
+_PYPROJECT_VERSION_RE = re.compile(r"^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$")
+# A requirement's package, with a PEP 508 extras marker dropped: the matrix cell is the spec alone.
+_REQ_SPEC_RE = re.compile(r"^(?P<pkg>juniper-[a-z0-9-]+)(?:\[[^\]]*\])?(?P<spec>>=.+)$")
+# Column order of docs/REFERENCE.md's Ecosystem Compatibility matrix, after the series label.
+# Recurrence, service-core, config-tools and model-core have no column (juniper-ml#2482).
+_MATRIX_PACKAGES = (
+    "juniper-data",
+    "juniper-cascor",
+    "juniper-canopy",
+    "juniper-data-client",
+    "juniper-cascor-client",
+    "juniper-cascor-worker",
+    "juniper-ci-tools",
+    "juniper-doc-tools",
+    "juniper-observability",
+)
 
 _DOCS_INLINE_TABLES = (
     _REPO / "AGENTS.md",
@@ -289,6 +312,77 @@ def _compat_table_version(text: str) -> str | None:
     return match.group("version").strip() if match else None
 
 
+def _series_label(version: str) -> str:
+    """``0.11.4`` -> ``0.11.x``, the matrix row the current release owns."""
+    match = _PYPROJECT_VERSION_RE.match(version)
+    if match is None:
+        raise AssertionError(f"pyproject version is not N.N.N: {version!r}")
+    return f"{match.group('major')}.{match.group('minor')}.x"
+
+
+def _specs_from_members(members: list[str]) -> dict[str, str]:
+    """Map a package name to its version spec, dropping a PEP 508 extras marker."""
+    specs: dict[str, str] = {}
+    for member in members:
+        match = _REQ_SPEC_RE.match(member.strip())
+        if match is None:
+            raise AssertionError(f"requirement without a floor: {member!r}")
+        package, spec = match.group("pkg"), match.group("spec")
+        previous = specs.get(package)
+        if previous is not None and previous != spec:
+            raise AssertionError(f"{package} has two specs: {previous} and {spec}")
+        specs[package] = spec
+    return specs
+
+
+def _version_cells(text: str) -> list[str]:
+    """Versions in ``| **Version** | `…` |`` cells. A prose ``**Version**`` mention is not a cell."""
+    return [match.group("version") for match in _VERSION_CELL_RE.finditer(text)]
+
+
+def _declares_versions(text: str) -> list[str]:
+    """Versions in `` `juniper-ml` X.Y.Z declares the following pins. `` sentences."""
+    return [match.group("version") for match in _DECLARES_RE.finditer(text)]
+
+
+def _sets_them_clauses(text: str) -> list[tuple[str, set[str]]]:
+    """``X.Y.Z sets them to `pin`, `pin` and `pin` `` -> that version and those pins.
+
+    Backtick pins are taken from that clause's body only, so a later ``published`` pin is not
+    this release's floor.
+    """
+    clauses: list[tuple[str, set[str]]] = []
+    for match in _SETS_THEM_RE.finditer(text):
+        pins = set(re.findall(r"`([^`]+)`", match.group("body")))
+        clauses.append((match.group("version"), pins))
+    return clauses
+
+
+def _reference_matrix(text: str) -> tuple[list[str], dict[str, list[str]]]:
+    """Header and data rows of REFERENCE.md's Ecosystem Compatibility matrix.
+
+    The header is the row that starts ``| juniper-ml |``. Parsing stops at the first line that
+    is not part of that table, so a later table is not a row.
+    """
+    header: list[str] | None = None
+    rows: dict[str, list[str]] = {}
+    for line in text.splitlines():
+        if header is None:
+            if line.startswith("| juniper-ml |"):
+                header = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            continue
+        if not line.startswith("|"):
+            break
+        if set(line.replace("|", "").strip()) <= set("- "):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if cells and cells[0]:
+            rows[cells[0]] = cells
+    if header is None:
+        raise AssertionError("docs/REFERENCE.md has no Ecosystem Compatibility matrix header")
+    return header, rows
+
+
 class ExtrasDocsLockstepTest(unittest.TestCase):
     """Documented extras tables must match pyproject pin strings exactly."""
 
@@ -426,6 +520,129 @@ class ReadmeCompatTableTest(unittest.TestCase):
         parsed = _pins_from_compat_table(stale)
         self.assertEqual(parsed, {canopy: ">=0.5.0"})
         self.assertNotEqual(parsed.get(canopy), self.expected[canopy])
+
+
+class ReferenceCompatibilityMatrixTest(unittest.TestCase):
+    """Pin the REFERENCE surfaces ``propose.py`` does not edit.
+
+    ``util/release_train/propose.py`` bumps ``pyproject.toml``, ``AGENTS.md``'s Version header
+    and README's compatibility lead-in. ``docs/REFERENCE.md`` still names the release in the
+    Package Overview Version cell, in the sentence `` `juniper-ml` X.Y.Z declares the following
+    pins. ``, and in the current series row of the Ecosystem Compatibility matrix. The three
+    ``recurrence`` pins have no matrix column; the sentence's ``X.Y.Z sets them to …`` clause is
+    the only place that row records them. juniper-ml#2482 moved ``juniper-recurrence`` from
+    ``>=0.8.0`` to ``>=0.8.1`` (0.8.0 answers 500 on ``POST /v1/crossval``) and said no test read
+    either site. README's flat table is a different surface, already pinned by
+    ``ReadmeCompatTableTest``. The extras tables are pinned by ``ExtrasDocsLockstepTest``.
+    """
+
+    version: ClassVar[str]
+    specs: ClassVar[dict[str, str]]
+    recurrence: ClassVar[set[str]]
+    reference: ClassVar[str]
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        if sys.version_info < (3, 11):
+            raise unittest.SkipTest("tomllib requires Python 3.11+")
+        with _PYPROJECT.open("rb") as handle:
+            project = tomllib.load(handle)["project"]
+        cls.version = project["version"]
+        members: list[str] = []
+        for extra, extra_members in project.get("optional-dependencies", {}).items():
+            if extra == "all":
+                continue
+            members.extend(member for member in extra_members if not str(member).startswith("juniper-ml["))
+        cls.specs = _specs_from_members(members)
+        cls.recurrence = set(project["optional-dependencies"]["recurrence"])
+        cls.reference = _REFERENCE_MD.read_text(encoding="utf-8")
+
+    def test_package_overview_version_cell_matches_pyproject(self) -> None:
+        cells = _version_cells(self.reference)
+        self.assertEqual(
+            cells,
+            [self.version],
+            "docs/REFERENCE.md Package Overview Version cell drifted from pyproject.toml; " "propose.py does not edit it (juniper-ml#2482)",
+        )
+
+    def test_compatibility_sentence_names_this_release(self) -> None:
+        named = _declares_versions(self.reference)
+        self.assertEqual(
+            named,
+            [self.version],
+            "docs/REFERENCE.md's 'declares the following pins' sentence names a stale juniper-ml version",
+        )
+
+    def test_current_series_row_matches_pyproject_floors(self) -> None:
+        header, rows = _reference_matrix(self.reference)
+        self.assertEqual(header, ["juniper-ml", *_MATRIX_PACKAGES])
+        series = _series_label(self.version)
+        self.assertIn(series, rows, f"docs/REFERENCE.md has no {series} row for pyproject {self.version}")
+        cells = rows[series]
+        self.assertEqual(len(cells), len(header), f"{series} row has a different width than the matrix header")
+        self.assertEqual(cells[0], series)
+        for package, cell in zip(header[1:], cells[1:], strict=True):
+            with self.subTest(package=package):
+                self.assertEqual(cell, self.specs[package], f"{series} cell for {package} drifted from pyproject.toml")
+        for pin in self.recurrence:
+            package = pin.split("[", 1)[0].split(">=", 1)[0]
+            self.assertNotIn(package, header, f"{package} gained a matrix column; the sentence's 'sets them to' clause would no longer be its only record")
+
+    def test_sentence_sets_recurrence_pins_to_the_extra(self) -> None:
+        clauses = _sets_them_clauses(self.reference)
+        self.assertEqual(len(clauses), 1, f"expected one 'sets them to' clause, found {clauses!r}")
+        named, pins = clauses[0]
+        self.assertEqual(named, self.version, "the 'sets them to' clause names a stale juniper-ml version")
+        self.assertEqual(
+            pins,
+            self.recurrence,
+            "docs/REFERENCE.md's recurrence clause drifted from the [recurrence] extra. " "0.8.0 admits juniper-model-core 0.2.0 and POST /v1/crossval answers 500",
+        )
+
+    def test_version_cell_parser_ignores_a_prose_mention(self) -> None:
+        """A ``**Version**`` mention that is not a table cell is not the Package Overview contract."""
+        text = "propose.py rewrites the **Version** header.\n| **Version**            | `0.11.3`     |\n"
+        self.assertEqual(_version_cells(text), ["0.11.3"])
+        self.assertNotEqual(_version_cells(text), [self.version])
+
+    def test_parser_reads_the_current_series_row_not_an_older_one(self) -> None:
+        """A stale current-series cell stays visible; an older row is not substituted for it."""
+        text = "| juniper-ml | juniper-data |\n|------------|--------------|\n| 0.10.x     | >=0.15.0     |\n| 0.11.x     | >=0.17.0     |\n\n### Service Ports\n"
+        header, rows = _reference_matrix(text)
+        self.assertEqual(header, ["juniper-ml", "juniper-data"])
+        self.assertEqual(rows["0.10.x"][1], ">=0.15.0")
+        self.assertEqual(rows["0.11.x"][1], ">=0.17.0")
+        self.assertNotEqual(rows["0.11.x"][1], self.specs["juniper-data"])
+        self.assertNotIn("Service Ports", rows)
+
+    def test_spec_drops_the_extras_marker(self) -> None:
+        """The matrix cell is the spec. ``juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`` is ``>=0.9.0``."""
+        specs = _specs_from_members(
+            [
+                "juniper-canopy[juniper-cascor,juniper-data]>=0.9.0",
+                "juniper-data[api]>=0.17.1",
+            ]
+        )
+        self.assertEqual(specs, {"juniper-canopy": ">=0.9.0", "juniper-data": ">=0.17.1"})
+
+    def test_sets_them_clause_ignores_the_historical_pin(self) -> None:
+        """``published`` keeps the previous floor. Only ``sets them to`` is this release's pin.
+
+        The 0.11.4 sentence records both ``>=0.8.1`` (current) and ``>=0.8.0`` (0.11.0 through
+        0.11.3). A parser that took every backtick pin would call the old floor current.
+        """
+        current = ", ".join(f"`{pin}`" for pin in sorted(self.recurrence)[:-1])
+        last = sorted(self.recurrence)[-1]
+        if current:
+            current = f"{current} and `{last}`"
+        else:
+            current = f"`{last}`"
+        historical = "`juniper-recurrence>=0.8.0,<0.9.0`"
+        text = f"`juniper-ml` {self.version} declares the following pins. {self.version} sets them to {current}. 0.11.0 through 0.11.3 published {historical}."
+        self.assertEqual(_declares_versions(text), [self.version])
+        clauses = _sets_them_clauses(text)
+        self.assertEqual(clauses, [(self.version, set(self.recurrence))])
+        self.assertNotIn(historical.strip("`"), clauses[0][1])
 
 
 if __name__ == "__main__":
