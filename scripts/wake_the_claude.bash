@@ -2,7 +2,7 @@
 ########################################################################################################################################################################
 # Author: Paul Calnon
 # Date: 2026-03-12
-# Version: 1.0.0
+# Version: 1.1.0
 # Status: Development
 # License: MIT
 # Copyright: 2026 Paul Calnon
@@ -118,9 +118,9 @@ if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
 fi
 
 SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
-# This script's own version, as its header states, for -v. Assigned unconditionally: claude_interactive.bash exports
+# This script's own version, as its header states, for --script-version. Assigned unconditionally: claude_interactive.bash exports
 # SCRIPT_VERSION as its own version, which this script would otherwise inherit and report as its own.
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.1.0"
 # set -x
 # PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): ${PS4}: "
 # PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): "
@@ -351,10 +351,11 @@ FILE_FLAGS="-f | --file | --file-name"
 PATH_FLAGS="-l | --path | --file-path"
 PROMPT_FLAGS="-p | --prompt | --prompt-string"
 WORKTREE_FLAGS="-w | ${CLAUDE_WORKTREE_FLAGS} | --work-tree | --working-tree"
-MODEL_VERSION_FLAGS="-V | ${CLAUDE_VERSION_FLAGS} | --claude-version"
+MODEL_VERSION_FLAGS="-v | -V | ${CLAUDE_VERSION_FLAGS} | --claude-version"
 # --version is Claude Code's own version flag, so it asks for Claude Code's version alone; this script's version takes a flag of its
 # own (owner ruling, 2026-11-04). The two patterns once shared --version, and the model-version pattern, matched first, won.
-SCRIPT_VERSION_FLAGS="-v | --script-version"
+# -v follows --version, as `claude -v` does (owner ruling, 2026-11-06); until then it printed this script's version.
+SCRIPT_VERSION_FLAGS="--script-version"
 EFFORT_FLAGS="-e | ${CLAUDE_EFFORT_FLAGS} | --effort-type | --effort-level"
 HEADLESS_FLAGS="-a | ${CLAUDE_HEADLESS_FLAGS} | --agent | --silent | --headless"
 REMOTE_CONTROL_FLAGS="-c | --remote | --control | ${CLAUDE_REMOTE_CONTROL_FLAGS}"
@@ -1377,14 +1378,17 @@ function parse_model_version_flags() {
     elif matches_pattern "${current_flag}" "${MODEL_VERSION_FLAGS}"; then
         debug_log "Received Model Version Flag: \"${current_flag}\""
         shift
+        # The errors go to stderr as well: with debug output off (WTC_DEBUG=1) they would leave a bare exit 1
         if [[ ( "${version_bin}" == "" ) || ( ! -x "${version_bin}" ) ]]; then
             debug_log "Error: claude command not found in PATH"
+            echo "Error: claude command not found in PATH" >&2
             result_value="${FALSE}"
         elif [[ -x "${version_bin}" ]]; then
             current_version="$("${version_bin}" ${CLAUDE_VERSION_FLAGS})"
             debug_log "Current Version: \"${current_version}\""
             if [[ "${current_version}" == "" ]]; then
                 debug_log "Error: Unable to retrieve Model Version. Exiting..."
+                echo "Error: \"${version_bin} ${CLAUDE_VERSION_FLAGS}\" printed no version" >&2
                 result_value="${FALSE}"
             else
                 debug_log "Model Version: \"${version_bin} ${CLAUDE_VERSION_FLAGS}\": \"${current_version}\""
@@ -1737,6 +1741,8 @@ while (( ${#*} > 0 )); do
     # A parser that could not use its flag stops the launch: claude code never starts on input this script rejected
     if [[ "${PARSE_RESULT}" != "${TRUE}" ]]; then
         debug_log "Error: Failed to parse Input Param: \"${CURRENT_ELEMENT}\" (result: ${PARSE_RESULT}). Exiting..."
+        # On stderr too: with debug output off (WTC_DEBUG=1) the refusal was the usage text alone, with no reason
+        echo "Error: refused \"${CURRENT_ELEMENT}\": its value is missing or invalid (WTC_DEBUG=0 logs why)" >&2
         usage "${FALSE}"
     fi
 
@@ -1751,6 +1757,7 @@ done
 # with no file name -- must not launch claude code without the prompt it was asked to send.
 if [[ ( "${VALID_PROMPT_PARAM}" != "${TRUE}" ) && ( ( "${FILE_NAME}" != "" ) || ( "${PATH_NAME}" != "" ) ) && ( "${PROMPT_FILE}" == "" ) ]]; then
     debug_log "Error: received an invalid Prompt File. Exiting..."
+    echo "Error: no prompt file found for --file \"${FILE_NAME}\" and --path \"${PATH_NAME}\"" >&2
     usage "${FALSE}"
 fi
 

@@ -169,7 +169,7 @@ EXPECTED_EXTRAS = {
     },
     "recurrence": {
         "juniper-recurrence-model>=0.6.0,<0.7.0",
-        "juniper-recurrence>=0.8.0,<0.9.0",
+        "juniper-recurrence>=0.8.1,<0.9.0",
         "juniper-recurrence-client>=0.3.0,<0.4.0",
     },
     "all": {
