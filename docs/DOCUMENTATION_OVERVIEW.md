@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.55
+**Version:** 0.2.60
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -64,6 +64,7 @@
 | **See whose recurrence fit holds the listener** | [REFERENCE — One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service) (busy `409`, `GET /v1/training/status`; a timed-out driver fit keeps the lock) | docs/ |
 | **Handle a recurrence error that quotes a header value** | [REFERENCE — Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text) (a 502 `detail` can contain the rejected data API key; the driver copies it into the run record) | docs/ |
 | **Read a run's `stats.json` / `summary.md`** | [REFERENCE — Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) (de-ratified `wall_seconds`, per-poll step duration, `scrape_confirmed` tri-state, recurrence timings under `outcome.timings`) | docs/    |
+| **Read a zero score or a zero θ** | [REFERENCE — A zero is a measured value](REFERENCE.md#a-zero-is-a-measured-value) (`- accuracy: 0` and a bar of height 0; a bool is text in `summary.md` only; `train.theta: 0` stays `explicit`) | docs/    |
 | **Check which generators an env can run** | [REFERENCE — Generator Availability Matrix](REFERENCE.md#generator-availability-matrix-on-host) (gates, mnist/equities install paths, probe one-liner) | docs/    |
 | **Run `equities` / `equities_seq` without a 422** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (14-symbol refuse; unit is symbols because cost is per request; silent slice deleted) | docs/    |
 | **Tell two `equities_seq` mints apart** | [REFERENCE — Equities Dataset Id Does Not Pin Array Content](REFERENCE.md#equities-dataset-id-does-not-pin-array-content) (`dataset_id` hashes the request; compare `meta.checksum`; an all-zero `dividend` is a silent fill) | docs/    |
@@ -252,6 +253,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.2.55
+**Last Updated:** 2026-11-04
+**Version:** 0.2.60
 **Maintainer:** Paul Calnon

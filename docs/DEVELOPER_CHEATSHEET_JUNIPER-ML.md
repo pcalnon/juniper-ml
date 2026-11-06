@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.68
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -57,6 +57,7 @@
 | `jq '.outcome.timings' $RUN_DIR/artifacts/results/stats.json` | Read Wave 2.6 timings; recurrence train/crossval live here, not under `.recurrence` |
 | `jq '.cascor.training_step_duration.basis, .provenance.metrics_scraped.scrape_confirmed' $RUN_DIR/artifacts/results/stats.json` | Per-poll (not per-step) p50/p95; scrape_confirmed is tri-state |
 | `jq '{schema, eval: .cascor.eval_scalars, in_loop: .cascor.eval_scalars_in_loop}' $RUN_DIR/artifacts/results/stats.json` | Cascor eval scalars = the final evaluation (`split`, `n_samples`, `held_out`, or `absent` + why); in-loop values beside them. `/1` files hold in-loop values in `eval_scalars` (juniper-ml#2064) |
+| `jq '.cascor.eval_scalars.accuracy, .recurrence.theta' $RUN_DIR/artifacts/results/stats.json` | `0` / `0.0` is a measured value (`- accuracy: 0`, a bar of height 0, column kept). A bool is text in `summary.md` and is dropped from the plot and from `aggregate.csv`. `train.theta: 0` stays `explicit`. [A zero is a measured value](REFERENCE.md#a-zero-is-a-measured-value) |
 | `python util/experiments/read_run_metrics.py SUITE_DIR` | Read ratified `step_count` / `mean_step_seconds` (not `wall_seconds` / `timings.drive`) |
 | `python util/experiments/make_baseline.py --tag TAG --suite SUITE_DIR` | Bless suite runs under `~/.local/state/juniper-experiments/baselines/<TAG>/` |
 | `python util/experiments/compare_baseline.py --baseline TAG --suite SUITE_DIR` | Split-compare a suite to a Q-8 baseline (exit 0 PASS/WAIVED, 1 FAIL, 2 REFUSED) |
@@ -1147,6 +1148,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Suite Driver](REFERENCE.md#suite-driver) -- `run_suite.py` expansion, resume, cascor parallel floor, Grafana env toggle
 - [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- `degraded` is not a success (exit 1); `train_r2` / `cv_r2` from nested `stats.recurrence`; cascor accuracy columns empty
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
+- [A zero is a measured value](REFERENCE.md#a-zero-is-a-measured-value) -- accuracy `0` stays in `summary.md`, the plot, and the suite column; a bool does not; `train.theta: 0` stays `explicit`
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
 - [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence, bare `open()` blocks merge
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy gate is authority for `main.py` (count 58); v1 is the name-matching negative example
@@ -1183,6 +1185,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.68
 **Maintainer:** Paul Calnon
