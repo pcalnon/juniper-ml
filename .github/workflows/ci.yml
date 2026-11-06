@@ -403,6 +403,12 @@ jobs:
           # mutates-source, and exit codes. util/ is not pre-commit-lint-gated, so this
           # unittest is the gate (flood remediation §4 item 7).
           python3 -m unittest -v tests/test_predict_merge.py
+          # tests/test_predict_merge_scratch_edges.py: the scratch borrows a shallow
+          # linked worktree's common object store (not the worktree git dir), matches
+          # a sha256 source's object format, and checks out an LFS pointer without
+          # smudging it. Beside test_predict_merge.py; util/ is not lint-gated, so
+          # this unittest is the gate.
+          python3 -m unittest -v tests/test_predict_merge_scratch_edges.py
           # tests/test_fleet_supervisor_contract.py: static contract for the read-only
           # fleet-supervisor subagent (.claude/agents/fleet-supervisor.md) -- exact tool set
           # {Read,Grep,Glob,Bash}, opus+max, and body wiring to predict_merge.py + all four
