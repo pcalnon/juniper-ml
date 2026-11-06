@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.79
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -4690,6 +4690,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - **429 header passthrough** — `RateLimiter` raises `HTTPException` carrying `Retry-After` + `X-RateLimit-*`; `SecurityMiddleware.dispatch` must rebuild `JSONResponse(..., headers=exc.headers)`. RateLimiter unit tests alone do not exercise that catch path.
 - **Control-WS log sanitizing** — reject logs that interpolate untrusted Origin/command text; go through the module-local `_sanitize_for_log` helpers (`control_security` strips `\r`/`\n`; `control_stream` also drops other C0 controls, keeping tabs) so CRLF cannot forge multi-line control-plane records. Sanitizing changes log records only, never handshake outcomes or ack JSON.
 - **Zero rate limit** — `ws_control_rate_limit_per_sec=0` builds a `LeakyBucket` with no refill; `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop.
+- **Control-channel edges** — the bucket banks at most `capacity` and admits at a balance of at least 1 (a denial does not spend a token); Origin match is exact, and an origin that strips to empty fails closed; the cooldown blocks on the Nth rejection and drops one aged exactly one window; a block lifts when `now` reaches `blocked_until`. Operator surface: [Control channel burst, origin match, and cooldown edges](#control-channel-burst-origin-match-and-cooldown-edges).
 - **`/ws/workers` fail-closed** — a bad/missing `X-API-Key` closes **4001** without accepting; a non-object or shape-invalid registration closes **4008** with no `registration_ack`; `submit_result` rejects wrong-worker / unassigned results before the protocol parse; binary attachments over 100 MB get `Binary frame too large`. A clean disconnect and a mid-result transport abort (expected-binary-got-text / oversize) **requeue** the in-flight task rather than leaving it assigned until `task_reassignment_timeout`. Control receive rejects malformed / non-object JSON with close **1003** rather than an `AttributeError`.
 - **WS tunables are declared, not implicit** — `websocket/tunables.py` holds all eleven settings fields the WebSocket handlers read, each with its default and a `security` flag. Six are security controls: the Origin allowlist, the control-endpoint kill switch, the control rate limit, and the three handshake-cooldown parameters. Call sites pass only a name; the default lives in the registry.
   - The `getattr`-based decoupling is deliberate and kept — the shared package still never imports a consuming service's settings class. What changes is that a miss which looks like a misspelling now logs a WARNING naming both spellings, instead of silently reverting a security control to a library default forever (`ws_control_rate_limit_per_second` vs `..._per_sec`).
@@ -8378,16 +8379,63 @@ Sanitizing flattens log *records* only — it does not change handshake outcomes
 
 #### Control WS rate limiting (`ws_control_rate_limit_per_sec`)
 
-Control-plane WebSockets build a per-connection `LeakyBucket` from `ws_control_rate_limit_per_sec` (default `10`); a denied command acks `rate_limited` with `data.retry_after` from `LeakyBucket.retry_after`.
+Control-plane WebSockets build a per-connection `LeakyBucket` from `ws_control_rate_limit_per_sec` (default `10`). A denied command acks `rate_limited` with `data.retry_after` from `LeakyBucket.retry_after`.
+The class name says leaky bucket. The code is a token bucket, so a connection may spend a banked burst at once.
+The cap, the exact-token admit, Origin membership, and when a cooldown block lifts are [Control channel burst, origin match, and cooldown edges](#control-channel-burst-origin-match-and-cooldown-edges).
 
 | Setting | Effect |
 |---------|--------|
-| `> 0` (default) | Normal refill; `retry_after` is roughly the seconds until one token |
+| `> 0` (default) | Refill at that many tokens per second, banked up to the same number. `retry_after` is the deficit until one token, rounded to 0.1 s |
 | `= 0` | No refill — `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop |
 
 A client seeing a very large `retry_after` on a zero limit is the expected hard-backoff path; raise the setting if you want faster refill.
 
-Repeated *rejected handshakes* are throttled separately by `HandshakeCooldown`, which tracks rejections per client IP: more than `max_rejections` (default **10**) within `window_sec` (default **60**) blocks that IP for `block_sec` (default **300**, i.e. 5 minutes) and closes further attempts with **4029** `Too many rejected handshakes`. The state is in memory only, so a server restart clears it — a deliberate NAT-hostile escape hatch, since many clients can share a single egress IP.
+Repeated *rejected handshakes* are throttled separately by `HandshakeCooldown`, one map per app, keyed by client IP.
+The **Nth** rejection blocks, where N is `ws_control_cooldown_rejections` (default **10**): the check is `len >= max_rejections` after the new stamp is stored, so the 10th rejection blocks and the 11th is not required.
+The window is `ws_control_cooldown_window_sec` (default **60**) and the block is `ws_control_cooldown_block_sec` (default **300**). Further attempts close **4029** `Too many rejected handshakes`.
+The map is in memory only, so a server restart clears it. That is a deliberate NAT-hostile escape hatch, since many clients can share one egress IP.
+
+#### Control channel burst, origin match, and cooldown edges
+
+`control_stream_handler` in `juniper_service_core.websocket.control_stream` is `/ws/control`. The handshake gates run before `accept()`. Commands then go through `LeakyBucket.try_acquire`.
+
+**Burst.** The handler passes the same number as capacity and as refill rate: `LeakyBucket(capacity=rate_limit, refill_rate=float(rate_limit))`.
+`try_acquire` sets the balance to `min(capacity, tokens + elapsed * rate)` and admits only when that balance is **at least 1**, then subtracts 1.
+A long idle banks at most `capacity`. It does not bank `elapsed * rate` past the cap. A refill that lands on exactly 1.0 is admitted and leaves 0.
+A denial does not subtract: a half token stays a half token.
+`retry_after` is `0.0` when a token is already available, `3600.0` when `refill_rate <= 0`, otherwise `round((1 - tokens) / rate, 1)`. A deficit of 0.88 s reports **0.9**.
+
+Pong frames do not spend a token. Keepalive is not a command. An oversize frame closes **1009** `Message too large` before the command handler, so it does not spend one either. An unknown command does spend one, because the acquire runs before the command-name check. `capacity` of 0 never admits: `min(0, …)` stays under 1.
+
+**Origin.** `validate_control_origin` runs only when `ws_control_allowed_origins` is a non-empty list. The default is `None`, which skips the check.
+With a list set, the header and each allowlist entry are lowercased and stripped of trailing `/`. Membership is exact.
+A missing Origin, or one that strips to empty (`/`, `///`), is rejected before that membership test, including when an allowlist entry strips to the same empty string.
+A longer host is not a prefix or a suffix: `https://app.example.evil` and `https://evil.app.example` both miss `https://app.example`. `HTTPS://App.Example/` matches `https://app.example`.
+A reject closes **4003** `Origin not allowed`.
+
+**Cooldown.** `record_rejection` keeps a stamp only when it is strictly newer than `now - window_sec`. A rejection aged exactly 60 s does not count. One a millisecond inside the window does.
+On the Nth kept stamp the IP is blocked until `now + block_sec` and that IP's history is cleared.
+`is_blocked` stays true only while `now < blocked_until`. At that exact instant the entry is removed and the handshake is allowed.
+`get_block_remaining` returns `None` at that instant and removes the entry. Slightly earlier it returns the remainder rounded to one decimal: 0.06 s remaining reports **0.1**.
+Every **50** recorded rejections, an IP whose every stamp is strictly older than `2 * window_sec` is dropped. A stamp aged exactly two windows stays.
+
+What increments the counter: a failed API-key check, and a failed Origin check. What does not: the kill switch (`disable_ws_control_endpoint`, close **1013** `Control endpoint disabled`), and an IP that is already blocked (close **4029**, no extra stamp). A socket with no client address is stored as `"unknown"`, and every such socket shares that one key.
+
+**What the browser sees.** All four refusals close before `accept()`: kill switch **1013**, cooldown **4029**, auth **4001**, Origin **4003**. Uvicorn turns a pre-accept close into HTTP **403** and drops the code and the reason (`APD-SVCCORE-016`). The code remains the ASGI reason in the server log. Accepting first so the code is visible on the wire is the regression the handler is written to prevent.
+
+| Symptom | What it is |
+|---------|------------|
+| A burst of `capacity` commands, then `rate_limited` | Expected. Idle time does not raise the burst above `capacity`. |
+| `retry_after` is 3600 | `ws_control_rate_limit_per_sec` is 0, or the bucket was built with a non-positive refill rate. |
+| `retry_after` is 0.9 after a short wait | Rounded to 0.1 s. A deficit of 0.88 s reports 0.9. |
+| Origin rejected though the host "contains" an allowed origin | Exact match after lowercasing and stripping trailing slashes. Not a prefix or a suffix. |
+| Allowlist `["/"]` and Origin `/` still rejected | An origin that strips to empty fails closed before membership. |
+| The 10th bad handshake blocks the IP for 5 minutes | Default is `>= 10` inside 60 s, then 300 s. A stamp aged exactly 60 s does not count. |
+| The block is gone at its exact end, and remaining time is not 0 | Hold is `now < blocked_until`. Equality clears the entry and `get_block_remaining` is `None`. |
+| The client sees HTTP 403, not close 4029 or 4003 | Pre-accept close. Read the server log for 1013, 4029, 4001, or 4003. |
+| Every client behind one NAT is blocked together | The key is the source IP. A missing address shares `"unknown"`. A restart clears the map. |
+
+Source: `juniper-service-core/juniper_service_core/websocket/control_security.py` and `control_stream.py`. Tests: `juniper-service-core/tests/test_websocket_control_security.py`, `test_websocket_control_stream.py`.
 
 #### `/ws/workers` contracts
 
@@ -8415,6 +8463,9 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | A health probe gets 429 | Health/docs/metrics are exempt in service-core — check an upstream proxy or a non-exempt path. |
 | A large POST is accepted despite the body limit | The mutating-method stream cap must be unconditional; a `Content-Length`-only fast path is the bypass class. |
 | Multi-line or forged log record after a bad Origin/command | `_sanitize_for_log` regression — never interpolate unsanitized Origin/command into logger format strings. |
+| `/ws/control` admits a burst, then `rate_limited` | Token bucket: at most `capacity` (the rate-limit setting), even after a long idle. A denial does not spend a token. See [Control channel edges](#control-channel-burst-origin-match-and-cooldown-edges). |
+| `/ws/control` client sees HTTP 403 | Pre-accept close. The log has 1013 (disabled), 4029 (cooldown), 4001 (auth), or 4003 (origin). |
+| Control cooldown blocked on the 10th failure | `len >= ws_control_cooldown_rejections` (default 10). A rejection aged exactly 60 s does not count. The block lifts when `now` reaches `blocked_until`. |
 | Worker WS closes 4001 before `connection_established` | API-key auth is enabled — send `X-API-Key`, or disable `app.state.api_key_auth` locally. |
 | Worker WS closes 4008 after accept | Fix the registration shape: string `worker_id` plus dict `capabilities`. |
 | Worker WS closes 4003 immediately | The client sent an `Origin` header — workers are not browsers; drop it from the client's WS options. |
@@ -8465,6 +8516,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.79  | 2026-11-04 | `/ws/control` edges: the bucket banks at most `capacity` and admits at a balance of at least 1; Origin match is exact and an empty origin fails closed; the cooldown blocks on the Nth rejection (default the 10th, not the 11th), drops a stamp aged exactly one window, and lifts the block when `now` reaches `blocked_until`. A pre-accept close is HTTP 403 on uvicorn. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
