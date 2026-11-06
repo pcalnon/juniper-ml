@@ -64,17 +64,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>`, from a shallow
-  checkout.** Its scratch was `git clone --shared <checkout>`, and git turns a clone's local mode off for a shallow
-  source. juniper-ml's primary checkout has been shallow since 2026-09-10 (`.git/shallow`), so the clone ran an
-  upload-pack transport that wrote no alternate and carried only the checkout's local branches. Every fleet PR's head
-  then failed `update-ref` ("nonexistent object"), and 56 of 57 open PRs came back `ERROR` on 2026-11-06. The scratch
-  is now `git init` plus an `objects/info/alternates` entry naming the checkout's object store, matched to its object
-  format. Its git commands run with `GIT_LFS_SKIP_SMUDGE=1`, because the scratch has no remote to fetch LFS content
-  from and juniper-ml keeps `*.png` / `*.jpg` in LFS. `docs/REFERENCE.md` describes the new scratch.
-  `.claude/agents/fleet-supervisor.md` no longer says the rulesets' strict up-to-date policy is off; juniper-ml's
-  `juniper-ml-rules` has it on. Nor does it say a BEHIND branch is fixed by a rebase, which re-creates its commits
-  unsigned; GitHub's update-branch is the fix.
+- **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>` from a shallow
+  checkout, and refuses a history that a shallow checkout cannot show.**
+  - **The cause.** The scratch was `git clone --shared <checkout>`, which writes the alternate only for a local
+    clone, and git turns local mode off for a shallow source. juniper-ml's primary checkout has been shallow since
+    at least 2026-09-10 (a stray `.git/shallow` entry from 09-07). The clone was therefore a pack transfer that
+    carried only objects reachable from the checkout's local branches and tags. Every fleet PR's head failed
+    `update-ref` ("nonexistent object"): 44 of 45 open PRs came back `ERROR` on 2026-11-04, and 56 of 57 on
+    2026-11-06.
+  - **The fix.** The scratch is now `git init`, matched to the checkout's object format, plus an
+    `objects/info/alternates` entry naming the checkout's object store.
+  - **Four more defects, found by review of the fix, also fixed:**
+    - The scratch takes the source's `.git/shallow`. A merge or ancestor check that fails for any reason other than a
+      conflict is now an error, and so is a behind branch whose merge did not take `main`. A history cut above the
+      merge base had come back mergeable, unmerged.
+    - No filter driver runs in the scratch (`* -filter`), so `filter.lfs.required` configured without git-lfs
+      installed no longer breaks it.
+    - A binary file in a PR no longer raises `UnicodeDecodeError` mid-batch.
+    - An inherited `GIT_DIR` no longer re-initialises the source.
+  - **Docs.** `docs/REFERENCE.md` describes the new scratch. `.claude/agents/fleet-supervisor.md` drops three wrong
+    claims:
+    - the rulesets' strict up-to-date policy is off: it is on in juniper-ml, juniper-data and juniper-canopy;
+    - CI never runs on the merge result: a PR's CI runs on `refs/pull/N/merge`;
+    - a BEHIND branch is fixed by a rebase: GitHub's update-branch is the fix.
 
 - **Cascor suites carry headline columns: `aggregate.csv` and `REPORT.md` gain `train_accuracy` and `val_accuracy`, a
   finished suite gains them without re-running, and a NaN or infinite value fails every acceptance band** (register row
