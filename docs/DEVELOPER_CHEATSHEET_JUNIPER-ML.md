@@ -712,6 +712,7 @@ Tip: `run_suite` `aggregate.csv` / `REPORT.md` now carry both gate inputs (`step
 
 Tip: a recurrence cell that trained but lost an enabled predict / crossval / `save_model` phase is `degraded` (W0.3): never counted as succeeded, re-run by `--resume`, suite exit 1.
 `train_r2` is `stats.recurrence.final_metrics.r2` and `cv_r2` is `crossval.eval_aggregate.r2` — blank, not 0, when crossval is null; `0.0` and `-18081.0` are real values. Cascor cells carry `train_accuracy` / `val_accuracy` from `stats.cascor.final` since 2026-10-26 (`APD-ML-002`); `val_accuracy` is selected-on, not held out. Since juniper-ml#2064 they also carry the held-out `test_accuracy` / `test_f1` / `test_precision` / `test_recall` / `test_roc_auc`, but only from a final evaluation of the TEST split (`stats.cascor.eval_scalars.split == "test"`): a validation final block, or none, leaves them blank, and `test_accuracy` needs a cascor with juniper-cascor#731. `final_accuracy` is refused. A NaN or infinite value fails any band. Backfill an older suite with `run_suite.py --reaggregate SUITE_DIR`, which launches nothing.
+A readable `stats.json` that is `{}` or has no headline columns is the source, so the registry's recorded metrics stay off the report. A missing, invalid, or non-object file is what prints those recorded metrics. See [REFERENCE — An empty stats.json is not a missing file](REFERENCE.md#an-empty-statsjson-is-not-a-missing-file).
 See [REFERENCE — Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics).
 
 Tip: on a failed `*_up` leg, `do_up` auto-calls `teardown_run` (because `ports.json` is written before launches). Expect `bring-up failed — tearing the partial run back down`, then inspect `$RUN_DIR/logs/` + `teardown.json` before retrying. Pidfile refuse → kill-by-port on the recorded port only (open #923).
@@ -1046,6 +1047,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Cell printed `degraded (crossval failed: …)`, suite exit 1 | Train succeeded; an enabled phase did not (W0.3). Read `phases` in `manifest.json`. An `X_full` 422 is F-E1 (a model without `derive_full_split`), not a science result. |
 | Recurrence `cv_r2` cell is blank in `aggregate.csv` | Crossval was null, disabled, or failed. Blank is not 0. `train_r2` still comes from `final_metrics.r2`. |
 | Cascor `aggregate.csv` has no accuracy column | Aggregated before 2026-10-26 (`APD-ML-002`). `run_suite.py --reaggregate SUITE_DIR` re-renders it and launches nothing; `--resume` would re-run incomplete cells. |
+| `aggregate.csv` blank while registry `metrics` are set | `stats.json` is a JSON object with no headline, including `{}`. A missing, invalid, or non-object file would have printed the recorded metrics. [An empty stats.json](REFERENCE.md#an-empty-statsjson-is-not-a-missing-file). |
 | Suite bridged vs unbridged hashes differ | Use `JUNIPER_SUITE_GRAFANA_BRIDGE=1`; do not put the bridge in the YAML. |
 | `residuals.png` has only 2 panels | Optional `target_dt_*` missing or length-mismatched — pred/truth still plotted; not a SKIP. |
 | PF-1 `--dry-run` shows ≠5 cells or mixed budgets | Repeats leaked into `include`, or the 4000/4000 epoch pair was split. Stop. |
@@ -1183,6 +1185,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.73
 **Maintainer:** Paul Calnon
