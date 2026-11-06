@@ -228,6 +228,11 @@ jobs:
           # --dangerously-skip-permissions + inverted TRUE/FALSE opt-in
           # convention vs the older default_interactive launcher.
           python3 -m unittest -v tests/test_claude_interactive.py
+          # Prompt-vs-file precedence in wake_the_claude.bash, and the claudey
+          # edges a first-argument version check cannot see: a version flag
+          # after another flag still execs wake with --version, and
+          # CLAUDE_PROMPT_PATH suppresses the default prompt.
+          python3 -m unittest -v tests/test_launcher_prompt_and_version_edges.py
           # Env-repr safety: lint gate forbidding raw os.environ-derived
           # subprocess env mappings in tests/ (secret-leak class; the
           # RedactedEnv wrapper in tests/redacted_env.py is the fix).
