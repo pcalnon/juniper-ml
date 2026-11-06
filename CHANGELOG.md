@@ -35,6 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A later `--file` or `--path` that does not resolve no longer sends an earlier prompt file.**
+  `scripts/wake_the_claude.bash` kept the prompt the first flag resolved when a second `--file` named a
+  missing file, or a second `--path` named a directory and no `--file` followed. `--file good.md --file
+  missing.md` and `--path good.md --path emptydir` exited 0 and sent `good.md`. Those wait branches now
+  drop the earlier prompt, and the existing "no prompt file found" refusal fires. Two flags that both
+  resolve still use the later one, and `--file <name> --path <dir>` still resolves.
+
 - **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>` from a shallow
   checkout, and refuses a history that a shallow checkout cannot show.**
   - **The cause.** The scratch was `git clone --shared <checkout>`, which writes the alternate only for a local

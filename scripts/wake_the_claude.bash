@@ -1282,6 +1282,11 @@ function parse_prompt_path_flags() {
                 PROMPT_FILE="${PATH_NAME}/${FILE_NAME}"
             elif [[ "${FILE_NAME}" == "" ]]; then
                 debug_log "Filename has not yet been parsed"
+                # A directory with no file name is not a prompt. Drop any prompt an earlier --path resolved:
+                # --path good.md --path emptydir otherwise sent good.md and exited 0.
+                PROMPT_FILE=""
+                VALID_FILE_PARAM="${FALSE}"
+                VALID_PATH_PARAM="${FALSE}"
             else
                 debug_log "Error: Prompt file is invalid when Pathname is combined with Filename. Exiting..."
                 result_value="${FALSE}"
@@ -1340,6 +1345,11 @@ function parse_prompt_file_flags() {
         # The path flag may follow: resolution waits for it (and fails after parsing if it never arrives)
         elif [[ "${PATH_NAME}" == "" ]]; then
             debug_log "Filename not yet valid, Pathname has not yet been parsed"
+            # This name did not resolve, and no directory is waiting to join it. Drop any prompt an earlier
+            # --file or --path resolved: --file good.md --file missing.md otherwise sent good.md and exited 0.
+            PROMPT_FILE=""
+            VALID_FILE_PARAM="${FALSE}"
+            VALID_PATH_PARAM="${FALSE}"
         else
             debug_log "Error: received an invalid Prompt File. Exiting..."
             result_value="${FALSE}"
