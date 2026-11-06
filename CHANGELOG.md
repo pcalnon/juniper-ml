@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
+  session turns on remote control (owner rulings, 2026-11-06).** In `scripts/wake_the_claude.bash` (now 1.1.0), `-v`
+  joins `-V`, `--version` and `--claude-version`, as `claude -v` does; it printed the script's own version, which
+  `--script-version` alone now prints. `claudey` (`scripts/claude_interactive.bash`, now 0.2.0) runs `wake_the_claude.bash
+  --version` for all four, so they print Claude Code's version too; `-v` and `--version` printed claudey's,
+  which `--script-version` now prints. `claudey` forwards a prompt file, `--file` / `-f` / `--file-name` and `--path` /
+  `-l` / `--file-path` (or `CLAUDE_PROMPT_FILE` / `CLAUDE_PROMPT_PATH`), and then sends no default prompt:
+  `wake_the_claude.bash` prefers `--prompt` to a prompt file, so the default would have discarded the file. A prompt
+  together with a prompt file exits 1 for the same reason. `scripts/default_interactive_session_claude_code.bash` sends
+  a bare `--remote-control`, as `claudey` does. `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` describes all three, and no
+  longer says `claude` is invoked with an unquoted parameter array: both the interactive and the `nohup` call quote it.
+  Found in review:
+  - `claudey` exits with `wake_the_claude.bash`'s status. It always exited 0, so a prompt file that
+    `wake_the_claude.bash` refused ended in "Closed …" and success.
+  - It refuses an empty `--file` / `--path` value and an empty word. An empty word ended its parsing, and the words
+    after it were dropped, so `-f "${UNSET}"` or `-w '' --file f` launched with the default prompt. `-w ''` is now a
+    bare `-w`.
+  - `wake_the_claude.bash` prints its errors on stderr as well as in the debug log: a version flag with no `claude`
+    on `PATH` or no version printed, a prompt file that never resolves, and any flag it refuses. With `WTC_DEBUG=1`
+    each was a bare exit 1 or the usage text alone.
+  - `claudey`'s usage text names its own script instead of `wake_the_claude.bash`, lists `-h`, and shows a prompt
+    and a prompt file as alternatives. An empty word is reported as "(an empty word)". `claudey -v` prints no debug
+    log unless `WTC_DEBUG` asks for one.
+
 ## [0.11.4] - 2026-11-06
 
 ### Changed

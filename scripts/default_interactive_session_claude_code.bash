@@ -3,7 +3,7 @@
 # Author: Paul Calnon
 # Filename: default_interactive_session_claude_code.bash
 # Created:  2026-03-07
-# Modified: 2026-03-12
+# Modified: 2026-11-06
 #
 ########################################################################################################################################################################################################
 
@@ -18,7 +18,8 @@ SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 # Define Script Constants for Claude Code interaction
 ########################################################################################################################################################################################################
 DEFAULT_PROMPT="Hello World, Claude!"
-CLAUDE_ARGS=(--id --worktree --effort high --prompt "${DEFAULT_PROMPT}")
+# A bare --worktree and --remote-control, as claudey sends by default (owner ruling, 2026-11-06)
+CLAUDE_ARGS=(--id --worktree --remote-control --effort high --prompt "${DEFAULT_PROMPT}")
 
 
 ########################################################################################################################################################################################################
