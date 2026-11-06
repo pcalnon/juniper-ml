@@ -403,6 +403,11 @@ jobs:
           # mutates-source, and exit codes. util/ is not pre-commit-lint-gated, so this
           # unittest is the gate (flood remediation §4 item 7).
           python3 -m unittest -v tests/test_predict_merge.py
+          # tests/test_predict_merge_shallow_worktree.py: a linked worktree of a shallow
+          # checkout copies the common dir's graft (a missing boundary parent stays
+          # NEEDS-UPDATE-BRANCH, a real edit stays CONFLICT). A shallow source whose graft
+          # file is gone is refused, and the scratch is removed.
+          python3 -m unittest -v tests/test_predict_merge_shallow_worktree.py
           # tests/test_fleet_supervisor_contract.py: static contract for the read-only
           # fleet-supervisor subagent (.claude/agents/fleet-supervisor.md) -- exact tool set
           # {Read,Grep,Glob,Bash}, opus+max, and body wiring to predict_merge.py + all four
