@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.82
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -4684,7 +4684,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 
 `juniper-service-core` (this repo's `juniper-service-core/` subdirectory) owns the shared FastAPI middleware, the `/ws/control` security + command dispatch, and the distributed worker pool that model services inject executors into. The load-bearing invariants — the ones a well-meaning refactor silently breaks:
 
-- **CR-024 body limit** — `RequestBodyLimitMiddleware` treats `Content-Length` as an early-reject hint only and **always** stream-caps `POST` / `PUT` / `PATCH` against the cumulative limit (default 10 MiB), so an under-declared header or a chunked body with none still 413s. Skipping the stream when the declared length is present-and-small is the classic bypass.
+- **CR-024 body limit** — `RequestBodyLimitMiddleware` treats `Content-Length` as an early-reject hint only and **always** stream-caps `POST` / `PUT` / `PATCH` against the cumulative limit (default 10 MiB), so an under-declared header or a chunked body with none still 413s. A body that fills the cap is delivered: [exact fill](#a-body-that-fills-the-cap-is-delivered). Skipping the stream when the declared length is present-and-small is the classic bypass.
 - **Auth before rate limit** — with API keys configured, `APIKeyAuth` runs first, so a 401 never consumes a rate-limit token. Blank / whitespace-only configured keys are filtered out (the `auth_posture.real_keys` rule) so an empty secret file cannot enable auth that then accepts an empty `X-API-Key`.
 - **Non-ASCII API keys are a 401, not a 500** — `APIKeyAuth.validate` compares UTF-8 bytes (`surrogatepass`). Comparing `str` with `hmac.compare_digest` raises `TypeError` on any non-ASCII character, which escaped as a 500, skipped `FailedAuthThrottle`, and (under Sentry's default local-variable capture) could ship the configured key. Published `juniper-service-core` 0.7.0 still has the `str` compare. Operator surface: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
 - **429 header passthrough** — `RateLimiter` raises `HTTPException` carrying `Retry-After` + `X-RateLimit-*`; `SecurityMiddleware.dispatch` must rebuild `JSONResponse(..., headers=exc.headers)`. RateLimiter unit tests alone do not exercise that catch path.
@@ -8336,6 +8336,22 @@ Publish and CI constraints:
 - **Rate-limit keying.** `RateLimiter._get_key` buckets by `key:<api_key>` when the request is authenticated, otherwise by `ip:<client.host>` — falling back to `ip:unknown` when Starlette reports no client. Authenticated callers therefore get their own budget rather than sharing one per source IP (and a shared NAT egress cannot exhaust an authenticated client's budget).
 - **Worker mTLS half-config.** `TLSConfig` (`juniper_service_core.workers.security`) fails closed: with TLS enabled and only one of `cert_file` / `key_file` set, it raises `ValueError` naming both paths, rather than returning a bare `SSLContext` with neither chain nor key. A silent half-config is the dangerous shape — it looks "TLS enabled" to callers while presenting nothing.
 
+#### A body that fills the cap is delivered
+
+`RequestBodyLimitMiddleware` (`juniper_service_core/middleware.py`) admits a body whose size is exactly `max_bytes`. Both checks use `>`: the `Content-Length` early reject (`declared_length > self._max_bytes`) and the cumulative stream read (`size > self._max_bytes`). One more byte is HTTP 413 `{"detail": "Request body too large"}`, and the route is not called.
+
+The default cap is `_DEFAULT_MAX_REQUEST_BODY_BYTES`, 10 MiB (`10 * 1024 * 1024`). A caller passes a different `max_bytes` to the constructor. A cap of `0` admits an empty body and rejects the first byte. This is the HTTP body cap. It is not the 100 MB worker binary-frame cap, and it is not the CSV import path cap.
+
+| Check | Delivered | 413 |
+|-------|-----------|-----|
+| `Content-Length`, any method | The declared integer is less than or equal to `max_bytes`. A non-integer header is **400** `Invalid Content-Length header`, and the route is not called. | The declared integer is greater than `max_bytes`. The response is sent before the body is read, including when the next chunk is empty. |
+| Stream read, `POST` / `PUT` / `PATCH` only | The chunks sum to at most `max_bytes`. They are joined onto `request._body`, and the route sees that one buffer. A missing or smaller `Content-Length` does not change the count: a real body that still fits is delivered. A declared length equal to the cap does not skip the read. | The chunk that pushes the running total past `max_bytes`. That chunk is not cached. |
+| Any other method | No stream read. A body with no `Content-Length`, or a declared length within the cap, is not measured against the cap. | Only the declared-length row above. |
+
+The shipped body-limit tests send a payload strictly inside the cap (`5` bytes at `100`, `20` bytes of a chunked body at `100`) or strictly outside it (`50` bytes at `10`, and an under-declared `Content-Length: 5` whose real body is `50` bytes at a cap of `10`). A comparison that rejects equality stays green against those tests and starts failing clients that fill the cap.
+
+Gate: `juniper-service-core/tests/test_middleware.py` (`test_body_limit_allows_within_limit`, `test_body_limit_rejects_oversized_post`, `test_body_limit_rejects_oversized_put_and_patch`, `test_body_limit_rejects_invalid_content_length`, `test_body_limit_rejects_underdeclared_content_length`) and `juniper-service-core/tests/test_toplevel_coverage.py` (`test_body_limit_streams_within_cap_when_no_content_length`, `test_body_limit_rejects_oversized_chunked_stream`).
+
 #### Non-ASCII API keys and Sentry frame locals
 
 `APIKeyAuth.validate` (`juniper_service_core/security.py`) compares the presented `X-API-Key` with each configured key as UTF-8 bytes, error handler `surrogatepass`. Equality is exact: a configured key that itself contains non-ASCII still matches that same string. A mismatch is an ordinary authentication failure, never an exception.
@@ -8414,6 +8430,8 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | HTTP 429 arrives without `Retry-After` | `SecurityMiddleware` must pass `exc.headers` into the `JSONResponse` — RateLimiter unit tests alone do not cover that catch path. |
 | A health probe gets 429 | Health/docs/metrics are exempt in service-core — check an upstream proxy or a non-exempt path. |
 | A large POST is accepted despite the body limit | The mutating-method stream cap must be unconditional; a `Content-Length`-only fast path is the bypass class. |
+| A body of exactly `max_bytes` returns 413 | Both checks use `>`. A body that fills the cap, including chunks that sum to it, is delivered and cached on `request._body`. The next byte is 413 and the route does not run. [A body that fills the cap is delivered](#a-body-that-fills-the-cap-is-delivered). |
+| A large GET or DELETE is accepted | Only `POST`, `PUT`, and `PATCH` are stream-capped. Other methods 413 only when `Content-Length` is an integer greater than the cap. |
 | Multi-line or forged log record after a bad Origin/command | `_sanitize_for_log` regression — never interpolate unsanitized Origin/command into logger format strings. |
 | Worker WS closes 4001 before `connection_established` | API-key auth is enabled — send `X-API-Key`, or disable `app.state.api_key_auth` locally. |
 | Worker WS closes 4008 after accept | Fix the registration shape: string `worker_id` plus dict `capabilities`. |
@@ -8448,6 +8466,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.82  | 2026-11-04 | Request body cap: both checks use `>`. A body that fills `max_bytes`, including chunks that sum to it, is delivered; the next byte is 413 and the route is not called. `GET` and `DELETE` are not stream-capped. |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |

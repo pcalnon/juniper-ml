@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.82
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -1071,6 +1071,8 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | WS stream does not default `ws://` / reject hostless | Deliberate — `CascorTrainingStream` / `CascorControlStream` only `rstrip("/")`. |
 | A probe gets 429 on `/v1/health` | Health/docs/metrics are exempt in service-core — check an upstream proxy or a non-exempt path. |
 | Large POST accepted despite the body limit | The mutating-method stream cap must be unconditional; a `Content-Length`-only fast path is the bypass. |
+| POST of exactly the body cap returns 413 | Both checks use `>`. A body that fills `max_bytes`, including chunks that sum to it, is delivered on `request._body`. The next byte is 413 and the route does not run. [REFERENCE](REFERENCE.md#a-body-that-fills-the-cap-is-delivered). |
+| Large GET or DELETE accepted | Only POST, PUT, and PATCH are stream-capped. Other methods 413 only when `Content-Length` is an integer greater than the cap. |
 | Control-WS reject log spans multiple lines | `_sanitize_for_log` regression — never interpolate raw Origin/command into logger format strings. |
 | Worker WS closes 4001 / 4008 | 4001 = API-key auth enabled (send `X-API-Key`); 4008 = registration shape (string `worker_id` + dict `capabilities`). |
 | Non-ASCII `X-API-Key` is a 500 | Published `juniper-service-core` 0.7.0: `hmac.compare_digest` raises on a non-ASCII `str`, which is not an `HTTPException`. `main` compares UTF-8 bytes (`surrogatepass`, juniper-ml#2086, unreleased). Do not catch the `TypeError`; do not re-enable Sentry locals. |
