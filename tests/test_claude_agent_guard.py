@@ -372,6 +372,13 @@ GPG_CASES = [
     ("gpg --sign x", GPG_SIGN),
     ("gpg -s x", GPG_SIGN),
     ("gpg --clearsign x", GPG_SIGN),
+    # GnuPG 2.4 runs these. A floor of 4 allowed every one.
+    ("gpg --cl", GPG_SIGN),
+    ("gpg --cle", GPG_SIGN),
+    ("echo t | gpg --cl", GPG_SIGN),
+    ("gpg --ls KEYID", GPG_SIGN),
+    ("gpg --lsi KEYID", GPG_SIGN),
+    ("gpg --det x", GPG_SIGN),
     ("gpg -d secret.gpg", GPG_SIGN),
     ("unset GIT_CONFIG_COUNT; git commit -m x", GPG_SIGN),
     ("GIT_CONFIG_COUNT=0 git commit -m x", GPG_SIGN),
