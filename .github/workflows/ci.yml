@@ -674,7 +674,10 @@ jobs:
           # assignment, the installer's never-blessed first install runs to the end
           # (I-36) and its drift gate refuses/allows as ruled (D-6), and the two P0
           # recovery helpers' --dry-run gates refuse a group-readable secret file or a
-          # non-0700 data folder. Runs no Duplicati binary (DUPLICATI_SERVER=/bin/true).
+          # non-0700 data folder. The Phase D trial drop-in is merged onto duplicati.service
+          # with systemd's empty-assignment reset: the trial wrapper, defaults and key replace
+          # the live ones, a blocked syscall stays a kill, Restart=no, and no confinement key
+          # is reassigned. Runs no Duplicati binary (DUPLICATI_SERVER=/bin/true).
           python3 -m unittest -v tests/test_duplicati_wrapper_contract.py
           # tests/test_duplicati_installer_real_path.py: the installer's REAL path
           # (no --dry-run) as non-root against a scratch prefix with PATH stubs --
