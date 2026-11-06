@@ -2,7 +2,7 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.90
+**Version:** 0.6.91
 **Status:** Active
 **Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -8496,7 +8496,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0.6.90  | 2026-11-06 | PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0: the extras table is this checkout's `>=0.8.1` floor; `pip install -U juniper-ml[recurrence]` from the index leaves 0.8.0; 0.8.1 refuses model-core 0.2.0. Skipped 0.6.64-0.6.89 (in-flight docs PRs) |
+| 0.6.91  | 2026-11-06 | PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0: the extras table is this checkout's `>=0.8.1` floor; `pip install -U juniper-ml[recurrence]` from the index leaves 0.8.0; 0.8.1 refuses model-core 0.2.0. Skipped 0.6.64-0.6.90 (in-flight docs PRs; #2476 holds 0.6.90) |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
