@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.95
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -14,6 +14,7 @@
 - [Package Overview](#package-overview)
 - [Extras Reference](#extras-reference)
 - [Ecosystem Compatibility](#ecosystem-compatibility)
+- [juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor](#juniper-ml-0114-publishes-the-recurrence-081-floor)
 - [HTTP Client Base-URL Contract](#http-client-base-url-contract)
 - [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
@@ -184,6 +185,8 @@ pip install juniper-ml[all]       # Everything
 | 0.10.x     | >=0.15.0     | >=0.11.0       | >=0.8.1        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 | 0.11.x     | >=0.17.1     | >=0.12.0       | >=0.9.0        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.4.1               |
 
+The three `recurrence` pins have no column in that matrix. What 0.11.4 requires, and why an environment that already holds recurrence 0.8.0 does not move while PyPI still serves 0.11.3, is [juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor](#juniper-ml-0114-publishes-the-recurrence-081-floor).
+
 ### Service Ports
 
 `juniper-cascor` has two commonly visible ports: the service/container default is `8200`, while the host-level Juniper stack and Docker published port use `8201`. Local utilities in this repository target the host-facing port.
@@ -247,6 +250,59 @@ The three services intentionally ship with **different** `rate_limit_enabled` de
 | `juniper-canopy` | `JUNIPER_CANOPY_RATE_LIMIT_ENABLED`  | `JUNIPER_CANOPY_RATE_LIMIT_REQUESTS_PER_MINUTE`   |
 
 The split-default is intentional, not an oversight: `juniper-data` is a higher-risk, public-facing surface (dataset generation, paginated reads), so it ships rate-limited by default; the other two run behind a known reverse proxy / authenticated client surface, where the rate-limit value adds operator friction during local development. Closes the documentation gap tracked in the v7 outstanding-development roadmap under CFG-08.
+
+---
+
+## juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor
+
+This proposal's `[recurrence]` extra requires `juniper-recurrence>=0.8.1,<0.9.0` (`pyproject.toml`). The model pin `juniper-recurrence-model>=0.6.0,<0.7.0` and the client pin `juniper-recurrence-client>=0.3.0,<0.4.0` stay as 0.11.3 published them. `[tools]` still allows `juniper-model-core>=0.1.0,<0.4.0`; the model-core floor below is recurrence's own requirement, not the tools extra.
+
+PyPI's latest `juniper-ml` is still **0.11.3** (probed 2026-11-06). That wheel's recurrence extra is `juniper-recurrence<0.9.0,>=0.8.0`. `pip install juniper-ml[recurrence]` from the index installs 0.11.3, not this proposal.
+
+### Why 0.8.0 with model-core 0.2.0 returns crossval 500
+
+Published `juniper-recurrence` 0.8.0 and 0.8.1 both call `walk_forward_folds(..., groups=groups)` from `build_folds` (`juniper_recurrence/_folds.py`) once `POST /v1/crossval` has loaded its dataset.
+`groups` is `sequence.ticker_code`, and the keyword is passed when that value is `None`.
+`routers/crossval.py` catches `ValueError` around that call and does not catch `TypeError`, so the unexpected keyword is an unhandled 500.
+A request that loses the crossval lock is 409, and a failed dataset fetch never reaches `build_folds`.
+
+Published `juniper-model-core` 0.2.0's `walk_forward_folds` has no `groups` parameter. 0.3.0 is the first wheel that accepts it. 0.8.0 requires `juniper-model-core[crossval]<0.4.0,>=0.2.0`, so model-core 0.2.0 satisfies `pip check`. 0.8.1 requires `juniper-model-core[crossval]<0.4.0,>=0.3.0` (PyPI `requires_dist`, 2026-11-06) and still passes `groups=`.
+
+### Who an upgrade moves
+
+A fresh resolve of either range selects 0.8.1, the newest `juniper-recurrence` under `<0.9.0`.
+An environment that already has 0.8.0 keeps it under `pip install -U juniper-ml[recurrence]` while the installed meta-package is 0.11.3: pip's default `--upgrade-strategy` is `only-if-needed`, and 0.8.0 satisfies `>=0.8.0`.
+It does not satisfy this proposal's `>=0.8.1`, so the same command upgrades recurrence once 0.11.4 is the distribution being installed.
+Until the Release is on PyPI, that is this checkout (`pip install -e '.[recurrence]'`), not the index.
+
+### What preflight does not see
+
+`bash util/recurrence_env_preflight.bash` can print `ENV PREFLIGHT OK` for recurrence 0.8.0 with model-core 0.2.0, and `/v1/health/ready` does not import `walk_forward_folds`:
+
+| Check | What it reads | This pair |
+|-------|---------------|-----------|
+| Scoped `pip check` | Closure includes `juniper-model-core`. A satisfied requirement prints nothing. | Clean. 0.8.0 allows model-core 0.2.0. |
+| Pin probe | `PINNED_DISTS` is `juniper-recurrence-model` and `juniper-service-core` only. | Does not read model-core. |
+| Import probe | `from juniper_recurrence_model.data import derive_full_split`. | Does not call `walk_forward_folds`. |
+
+The same `pip check` refuses recurrence 0.8.1 with model-core 0.2.0: the requirement is unsatisfied, and both distributions are in the closure. The pin probe still does not name model-core.
+
+### What the proposal generator does not edit
+
+`util/release_train/propose.py` bumps `pyproject.toml`'s version, `AGENTS.md`'s `**Version**` header, README's "pyproject pins matching" lead-in, and moves `[Unreleased]`.
+It does not edit this file's Package Overview Version cell or the Ecosystem Compatibility sentence, and no test reads either string.
+`python3 util/ad-hoc/2026-11-06_juniper_ml_0_11_4_cut_cochanges.py --check` exits 1 while either still names 0.11.3, and a re-run after they match writes nothing.
+The `[recurrence]` pin itself was applied by `util/ad-hoc/2026-11-06_raise_recurrence_floor_0_8_1.py`.
+
+### What to run
+
+```bash
+python3 -c "import importlib.metadata as m; print(m.version('juniper-ml')); print([r for r in (m.requires('juniper-ml') or []) if 'juniper-recurrence' in r])"
+python3 -c "import importlib.metadata as m; print('recurrence', m.version('juniper-recurrence')); print('model-core', m.version('juniper-model-core'))"
+python3 util/ad-hoc/2026-11-06_juniper_ml_0_11_4_cut_cochanges.py --check
+```
+
+The third command is a checkout of this proposal. An installed wheel has no `util/`.
 
 ---
 
@@ -5526,6 +5582,7 @@ tail -n 80 "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/<RUN
 | Symptom | What it is |
 |---------|------------|
 | `/v1/health/ready` is 200, then `POST /v1/crossval` is 422 missing `X_full` | F-E1's shape; readiness does not import `derive_full_split`. The launch passed `--skip-env-preflight`, or `serve` was started outside these two launchers (Compose has no launcher preflight; plan W3.0b would add the check to readiness). |
+| `/v1/health/ready` is 200, preflight is OK, and `POST /v1/crossval` is 500 | Installed `juniper-recurrence` is 0.8.0 and model-core is below 0.3.0. `build_folds` passes `groups=`, which `walk_forward_folds` gains in model-core 0.3.0, and the route catches `ValueError` only. `pip check` is clean because 0.8.0 allows `juniper-model-core[crossval]>=0.2.0`. [0.11.4 publishes the 0.8.1 floor](#juniper-ml-0114-publishes-the-recurrence-081-floor). |
 | `ENV PREFLIGHT REFUSED` with `FINDING:` lines naming the model pin, the service-core pin, or `derive_full_split` | The interpreter `serve` would use failed the closure check. The repair is W0.1. Lines marked `unrelated to recurrence` are not the refusal. |
 | CUDA `pip check` lines on stdout, exit 0 | Unrelated; printed as `unrelated to recurrence (not a finding)`. |
 | `WARNING: ENV PREFLIGHT SKIPPED —` and the service still reaches ready | The emergency override, recorded in `launch.log`. A skipped `derive_full_split` finding still 422s every `split="full"` request. |
@@ -8964,6 +9021,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-06
+**Version:** 0.6.95
 **Maintainer:** Paul Calnon
