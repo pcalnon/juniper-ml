@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`[recurrence]` now floors `juniper-recurrence>=0.8.1`** (`<0.9.0`), the release that floors
+  `juniper-model-core[crossval]>=0.3.0,<0.4.0` (juniper-recurrence#229). The pin was
+  `juniper-recurrence>=0.8.0,<0.9.0`. The owner approved the raise on 2026-11-06, with a 0.11.4 cut to carry it.
+  - **Why.** recurrence 0.8.0's `_folds.build_folds` passes `groups=` to `walk_forward_folds` on every
+    `POST /v1/crossval`, and `groups=` first shipped in juniper-model-core 0.3.0. 0.8.0 declared
+    `juniper-model-core>=0.2.0`, so an environment holding model-core 0.2.0 passed `pip check` while every
+    crossval request answered 500 (W0.1's bench on 2026-11-04: 4 of 41 failed). 0.8.1 is 0.8.0 with that floor
+    fixed, on PyPI since 2026-11-06.
+  - **Who it reaches.** A fresh install already resolves 0.8.1, the newest release under `<0.9.0`. An environment
+    that already holds 0.8.0 keeps it under `pip install -U juniper-ml[recurrence]`, which upgrades a dependency
+    only when its requirement forces it; this floor forces it.
+  - **Pre-flighted against real PyPI** on 2026-11-06 with
+    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages and
+    `[all]` in 95 on Python 3.12, 3.13 and 3.14, each to juniper-recurrence 0.8.1, juniper-recurrence-model 0.6.0,
+    juniper-recurrence-client 0.3.1 and juniper-model-core 0.3.2.
+  - The model pin `juniper-recurrence-model>=0.6.0,<0.7.0` and the client pin `juniper-recurrence-client>=0.3.0,<0.4.0`
+    stay: 0.8.1's `requires_dist` asks for the same model range, and no client contract changed. Applied by
+    `util/ad-hoc/2026-11-06_raise_recurrence_floor_0_8_1.py`, which asserts each site's exact text and requires
+    exactly one match apiece.
+
 - **`claudey` starts with a worktree and remote control by default, `--remote-control` never takes a value, and in
   `scripts/wake_the_claude.bash` `--version` is Claude Code's version and `-u` fails (owner rulings, 2026-11-04).**
   `claude_interactive.bash` sends a bare `--worktree`, so Claude Code names the worktree unless `-w <name>` names one,
