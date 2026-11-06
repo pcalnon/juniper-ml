@@ -189,10 +189,11 @@ Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` c
 `--claude-version` print Claude Code's version, as `claude -v` does, and `--script-version` prints the launcher's own.
 `claudey` refuses a prompt together with a prompt file (exit 1): `wake_the_claude.bash` would send the prompt and drop
 the file. `--file ''` and `--path ''` (also `-f` and `-l`) exit 1 with `Missing value for` that flag and do not call wake.
-An empty word exits 1 (`Unknown argument`), except `-w ''`, which is a bare `--worktree` and does not end the parse.
+An empty word exits 1 (`Unknown argument: (an empty word)`), except `-w ''`, which is a bare `--worktree` and does not end the parse.
 `claudey` exits with `wake_the_claude.bash`'s status after the `Closed` line. `./claudey -v` leaves wake's debug log off
-unless `WTC_DEBUG` is already set. With `WTC_DEBUG=1`, a missing `claude`, an empty `claude --version`, and a prompt file
-that never resolves still print an `Error:` line on stderr. `-u` prints the usage text and exits 1.
+unless `WTC_DEBUG` is already set. With `WTC_DEBUG=1`, a missing `claude`, an empty `claude --version`, a prompt file
+that never resolves, and a flag the parser refuses (`Error: refused "<flag>": its value is missing or invalid (WTC_DEBUG=0 logs why)`)
+still print an `Error:` line on stderr. claudey's usage shows `--prompt` or a prompt file, not both as separate slots. `-u` prints the usage text and exits 1.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 

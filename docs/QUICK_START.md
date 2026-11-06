@@ -179,7 +179,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Release-Train Detect Summary and Slack](REFERENCE.md#release-train-detect-summary-and-slack) -- action set vs the ceremonial class, hard-fail banner
 - [AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check) -- verifies `**Last Updated**:` was bumped on PRs touching `AGENTS.md`
 - [Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) -- L2/L3 `ANTHROPIC_API_KEY` safeguards + `DEFAULT_REPOS` fan-out
-- [Local Claude Code Launchers](REFERENCE.md#local-claude-code-launchers) -- `./claudey` versus the older default session; empty `--file` / `--path` exit 1; `claudey` returns wake's status; `-v` prints Claude Code's version
+- [Local Claude Code Launchers](REFERENCE.md#local-claude-code-launchers) -- `./claudey` versus the older default session; empty `--file` / `--path` exit 1; `claudey` returns wake's status; a refused flag prints `Error: refused "<flag>"`; `-v` prints Claude Code's version
 - [juniper-service-core](REFERENCE.md#juniper-service-core) -- body limit, 429 headers, control-WS sanitizer, `/ws/workers` contracts
 - [Non-ASCII API keys and Sentry frame locals](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) -- a non-ASCII `X-API-Key` is a 401 (WebSocket close 4001) on `main`; published service-core 0.7.0 still 500s, and that 500 can send the configured key to Sentry in a frame local
 - [HTTP Client Base-URL Contract](REFERENCE.md#http-client-base-url-contract) -- shared REST `_normalize_url`, TLS-downgrade pitfall, WS streams still rstrip-only
