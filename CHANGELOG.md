@@ -64,6 +64,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`util/fleet_triage/predict_merge.py` keeps the source checkout's shallow graft in its scratch.** The scratch borrows
+  the checkout's objects through `objects/info/alternates` and did not copy `.git/shallow`. A boundary commit still
+  names a parent that was never fetched; `git merge` then fails with `Could not read <parent>` and `refusing to merge
+  unrelated histories`. `simulate_merge` treats every non-zero merge as `CONFLICT`, so a behind-main PR that merges
+  cleanly — the `NEEDS-UPDATE-BRANCH` case — was reported as a conflict with no conflicted files. The scratch now
+  copies the source's shallow file (including when the source is a linked worktree). A non-shallow checkout is
+  unchanged.
+
 - **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>`, from a shallow
   checkout.** Its scratch was `git clone --shared <checkout>`, and git turns a clone's local mode off for a shallow
   source. juniper-ml's primary checkout has been shallow since 2026-09-10 (`.git/shallow`), so the clone ran an

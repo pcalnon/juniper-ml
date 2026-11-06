@@ -318,6 +318,12 @@ def _scratch_clone(repo_root: Path, base_sha: str, branch_sha: str, scratch_pare
     filesystem). The merge writes new objects only into the SCRATCH's own object dir; the source repo
     is READ only -- never written, never a worktree, never pruned during the seconds-long run.
 
+    A shallow source's boundary commits still name parents that were never fetched. The source treats
+    those commits as roots via ``.git/shallow``; the scratch must carry the same graft or ``git merge``
+    walks off the boundary, fails with ``Could not read <parent>`` / ``refusing to merge unrelated
+    histories``, and a behind-main PR that merges cleanly is reported ``CONFLICT``. ``git clone`` of a
+    shallow repo copied this file; ``git init`` does not.
+
     This was ``git clone --shared <path>``, which writes the alternate only for a LOCAL clone, and git
     turns local mode off for a SHALLOW source. juniper-ml's primary checkout has been shallow since
     2026-09-10 (``.git/shallow``), so the clone ran an upload-pack transport that carried only objects
@@ -338,12 +344,34 @@ def _scratch_clone(repo_root: Path, base_sha: str, branch_sha: str, scratch_pare
         shutil.rmtree(scratch, ignore_errors=True)
         raise PredictMergeError(f"git init of the scratch repository failed: {cp.stderr.strip()}")
     (clone / ".git" / "objects" / "info" / "alternates").write_text(f"{objects_dir}\n", encoding="utf-8")
+    try:
+        _inherit_shallow_boundary(repo_root, clone)
+    except PredictMergeError:
+        shutil.rmtree(scratch, ignore_errors=True)
+        raise
     for ref_name, sha in (("refs/fleet/base", base_sha), ("refs/fleet/branch", branch_sha)):
         upd = _git(clone, "update-ref", ref_name, sha)
         if upd.returncode != 0:
             shutil.rmtree(scratch, ignore_errors=True)
             raise PredictMergeError(f"could not pin {ref_name} -> {sha[:12]} in scratch clone: {upd.stderr.strip()}")
     return scratch, clone
+
+
+def _inherit_shallow_boundary(repo_root: Path, clone: Path) -> None:
+    """Copy ``repo_root``'s shallow graft into ``clone`` when the source is shallow.
+
+    ``--git-path`` is the common dir's ``shallow`` file, including when ``repo_root`` is a linked
+    worktree. A non-shallow source is left alone: writing an empty graft would change merge-base.
+    """
+    flag = _git(repo_root, "rev-parse", "--is-shallow-repository")
+    if flag.returncode != 0 or flag.stdout.strip() != "true":
+        return
+    loc = _git(repo_root, "rev-parse", "--path-format=absolute", "--git-path", "shallow")
+    src = Path(loc.stdout.strip()) if loc.returncode == 0 else None
+    if src is None or not src.is_file():
+        detail = loc.stderr.strip() if loc.returncode != 0 else f"{src} is not a file"
+        raise PredictMergeError(f"{repo_root} is shallow but its shallow boundary could not be read: {detail}")
+    (clone / ".git" / "shallow").write_bytes(src.read_bytes())
 
 
 # --------------------------------------------------------------------------- #
