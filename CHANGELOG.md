@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.4] - 2026-11-06
+
 ### Changed
 
 - **`[recurrence]` now floors `juniper-recurrence>=0.8.1`** (`<0.9.0`), the release that floors
