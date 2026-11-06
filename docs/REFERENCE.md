@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.67
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -16,6 +16,7 @@
 - [Ecosystem Compatibility](#ecosystem-compatibility)
 - [HTTP Client Base-URL Contract](#http-client-base-url-contract)
 - [Host Orchestration Utilities](#host-orchestration-utilities)
+- [Host-Check Wording (E-H3)](#host-check-wording-e-h3)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
 - [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client)
 - [Juniper Project-Tree Backup](#juniper-project-tree-backup)
@@ -528,6 +529,56 @@ Troubleshooting:
 | systemd plant health timeout / partial stack | `cleanup_on_failure` did **not** stop user units. Inspect `systemctl --user status juniper-{data,cascor,canopy,cascor-worker}` and tear down with `util/juniper_chop_all.bash --systemd` (or matching `systemctl --user stop`) before re-planting. |
 | Worker WARNING: healthy but unit not active | HTTP `/v1/health/ready` passed but `is-active` failed — check `journalctl --user -u juniper-cascor-worker` / unit file; plant still exited 0. |
 | Mixed plant/chop modes | Never plant with `--systemd` and chop via pidfile (or the reverse). Match the mode used at start. |
+
+---
+
+## Host-Check Wording (E-H3)
+
+`util/host_state_check.py` names the plan task behind a failing gate. Two of those sentences were wrong until [juniper-ml#2392](https://github.com/pcalnon/juniper-ml/pull/2392) (erratum E-H3 in [`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md) §18.3). The pass/fail result is the same. The sentence an operator follows is not.
+
+### kubectl: task D3, then task D4
+
+G-TOOLS reads `kubectl version --client -o json`. It passes when the client major matches `gates.G-TOOLS.kubectl.cluster` and the minor is within `max_minor_skew`. On turing that file sets cluster `1.36` and skew `1` (`conf/hosts/turing/expected.yaml`).
+
+A miss uses one remediation, including when the probe records `found: false` (`kubectl not found`):
+
+```text
+task D3 (owner) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl 1.36.x, which needs re-planning under the D6 ruling (erratum E-D6)
+```
+
+`1.36` is turing's cluster value with `.x` appended. Decision D7: Docker Desktop installs `/usr/local/bin/kubectl`. The bring-up plan records that on turing this link is the only kubectl on `PATH`, it points into Docker.app, and it is v1.22.4.
+
+Upgrading kubectl beside that install leaves the gate on Docker Desktop's binary. Task D3 (the owner's Docker Desktop upgrade) comes first. Task D4 still needs re-planning under the D6 ruling (erratum E-D6). `expected.yaml`'s comment on the kubectl block still names D4 only.
+
+A pass does not name a task. The message is `kubectl <gitVersion> is within <skew> minor of the cluster's <cluster>`.
+
+### G-MEM: three vm_stat rows, two labels
+
+The memory condition adds `Pages free`, `Pages speculative`, and `Pages inactive`, multiplies by the `vm_stat` header page size, and rounds down to whole MiB (`(free + speculative + inactive) * page // 1048576`). The sentence starts `free + speculative + inactive`. The need is the VM size plus `reserve_gib` (turing: 6 GiB configured, or the VM's `memory=` when that is larger, plus 4 GiB).
+
+`util/macvm_ctl.bash` adds the same three counts before `start`. Its status block prints a `free` row defined as Pages free plus Pages speculative, and its condition line still says `free + inactive`. The two MiB figures are the same sum. The labels differ on purpose: the check names every row, and `macvm_ctl` keeps the label it had when the gate landed.
+
+The CHANGELOG entry for #2392 records the speculative term on turing on 2026-10-27 as 88 MiB of a 6161 MiB sum. Treating the check's figure as "free + inactive, plus speculative again" drops those pages a second time.
+
+`conf/hosts/turing/expected.yaml`'s G-MEM comment still says `free + inactive`, which is `macvm_ctl`'s condition label. Purgeable, file-backed, and compressor pages stay out of both sums (`macvm_ctl.bash` header): leaving them out errs toward macOS. Swap used still rounds up and must be at most `max_swap_gib` (2 GiB on turing).
+
+```bash
+python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM --check
+python3 util/host_state_check.py --host turing --probe-json probe.json --section G-MEM --json
+bash util/macvm_ctl.bash status
+```
+
+`--check` exits 1 while a gate fails and 2 when a condition cannot be evaluated. Without `--check` the report exits 0. `macvm_ctl status` exits 0 on a failing gate.
+
+| What the report says | Reading |
+|---|---|
+| kubectl remediation names task D3, then D4 | Current check (`_kubectl` in `util/host_state_check.py`) |
+| kubectl remediation names task D4 only | The pre-#2392 sentence. `expected.yaml`'s comment still reads that way |
+| `free + speculative + inactive` from `host_state_check.py` | Current check. The three `vm_stat` rows, in MiB |
+| `free + inactive` from `macvm_ctl.bash status` | Current `macvm_ctl` label for that same MiB. Its `free` row already includes speculative pages |
+| The two tools print different MiB | Compare page size, the three counts, and whether the VM's configured memory raised the bar |
+
+Pins: `FailureTest.test_the_kubectl_fix_puts_task_d3_before_d4` and `FailureTest.test_the_memory_figure_names_every_count_it_adds` in `tests/test_host_state_check.py`. The wording follow-up's four mutants live in `util/ad-hoc/2026-10-30_turing_check_wording_mutation_check.py`.
 
 ---
 
@@ -3893,6 +3944,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - `util/home_path_literal_check.py` -- Gate G-PATH: `python3 util/home_path_literal_check.py [--root DIR] [--baseline FILE] [FILE ...]`, or the same with `--update-baseline [--dry-run]`. A tracked `.bash`/`.sh`/`.py`/`.yml` file under `util/`, `scripts/` or `.github/` may hold no more lines carrying `/home/pcalnon` than `conf/home_path_literal_baseline.json` allows it. When the gate landed that was 436 files and 651 lines, 427 of the files under `util/ad-hoc/`. A line ending in `# home-path-literal: allow` is not counted. With FILE arguments it checks those files, or the whole scope when the baseline is one of them; that is the `home-path-literal` pre-commit hook. Without arguments it checks every tracked file in scope; that is the whole-scope step in ci.yml's Pre-commit job. A count below its baseline is a NOTE: lower the baseline with `--update-baseline`. Exit 0 / 1 / 2. `GIT` is overridable. Turing bring-up G5, decision D12. Tests: `tests/test_home_path_literal_check.py`.
 - `util/host_state_probe.bash` -- Collects a macOS host's state, read-only: `bash util/host_state_probe.bash [--json] [--section NAME]... [--tool NAME]... [--root DIR] [--vm NAME] [--timeout SECONDS]`. Each fact is one command's capture: its argv, exit code, stdout and stderr. The sections are hardware, memory (G-MEM's inputs, as `util/macvm_ctl.bash` reads them), vm, network, power, security (with `socketfilterfw --getblockall` since 2026-10-25, for task C2), tools, env, alias (`util/git_remote_alias_check.py --json`) and signing (`util/configure_commit_signing.py --check --json` and `util/headless_signing_preflight.bash`). It judges nothing. A missing, failing or hung command is recorded, a hung one killed at `--timeout` (default 60 s); the probe exits 0, or 2 on a usage error. Under `~/.ssh` and `~/.gnupg` it tests names and permission bits only, and it runs no credential probe. Every program is overridable (`SYSCTL`, `VM_STAT`, `CSRUTIL`, ... `PYTHON`), and commands run with `LC_ALL=C`. The JSON schema is in its header. Turing bring-up G1. It graduates `util/ad-hoc/2026-10-15_turing_host_state_probe.bash`, whose output is the plan's Appendix A. Tests: `tests/test_host_state_probe.py`.
 - `util/host_state_check.py` -- Judges a host against `conf/hosts/<host>/expected.yaml`: `python3 util/host_state_check.py [--host NAME] [--expected FILE] [--probe-json FILE] [--root DIR] [--section GATE]... [--check] [--json]`. It runs the probe, or reads a saved `--probe-json`. It then evaluates seven of the plan's ten host gates, condition by condition, and names the plan task behind each failure: G-ALIAS; G-SIGN (erratum E-G-SIGN: `configure_commit_signing.py --check`, the preflight's pinentry, agent-socket and external-cache lines, and the I-SIGN record); G-SEC (its firewall condition needs the firewall on and blocking all incoming connections: task C2's block-all form, owner ruling 2026-10-25); G-TOOLS (erratum E-D6: each listed tool resolves from `~/.local/bin`, and kubectl is within a minor of the cluster); G-ENV; G-NET; and G-MEM (`util/macvm_ctl.bash`'s arithmetic). G-AUTH, G-PATH and G-AGENT are evaluated elsewhere, and the report names them. expected.yaml is validated first: a VM that cannot fit the machine is regression R-G1, the X2 class, and exits 2, as does a probe whose hardware does not match its `identity`. The report exits 0; with `--check` the exit is 0 / 1 / 2, and an unevaluable condition wins. PyYAML is required. `HOST_STATE_PROBE`, `HOST_STATE_BASH` and `JUNIPER_ROOT` are overridable. Turing's readiness when it landed was 0 of 7. Tests: `tests/test_host_state_check.py`.
+  - **Wording (erratum E-H3, juniper-ml#2392).** A failing kubectl condition names task D3 (upgrade Docker Desktop) before task D4. The G-MEM memory line says `free + speculative + inactive`. `macvm_ctl` still says `free + inactive` for the same sum. Operator surface: [Host-Check Wording](#host-check-wording-e-h3).
 - `util/mcp_setup.bash` -- Writes a checkout's `.mcp.json` Serena entry: `bash util/mcp_setup.bash [--host NAME] [--conf FILE] [--check | --remove] [--dry-run] [checkout]` (default: the checkout that holds the script; a worktree counts). The entry runs `uvx --from git+https://github.com/oraios/serena@<commit> serena start-mcp-server --context <context> --project <checkout> --open-web-dashboard False`, with `SERENA_USAGE_REPORTING=false` in its `env`: Serena v1.7.0 reports usage to `oraios-software.de` at every start unless that variable is exactly `false` (SER-E1 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md`; owner ruling 2026-10-25). `<commit>` (a full 40-hex sha) and `<context>` (a built-in name) come from `conf/hosts/<host>/mcp.json`, the host's approved pin; with no pin it refuses, so Serena never runs unpinned HEAD (decision D10). turing's pin is v1.7.0 (`949a27ef`), whose claude-code context excludes `execute_shell_command`; `.serena/project.yml` excludes it too. A pin bump must re-read the context's `excluded_tools`, and the usage-report check, at the new commit. It fixes audit A2-F1 (no `--project`) and A2-F4 (no `.mcp.json` in a worktree). Other servers and keys are kept; a changed file is backed up to `.mcp.json.bak-<UTC time>` (gitignored; it holds the old tokens) and keeps its mode; a second run writes nothing. `--check` exits 1 on a missing, unpinned, unbound or rebound entry, or one that leaves the usage report on. Exit 2 on usage or environment errors, including an existing `.mcp.json` that is not a JSON object, which it never overwrites. On turing, Serena v1.7.0 does not yet start: its exact `cryptography==50.0.0` pin has no Intel-macOS wheel, and building it needs Rust 1.83 (the host has 1.71). Tests: `tests/test_mcp_setup.py`.
 - `util/wait_for_checks.py` -- Waits for a PR's **required** status checks to finish, then reports honestly. The shared replacement for the hand-rolled "wait for CI" loops that sessions keep re-writing and keep getting wrong the same two ways. Read-only (only `gh pr view` / `gh api .../rules/...` reads — never merges, updates a branch, pushes, or comments), so any session can run it at any time.
   - `python util/wait_for_checks.py --pr N [--repo juniper-cascor] [--owner pcalnon] [--anchor required|observed] [--fail-fast] [--timeout SECONDS] [--interval 20] [--json] [--verbose]`. Exit **0** all required green / **1** a required check failed (named) / **2** timeout with the still-running and never-reported contexts named / **3** hard error.
@@ -8964,6 +9016,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.67
 **Maintainer:** Paul Calnon

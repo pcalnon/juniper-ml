@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.67
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -1126,6 +1126,18 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
+## Host-check wording (turing)
+
+A G-TOOLS kubectl failure names task D3 first. Docker Desktop installs `/usr/local/bin/kubectl`, and on turing that link is the client the gate sees (v1.22.4, inside Docker.app). Task D4 (kubectl 1.36.x) still needs re-planning under the D6 ruling.
+
+G-MEM's memory line is `free + speculative + inactive`. `bash util/macvm_ctl.bash status` still prints `free + inactive` for the same MiB: its `free` row is Pages free plus Pages speculative. `conf/hosts/turing/expected.yaml` comments still use the older sentences. [REFERENCE — Host-Check Wording](REFERENCE.md#host-check-wording-e-h3).
+
+```bash
+python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM --check
+```
+
+---
+
 ## Cross-References
 
 - [Ecosystem Guide](../AGENTS.md) -- project map, dependency graph, conventions
@@ -1148,6 +1160,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- `degraded` is not a success (exit 1); `train_r2` / `cv_r2` from nested `stats.recurrence`; cascor accuracy columns empty
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
+- [Host-Check Wording](REFERENCE.md#host-check-wording-e-h3) -- kubectl's fix is task D3 (Docker Desktop) before D4; G-MEM names speculative pages; `macvm_ctl` keeps `free + inactive`
 - [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence, bare `open()` blocks merge
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy gate is authority for `main.py` (count 58); v1 is the name-matching negative example
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments; PF-1 matched epoch pair + matrix-axis repeats; PF-4/PF-8 are not driver suites
@@ -1183,6 +1196,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.67
 **Maintainer:** Paul Calnon
