@@ -217,6 +217,12 @@ jobs:
           # without it the suites cannot even be collected. Wheels exist for the
           # whole 3.12/3.13/3.14 matrix, so this never builds from source.
           pip install "h5py>=3.11"
+          # setuptools builds the six sub-package wheels in
+          # tests/test_subpackage_py_typed.py. These packages have no
+          # MANIFEST.in, so an undeclared py.typed never reaches the wheel
+          # (juniper-config-tools 0.1.0). actions/setup-python does not
+          # vendor setuptools, so the regression job installs it.
+          pip install "setuptools>=68"
 
       - name: Run Python regression tests
         run: |
@@ -467,8 +473,11 @@ jobs:
           python3 -m unittest -v tests/test_publish_subpackage_workflows.py
           # tests/test_subpackage_py_typed.py: asserts all six published sub-packages
           # ship a py.typed marker AND declare it as package data (APD-SVCCORE-008 /
-          # APD-OBS-002, fixed in ml#1237). Wired 2026-08-22; the gate for that fix had
-          # never run in CI, so a regression would have shipped silently.
+          # APD-OBS-002, fixed in ml#1237), and that the built wheel contains
+          # <import>/py.typed plus the Typing :: Typed classifier. An emptied
+          # package-data list must omit the marker. Wired 2026-08-22; the source
+          # gate for that fix had never run in CI, and the wheel itself was
+          # unchecked -- juniper-config-tools 0.1.0 published without the marker.
           python3 -m unittest -v tests/test_subpackage_py_typed.py
           # The flood-remediation sequence-safety screens (Proposal P2 gates G1/G2)
           # now ship as the PyPI package juniper-ci-tools (>=0.8.0); the per-PR
