@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.87
+**Date**: 2026-11-06
 **Project**: juniper-ml
 
 ---
@@ -179,6 +179,8 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 `claude_interactive.bash` ships `DEBUG=TRUE`, which adds `--dangerously-skip-permissions` to every launch.
 `default_interactive_session_claude_code.bash` adds it only when `CLAUDE_SKIP_PERMISSIONS=1` is set.
+
+The tracked root `settings.local.json` is not a Claude Code settings file. `"idleCompaction": false` there does not turn idle compaction off. Put that key in gitignored `.claude/settings.local.json`, or in `~/.claude/settings.json`. See [Idle compaction and the tracked settings file](REFERENCE.md#idle-compaction-and-the-tracked-settings-file).
 
 `wake_the_claude.bash` sends the prompt (from `--prompt`, or the contents of a `--file` / `--path` prompt file) as Claude
 Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` cannot take it as a value.
@@ -1148,6 +1150,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- `degraded` is not a success (exit 1); `train_r2` / `cv_r2` from nested `stats.recurrence`; cascor accuracy columns empty
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
+- [Idle compaction and the tracked settings file](REFERENCE.md#idle-compaction-and-the-tracked-settings-file) -- root `settings.local.json` is not loaded; set `idleCompaction` in `.claude/settings.local.json`
 - [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence, bare `open()` blocks merge
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy gate is authority for `main.py` (count 58); v1 is the name-matching negative example
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments; PF-1 matched epoch pair + matrix-axis repeats; PF-4/PF-8 are not driver suites
@@ -1183,6 +1186,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-06
+**Version:** 1.0.87
 **Maintainer:** Paul Calnon
