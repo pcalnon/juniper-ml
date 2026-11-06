@@ -138,13 +138,13 @@ export USAGE_MESSAGE_WORKTREE="[--worktree-name|--worktree|-w [WORKTREE_NAME|${T
 export USAGE_MESSAGE_RESUME="[--resume-session|--resume|-rs|-r]"
 export USAGE_MESSAGE_REMOTE_CONTROL="[--remote-control-session|--remote-control|-rc] [--no-remote-control]"
 export USAGE_MESSAGE_SKIP_PERMISSIONS="[--dangerously-skip-permissions|--skip-permissions|-sp]"
-export USAGE_MESSAGE_PROMPT="[--initial-prompt|--prompt|-p <YOUR_INITIAL_PROMPT_HERE>]"
-# A prompt file instead of a prompt: --file names the file; --path names the file, or, with --file, the directory holding it
+# A prompt, or a prompt file instead -- never both: --file names the file; --path names the file, or, with --file, the directory holding it
 export USAGE_MESSAGE_PROMPT_FILE="[--file-name|--file|-f <PROMPT_FILE>] [--file-path|--path|-l <PROMPT_FILE, or with --file its DIRECTORY>]"
+export USAGE_MESSAGE_PROMPT="[--initial-prompt|--prompt|-p <YOUR_INITIAL_PROMPT_HERE> | ${USAGE_MESSAGE_PROMPT_FILE}]"
 export USAGE_MESSAGE_VERSION="[--version|--claude-version|-v|-V] [--script-version]"
 export USAGE_MESSAGE_HELP="[--help|-h|-?]"
 
-export USAGE_MESSAGE="${USAGE_MESSAGE_PREFIX} ${USAGE_MESSAGE_MODEL} ${USAGE_MESSAGE_EFFORT} ${USAGE_MESSAGE_ID} ${USAGE_MESSAGE_RESUME} ${USAGE_MESSAGE_WORKTREE} ${USAGE_MESSAGE_REMOTE_CONTROL} ${USAGE_MESSAGE_SKIP_PERMISSIONS} ${USAGE_MESSAGE_PROMPT} ${USAGE_MESSAGE_PROMPT_FILE} ${USAGE_MESSAGE_VERSION} ${USAGE_MESSAGE_HELP}"
+export USAGE_MESSAGE="${USAGE_MESSAGE_PREFIX} ${USAGE_MESSAGE_MODEL} ${USAGE_MESSAGE_EFFORT} ${USAGE_MESSAGE_ID} ${USAGE_MESSAGE_RESUME} ${USAGE_MESSAGE_WORKTREE} ${USAGE_MESSAGE_REMOTE_CONTROL} ${USAGE_MESSAGE_SKIP_PERMISSIONS} ${USAGE_MESSAGE_PROMPT} ${USAGE_MESSAGE_VERSION} ${USAGE_MESSAGE_HELP}"
 
 
 ########################################################################################################################################################################################################
@@ -175,7 +175,7 @@ function require_nonempty_value {
 # -v, -V, --version and --claude-version report Claude Code's version, as `claude -v` does, through wake_the_claude.bash; this script's
 # own version is --script-version (owner ruling, 2026-11-06). Until then -v and --version printed this script's version.
 function claude_code_version {
-    # Without wake_the_claude.bash's debug log, unless the caller asks for it: the answer is the version, as `claude -v` prints it
+    # Without wake_the_claude.bash's debug log, unless the caller asks for it: stdout is then the version line alone
     WTC_DEBUG="${WTC_DEBUG:-${FALSE}}" exec "${WAKE_THE_CLAUDE_SCRIPT}" "${CLAUDE_VERSION_FLAG}"
 }
 
@@ -222,7 +222,7 @@ while (( $# > 0 )); do
         # A prompt file, forwarded to wake_the_claude.bash, which reads it: --file names the file, --path the file or its directory
         "--file-name" | "--file" | "-f") require_nonempty_value "${@}" && CLAUDE_PROMPT_FILE="${2}" && shift 2 ;;
         "--file-path" | "--path" | "-l") require_nonempty_value "${@}" && CLAUDE_PROMPT_PATH="${2}" && shift 2 ;;
-        *) usage 1 "Unknown argument: ${1}";;
+        *) usage 1 "Unknown argument: ${1:-(an empty word)}";;
     esac
 done
 

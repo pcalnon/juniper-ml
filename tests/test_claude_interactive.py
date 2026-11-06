@@ -538,7 +538,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             env = self._base_env(args_log)
             result = self._run_launcher(launcher_path, temp_dir, env, ["", "--file", "prompt.md"])
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertIn("Unknown argument: \n", result.stdout)
+            self.assertIn("Unknown argument: (an empty word)", result.stdout)
             self.assertEqual(self._extract_logged_args(args_log), [], "wake_the_claude.bash must not be invoked")
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -572,7 +572,7 @@ class ClaudeInteractiveEndToEndTests(unittest.TestCase):
     optional value (``--worktree [name]``, ``--remote-control [name]``) would take the prompt as that value.
     """
 
-    def _launch(self, temp_dir: str, extra_args: list[str]) -> tuple[subprocess.CompletedProcess[str], list[str]]:
+    def _launch(self, temp_dir: str, extra_args: list[str], env_extra: dict[str, str] | None = None) -> tuple[subprocess.CompletedProcess[str], list[str]]:
         scripts_dir = Path(temp_dir) / "scripts"
         scripts_dir.mkdir(exist_ok=True)
         for name in ("claude_interactive.bash", "wake_the_claude.bash"):
@@ -597,6 +597,7 @@ class ClaudeInteractiveEndToEndTests(unittest.TestCase):
         env["CLAUDE_ARGV_NUL_LOG"] = str(argv_log)
         env["WTC_SESSIONS_DIR"] = str(Path(temp_dir) / "sessions")
         env["WTC_LOGS_DIR"] = str(Path(temp_dir) / "logs")
+        env.update(env_extra or {})
         result = subprocess.run(
             ["bash", str(scripts_dir / "claude_interactive.bash"), *extra_args],
             cwd=temp_dir,
@@ -659,13 +660,17 @@ class ClaudeInteractiveEndToEndTests(unittest.TestCase):
                 self.assertEqual(argv, [], "no Claude Code session may start")
 
     def test_a_prompt_file_wake_the_claude_refuses_fails_claudey(self) -> None:
-        """A missing or empty prompt file starts no session, and claudey exits 1, as wake_the_claude.bash does."""
+        """A missing or empty prompt file starts no session, claudey exits 1, as wake_the_claude.bash does, and stderr says why.
+
+        With the debug log off (``WTC_DEBUG=1``), so the ``Error:`` line can only come from the errors themselves.
+        """
         with tempfile.TemporaryDirectory() as temp_dir:
             (Path(temp_dir) / "empty.md").write_text("\n", encoding="utf-8")
             for extra_args in (["--file", "missing.md"], ["--file", "empty.md"], ["--path", "no-such-dir", "--file", "empty.md"]):
                 with self.subTest(extra_args=extra_args):
-                    result, argv = self._launch(temp_dir, extra_args)
+                    result, argv = self._launch(temp_dir, extra_args, {"WTC_DEBUG": "1"})
                     self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                    self.assertNotIn("wake_the_claude.bash: ", result.stderr, "the debug log must be off")
                     self.assertIn("Error:", result.stderr)
                     self.assertEqual(argv, [], "no Claude Code session may start")
 
