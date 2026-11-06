@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.42
+**Version:** 0.3.59
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -180,6 +180,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check) -- verifies `**Last Updated**:` was bumped on PRs touching `AGENTS.md`
 - [Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) -- L2/L3 `ANTHROPIC_API_KEY` safeguards + `DEFAULT_REPOS` fan-out
 - [juniper-service-core](REFERENCE.md#juniper-service-core) -- body limit, 429 headers, control-WS sanitizer, `/ws/workers` contracts
+- [A measured zero heartbeat overwrites](REFERENCE.md#a-measured-zero-heartbeat-overwrites) -- a reported `0` / `[]` replaces the prior worker reading; `None` keeps it; a heartbeat aged exactly one timeout (default 30 s) is already stale
 - [Non-ASCII API keys and Sentry frame locals](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) -- a non-ASCII `X-API-Key` is a 401 (WebSocket close 4001) on `main`; published service-core 0.7.0 still 500s, and that 500 can send the configured key to Sentry in a frame local
 - [HTTP Client Base-URL Contract](REFERENCE.md#http-client-base-url-contract) -- shared REST `_normalize_url`, TLS-downgrade pitfall, WS streams still rstrip-only
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy event-loop blocking; count is 58 (canopy#567); the slice-1a gate is authority for `main.py` only (do not quote the v1 name-matching census)
@@ -203,6 +204,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.3.41
+**Last Updated:** 2026-11-04
+**Version:** 0.3.59
 **Status:** Active
