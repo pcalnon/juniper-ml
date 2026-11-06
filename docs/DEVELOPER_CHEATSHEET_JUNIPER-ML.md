@@ -1,6 +1,6 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.95
+**Version**: 1.0.96
 **Date**: 2026-11-06
 **Project**: juniper-ml
 
