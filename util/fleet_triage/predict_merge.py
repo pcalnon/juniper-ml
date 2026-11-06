@@ -11,7 +11,8 @@ WHAT IT DOES (P3 §1A -- the deterministic SCRIPT layer, no agent):
 
 For a PR branch (``--pr N``) or every open PR (``--batch``) it, per PR:
 
-  (a) creates a throwaway DETACHED ``git clone`` under the system tempdir --
+  (a) creates a throwaway DETACHED scratch repository under the system tempdir that
+      borrows the source's objects through ``objects/info/alternates`` --
       never a ``git worktree`` of the primary repo, never the invoking checkout,
       never a push (the merge stays local and is discarded);
   (b) merges ``origin/main`` into the branch tip (``git merge --no-ff``) so the
@@ -125,8 +126,28 @@ def _run(cmd: list, cwd: Optional[Path] = None) -> subprocess.CompletedProcess:
     )
 
 
+# Variables that point a git command at another repository than the one ``-C`` names. Inherited (as
+# inside a git hook), GIT_DIR made the scratch's ``git init`` re-initialise the SOURCE.
+_GIT_LOCATION_VARS = (
+    "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR",
+    "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_NAMESPACE",
+)
+
+
 def _git(repo: Path, *args: str) -> subprocess.CompletedProcess:
-    return _run(["git", "-C", str(repo), *args])
+    env = {k: v for k, v in os.environ.items() if k not in _GIT_LOCATION_VARS}
+    # Git LFS pointers stay pointers: a merge simulation needs no LFS content. Without this, git-lfs smudges
+    # through the alternate (hardlinking the source's LFS objects into the scratch) or tries to download an
+    # object the source never fetched. The scratch also disables every filter in .git/info/attributes,
+    # which covers a filter that is configured but whose binary is absent.
+    env["GIT_LFS_SKIP_SMUDGE"] = "1"
+    return subprocess.run(  # nosec B603 -- fixed argv, no shell, trusted tool names
+        ["git", "-C", str(repo), *[str(a) for a in args]],
+        capture_output=True,
+        text=True,
+        errors="replace",  # a binary blob (``git show`` of a PDF) must not raise UnicodeDecodeError mid-batch
+        env=env,
+    )
 
 
 def _rev(repo: Path, ref: str) -> Optional[str]:
@@ -298,24 +319,51 @@ def _run_gate_battery(clone: Path, changed_existing: list, *, run_gates: bool, g
 # --------------------------------------------------------------------------- #
 
 def _scratch_clone(repo_root: Path, base_sha: str, branch_sha: str, scratch_parent: Path) -> tuple:
-    """Detached ``git clone`` under the system tempdir with ``base``/``branch`` pinned by SHA.
+    """Detached scratch repository under the system tempdir that BORROWS the source's object store.
 
-    ``git clone --shared`` references the source's WHOLE object store via an alternate (every
-    object reachable from any of the source's refs -- including remote-tracking ``origin/*`` and,
-    for a linked-worktree source, the shared common object store -- is visible), so both commit
-    SHAs are already present; a plain ``update-ref`` then binds them to stable
-    ``refs/fleet/{base,branch}``. ``--shared`` (not ``--local``) is cross-device-safe -- the
-    scratch lives under the system tempdir, typically a different filesystem from the repo, where
-    ``--local`` hardlinks fail with "Invalid cross-device link". No refspec disambiguation, no
-    network. The merge writes new objects only into the SCRATCH's own object dir; the source repo
-    is READ only -- never written, never a worktree, never pruned during the seconds-long run.
+    ``git init`` plus an ``objects/info/alternates`` entry naming the source's object directory (the
+    COMMON dir's, so a linked-worktree source works too): every object reachable from any of the
+    source's refs -- remote-tracking ``origin/*`` included -- is visible, so both commit SHAs are
+    already present; a plain ``update-ref`` then binds them to stable ``refs/fleet/{base,branch}``.
+    No transport, no network, no hardlinks, so the scratch may live on any filesystem. The merge writes
+    new objects only into the SCRATCH's own object dir; the source repo is READ only -- never written,
+    never a worktree, never pruned during the seconds-long run.
+
+    This was ``git clone --shared <path>``, which writes the alternate only for a LOCAL clone; git turns
+    local mode off for a SHALLOW source (``builtin/clone.c``, since at least v2.25). juniper-ml's primary
+    checkout has been shallow since at least 2026-09-10 (a stray ``.git/shallow`` entry from 09-07), so
+    the clone was a pack transfer (``pack-objects`` / ``index-pack``) carrying only objects reachable
+    from the source's local branches and tags, and every PR head reachable only from ``origin/*`` failed
+    ``update-ref`` ("nonexistent object"): 44 of 45 open PRs came back ERROR on 2026-11-04, 56 of 57 on
+    2026-11-06.
     """
+    common = _git(repo_root, "rev-parse", "--path-format=absolute", "--git-common-dir")
+    fmt = _git(repo_root, "rev-parse", "--show-object-format")
+    if common.returncode != 0 or fmt.returncode != 0:
+        raise PredictMergeError(f"cannot locate the object store of {repo_root}: {(common.stderr or fmt.stderr).strip()}")
+    objects_dir = Path(common.stdout.strip()) / "objects"
+    if not objects_dir.is_dir():
+        raise PredictMergeError(f"{repo_root}'s object store {objects_dir} is not a directory")
     scratch = Path(tempfile.mkdtemp(prefix="fleet-triage-", dir=str(scratch_parent)))
     clone = scratch / "clone"
-    cp = _run(["git", "clone", "--no-checkout", "--quiet", "--shared", str(repo_root), str(clone)])
+    cp = _git(scratch, "init", "--quiet", f"--object-format={fmt.stdout.strip()}", str(clone))
     if cp.returncode != 0:
         shutil.rmtree(scratch, ignore_errors=True)
-        raise PredictMergeError(f"git clone of {repo_root} failed: {cp.stderr.strip()}")
+        raise PredictMergeError(f"git init of the scratch repository failed: {cp.stderr.strip()}")
+    try:
+        (clone / ".git" / "objects" / "info" / "alternates").write_text(f"{objects_dir}\n", encoding="utf-8")
+        # No filter driver runs in the scratch: the merge needs blobs, not smudged files, and a configured
+        # filter whose binary is absent (filter.lfs.required without git-lfs) would fail every checkout.
+        (clone / ".git" / "info").mkdir(exist_ok=True)
+        (clone / ".git" / "info" / "attributes").write_text("* -filter\n", encoding="utf-8")
+        # The source's shallow boundary, so a history cut above the merge base is refused, not misread:
+        # without it git cannot parse the missing parents, and a merge can exit 0 having merged nothing.
+        shallow = Path(common.stdout.strip()) / "shallow"
+        if shallow.is_file():
+            shutil.copyfile(shallow, clone / ".git" / "shallow")
+    except OSError as exc:
+        shutil.rmtree(scratch, ignore_errors=True)
+        raise PredictMergeError(f"could not prepare the scratch repository: {exc}") from exc
     for ref_name, sha in (("refs/fleet/base", base_sha), ("refs/fleet/branch", branch_sha)):
         upd = _git(clone, "update-ref", ref_name, sha)
         if upd.returncode != 0:
@@ -359,6 +407,8 @@ def simulate_merge(
 
         # branch behind main iff main tip is NOT an ancestor of the branch tip
         anc = _git(clone, "merge-base", "--is-ancestor", "refs/fleet/base", "refs/fleet/branch")
+        if anc.returncode not in (0, 1):  # 1 = not an ancestor; anything else is a failure, not "behind"
+            raise PredictMergeError(f"merge-base --is-ancestor failed: {anc.stderr.strip()}")
         behind = anc.returncode != 0
 
         # check out the branch tip, then merge main into it -> the predicted RESULT
@@ -366,7 +416,13 @@ def simulate_merge(
         if co.returncode != 0:
             raise PredictMergeError(f"checkout of branch tip failed: {co.stderr.strip()}")
         merge = _git(clone, *_MERGE_IDENT, "merge", "--no-ff", "--no-edit", "refs/fleet/base")
+        if merge.returncode not in (0, 1):  # 1 = conflicts; e.g. 128 "refusing to merge unrelated histories"
+            raise PredictMergeError(f"merge failed: {(merge.stderr or merge.stdout).strip()}")
         conflict = merge.returncode != 0
+        # A behind branch's clean merge must have taken main as its second parent. Across a missing parent
+        # git once printed "could not parse commit", then "Already up to date.", and exited 0.
+        if not conflict and behind and _rev(clone, "HEAD^2") != base_sha:
+            raise PredictMergeError(f"the merge of main into the branch did not happen: {(merge.stderr or merge.stdout).strip()}")
 
         if conflict:
             conflicted = _names(clone, "--diff-filter=U")
