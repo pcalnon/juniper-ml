@@ -25,8 +25,10 @@ and report. **You never push, merge, close, comment on, or author a PR.** Fixes 
 ## The deterministic script does the heavy lifting
 
 The per-merge simulation is a **deterministic script**, `util/fleet_triage/predict_merge.py` —
-NOT you. Per PR it builds a throwaway **detached `git clone`** under the system tempdir (never a
-`git worktree` of the primary repo, never the owner's checkout, never a push), merges
+NOT you. Per PR it builds a throwaway scratch repository under the system tempdir
+(`git init` plus an `objects/info/alternates` entry naming the checkout's object store,
+so a shallow checkout's `origin/*` PR heads resolve; never a `git worktree` of the
+primary repo, never the owner's checkout, never a push), merges
 `origin/main` into the branch tip, and on the RESULT runs the repo-pinned fast gates
 (`pre-commit run black isort flake8 mypy check-ast --files <changed>`) plus two screens CI cannot
 see — an **AST symbol screen** (a symbol on `origin/main` absent in the merged result) and a
@@ -138,6 +140,6 @@ checkpoints; you are not re-invoked per merge. (Fully draining a same-file clust
 - Every per-PR claim is backed by the script's JSON for that PR — cite it. Do not assert a verdict
   you did not obtain from `predict_merge.py`.
 - The TRUE delta is the script's `git diff` of the merge result, **never** `gh --json files`.
-- If the script errors on a PR (unresolved ref, clone failure), report it as `ERROR` for that PR
+- If the script errors on a PR (unresolved ref, or scratch setup such as `could not pin refs/fleet/…`), report it as `ERROR` for that PR
   and continue — never invent a verdict.
 - You ask no questions and request no tools beyond `Read` / `Grep` / `Glob` / `Bash`.

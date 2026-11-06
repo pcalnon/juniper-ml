@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.90
+**Date**: 2026-11-06
 **Project**: juniper-ml
 
 ---
@@ -71,7 +71,7 @@
 | `python util/experiments/make_baseline.py --tag TAG --suite SUITE_DIR` | Bless a suite as a named Q-8 baseline (operator-only; no `--force`) |
 | `python util/experiments/compare_baseline.py --baseline TAG --suite SUITE_DIR` | Split compare vs a baseline (exit 0/1/2). Same-branch FAIL is a real move; branch flip REFUSES. **Do not wire to CI.** |
 | `python util/agent_suite_doctor.py --json`             | Custom-agent suite health check (OK/WARN/FAIL; discovery fail-closed) |
-| `python util/fleet_triage/predict_merge.py --pr N --json` | Predicted-merge triage for one open PR (detached clone; never pushes) |
+| `python util/fleet_triage/predict_merge.py --pr N --json` | Predicted-merge triage for one open PR (`git init` + object-store alternates; shallow-safe; never pushes) |
 | `python3 util/ruleset_scope_guard.py` | Assert this repo's rulesets are not scoped `~ALL` (Quality Gate hard need) |
 | `python3 util/ruleset_scope_guard.py --fleet` | Same check across all 9 Juniper repos |
 | `python3 -m unittest -v tests/test_ruleset_scope_guard.py` | Hermetic gate for the ~ALL-scope guard |
@@ -88,7 +88,7 @@
 | `python3 util/soak_run_probe.py --probe-id FULL-SLUG`  | Run a named soak probe (full slug; do not `--force`) |
 | `python util/env_floor_drift_check.py --repo-root PATH --env NAME` | Floor-drift: installed `juniper-*` vs pyproject floors (I-2) |
 | `util/check_conda_env_torch.bash JuniperCascor1` | Classify P-5 / May-7 torch._C shadow (exit 0/1/2/3/4; does not rebuild) |
-| `python util/fleet_triage/predict_merge.py --pr N --json` | Predicted-merge triage for one open PR (detached clone; never pushes) |
+| `python util/fleet_triage/predict_merge.py --pr N --json` | Predicted-merge triage for one open PR (`git init` + object-store alternates; shallow-safe; never pushes) |
 | `python util/fleet_triage/predict_merge.py --batch --json` | Batch triage + same-file cluster map + merge order |
 | `python3 util/ad-hoc/2026-08-31_resident_gap_triage.py . --min-score 3` | Rank source comments that are hazard-shaped and resident nowhere |
 | `python3 util/ad-hoc/2026-08-31_resident_gap_triage.py ../juniper-cascor --self-check --agents /tmp/pre609.md` | Positive control: cascor `max_epochs` split must score ≥ 3 and rank top 5 |
@@ -393,7 +393,7 @@ commit trailer in BASE..HEAD — the per-PR `allow-symbol-loss` label is WARN-on
 **not** green `main-verify`. Docs-only deltas skip the pre-commit battery (`no .py files in delta`).
 `--batch` orders heal titles/branches first (`restore` / `heal` / `repair` / `fix-first`). Verdicts:
 `NEEDS-UPDATE-BRANCH` means behind-main; `DAMAGED-FIX-FIRST` is gate **or** symbol **or** docs `fail`.
-Skip local pre-commit with `JUNIPER_FLEET_SKIP_PRECOMMIT=1`. Full contract:
+Skip local pre-commit with `JUNIPER_FLEET_SKIP_PRECOMMIT=1`. The scratch is `git init` plus `objects/info/alternates` on the checkout's object store, so a shallow checkout's `origin/<branch>` heads resolve; `git fetch origin` first, because the alternate cannot supply an object this checkout never fetched. Full contract:
 [REFERENCE.md § Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety).
 
 **Ruleset context audit:** a required name that never reports leaves `main` unmergeable with every
@@ -537,7 +537,7 @@ ref. Re-dispatch after #770; see runbook §7.
 any-removed-line counter (not heading/`--min-run`), but honors `Allow-Docs-Rewrite: <path>` / `*`
 trailers like `docs_additions_check.py` so intentional docs rewrites are not forever
 `DAMAGED-FIX-FIRST`. `Allow-Symbol-Loss: *` is still rejected. Exit `0` always emits a report —
-read each `verdict`. Full contract:
+read each `verdict`. The scratch is `git init` plus `objects/info/alternates` on the checkout's object store (a shallow checkout's `origin/*` heads resolve). `git fetch origin` first. Full contract:
 [REFERENCE.md § Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety).
 
 **Post-merge main-verify (G3 / G3.1 / notify 0.3.0):** every `push:main` runs
@@ -851,6 +851,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Slack PR-budget WARN/ALARM | Open the `PR Budget Alarm` run step summary; drain oldest `cursor/` same-file clusters; confirm dashboard per-run caps. Raise thresholds only via `PR_BUDGET_WARN` / `PR_BUDGET_ALARM` repo vars. |
 | Budget alarm cron green but no Slack on breach | Confirm `SLACK_WEBHOOK_URL` is set; missing secret skips notification by design (run stays green). |
 | `predict_merge` exit `2` | Bad args / non-git `--repo-root` / missing `gh` / unresolved branch ref — not a damage finding. |
+| `--batch` mostly `ERROR`, `nonexistent object` | Shallow checkout still running `git clone --shared` (pre-2026-11-06). The scratch must be `git init` + `objects/info/alternates` on `--git-common-dir`/objects. `git fetch origin` first. See [REFERENCE — Fleet Triage](REFERENCE.md#fleet-triage-and-sequence-safety). |
 | `DAMAGED-FIX-FIRST` on intentional delete | Add `Allow-Symbol-Loss: func:…` (qualified) on a commit in the PR; re-run `--pr`. Label alone will not green `main-verify`. |
 | Local triage stuck in pre-commit | `JUNIPER_FLEET_SKIP_PRECOMMIT=1` (screens still run). |
 | Startup exits before launching services | Check the preflight output for missing `curl`, `ss`, conda, sibling repo directories, or occupied ports. |
@@ -862,6 +863,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | `chop_all` cannot find `JuniperProject.pid` | Confirm `plant_all` finished in `nohup` mode and rerun with `JUNIPER_PROJECT_DIR` set to the same project root; for systemd mode, stop with `util/juniper_chop_all.bash --systemd`. |
 | Doctor green but Template Agent grounding dead | Re-run without `--no-discovery`; fix `util/prompt_discovery/cli.py` until it emits `schema_version` + `provenance.head_sha`. |
 | `predict_merge` exit `2` | Bad args / non-git `--repo-root` / missing `gh` — not a damage finding. (Unresolved tip in `--batch` is soft-`ERROR`, exit 0.) |
+| `--batch` mostly `ERROR`, `nonexistent object` | Shallow checkout still running `git clone --shared` (pre-2026-11-06). The scratch must be `git init` + `objects/info/alternates` on `--git-common-dir`/objects. `git fetch origin` first. See [REFERENCE — Fleet Triage](REFERENCE.md#fleet-triage-and-sequence-safety). |
 | New `.md` falsely `DAMAGED-FIX-FIRST` | Header-counting bug class: only content `-` lines count; `---` file headers must be ignored (#910). |
 | Docs-only PR “fails” gates | No `.py` in TRUE delta → battery `skip` (`no .py files in delta`), not fail. |
 | Heal PR not first in `--batch` order | Title or branch needs `restore`/`heal`/`repair`/`fix-first` (not bare `fix`/`hotfix`). |
@@ -950,6 +952,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Soak `status` exits 1 with an otherwise healthy rate | Open escalation or `BET-FAILING` — do **not** `resolve` to green the exit code. |
 | Soak probe reaped / no `status.json` | Pidfile was under `reports/soak/runs/` (unscanned) or interpreter was `JuniperC*`. Use `/usr/bin/python3`. |
 | `predict_merge` exit `2` | Bad args / non-git `--repo-root` / missing `gh` / unresolved branch ref — not a damage finding. |
+| `--batch` mostly `ERROR`, `nonexistent object` | Shallow checkout still running `git clone --shared` (pre-2026-11-06). The scratch must be `git init` + `objects/info/alternates` on `--git-common-dir`/objects. `git fetch origin` first. See [REFERENCE — Fleet Triage](REFERENCE.md#fleet-triage-and-sequence-safety). |
 | Fleet `DAMAGED` on intentional docs rewrite | Add `Allow-Docs-Rewrite: <path>` or `*` in BASE..RESULT (#926); wrong-path trailers do not waive. |
 | Mixed `--systemd` / pidfile modes | Match plant and chop modes; systemd never writes `JuniperProject.pid`. |
 | Plant WARNING `invalid health-check interval` / stuck health wait | Unset `HEALTH_CHECK_INTERVAL` or set a positive integer (default `2`); `0` was a busy-loop. |

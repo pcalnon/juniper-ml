@@ -11,7 +11,9 @@ WHAT IT DOES (P3 §1A -- the deterministic SCRIPT layer, no agent):
 
 For a PR branch (``--pr N``) or every open PR (``--batch``) it, per PR:
 
-  (a) creates a throwaway DETACHED ``git clone`` under the system tempdir --
+  (a) creates a throwaway scratch repository under the system tempdir
+      (``git init`` plus an ``objects/info/alternates`` entry naming the checkout's
+      object store, so a shallow checkout's ``origin/*`` heads resolve) --
       never a ``git worktree`` of the primary repo, never the invoking checkout,
       never a push (the merge stays local and is discarded);
   (b) merges ``origin/main`` into the branch tip (``git merge --no-ff``) so the
@@ -361,7 +363,7 @@ def simulate_merge(
     run_gates: bool = True,
     keep_scratch: bool = False,
 ) -> dict:
-    """Simulate merging ``base_ref`` into ``branch_ref`` in a detached clone; return the verdict dict.
+    """Simulate merging ``base_ref`` into ``branch_ref`` in a throwaway scratch repo; return the verdict dict.
 
     Pure of ``gh``/network: callers resolve the branch ref (real: ``origin/<headRefName>``);
     tests pass a fixture branch name directly. The invoking ``repo_root`` is only READ.
