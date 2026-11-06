@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.71
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -141,6 +141,14 @@
 Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped rows — they can agree and both miss a close that never reached §2 / §5.1. Run `register_status_crosscheck.py` after every four-touch close. `register_open_set.py` uses a relative `notes/…` path (`FileNotFoundError` unless cwd is the repo root); the crosscheck is `__file__`-relative. Token is `**FIXED` only. [REFERENCE — Defect Register Close Protocol](REFERENCE.md#defect-register-close-protocol).
 
 **Cascor-primary freeze:** `python3 util/ad-hoc/cascor_freeze_tell.py`. Exit 1 = a user-owned process holds `/home/pcalnon/Development/python/Juniper/juniper-cascor` — do not edit it. Exit 0 is "no user-owned importer", not "no importer" (root-owned `/proc/<pid>/{fd,environ,maps}` are invisible). Sibling `juniper-cascor-client` / `-worker` and both worktree roots are not holds. [REFERENCE.md § Cascor Primary Freeze Tell](REFERENCE.md#cascor-primary-freeze-tell).
+
+**G-SEC firewall:** `python3 util/host_state_check.py --host turing --section G-SEC --check`.
+A pass needs `State >= 1` on `--getglobalstate` and, on the separate `--getblockall` capture, the phrase `is blocking all non-essential incoming connections`.
+Turing's state-2 global line contains that phrase; paired with `has block all state set to disabled` the condition fails and the fix names only `--setblockall on`.
+`State = 0` fails even when block-all prints the on sentence.
+`--setblockall`'s confirmation (`is set to block all ...`), and the unknown and undefined getter sentences, are an error with no fix while the firewall is on.
+Stealth is reported in the message.
+[REFERENCE — The firewall gate reads getblockall](REFERENCE.md#the-firewall-gate-reads-getblockall).
 
 ---
 

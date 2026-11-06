@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.71
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -16,6 +16,7 @@
 - [Ecosystem Compatibility](#ecosystem-compatibility)
 - [HTTP Client Base-URL Contract](#http-client-base-url-contract)
 - [Host Orchestration Utilities](#host-orchestration-utilities)
+- [The firewall gate reads getblockall](#the-firewall-gate-reads-getblockall)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
 - [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client)
 - [Juniper Project-Tree Backup](#juniper-project-tree-backup)
@@ -528,6 +529,60 @@ Troubleshooting:
 | systemd plant health timeout / partial stack | `cleanup_on_failure` did **not** stop user units. Inspect `systemctl --user status juniper-{data,cascor,canopy,cascor-worker}` and tear down with `util/juniper_chop_all.bash --systemd` (or matching `systemctl --user stop`) before re-planting. |
 | Worker WARNING: healthy but unit not active | HTTP `/v1/health/ready` passed but `is-active` failed — check `journalctl --user -u juniper-cascor-worker` / unit file; plant still exited 0. |
 | Mixed plant/chop modes | Never plant with `--systemd` and chop via pidfile (or the reverse). Match the mode used at start. |
+
+---
+
+## The firewall gate reads getblockall
+
+G-SEC's `firewall` condition is `util/host_state_check.py` `_firewall` (bring-up task C2, owner ruling 2026-10-25). `util/host_state_probe.bash` records three captures from `/usr/libexec/ApplicationFirewall/socketfilterfw` (`SOCKETFILTERFW` overrides the binary). A pass needs the first two. Stealth is copied into the message and does not decide the condition.
+
+| Capture | Command | Role |
+|---------|---------|------|
+| `firewall` | `--getglobalstate` | Reads `State = N`. On is `N >= 1`. State 1 is `Firewall is enabled. (State = 1)`. State 2, turing after C2 on 2026-10-26, is `Firewall is blocking all non-essential incoming connections. (State = 2)`. |
+| `blockall` | `--getblockall` | On when the text contains `is blocking all non-essential incoming connections`. Off when it contains `has block all state set to disabled`. The on phrase is tested first. |
+| `stealth` | `--getstealthmode` | The first line is appended when the capture succeeds. A missing or failed stealth capture is left out. |
+
+The state-2 global-state line contains the on phrase. Block-all is still the `blockall` capture. That line paired with `Firewall has block all state set to disabled.` fails, and the fix names only `--setblockall on`.
+
+`State = 0` fails for every block-all result, including the on sentence. The fix names `--setglobalstate on`, then `--setblockall on` and `--setstealthmode on`.
+
+While `State` is 1 or greater, these `--getblockall` results are an error and carry no fix step:
+
+- `Firewall is set to block all non-essential incoming connections` — `--setblockall`'s confirmation. Turing's getter printed `Firewall is blocking all non-essential incoming connections.` on 2026-10-26 (erratum E-C2-GATE).
+- `Firewall has unknown block all state.`
+- `Firewall is in undefined block all state.`
+- A missing `blockall` key, a missing binary, a non-zero exit, or a timeout. The message is `the probe recorded no socketfilterfw --getblockall`, or `socketfilterfw --getblockall:` plus the failure.
+
+An unrecognized sentence reports `socketfilterfw --getblockall: no block-all state in '<first line>'`.
+
+While `State` is 0, those same results stay a failure. The message keeps the global-state line. When `--getblockall` produced stdout, its first line is included. A capture that failed before stdout (missing binary, non-zero exit) leaves only the global-state line.
+
+Every remediation starts `task C2 (owner): sudo /usr/libexec/ApplicationFirewall/socketfilterfw` and ends `(block all incoming connections while nothing inbound is needed; owner ruling 2026-10-25)`.
+
+| Global `State` | `--getblockall` | Condition | Steps the fix names |
+|----------------|-----------------|-----------|---------------------|
+| `0` | any text, or a failed capture | fail | `--setglobalstate on`, then `--setblockall on` and `--setstealthmode on` |
+| `>= 1` | contains `is blocking all non-essential incoming connections` | pass | none |
+| `>= 1` | contains `has block all state set to disabled`, and not the on phrase | fail | `--setblockall on` |
+| `>= 1` | confirmation, unknown, undefined, missing, or failed | error | none |
+
+`--check` exits 1 for a failure and 2 for an error. Exit 2 wins when a selected gate has both. Without `--check` the report exits 0.
+
+```bash
+python3 util/host_state_check.py --host turing --section G-SEC --check
+```
+
+`FirewallTest` in `tests/test_host_state_check.py` pins the pass, the disabled sentence, the confirmation sentence, stealth, and a probe with no `blockall` key.
+
+### Operator pitfalls
+
+| What you see | What to do |
+|--------------|------------|
+| The global-state line says "is blocking" and the condition fails | Read the second sentence. `has block all state set to disabled` means run `--setblockall on`. The first sentence already supplied `State = 2`. |
+| `ERROR` and `no block-all state in 'Firewall is set to block all ...'` | That line is `--setblockall`'s confirmation. Re-probe. The passing sentence is `is blocking all non-essential incoming connections`. |
+| `ERROR` with `has unknown block all state` or `is in undefined block all state` while the firewall is on | The getter printed a sentence the gate does not classify. There is no remediation until `--getblockall` prints the on phrase or the off phrase. |
+| `State = 0` and the block-all line is the on sentence | Turn the firewall on first. The on sentence does not pass `State = 0`. |
+| Stealth mode is off and the condition passes | Expected. The stealth line is only in the message. |
 
 ---
 
