@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.90
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -75,6 +75,7 @@
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
+- [Local Claude Code Launchers](#local-claude-code-launchers)
 - [Claude Code Action](#claude-code-action)
 - [CodeQL Analysis](#codeql-analysis)
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
@@ -4443,7 +4444,7 @@ With the `SLACK_WEBHOOK_URL` repo secret present (owner-provisioned incoming web
 
 ### Claude Code Action (`claude.yml`)
 
-GitHub `@claude` assistant (`anthropics/claude-code-action`). Event-driven (comments/reviews/issues), SHA-pinned, **not** a required check and **not** the local `claudey` launcher. Operator surface: [Claude Code Action](#claude-code-action). Access audit: [Claude.yml Access Validation](#claudeyml-access-validation).
+GitHub `@claude` assistant (`anthropics/claude-code-action`). Event-driven (comments/reviews/issues), SHA-pinned, **not** a required check and **not** the local `claudey` launcher. Operator surface: [Claude Code Action](#claude-code-action). Local launchers: [Local Claude Code Launchers](#local-claude-code-launchers). Access audit: [Claude.yml Access Validation](#claudeyml-access-validation).
 
 ### CodeQL Analysis (`codeql.yml`)
 
@@ -8068,9 +8069,105 @@ The bash auditor covers L2/L3 structure only; juniper-ml's own `on:` event matri
 
 ---
 
+## Local Claude Code Launchers
+
+Three local entry points start Claude Code. `./claudey` is the repo-root symlink to `scripts/claude_interactive.bash`. It does not run `scripts/default_interactive_session_claude_code.bash`. The GitHub `@claude` workflow is a different surface: [Claude Code Action](#claude-code-action).
+
+`TRUE="0"` and `FALSE="1"` in both `claude_interactive.bash` and `wake_the_claude.bash`. A `1` after a boolean flag is off. `CLAUDE_SKIP_PERMISSIONS=1` on the older default-session script is the opposite convention: that `1` means on.
+
+### Entry points
+
+| Entry | What reaches `wake_the_claude.bash` |
+|-------|-------------------------------------|
+| `./claudey` | `--model opus`, `--effort max`, `--prompt "Hello World, Claude!"`, a bare `--worktree`, a bare `--remote-control`. Shipped `DEBUG=TRUE` (`0`) also sends `--dangerously-skip-permissions` on every launch. |
+| `./claudey --file <file>` or `--path` | The same defaults, except no `--prompt`. The file's text is the prompt. |
+| `bash scripts/default_interactive_session_claude_code.bash` | `--id` (wake turns that into `--session-id` plus a new UUID), a bare `--worktree`, a bare `--remote-control`, `--effort high`, and `--prompt "Hello World, Claude!"`. No `--model`. `--dangerously-skip-permissions` only when `CLAUDE_SKIP_PERMISSIONS=1`. |
+| `bash scripts/wake_the_claude.bash ...` | Whatever the parser accepts. No arguments prints usage and exits 1. `-u` / `--usage` print usage and exit 1. `-h` / `--help` print usage and exit 0. |
+
+`./claudey` turns worktree and remote control on (2026-11-04). `--no-worktree` and `--no-remote-control` turn them off, as do `CLAUDE_WORKTREE=1` and `CLAUDE_REMOTE_CONTROL=1`. The older default-session script gained the bare `--remote-control` on 2026-11-06. It still passes `--id` and `--effort high`, which `./claudey` does not.
+
+`-s` is not the same flag in both scripts. On `claudey` it is `--id` and it requires a value. On `wake_the_claude.bash` it is `--dangerously-skip-permissions`.
+
+`claudey` exits with `wake_the_claude.bash`'s status. It prints `Closed Default Interactive session with Claude Code` and then returns that status. It used to `exit 0` after the Closed line, so a prompt file wake refused still looked successful. The default-session script already returned wake's status.
+
+### Version flags
+
+Both launchers follow `claude -v` (2026-11-06). `wake_the_claude.bash` is 1.1.0. `claudey` is 0.2.0.
+
+| Flag | `wake_the_claude.bash` | `./claudey` |
+|------|------------------------|-------------|
+| `-v`, `-V`, `--version`, `--claude-version` | Runs `claude --version`, prints `<path-to-claude> <that output>`, exits 0, starts no session. | `exec`s `wake_the_claude.bash --version`. Same output. Any later arguments are dropped. |
+| `--script-version` | Prints `wake_the_claude.bash 1.1.0` and exits 0. An exported `SCRIPT_VERSION` is ignored (claudey exports `0.2.0`). | Prints `0.2.0` and exits 0. Does not call wake. |
+
+`./claudey -v` sets `WTC_DEBUG` to `1` when that variable is unset, so the version line is not wrapped in wake's debug log. Export `WTC_DEBUG=0` before `./claudey -v` to keep the log. `--script-version` on claudey never calls wake.
+
+`WTC_DEBUG` defaults to `0` inside `wake_the_claude.bash` (debug on). `WTC_DEBUG=1` turns the debug log off. These failures still print on stderr when the log is off:
+
+| Failure | stderr |
+|---------|--------|
+| Version flag, no executable `claude` on `PATH` | `Error: claude command not found in PATH` (exit 1) |
+| `claude --version` prints nothing | `Error: "<path-to-claude> --version" printed no version` (exit 1) |
+| `--file` / `--path` never resolves to a file | `Error: no prompt file found for --file "<name>" and --path "<path>"`, then usage (exit 1) |
+| Launch cannot find `claude` | `Error: claude command not found in PATH` (exit 1) |
+| Headless mode cannot open a nohup log | `Error: Failed to open nohup log file at <logs> or <HOME>` (exit 1) |
+
+### Prompt file
+
+`claudey` forwards a prompt file (2026-11-06). `--file`, `-f`, and `--file-name` name the file. `--path`, `-l`, and `--file-path` name the file, or the directory that holds `--file`. `CLAUDE_PROMPT_FILE` and `CLAUDE_PROMPT_PATH` do the same when the flags are absent. A flag overwrites the matching variable.
+
+`wake_the_claude.bash` prefers `--prompt` to a file, so claudey sends no default prompt once a file is set. An explicit prompt together with a file exits 1 before wake runs. The message is `A prompt and a prompt file are exclusive: give --prompt (or CLAUDE_PROMPT), or --file / --path (or CLAUDE_PROMPT_FILE / CLAUDE_PROMPT_PATH), not both`. `CLAUDE_PROMPT=1` (off) alongside a file is accepted and still sends no `--prompt`.
+
+`./claudey --file ''`, `--path ''`, `-f ''`, and `-l ''` exit 1 with `Missing value for` that flag and do not call wake. An empty expansion, such as `-f "${HANDOFF}"` when `HANDOFF` is unset, used to launch with the default prompt.
+
+An empty word is parsed. `./claudey '' --file prompt.md` exits 1 with `Unknown argument`. claudey's parse loop used to stop at the empty word, and `wake_the_claude.bash` still breaks its loop when the current word is empty, so the `--file` was dropped and the default prompt was sent. `-w ''` is the exception: it is a bare `--worktree` (Claude Code names it), and flags after it are still parsed.
+
+`./claudey --prompt` with no word exits 1 (`Missing value for --prompt`) and does not call wake. On wake, the word after `-p` / `--prompt` / `--prompt-string` is the prompt even when it starts with `-`. `0` or an empty word sends `Hello World, Claude!`. `1` sends no prompt. A missing word on wake also sends that default text.
+
+wake reads the file after parsing. `$(cat)` strips trailing newlines; interior newlines stay, including a leading `---name:` front-matter line.
+The text is Claude Code's last argument, after `--`. No `--prompt` flag reaches `claude`.
+A file that exists but cannot be read, or that holds only whitespace, prints `Error: the prompt file "<path>" could not be read, or holds no prompt` on stderr and exits 1.
+A path that is not a file, a `--file` whose directory never arrives, or a `--path` directory with no file name, prints the unresolved-file error above and exits 1. None of those launch.
+
+claudey's usage line is prefixed `Usage: claude_interactive.bash` (`SCRIPT_NAME` after `realpath` of the symlink), lists `-h`, and shows `--path` together with `--file`.
+
+### Where the prompt sits
+
+The prompt is the last argument, after `--`. Claude Code treats the word after a bare `--worktree` or `--remote-control` as that option's value. The `--` keeps the prompt, and a front-matter line that starts with `-`, from becoming that value. Both the interactive call and the headless `nohup` call pass `"${CLAUDE_CODE_PARAMS[@]}"`.
+
+`--remote-control` (`-c`, `--remote`, `--control` on wake; `--remote-control` and `-rc` on claudey) takes no session name. On wake, `0` or a following flag is a bare `--remote-control`, `1` omits it, and any other word exits 1 with usage. On claudey the flag is a switch: the next word is parsed on its own, so `./claudey --remote-control laptop` exits 1 with `Unknown argument: laptop`. `./claudey --no-remote-control --prompt --remote-control` leaves remote control off. The prompt text is `--remote-control`.
+
+### Examples
+
+```bash
+./claudey -v
+./claudey --script-version
+bash scripts/wake_the_claude.bash --script-version
+./claudey --file prompts/handoff.md
+./claudey --path prompts --file handoff.md
+./claudey -w '' --file prompts/handoff.md
+./claudey --no-worktree --no-remote-control --prompt "two words"
+```
+
+### Operator pitfalls
+
+| What you see | What happened |
+|--------------|---------------|
+| `./claudey -f "$HANDOFF"` exits 1, `Missing value for -f` | `HANDOFF` is empty. Wake is not called, so the default prompt is not sent in its place. |
+| `./claudey '' --file prompt.md` exits 1, `Unknown argument` | An empty word is its own argument. `-w '' --file prompt.md` is a bare worktree plus that file, and the default prompt is not sent. |
+| `Closed Default Interactive session` and then a failing status | `claudey` returns wake's status. A refused prompt file is exit 1. The Closed line is still printed before that status. |
+| `./claudey -v` exits 1, `Error: claude command not found in PATH` | No executable `claude` on `PATH`. claudey turns wake's debug log off for this call unless `WTC_DEBUG` is already set. |
+| `--file missing.md` exits 1 and names the file on stderr | `Error: no prompt file found for --file "missing.md" and --path ""`, then usage. The debug log is not required to see it. |
+
+Quick card: [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) § Claude Code Session Script.
+Regression: `python3 -m unittest tests/test_wake_the_claude.py tests/test_claude_interactive.py`.
+The version split is `test_version_flags_report_claude_codes_version_only`, `test_script_version_flag_reports_this_scripts_own_version`, and `ClaudeInteractiveEndToEndTests.test_version_flags_report_claude_codes_version` (that last one also asserts the debug log is absent).
+The stderr lines with debug off are `test_version_flags_without_claude_say_why_with_debug_output_off` and `test_prompt_file_that_never_resolves_says_why_with_debug_output_off`.
+The prompt file is `test_a_prompt_file_replaces_the_default_prompt`, `test_a_prompt_and_a_prompt_file_are_refused_together`, `test_a_prompt_file_flag_with_an_empty_value_is_refused`, `test_an_empty_word_is_parsed_not_the_end_of_the_input`, `test_claudey_exits_with_wake_the_claudes_status`, `test_a_prompt_file_wake_the_claude_refuses_fails_claudey`, and `test_a_prompt_file_reaches_claude_as_the_prompt`.
+The default session's bare `--remote-control` is `test_default_interactive_script_forwards_expected_defaults`.
+
 ## Claude Code Action
 
-`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher (`scripts/wake_the_claude.bash` / `claudey`). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
+`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher (`scripts/wake_the_claude.bash` / `claudey`; [Local Claude Code Launchers](#local-claude-code-launchers)). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
 
 The job is **not** a required status check and is **not** in Quality Gate `needs:`. It has no `push` or `pull_request` trigger, so a commit to `main` does not start it.
 
@@ -8448,6 +8545,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.90  | 2026-11-06 | Local Claude Code launchers (juniper-ml#2468): empty `--file` / `--path` and an empty word exit 1; `claudey` returns wake's status; a missing `claude`, an empty `claude --version`, and an unresolved prompt file print on stderr when `WTC_DEBUG=1`. `-v` is Claude Code's version. Skipped 0.6.64–0.6.89 (in-flight docs PRs). |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |

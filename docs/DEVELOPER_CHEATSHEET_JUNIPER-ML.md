@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.90
+**Date**: 2026-11-06
 **Project**: juniper-ml
 
 ---
@@ -167,6 +167,8 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 ## Claude Code Session Script
 
 > See: `scripts/claude_interactive.bash` | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
+>
+> Operator contract: [REFERENCE — Local Claude Code Launchers](REFERENCE.md#local-claude-code-launchers).
 
 | Entry Point                                                 | Behavior                                                                                                                        |
 |-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
@@ -186,7 +188,11 @@ Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` c
 `--remote-control` never takes a value. In both `wake_the_claude.bash` and `claudey`, `-v`, `-V`, `--version` and
 `--claude-version` print Claude Code's version, as `claude -v` does, and `--script-version` prints the launcher's own.
 `claudey` refuses a prompt together with a prompt file (exit 1): `wake_the_claude.bash` would send the prompt and drop
-the file. `-u` prints the usage text and exits 1.
+the file. `--file ''` and `--path ''` (also `-f` and `-l`) exit 1 with `Missing value for` that flag and do not call wake.
+An empty word exits 1 (`Unknown argument`), except `-w ''`, which is a bare `--worktree` and does not end the parse.
+`claudey` exits with `wake_the_claude.bash`'s status after the `Closed` line. `./claudey -v` leaves wake's debug log off
+unless `WTC_DEBUG` is already set. With `WTC_DEBUG=1`, a missing `claude`, an empty `claude --version`, and a prompt file
+that never resolves still print an `Error:` line on stderr. `-u` prints the usage text and exits 1.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 
@@ -1186,6 +1192,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-06
+**Version:** 1.0.90
 **Maintainer:** Paul Calnon
