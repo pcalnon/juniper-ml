@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.72
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -39,6 +39,7 @@
 - [Resident-Hazard Gap Triage](#resident-hazard-gap-triage)
 - [Ruleset Context Audit](#ruleset-context-audit)
 - [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost)
+- [The MERGED Line's SHA Is the Verified Head](#the-merged-lines-sha-is-the-verified-head)
 - [Post-Merge Main Verification](#post-merge-main-verification)
 - [Experiment Stack Utilities](#experiment-stack-utilities)
 - [Recurrence Env Preflight](#recurrence-env-preflight)
@@ -3820,6 +3821,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
     `update_branch` now polls until the ref moves, and such a rejection maps to a **refusal** (exit 1), not a hard error: nothing was merged, which is correct.
   - `BEHIND` is repaired with the server-side `update-branch` API (**GitHub-signed**, accepted by `required_signatures`); no local git is ever invoked, so no checkout is needed. Re-sync is bounded by `MAX_SYNC_CYCLES` -- sustained concurrent merges refuse rather than spin.
   - `--merge-method rebase` is **rejected outright** (exit 2): rebase re-creates commits unsigned. A zero exit from `gh pr merge` is not trusted -- the PR is re-read and must report `MERGED`.
+  - **The success line's SHA is the verified head.** `MERGED #<pr> at <head8> via squash` (or `merge`) prints the `headRefOid` captured before the wait, eight characters. A net that merges first prints no SHA. The squash commit on the base is `mergeCommit.oid`. Operator surface: [The MERGED line's SHA is the verified head](#the-merged-lines-sha-is-the-verified-head).
   - **Kill-resilience** (after a session's run was killed mid-wait, before its second PR merged): the waiter is spawned via `Popen` with `prctl(PR_SET_PDEATHSIG)`, so a SIGKILLed parent cannot orphan it -- measured before the fix, the orphan kept polling GitHub for up to 32 min.
     `SIGTERM`/`SIGINT`/`SIGHUP` reap the child and exit **4 = INTERRUPTED**, distinct from refused (1) and hard error (3), so a killed run is never read as a decision. `--dry-run` no longer blocks on the wait (~2 s, was up to the full timeout).
   - **Why the kill-resilience work exists, measured (2026-08-20).** Kill forensics §3.4 identified the mechanism: a background task runs on a `[bg]` worker, **spare workers hold a hard ~3600 s lease**, and a task **cannot outlive its host worker**. A task placed on a fresh spare gets an hour; the same command placed on a spare already 3372 s old gets 229 s. **The runway is not knowable in advance** — which is why elapsed-at-kill shows no duration pattern and why "it worked last time" predicts nothing. Hold the completion condition off-process.
@@ -4696,6 +4698,30 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - `resolve()` on an undeclared name raises rather than defaulting; `audit(settings)` is the boot-time counterpart, reporting defaulted security controls and suspected typos. Closes APD-SVCCORE-003 / -010. `tests/test_ws_tunables.py` pins the pre-refactor defaults byte-for-byte and source-scans both handlers so registry and call sites cannot drift.
 
 Operator surface: [`docs/REFERENCE.md` § juniper-service-core](#juniper-service-core).
+
+---
+
+## The MERGED line's SHA is the verified head
+
+`python util/safe_merge.py --pr N [--repo R] [--execute]` prints one success line and exits 0 when the pull request has merged. Any SHA in that line is the head this run verified: `headRefOid`, read before the wait and passed to `gh pr merge --match-head-commit`, truncated to eight characters. The squash commit GitHub writes on the base is a different object. Read it with `gh pr view`.
+
+| How the merge finished | What stdout says | Which SHA |
+| --- | --- | --- |
+| This run's `gh pr merge` returned, and the re-read has `state` `MERGED` | `MERGED #<pr> at <head8> via squash` (or `via merge`) | The verified head |
+| The armed net merged before that call | `MERGED #<pr> by the armed auto-merge net (required checks green)` | None |
+| No net was armed, and another actor merged it before that call | `MERGED #<pr> concurrently -- this run armed no net, so another actor merged it` | None |
+| The net or the other actor won during the `gh pr merge` call, and `headRefOid` is still the verified head | The sentence above, then ` at <head8>, winning the race against this run's own merge` | The verified head |
+| That same race, and `headRefOid` differs from the verified head | Exit 3. `PR #<pr> is MERGED at <other8>, but this run verified and tried to merge <head8>` | Both values are `headRefOid` |
+
+A squash writes a new commit on the base. The success line's SHA is the pull request head, so that object is absent from `main`'s history. The commit on the base is:
+
+```bash
+gh pr view <N> --repo pcalnon/<repo> --json mergeCommit --jq .mergeCommit.oid
+```
+
+`--repo` is the bare repository name (`juniper-ml`). The owner is `--owner` (default `pcalnon`). `util/wait_for_checks.py` uses the same split. Passing `pcalnon/juniper-ml` as `--repo` asks GitHub for a repository that does not exist under that owner.
+
+Exit 0 with a `MERGED #` line means the pull request merged. The line is printed only after a re-read reports `state == MERGED`. Exit 1 is a refusal and disarms the net. Exit 4 is an interrupt and leaves the net armed. The squash SHA is still the `gh pr view` read above.
 
 ---
 
@@ -8465,6 +8491,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.72  | 2026-11-04 | `safe_merge` success line: the SHA is the verified `headRefOid` (eight characters). A net that merges first prints no SHA. The squash commit on the base is `gh pr view --json mergeCommit`. `--repo` is the bare name. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +8991,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.72
 **Maintainer:** Paul Calnon
