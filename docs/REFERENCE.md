@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.89
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -75,6 +75,7 @@
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
+- [Local Claude Code Launchers](#local-claude-code-launchers)
 - [Claude Code Action](#claude-code-action)
 - [CodeQL Analysis](#codeql-analysis)
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
@@ -8068,9 +8069,75 @@ The bash auditor covers L2/L3 structure only; juniper-ml's own `on:` event matri
 
 ---
 
+## Local Claude Code Launchers
+
+Three local entry points start Claude Code. `./claudey` is the repo-root symlink to `scripts/claude_interactive.bash`. It does not run `scripts/default_interactive_session_claude_code.bash`. The GitHub `@claude` workflow is a different surface: [Claude Code Action](#claude-code-action).
+
+`TRUE="0"` and `FALSE="1"` in both `claude_interactive.bash` and `wake_the_claude.bash`. A `1` after a boolean flag is off.
+
+### Entry points
+
+| Entry | What reaches `wake_the_claude.bash` |
+|-------|-------------------------------------|
+| `./claudey` | `--model opus`, `--effort max`, `--prompt "Hello World, Claude!"`, a bare `--worktree`, a bare `--remote-control`. Shipped `DEBUG=TRUE` (`0`) also sends `--dangerously-skip-permissions` on every launch. |
+| `./claudey --file <file>` or `--path` | The same defaults, except no `--prompt`. The file's text is the prompt. |
+| `bash scripts/default_interactive_session_claude_code.bash` | `--id` (wake turns that into `--session-id` plus a new UUID), a bare `--worktree`, a bare `--remote-control`, `--effort high`, and `--prompt "Hello World, Claude!"`. No `--model`. `--dangerously-skip-permissions` only when `CLAUDE_SKIP_PERMISSIONS=1`, and that `1` means on. |
+| `bash scripts/wake_the_claude.bash ...` | Whatever the parser accepts. No arguments prints usage and exits 0. `-u` / `--usage` print usage and exit 1. `-h` / `--help` print usage and exit 0. |
+
+`./claudey` turns worktree and remote control on (2026-11-04). `--no-worktree` and `--no-remote-control` turn them off, as do `CLAUDE_WORKTREE=1` and `CLAUDE_REMOTE_CONTROL=1`. The older default-session script gained the bare `--remote-control` on 2026-11-06. It still passes `--id` and `--effort high`, which `./claudey` does not.
+
+`-s` is not the same flag in both scripts. On `claudey` it is `--id` and it requires a value. On `wake_the_claude.bash` it is `--dangerously-skip-permissions`.
+
+### Version flags
+
+Changed 2026-11-06 so both launchers follow `claude -v`. `wake_the_claude.bash` is 1.1.0. `claudey` is 0.2.0.
+
+| Flag | `wake_the_claude.bash` | `./claudey` |
+|------|------------------------|-------------|
+| `-v`, `-V`, `--version`, `--claude-version` | Runs `claude --version`, prints `<path-to-claude> <that output>`, exits 0, starts no session. | `exec`s `wake_the_claude.bash --version`. Same output. Any later arguments are dropped. |
+| `--script-version` | Prints `wake_the_claude.bash 1.1.0` and exits 0. An exported `SCRIPT_VERSION` is ignored (claudey exports `0.2.0`). | Prints `0.2.0` and exits 0. Does not call wake. |
+
+A version flag with no executable `claude` on `PATH` exits 1. That message goes through `debug_log` only. `WTC_DEBUG` defaults to `0` (debug on). `WTC_DEBUG=1` turns the debug log off, and this exit is then silent. A real launch that cannot find `claude` still prints `Error: claude command not found in PATH` on stderr. The headless nohup failure (`Error: Failed to open nohup log file at <logs> or <HOME>`) is the other stderr line that stays when debug is off.
+
+### Prompt file
+
+`claudey` forwards a prompt file (2026-11-06). `--file`, `-f`, and `--file-name` name the file. `--path`, `-l`, and `--file-path` name the file, or the directory that holds `--file`. `CLAUDE_PROMPT_FILE` and `CLAUDE_PROMPT_PATH` do the same when the flags are absent. A flag overwrites the matching variable.
+
+`wake_the_claude.bash` prefers `--prompt` to a file, so claudey sends no default prompt once a file is set. An explicit prompt together with a file exits 1 before wake runs, with `A prompt and a prompt file are exclusive` on stdout. `CLAUDE_PROMPT=1` (off) alongside a file is accepted and still sends no `--prompt`.
+
+wake reads the file after parsing. `$(cat)` strips trailing newlines; interior newlines stay, including a leading `---name:` front-matter line.
+The text is Claude Code's last argument, after `--`. No `--prompt` flag reaches `claude`.
+A file that exists but cannot be read, or that holds only whitespace, prints `Error: the prompt file "<path>" could not be read, or holds no prompt` on stderr and exits 1.
+A path that is not a file, a `--file` whose directory never arrives, or a `--path` directory with no file name, prints usage and exits 1. None of those launch.
+
+`./claudey --prompt` with no word exits 1 (`Missing value for --prompt`) and does not call wake. The same is true for `--file` and `--path`. On wake, the word after `-p` / `--prompt` / `--prompt-string` is the prompt even when it starts with `-`. `0` or an empty word sends `Hello World, Claude!`. `1` sends no prompt. A missing word on wake also sends that default text.
+
+### Where the prompt sits
+
+The prompt is the last argument, after `--`. Claude Code treats the word after a bare `--worktree` or `--remote-control` as that option's value. The `--` keeps the prompt, and a front-matter line that starts with `-`, from becoming that value.
+
+`--remote-control` (`-c`, `--remote`, `--control` on wake; `--remote-control` and `-rc` on claudey) takes no session name. On wake, `0` or a following flag is a bare `--remote-control`, `1` omits it, and any other word exits 1 with usage. On claudey the flag is a switch: the next word is parsed on its own, so `./claudey --remote-control laptop` exits 1 with `Unknown argument: laptop`. `./claudey --no-remote-control --prompt --remote-control` leaves remote control off. The prompt text is `--remote-control`.
+
+### Examples
+
+```bash
+./claudey -v
+./claudey --script-version
+bash scripts/wake_the_claude.bash --script-version
+./claudey --file prompts/handoff.md
+./claudey --path prompts --file handoff.md
+./claudey --no-worktree --no-remote-control --prompt "two words"
+```
+
+Quick card: [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) § Claude Code Session Script.
+Regression: `python3 -m unittest tests/test_wake_the_claude.py tests/test_claude_interactive.py`.
+The version split is `test_version_flags_report_claude_codes_version_only`, `test_script_version_flag_reports_this_scripts_own_version`, and `ClaudeInteractiveEndToEndTests.test_version_flags_report_claude_codes_version`.
+The prompt file is `test_a_prompt_file_replaces_the_default_prompt`, `test_a_prompt_and_a_prompt_file_are_refused_together`, and `test_a_prompt_file_reaches_claude_as_the_prompt`.
+The default session's bare `--remote-control` is `test_default_interactive_script_forwards_expected_defaults`.
+
 ## Claude Code Action
 
-`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher (`scripts/wake_the_claude.bash` / `claudey`). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
+`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher (`scripts/wake_the_claude.bash` / `claudey`; [Local Claude Code Launchers](#local-claude-code-launchers)). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
 
 The job is **not** a required status check and is **not** in Quality Gate `needs:`. It has no `push` or `pull_request` trigger, so a commit to `main` does not start it.
 
@@ -8465,6 +8532,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.89  | 2026-11-06 | Local Claude Code launchers (juniper-ml#2468): `-v` prints Claude Code's version in both launchers; `--script-version` prints the launcher's own (wake 1.1.0, claudey 0.2.0). claudey `--file` / `--path` replaces the default prompt; a prompt plus a prompt file exits 1. The older default session adds a bare `--remote-control`. Skipped 0.6.64–0.6.88 (in-flight docs PRs). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |

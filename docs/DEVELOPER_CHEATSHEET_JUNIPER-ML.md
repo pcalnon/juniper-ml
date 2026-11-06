@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.89
+**Date**: 2026-11-06
 **Project**: juniper-ml
 
 ---
@@ -167,6 +167,8 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 ## Claude Code Session Script
 
 > See: `scripts/claude_interactive.bash` | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
+>
+> Operator contract (version flags, prompt file, boolean sense): [REFERENCE — Local Claude Code Launchers](REFERENCE.md#local-claude-code-launchers).
 
 | Entry Point                                                 | Behavior                                                                                                                        |
 |-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
@@ -1186,6 +1188,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-06
+**Version:** 1.0.89
 **Maintainer:** Paul Calnon
