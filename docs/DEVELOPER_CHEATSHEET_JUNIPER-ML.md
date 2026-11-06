@@ -174,7 +174,8 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 | `./claudey --prompt "..."`                                  | Custom prompt, default flags                                                                                                    |
 | `./claudey -w <name>`                                       | Names the worktree; a bare `-w` lets Claude Code name it                                                                        |
 | `./claudey --no-worktree --no-remote-control`               | Turns off the worktree and remote control, which are on by default                                                             |
-| `bash scripts/default_interactive_session_claude_code.bash` | Older default session (`--id --worktree --effort high`); `CLAUDE_SKIP_PERMISSIONS=1` adds `--dangerously-skip-permissions`      |
+| `./claudey --file <prompt file>`                            | Prompt from a file: `--file <file>`, `--path <file>`, or `--path <dir> --file <name>`; the default prompt is not sent           |
+| `bash scripts/default_interactive_session_claude_code.bash` | Older default session (`--id --worktree --remote-control --effort high`); `CLAUDE_SKIP_PERMISSIONS=1` adds `--dangerously-skip-permissions` |
 | `bash scripts/wake_the_claude.bash ...`                     | Direct launcher with full flag control                                                                                          |
 
 `claude_interactive.bash` ships `DEBUG=TRUE`, which adds `--dangerously-skip-permissions` to every launch.
@@ -182,8 +183,10 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 `wake_the_claude.bash` sends the prompt (from `--prompt`, or the contents of a `--file` / `--path` prompt file) as Claude
 Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` cannot take it as a value.
-`--remote-control` never takes a value. `--version` prints Claude Code's version; `-v` / `--script-version` print the
-script's. `-u` prints the usage text and exits 1.
+`--remote-control` never takes a value. In both `wake_the_claude.bash` and `claudey`, `-v`, `-V`, `--version` and
+`--claude-version` print Claude Code's version, as `claude -v` does, and `--script-version` prints the launcher's own.
+`claudey` refuses a prompt together with a prompt file (exit 1): `wake_the_claude.bash` would send the prompt and drop
+the file. `-u` prints the usage text and exits 1.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 
@@ -197,7 +200,7 @@ bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."        
 
 **Safety:** `--id` refuses symlink targets. Resume filenames must be `.txt` basenames (no `/`). File contents must be a valid UUID. Invalid/missing files are preserved.
 
-**Known pitfall:** `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`; prompt strings may split on spaces. Run regression tests after changes.
+`claude` is invoked with the quoted array `"${CLAUDE_CODE_PARAMS[@]}"` in both the interactive and the `nohup` call, so a multi-word prompt arrives as one argument; the tests pin the interactive call's. Run the regression tests after changes.
 
 ### Resume And Fork Alias Forwarding
 
