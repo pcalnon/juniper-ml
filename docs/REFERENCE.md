@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.86
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -80,6 +80,7 @@
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
 - [Ruleset Scope Guard](#ruleset-scope-guard)
 - [Sibling Packages](#sibling-packages)
+- [A task assigned for exactly the reassignment timeout stays assigned](#a-task-assigned-for-exactly-the-reassignment-timeout-stays-assigned)
 - [Version History](#version-history)
 - [Build and Release](#build-and-release)
 - [Flood-Remediation CI Gates](#flood-remediation-ci-gates)
@@ -4691,6 +4692,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - **Control-WS log sanitizing** — reject logs that interpolate untrusted Origin/command text; go through the module-local `_sanitize_for_log` helpers (`control_security` strips `\r`/`\n`; `control_stream` also drops other C0 controls, keeping tabs) so CRLF cannot forge multi-line control-plane records. Sanitizing changes log records only, never handshake outcomes or ack JSON.
 - **Zero rate limit** — `ws_control_rate_limit_per_sec=0` builds a `LeakyBucket` with no refill; `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop.
 - **`/ws/workers` fail-closed** — a bad/missing `X-API-Key` closes **4001** without accepting; a non-object or shape-invalid registration closes **4008** with no `registration_ack`; `submit_result` rejects wrong-worker / unassigned results before the protocol parse; binary attachments over 100 MB get `Binary frame too large`. A clean disconnect and a mid-result transport abort (expected-binary-got-text / oversize) **requeue** the in-flight task rather than leaving it assigned until `task_reassignment_timeout`. Control receive rejects malformed / non-object JSON with close **1003** rather than an `AttributeError`.
+- **Task reassignment is a strict greater-than** — `_check_task_timeouts` requeues only when `(now - dispatched_at) > task_reassignment_timeout` (default 120s). Equality stays assigned. The sweep is every `health_check_interval` (default 10s) after `start_monitor()`, and it does not cancel the socket. See [A task assigned for exactly the reassignment timeout stays assigned](#a-task-assigned-for-exactly-the-reassignment-timeout-stays-assigned).
 - **WS tunables are declared, not implicit** — `websocket/tunables.py` holds all eleven settings fields the WebSocket handlers read, each with its default and a `security` flag. Six are security controls: the Origin allowlist, the control-endpoint kill switch, the control rate limit, and the three handshake-cooldown parameters. Call sites pass only a name; the default lives in the registry.
   - The `getattr`-based decoupling is deliberate and kept — the shared package still never imports a consuming service's settings class. What changes is that a miss which looks like a misspelling now logs a WARNING naming both spellings, instead of silently reverting a security control to a library default forever (`ws_control_rate_limit_per_second` vs `..._per_sec`).
   - `resolve()` on an undeclared name raises rather than defaulting; `audit(settings)` is the boot-time counterpart, reporting defaulted security controls and suspected typos. Closes APD-SVCCORE-003 / -010. `tests/test_ws_tunables.py` pins the pre-refactor defaults byte-for-byte and source-scans both handlers so registry and call sites cannot drift.
@@ -8389,6 +8391,36 @@ A client seeing a very large `retry_after` on a zero limit is the expected hard-
 
 Repeated *rejected handshakes* are throttled separately by `HandshakeCooldown`, which tracks rejections per client IP: more than `max_rejections` (default **10**) within `window_sec` (default **60**) blocks that IP for `block_sec` (default **300**, i.e. 5 minutes) and closes further attempts with **4029** `Too many rejected handshakes`. The state is in memory only, so a server restart clears it — a deliberate NAT-hostile escape hatch, since many clients can share a single egress IP.
 
+#### A task assigned for exactly the reassignment timeout stays assigned
+
+`WorkerCoordinator._check_task_timeouts` (`juniper_service_core/workers/coordinator.py`) requeues a task only when `assigned_worker_id` is set, `completed` is false, and `(now - dispatched_at) > task_reassignment_timeout`. The constructor default is **120.0** seconds. An age of exactly 120.0 seconds stays assigned: no warning, `tasks_failed` unchanged, and the worker stays busy. Any larger age takes the requeue path. A probe with `timeout + 1e-6` requeued; the equality case did not.
+
+`dispatched_at` is written in `get_next_assignment`, when a worker is handed the task. A task still sitting on `_unassigned_tasks` is not on this clock. An accepted result sets `completed` (`submit_result`) and the sweep skips it, however old the stamp is. At an age equal to the timeout the assignee can still submit, and that result is accepted.
+
+A configured timeout of **0** keeps a task dispatched at that same instant (`0 > 0` is false). An age of one second on that timeout requeues.
+
+The sweep runs on the health-monitor thread, and only after `start_monitor()`. That loop waits `health_check_interval` (default **10.0** seconds) before every pass, including the first, so the check is not a timer on the task. A sweep that observes an age equal to the timeout leaves the task; the next pass is one interval later. With the defaults a task can stay assigned until just under 130 seconds.
+
+The warning formats the age with `%.1f`, so a line that reads `120.0s` is already past the timeout. Equality does not log.
+
+When the age is over the timeout the worker is not disconnected and no cancel is sent on the socket:
+
+| Registry state | Worker | Task |
+|----------------|--------|------|
+| `active_task_id` is this task | Stays registered. `complete_task(..., success=False)` increments `tasks_failed`, clears `active_task_id`, and the worker is idle. | `assigned_worker_id` cleared. Appended to the tail of `_unassigned_tasks` when it is not already there. `dispatched_at` becomes that sweep's `now`. |
+| `active_task_id` is a different task | Stays registered. `tasks_failed` is not incremented, and the other task stays active. | Same requeue. |
+| Worker already gone from the registry | No `complete_task`. | Same requeue. |
+
+A second sweep while the task is already unassigned does nothing more. `assigned_worker_id` is clear, so `tasks_failed` is not incremented again and the queue does not gain a duplicate.
+
+The sweep does not push `task_assign`. The stream dispatches on connect, after a result, and on a heartbeat only when `idle` (`active_task_id is None`). After a matching timeout the worker is idle, so its next heartbeat can be given the requeued task, including the same one, while the process may still be computing the copy it already has. Another idle worker can take it off the tail first. The original worker keeps the failure count.
+
+A result that arrives after the sweep is rejected (`Result for unassigned task`) and does not enter `collect_results`. The next real dispatch writes a fresh `dispatched_at`. Time spent on the queue does not carry into that clock.
+
+This is not the heartbeat clock. `WorkerRegistration.is_alive` is `(now - last_heartbeat) < heartbeat_timeout` (registry default **30.0**). An age equal to that timeout is already not alive, and `_check_stale_workers` deregisters and requeues without incrementing `tasks_failed`. A worker that keeps heartbeating stays registered for the whole 120 second task clock.
+
+`test_task_timeout_reassigns` backdates a dispatch by 10 seconds against a 1 second timeout and asserts the requeue, `tasks_failed == 1`, and idle. It does not pin equality. `test_parse_none_requeue_does_not_let_timeout_steal_newer_assignment` pins the orphan guard (a timed-out sticky assignment must not clear a newer `active_task_id`).
+
 #### `/ws/workers` contracts
 
 The handshake runs **Origin → auth → per-source rate limit → accept → registration → message loop**, so four of the five close codes fire *before* `accept()`:
@@ -8420,6 +8452,8 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Worker WS closes 4003 immediately | The client sent an `Origin` header — workers are not browsers; drop it from the client's WS options. |
 | Worker WS closes 4029 before accept | `HandshakeCooldown` or the per-source worker rate limiter is throttling that IP; back off, or restart the server to clear the in-memory block. |
 | Worker WS closes 4004 | Server-side: `worker_coordinator` / `worker_registry` never initialized — check the service's worker-pool startup, not the client. |
+| A task is still assigned at exactly `task_reassignment_timeout` | Expected. The sweep uses `>` and runs only every `health_check_interval` (default 10 s) after `start_monitor()`. A warning that prints `120.0s` is already over; equality does not log. See [A task assigned for exactly the reassignment timeout stays assigned](#a-task-assigned-for-exactly-the-reassignment-timeout-stays-assigned). |
+| The same worker receives another `task_assign` after a timeout warning | The sweep counted `tasks_failed` and marked the worker idle. It did not cancel the in-flight compute. The next idle heartbeat dispatches, and a late result for the first copy is rejected as unassigned. |
 | Worker TLS "enabled" but presents no chain | Half-config — `TLSConfig` raises `ValueError` when only one of `cert_file` / `key_file` is set; supply both. |
 | One noisy IP throttles authenticated clients | Expected only for unauthenticated traffic — `RateLimiter` keys authenticated requests as `key:<api_key>`, so confirm the caller is actually sending `X-API-Key`. |
 | Two `task_assign` frames while the first task runs | A mid-task heartbeat must ack without dispatching — confirm the idle guard. |
@@ -8465,6 +8499,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.86  | 2026-11-04 | Task reassignment: an assigned age equal to `task_reassignment_timeout` (default 120s) stays assigned. Any larger age requeues. The sweep runs every `health_check_interval` (default 10s) after `start_monitor()`, marks a matching worker failed and idle without cancelling the socket, and that worker's next idle heartbeat can be given the same task. A late result is rejected. The heartbeat clock is a different comparison (`<`, default 30s) and deregisters. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +8999,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.86
 **Maintainer:** Paul Calnon
