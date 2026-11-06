@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.90
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -41,6 +41,7 @@
 - [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost)
 - [Post-Merge Main Verification](#post-merge-main-verification)
 - [Experiment Stack Utilities](#experiment-stack-utilities)
+- [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](#pypi-juniper-ml-0113-still-accepts-recurrence-080)
 - [Recurrence Env Preflight](#recurrence-env-preflight)
 - [PF Scenario Suites](#pf-scenario-suites)
 - [Perf-Lane Work Gate](#perf-lane-work-gate)
@@ -141,6 +142,8 @@ pip install juniper-ml[recurrence]# Δt-native LMU model + FastAPI app + HTTP cl
 pip install juniper-ml[all]       # Everything
 ```
 
+The `recurrence` cell is this checkout's `pyproject.toml` pin (`juniper-recurrence>=0.8.1,<0.9.0`). PyPI `juniper-ml` 0.11.3 still accepts 0.8.0. [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](#pypi-juniper-ml-0113-still-accepts-recurrence-080).
+
 > **Extras lint contract (two gates).** Any edit to `[project.optional-dependencies]` in `pyproject.toml` must co-update, in the **same PR**:
 >
 > 1. `tests/test_pyproject_extras.py` `EXPECTED_EXTRAS` — schema + pin-string contract (`PyprojectExtrasTest`).
@@ -174,7 +177,7 @@ pip install juniper-ml[all]       # Everything
 
 ## Ecosystem Compatibility
 
-`juniper-ml` 0.11.3 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups. The `0.6.x` row is kept for history and covers 0.7.x too -- 0.7.0/0.7.1 changed no floor. The `0.11.x` row is 0.11.3's, and its floors are 0.11.2's. 0.11.3 moves no floor: it requests the three servers with their own extras (juniper-ml#2062; the extras table above names them), and an extras marker has no column here. 0.11.0 and 0.11.1 published `juniper-data>=0.17.0` and `juniper-cascor>=0.11.0`, which 0.11.2 raised to `>=0.17.1` and `>=0.12.0`. 0.11.0 published `juniper-observability>=0.2.0`, which 0.11.1 raised to `>=0.4.1`; 0.11.1 also raised `juniper-service-core`, which has no column here, from `>=0.2.0,<0.8.0` to `>=0.7.1,<0.8.0`. The three `recurrence` pins have no columns here; 0.11.0 through 0.11.3 set them to `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0` (see the extras table above), and 0.8.0 through 0.10.0 published `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`.
+`juniper-ml` 0.11.3 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups. The `0.6.x` row is kept for history and covers 0.7.x too -- 0.7.0/0.7.1 changed no floor. The `0.11.x` row is 0.11.3's, and its floors are 0.11.2's. 0.11.3 moves no floor: it requests the three servers with their own extras (juniper-ml#2062; the extras table above names them), and an extras marker has no column here. 0.11.0 and 0.11.1 published `juniper-data>=0.17.0` and `juniper-cascor>=0.11.0`, which 0.11.2 raised to `>=0.17.1` and `>=0.12.0`. 0.11.0 published `juniper-observability>=0.2.0`, which 0.11.1 raised to `>=0.4.1`; 0.11.1 also raised `juniper-service-core`, which has no column here, from `>=0.2.0,<0.8.0` to `>=0.7.1,<0.8.0`. The three `recurrence` pins have no columns here; 0.11.0 through 0.11.3 set them to `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0` (published wheels; the extras table is this checkout's pin — [PyPI 0.11.3 still accepts 0.8.0](#pypi-juniper-ml-0113-still-accepts-recurrence-080)), and 0.8.0 through 0.10.0 published `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`.
 
 | juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools  | juniper-observability |
 |------------|--------------|----------------|----------------|---------------------|-----------------------|-----------------------|------------------|--------------------|-----------------------|
@@ -5455,6 +5458,50 @@ Q-8 baselines and the split comparator are a **separate** operator surface: [Per
 
 ---
 
+## PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0
+
+The [Available Extras](#available-extras) table matches `pyproject.toml`. On this checkout the recurrence member is `juniper-recurrence>=0.8.1,<0.9.0`, and `[project].version` is still `0.11.3`. PyPI's latest `juniper-ml` is 0.11.3 (probed 2026-11-06). Its `recurrence` extra requires `juniper-recurrence<0.9.0,>=0.8.0`. An environment that already holds 0.8.0 satisfies that published requirement, so `pip install -U juniper-ml[recurrence]` from the index leaves 0.8.0 installed.
+
+The checkout floor applies to an install that uses this `pyproject.toml`: `pip install -e ".[recurrence]"` from this tree, or a later wheel that publishes the same extra. `CHANGELOG.md`'s `[Unreleased]` entry names a 0.11.4 cut as the carrier. 0.11.4 is not a PyPI release. The model pin `juniper-recurrence-model>=0.6.0,<0.7.0` and the client pin `juniper-recurrence-client>=0.3.0,<0.4.0` are unchanged here.
+
+PyPI `juniper-recurrence` 0.8.1 requires the same `juniper-recurrence-model<0.7.0,>=0.6.0` range that 0.8.0 requires.
+
+### What 0.8.1 changes
+
+0.8.0 and 0.8.1 both pass `groups=` on every crossval fold build. In `juniper_recurrence/_folds.py`, `build_folds` sets `groups = sequence.ticker_code` and calls `walk_forward_folds(..., order=order, groups=groups)`. That call is the same at tags `juniper-recurrence-v0.8.0` and `juniper-recurrence-v0.8.1`. `ticker_code` is `None` when the series has no ticker, and the keyword is still passed.
+
+Tag `juniper-model-core-v0.2.0` `walk_forward_folds` takes `order` and has neither `groups` nor `**kwargs`. Tag `juniper-model-core-v0.3.0` adds keyword-only `groups`. `routers/crossval.py` catches `ValueError` around `build_folds` and returns HTTP 422. The unexpected keyword is a `TypeError`, so that request is not the 422. `app.py` mounts the generic health router separately from `crossval_router`, so the failure stays on the crossval route.
+
+PyPI `juniper-recurrence` 0.8.0 requires `juniper-model-core[crossval]<0.4.0,>=0.2.0`, so model-core 0.2.0 satisfies it and `pip check` is clean. 0.8.1 requires `juniper-model-core[crossval]<0.4.0,>=0.3.0` ([juniper-recurrence#229](https://github.com/pcalnon/juniper-recurrence/pull/229)). The archived record is [`notes/releases/RELEASE_NOTES_juniper-recurrence_v0.8.1.md`](../notes/releases/RELEASE_NOTES_juniper-recurrence_v0.8.1.md).
+
+### What to run
+
+```bash
+pip install -U "juniper-model-core[crossval]>=0.3.0,<0.4.0"
+pip install -U "juniper-recurrence>=0.8.1,<0.9.0"
+pip install -e ".[recurrence]"
+```
+
+The first command makes the keyword legal and leaves recurrence at 0.8.0. The second moves the app onto the requirement that refuses model-core 0.2.0; pip then upgrades model-core into `>=0.3.0,<0.4.0` or the resolve fails. The third applies this checkout's extra, which 0.8.0 does not satisfy. `pip install -U juniper-ml[recurrence]` against PyPI 0.11.3 does not run any of those three.
+
+`util/recurrence_env_preflight.bash` includes `juniper-model-core` in `CLOSURE` and runs a scoped `pip check`. It does not import `walk_forward_folds`. With recurrence 0.8.0 and model-core 0.2.0 the check is clean and the launcher reaches `serve`. With 0.8.1 installed and model-core 0.2.0 still present, the same line is a closure conflict: the launcher prints `ENV PREFLIGHT REFUSED` and does not `serve`.
+
+The pin probe compares only installed `juniper-recurrence-model` and `juniper-service-core` (`PINNED_DISTS`) with the installed app's metadata.
+
+`util/ad-hoc/2026-11-06_raise_recurrence_floor_0_8_1.py` rewrites the pin sites by exact string and requires one match each. It does not edit this section. A re-run after the pins read `>=0.8.1` reports each pin site as already at target. `--check` exits 0 when those sites, the `[Unreleased]` entry, and `AGENTS.md`'s `Last Updated` line (today's UTC date) are already in place. That was the result on 2026-11-06.
+
+### Operator symptoms
+
+| Symptom | What it is |
+|---------|------------|
+| Health stays up and `POST /v1/crossval` is 500 | `build_folds` passed `groups=` and the installed model-core is 0.2.0. The crossval route returns 422 only for `ValueError`. A series with no ticker still passes `groups=None`. |
+| `pip check` and `ENV PREFLIGHT OK`, then crossval 500 | The installed app is recurrence 0.8.0. Model-core 0.2.0 meets `>=0.2.0`. The preflight never looks at the signature. |
+| `pip install -U juniper-ml[recurrence]` left 0.8.0 | The index artifact is juniper-ml 0.11.3. Its extra is still `>=0.8.0`. Upgrade `juniper-recurrence` itself, or install the extra from this checkout. |
+| `ENV PREFLIGHT REFUSED` names `juniper-model-core` | Recurrence 0.8.1 is installed beside model-core 0.2.0. Install `juniper-model-core[crossval]>=0.3.0,<0.4.0`. A CUDA line printed as `unrelated to recurrence` is not this finding. |
+| Extras table says `>=0.8.1` and the compatibility paragraph says 0.11.3 published `>=0.8.0` | The table is the lockstep copy of `pyproject.toml`. The paragraph is the published 0.11.0 through 0.11.3 history. PyPI has no juniper-ml wheel carrying `>=0.8.1`. |
+
+---
+
 ## Recurrence Env Preflight
 
 Operator runbook for the check that refuses to serve `juniper-recurrence` from an env whose recurrence dependency closure is stale. The script is `util/recurrence_env_preflight.bash`. Both host launchers run it from `recurrence_up`, after the console-script check and before `serve`. Cascor legs are not checked.
@@ -5526,6 +5573,7 @@ tail -n 80 "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/<RUN
 | Symptom | What it is |
 |---------|------------|
 | `/v1/health/ready` is 200, then `POST /v1/crossval` is 422 missing `X_full` | F-E1's shape; readiness does not import `derive_full_split`. The launch passed `--skip-env-preflight`, or `serve` was started outside these two launchers (Compose has no launcher preflight; plan W3.0b would add the check to readiness). |
+| Health stays up, `POST /v1/crossval` is 500, and this preflight was OK | Installed `juniper-recurrence` is 0.8.0 and model-core is 0.2.0. `pip check` is clean because 0.8.0 allows `juniper-model-core[crossval]>=0.2.0`. [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](#pypi-juniper-ml-0113-still-accepts-recurrence-080). |
 | `ENV PREFLIGHT REFUSED` with `FINDING:` lines naming the model pin, the service-core pin, or `derive_full_split` | The interpreter `serve` would use failed the closure check. The repair is W0.1. Lines marked `unrelated to recurrence` are not the refusal. |
 | CUDA `pip check` lines on stdout, exit 0 | Unrelated; printed as `unrelated to recurrence (not a finding)`. |
 | `WARNING: ENV PREFLIGHT SKIPPED —` and the service still reaches ready | The emergency override, recorded in `launch.log`. A skipped `derive_full_split` finding still 422s every `split="full"` request. |
@@ -8448,6 +8496,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.90  | 2026-11-06 | PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0: the extras table is this checkout's `>=0.8.1` floor; `pip install -U juniper-ml[recurrence]` from the index leaves 0.8.0; 0.8.1 refuses model-core 0.2.0. Skipped 0.6.64-0.6.89 (in-flight docs PRs) |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |

@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.42
+**Version:** 0.3.69
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -62,6 +62,8 @@ pip install juniper-ml[all]
 | `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)                                                                                                                     |
 | `recurrence`| `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.1,<0.9.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
 | `all`       | All packages from `clients` + `worker` + `servers` + `tools` + `recurrence`                                                                                                                                  |
+
+The `recurrence` row is this checkout's pin (`juniper-recurrence>=0.8.1,<0.9.0`). PyPI `juniper-ml` 0.11.3 still accepts `juniper-recurrence` 0.8.0. That release with model-core 0.2.0 answers every `POST /v1/crossval` with 500, and `pip install -U juniper-ml[recurrence]` from the index leaves 0.8.0 installed. [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](REFERENCE.md#pypi-juniper-ml-0113-still-accepts-recurrence-080).
 
 ### Shared Observability Package
 
@@ -139,6 +141,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Ruleset Scope Guard](REFERENCE.md#ruleset-scope-guard) -- `~ALL` re-arms deleted dependabot/Copilot bypass rows; exit 2 is not clean
 - [Experiment Stack Utilities](REFERENCE.md#experiment-stack-utilities) -- per-run cascor/recurrence experiments via `util/experiment_stack.bash` + `run_experiment.py` (failed `--up` auto-tears down)
 - [Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) -- W0.2 (juniper-ml#2139): the recurrence leg refuses a stale env before `serve` (scoped `pip check`, installed pins, `derive_full_split`); `--skip-env-preflight` warns and still serves
+- [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](REFERENCE.md#pypi-juniper-ml-0113-still-accepts-recurrence-080) -- the index extra is still `>=0.8.0`; 0.8.1 refuses model-core 0.2.0; preflight stays OK on the 0.8.0 pair
 - [Recurrence launch record and service env](REFERENCE.md#recurrence-launch-record-and-service-env) -- `save_model` saves the scored model by `operation_id` (a pre-W1.5 service re-runs the launcher-recorded CLI under interpreter and model-version parity instead); per-run recurrence snapshots dir
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments (`--dry-run` first; PF-1 matched 4000/4000 epochs; `JUNIPER_SUITE_GRAFANA_BRIDGE`; PF-4/PF-8 are not driver suites)
 - [Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) -- `read_run_metrics` / `make_baseline` / `compare_baseline`; sound since ml#1743, but **never** wire the exact `step_count` gate to CI — P1 design §6 closed 2026-09-07; host identity blocks on hosted runners, so it would exit 2 REFUSED every time

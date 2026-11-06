@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.90
+**Date**: 2026-11-06
 **Project**: juniper-ml
 
 ---
@@ -15,7 +15,8 @@
 | `pip install -e ".[worker]"`                           | Install just the distributed training worker (editable) |
 | `pip install -e ".[servers]"`                          | Install just the service distributions: canopy + cascor + data, with their clients (editable) |
 | `pip install -e ".[tools]"`                            | Install shared tooling: ci/doc/config tools + model-core + observability + service-core (editable) |
-| `pip install -e ".[recurrence]"`                       | Install Δt-native recurrence stack: model + FastAPI app + HTTP client (editable) |
+| `pip install -e ".[recurrence]"`                       | Install Δt-native recurrence stack: model + FastAPI app + HTTP client (editable). This checkout requires `juniper-recurrence>=0.8.1,<0.9.0` |
+| `pip install -U "juniper-recurrence>=0.8.1,<0.9.0"`    | Leave recurrence 0.8.0. PyPI `juniper-ml` 0.11.3 still accepts 0.8.0, so `pip install -U juniper-ml[recurrence]` does not |
 | `python -m build && twine check dist/*`                | Build and validate package                      |
 | `python3 -m unittest -v tests/test_wake_the_claude.py` | Run launcher regression tests                   |
 | `python3 -m unittest -v tests/test_pyproject_extras.py`| Lint extras schema + docs↔pyproject pin lockstep |
@@ -237,6 +238,7 @@ This behavior is regression-tested in `tests/test_wake_the_claude.py`:
    - Documented extras tables: `AGENTS.md`, `README.md`, `docs/QUICK_START.md`, `docs/REFERENCE.md` (`ExtrasDocsLockstepTest` — pin strings must match `pyproject.toml` **exactly**; juniper-ml#907)
    - When adding a new extra, include it in `[all]` (except the `[doc-tools]` alias, already covered by `[tools]`)
 4. **Verify**: `python3 -m unittest -v tests/test_pyproject_extras.py` (covers both gates once #907 lands)
+5. **Recurrence floor**: this checkout's extra is `juniper-recurrence>=0.8.1,<0.9.0`. PyPI `juniper-ml` 0.11.3 still accepts 0.8.0, and `pip install -U juniper-ml[recurrence]` from the index leaves 0.8.0 installed. 0.8.0 with model-core 0.2.0 answers every `POST /v1/crossval` with 500. [REFERENCE](REFERENCE.md#pypi-juniper-ml-0113-still-accepts-recurrence-080)
 
 > Tip: Inline extras tables must keep the **full** pin in backticks (`juniper-foo>=X,<Y`). Stale `tools` ceilings (`model-core` / `service-core`) and omitted REFERENCE rows are the drift class #906 synced; after #907 merges, `ExtrasDocsLockstepTest` fails CI on that class. Current truth: `juniper-model-core>=0.1.0,<0.4.0`, `juniper-service-core>=0.2.0,<0.8.0`.
 > See: per-repo `pyproject.toml` | `juniper-data/notes/DEPENDENCY_UPDATE_WORKFLOW.md` | [REFERENCE.md § Extras Reference](REFERENCE.md#extras-reference)
@@ -1139,6 +1141,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default 503-name universe, per-request cost, silent `max_symbols` slice
 - [Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) -- PF-5/6/7 report-only; `work_countable` third state; baseline/compare refuse
 - [Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) -- W0.2 (juniper-ml#2139): scoped `pip check`, installed pins, `derive_full_split` before recurrence `serve`; CUDA noise does not refuse; `--skip-env-preflight` warns
+- [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](REFERENCE.md#pypi-juniper-ml-0113-still-accepts-recurrence-080) -- index `pip install -U juniper-ml[recurrence]` leaves 0.8.0; 0.8.1 refuses model-core 0.2.0; preflight stays OK on the 0.8.0 pair
 - [Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters) -- omitted readout is linear at `default_ridge` (0.0, and the E-H YAML pins it); omitted RFF ridge is `gcv`; crossval fits a fresh model per fold
 - [Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text) -- a 502 `detail` can contain a rejected data API key; the driver copies it into the run record
 - [One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service) -- one `train_lock` and one model per service; a busy train is a `409` (exit 4)
