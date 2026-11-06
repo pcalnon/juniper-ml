@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.55
+**Version:** 0.2.88
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -68,6 +68,7 @@
 | **Run `equities` / `equities_seq` without a 422** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (14-symbol refuse; unit is symbols because cost is per request; silent slice deleted) | docs/    |
 | **Tell two `equities_seq` mints apart** | [REFERENCE — Equities Dataset Id Does Not Pin Array Content](REFERENCE.md#equities-dataset-id-does-not-pin-array-content) (`dataset_id` hashes the request; compare `meta.checksum`; an all-zero `dividend` is a silent fill) | docs/    |
 | **Re-run or read the E-H equities crossval measurement** | [REFERENCE — Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) (`replay` / `matrix`; exit 0 is not HTTP 200) + [investigation note](../notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md) | docs/ + notes/ |
+| **See why `gpg --list` or `gpg --expo` was denied** | [REFERENCE — GnuPG long-option abbreviations](REFERENCE.md#gnupg-long-option-abbreviations) (4-character prefix of a secret or sign option; `gpg --export` and `gpg --list-keys` stay allowed; 3 characters is not this rule) | docs/ |
 | **Import a CSV/JSON dataset (byte cap)** | [REFERENCE — CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) (128 MiB, 422 until opt-in, `IMPORT_DIR` pitfall; equities is capped in symbols instead) | docs/    |
 | **Bound an `equities` request (do not use a byte cap)** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (per-request cost, 14-symbol cap: a 422 or an annotated cut, never a silent slice; default 503 names ≈ 34 min) | docs/    |
 | **Index / classify / backfill the snapshot archive** | [REFERENCE — Snapshot Sidecar Chain](REFERENCE.md#snapshot-sidecar-chain) (`--scan`, two-axis classify, derivation levels, `--root` trap) | docs/    |
