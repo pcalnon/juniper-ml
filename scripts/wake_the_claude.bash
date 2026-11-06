@@ -1741,6 +1741,8 @@ while (( ${#*} > 0 )); do
     # A parser that could not use its flag stops the launch: claude code never starts on input this script rejected
     if [[ "${PARSE_RESULT}" != "${TRUE}" ]]; then
         debug_log "Error: Failed to parse Input Param: \"${CURRENT_ELEMENT}\" (result: ${PARSE_RESULT}). Exiting..."
+        # On stderr too: with debug output off (WTC_DEBUG=1) the refusal was the usage text alone, with no reason
+        echo "Error: refused \"${CURRENT_ELEMENT}\": its value is missing or invalid (WTC_DEBUG=0 logs why)" >&2
         usage "${FALSE}"
     fi
 

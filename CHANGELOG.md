@@ -26,10 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - It refuses an empty `--file` / `--path` value and an empty word. An empty word ended its parsing, and the words
     after it were dropped, so `-f "${UNSET}"` or `-w '' --file f` launched with the default prompt. `-w ''` is now a
     bare `-w`.
-  - `wake_the_claude.bash` prints two errors on stderr: a version flag with no `claude` on `PATH`, and a prompt file
-    that never resolves. With `WTC_DEBUG=1` each was a bare exit 1.
-  - `claudey`'s usage text names claudey and lists `-h`, and `claudey -v` prints no debug log unless `WTC_DEBUG` asks
-    for one.
+  - `wake_the_claude.bash` prints its errors on stderr as well as in the debug log: a version flag with no `claude`
+    on `PATH` or no version printed, a prompt file that never resolves, and any flag it refuses. With `WTC_DEBUG=1`
+    each was a bare exit 1 or the usage text alone.
+  - `claudey`'s usage text names its own script instead of `wake_the_claude.bash`, lists `-h`, and shows a prompt
+    and a prompt file as alternatives. An empty word is reported as "(an empty word)". `claudey -v` prints no debug
+    log unless `WTC_DEBUG` asks for one.
 - **`claudey` starts with a worktree and remote control by default, `--remote-control` never takes a value, and in
   `scripts/wake_the_claude.bash` `--version` is Claude Code's version and `-u` fails (owner rulings, 2026-11-04).**
   `claude_interactive.bash` sends a bare `--worktree`, so Claude Code names the worktree unless `-w <name>` names one,

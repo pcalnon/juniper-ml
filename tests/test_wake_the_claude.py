@@ -1717,6 +1717,33 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
                     self.assertIn("Error: claude command not found in PATH", result.stderr)
 
+    def test_a_claude_that_prints_no_version_says_so_with_debug_output_off(self) -> None:
+        """A ``claude --version`` that prints nothing exits 1 with the reason on stderr, not only in the debug log."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, env = self._install_fake_claude(temp_dir)
+            silent_bin = Path(temp_dir) / "silent-bin"
+            silent_bin.mkdir()
+            (silent_bin / "claude").write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+            (silent_bin / "claude").chmod(0o755)
+            env["PATH"] = f"{silent_bin}:/usr/bin:/bin"
+            env["WTC_DEBUG"] = "1"
+            result = self._run_script(["-v"], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("printed no version", result.stderr)
+
+    def test_a_refused_flag_says_why_with_debug_output_off(self) -> None:
+        """A flag whose parser refuses it names the flag on stderr: with ``WTC_DEBUG=1`` the launch ended in the usage text alone."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["WTC_DEBUG"] = "1"
+            for args, flag in ((["--path", "no-such-dir"], "--path"), (["--file", "-x"], "--file")):
+                with self.subTest(args=args):
+                    result = self._run_script(args, cwd=temp_dir, env=env)
+                    self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                    self.assertIn(f'Error: refused "{flag}"', result.stderr)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
     @staticmethod
     def _flags_in_two_patterns(script_text: str) -> dict[str, list[str]]:
         """Map each input flag that two VALID_PATTERNS entries share to their names, resolving ``${CLAUDE_*_FLAGS}`` with bash."""
