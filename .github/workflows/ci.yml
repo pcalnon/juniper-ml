@@ -1398,6 +1398,10 @@ jobs:
           # JUNIPER_GUARD_HOME: allowed calls print nothing (never "allow"); bad input exits 2.
           # Also drives util/install_claude_agent_guard.bash against a temp settings file.
           python3 -m unittest -v tests/test_claude_agent_guard.py
+          # tests/test_claude_agent_guard_brace_cap.py: brace expansion keeps a credential
+          # name in the 64th alternative and drops the 65th. A numeric range of 64 includes
+          # both ends; one past the cap drops the far end inside _brace_range.
+          python3 -m unittest -v tests/test_claude_agent_guard_brace_cap.py
           # tests/test_git_remote_alias_check.py: turing bring-up G2 / R-G2a/b/c (gate G-ALIAS).
           # util/git_remote_alias_check.py checks each checkout's PERSISTED origin and pushurl
           # (config --get; remote get-url would expand insteadOf), the alias's ssh -G view and the
