@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.81
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -75,6 +75,7 @@
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
+- [Local Claude Launcher](#local-claude-launcher)
 - [Claude Code Action](#claude-code-action)
 - [CodeQL Analysis](#codeql-analysis)
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
@@ -8068,9 +8069,143 @@ The bash auditor covers L2/L3 structure only; juniper-ml's own `on:` event matri
 
 ---
 
+## Local Claude Launcher
+
+`./claudey` is a symlink to `scripts/claude_interactive.bash`. That wrapper builds one argument array and calls `scripts/wake_the_claude.bash`, which parses it and execs `claude`. `scripts/default_interactive_session_claude_code.bash` is an older wrapper with different defaults; `./claudey` does not run it. The GitHub `@claude` assistant is a separate surface: [Claude Code Action](#claude-code-action).
+
+`claudey` and wake both set `TRUE="0"` and `FALSE="1"`. A following `0` turns a boolean flag on. A following `1` turns it off.
+
+### What `./claudey` launches
+
+The shipped defaults are the uncommented `export DEFAULT_*` lines in `scripts/claude_interactive.bash`:
+
+| Knob | Shipped value | What reaches Claude Code |
+|------|---------------|--------------------------|
+| model | `opus` | `--model opus` |
+| effort | `max` | `--effort max` |
+| prompt | `Hello World, Claude!` | that text, as the last argument, after `--` |
+| worktree | on (`TRUE`) | a bare `--worktree`. Claude Code names the worktree |
+| remote control | on (`TRUE`) | a bare `--remote-control`. The flag carries no session name |
+| session id | off | no `--id` |
+| resume | off | no `--resume` |
+| skip permissions | the variable defaults off; shipped `DEBUG=TRUE` forces it on | `--dangerously-skip-permissions` on every launch |
+
+`DEBUG` is assigned `TRUE` in the script. While that line stands, `--dangerously-skip-permissions` is added even when `CLAUDE_SKIP_PERMISSIONS=1` (false under this convention). The owner kept that pairing on 2026-11-04. An explicit `--skip-permissions` / `-sp`, or `CLAUDE_SKIP_PERMISSIONS=0`, also adds the flag.
+
+`--no-worktree` and `--no-remote-control` turn those two defaults off, and so do `CLAUDE_WORKTREE=1` and `CLAUDE_REMOTE_CONTROL=1`. `-w <name>` names the worktree. A bare `-w`, or `-w` whose next word is a flag, stays bare: that next word is parsed as its own flag. `--remote-control` and `-rc` never take a name.
+
+`./claudey -v` and `./claudey --version` print `0.1.1` and exit 0. Wake is not called. A flag that needs a value (`-m`, `--effort`, `--id`, `--prompt`) with nothing after it exits 1 and prints `Missing value for <flag>`. A bare word such as `sonnet` prints `Unknown argument: sonnet` and exits 1. `claudey` accepts no `--file` and no `--path`.
+
+The prompt is one array element in the call to wake. The debug echo joins that array with spaces, so a multi-word prompt looks split on the debug line. The call itself keeps it as one argument.
+
+```bash
+./claudey
+# Claude Code's argv includes:
+#   --model opus --effort max --worktree --remote-control --dangerously-skip-permissions -- 'Hello World, Claude!'
+
+./claudey -w feature-tree --prompt "two words"
+# --worktree feature-tree, and the prompt is the last argument, after --
+
+./claudey --no-remote-control --prompt --remote-control
+# remote control stays off; the prompt text is the word --remote-control
+```
+
+### What wake forwards to `claude`
+
+Wake rebuilds the option list, then appends the prompt. The argv Claude Code receives ends with `--` and the prompt text as one argument. Wake does not forward a prompt flag: its `-p` is the prompt, and Claude Code's `-p` is `--print`. Options are emitted in this order: `--resume`, `--session-id`, `--worktree`, `--remote-control`, `--effort`, `--model`, `--print`, `--fork-session`, `--dangerously-skip-permissions`, then `--`, then the prompt.
+
+The `--` is required for the prompt to survive Claude Code's parser. `--worktree`, `--remote-control`, and `--resume` take an optional value, so a bare flag immediately before the prompt would take the prompt as that value. A prompt that starts with `-` (a handoff file's YAML front matter starts with `---`) would otherwise be read as an unknown option.
+
+The word after `-p`, `--prompt`, or `--prompt-string` is the prompt, including a word that starts with `--`. Wake consumes that word before it parses later flags, so flags that follow the prompt still apply.
+
+| Word after the prompt flag | What wake sends |
+|----------------------------|-----------------|
+| the flag is last (wake only) | the default text `Hello World, Claude!` |
+| `0` | that same default text. The characters `0` are a boolean, so they are not sent as the prompt |
+| `1` | no prompt argument |
+| an empty word | the default text, and parsing continues with the next flag |
+| any other word | that word, unchanged |
+
+`./claudey --prompt` with no word never reaches this table. Claudey exits 1 with `Missing value for --prompt`. `./claudey --prompt 0` forwards `0`, and wake sends the default text. `./claudey --prompt 1` leaves the prompt flag off the wake command, so Claude Code is started with no prompt.
+
+`--file` / `-f` / `--file-name` and `--path` / `-l` / `--file-path` supply a prompt file.
+A directory from `--path` combines with a file name from `--file`, in either order.
+A name that never resolves to a file prints usage and exits 1, and `claude` is not started.
+An empty, whitespace-only, or unreadable file prints `could not be read, or holds no prompt` on stderr and exits 1, and `claude` is not started.
+Trailing newlines on the file are dropped when the file is read; newlines inside the text stay.
+When a prompt string is actually sent, it is the prompt and the file is left unread.
+`--prompt 1` sends no string, so a file next to it is still read.
+
+A `--` on wake's own command line is a spacer. Wake drops it. A bare word in that position is an unknown argument: usage, exit 1. The prompt reaches `claude` only as the word after a prompt flag, or as the contents of a prompt file.
+
+```bash
+bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --fork --prompt "hello"
+# claude receives: --resume <uuid> --fork-session -- hello
+
+bash scripts/wake_the_claude.bash --prompt --dangerously-skip-permissions --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd
+# the prompt text is --dangerously-skip-permissions, and skip-permissions is not added
+# claude receives: --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd -- --dangerously-skip-permissions
+```
+
+### Version, usage, and the two launch errors
+
+| Invocation | Prints | Exit |
+|------------|--------|------|
+| `./claudey -v`, `./claudey --version` | `0.1.1` | 0. Wake is not called |
+| wake `-v`, `--script-version` | `wake_the_claude.bash 1.0.0` | 0. An exported `SCRIPT_VERSION` is ignored |
+| wake `--version`, `-V`, `--claude-version` | `<path to claude> <claude --version>` | 0 when `claude` runs and prints a version. A missing binary, or empty output, exits 1. That path writes a debug line only |
+| wake `-u`, `--usage` | the usage text | 1 |
+| wake `-h`, `--help`, `-?` | the usage text | 0 |
+| wake with no arguments | the usage text | 1 |
+
+`-v` on wake prints wake's version. `-v` on `claudey` prints `0.1.1`. Claude Code's version is wake's `--version`, `-V`, or `--claude-version`. Each of those flags belongs to one pattern. `--version` used to sit in the script-version pattern as well, and whichever pattern came first won.
+
+Wake's `DEBUG` defaults to `TRUE` (`0`), and `WTC_DEBUG` follows it, so debug lines are on until `WTC_DEBUG=1`. Two failures of the launch itself still print to stderr when debug is off:
+
+- `Error: claude command not found in PATH`
+- `Error: Failed to open nohup log file at <logs dir> or <HOME>`
+
+A `--version` run with no `claude` binary is a separate, debug-only exit 1.
+It does not print the first of those two lines.
+Headless mode (`--print`, also `-a`, `--agent`, `--silent`, `--headless`) launches through `nohup`.
+The log is `logs/wake_the_claude.nohup.log`, or `$HOME/wake_the_claude.nohup.log` when the logs directory cannot be written.
+Interactive mode runs `claude` in the foreground.
+The prompt stays one argument (`"${CLAUDE_CODE_PARAMS[@]}"`).
+The line wake prints quotes that argument the same way.
+
+### Booleans, models, and the older wrapper
+
+- `-s` on wake is `--dangerously-skip-permissions`. `-s` on `claudey` is `--id`.
+- Wake's `--remote-control` (also `-c`, `--remote`, `--control`) takes no name. `0`, the end of the arguments, or a following flag leaves it bare. `1` omits it. Any other word, such as `laptop-session`, prints usage and exits 1, and `claude` is not started.
+- Wake's `--worktree` (also `-w`) does take a name. `0`, the end, or a following flag leaves it bare. `1` omits it. A name that starts with `-` is parsed as the next flag, so the worktree stays bare.
+- `--model 0` sends `opus` (`MODEL_DEFAULT`). `--model 1` omits the model. A missing model word exits 1 and does not launch. Accepted words are the aliases `opus`, `sonnet`, `haiku`, `fable` and the full names `claude-opus-5`, `claude-sonnet-4-6`, `claude-haiku-4-5`, `claude-fable-5`. The match is case-insensitive. The word you typed is the word that is forwarded.
+- `--effort 0` sends wake's own default, `auto` (`EFFORT_DEFAULT`). That is a different value from `claudey`'s shipped `max`. `--effort 1` omits effort. A missing or unknown effort exits 1 and does not launch. Accepted words: `low`, `medium`, `high`, `xhigh`, `max`, `auto`.
+- `--resume 0` resumes a session id given earlier in the same command. With no earlier id, wake forwards a bare `--resume`.
+
+`bash scripts/default_interactive_session_claude_code.bash` still passes `--id --worktree --effort high` and the default prompt. It passes no `--remote-control`. It adds `--dangerously-skip-permissions` only when `CLAUDE_SKIP_PERMISSIONS=1`, which is the ordinary shell reading of `1` and the opposite of `TRUE="0"`.
+
+### Tests
+
+```bash
+python3 -m unittest tests/test_wake_the_claude.py tests/test_claude_interactive.py
+```
+
+The contract above is pinned by `test_a_prompt_value_starting_with_dashes_is_the_prompt_not_a_flag`,
+`test_a_bare_optional_valued_flag_cannot_take_the_prompt`,
+`test_every_prompt_source_reaches_claude_last_and_without_a_prompt_flag`,
+`test_remote_control_goes_bare_and_refuses_a_value`,
+`test_version_flags_report_claude_codes_version_only`,
+`test_script_version_flag_reports_this_scripts_own_version`,
+`test_usage_flag_prints_usage_and_exits_with_failure`,
+and `test_a_prompt_file_that_is_unreadable_or_empty_fails_without_invoking_claude`.
+On the claudey side it is pinned by `ClaudeInteractiveEndToEndTests.test_claude_gets_a_bare_worktree_and_remote_control_and_the_prompt_last`
+and `test_a_prompt_that_reads_like_a_flag_does_not_undo_an_opt_out`.
+
+---
+
 ## Claude Code Action
 
-`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher (`scripts/wake_the_claude.bash` / `claudey`). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
+`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher ([Local Claude Launcher](#local-claude-launcher)). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
 
 The job is **not** a required status check and is **not** in Quality Gate `needs:`. It has no `push` or `pull_request` trigger, so a commit to `main` does not start it.
 
@@ -8448,6 +8583,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.81  | 2026-11-04 | Local Claude launcher (`./claudey` → `wake_the_claude.bash`): prompt is the last argv after `--`; the word after a prompt flag is the prompt; `--remote-control` is bare and refuses a name; claudey defaults worktree and remote control on and forces skip-permissions while `DEBUG=TRUE`; `-v` is each script's own version and wake `--version` / `-V` / `--claude-version` print Claude Code's; `-u` exits 1. Supersedes the conflicting draft on juniper-ml#2440 now that #2438 is on `main`. |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |

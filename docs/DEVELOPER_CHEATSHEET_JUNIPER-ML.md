@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.81
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -166,26 +166,35 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 ## Claude Code Session Script
 
-> See: `scripts/claude_interactive.bash` | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
+> See: [REFERENCE — Local Claude Launcher](REFERENCE.md#local-claude-launcher) | `scripts/claude_interactive.bash` | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
+
+`TRUE="0"` and `FALSE="1"` in `claudey` and in wake. The older default-session script still treats `CLAUDE_SKIP_PERMISSIONS=1` as the opt-in.
 
 | Entry Point                                                 | Behavior                                                                                                                        |
 |-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| `./claudey`                                                 | Interactive session: the model and effort defaults in `scripts/claude_interactive.bash`, a bare `--worktree` and `--remote-control` |
-| `./claudey --prompt "..."`                                  | Custom prompt, default flags                                                                                                    |
+| `./claudey`                                                 | Interactive session: model `opus`, effort `max`, prompt `Hello World, Claude!`, a bare `--worktree` and `--remote-control`, and `--dangerously-skip-permissions` because shipped `DEBUG=TRUE` forces it |
+| `./claudey --prompt "..."`                                  | Custom prompt, default flags. The prompt is Claude Code's last argument, after `--`                                             |
+| `./claudey --no-remote-control --prompt --remote-control`   | Remote control stays off. The prompt text is the word `--remote-control`                                                       |
 | `./claudey -w <name>`                                       | Names the worktree; a bare `-w` lets Claude Code name it                                                                        |
 | `./claudey --no-worktree --no-remote-control`               | Turns off the worktree and remote control, which are on by default                                                             |
-| `bash scripts/default_interactive_session_claude_code.bash` | Older default session (`--id --worktree --effort high`); `CLAUDE_SKIP_PERMISSIONS=1` adds `--dangerously-skip-permissions`      |
+| `./claudey -v`                                              | Prints `0.1.1` and does not call wake                                                                                           |
+| `bash scripts/wake_the_claude.bash --version`               | Prints Claude Code's version (`-V` and `--claude-version` do the same). `-v` / `--script-version` print `wake_the_claude.bash 1.0.0` |
+| `bash scripts/default_interactive_session_claude_code.bash` | Older default session (`--id --worktree --effort high`, no `--remote-control`); `CLAUDE_SKIP_PERMISSIONS=1` adds `--dangerously-skip-permissions` |
 | `bash scripts/wake_the_claude.bash ...`                     | Direct launcher with full flag control                                                                                          |
 
-`claude_interactive.bash` ships `DEBUG=TRUE`, which adds `--dangerously-skip-permissions` to every launch.
-`default_interactive_session_claude_code.bash` adds it only when `CLAUDE_SKIP_PERMISSIONS=1` is set.
+`claude_interactive.bash` ships `DEBUG=TRUE`, which adds `--dangerously-skip-permissions` on every launch, including when `CLAUDE_SKIP_PERMISSIONS=1`.
+`default_interactive_session_claude_code.bash` adds that flag only when `CLAUDE_SKIP_PERMISSIONS=1`.
 
-`wake_the_claude.bash` sends the prompt (from `--prompt`, or the contents of a `--file` / `--path` prompt file) as Claude
-Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` cannot take it as a value.
-`--remote-control` never takes a value. `--version` prints Claude Code's version; `-v` / `--script-version` print the
-script's. `-u` prints the usage text and exits 1.
+Wake sends the prompt (the word after `--prompt` / `-p` / `--prompt-string`, or the contents of a `--file` / `--path` file) as Claude Code's last argument, after `--`.
+A bare `--worktree` or `--remote-control` therefore cannot take the prompt as its value.
+The word after a prompt flag is the prompt even when it starts with `--`.
+On wake, `0` or a missing word sends `Hello World, Claude!`, and `1` sends no prompt.
+`./claudey --prompt` with no word exits 1 (`Missing value for --prompt`) before wake sees it.
+`--remote-control` refuses a name (`laptop-session` exits 1). `-u` prints usage and exits 1; `-h` exits 0.
 
-**Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
+**Interactive** (default): runs `claude` in the foreground, with the prompt kept as one argument. **Headless**: add `--print` to launch via `nohup`. The log is `logs/wake_the_claude.nohup.log` (fallback: `$HOME/wake_the_claude.nohup.log`). A missing `claude` binary and a nohup log that cannot be opened both print to stderr, including when `WTC_DEBUG=1`.
+
+**Known pitfalls:** the prompt is one argv element (`"${CLAUDE_CODE_PARAMS[@]}"`). The debug echo joins with spaces and can look split. A prompt whose text is `0` or `1` is the boolean, so wake sends the default text or no prompt. `./claudey -v` and wake `-v` print two different script versions; Claude Code's version is wake `--version`. Full contract: [REFERENCE — Local Claude Launcher](REFERENCE.md#local-claude-launcher).
 
 ### Session ID and Resume
 
@@ -196,8 +205,6 @@ bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."        
 ```
 
 **Safety:** `--id` refuses symlink targets. Resume filenames must be `.txt` basenames (no `/`). File contents must be a valid UUID. Invalid/missing files are preserved.
-
-**Known pitfall:** `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`; prompt strings may split on spaces. Run regression tests after changes.
 
 ### Resume And Fork Alias Forwarding
 
@@ -212,7 +219,7 @@ Example (alias input to canonical output):
 
 ```bash
 bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --fork --prompt "hello"
-# Forwards args to claude as: --resume <uuid> --fork-session "hello"
+# Forwards args to claude as: --resume <uuid> --fork-session -- hello
 ```
 
 This behavior is regression-tested in `tests/test_wake_the_claude.py`:
@@ -1131,6 +1138,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Ecosystem Guide](../AGENTS.md) -- project map, dependency graph, conventions
 - [Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage) -- three scanners; the candidate count grows after a cut
 - [juniper-ml REFERENCE](REFERENCE.md) -- package metadata, extras, version history
+- [Local Claude Launcher](REFERENCE.md#local-claude-launcher) -- `./claudey` prompt after `--`, bare worktree and remote control, version-flag split
 - [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- seeded probes, characterisation vs least-covered, scoring pitfalls
 - [Perf-Lane Split Comparator](REFERENCE.md#perf-lane-split-comparator) -- identity first, work exact / speed reported, exit 0/1/2, waiver cannot mask REFUSED
 - [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) -- 128 MiB, 422 until opt-in, experiment-stack `IMPORT_DIR` pitfall
@@ -1183,6 +1191,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.81
 **Maintainer:** Paul Calnon
