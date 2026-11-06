@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.77
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -1094,6 +1094,9 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Suite cells `stalled` ~130 s then finish | Candidate-phase inert stall — set `execution.stall_seconds`; size `per_run_timeout_seconds` above the worst-case driver budget. |
 | `--resume` re-runs a green cell | Only `registry.jsonl` `succeeded` is skipped; missing resume dir is exit `2`. |
 | Repeats ran the smoke config | `include` does not inherit `matrix` — put the repeat axis on `matrix` (PF-1). |
+| Worker logs `suspiciously_fast: 0.000s` and still accepts | Score present, duration absent: the coordinator times it as `0.0`. The detector only warns. See [REFERENCE](REFERENCE.md#worker-result-anomaly-detector). |
+
+A scored worker result with no `duration` logs `suspiciously_fast: 0.000s` and is still accepted. Bounds are strict (`< 0.1` s, `> 0.999`, `abs(score) < 0.001`). Three scores that print the same to six decimals are `duplicate_scores`. See [REFERENCE — Worker Result Anomaly Detector](REFERENCE.md#worker-result-anomaly-detector).
 
 ## Quick Reference Tables
 
@@ -1183,6 +1186,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.77
 **Maintainer:** Paul Calnon

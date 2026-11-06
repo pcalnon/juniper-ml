@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.77
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -88,6 +88,7 @@
 - [Open-PR Budget Alarm](#open-pr-budget-alarm)
 - [Memory File Size Budget](#memory-file-size-budget)
 - [Memory-Budget Slack (Planning)](#memory-budget-slack-planning)
+- [Worker Result Anomaly Detector](#worker-result-anomaly-detector)
 
 ---
 
@@ -4694,6 +4695,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - **WS tunables are declared, not implicit** — `websocket/tunables.py` holds all eleven settings fields the WebSocket handlers read, each with its default and a `security` flag. Six are security controls: the Origin allowlist, the control-endpoint kill switch, the control rate limit, and the three handshake-cooldown parameters. Call sites pass only a name; the default lives in the registry.
   - The `getattr`-based decoupling is deliberate and kept — the shared package still never imports a consuming service's settings class. What changes is that a miss which looks like a misspelling now logs a WARNING naming both spellings, instead of silently reverting a security control to a library default forever (`ws_control_rate_limit_per_second` vs `..._per_sec`).
   - `resolve()` on an undeclared name raises rather than defaulting; `audit(settings)` is the boot-time counterpart, reporting defaulted security controls and suspected typos. Closes APD-SVCCORE-003 / -010. `tests/test_ws_tunables.py` pins the pre-refactor defaults byte-for-byte and source-scans both handlers so registry and call sites cannot drift.
+- **Worker result anomalies warn.** `AnomalyDetector.check_result` flags a fast, perfect, stale, or duplicate score. `WorkerCoordinator.submit_result` logs that list and still accepts the result. No detector, or a `None` score, skips the check. A score with no duration is timed as `0.0` and logs `suspiciously_fast`. Operator surface: [Worker Result Anomaly Detector](#worker-result-anomaly-detector).
 
 Operator surface: [`docs/REFERENCE.md` § juniper-service-core](#juniper-service-core).
 
@@ -8465,6 +8467,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.77  | 2026-11-04 | Worker result anomaly detector: strict bounds (`< 0.1` s, `> 0.999`, `abs(score) < 0.001`), a six-decimal duplicate window, and a missing duration timed as `0.0` s. The result is still accepted. Skipped 0.6.64–0.6.76 (in-flight docs PRs; 0.6.76 is the launcher page) |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +8967,60 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+## Worker Result Anomaly Detector
+
+`AnomalyDetector` (`juniper_service_core.workers.security`) flags a remote worker result that looks too fast, too perfect, stuck near zero, or replayed. It does not reject the result. `WorkerCoordinator.submit_result` logs the flags and then stores the result the same way it would have without them. The coordinator's default detector is `None`, which skips the check. A service opts in by assigning `coordinator.anomaly_detector`.
+
+The check runs only when a detector is set and `ParsedResult.score` is not `None`. `JsonTaskProtocol.parse_result` leaves a missing `score` or `duration` as `None`, and a missing score skips the check. A present score with a missing duration does not: the coordinator passes `parsed.duration or 0.0`, and `0.0` is under the fast bound, so the log says `suspiciously_fast` while the result is still stored.
+
+### Defaults
+
+With no constructor arguments the comparisons are strict. A value sitting on the bound is clean. The defaults assume a score in `[0, 1]`; a service whose score has another range passes its own thresholds.
+
+| Flag | Comparison | Default | On the bound |
+|------|------------|---------|--------------|
+| `suspiciously_fast` | `training_duration < min_training_time` | `0.1` seconds | `0.1` is clean; `0.099` flags `suspiciously_fast: 0.099s (min=0.1s)` |
+| `perfect_score` | `score > perfect_score_threshold` | `0.999` | `0.999` is clean; `0.9990001` flags |
+| `stale_score` | `abs(score) < stale_score_threshold` | `0.001` | `0.001` and `-0.001` are clean; `0.000999` and `-0.0005` flag |
+| `duplicate_scores` | every retained score prints the same to 6 decimals, and at least 3 are retained | window of `10` | two identical scores are clean; the third flags |
+
+A negative score uses its magnitude for the stale check only. `-0.5` is neither stale nor perfect. One result can carry more than one flag: score `1.0` in `0.0` seconds is both `suspiciously_fast` and `perfect_score`.
+
+The message formats the score to six decimals, so a value just over the perfect bound prints as the bound: `perfect_score: 0.999000` for `0.9990001`. Read the flag name. The printed digits can sit on the bound that the comparison treated as clean.
+
+### Duplicate window
+
+History is per `worker_id`, in memory, and trimmed to the last `duplicate_window` records after each append. `get_worker_stats(worker_id)["total_results"]` is that retained length, not a lifetime count. An unknown worker returns `{"total_results": 0}`. `clear_worker` drops the row. Two workers do not share a window.
+
+The duplicate flag needs every score still in the window to format as the same `f"{score:.6f}"` string, and at least three of them.
+
+- `0.42`, `0.4200004`, and `0.4199995` all print `0.420000`. The third result is a duplicate. Exact float equality would miss that stuck worker.
+- `0.4200006` prints `0.420001`. It is not a duplicate of `0.42`.
+- An older different score blocks the flag until it ages out. With `duplicate_window=3`, the series `0.10`, `0.50`, `0.50` does not flag; the next `0.50` drops `0.10` and flags. `total_results` is then `3`, the retained window.
+- A later different score clears the flag on that result.
+- The message is `duplicate_scores: 1/<n> unique (hash=<8 hex>)`. `<n>` is how many scores are still in the window (3 through `duplicate_window`). The hash is the first 8 hex characters of SHA-256 over `str(sorted(raw_scores))`, not over the six-decimal text, so two windows that print as one score can carry different hashes.
+
+### What the warning does
+
+Both loggers are `WARNING`. `check_result` logs `ANOMALY: worker=<id> task=<id> anomalies=[...]`. The coordinator then logs `Anomalies detected for worker <id> on task <id>: [...]` and stores the result. That path does not close the socket, fail the task, or call `AuditLogger.on_anomaly`.
+
+### Operator pitfalls
+
+| What you see | What it is |
+|--------------|------------|
+| No anomaly logs | `anomaly_detector` is still `None`, or the result has no `score` |
+| `suspiciously_fast: 0.000s` on every scored result | The payload has `score` and no `duration`. Missing duration becomes `0.0`. Send a duration, or treat the flag as noise |
+| `perfect_score: 0.999000` | The score was strictly above `0.999`. The message rounds to 6 decimals |
+| A stuck worker stays clean | A different score is still inside the window. The flag waits until that score ages out, and until at least three retained scores print the same |
+| `total_results` stuck at 10 | The default window keeps the last 10 |
+| The result was accepted | Expected. The detector only warns |
+
+Gate, all under `juniper-service-core/tests/`: `test_t2_workers.py` (`test_anomaly_detector_flags_and_passes`, `test_anomaly_detector_duplicate_scores`); `test_workers_coverage.py` (`test_anomaly_detector_trims_history_to_duplicate_window`, `test_anomaly_detector_clear_worker`, `test_submit_result_logs_anomaly_but_still_accepts`); `test_t2_worker_coordinator.py` (`test_anomaly_detector_skipped_when_score_is_none`).
+
+Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordinator.py` `submit_result`.
+
+---
+
+**Last Updated:** 2026-11-04
+**Version:** 0.6.77
 **Maintainer:** Paul Calnon
