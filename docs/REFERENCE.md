@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.98
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -51,6 +51,7 @@
 - [Snapshot Sidecar Chain](#snapshot-sidecar-chain)
 - [Suite Driver](#suite-driver)
 - [Recurrence Degraded Outcome and Headline Metrics](#recurrence-degraded-outcome-and-headline-metrics)
+- [Cascor 0.13.0 ships final-evaluation accuracy](#cascor-0130-ships-final-evaluation-accuracy)
 - [Recurrence Work Is Not Countable](#recurrence-work-is-not-countable)
 - [Recurrence Crossval Hyperparameters](#recurrence-crossval-hyperparameters)
 - [Recurrence Upstream Error Text](#recurrence-upstream-error-text)
@@ -5319,7 +5320,7 @@ Cell ids are `c{index:03d}-{sha8(relative_config + sorted_overrides)}`. The hash
 
 #### Acceptance bands (W5.4)
 
-`acceptance:` is a **list** of bands, on the suite (judges every cell) or on one `include` row (judges that row only). A band names one headline metric `aggregate.csv` carries -- the W0.4 recurrence keys `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` or the cascor `train_accuracy` / `val_accuracy` (since 2026-10-26; `val_accuracy` is **selected-on**, not held out) and, since [juniper-ml#2064](https://github.com/pcalnon/juniper-ml/issues/2064), the held-out `test_accuracy` / `test_f1` / `test_precision` / `test_recall` / `test_roc_auc`. Those five come from cascor's final evaluation and only when it scored the **test** split, so a band on one reads `absent` -- a `gate` band fails the cell -- on a run with no test split loaded, with no final evaluation, or, for `test_accuracy`, against a cascor service without [juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731) (in no release on 2026-10-27; PyPI's latest is 0.12.0). Until juniper-ml#2064 `test_accuracy` had no producer at all, and `run_suite` warned about it before any launch; it no longer does. `final_accuracy` was accepted until 2026-10-26 and is now refused (exit `2`): no writer ever produced it. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). A band takes `min` and / or `max` (inclusive, finite numbers; `min <= max`) and a required `mode`:
+`acceptance:` is a **list** of bands, on the suite (judges every cell) or on one `include` row (judges that row only). A band names one headline metric `aggregate.csv` carries -- the W0.4 recurrence keys `train_r2` / `cv_r2` / `cv_r2_std` / `n_windows` or the cascor `train_accuracy` / `val_accuracy` (since 2026-10-26; `val_accuracy` is **selected-on**, not held out) and, since [juniper-ml#2064](https://github.com/pcalnon/juniper-ml/issues/2064), the held-out `test_accuracy` / `test_f1` / `test_precision` / `test_recall` / `test_roc_auc`. Those five come from cascor's final evaluation and only when it scored the **test** split, so a band on one reads `absent` -- a `gate` band fails the cell -- on a run with no test split loaded, with no final evaluation, or, for `test_accuracy`, against a cascor service without [juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731) (first released in juniper-cascor 0.13.0; a 0.12.0 service still omits it — [Cascor 0.13.0 ships final-evaluation accuracy](#cascor-0130-ships-final-evaluation-accuracy)). Until juniper-ml#2064 `test_accuracy` had no producer at all, and `run_suite` warned about it before any launch; it no longer does. `final_accuracy` was accepted until 2026-10-26 and is now refused (exit `2`): no writer ever produced it. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). A band takes `min` and / or `max` (inclusive, finite numbers; `min <= max`) and a required `mode`:
 
 | `mode` | A miss, or a metric the cell did not produce | Exit code |
 |--------|-----------------------------------------------|-----------|
@@ -6212,7 +6213,7 @@ jq '{train_accuracy: .cascor.final.train_accuracy, val_accuracy: .cascor.final.v
 
 | Column | Key in the final-evaluation block |
 |--------|-----------------------------------|
-| `test_accuracy` | `accuracy`, new in [juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731), which is in no release on 2026-10-27 (PyPI's latest is 0.12.0). A service without it leaves this column empty while the other four fill. |
+| `test_accuracy` | `accuracy`, new in [juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731) and first released in juniper-cascor 0.13.0 (2026-10-28). A 0.12.0 service leaves this column empty while the other four fill. See [Cascor 0.13.0 ships final-evaluation accuracy](#cascor-0130-ships-final-evaluation-accuracy). |
 | `test_f1` | `f1` |
 | `test_precision` | `precision` |
 | `test_recall` | `recall` |
@@ -6228,6 +6229,30 @@ jq '{train_accuracy: .cascor.final.train_accuracy, val_accuracy: .cascor.final.v
 ```bash
 jq '.cascor.eval_scalars | {split, n_samples, held_out, absent, accuracy, f1, roc_auc}' "$RUN_DIR/artifacts/results/stats.json"
 ```
+
+#### Cascor 0.13.0 ships final-evaluation accuracy
+
+juniper-cascor **0.13.0** is the first release whose final evaluation includes `accuracy`. PyPI uploaded the wheel and sdist on 2026-10-28 (`juniper_cascor-0.13.0`). Tag `v0.13.0` contains [juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731) (`compute_classification_accuracy` in `src/api/lifecycle/classification_metrics.py`). PyPI's latest `juniper-cascor` is 0.13.0.
+
+The 0.11.4 changelog, and the archive `notes/releases/RELEASE_NOTES_v0.11.4.md`, still say #731 "is in no release on 2026-10-27; PyPI's latest is 0.12.0". That was true the day those sentences were written. It is not true of a service installed now.
+
+`run_suite` copies `eval_metrics.final.accuracy` to the `test_accuracy` column only when the labelled block's `split` is `test` (`CASCOR_TEST_COLUMNS` in `util/experiments/run_suite.py`). A validation final block still leaves every `test_*` column empty. `_is_metric` keeps a numeric value, including `0.0`, and drops a missing key.
+
+| Service | `test_accuracy` | The other four `test_*` columns | `summary.md` |
+|---------|-----------------|----------------------------------|--------------|
+| juniper-cascor 0.13.0, final block `split` is `test` | filled from `accuracy` | filled | `- accuracy: <number>` |
+| juniper-cascor 0.12.0 (or any build before #731), same test split | empty | filled | `- accuracy: not reported` (`util/experiments/stats_summary.py` `_eval_lines`, when the key is absent and not in `undefined`) |
+| Final block `split` is `validation`, or there is no final block | empty | empty | the block's `absent` reason, or the validation caption |
+
+A `gate` band on `test_accuracy` reads `absent` and fails the cell whenever that column is empty. `mode: report` records the miss and does not fail the cell.
+
+juniper-ml 0.11.4's `[servers]` extra still declares `juniper-cascor[api,juniper-data]>=0.12.0` and does not cap it (`pyproject.toml`). A fresh resolve takes 0.13.0. An environment that already holds 0.12.0 keeps it under `pip install -U 'juniper-ml[servers]'`: pip's default `--upgrade-strategy` is `only-if-needed`, and 0.12.0 satisfies the floor. Upgrade cascor itself when the column has to exist:
+
+```bash
+pip install -U 'juniper-cascor[api,juniper-data]>=0.13.0'
+```
+
+The corpus count above (84 test-split finals, none with `accuracy`) is the 2026-10-27 run corpus. Those files predate this release. Re-aggregating them does not invent `accuracy`; the service that trained the run has to have written it.
 
 ### Work-gate interaction
 
@@ -6246,7 +6271,7 @@ jq '.cascor.eval_scalars | {split, n_samples, held_out, absent, accuracy, f1, ro
 | Plot skipped / matplotlib missing, outcome still `succeeded`, exit 1 | An acceptance failure that is not a phase. Not `degraded`. |
 | `make_baseline` refuses a degraded recurrence cell | Expected (`outcome != succeeded`); recurrence is not countable anyway. |
 | Cascor cell, headline accuracy columns empty | The suite was aggregated before 2026-10-26: re-render it with `--reaggregate SUITE_DIR` (see above). A cell whose run dir is gone keeps its recorded, empty `metrics`. |
-| A `test_*` band reads `absent` and fails the cell | The cell has no final evaluation of the test split: no test split was loaded (a `validation` block), there is no final evaluation, or, for `test_accuracy` alone, the cascor service predates juniper-cascor#731. Read `split` / `absent` in its `stats.json` `cascor.eval_scalars`. Use `mode: report` where that is expected. |
+| A `test_*` band reads `absent` and fails the cell | The cell has no final evaluation of the test split: no test split was loaded (a `validation` block), there is no final evaluation, or, for `test_accuracy` alone, the cascor service is older than 0.13.0 (juniper-cascor#731). Read `split` / `absent` in its `stats.json` `cascor.eval_scalars`. Use `mode: report` where that is expected. |
 | Cascor `test_*` columns empty on an older suite | `--reaggregate SUITE_DIR` re-derives them from each run's `metrics_final.json`. They stay empty where the final block scored validation or does not exist. |
 | A `final_accuracy` band refuses the suite, exit `2` | Removed 2026-10-26: no writer ever produced it. `val_accuracy` exists, and is selected-on. |
 
@@ -8465,6 +8490,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.98  | 2026-11-06 | Cascor final-evaluation `accuracy` shipped in juniper-cascor 0.13.0 (2026-10-28, juniper-cascor#731). A 0.12.0 service still omits `test_accuracy`. `[servers]` still floors `juniper-cascor>=0.12.0`, so an installed 0.12.0 stays under `pip install -U`. Skipped 0.6.64–0.6.97 (in-flight docs PRs). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +8990,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-06
+**Version:** 0.6.98
 **Maintainer:** Paul Calnon
