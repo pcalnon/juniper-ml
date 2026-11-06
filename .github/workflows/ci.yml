@@ -224,6 +224,9 @@ jobs:
           echo "║       juniper-ml - Python Regression Tests                 ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           python3 -m unittest -v tests/test_wake_the_claude.py
+          # Empty `claude --version` output is refused on stderr, and claudey
+          # keeps an explicit WTC_DEBUG=0 when it asks for that version.
+          python3 -m unittest -v tests/test_launcher_empty_version_output.py
           # claude_interactive.bash (`claudey`): DEBUG-forced
           # --dangerously-skip-permissions + inverted TRUE/FALSE opt-in
           # convention vs the older default_interactive launcher.
