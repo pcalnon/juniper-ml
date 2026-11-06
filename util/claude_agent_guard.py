@@ -1280,10 +1280,12 @@ class BashAnalyzer(object):
                 continue
             short = text[1:] if text.startswith("-") and not text.startswith("--") else ""
             if sub in GIT_SIGN_SUBCOMMANDS:
-                if text.startswith("--gpg-sign") or _cluster_has(short, "S", "mFCcXxp"):
+                # ``--g`` is already ``--gpg-sign`` on commit and merge (git 2.43).
+                if _git_long_abbrev(text, "gpg-sign", 1) or _cluster_has(short, "S", "mFCcXxp"):
                     self.hit("GPG-SIGN", "git %s %s" % (sub, text))
             elif sub == "tag":
-                if text in ("--sign", "--local-user") or text.startswith(("--sign=", "--local-user=")) or _cluster_has(short, "su", "mFn"):
+                # ``--si`` signs; ``--lo`` selects the signing key. ``--s`` / ``--l`` do not run.
+                if _git_long_abbrev(text, "sign", 2) or _git_long_abbrev(text, "local-user", 2) or _cluster_has(short, "su", "mFn"):
                     self.hit("GPG-SIGN", "git tag " + text)
             elif sub == "push" and (text == "--signed" or (text.startswith("--signed=") and text.split("=", 1)[1].casefold() not in ("false", "no", "off", "0"))):
                 self.hit("GPG-SIGN", "git push " + text)
@@ -1581,6 +1583,25 @@ class BashAnalyzer(object):
             current = prev
             k -= 1
         return out
+
+
+def _git_long_abbrev(text: str, name: str, minimum: int) -> bool:
+    """True when ``text`` is a long option git will run as ``name``.
+
+    Git accepts an unambiguous prefix. On git 2.43, ``git commit --g`` and
+    ``git merge --g`` are ``--gpg-sign`` and the commit is signed; ``git tag --si``
+    is ``--sign`` and ``git tag --lo`` is ``--local-user``. A longer different
+    option is not a prefix (``--signoff``, ``--skip``). ``--no-gpg-sign`` is a
+    different option, so it does not match ``gpg-sign``. ``minimum`` keeps a
+    prefix git itself rejects: ``git tag --s`` is ambiguous with ``--sort``,
+    and ``git tag --l`` is ambiguous with ``--list``.
+    """
+    if not text.startswith("--"):
+        return False
+    body = text[2:].split("=", 1)[0]
+    if len(body) < minimum or len(body) > len(name):
+        return False
+    return name.startswith(body)
 
 
 def _cluster_has(cluster: str, wanted: str, value_letters: str) -> bool:

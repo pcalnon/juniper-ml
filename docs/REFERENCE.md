@@ -3346,6 +3346,7 @@ python3 -m unittest -v tests/test_juniper_clone.py
 python3 -m unittest -v tests/test_find_encryption_readme_notes.py
 python3 -m unittest -v tests/test_macvm_ctl.py
 python3 -m unittest -v tests/test_claude_agent_guard.py
+python3 -m unittest -v tests/test_claude_agent_guard_git_sign_abbrev.py
 python3 -m unittest -v tests/test_git_remote_alias_check.py
 python3 -m unittest -v tests/test_headless_signing_preflight.py
 python3 -m unittest -v tests/test_configure_commit_signing.py

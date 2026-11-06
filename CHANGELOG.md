@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The agent guard denies a git abbreviation that signs.** On git 2.43, `git commit --g`, `--gp`, `--gpg`, and `--gpg=KEY` are `--gpg-sign` and sign even when `commit.gpgsign` is false; `git merge --g` signs the merge commit; `git tag --si` and `--sig` are `--sign`; `git tag --lo` and `--loc` are `--local-user`. The guard matched only the full `--gpg-sign` and the exact `--sign` / `--local-user`, so those prefixes were allowed. `--no-gpg-sign`, `--signoff`, `git rebase --skip`, and `git tag --sort` stay allowed. The installed hook is a copy under `~/.claude/hooks`; the owner reinstalls with `util/install_claude_agent_guard.bash`.
+
 ## [0.11.4] - 2026-11-06
 
 ### Changed
