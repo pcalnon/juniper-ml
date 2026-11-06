@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.87
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -76,6 +76,7 @@
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
 - [Claude Code Action](#claude-code-action)
+- [Idle compaction and the tracked settings file](#idle-compaction-and-the-tracked-settings-file)
 - [CodeQL Analysis](#codeql-analysis)
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
 - [Ruleset Scope Guard](#ruleset-scope-guard)
@@ -8112,6 +8113,36 @@ Both `uses:` lines are SHA-pinned with a trailing `# vX.Y.Z` comment. Do not ret
 
 ---
 
+## Idle compaction and the tracked settings file
+
+The repository tracks [`settings.local.json`](../settings.local.json) at the repository root. Claude Code does not read that path. Its project-local file is `.claude/settings.local.json`. [`.gitignore`](../.gitignore) ignores `.claude/settings.local.json` and `**/.claude/settings.local.json`, and the custom-agent comment in that file says settings stay ignored. Nothing under `scripts/` or `util/` copies the root file into `.claude/`. `scripts/wake_the_claude.bash` does not pass `--settings`.
+
+On `main` the root file's keys are `permissions`, `enableAllProjectMcpServers`, and `enabledMcpjsonServers`. [juniper-ml#2271](https://github.com/pcalnon/juniper-ml/pull/2271) (`feat/disable-idle-compress-setting-for-claude-code`) adds `"idleCompaction": false` beside them. That key is not loaded. A session's idle compaction does not change. The `permissions` and MCP keys in the same root file are not loaded either.
+
+`util/claude_agent_guard.py` `check_file_tool` treats a settings write as in scope only when the parent directory is named `.claude` (the `settings_like` test). The root file is not that case, so the guard does not block an edit there.
+
+Put `"idleCompaction": false` in a file Claude Code loads:
+
+| File | Who it affects |
+|------|----------------|
+| `~/.claude/settings.json` | This machine, every project |
+| `.claude/settings.json` | Everyone who clones this repo |
+| `.claude/settings.local.json` | This checkout only; gitignored here |
+| Managed settings | The organization. A managed key is not overridden by the files above |
+
+Precedence, highest first: managed, command line, project local, shared project, user. Sources, fetched 2026-11-06: [Settings files and precedence](https://code.claude.com/docs/en/settings) and [All settings](https://code.claude.com/docs/en/settings-reference) (`idleCompaction`, `autoCompactEnabled`).
+
+- `false` stops idle compaction. `true` compacts idle conversations that meet the conditions below. Default is `true`.
+- Claude Code before v2.1.290 ignores the key. On those versions set `autoCompactEnabled` to `false`. Turning auto-compact off also turns idle compaction off. `/compact` still works.
+- `DISABLE_AUTO_COMPACT` turns idle compaction off for one session, together with auto-compact. Whichever of that variable and `autoCompactEnabled` turns auto-compact off, the other cannot turn it back on.
+- Idle compaction runs only when every condition holds: an interactive terminal session, the VS Code chat panel, or a desktop Code tab on this machine or over SSH; auto-compact is on; the conversation uses the one-hour prompt-cache TTL; context has reached the token threshold (default 200,000); about an hour has passed since the last request and the computer stayed awake.
+- `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` sets that threshold. A positive whole number below `100000` is raised to `100000`.
+- `/config` → Idle compaction writes the choice to user settings and needs v2.1.302 or later. If another file already sets the key, change that file. Before v2.1.314, if feature flags cannot be fetched, idle compaction does not run.
+
+The gitignored `.claude/settings.local.json` is the live project file. Editing the tracked root copy does not change a session.
+
+---
+
 ## CodeQL Analysis
 
 [`.github/workflows/codeql.yml`](../.github/workflows/codeql.yml) is the Python semantic-SAST lane. It is **not** a Quality Gate `needs:` member — the check context **`Analyze (python)`** is promoted in the **branch ruleset** (`required_status_checks`), the same soak-then-promote path later jobs copy (see [Flood-Remediation CI Gates](#flood-remediation-ci-gates)). SARIF from the job also feeds the ruleset `code_scanning` rule (tool: CodeQL). There is no in-repo `tests/test_codeql_*.py` and no `.github/codeql-config.yml`; the live workflow file is the contract.
@@ -8448,6 +8479,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.87  | 2026-11-06 | Idle compaction: tracked repo-root `settings.local.json` is not loaded. Claude Code reads `.claude/settings.local.json` (gitignored). `"idleCompaction": false` in the root file does not turn it off. Key needs v2.1.290+. Skipped 0.6.64–0.6.86 (open docs PRs; #2464 holds 0.6.86). |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -8964,6 +8996,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-06
+**Version:** 0.6.87
 **Maintainer:** Paul Calnon
