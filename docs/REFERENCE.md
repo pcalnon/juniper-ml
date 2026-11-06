@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.69
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -18,6 +18,7 @@
 - [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
 - [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client)
+- [Phase D Trial Drop-In and Settings-Key Write](#phase-d-trial-drop-in-and-settings-key-write)
 - [Juniper Project-Tree Backup](#juniper-project-tree-backup)
 - [Editable Install Drift Check](#editable-install-drift-check)
 - [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell)
@@ -625,6 +626,7 @@ Do **not** read `DUPLICATI_STALE_DAYS` as "N consecutive skips are allowed." The
 - `notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_DUPLICATI-DB-RESTORE-RUNBOOK.md` is **withdrawn** — restoring the archived job DB reproduces the wedge. Do not execute it.
 - Project-tree / external-media archives: [Juniper Project-Tree Backup](#juniper-project-tree-backup) (`util/juniper-backup.bash`).
 - The Duplicati **server** on `127.0.0.1:8300` is a third surface: [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client). It is not this lane's `duplicati-cli` timer.
+- Phase D's throwaway confinement trial and Procedure A's settings-key write: [Phase D Trial Drop-In and Settings-Key Write](#phase-d-trial-drop-in-and-settings-key-write). Neither changes this lane.
 
 Troubleshooting:
 
@@ -780,6 +782,85 @@ Job 2 is hard-coded, with no flag, in `util/ad-hoc/yamaguchi_switch_aes.py` (a `
 | `PAUSED_WITH_QUEUE` | `pause` is indefinite and survives reboot. `python3 util/ad-hoc/yamaguchi_server_api.py resume` |
 | The desktop never pops, and the log has the alert | `notify-send` is best-effort. Read `server-failures.log` |
 | A bare watchdog run notified the desktop | It writes the live state directory unless you pass `--state-dir` and `--no-notify` |
+
+---
+
+## Phase D Trial Drop-In and Settings-Key Write
+
+Phase D of the Duplicati server recovery ([juniper-ml#2391](https://github.com/pcalnon/juniper-ml/pull/2391)) added the two commands the assessment and the design named but did not give.
+The sitting's sequence is [`notes/JUNIPER_2026-10-29_JUNIPER-ECOSYSTEM_BACKUP-PHASE-D-STEP0-TRIAL-AND-KEY-WRITE-RUNBOOK.md`](../notes/JUNIPER_2026-10-29_JUNIPER-ECOSYSTEM_BACKUP-PHASE-D-STEP0-TRIAL-AND-KEY-WRITE-RUNBOOK.md).
+This section is the contract of those two files, verified against them on `origin/main`. Neither file is the scheduled `$HOME` lane or the project-tree archives.
+
+### Step 0(b): the confinement trial
+
+`util/ad-hoc/2026-10-29_duplicati-trial-override.conf` is a systemd drop-in for a **throwaway** unit, `duplicati-trial.service`. The unit file is `util/systemd/duplicati.service` copied byte for byte to `/run/systemd/system/duplicati-trial.service`, and the drop-in is installed beside it at `duplicati-trial.service.d/override.conf`. It does not edit the live `duplicati.service`.
+
+The drop-in resets four lists with an empty assignment, then sets them again: `ExecStart=`, `EnvironmentFile=`, `LoadCredential=`, and `SystemCallErrorNumber=`.
+Without the `LoadCredential=` reset, systemd v259 replaces the path for the same credential id instead of starting from the unit file's list.
+It then adds four settings that are not confinement directives: `Restart=no`, `Environment=DUPLICATI_ENV_FILE=…`, console logging, and a `Description=` so `systemctl status` cannot be mistaken for the real unit.
+
+| Constraint | Why |
+|------------|-----|
+| Wrapper, defaults copy, and env contract live in `/usr/local/lib/duplicati-trial/`, root-owned `0755` | `/run` is `noexec` on this host, so a wrapper there fails every start with `203/EXEC` before any directive is tried. A directory the `duplicati` uid can replace is a code-injection path into a process that holds `CAP_DAC_READ_SEARCH`. |
+| Only the data folder stays under `/home/duplicati` | The server must own the folder it writes. |
+| Copied defaults change two words: `--webservice-port=8398` and the step-0 data folder | Port `8300` is the live server. The file's own quoting is what systemd parses. |
+| `ExecStart` appends `--phase-d-trial-unknown-option-marker` | Positive control for console logging. The journal should show exactly one `Unknown option supplied` line naming that marker. A second line is a production option the server does not know. None at all means logging did not reach the journal. |
+| `SystemCallErrorNumber=` is empty (kill, `SIGSYS`) | The real unit keeps EPERM, so a blocked call can fall back silently. The trial records what the server needs. It does not change production. |
+| `LoadCredential=settings-key:/etc/credstore/phase-d-trial-key` | Step 0(a)'s throwaway key. `/etc/credstore` is on the unit's `InaccessiblePaths=`, so the trial also checks that `LoadCredential=` still works: the manager reads the file before the mask applies. |
+| `Restart=no` | A failed trial must not restart itself. |
+| Unit and drop-in live on the `/run` tmpfs | A reboot removes them. The owner removes `/usr/local/lib/duplicati-trial` after the trial. |
+
+### Procedure A's settings-key write
+
+`util/ad-hoc/2026-10-29_write_matched_settings_key.py` (1.3.1) writes the form of the moved-aside service `.env`'s active `SETTINGS_ENCRYPTION_KEY` that the frozen server database is encrypted under, at the credential path.
+The wrapper reads that file with `$(<file)`, which drops every trailing newline, refuses a NUL, a carriage return, or edge whitespace, and keeps quotes.
+A `noquote` match is written without its quotes. A quoted `raw` match keeps them.
+A match that exists only on the probe's `newline` variant cannot be delivered: the server would be handed the text without that newline.
+
+The tool re-derives the match from `--db`. It does not trust a hand-copied variant name. It prints candidate labels, counts, the matched labels, the value's length, and the outcome. It never prints the value or a hash, and the key is never placed on an argv. `SETTINGS_ENCRYPTION_KEY_OLD` is a different name and is never the active key.
+
+Run it from a checkout of `origin/main`, as root (`/etc/credstore` is root-owned). `--db` is the probe's scratch **copy** of `Duplicati-server.sqlite`, never the freeze itself. `--dry-run` is step 7, straight after the probe reports an `ENV_ACTIVE_KEY` label. The real run is step 9, after the installer and before that `.env` is shredded, and only when the dry run exited 0.
+
+```bash
+python3 util/ad-hoc/2026-10-29_write_matched_settings_key.py --dry-run \
+    --env /home/duplicati/.config/Duplicati.empty-2026-09-20/.env \
+    --db /root/phase-d-tmp/probe/Duplicati-server.sqlite \
+    --out /etc/credstore/duplicati-settings-key
+```
+
+`--dry-run` runs the same refusals as the real run through the deliverability check, and writes nothing. The real run creates `--out` with `O_CREAT|O_EXCL|O_NOFOLLOW`, mode `0600`, no trailing newline, owned by the effective user, and fsyncs the file and the directory. It then reads the file back twice: `util/ad-hoc/2026-10-03_rekey_gate.py`'s `read_key`, and bash `$(<file)`. Both must hash to the database's key hash. A failed read-back removes the file this run created.
+
+| Exit | Meaning |
+|------|---------|
+| `0` | Dry run passed, or the file was written and both read-backs match |
+| `1` | `REFUSED:` on stderr. Nothing left written |
+| `2` | Usage, or `FATAL:` I/O |
+
+SIGINT, SIGTERM, SIGHUP, and SIGQUIT are deferred from just before the create until the decision line is printed. Only SIGKILL cannot be deferred. Core dumps are off for the whole run (`RLIMIT_CORE` 0), so a SIGQUIT cannot write the key's memory into the checkout. Trust the last decision line, whatever the status after it:
+
+- `wrote … both match` means written and verified.
+- `removed …` means nothing is left at the credential path.
+- A status of 128 or more with neither line is a kill before a decision. List the directory and remove an unverified key file before a re-run.
+
+A `NONE` line after step 7's probe reported an `ENV_ACTIVE_KEY` match means the two tools disagree. Stop, keep the `.env`, and do not treat that line as a route to procedure A0. Confirm `--env` and `--db` are the probe's own paths.
+
+### Operator pitfalls
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| `REFUSED: … already exists` | `--out` is present, including a symlink, and including on `--dry-run`. The tool never replaces a key. |
+| `REFUSED: … not owned by the effective user` | `/etc/credstore` is root's. Run from the owner's root shell. |
+| `REFUSED: … writable by its group or by others` | The output directory must not be group- or world-writable. A symlinked directory is refused as well (`O_NOFOLLOW`). |
+| `REFUSED: key-hash match: NONE` after the probe matched | `--env` or `--db` is not the probe's path, or the two tools disagree. Stop. Keep the `.env`. |
+| `REFUSED: … cannot be delivered` | The matched form holds a NUL, a carriage return, any newline, or leading or trailing whitespace (any Unicode space; stricter than the wrapper, never looser). Procedure A cannot run on this key. |
+| `REFUSED: … another key hash` | The re-key gate's five columns are not one key. Step 13's exit gate would fail. Stop and ask the owner. |
+| `REFUSED: … no uncommented SETTINGS_ENCRYPTION_KEY=` | The `.env` is the wrong file, or the only key line is `SETTINGS_ENCRYPTION_KEY_OLD` or a comment. |
+| Exit 128 or more, and no `wrote` or `removed` line | Killed before a decision. Remove any key file this run left, then re-run. |
+| `query error … (text not shown)` | The message names the exception class only. Do not paste a column's text; a decode error quotes it. |
+| Trial start `203/EXEC` | The wrapper was placed on `/run`, which is `noexec`. Use `/usr/local/lib/duplicati-trial/`. |
+| Trial journal has no `Unknown option supplied`, or more than one | Logging did not reach the journal, or a production option word is unknown to this server. The planted marker should be the only one. |
+
+Coverage: `tests/test_write_matched_settings_key.py`. The password-init helper, the probe's redirect, and procedure A0's command lines stay in the runbook linked above.
 
 ---
 
@@ -8465,6 +8546,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.69  | 2026-11-04 | Phase D (juniper-ml#2391): the confinement-trial drop-in and Procedure A's settings-key write. The trial unit is a byte copy plus a drop-in; its inputs stay off `/run` (`noexec` → `203/EXEC`) and off a `duplicati`-writable directory. The key writer re-derives the `ENV_ACTIVE_KEY` form, never prints the value or a hash, refuses an undeliverable form, and creates the credential with `O_EXCL`. Trust the last decision line. Skipped 0.6.64–0.6.68 (in-flight; #2417 holds 0.6.68). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |

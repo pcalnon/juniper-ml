@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.69
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -762,6 +762,11 @@ The watchdog has no default job id — an absent `--backup-id` records `JOB_MISS
 Deploy with `bash util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>` after the primary checkout is synced; do not copy the unit alone.
 Full contract: [REFERENCE — Yamaguchi Duplicati Server Client](REFERENCE.md#yamaguchi-duplicati-server-client).
 
+Tip: Phase D's settings-key write (`util/ad-hoc/2026-10-29_write_matched_settings_key.py`) re-derives the `ENV_ACTIVE_KEY` form and never prints the value or a hash.
+`--dry-run` writes nothing and still refuses an existing `--out`, an undeliverable form, or a second key hash. The real run is `O_EXCL`, mode `0600`. Trust the last `wrote` / `removed` line.
+The confinement trial is a byte copy of `duplicati.service` plus `util/ad-hoc/2026-10-29_duplicati-trial-override.conf`; its wrapper stays off `/run` (`noexec` → `203/EXEC`).
+Full contract: [REFERENCE — Phase D Trial Drop-In and Settings-Key Write](REFERENCE.md#phase-d-trial-drop-in-and-settings-key-write).
+
 Tip: `util/juniper-backup.bash` writes per-repo `.tbz2.gpg` (bzip2). Restore with `gpg -d FILE | tar -xjf -`, not `-xzf`. `--dry-run` must exit without writing. Exit 4 is PARTIAL (already-verified copies stay). Unattended verify is `--list-packets` only — it does not prove the tar is intact. Distinct from the Duplicati `$HOME` lane.
 Full contract: [REFERENCE — Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup).
 
@@ -938,6 +943,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Duplicati timer silent after logout | Linger was `no` — the original failure class. Confirm `list-timers duplicati-backup.timer` |
 | Duplicati `FATAL` unmounted dest / tmpfs tempdir | Mount the backup volume; point `DUPLICATI_TEMP_DIR` at any disk-backed path (the runner refuses a RAM-backed one outright, and `/tmp` is tmpfs here) |
 | Duplicati skip then next run escalates | Expected — skip overwrites `result=OK`. Inspect `~/.local/state/duplicati/{last-run.status,failures.log}` |
+| Phase D key write `REFUSED: … already exists` or `NONE` after the probe matched | Never replace a key. `NONE` after an `ENV_ACTIVE_KEY` probe match means the paths disagree — stop and keep the `.env`. Trust a `wrote … both match` or `removed` line over the exit status |
 | `juniper-backup` restore `tar` fails | Use `-xjf`, not `-xzf`. Archives are bzip2 (`.tbz2.gpg`). |
 | `juniper-backup` exit 4 PARTIAL | A device/copy failed; already-verified archives stay. Re-run makes a new UUID. |
 | `juniper-backup` `FATAL: gpg recipient not found` | Both `ENCRYPT_KEYS` UIDs must resolve in the local keyring before tar starts. |
@@ -1166,6 +1172,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- `e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
 - [Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) -- per-repo `.tbz2.gpg` (restore `-xjf`); not the Duplicati `$HOME` lane
 - [Yamaguchi Duplicati Server Client](REFERENCE.md#yamaguchi-duplicati-server-client) -- `127.0.0.1:8300`; export token; watchdog `--backup-id` has no default
+- [Phase D Trial Drop-In and Settings-Key Write](REFERENCE.md#phase-d-trial-drop-in-and-settings-key-write) -- throwaway `duplicati-trial` drop-in; Procedure A re-derives the key and never prints it
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- required-context classifier; 2026-08-10 class; text-mode 0 can still carry `ERROR:`
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition; WITHDRAWN (`WITHDR`) is a fourth
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; exit 2 = failed to measure; idle populated is VALID
@@ -1183,6 +1190,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.69
 **Maintainer:** Paul Calnon
