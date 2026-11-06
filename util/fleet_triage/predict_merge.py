@@ -14,10 +14,15 @@ For a PR branch (``--pr N``) or every open PR (``--batch``) it, per PR:
   (a) creates a throwaway DETACHED scratch repository under the system tempdir that
       borrows the source's objects through ``objects/info/alternates`` --
       never a ``git worktree`` of the primary repo, never the invoking checkout,
-      never a push (the merge stays local and is discarded);
+      never a push (the merge stays local and is discarded). The scratch matches the
+      source object format, copies ``.git/shallow`` when the source has one, disables
+      every filter (``* -filter``), and drops repository-location variables (``GIT_DIR``
+      and the rest) so a hook cannot re-initialise the source;
   (b) merges ``origin/main`` into the branch tip (``git merge --no-ff``) so the
       RESULT is the tree GitHub would actually land -- previewed here WITHOUT
-      paying for it. ``strict_required_status_checks_policy`` is ``true`` on all
+      paying for it. A merge or ancestor check whose exit is not 0 or 1 is an
+      error, and so is a behind branch whose clean merge did not take main as its
+      second parent. ``strict_required_status_checks_policy`` is ``true`` on all
       nine repos, and ``allow_update_branch`` is ``false``, so a PR that has gone
       ``BEHIND`` cannot merge and GitHub will not sync it for you: every sync is a
       manual ``update-branch`` that creates a fresh head and restarts the FULL
@@ -387,7 +392,7 @@ def simulate_merge(
     run_gates: bool = True,
     keep_scratch: bool = False,
 ) -> dict:
-    """Simulate merging ``base_ref`` into ``branch_ref`` in a detached clone; return the verdict dict.
+    """Simulate merging ``base_ref`` into ``branch_ref`` in a throwaway scratch repo; return the verdict dict.
 
     Pure of ``gh``/network: callers resolve the branch ref (real: ``origin/<headRefName>``);
     tests pass a fixture branch name directly. The invoking ``repo_root`` is only READ.
