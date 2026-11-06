@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.74
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -80,6 +80,7 @@
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
 - [Ruleset Scope Guard](#ruleset-scope-guard)
 - [Sibling Packages](#sibling-packages)
+- [The Worker Connection Bucket Refills Only up to Its Burst](#the-worker-connection-bucket-refills-only-up-to-its-burst)
 - [Version History](#version-history)
 - [Build and Release](#build-and-release)
 - [Flood-Remediation CI Gates](#flood-remediation-ci-gates)
@@ -8397,7 +8398,7 @@ The handshake runs **Origin → auth → per-source rate limit → accept → re
 |-------|-----------|-------|---------------|
 | 1 | Any `Origin` header present | **4003** | `Origin header not allowed on worker endpoint` — workers are not browsers, so any Origin is a browser/CSRF shape |
 | 2 | `ws_authenticate` fails (bad or missing `X-API-Key` while `app.state.api_key_auth` is enabled) | **4001** | `Authentication required` |
-| 3 | Optional `worker_rate_limiter` denies the source IP | **4029** | `Rate limited` |
+| 3 | Optional `worker_rate_limiter` denies the source IP | **4029** | `Rate limited`. [The worker connection bucket](#the-worker-connection-bucket-refills-only-up-to-its-burst) |
 | 4 | `worker_coordinator` or `worker_registry` missing | **4004** | `Worker system not initialized` — the pool never came up; not a client fault |
 | 5 | *(after accept)* registration shape invalid | **4008** | `Invalid registration` |
 
@@ -8406,6 +8407,42 @@ The handshake runs **Origin → auth → per-source rate limit → accept → re
 - **Result ownership.** `WorkerCoordinator.submit_result` rejects wrong-worker / unassigned results before the protocol parse.
 - **Binary frame cap.** Attachments over `_MAX_BINARY_SIZE` (100 MB) get `Binary frame too large` before `submit_result`.
 - **Unknown lifecycle frames.** `build_frame_sink` maps unknown or missing frame types onto the generic `event` envelope rather than dropping or raising.
+
+#### The worker connection bucket refills only up to its burst
+
+`ConnectionRateLimiter` (`juniper_service_core.workers.security`) is the optional cap on `/ws/workers` connection attempts. `attach_worker_pool` sets `app.state.worker_rate_limiter` only when the caller passes `rate_limiter`. With that attribute absent, `worker_stream_handler` applies no connection cap. The handler runs the check after the Origin reject and `ws_authenticate`, and before `accept()`.
+
+The source id is `websocket.client[0]`, the client host, or the literal `unknown` when Starlette reports no client. Registration has not run yet, so the handler passes the host. Workers that share an address share a bucket. Clients with no address share the `unknown` bucket.
+
+A refusal closes **4029** with reason `Rate limited` and logs `Rate limited connection from <source>`. `HandshakeCooldown` also closes **4029**, with reason `Too many rejected handshakes`.
+
+Constructed with no arguments, the limiter uses:
+
+| Argument | Default | Meaning |
+|----------|---------|---------|
+| `max_connections_per_minute` | 10 | Tokens added per second: this value divided by 60 |
+| `burst_size` | 3 | A new bucket starts full. Refill stops at this many tokens |
+| `cleanup_interval` | 300 | Seconds (`_RATE_LIMITER_CLEANUP_INTERVAL`). Stale buckets are dropped on this period |
+
+`allow` adds the elapsed refill, then spends one token when the bucket holds at least one:
+
+```text
+tokens = min(burst, tokens + elapsed_seconds * (max_connections_per_minute / 60))
+```
+
+The spend happens when that result is at least 1. A refusal leaves the fractional token in the bucket. Another call in the same instant leaves the bucket unchanged. After a long idle the same `min` stops the bucket at `burst`. At the defaults, three attempts succeed at once, and the fourth waits 6 seconds (one token at 10 per minute). A rate of 0 adds nothing: the bucket can still spend the burst it started with, and every later attempt is refused. `tests/test_t2_workers.py` (`test_rate_limiter_allows_burst_then_blocks`) pins a burst of 2 and a separate bucket per source. That test stays at the exhausted instant, so a refill that ignored the cap would still pass it.
+
+Buckets live in the process. Cleanup runs at the start of `allow` when `now - last_cleanup >= cleanup_interval`. It deletes a bucket when `now - last_access > cleanup_interval`. An age equal to the interval runs the pass and keeps the bucket. `last_access` moves on every attempt, including a refusal, so a source that keeps connecting stays in the map. A removed bucket is replaced, on the next attempt, by a new one that starts full. Removing a bucket at an age equal to the interval would hand an exhausted source a fresh burst. A source that stays quiet for longer than the interval is removed, and its next attempt is a full burst. The map has no numeric cap on distinct source ids. Every source that attempted inside the interval stays.
+
+| Limiter | What it counts | What the caller sees |
+|---------|----------------|----------------------|
+| `ConnectionRateLimiter` | `/ws/workers` attempts, per client host | close **4029** `Rate limited` |
+| `HandshakeCooldown` | rejected handshakes, per client IP | close **4029** `Too many rejected handshakes` |
+| `RateLimiter` | HTTP requests, per API key or client IP | **429** |
+| `LeakyBucket` | commands on one control WebSocket | ack `rate_limited` |
+| `FailedAuthThrottle` | HTTP 401s, per source IP | **429** |
+
+Restarting the process clears the map. Waiting out the refill adds tokens with the process still up. Waiting quietly for longer than `cleanup_interval` replaces the bucket with a full one.
 
 Control receives rejects malformed/non-object JSON with close **1003** rather than an `AttributeError`.
 
@@ -8418,7 +8455,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Worker WS closes 4001 before `connection_established` | API-key auth is enabled — send `X-API-Key`, or disable `app.state.api_key_auth` locally. |
 | Worker WS closes 4008 after accept | Fix the registration shape: string `worker_id` plus dict `capabilities`. |
 | Worker WS closes 4003 immediately | The client sent an `Origin` header — workers are not browsers; drop it from the client's WS options. |
-| Worker WS closes 4029 before accept | `HandshakeCooldown` or the per-source worker rate limiter is throttling that IP; back off, or restart the server to clear the in-memory block. |
+| Worker WS closes 4029 before accept | Reason `Rate limited` is the worker connection bucket: refill stops at the burst. Reason `Too many rejected handshakes` is `HandshakeCooldown`. Both live in process memory. [The worker connection bucket](#the-worker-connection-bucket-refills-only-up-to-its-burst). |
 | Worker WS closes 4004 | Server-side: `worker_coordinator` / `worker_registry` never initialized — check the service's worker-pool startup, not the client. |
 | Worker TLS "enabled" but presents no chain | Half-config — `TLSConfig` raises `ValueError` when only one of `cert_file` / `key_file` is set; supply both. |
 | One noisy IP throttles authenticated clients | Expected only for unauthenticated traffic — `RateLimiter` keys authenticated requests as `key:<api_key>`, so confirm the caller is actually sending `X-API-Key`. |
@@ -8465,6 +8502,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.74  | 2026-11-04 | Worker connection bucket: `/ws/workers` close 4029 `Rate limited` refills at `max_connections_per_minute / 60` and stops at `burst_size` (defaults 10/min and 3). A refusal keeps the fractional token. Cleanup drops a source only after it has been quiet for longer than the interval. Skipped 0.6.64–0.6.73 (in-flight; #2432 holds 0.6.73). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +9002,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.74
 **Maintainer:** Paul Calnon
