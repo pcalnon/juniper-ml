@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.42
+**Version:** 0.3.77
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -170,6 +170,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Run lister / pruner](REFERENCE.md#run-lister--pruner-list_runspy) -- `list_runs.py` directory-truth scan; `--prune` deletes the `RUN_DIR`, `--down` keeps `artifacts/`
 - [Suite Driver](REFERENCE.md#suite-driver) -- multi-cell `run_suite.py` (expansion, resume, cascor parallel floor, Grafana env toggle)
 - [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- a lost enabled phase is `degraded` (suite exit 1); r² columns read nested `stats.recurrence`
+- [Cascor 0.13.0 ships final-evaluation accuracy](REFERENCE.md#cascor-0130-ships-final-evaluation-accuracy) -- `test_accuracy` needs juniper-cascor 0.13.0; a held 0.12.0 leaves that column empty and `[servers]` does not force the upgrade
 - [Suite driver](REFERENCE.md#suite-driver) -- multi-cell campaigns via `util/experiments/run_suite.py` (`--dry-run` / `--resume`; cascor parallel needs launched tree ≥ 0.10.0)
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- how to read `stats.json` / `summary.md` (de-ratified wall, per-poll p50/p95, scrape_confirmed tri-state)
 - [Shared-Package CI Workflows](REFERENCE.md#shared-package-ci-workflows) -- the six in-repo `ci-<pkg>.yml` contracts (paths, floors, coverage enforce)
@@ -203,6 +204,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.3.41
+**Last Updated:** 2026-11-06
+**Version:** 0.3.77
 **Status:** Active

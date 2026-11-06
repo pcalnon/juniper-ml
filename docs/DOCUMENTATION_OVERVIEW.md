@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.55
+**Version:** 0.2.90
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -109,6 +109,7 @@
 | **Debug service-core middleware / control-WS / workers** | [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core); a non-ASCII `X-API-Key` is a 401 on `main` (published 0.7.0 still 500s), and Sentry does not capture frame locals: [Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) | docs/    |
 | **Create or clean a worktree**          | [Worktree setup](../notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md) / [cleanup V2](../notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md) + [REFERENCE — in-use probe](REFERENCE.md#wider-second-opinion-open-files-and-argv) | notes/ + docs/ |
 | **Check a worktree is idle before removing it** | [REFERENCE — Worktree Divergence](REFERENCE.md#worktree-divergence-is-a-memory-cost) (cwd-only liveness, then STRONG cwd/fd vs WEAK cmdline) | docs/ |
+| **See why cascor `test_accuracy` is empty** | [REFERENCE — Cascor 0.13.0 accuracy](REFERENCE.md#cascor-0130-ships-final-evaluation-accuracy) (0.12.0 omits it; `[servers]` still floors `>=0.12.0`) | docs/    |
 | **Understand the project**              | [README.md](../README.md)                                                                                                        | Root     |
 | **Use shared observability primitives** | [juniper-observability README](../juniper-observability/README.md)                                                               | juniper-observability/ |
 | **See development conventions**         | [AGENTS.md](../AGENTS.md)                                                                                                        | Root     |
@@ -252,6 +253,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.2.55
+**Last Updated:** 2026-11-06
+**Version:** 0.2.90
 **Maintainer:** Paul Calnon
