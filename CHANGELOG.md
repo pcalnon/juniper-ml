@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
+  session turns on remote control (owner rulings, 2026-11-06).** In `scripts/wake_the_claude.bash` (now 1.1.0), `-v`
+  joins `-V`, `--version` and `--claude-version`, as `claude -v` does; it printed the script's own version, which
+  `--script-version` alone now prints. `claudey` (`scripts/claude_interactive.bash`, now 0.2.0) hands the same four
+  flags to `wake_the_claude.bash`, so they print Claude Code's version too; `-v` and `--version` printed claudey's,
+  which `--script-version` now prints. `claudey` forwards a prompt file, `--file` / `-f` / `--file-name` and `--path` /
+  `-l` / `--file-path` (or `CLAUDE_PROMPT_FILE` / `CLAUDE_PROMPT_PATH`), and then sends no default prompt:
+  `wake_the_claude.bash` prefers `--prompt` to a prompt file, so the default would have discarded the file. A prompt
+  together with a prompt file exits 1 for the same reason. `scripts/default_interactive_session_claude_code.bash` sends
+  a bare `--remote-control`, as `claudey` does. `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` describes all three, and no
+  longer says `claude` is invoked with an unquoted parameter array: both the interactive and the `nohup` call quote it.
 - **`claudey` starts with a worktree and remote control by default, `--remote-control` never takes a value, and in
   `scripts/wake_the_claude.bash` `--version` is Claude Code's version and `-u` fails (owner rulings, 2026-11-04).**
   `claude_interactive.bash` sends a bare `--worktree`, so Claude Code names the worktree unless `-w <name>` names one,

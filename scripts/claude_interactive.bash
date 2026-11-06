@@ -5,17 +5,18 @@
 # Author:   Paul Calnon
 # Email:    overtoad.research@gmail.com
 # Created:  2026-03-07
-# Modified: 2026-11-04
-# Version:  0.1.1
+# Modified: 2026-11-06
+# Version:  0.2.0
 #####################################################################################################################################################################################################################################
 # Description:
 #     Interactively launch a Claude Code session
 #
 # Usage:
-#    ./claude_interactive.bash [<model> [<effort> [prompt]]]
+#    ./claude_interactive.bash [-m <model>] [-e <effort>] [-p <prompt> | -f <prompt file> | -l <prompt file or directory>] [...]
 #
 # Example:
-#    ./claude_interactive.bash fable auto
+#    ./claude_interactive.bash -m fable -e auto
+#    ./claude_interactive.bash --file prompts/thread-handoff_automated-prompts/HANDOFF_<...>.md
 #
 #####################################################################################################################################################################################################################################
 # Notes:
@@ -45,7 +46,7 @@ export FALSE="1"
 export DEBUG="${TRUE}"
 # export DEBUG="${FALSE}"
 
-export SCRIPT_VERSION="0.1.1"
+export SCRIPT_VERSION="0.2.0"
 
 
 ########################################################################################################################################################################################################
@@ -72,6 +73,9 @@ export CLAUDE_SKIP_PERMISSIONS_FLAG="--dangerously-skip-permissions"
 export CLAUDE_REMOTE_CONTROL_FLAG="--remote-control"
 export CLAUDE_WORKTREE_FLAG="--worktree"
 export CLAUDE_PROMPT_FLAG="--prompt"
+export CLAUDE_PROMPT_FILE_FLAG="--file"
+export CLAUDE_PROMPT_PATH_FLAG="--path"
+export CLAUDE_VERSION_FLAG="--version"
 export CLAUDE_RESUME_FLAG="--resume"
 export CLAUDE_EFFORT_FLAG="--effort"
 export CLAUDE_MODEL_FLAG="--model"
@@ -134,9 +138,10 @@ export USAGE_MESSAGE_WORKTREE="[--worktree-name|--worktree|-w [WORKTREE_NAME|${T
 export USAGE_MESSAGE_RESUME="[--resume-session|--resume|-rs|-r]"
 export USAGE_MESSAGE_REMOTE_CONTROL="[--remote-control-session|--remote-control|-rc] [--no-remote-control]"
 export USAGE_MESSAGE_SKIP_PERMISSIONS="[--dangerously-skip-permissions|--skip-permissions|-sp]"
-export USAGE_MESSAGE_PROMPT="[--initial-prompt|--prompt|-p <YOUR_INITIAL_PROMPT_HERE>]"
+export USAGE_MESSAGE_PROMPT="[--initial-prompt|--prompt|-p <YOUR_INITIAL_PROMPT_HERE> | --file-name|--file|-f <PROMPT_FILE> | --file-path|--path|-l <PROMPT_FILE_OR_DIR>]"
+export USAGE_MESSAGE_VERSION="[--version|--claude-version|-v|-V] [--script-version]"
 
-export USAGE_MESSAGE="${USAGE_MESSAGE_PREFIX} ${USAGE_MESSAGE_MODEL} ${USAGE_MESSAGE_EFFORT} ${USAGE_MESSAGE_ID} ${USAGE_MESSAGE_RESUME} ${USAGE_MESSAGE_WORKTREE} ${USAGE_MESSAGE_REMOTE_CONTROL} ${USAGE_MESSAGE_SKIP_PERMISSIONS} ${USAGE_MESSAGE_PROMPT}"
+export USAGE_MESSAGE="${USAGE_MESSAGE_PREFIX} ${USAGE_MESSAGE_MODEL} ${USAGE_MESSAGE_EFFORT} ${USAGE_MESSAGE_ID} ${USAGE_MESSAGE_RESUME} ${USAGE_MESSAGE_WORKTREE} ${USAGE_MESSAGE_REMOTE_CONTROL} ${USAGE_MESSAGE_SKIP_PERMISSIONS} ${USAGE_MESSAGE_PROMPT} ${USAGE_MESSAGE_VERSION}"
 
 
 ########################################################################################################################################################################################################
@@ -157,6 +162,12 @@ function require_value {
     (( $# >= 2 )) || usage 1 "Missing value for ${1}"
 }
 
+# -v, -V, --version and --claude-version report Claude Code's version, as `claude -v` does, through wake_the_claude.bash; this script's
+# own version is --script-version (owner ruling, 2026-11-06). Until then -v and --version printed this script's version.
+function claude_code_version {
+    exec "${WAKE_THE_CLAUDE_SCRIPT}" "${CLAUDE_VERSION_FLAG}"
+}
+
 
 ########################################################################################################################################################################################################
 # Parse Command Line Input Parameters if provided
@@ -164,7 +175,9 @@ function require_value {
 # Display Usage Message and Exit if --help, -h, or -? is provided
 if [[ "${1}" == "--help" || "${1}" == "-h" || "${1}" == "-?" ]]; then
     usage 0
-elif [[ "${1}" == "--version" || "${1}" == "-v" ]]; then
+elif [[ "${1}" == "--version" || "${1}" == "--claude-version" || "${1}" == "-v" || "${1}" == "-V" ]]; then
+    claude_code_version
+elif [[ "${1}" == "--script-version" ]]; then
     echo "${SCRIPT_VERSION}"
     exit 0
 fi
@@ -173,7 +186,8 @@ fi
 while [[ "${1}" != "" ]]; do
     case "${1}" in
         "--help" | "-h" | "-?") usage 0 ;;
-        "--version" | "-v") echo "${SCRIPT_VERSION}" && exit 0 ;;
+        "--version" | "--claude-version" | "-v" | "-V") claude_code_version ;;
+        "--script-version") echo "${SCRIPT_VERSION}" && exit 0 ;;
         "--model-alias" | "--model" | "-m") require_value "${@}" && CLAUDE_MODEL="${2}" && shift 2 ;;
         "--effort-level" | "--effort" | "-e") require_value "${@}" && CLAUDE_EFFORT="${2}" && shift 2 ;;
         "--session-id" | "--session" | "--id" | "-s" | "-i") require_value "${@}" && CLAUDE_ID="${2}" && shift 2 ;;
@@ -191,6 +205,9 @@ while [[ "${1}" != "" ]]; do
         "--no-remote-control") CLAUDE_REMOTE_CONTROL="${FALSE}" && shift ;;
         "--dangerously-skip-permissions" | "--skip-permissions" | "-sp") CLAUDE_SKIP_PERMISSIONS="${TRUE}" && shift ;;
         "--initial-prompt" | "--prompt" | "-p") require_value "${@}" && CLAUDE_PROMPT="${2}" && shift 2 ;;
+        # A prompt file, forwarded to wake_the_claude.bash, which reads it: --file names the file, --path the file or its directory
+        "--file-name" | "--file" | "-f") require_value "${@}" && CLAUDE_PROMPT_FILE="${2}" && shift 2 ;;
+        "--file-path" | "--path" | "-l") require_value "${@}" && CLAUDE_PROMPT_PATH="${2}" && shift 2 ;;
         *) usage 1 "Unknown argument: ${1}";;
     esac
 done
@@ -205,7 +222,18 @@ CLAUDE_REMOTE_CONTROL_PARAM="${CLAUDE_REMOTE_CONTROL:-${DEFAULT_REMOTE_CONTROL}}
 [[ "${DEBUG}" == "${TRUE}" ]] && echo "CLAUDE_REMOTE_CONTROL_PARAM: ${CLAUDE_REMOTE_CONTROL_PARAM}" || true
 CLAUDE_WORKTREE_PARAM="${CLAUDE_WORKTREE:-${DEFAULT_WORKTREE}}"
 [[ "${DEBUG}" == "${TRUE}" ]] && echo "CLAUDE_WORKTREE_PARAM: ${CLAUDE_WORKTREE_PARAM}" || true
-CLAUDE_PROMPT_PARAM="${CLAUDE_PROMPT:-${DEFAULT_PROMPT}}"
+CLAUDE_PROMPT_FILE_PARAM="${CLAUDE_PROMPT_FILE:-}"
+[[ "${DEBUG}" == "${TRUE}" ]] && echo "CLAUDE_PROMPT_FILE_PARAM: ${CLAUDE_PROMPT_FILE_PARAM}" || true
+CLAUDE_PROMPT_PATH_PARAM="${CLAUDE_PROMPT_PATH:-}"
+[[ "${DEBUG}" == "${TRUE}" ]] && echo "CLAUDE_PROMPT_PATH_PARAM: ${CLAUDE_PROMPT_PATH_PARAM}" || true
+# A prompt file replaces the default prompt (owner ruling, 2026-11-06). wake_the_claude.bash prefers --prompt to a prompt file, so the
+# default prompt sent alongside the file would silently discard it -- and so would an explicit prompt, which is refused instead.
+if [[ ( "${CLAUDE_PROMPT_FILE_PARAM}" != "" ) || ( "${CLAUDE_PROMPT_PATH_PARAM}" != "" ) ]]; then
+    [[ ( "${CLAUDE_PROMPT:-}" == "" ) || ( "${CLAUDE_PROMPT:-}" == "${FALSE}" ) ]] || usage 1 "A prompt and a prompt file are exclusive: give --prompt, or --file / --path, not both"
+    CLAUDE_PROMPT_PARAM=""
+else
+    CLAUDE_PROMPT_PARAM="${CLAUDE_PROMPT:-${DEFAULT_PROMPT}}"
+fi
 [[ "${DEBUG}" == "${TRUE}" ]] && echo "CLAUDE_PROMPT_PARAM: ${CLAUDE_PROMPT_PARAM}" || true
 CLAUDE_EFFORT_PARAM="${CLAUDE_EFFORT:-${DEFAULT_EFFORT}}"
 [[ "${DEBUG}" == "${TRUE}" ]] && echo "CLAUDE_EFFORT_PARAM: ${CLAUDE_EFFORT_PARAM}" || true
@@ -235,6 +263,8 @@ CLAUDE_ARGS=()
 [[ "${CLAUDE_RESUME_PARAM}" == "${TRUE}" ]] && CLAUDE_ARGS+=("${CLAUDE_RESUME_FLAG}" "${TRUE}")                                                        # Opt in to --resume when requested (wake_the_claude.bash needs a session id or a boolean after --resume)
 [[ "${DEBUG}" == "${TRUE}" || "${CLAUDE_SKIP_PERMISSIONS_PARAM}" == "${TRUE}" ]] && CLAUDE_ARGS+=("${CLAUDE_SKIP_PERMISSIONS_FLAG}")                   # Opt in to --dangerously-skip-permissions only when explicitly requested or in debug mode
 [[ "${CLAUDE_PROMPT_PARAM}" != "" && "${CLAUDE_PROMPT_PARAM}" != "${FALSE}" ]] && CLAUDE_ARGS+=("${CLAUDE_PROMPT_FLAG}" "${CLAUDE_PROMPT_PARAM}")      # Add the initial prompt if provided
+[[ "${CLAUDE_PROMPT_FILE_PARAM}" != "" ]] && CLAUDE_ARGS+=("${CLAUDE_PROMPT_FILE_FLAG}" "${CLAUDE_PROMPT_FILE_PARAM}")                                 # Add the prompt file, which wake_the_claude.bash reads
+[[ "${CLAUDE_PROMPT_PATH_PARAM}" != "" ]] && CLAUDE_ARGS+=("${CLAUDE_PROMPT_PATH_FLAG}" "${CLAUDE_PROMPT_PATH_PARAM}")                                 # Add the prompt file's path: the file itself, or the directory holding --file
 
 
 ########################################################################################################################################################################################################

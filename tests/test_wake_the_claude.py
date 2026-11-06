@@ -704,6 +704,9 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertLess(session_id_index + 1, len(last_invocation_args))
             self.assertRegex(last_invocation_args[session_id_index + 1], UUID_REGEX)
             self.assertIn("--worktree", last_invocation_args)
+            # Bare, as claudey sends it (owner ruling, 2026-11-06): the next argument is an option, never a value
+            self.assertIn("--remote-control", last_invocation_args)
+            self.assertTrue(last_invocation_args[last_invocation_args.index("--remote-control") + 1].startswith("-"))
             self.assertNotIn("--dangerously-skip-permissions", last_invocation_args)
             self.assertIn("--effort", last_invocation_args)
             effort_index = last_invocation_args.index("--effort")
@@ -1679,14 +1682,15 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertEqual(invocations, [])
 
     def test_version_flags_report_claude_codes_version_only(self) -> None:
-        """``--version``, ``-V`` and ``--claude-version`` report Claude Code's version, never this script's (owner ruling, 2026-11-04).
+        """``-v``, ``--version``, ``-V`` and ``--claude-version`` report Claude Code's version, never this script's.
 
-        ``--version`` once sat in this script's version pattern as well, and ``-V`` / ``--claude-version`` were checked against
-        ``--version`` alone, so both exited 1.
+        Owner rulings: ``--version`` on 2026-11-04, and ``-v``, as ``claude -v`` does, on 2026-11-06 -- until then ``-v`` printed this
+        script's version. ``--version`` once sat in this script's version pattern as well, and ``-V`` / ``--claude-version`` were
+        checked against ``--version`` alone, so both exited 1.
         """
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
-            for flag in ("--version", "-V", "--claude-version"):
+            for flag in ("-v", "--version", "-V", "--claude-version"):
                 with self.subTest(flag=flag):
                     result = self._run_script([flag], cwd=temp_dir, env=env)
                     self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
@@ -1714,23 +1718,26 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         self.assertEqual(self._flags_in_two_patterns(SCRIPT_PATH.read_text(encoding="utf-8")), {})
 
     def test_the_pattern_overlap_check_reports_the_old_version_overlap(self) -> None:
-        """Positive control: restoring ``--version`` to this script's version pattern is reported."""
+        """Positive control: restoring ``--version`` or ``-v`` to this script's version pattern is reported."""
         script_text = SCRIPT_PATH.read_text(encoding="utf-8")
-        current = 'SCRIPT_VERSION_FLAGS="-v | --script-version"'
+        current = 'SCRIPT_VERSION_FLAGS="--script-version"'
         self.assertIn(current, script_text)
-        overlap = self._flags_in_two_patterns(script_text.replace(current, 'SCRIPT_VERSION_FLAGS="-v | --version"'))
-        self.assertEqual(overlap, {"--version": ["MODEL_VERSION_FLAGS", "SCRIPT_VERSION_FLAGS"]})
+        for restored, flag in (("--script-version | --version", "--version"), ("-v | --script-version", "-v")):
+            with self.subTest(restored=restored):
+                overlap = self._flags_in_two_patterns(script_text.replace(current, f'SCRIPT_VERSION_FLAGS="{restored}"'))
+                self.assertEqual(overlap, {flag: ["MODEL_VERSION_FLAGS", "SCRIPT_VERSION_FLAGS"]})
 
     def test_script_version_flag_reports_this_scripts_own_version(self) -> None:
-        """``-v`` / ``--script-version`` report this script's version.
+        """``--script-version`` reports this script's version; ``-v`` did too until it followed ``claude -v`` (2026-11-06).
 
-        ``-v`` read a ``SCRIPT_VERSION`` that only claudey exports, as claudey's version: run directly, it exited 1.
+        The script-version flag once read a ``SCRIPT_VERSION`` that only claudey exports, as claudey's version: run directly, it
+        exited 1.
         """
         header = re.search(r"^# Version: (\S+)$", SCRIPT_PATH.read_text(encoding="utf-8"), re.MULTILINE)
         self.assertIsNotNone(header, msg="wake_the_claude.bash's header must state its version")
         assert header is not None
         inherited_version = "9.9.9-inherited-from-claudey"
-        for flag, inherited in ((flag, inherited) for flag in ("-v", "--script-version") for inherited in (False, True)):
+        for flag, inherited in ((flag, inherited) for flag in ("--script-version",) for inherited in (False, True)):
             with self.subTest(flag=flag, inherited_script_version=inherited):
                 with tempfile.TemporaryDirectory() as temp_dir:
                     invocations_log, env = self._install_fake_claude(temp_dir)
@@ -1838,8 +1845,8 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
             self.assertTrue(args, "Expected wrapper to invoke wake_the_claude.bash")
             self.assertNotIn("--dangerously-skip-permissions", args)
             self.assertEqual(
-                args[:6],
-                ["--id", "--worktree", "--effort", "high", "--prompt", "Hello World, Claude!"],
+                args[:7],
+                ["--id", "--worktree", "--remote-control", "--effort", "high", "--prompt", "Hello World, Claude!"],
             )
 
     def test_default_launcher_includes_skip_permissions_only_when_opted_in(self) -> None:

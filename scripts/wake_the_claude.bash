@@ -2,7 +2,7 @@
 ########################################################################################################################################################################
 # Author: Paul Calnon
 # Date: 2026-03-12
-# Version: 1.0.0
+# Version: 1.1.0
 # Status: Development
 # License: MIT
 # Copyright: 2026 Paul Calnon
@@ -118,9 +118,9 @@ if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
 fi
 
 SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
-# This script's own version, as its header states, for -v. Assigned unconditionally: claude_interactive.bash exports
+# This script's own version, as its header states, for --script-version. Assigned unconditionally: claude_interactive.bash exports
 # SCRIPT_VERSION as its own version, which this script would otherwise inherit and report as its own.
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.1.0"
 # set -x
 # PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): ${PS4}: "
 # PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): "
@@ -351,10 +351,11 @@ FILE_FLAGS="-f | --file | --file-name"
 PATH_FLAGS="-l | --path | --file-path"
 PROMPT_FLAGS="-p | --prompt | --prompt-string"
 WORKTREE_FLAGS="-w | ${CLAUDE_WORKTREE_FLAGS} | --work-tree | --working-tree"
-MODEL_VERSION_FLAGS="-V | ${CLAUDE_VERSION_FLAGS} | --claude-version"
+MODEL_VERSION_FLAGS="-v | -V | ${CLAUDE_VERSION_FLAGS} | --claude-version"
 # --version is Claude Code's own version flag, so it asks for Claude Code's version alone; this script's version takes a flag of its
 # own (owner ruling, 2026-11-04). The two patterns once shared --version, and the model-version pattern, matched first, won.
-SCRIPT_VERSION_FLAGS="-v | --script-version"
+# -v follows --version, as `claude -v` does (owner ruling, 2026-11-06); until then it printed this script's version.
+SCRIPT_VERSION_FLAGS="--script-version"
 EFFORT_FLAGS="-e | ${CLAUDE_EFFORT_FLAGS} | --effort-type | --effort-level"
 HEADLESS_FLAGS="-a | ${CLAUDE_HEADLESS_FLAGS} | --agent | --silent | --headless"
 REMOTE_CONTROL_FLAGS="-c | --remote | --control | ${CLAUDE_REMOTE_CONTROL_FLAGS}"
