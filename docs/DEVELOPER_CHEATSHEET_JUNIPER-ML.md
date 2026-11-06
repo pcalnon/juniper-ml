@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.66
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -816,6 +816,8 @@ Tip: a non-ASCII `X-API-Key` is a **401** on HTTP and close **4001** on a WebSoc
 
 Tip: juniper-service-core invariants — `RequestBodyLimitMiddleware` always stream-caps POST/PUT/PATCH (`Content-Length` is a hint only); auth runs before rate limiting and 429s must pass `exc.headers` through; control-WS reject logs stay single-line via `_sanitize_for_log`; `ws_control_rate_limit_per_sec=0` yields `retry_after=3600` instead of dividing by zero; `/ws/workers` closes **4001** on bad auth and **4008** on a bad registration shape. See [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core).
 
+Tip: `juniper_config_tools.env_with_legacy_alias` treats `""` as set, hides its `DeprecationWarning` outside `__main__`, and must not be chained with `or`. PyPI `0.1.1` includes `py.typed`, so a fresh install is typed. The `0.1.0` wheel does not, and a pin to it still reads as `Any`. See [REFERENCE — juniper-config-tools](REFERENCE.md#juniper-config-tools).
+
 Tip: REST client `base_url` on GitHub-main data/cascor/recurrence clients is normalised (case-insensitive scheme, `hostname` required, trailing `/v1` stripped). `HTTPS://host` on an older wheel silently becomes `http://HTTPS://host`. Cascor WS streams stay rstrip-only. Host cascor is `:8201`, constructor default is `:8200`. See [REFERENCE — HTTP Client Base-URL](REFERENCE.md#http-client-base-url-contract).
 
 Tip: `predict_merge --pr` **hard-fails** (exit `2`) when `gh` exits nonzero or returns non-JSON, while `--batch` soft-`ERROR`s that row and keeps going. A deleted `.py` stays in `true_delta` for the symbol screen but is filtered out of the pre-commit battery, so a pure-deletion PR can be gate-clean and still `DAMAGED-FIX-FIRST`.
@@ -1131,6 +1133,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Ecosystem Guide](../AGENTS.md) -- project map, dependency graph, conventions
 - [Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage) -- three scanners; the candidate count grows after a cut
 - [juniper-ml REFERENCE](REFERENCE.md) -- package metadata, extras, version history
+- [juniper-config-tools](REFERENCE.md#juniper-config-tools) -- `""` is set; `DeprecationWarning` is silent outside `__main__`; PyPI `0.1.1` ships `py.typed`; `0.1.0` does not
 - [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- seeded probes, characterisation vs least-covered, scoring pitfalls
 - [Perf-Lane Split Comparator](REFERENCE.md#perf-lane-split-comparator) -- identity first, work exact / speed reported, exit 0/1/2, waiver cannot mask REFUSED
 - [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) -- 128 MiB, 422 until opt-in, experiment-stack `IMPORT_DIR` pitfall
@@ -1183,6 +1186,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.66
 **Maintainer:** Paul Calnon

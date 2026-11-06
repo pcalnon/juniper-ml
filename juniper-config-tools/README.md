@@ -55,14 +55,59 @@ Behaviour:
 | env state                               | returns                                | warning?    |
 |-----------------------------------------|----------------------------------------|-------------|
 | `JUNIPER_CASCOR_WORKER_SERVER_URL` set  | its value                              | none        |
+| canonical set to `""`                   | `""` (legacy is not read)              | none        |
 | only `CASCOR_SERVER_URL` set            | its value                              | one DepW    |
+| only the legacy name set to `""`        | `""`                                   | one DepW    |
 | both set                                | `JUNIPER_CASCOR_WORKER_SERVER_URL` val | none        |
 | neither set                             | `""` (the `default`)                   | none        |
 
-The `DeprecationWarning` text names both env-var names so operators can
-mechanically fix configuration. The warning is emitted with
-`stacklevel=2` so the warning's reported location is the caller's,
-not this package's internals.
+`""` is a set value. `os.environ.get` returns it, and the helper treats
+any non-`None` result as present, so an empty canonical name does not
+fall through to the legacy name or to `default`.
+
+The `DeprecationWarning` text is
+`"{legacy_name} is deprecated; use {new_name} instead."`.
+It is emitted with `stacklevel=2`, so the reported location is the
+caller's, not this package's internals.
+
+## Pitfalls
+
+- **The warning is hidden in library code.** Python's default filters
+  show `DeprecationWarning` only when it is attributed to `__main__`,
+  and ignore it everywhere else. `stacklevel=2` attributes this warning
+  to the caller, so a service or library call returns the legacy value
+  and prints nothing. A script (`__main__`) does print it. The default
+  action is also once per call site. The tests force
+  `warnings.simplefilter("always")`. To see the warning from a service,
+  run with `python -W default` or set `PYTHONWARNINGS=default`.
+- **Both names set is silent.** The canonical value wins, and the
+  legacy name is ignored with no warning.
+- **One legacy name.** A multi-hop migration is two calls. Do not join
+  them with `or` when `""` is a real value: `""` is falsy, so an
+  explicit empty canonical name still runs the next call, which can
+  return a further legacy value and warn about the wrong pair.
+  Chain on `is not None` instead. There is no variadic form.
+- **No environment mapping.** The helper reads `os.environ` only.
+
+The operator write-up, including the published-wheel typing gap, is in
+[`docs/REFERENCE.md`](../docs/REFERENCE.md#juniper-config-tools).
+
+## Typing
+
+The source is annotated, and the tree ships a PEP 561 marker:
+`juniper_config_tools/py.typed` is declared in
+`[tool.setuptools.package-data]`, and the classifiers include
+`Typing :: Typed`. The marker file has to be package data. There is
+no `MANIFEST.in`, so an undeclared `py.typed` never reaches a wheel
+(`tests/test_subpackage_py_typed.py`).
+
+The wheel published as `juniper-config-tools==0.1.1` contains
+`py.typed` (PyPI file list, checked 2026-11-04) and its classifiers
+include `Typing :: Typed`. The `0.1.0` wheel, still on the index, does
+not contain `py.typed`. A type checker skips that older package
+(`import-untyped`) and `env_with_legacy_alias` is `Any`. A fresh
+`pip install` resolves `0.1.1`. An editable install includes the marker
+because the file is already in the package directory.
 
 ## API
 
@@ -90,7 +135,7 @@ right shape there. This package serves the constrained-runtime case.
 ## Versioning
 
 `juniper-config-tools` follows [Semantic Versioning](https://semver.org/).
-Public API surface in 0.1.0 is a single function: `env_with_legacy_alias`.
+The 0.1 public API is a single function: `env_with_legacy_alias`.
 Consumers pin with `juniper-config-tools>=0.1.0,<0.2.0` to opt out of
 future API growth that may add new functions without breaking changes.
 

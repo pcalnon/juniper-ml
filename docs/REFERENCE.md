@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.66
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -8313,6 +8313,85 @@ Publish and CI constraints:
 2. `publish-observability.yml` runs on `release: published` when the Release tag starts with `juniper-observability-v` (or on `workflow_dispatch`), builds from the subdirectory, publishes to TestPyPI, verifies installation, then publishes the same artifact to PyPI. It deliberately does **not** subscribe to `push: tags` — see [Independent Sibling Package Publish Pipelines](#independent-sibling-package-publish-pipelines).
 3. The publish workflow uses OIDC trusted publishing, GitHub-hosted `ubuntu-latest` runners, and SHA-pinned actions. If the runner type or pinned artifact actions change, verify compatibility before cutting a Release.
 
+### juniper-config-tools
+
+`juniper-config-tools` lives under `juniper-config-tools/` and publishes independently (`juniper-config-tools-v*` → `.github/workflows/publish-config-tools.yml`; CI: `ci-config-tools.yml`, Python 3.11–3.14, `--cov-fail-under=85`). It is the stdlib-only env-var alias helper (`os` and `warnings` only; no runtime dependencies). Since `juniper-ml` 0.5.0 it is aggregated under `[tools]` and `[all]` at `juniper-config-tools>=0.1.0,<0.2.0`. Package Python is `>=3.10`.
+
+| Field | Value |
+|-------|-------|
+| **PyPI name** | `juniper-config-tools` |
+| **Published version** | `0.1.1` (PyPI JSON and the 0.1.1 wheel file list, checked 2026-11-04). `0.1.0` remains on the index and has no `py.typed` |
+| **Tree version** | `0.1.1` on `main`, in `pyproject.toml` and `juniper_config_tools/_version.py` |
+| **Python** | `>=3.10` |
+| **Import** | `juniper_config_tools` |
+| **Public API** | `env_with_legacy_alias`, `__version__` (`__all__`) |
+| **CLI** | `python -m juniper_config_tools --version` only. No arguments exits 0. |
+| **Package docs** | [`../juniper-config-tools/README.md`](../juniper-config-tools/README.md) |
+
+The package exists because `juniper-cascor-worker` cannot depend on `juniper-observability` (that package requires pydantic) without breaking the no-Pydantic-at-runtime invariant (juniper-ml#168). Services that already use pydantic-settings keep their field validators. This helper is the constrained-runtime case, not a replacement for those validators.
+
+#### What `env_with_legacy_alias` returns
+
+```python
+from juniper_config_tools import env_with_legacy_alias
+
+url = env_with_legacy_alias(
+    "JUNIPER_CASCOR_WORKER_SERVER_URL",  # canonical name, always first
+    "CASCOR_SERVER_URL",                  # one legacy alias, or None
+    default="",                           # used only when neither name is set
+)
+```
+
+`env_with_legacy_alias(new_name, legacy_name=None, default=None) -> str | None` reads `os.environ` only. There is no mapping argument. `legacy_name=None` disables the fallback; the helper does not guess another variable name.
+
+| Environment | Returns | Warning |
+|-------------|---------|---------|
+| `new_name` is set, including `""` | that value. The legacy name is not read. | no |
+| only `legacy_name` is set, including `""` | that value | one `DeprecationWarning` |
+| both set | `new_name`'s value. The legacy value is ignored. | no |
+| neither set | `default` (`None` when the argument is omitted) | no |
+
+The warning text is `f"{legacy_name} is deprecated; use {new_name} instead."`, emitted with `stacklevel=2`, so the reported file is the caller, not `_env_aliases.py`.
+
+#### Operator pitfalls
+
+**An empty string is set.** `os.environ.get` returns `""`, and `""` is not `None`, so the helper returns `""`. It does not fall through to the legacy name, and it does not return `default`. An empty canonical value also suppresses the warning even when the legacy name is set. An empty legacy value still warns and returns `""`. Pins: `test_canonical_empty_string_is_returned` and `test_legacy_empty_string_is_returned` in `juniper-config-tools/tests/test_env_with_legacy_alias.py`.
+
+**The deprecation warning is silent in library code.** On Python 3.12 the default filters are `default::DeprecationWarning:__main__` and then `ignore::DeprecationWarning`. `stacklevel=2` attributes the warning to the caller. A call from any module other than `__main__` is ignored: the legacy value is still returned, and nothing is printed. A call from a script (`__main__`) is shown.
+
+The default action is also once per location, so a loop at one call site emits at most one warning even when the filter is opened. The package tests call `warnings.simplefilter("always")`, which is why they always see the warning. To see it from a service, run `python -W default` or set `PYTHONWARNINGS=default`.
+
+**Both names set is silent.** The canonical value wins. There is no warning that the legacy name is still present in the environment.
+
+**Do not chain hops with `or` when `""` is a real value.** The implementation allows one legacy name. The module docstring's multi-hop recipe is `env_with_legacy_alias("NEW", "MID") or env_with_legacy_alias("MID", "OLD")`. There is no variadic form.
+
+`""` is falsy, so an explicit empty `NEW` still evaluates the second call. That call treats `MID` as the canonical name. If `MID` is unset and `OLD` is set, the expression returns `OLD` and warns `OLD is deprecated; use MID instead`, and it never mentions `NEW`. Chain on `is not None`:
+
+```python
+value = env_with_legacy_alias("NEW", "MID")
+if value is None:
+    value = env_with_legacy_alias("MID", "OLD")
+```
+
+#### PyPI 0.1.1 ships `py.typed`; 0.1.0 does not
+
+PEP 561 needs a `py.typed` marker inside the installed distribution. The git tree has had all three of these since juniper-ml#1237:
+
+- the empty marker file `juniper_config_tools/py.typed`
+- `[tool.setuptools.package-data]` `juniper_config_tools = ["py.typed"]`
+- the classifier `Typing :: Typed`
+
+The file alone does not reach a wheel. These packages have no `MANIFEST.in`, and setuptools omits package data that is not declared. `tests/test_subpackage_py_typed.py` pins the file, the package-data entry, and the classifier for all six in-repo sub-packages. It also fails if a `package-data` table swallows `packages.find` keys (`include`, `exclude`, `where`, `namespaces`), which is how a mid-table header once packaged `juniper-model-core`'s tests.
+
+The wheel on PyPI at `juniper-config-tools==0.1.0` (file list checked 2026-11-04) contains `__init__.py`, `__main__.py`, `_env_aliases.py`, `_version.py`, and dist-info. It does not contain `py.typed`. That release's classifiers do not include `Typing :: Typed`. A type checker then skips the module (`import-untyped`) and `env_with_legacy_alias` is `Any`, even though `_env_aliases.py` annotates the function.
+
+`juniper-config-tools==0.1.1` (GitHub Release `juniper-config-tools-v0.1.1`, 2026-11-04) adds `juniper_config_tools/py.typed` and the classifier `Typing :: Typed`. The helper's behavior is unchanged. `pip install juniper-ml[tools]` accepts `>=0.1.0,<0.2.0` and resolves `0.1.1`, the newest match, so a fresh install is typed. A pin to `==0.1.0` still installs the untyped wheel. An editable install of this repo already has the marker on disk.
+
+```bash
+python3 -m pytest juniper-config-tools/tests
+python3 -m unittest -v tests/test_subpackage_py_typed.py
+```
+
 ### juniper-service-core
 
 `juniper-service-core` lives under `juniper-service-core/` and publishes independently (`juniper-service-core-v*` → `.github/workflows/publish-service-core.yml`; CI: `ci-service-core.yml`). Since `juniper-ml` 0.5.0, it is aggregated under the `[tools]` and `[all]` extras. Model services inject lifecycle / command executors; this package owns the shared FastAPI + WebSocket + worker-pool plumbing.
@@ -8448,6 +8527,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.66  | 2026-11-04 | juniper-config-tools: `""` is set, `DeprecationWarning` is silent outside `__main__`, do not chain hops with `or`. PyPI `0.1.1` ships `py.typed`; the still-published `0.1.0` wheel does not (juniper-ml#1237 / #2408) |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -8964,6 +9044,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.66
 **Maintainer:** Paul Calnon
