@@ -174,7 +174,7 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 | `./claudey --prompt "..."`                                  | Custom prompt, default flags                                                                                                    |
 | `./claudey -w <name>`                                       | Names the worktree; a bare `-w` lets Claude Code name it                                                                        |
 | `./claudey --no-worktree --no-remote-control`               | Turns off the worktree and remote control, which are on by default                                                             |
-| `./claudey --file <prompt file>`                            | Prompt from a file (`--file`, or `--path` to the file or its directory); the default prompt is not sent                        |
+| `./claudey --file <prompt file>`                            | Prompt from a file: `--file <file>`, `--path <file>`, or `--path <dir> --file <name>`; the default prompt is not sent           |
 | `bash scripts/default_interactive_session_claude_code.bash` | Older default session (`--id --worktree --remote-control --effort high`); `CLAUDE_SKIP_PERMISSIONS=1` adds `--dangerously-skip-permissions` |
 | `bash scripts/wake_the_claude.bash ...`                     | Direct launcher with full flag control                                                                                          |
 
@@ -200,7 +200,7 @@ bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."        
 
 **Safety:** `--id` refuses symlink targets. Resume filenames must be `.txt` basenames (no `/`). File contents must be a valid UUID. Invalid/missing files are preserved.
 
-`claude` is invoked with the quoted array `"${CLAUDE_CODE_PARAMS[@]}"`, so a multi-word prompt arrives as one argument; `tests/test_claude_interactive.py` pins it. Run the regression tests after changes.
+`claude` is invoked with the quoted array `"${CLAUDE_CODE_PARAMS[@]}"` in both the interactive and the `nohup` call, so a multi-word prompt arrives as one argument; the tests pin the interactive call's. Run the regression tests after changes.
 
 ### Resume And Fork Alias Forwarding
 

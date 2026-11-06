@@ -1378,14 +1378,17 @@ function parse_model_version_flags() {
     elif matches_pattern "${current_flag}" "${MODEL_VERSION_FLAGS}"; then
         debug_log "Received Model Version Flag: \"${current_flag}\""
         shift
+        # The errors go to stderr as well: with debug output off (WTC_DEBUG=1) they would leave a bare exit 1
         if [[ ( "${version_bin}" == "" ) || ( ! -x "${version_bin}" ) ]]; then
             debug_log "Error: claude command not found in PATH"
+            echo "Error: claude command not found in PATH" >&2
             result_value="${FALSE}"
         elif [[ -x "${version_bin}" ]]; then
             current_version="$("${version_bin}" ${CLAUDE_VERSION_FLAGS})"
             debug_log "Current Version: \"${current_version}\""
             if [[ "${current_version}" == "" ]]; then
                 debug_log "Error: Unable to retrieve Model Version. Exiting..."
+                echo "Error: \"${version_bin} ${CLAUDE_VERSION_FLAGS}\" printed no version" >&2
                 result_value="${FALSE}"
             else
                 debug_log "Model Version: \"${version_bin} ${CLAUDE_VERSION_FLAGS}\": \"${current_version}\""
@@ -1752,6 +1755,7 @@ done
 # with no file name -- must not launch claude code without the prompt it was asked to send.
 if [[ ( "${VALID_PROMPT_PARAM}" != "${TRUE}" ) && ( ( "${FILE_NAME}" != "" ) || ( "${PATH_NAME}" != "" ) ) && ( "${PROMPT_FILE}" == "" ) ]]; then
     debug_log "Error: received an invalid Prompt File. Exiting..."
+    echo "Error: no prompt file found for --file \"${FILE_NAME}\" and --path \"${PATH_NAME}\"" >&2
     usage "${FALSE}"
 fi
 

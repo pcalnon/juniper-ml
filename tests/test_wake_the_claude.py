@@ -1699,6 +1699,24 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
+    def test_version_flags_without_claude_say_why_with_debug_output_off(self) -> None:
+        """With no ``claude`` on PATH, a version flag exits 1 with an error on stderr, not only in the debug log.
+
+        ``claudey -v`` asks this script for Claude Code's version, and with ``WTC_DEBUG=1`` the failure was a bare exit 1.
+        """
+        system_path = "/usr/bin:/bin"
+        if shutil.which("claude", path=system_path):
+            self.skipTest("a claude binary is on the system PATH")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, env = self._install_fake_claude(temp_dir)
+            env["PATH"] = system_path
+            env["WTC_DEBUG"] = "1"
+            for flag in ("-v", "--version"):
+                with self.subTest(flag=flag):
+                    result = self._run_script([flag], cwd=temp_dir, env=env)
+                    self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                    self.assertIn("Error: claude command not found in PATH", result.stderr)
+
     @staticmethod
     def _flags_in_two_patterns(script_text: str) -> dict[str, list[str]]:
         """Map each input flag that two VALID_PATTERNS entries share to their names, resolving ``${CLAUDE_*_FLAGS}`` with bash."""
@@ -1768,6 +1786,18 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--model", "0", "--prompt", "hello"])
         self.assertEqual(args[2], "--model")
         self.assertIn(args[3], {"fable", "opus", "sonnet", "haiku"})
+
+    def test_prompt_file_that_never_resolves_says_why_with_debug_output_off(self) -> None:
+        """The unresolved prompt file is named on stderr: with ``WTC_DEBUG=1`` the launch once ended in the usage text alone."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["WTC_DEBUG"] = "1"
+            result = self._run_script(["--resume", VALID_UUID, "--file", "missing.md"], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn('Error: no prompt file found for --file "missing.md"', result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
 
     def test_prompt_file_that_never_resolves_fails_without_invoking_claude(self) -> None:
         """A ``--file`` whose directory never arrives must not launch claude without the requested prompt."""
