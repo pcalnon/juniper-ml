@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.42
+**Version:** 0.3.67
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -123,6 +123,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 - [Documentation Overview](DOCUMENTATION_OVERVIEW.md) -- navigation index
 - [Reference](REFERENCE.md) -- extras, compatibility, and version reference
+- [Agent-guard brace cap](REFERENCE.md#a-brace-list-of-64-alternatives-still-names-ssh) -- a 64-alternative brace list still denies an assembled `.ssh`; alternative 65 is allowed; `{1..64}` includes both ends and `{1..65}` drops `65` inside `_brace_range`
 - [Host Orchestration Utilities](REFERENCE.md#host-orchestration-utilities) -- run services on-host with `util/juniper_plant_all.bash` and `util/juniper_chop_all.bash`
 - [Conda Env Torch Shadow Diagnostic](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- classify `import torch` / `torch._C` (exit **2** = P-5 free-threaded; exit **4** = May-7; does not rebuild)
 - [Environment Floor Drift — Malformed Input](REFERENCE.md#malformed-operator-input) -- `env_floor_drift_check.py` exit 2 is a resolution failure, including a truthy non-mapping in `ecosystem.yaml`; a bad extra does not drop `dependencies` floors
@@ -203,6 +204,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.3.41
+**Last Updated:** 2026-11-06
+**Version:** 0.3.67
 **Status:** Active

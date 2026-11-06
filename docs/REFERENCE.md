@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.88
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -80,6 +80,7 @@
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
 - [Ruleset Scope Guard](#ruleset-scope-guard)
 - [Sibling Packages](#sibling-packages)
+- [A Brace List of 64 Alternatives Still Names .ssh](#a-brace-list-of-64-alternatives-still-names-ssh)
 - [Version History](#version-history)
 - [Build and Release](#build-and-release)
 - [Flood-Remediation CI Gates](#flood-remediation-ci-gates)
@@ -8429,6 +8430,45 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 ---
 
+## A Brace List of 64 Alternatives Still Names .ssh
+
+`util/claude_agent_guard.py` expands bash `{a,b}` lists and `{1..3}` ranges before `CRED-PATH-BASH` looks for a `.ssh` or `.gnupg` path component. The cap is `MAX_BRACE_ALTERNATIVES` (64). A credential name assembled in the 64th alternative is denied. A name that would appear only as the 65th alternative is dropped, and that command is allowed. The source word can omit the characters `.ssh`; the deny evidence is the expanded alternative.
+
+### What the expander keeps
+
+`brace_expand` reads the first `{...}` whose `{` is not the `{` of `${...}`. The result starts with the original word, then the expansions, and stops at `limit + 1` entries (65 at the default limit).
+
+| Form | Expansions `brace_expand` keeps |
+|------|---------------------------------|
+| `{n0,...,.ss}h` with 64 alternatives | 64 expansions, ending in `.ssh`. `analyze("echo " + word)` records `CRED-PATH-BASH` |
+| The same list with 65 alternatives | The first 64 expansions (`n0h` through `n63h`). `.ssh` is absent and `analyze` records no hit |
+| `{.ss}h` (no comma and no `..`) | No expansion. The word stays `{.ss}h` and the command is allowed |
+| `{1..64}` | `1` through `64`, both ends |
+| `{1..65}` | `1` through `64`. `65` is absent, including when `limit` is 128 |
+| `{64..1}` | `64` down through `1` |
+| `{65..1}` | `65` down through `2`. The far end `1` is absent |
+| `{a..z}` | `a` through `z` (26 letters; a one-letter span stays under the cap) |
+| `{1..a}` | The single text `1..a` (a mixed range is not enumerated) |
+| `${HOME}/.ssh` | No brace expansion. `${HOME}` stays in the word |
+
+`_brace_range` slices the integer or letter `range` with `[:MAX_BRACE_ALTERNATIVES]` before `brace_expand` consults its own `limit`. The slice is lazy, so `{1..1000000}` does not allocate a million strings inside the hook. A higher `limit` leaves that inner slice at 64.
+
+### What the hook does with it
+
+`BashAnalyzer._raw` matches `_CRED_COMPONENT_RE` against the command text as written, so a word that already contains `.ssh` or `.gnupg` is denied on that scan. `BashAnalyzer._path_word` then runs `brace_expand` on each lexed word and applies the same component check to every alternative.
+
+That second scan is what denies a 64-alternative `echo {n0,...,.ss}h` whose source never contains `.ssh`. The 65-alternative command produces an empty hit list. A one-slot `{.ss}h` stays literal, because a brace group with no comma and no range is not a list.
+
+`component_matches` and the recursive-tool check call the same `brace_expand`, so a glob or a recursive operand shares this cap.
+
+### Constraint
+
+Leave the cap at 64. The range slice is what stops a wide `{1..N}` from materializing every integer before the outer cap applies. A `.ssh` or `.gnupg` component that exists only as alternative 65 is allowed. A component written in the source is denied by the raw scan, cap or no cap.
+
+The bound is the constant `MAX_BRACE_ALTERNATIVES`, the return slice in `brace_expand`, and the range slice in `_brace_range`. `tests/test_claude_agent_guard.py` exercises the guard's rule table, including literal `CRED-PATH-BASH` paths. Inventory: [Utility Script Reference](#utility-script-reference).
+
+---
+
 ## Version History
 
 > **Four version numbers below are claimed twice** — `0.6.19`, `0.6.27`, `0.6.40` and
@@ -8448,6 +8488,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.88  | 2026-11-06 | Agent-guard brace cap: a comma-list of 64 alternatives still denies a `.ssh` assembled in the last slot (`CRED-PATH-BASH`); alternative 65 is dropped and that command is allowed. A numeric range of 64 includes both ends; one past drops the far end inside `_brace_range`, even when `brace_expand` is asked for a higher limit. `{.ss}h` (no comma, no range) is left literal. Skipped 0.6.64–0.6.87 (in-flight docs PRs). |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -8964,6 +9005,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-06
+**Version:** 0.6.88
 **Maintainer:** Paul Calnon

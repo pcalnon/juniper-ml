@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.88
+**Date**: 2026-11-06
 **Project**: juniper-ml
 
 ---
@@ -1180,9 +1180,10 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) -- 12-slot dash-renderer starvation (FIXED canopy#507/#509/#511); do not add a new Interval
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session `topodiag` tally; exit 0 is not a paint PASS
 - [SOPS Usage Guide](../notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) -- complete secrets management reference
+- [Agent-guard brace cap](REFERENCE.md#a-brace-list-of-64-alternatives-still-names-ssh) -- 64 brace alternatives still deny an assembled `.ssh`; alternative 65 is allowed; `{1..64}` includes both ends
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-06
+**Version:** 1.0.88
 **Maintainer:** Paul Calnon
