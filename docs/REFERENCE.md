@@ -3158,6 +3158,7 @@ python3 -m unittest -v tests/test_release_train_propose.py
 python3 -m unittest -v tests/test_release_train_workflow_guard.py
 python3 -m unittest -v tests/test_release_train_archive_guard.py
 python3 -m unittest -v tests/test_release_train_ceremony.py
+python3 -m unittest -v tests/test_release_train_exact_caps.py
 python3 -m unittest -v tests/test_prompt_discovery.py
 python3 -m unittest -v tests/test_symbol_overlay.py
 python3 -m unittest -v tests/test_generated_prompt_index.py
