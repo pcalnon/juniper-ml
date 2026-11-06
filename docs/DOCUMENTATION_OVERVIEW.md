@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.55
+**Version:** 0.2.67
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -50,7 +50,7 @@
 | **Audit required-status-check contexts / why `main` is BLOCKED** | [REFERENCE — Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) (read-only; 2026-08-10 class; do not quote the note's §1 counts) | docs/    |
 | **Run a per-run experiment stack**      | [REFERENCE — Experiment Stack](REFERENCE.md#experiment-stack-utilities) (incl. partial-`--up` → `teardown_run`) + [CLI experimentation plan](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) | docs/ + notes/ |
 | **Refuse a stale recurrence env before serve** | [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) (W0.2, juniper-ml#2139: scoped `pip check`, installed pins, `derive_full_split`; CUDA `pip check` noise does not refuse; `/v1/health/ready` alone misses F-E1) | docs/ |
-| **Read a recurrence `save_model` record** | [REFERENCE — Recurrence launch record and service env](REFERENCE.md#recurrence-launch-record-and-service-env) (the scored model saved by `operation_id`, or, for a pre-W1.5 service, the launcher-recorded CLI re-fit under interpreter + model-version parity; a 409 or a mismatch is `degraded`) | docs/ |
+| **Read a recurrence `save_model` record** | [REFERENCE — Recurrence launch record and service env](REFERENCE.md#recurrence-launch-record-and-service-env) (scored model by `operation_id`, or a pre-W1.5 CLI re-fit). A failed snapshot does not re-fit: [A failed snapshot save does not re-fit](REFERENCE.md#a-failed-snapshot-save-does-not-re-fit). | docs/ |
 | **Run a PF scenario suite (PF-1…PF-7)** | [REFERENCE — PF Scenario Suites](REFERENCE.md#pf-scenario-suites) (`--dry-run` first; PF-1 matched 4000/4000 epochs; `JUNIPER_SUITE_GRAFANA_BRIDGE`; PF-4/PF-8 are not driver suites) + [P1 design](../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md) | docs/ + notes/ |
 | **Bless / compare a perf-lane baseline** | [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) (`read_run_metrics` / `make_baseline` / `compare_baseline`; sound since ml#1743, but **never** wire the exact work gate to CI — P1 design §6 closed 2026-09-07; host identity blocks on hosted runners) | docs/ |
 | **Read ratified perf metrics / bless a baseline** | [REFERENCE — Perf-lane metrics and baselines](REFERENCE.md#perf-lane-metrics-and-baselines) (`read_run_metrics.py` / `make_baseline.py`; `step_count` FAIL behind workload fingerprint, not `config_sha256`) | docs/ |
@@ -252,6 +252,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.2.55
+**Last Updated:** 2026-11-04
+**Version:** 0.2.67
 **Maintainer:** Paul Calnon

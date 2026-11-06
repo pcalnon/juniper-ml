@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.75
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -682,6 +682,8 @@ Tip: before `serve`, the recurrence leg of both launchers runs `bash util/recurr
 Full contract: [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight).
 
 Tip: `outputs.save_model: true` saves the recurrence model the run scored: `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, copied to `model.npz` (juniper-ml#2211); a 409 is `outcome: degraded` (exit 1) with no re-fit. Only a service that returns no `operation_id` gets the old re-fit, which re-runs the `juniper-recurrence` CLI the launcher recorded (`ports.json` `recurrence_launch.cli`, W1.9), and only under rerun parity: the same interpreter and `juniper-recurrence-model` version that `serve` ran. A mismatch is `outcome: degraded` (exit 1) and the CLI is not started.
+
+Tip: a snapshot save that gets any status but 201, loses the connection, disagrees on `size_bytes` (a missing field is `None`), or fails the copy does not re-fit either. The run stays `degraded` (exit 1), not exit 3. A bad copy deletes `artifacts/results/model.npz`; an HTTP error leaves an older file where it was. [REFERENCE — A failed snapshot save does not re-fit](REFERENCE.md#a-failed-snapshot-save-does-not-re-fit).
 `recurrence_up` exports `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots` (W1.10); a YAML `service:` key still outranks it and the two log knobs. Full contract: [REFERENCE — Recurrence launch record](REFERENCE.md#recurrence-launch-record-and-service-env).
 
 Tip: `compare_baseline.py` is a **split** gate (exact `step_count`, ungated speed). The #1710 counterexample is
@@ -1061,6 +1063,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Cascor `eval_scalars` all null, or differ from an older run's | `/2` (juniper-ml#2064): they are the final evaluation, and `absent` says why there is none. A `/1` file's `eval_scalars` are the in-loop values; check `schema` before comparing. |
 | Hand-written recurrence crossval blows up (eval r² ~ −2×10^4) while the E-H suite cell is ~ −0.1 | The body omitted the `train:` keys: each fold fits a new linear model at `default_ridge`, which the E-H YAML's own `service:` block pins to 0.0. Send the `train:` block. [REFERENCE — Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters). |
 | Recurrence train exit `4`, `HTTP 409` in `phases.train.error` | Another caller holds the service's `train_lock` (a timed-out driver fit keeps running). juniper-recurrence `main` names the holder in the 409 and in `GET /v1/training/status`. [REFERENCE — One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service). |
+| `save_model` is `degraded` and `model.npz` is missing or was just deleted | Train returned an `operation_id`, so a failed snapshot save does not re-fit (`save_model_rerun` is null, exit 1, not 3). A size mismatch, including a missing `size_bytes`, or a copy `OSError` deletes `artifacts/results/model.npz`. An HTTP error does not. [REFERENCE — A failed snapshot save does not re-fit](REFERENCE.md#a-failed-snapshot-save-does-not-re-fit). |
 | Recurrence phase error quotes a header value | `map_data_error` relays upstream exception text, and the driver copies it into the manifest, `stats.json` and the suite registry. Rotate the key; do not paste those files. [REFERENCE — Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text). |
 | `scrape_confirmed` is null / `target_file_written` is true | Unreachable Prometheus ≠ zero series. Five PF-1 runs wrote a target and Prometheus held nothing. |
 | `python util/experiments/stats_summary.py` does nothing useful | No `__main__`. The driver writes the files; you `jq` them. |
@@ -1183,6 +1186,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.75
 **Maintainer:** Paul Calnon
