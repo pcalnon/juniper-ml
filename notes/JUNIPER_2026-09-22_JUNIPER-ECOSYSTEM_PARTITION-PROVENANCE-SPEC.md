@@ -4,10 +4,10 @@
 **Sub-Project**: juniper-ecosystem (juniper-data → juniper-data-client → juniper-cascor / canopy / recurrence / ml)
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.2.1
+**Version**: 0.2.2
 **Document Type**: SPECIFICATION
-**Last Updated**: 2026-11-04
-**Status**: SPEC v2 — DRAFT, **not ratifiable**. v1 (0.1.0, merged in juniper-ml#2043) was rated **UNSOUND** by consensus review round 1 in its identity, versioning and legality layers. v2 folds all fourteen of that round's findings into §1–§13; §14 records where each one went. **Review round 2 (§15, 2026-09-23) found v2 not ready for ratification**: round 1's blockers are fixed, but ten clusters of MAJOR findings remain, in versioning, identity, the OQ-1 dependency and the release plan. §1–§13 below are v2 as that round reviewed them, left unedited except for one change: v0.2.1 (2026-11-04) renumbers the data-client releases, W5 to 0.7.0 and W11 to 0.7.1, by the owner's ruling of 2026-11-03 (§11.2, §16), and §14 and §15 still quote the numbers as reviewed. v3 folds §15's findings, and a round 3 reviews it before the owner rules on anything.
+**Last Updated**: 2026-11-06
+**Status**: SPEC v2 — DRAFT, **not ratifiable**. v1 (0.1.0, merged in juniper-ml#2043) was rated **UNSOUND** by consensus review round 1 in its identity, versioning and legality layers. v2 folds all fourteen of that round's findings into §1–§13; §14 records where each one went. **Review round 2 (§15, 2026-09-23) found v2 not ready for ratification**: round 1's blockers are fixed, but ten clusters of MAJOR findings remain, in versioning, identity, the OQ-1 dependency and the release plan. §1–§13 below are v2 as that round reviewed them, left unedited except for two changes: v0.2.1 (2026-11-04) renumbers the data-client releases, W5 to 0.7.0 and W11 to 0.7.1, by the owner's ruling of 2026-11-03 (§11.2, §16), and §14 and §15 still quote the numbers as reviewed; v0.2.2 (2026-11-06) records the owner's ruling that the consumer caps widen to `<0.8.0` (§11.2, §16). v3 folds §15's findings, and a round 3 reviews it before the owner rules on anything.
 **History**: Decision 12 was ruled on 2026-09-03. On 2026-09-22 the owner asked for it to be **specified before it is built**. No producer or gate code has moved. §12 lists six questions: OQ-4 is answered by a fix, and the other five belong to the owner. This document recommends an answer to each and decides none of them. §8.3 and §9.4 are written for both answers to OQ-2.
 
 **Tracks**: [juniper-data#423](https://github.com/pcalnon/juniper-data/issues/423)
@@ -527,7 +527,7 @@ Either order is safe for today's consumers, because none of them breaks on an ex
 - **juniper-data-client 0.6.x → 0.7.0 (W5).** A MINOR bump, because it adds public API.
   - **Renumbered in v0.2.1** by the owner's ruling of 2026-11-03 (`JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` §6 A9). v0.2.0 numbered W5 0.6.0 and W11 0.6.1, but P12's W1.13 took 0.6.0 (cut 2026-10-10), and R-DC-PATCH-6, the forward-ported F-S10 fix, takes 0.6.1.
   - Both consumer caps were `<0.6.0` at the pins: canopy (`juniper-canopy/pyproject.toml:192`) and recurrence (`juniper-recurrence/pyproject.toml:54`). P12 widened both to `<0.7.0` for its 0.6.0: on `main` on 2026-11-04, canopy's `juniper-data` extra reads `>=0.5.0,<0.7.0` and recurrence's dependency `>=0.6.0,<0.7.0`.
-  - Both are widened to `<0.8.0` **before** the Release. The owner ruled on 2026-09-05 that a downstream cap never lowers a SemVer bump (juniper-cascor-client#155, juniper-canopy#584).
+  - Both are widened to `<0.8.0` **before** the Release (owner ruling 2026-11-06; until then this width was an inference). The owner ruled on 2026-09-05 that a downstream cap never lowers a SemVer bump (juniper-cascor-client#155, juniper-canopy#584).
   - The release train proposes those ceiling PRs for any pre-1.0 MINOR bump (`util/release_train/propose.py:930`).
   - Floors rise only once the wheel is on PyPI.
 - **juniper-data-client 0.7.0 → 0.7.1 (W11).** A PATCH: filling `FIRST_EMITTING_VERSION` refuses only artifacts whose block was stripped, and a genuine artifact at or above its generator's first emitting version always carries one (W6's fleet test). The `<0.8.0` caps admit it.
@@ -711,6 +711,7 @@ Consensus review round 2 ran on 2026-09-23 against v2 as committed (juniper-ml#2
 | OQ-5 canopy | — | — | — |
 | OQ-6 enforce from the first release | — | — | — |
 | The data-client numbers (not an OQ) | W5 is 0.7.0 and W11 0.7.1; 0.6.0 is P12's W1.13 and 0.6.1 is R-DC-PATCH-6 (§11.2) | 2026-11-03 | `JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` §6 A9 |
+| The consumer cap width (not an OQ) | canopy's and recurrence's data-client caps widen `<0.7.0` → `<0.8.0` before W5's Release (§11.2) | 2026-11-06 | `JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` §6 A9 (its v1.15.12) |
 
 ## 17. References
 
