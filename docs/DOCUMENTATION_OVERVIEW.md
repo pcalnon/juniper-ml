@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.55
+**Version:** 0.2.90
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -26,6 +26,7 @@
 |-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|----------|
 | **Install Juniper packages**            | [QUICK_START.md](QUICK_START.md)                                                                                                 | docs/    |
 | **See extras and version info**         | [REFERENCE.md](REFERENCE.md)                                                                                                     | docs/    |
+| **Tell a stale quick-start `pip list` from the floor** | [REFERENCE — Quick Start verify sample](REFERENCE.md#quick-start-verify-sample-is-not-the-current-floor) (`juniper-cascor 0.11.x` is the 0.10.0 sample; `[servers]` requires `>=0.12.0`) | docs/ |
 | **Configure HTTP client `base_url`**    | [REFERENCE.md](REFERENCE.md#http-client-base-url-contract)                                                                       | docs/    |
 | **Run the local host stack**            | [REFERENCE.md](REFERENCE.md#host-orchestration-utilities)                                                                        | docs/    |
 | **Operate the scheduled Duplicati backup lane** | [REFERENCE — Scheduled Duplicati Backup Lane](REFERENCE.md#scheduled-duplicati-backup-lane)                                | docs/    |
@@ -252,6 +253,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.2.55
+**Last Updated:** 2026-11-06
+**Version:** 0.2.90
 **Maintainer:** Paul Calnon
