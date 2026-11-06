@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`claudey` starts with a worktree and remote control by default, `--remote-control` never takes a value, and in
+  `scripts/wake_the_claude.bash` `--version` is Claude Code's version and `-u` fails (owner rulings, 2026-11-04).**
+  `claude_interactive.bash` sends a bare `--worktree`, so Claude Code names the worktree unless `-w <name>` names one,
+  and a bare `--remote-control`. `--no-worktree` and `--no-remote-control` turn them off, as `CLAUDE_WORKTREE=1` and
+  `CLAUDE_REMOTE_CONTROL=1` do. Both had been opt-in since juniper-ml#2396. `wake_the_claude.bash` now refuses a word
+  after `--remote-control` instead of forwarding it as the session's name, which juniper-ml#2405 had restored; `0` and
+  `1` still turn it on and off. `--version` matched both the Claude Code version pattern and the script's, and Claude
+  Code's, checked first, won. It is now Claude Code's alone, with `-V` and `--claude-version`; the script's version is
+  `-v` / `--script-version`. `-u` prints the usage text and exits 1, as its comment always said; after juniper-ml#2396
+  it exited 0. `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`'s launcher table now describes claudey's own defaults: it
+  described `default_interactive_session_claude_code.bash`'s.
 - **`agents-md-touch-up.yml` pins `actions/checkout` to a commit SHA (owner ruling 2026-11-03).** It checked out with
   the `v7.0.1` tag, the only tag-only `actions/checkout` in `.github/workflows/`. It now uses
   `3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1`, the commit that tag resolves to and the pin every other
@@ -78,6 +89,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `tests/test_run_suite_acceptance.py` (`CascorBandMetricsTest`, `NonFiniteBandValueTest`,
     `CascorSuiteLoopAcceptanceTest`); `util/ad-hoc/2026-10-26_apd_ml_002_mutation_check.py` kills 25 of 25 mutants,
     each by its own pin test.
+- **`scripts/wake_the_claude.bash`: `-v`, `--remote-control <name>` and two fatal errors, after the juniper-ml#2396
+  parser rewrite.** `-v` read a `SCRIPT_VERSION` the script never set, so it exited 1, except where the environment
+  carried the `SCRIPT_VERSION` that `claude_interactive.bash` exports as claudey's version (in any session claudey
+  started, for one): there it printed claudey's version. The script now sets its own, `1.0.0` as its header states. `--remote-control` forwards an optional session name again, as Claude Code's
+  `--remote-control [name]` and the usage text describe, and takes `0` / `1` as `--worktree` does. The nohup-log
+  error, which juniper-ml#2396 moved to `debug_log`, and the "claude command not found" error, which had always used
+  it, said nothing with debug output off (`WTC_DEBUG=1`); both print to stderr again. `PROMPT_FILE_DEFAULT` and
+  `PROMPT_PATH_DEFAULT` are gone: nothing read them, and they were built from names nothing assigns, so they expanded
+  to `./` and `/`.
+  - 6 new tests in `tests/test_wake_the_claude.py`, among them `LauncherScriptVariableTests`, which checks that every
+    name the four launcher scripts expand is assigned or expanded with a default. Shellcheck's SC2154 skips
+    all-uppercase names, so it reported neither unassigned name. Against `main`, 5 of the 6 fail; the sixth is the
+    scan's positive control.
+- **`scripts/wake_the_claude.bash` sends the prompt last, after `--`, so no flag can take it as its value, and
+  `claudey` no longer hangs on a flag missing its value.** Claude Code parses its command line with commander, where an
+  option with an optional value takes the next word as that value: `--worktree [name]`, `--remote-control [name]` and
+  `--resume [value]`. The script puts the prompt last, so `--worktree --prompt hello` became `claude --worktree
+  hello`: a worktree named `hello`, and no prompt. A bare `--remote-control`, or `--resume 0` without an `--id`, did the
+  same. A prompt starting with `-` failed outright. Measured on Claude Code 2.1.318, `claude '---name: x' --bogus-zzz`
+  says `error: unknown option '---name: x'`, and a prompt file's YAML front matter starts `---`. The `--` ends Claude
+  Code's options. The printed command line now quotes each argument, so the prompt shows as the one argument it is.
+  - `-V` and `--claude-version` exited 1: the parser compared them with `--version` alone.
+  - A `--prompt` value starting with `--` never reached the `--`. The parser left it in the input to be read as a flag,
+    and sent the default prompt: `--prompt --dangerously-skip-permissions` skipped permissions, and `--prompt --print`
+    launched headless. The word after a prompt flag is now the prompt, whatever it starts with. `0` or nothing after
+    the flag still sends the default prompt and `1` none, and an empty value no longer ends parsing (found in
+    juniper-ml#2438's review).
+  - A `--file` / `--path` prompt file that was empty or unreadable launched Claude Code without a prompt. It now stops
+    the launch with an error on stderr.
+  - In `claude_interactive.bash`, `-m`, `-e`, `--id` or `--prompt` with nothing after it looped forever: `shift 2`
+    on one remaining argument fails without shifting. It now exits 1 with the usage text. `-w --prompt hi` named the
+    worktree `--prompt`; `-w`'s name is optional now.
+  - 16 new tests and one rewritten, in `tests/test_wake_the_claude.py` and `tests/test_claude_interactive.py`, and 26
+    expected argv lists in the former gain the `--`. `ClaudeInteractiveEndToEndTests` runs claudey and the real
+    `wake_the_claude.bash` against a stub `claude`, where the other claudey tests stop at the argv a stub
+    `wake_the_claude.bash` recorded. Against the scripts as juniper-ml#2405 left them, 45 of the 107 tests fail, all 17
+    new or rewritten ones among them; the hangs end in the tests' 60-second timeout.
 - **A cascor run's eval scalars are cascor's final evaluation, labelled with its split and n, and `aggregate.csv` /
   `REPORT.md` gain the held-out `test_*` columns from it** (juniper-ml#2064; it follows juniper-ml#2369 and is
   `APD-ML-002` ruling 1's "test later"). `stats.json`'s `cascor.eval_scalars`, `summary.md`'s "Eval scalars" and

@@ -118,6 +118,9 @@ if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
 fi
 
 SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
+# This script's own version, as its header states, for -v. Assigned unconditionally: claude_interactive.bash exports
+# SCRIPT_VERSION as its own version, which this script would otherwise inherit and report as its own.
+SCRIPT_VERSION="1.0.0"
 # set -x
 # PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): ${PS4}: "
 # PS4="+ ${SCRIPT_NAME}: ${FUNCNAME[1]}(${LINENO}): "
@@ -284,12 +287,6 @@ export PROMPT_VALUE=""
 PROMPT_VALUE_DEFAULT="Hello World, Claude!"
 export PROMPT_VALUE_DEFAULT
 
-PROMPT_FILE_DEFAULT="./${PROMPT_FILE_NAME_DEFAULT}"
-export PROMPT_FILE_DEFAULT
-
-PROMPT_PATH_DEFAULT="${PROMPT_PATH_DIR_DEFAULT}/${PROMPT_FILE_NAME_DEFAULT}"
-export PROMPT_PATH_DEFAULT
-
 
 ########################################################################################################################################################################
 # Define Parameter Flag and Value Arrays
@@ -341,6 +338,8 @@ CLAUDE_RESUME_FLAGS="--resume"
 CLAUDE_EFFORT_FLAGS="--effort"
 CLAUDE_MODEL_FLAGS="--model"
 export CLAUDE_PROMPT_FLAGS="--prompt"
+# Ends Claude Code's options: the prompt follows it, as the last argument (see "Build Claude Code Prompt")
+CLAUDE_END_OF_OPTIONS_FLAG="--"
 
 ########################################################################################################################################################################
 # Define all valid Script Input parameter flags:
@@ -353,7 +352,9 @@ PATH_FLAGS="-l | --path | --file-path"
 PROMPT_FLAGS="-p | --prompt | --prompt-string"
 WORKTREE_FLAGS="-w | ${CLAUDE_WORKTREE_FLAGS} | --work-tree | --working-tree"
 MODEL_VERSION_FLAGS="-V | ${CLAUDE_VERSION_FLAGS} | --claude-version"
-SCRIPT_VERSION_FLAGS="-v | --version"
+# --version is Claude Code's own version flag, so it asks for Claude Code's version alone; this script's version takes a flag of its
+# own (owner ruling, 2026-11-04). The two patterns once shared --version, and the model-version pattern, matched first, won.
+SCRIPT_VERSION_FLAGS="-v | --script-version"
 EFFORT_FLAGS="-e | ${CLAUDE_EFFORT_FLAGS} | --effort-type | --effort-level"
 HEADLESS_FLAGS="-a | ${CLAUDE_HEADLESS_FLAGS} | --agent | --silent | --headless"
 REMOTE_CONTROL_FLAGS="-c | --remote | --control | ${CLAUDE_REMOTE_CONTROL_FLAGS}"
@@ -1036,32 +1037,43 @@ function parse_add_worktree_flags() {
 }
 
 ########################################################################################################################################################################################################################################
-# Add Remote Control flag
+# Add Remote Control flag: sent bare, never with a value (owner ruling, 2026-11-04), so Claude Code names the session itself.
+#     A 0 (true) or 1 (false) after the flag turns remote control on or off, as for the other flags here. Any other word after it is
+#     refused rather than forwarded: Claude Code would read a word after --remote-control as the session's name.
 function parse_add_remote_control_flags() {
     debug_log "Parsing add remote control flags"
-    local current_flag="${1:-""}"
-    debug_log "Current Flag: \"${current_flag}\""
+    local remote_control_flag="${1:-""}"
+    debug_log "Remote Control Flag: \"${remote_control_flag}\""
+    local remote_control_value="${2:-""}"
+    debug_log "Remote Control Value: \"${remote_control_value}\""
     local result_value="${TRUE}"
 
-    if [[ "${current_flag}" == "" ]]; then
+    if [[ "${remote_control_flag}" == "" ]]; then
         debug_log "Error: Received Empty Remote Control Flag."
         result_value="${UNSAFE_TARGET}"
-    elif matches_pattern "${current_flag}" "${REMOTE_CONTROL_FLAGS}"; then
-        debug_log "Received Remote Control Flag: \"${current_flag}\""
-        shift  # shift to consume the remote control flag
-    else
-        debug_log "Error: Received an Invalid Remote Control Flag: \"${current_flag}\"."
+        CLAUDE_REMOTE_CONTROL_VALUE=()
+    elif ! matches_pattern "${remote_control_flag}" "${REMOTE_CONTROL_FLAGS}"; then
+        debug_log "Error: Received an Invalid Remote Control Flag: \"${remote_control_flag}\"."
         result_value="${FALSE}" && shift  # shift to consume the invalid remote control flag
-    fi
-    debug_log "Result Value: \"${result_value}\""
-
-    if [[ "${result_value}" == "${TRUE}" ]]; then
-        debug_log "Remote Control parameter Flag Value: \"${current_flag}\""
+        CLAUDE_REMOTE_CONTROL_VALUE=()
+    elif [[ "${remote_control_value}" == "${FALSE}" ]]; then
+        debug_log "Warning: Received False Remote Control Value."
+        shift 2  # shift to consume the remote control flag and remote control boolean false value
+        CLAUDE_REMOTE_CONTROL_VALUE=()
+    # Bare: a true boolean value, the end of the input, or a flag next
+    elif [[ ( "${remote_control_value}" == "${TRUE}" ) || ( "${remote_control_value}" == "" ) || ( "${remote_control_value:0:1}" == "-" ) ]]; then
+        debug_log "Received Remote Control Flag. Claude Code names the session."
+        shift  # shift to consume the remote control flag
+        if [[ "${remote_control_value}" == "${TRUE}" ]]; then
+            shift  # shift to consume the remote control boolean true value
+        fi
         CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}")
     else
-        debug_log "Warning: Received an Invalid Remote Control Flag: \"${current_flag}\". Setting Remote Control parameter Flag Value to empty array."
+        debug_log "Error: Remote Control takes no value, but received: \"${remote_control_value}\"."
+        result_value="${FALSE}" && shift  # shift to consume the remote control flag
         CLAUDE_REMOTE_CONTROL_VALUE=()
     fi
+    debug_log "Result Value: \"${result_value}\""
     debug_log "Remote Control Value: \"${CLAUDE_REMOTE_CONTROL_VALUE[*]}\""
 
     debug_log "Updating Current Params"
@@ -1195,16 +1207,18 @@ function parse_prompt_value_flags() {
         debug_log "Received Prompt Value Flag: \"${current_flag}\""
         shift  # shift to consume the prompt value flag
 
-        if [[ "${current_prompt}" == "${FALSE}" ]]; then
+        # The word after a prompt flag is the prompt, whatever it starts with. It is consumed as opaque text and sent after "--",
+        # so a prompt such as "--dangerously-skip-permissions" or "--print" is never read as a flag, here or by Claude Code. It
+        # once was here: a value starting with "--" was left in the input to be parsed as a flag, and the default prompt sent.
+        if (( $# == 0 )); then
+            debug_log "Warning: Received a Prompt Flag at the end of the input. Setting Default Prompt Value: \"${PROMPT_VALUE_DEFAULT}\""
+            PROMPT_VALUE="${PROMPT_VALUE_DEFAULT}" && VALID_PROMPT_PARAM="${TRUE}"
+        elif [[ "${current_prompt}" == "${FALSE}" ]]; then
             debug_log "Warning: Received False Prompt Value. No prompt string will be sent."
             PROMPT_VALUE="" && VALID_PROMPT_PARAM="${FALSE}" && shift  # shift to consume the prompt boolean false value
-        elif [[ ( "${current_prompt}" == "${TRUE}" ) || ( "${current_prompt}" == "" ) || ( "${current_prompt:0:2}" == "${SPACER_FLAGS}" ) ]]; then
-            debug_log "Warning: Received an Edge Case Prompt Value: \"${current_prompt}\"."
-            if [[ "${current_prompt}" == "${TRUE}" ]]; then
-                shift  # shift to consume the prompt boolean true value
-            fi
-            debug_log "Setting Default Prompt Value: \"${PROMPT_VALUE_DEFAULT}\""
-            PROMPT_VALUE="${PROMPT_VALUE_DEFAULT}" && VALID_PROMPT_PARAM="${TRUE}"
+        elif [[ ( "${current_prompt}" == "${TRUE}" ) || ( "${current_prompt}" == "" ) ]]; then
+            debug_log "Warning: Received an Edge Case Prompt Value: \"${current_prompt}\". Setting Default Prompt Value: \"${PROMPT_VALUE_DEFAULT}\""
+            PROMPT_VALUE="${PROMPT_VALUE_DEFAULT}" && VALID_PROMPT_PARAM="${TRUE}" && shift  # shift to consume the boolean true value or the empty prompt
         else
             debug_log "Received an apparent valid Prompt Value [${#current_prompt} chars]."
             PROMPT_VALUE="${current_prompt}" && VALID_PROMPT_PARAM="${TRUE}" && shift  # shift to consume the prompt value
@@ -1227,7 +1241,7 @@ function parse_prompt_value_flags() {
 
 ########################################################################################################################################################################
 # Parse Prompt File Path Flag
-# TODO: cat the output of the prompt file into the prompt value
+#     The prompt file's contents are read once parsing is done, by load_prompt_file()
 function parse_prompt_path_flags() {
     debug_log "Parsing prompt path flags"
     local current_flag="${1:-""}"
@@ -1290,7 +1304,7 @@ function parse_prompt_path_flags() {
 
 ########################################################################################################################################################################
 # Parse prompt file flag
-# TODO: cat the output of the prompt file into the prompt value
+#     The prompt file's contents are read once parsing is done, by load_prompt_file()
 function parse_prompt_file_flags() {
     debug_log "Parsing prompt file flags"
     local current_flag="${1:-""}"
@@ -1359,7 +1373,8 @@ function parse_model_version_flags() {
     if [[ "${current_flag}" == "" ]]; then
         debug_log "Error: Received Empty Model Version Flag. Exiting..."
         result_value="${UNSAFE_TARGET}"
-    elif matches_pattern "${current_flag}" "${CLAUDE_VERSION_FLAGS}"; then
+    # Every model-version alias: -V and --claude-version were once matched against --version alone, and exited 1
+    elif matches_pattern "${current_flag}" "${MODEL_VERSION_FLAGS}"; then
         debug_log "Received Model Version Flag: \"${current_flag}\""
         shift
         if [[ ( "${version_bin}" == "" ) || ( ! -x "${version_bin}" ) ]]; then
@@ -1442,7 +1457,7 @@ function parse_script_version_flags() {
 }
 
 ########################################################################################################################################################################################################################################
-# Print script usage and exit with fail
+# Print script usage and exit with fail (1)
 function parse_usage_flags() {
     debug_log "Received Usage Flag"
     local current_flag="${1:-""}"
@@ -1470,7 +1485,8 @@ function parse_usage_flags() {
     UPDATED_PARAMS=("${CURRENT_PARAMS[@]}")
     debug_log "Updated Params: size: ${#UPDATED_PARAMS[@]}, values: [${UPDATED_PARAMS[*]}]"
 
-    usage "${result_value}" || return "${result_value}"
+    # -u asks for the usage text alone, so it exits with a failing status (owner ruling, 2026-11-04); -h exits 0
+    usage "${FALSE}"
 }
 
 ########################################################################################################################################################################################################################################
@@ -1513,6 +1529,48 @@ function parse_help_flags() {
 ########################################################################################################################################################################################################################################
 
 ########################################################################################################################################################################################################################################
+# load_prompt_file(): Read the prompt file that --file / --path named, and parsing validated, into CLAUDE_CODE_PROMPT
+#     A file that cannot be read, or that holds no prompt, fails: claude code must not start without the prompt it was asked to send.
+function load_prompt_file() {
+    local prompt_file="${1:-""}"
+    debug_log "Loading Prompt File: \"${prompt_file}\""
+    local prompt_text=""
+
+    if [[ ( "${prompt_file}" == "" ) || ( ! -f "${prompt_file}" ) || ( ! -r "${prompt_file}" ) ]]; then
+        debug_log "Error: Prompt File is missing or unreadable: \"${prompt_file}\""
+        return "${FALSE}"
+    elif ! prompt_text="$(cat -- "${prompt_file}")"; then
+        debug_log "Error: Failed to read Prompt File: \"${prompt_file}\""
+        return "${FALSE}"
+    elif [[ ! "${prompt_text}" =~ [^[:space:]] ]]; then
+        debug_log "Error: Prompt File holds no prompt: \"${prompt_file}\""
+        return "${FALSE}"
+    fi
+    CLAUDE_CODE_PROMPT="${prompt_text}"
+    debug_log "Prompt File loaded [${#CLAUDE_CODE_PROMPT} chars]"
+    return "${TRUE}"
+}
+
+########################################################################################################################################################################################################################################
+# format_command_line(): Render a command line as it would be typed: a plain word as-is, anything else in single quotes
+#     So the prompt shows as the one quoted argument claude receives. A single quote inside an argument is written '\''.
+function format_command_line() {
+    local plain_word='^[A-Za-z0-9_./:=@%+,-]+$'
+    local formatted=""
+    local arg=""
+    local quoted=""
+    for arg in "${@}"; do
+        if [[ "${arg}" =~ ${plain_word} ]]; then
+            quoted="${arg}"
+        else
+            quoted="'${arg//\'/\'\\\'\'}'"
+        fi
+        formatted+="${formatted:+ }${quoted}"
+    done
+    printf '%s' "${formatted}"
+}
+
+########################################################################################################################################################################################################################################
 # get_pattern_index(): Get the index into the valid patterns array of the pattern that matches the current element
 # TODO: Verify this function works properly with debug log statements.
 function get_pattern_index() {
@@ -1548,11 +1606,13 @@ function usage() {
     fi
     echo -ne "usage: ${SCRIPT_NAME}\n"
     echo -ne "\t ${USAGE_FLAGS}:\n"
-    echo -ne "\t\tFlags that allow the display of this Usage statement.\n"
+    echo -ne "\t\tFlags that display this Usage statement, then exit with a failing status (1).\n"
     echo -ne "\t ${HELP_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the Display of this Help statement.\n"
     echo -ne "\t ${MODEL_VERSION_FLAGS}:\n"
-    echo -ne "\t\tFlags that allow the version of the Claude Code model to be displayed.\n"
+    echo -ne "\t\tFlags that display the version of Claude Code (claude --version).\n"
+    echo -ne "\t ${SCRIPT_VERSION_FLAGS}:\n"
+    echo -ne "\t\tFlags that display the version of this script.\n"
     echo -ne "\t ${FILE_FLAGS}:\n"
     echo -ne "\t\tFlags to allow a filename to be specified for this script.\n"
     echo -ne "\t\tNOTE: Prompt string can be provided either as a string of text or as a file name or pathname to a file containing the prompt string.\n"
@@ -1572,6 +1632,8 @@ function usage() {
     echo -ne "\t\tFlags that fork the resumed session into a new session id (use together with --resume; the original session is left untouched).\n"
     echo -ne "\t ${PROMPT_FLAGS}:\n"
     echo -ne "\t\tFlags that allow a prompt string to be specified for use by the Claude Code model.\n"
+    echo -ne "\t\tNOTE: The word after a prompt flag is the prompt, even one starting with -; ${TRUE} sends the default prompt, ${FALSE} none.\n"
+    echo -ne "\t\tNOTE: The prompt, from whichever flag, is sent as Claude Code's last argument, after ${CLAUDE_END_OF_OPTIONS_FLAG}, with no prompt flag.\n"
     echo -ne "\t\tNOTE: Prompt string can be provided either as a string of text or as a file name or pathname to a file containing the prompt string.\n"
     echo -ne "\t ${MODEL_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the specific anthropic model, used by Claude Code, to be specified.\n"
@@ -1582,7 +1644,7 @@ function usage() {
     echo -ne "\t\tFlags that allow Claude Code's operating mode to be specified--either headless if headless flag is provided or interactive if headless flag is omitted.\n"
     echo -ne "\t ${REMOTE_CONTROL_FLAGS}:\n"
     echo -ne "\t\tFlags that allow Claude Code's remote control to be specified--either remote if remote control flag is provided or local if remote control flag is omitted.\n"
-    echo -ne "\t\tNOTE: Remote control value must be a valid remote control name.  If no remote control name is provided, Claude Code will assign a new remote control name.\n"
+    echo -ne "\t\tNOTE: Remote control takes no value: Claude Code names the session.  A following ${TRUE} (true) or ${FALSE} (false) turns it on or off.\n"
     echo -ne "\t ${PERMISSIONS_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the level of supervision applied to Claude Code's actions to be specified.\n"
     echo -ne "\t ${SPACER_FLAGS}:\n"
@@ -1716,11 +1778,18 @@ debug_log "Build Claude Code Prompt"
 if [[ ( "${PROMPT_VALUE}" != "" ) && ( "${VALID_PROMPT_PARAM}" == "${TRUE}" ) ]]; then
     CLAUDE_CODE_PROMPT="${PROMPT_VALUE}"
 elif [[ ( "${PROMPT_FILE}" != "" ) && ( ( "${VALID_FILE_PARAM}" == "${TRUE}" ) || ( "${VALID_PATH_PARAM}" == "${TRUE}" ) ) ]]; then
-    CLAUDE_CODE_PROMPT="$(cat "${PROMPT_FILE}")"
+    if ! load_prompt_file "${PROMPT_FILE}"; then
+        echo "Error: the prompt file \"${PROMPT_FILE}\" could not be read, or holds no prompt" >&2
+        exit 1
+    fi
 fi
 
+# The prompt is the last argument, after "--", which ends Claude Code's options. Claude Code parses its command line with commander, where an
+# option with an optional value (--worktree [name], --remote-control [name], --resume [value]) takes the next word as that value: without the
+# "--", a bare --worktree just before the prompt made the prompt the worktree's name and sent no prompt at all. The "--" also keeps a prompt
+# that starts with "-", such as a prompt file's YAML front matter, from being refused as an unknown option.
 if [[ "${CLAUDE_CODE_PROMPT}" != "" ]]; then
-    CLAUDE_CODE_PARAMS+=("${CLAUDE_CODE_PROMPT}")
+    CLAUDE_CODE_PARAMS+=("${CLAUDE_END_OF_OPTIONS_FLAG}" "${CLAUDE_CODE_PROMPT}")
     debug_log "Prompt loaded [${#CLAUDE_CODE_PROMPT} chars]"
 fi
 debug_log "Completed building prompt, ${#CLAUDE_CODE_PARAMS[@]} total args"
@@ -1732,8 +1801,9 @@ debug_log "Completed building prompt, ${#CLAUDE_CODE_PARAMS[@]} total args"
 debug_log "Executing claude with ${#CLAUDE_CODE_PARAMS[@]} args"
 
 CLAUDE_BIN="$(type -P claude 2>/dev/null || true)"
+# The errors that end the launch below go to stderr, not debug_log: with debug output off (WTC_DEBUG=1) they would leave a bare exit 1.
 if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
-    debug_log "Error: claude command not found in PATH"
+    echo "Error: claude command not found in PATH" >&2
     exit 1
 fi
 
@@ -1747,18 +1817,17 @@ if [[ "${CLAUDE_HEADLESS_VALUE[*]}" != "" ]]; then
         if touch "${NOHUP_LOG_CANDIDATE}" 2>/dev/null; then
             NOHUP_LOG_FILE="${NOHUP_LOG_CANDIDATE}"
         else
-            # echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}" >&2
-            debug_log "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}"
+            echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}" >&2
             exit 1
         fi
     fi
     debug_log "Nohup log file: ${NOHUP_LOG_FILE}"
-    echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
+    printf '%s\n' "nohup $(format_command_line "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}") >> ${NOHUP_LOG_FILE} 2>&1 &"
     nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
     debug_log "Launched claude headless via nohup (pid $!)"
 else
     debug_log "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
-    echo "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
+    printf '%s\n' "$(format_command_line "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}")"
     "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}"
     CLAUDE_STATUS=$?
     if [[ "${CLAUDE_STATUS}" != "0" ]]; then

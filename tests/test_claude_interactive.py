@@ -11,11 +11,15 @@ regression this suite locks.
 Convention note (script-local, inverted vs the default launcher):
   TRUE="0", FALSE="1"  — so ``CLAUDE_SKIP_PERMISSIONS=0`` means *enabled*.
 
-Owner rulings, 2026-11-03 (juniper-ml#2396):
-  * session id, worktree and remote control are OPT-IN: the shipped
-    ``DEFAULT_ID`` / ``DEFAULT_WORKTREE`` / ``DEFAULT_REMOTE_CONTROL`` are
-    FALSE, and the flags (``-i`` / ``-w`` / ``-rc``) or the matching
-    ``CLAUDE_*`` environment variables turn them on;
+Owner rulings, 2026-11-03 (juniper-ml#2396) and 2026-11-04:
+  * the session id is OPT-IN: the shipped ``DEFAULT_ID`` is FALSE, and ``-i``
+    or ``CLAUDE_ID`` turns it on;
+  * worktree and remote control are ON by default (2026-11-04, replacing the
+    2026-11-03 opt-in): ``DEFAULT_WORKTREE`` / ``DEFAULT_REMOTE_CONTROL`` are
+    TRUE. The worktree goes bare, so Claude Code names it, unless ``-w`` names
+    one; remote control never takes a value. ``--no-worktree`` /
+    ``--no-remote-control``, or the matching ``CLAUDE_*`` set to FALSE, turn
+    them off;
   * model and effort are FLAGS ONLY (``-m`` / ``-e``); a bare positional
     argument is rejected with the usage message.
 
@@ -148,6 +152,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
         env: RedactedEnv,
         extra_args: list[str] | None = None,
     ) -> subprocess.CompletedProcess[str]:
+        # Bounded: a flag whose value is missing once left the parse loop spinning forever.
         return subprocess.run(
             ["bash", str(launcher_path), *(extra_args or [])],
             cwd=temp_dir,
@@ -155,6 +160,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             text=True,
             capture_output=True,
             check=False,
+            timeout=60,
         )
 
     def test_script_and_claudey_symlink_exist(self) -> None:
@@ -191,11 +197,13 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             defaults = shipped_defaults("DEFAULT_MODEL", "DEFAULT_EFFORT", "DEFAULT_PROMPT")
             self.assertEqual(args[args.index("--model") + 1], defaults["DEFAULT_MODEL"])
             self.assertEqual(args[args.index("--effort") + 1], defaults["DEFAULT_EFFORT"])
-            # Session id, worktree and remote control are opt-in (owner ruling, 2026-11-03): pinned
-            # explicitly, so a silent flip back to always-on is a red build rather than a surprise.
-            self.assertNotIn("--remote-control", args)
+            # The session id is opt-in (owner ruling, 2026-11-03); worktree and remote control are on by default
+            # (2026-11-04): a worktree of TRUE, so Claude Code names it, and a remote control with no value. Pinned
+            # explicitly, so a silent flip of any of the three is a red build rather than a surprise.
             self.assertNotIn("--id", args)
-            self.assertNotIn("--worktree", args)
+            self.assertEqual(args[args.index("--worktree") + 1], SCRIPT_TRUE)
+            self.assertEqual(args.count("--remote-control"), 1)
+            self.assertTrue(args[args.index("--remote-control") + 1].startswith("-"), "--remote-control must not be given a value")
             # The prompt reaches wake_the_claude.bash as ONE argument, without literal quote characters.
             self.assertEqual(args[args.index("--prompt") + 1], defaults["DEFAULT_PROMPT"])
 
@@ -224,7 +232,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             args = self._extract_logged_args(args_log)
             self.assertTrue(args, "Expected wrapper to invoke wake_the_claude.bash")
             self.assertNotIn("--dangerously-skip-permissions", args)
-            self.assertNotIn("--remote-control", args)
+            self.assertIn("--remote-control", args)  # on by default (owner ruling, 2026-11-04), DEBUG or not
 
     def test_debug_false_includes_skip_permissions_when_opted_in(self) -> None:
         """Explicit opt-in uses the script's TRUE=\"0\" convention."""
@@ -272,19 +280,23 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             self.assertIn("--dangerously-skip-permissions", args)
 
     def test_remote_control_false_omits_flag(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
-            env = self._base_env(args_log)
-            env["CLAUDE_REMOTE_CONTROL"] = SCRIPT_FALSE
+        """Remote control is on by default; ``--no-remote-control`` or ``CLAUDE_REMOTE_CONTROL=1`` turns it off."""
+        for extra_args, env_value in ((["--no-remote-control"], None), ([], SCRIPT_FALSE)):
+            with self.subTest(extra_args=extra_args, env_value=env_value), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                if env_value is not None:
+                    env["CLAUDE_REMOTE_CONTROL"] = env_value
 
-            result = self._run_launcher(launcher_path, temp_dir, env)
-            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
 
-            args = self._extract_logged_args(args_log)
-            self.assertNotIn("--remote-control", args)
+                args = self._extract_logged_args(args_log)
+                self.assertTrue(args, "Expected wrapper to invoke wake_the_claude.bash")
+                self.assertNotIn("--remote-control", args)
 
     def test_remote_control_opt_in_adds_flag(self) -> None:
-        """Remote control is off by default; the flag or ``CLAUDE_REMOTE_CONTROL=0`` turns it on."""
+        """The flag or ``CLAUDE_REMOTE_CONTROL=0`` asks for remote control (also the default), and it never takes a value."""
         for extra_args, env_value in ((["--remote-control"], None), (["-rc"], None), ([], SCRIPT_TRUE)):
             with self.subTest(extra_args=extra_args, env_value=env_value), tempfile.TemporaryDirectory() as temp_dir:
                 launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
@@ -296,7 +308,8 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
 
                 args = self._extract_logged_args(args_log)
-                self.assertIn("--remote-control", args)
+                self.assertEqual(args.count("--remote-control"), 1)
+                self.assertTrue(args[args.index("--remote-control") + 1].startswith("-"), "--remote-control must not be given a value")
 
     def test_session_id_and_worktree_opt_in_flags(self) -> None:
         """``-i`` / ``-w`` forward their values to wake_the_claude.bash's ``--id`` / ``--worktree``."""
@@ -368,6 +381,144 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
 
             args = self._extract_logged_args(args_log)
             self.assertEqual(args[args.index("--resume") + 1], SCRIPT_TRUE)
+
+    def test_worktree_and_remote_control_turn_off_with_their_no_flags(self) -> None:
+        """``--no-worktree`` / ``--no-remote-control``, ``-w 1``, or the ``CLAUDE_*`` variables at FALSE turn the defaults off."""
+        cases: tuple[tuple[list[str], dict[str, str]], ...] = (
+            (["--no-worktree", "--no-remote-control"], {}),
+            (["-w", SCRIPT_FALSE, "--no-remote-control"], {}),
+            ([], {"CLAUDE_WORKTREE": SCRIPT_FALSE, "CLAUDE_REMOTE_CONTROL": SCRIPT_FALSE}),
+        )
+        for extra_args, env_values in cases:
+            with self.subTest(extra_args=extra_args, env_values=env_values), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                env.update(env_values)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertTrue(args, "Expected wrapper to invoke wake_the_claude.bash")
+                self.assertNotIn("--worktree", args)
+                self.assertNotIn("--remote-control", args)
+
+    def test_worktree_name_is_optional_and_never_the_next_flag(self) -> None:
+        """``-w`` with no name -- the input ends, or a flag such as ``--prompt`` is next -- lets Claude Code name the worktree.
+
+        The parser once took the next word whatever it was: ``-w --prompt hi`` named the worktree ``--prompt`` and then failed
+        on ``hi``, and a trailing ``-w`` spun forever on a ``shift 2`` that could not shift.
+        """
+        cases = (
+            (["-w"], SCRIPT_TRUE, None),
+            (["--worktree", "--prompt", "hi"], SCRIPT_TRUE, "hi"),
+            (["--worktree", "feature-tree", "--prompt", "hi"], "feature-tree", "hi"),
+            (["--worktree-name", SCRIPT_TRUE], SCRIPT_TRUE, None),
+        )
+        for extra_args, worktree_value, prompt in cases:
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertEqual(args.count("--worktree"), 1)
+                self.assertEqual(args[args.index("--worktree") + 1], worktree_value)
+                if prompt is not None:
+                    self.assertEqual(args[args.index("--prompt") + 1], prompt)
+
+    def test_a_flag_missing_its_value_fails_instead_of_hanging(self) -> None:
+        """``-m`` / ``--effort`` / ``--id`` / ``--prompt`` with nothing after them exit 1 with usage.
+
+        Each ran ``shift 2`` on one remaining argument, which fails without shifting, so the parse loop never ended.
+        """
+        for flag in ("-m", "--effort", "--id", "--prompt"):
+            with self.subTest(flag=flag), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, [flag])
+                self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                self.assertIn(f"Missing value for {flag}", result.stdout)
+                self.assertEqual(self._extract_logged_args(args_log), [], "wake_the_claude.bash must not be invoked")
+
+
+class ClaudeInteractiveEndToEndTests(unittest.TestCase):
+    """claudey, the REAL wake_the_claude.bash, and a stub claude that records the argv Claude Code itself is handed.
+
+    The runtime tests above stop at wake_the_claude.bash's argv. Claude Code's own parser is where a bare flag with an
+    optional value (``--worktree [name]``, ``--remote-control [name]``) would take the prompt as that value.
+    """
+
+    def _launch(self, temp_dir: str, extra_args: list[str]) -> tuple[subprocess.CompletedProcess[str], list[str]]:
+        scripts_dir = Path(temp_dir) / "scripts"
+        scripts_dir.mkdir(exist_ok=True)
+        for name in ("claude_interactive.bash", "wake_the_claude.bash"):
+            target = scripts_dir / name
+            target.write_text((REPO_ROOT / "scripts" / name).read_text(encoding="utf-8"), encoding="utf-8")
+            target.chmod(0o755)
+        bin_dir = Path(temp_dir) / "bin"
+        bin_dir.mkdir(exist_ok=True)
+        argv_log = Path(temp_dir) / "claude_argv.nul"
+        argv_log.unlink(missing_ok=True)
+        fake_claude = bin_dir / "claude"
+        fake_claude.write_text('#!/usr/bin/env bash\nprintf \'%s\\0\' "$@" >> "$CLAUDE_ARGV_NUL_LOG"\n', encoding="utf-8")
+        fake_claude.chmod(0o755)
+
+        env = RedactedEnv(os.environ)
+        for var in ("CLAUDE_SKIP_PERMISSIONS", "CLAUDE_REMOTE_CONTROL", "CLAUDE_MODEL", "CLAUDE_EFFORT", "CLAUDE_ID", "CLAUDE_WORKTREE", "CLAUDE_PROMPT", "BASH_ENV", "ENV"):
+            env.pop(var, None)
+        env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
+        env["CLAUDE_ARGV_NUL_LOG"] = str(argv_log)
+        env["WTC_SESSIONS_DIR"] = str(Path(temp_dir) / "sessions")
+        env["WTC_LOGS_DIR"] = str(Path(temp_dir) / "logs")
+        result = subprocess.run(
+            ["bash", str(scripts_dir / "claude_interactive.bash"), *extra_args],
+            cwd=temp_dir,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=60,
+        )
+        argv = argv_log.read_bytes().decode("utf-8").split("\0")[:-1] if argv_log.exists() else []
+        return result, argv
+
+    def test_claude_gets_a_bare_worktree_and_remote_control_and_the_prompt_last(self) -> None:
+        """Claude Code receives the worktree and remote control bare, and the prompt as its last argument, after ``--``."""
+        defaults = shipped_defaults("DEFAULT_MODEL", "DEFAULT_EFFORT", "DEFAULT_PROMPT")
+        cases: tuple[tuple[list[str], str, str | None], ...] = (
+            ([], defaults["DEFAULT_PROMPT"], None),
+            (["-w", "feature-tree", "-p", "two words, 'quoted'"], "two words, 'quoted'", "feature-tree"),
+        )
+        for extra_args, prompt, worktree_name in cases:
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                result, argv = self._launch(temp_dir, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertTrue(argv, "Expected claude to be invoked")
+
+                self.assertEqual(argv[-2:], ["--", prompt])
+                self.assertEqual(argv.count("--"), 1)
+                self.assertFalse({"--prompt", "-p", "--prompt-string"} & set(argv[:-1]), "no prompt flag reaches claude")
+                self.assertEqual(argv[argv.index("--model") + 1], defaults["DEFAULT_MODEL"])
+                self.assertEqual(argv[argv.index("--effort") + 1], defaults["DEFAULT_EFFORT"])
+                after_remote_control = argv[argv.index("--remote-control") + 1]
+                self.assertTrue(after_remote_control.startswith("-"), f"--remote-control was given {after_remote_control!r}")
+                after_worktree = argv[argv.index("--worktree") + 1]
+                if worktree_name is None:
+                    self.assertTrue(after_worktree.startswith("-"), f"--worktree was given {after_worktree!r}")
+                else:
+                    self.assertEqual(after_worktree, worktree_name)
+
+    def test_a_prompt_that_reads_like_a_flag_does_not_undo_an_opt_out(self) -> None:
+        """``--no-remote-control --prompt --remote-control`` keeps remote control off: the prompt is text (juniper-ml#2438 review)."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result, argv = self._launch(temp_dir, ["--no-remote-control", "--prompt", "--remote-control"])
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertEqual(argv[-2:], ["--", "--remote-control"])
+            self.assertNotIn("--remote-control", argv[:-2])
 
 
 if __name__ == "__main__":
