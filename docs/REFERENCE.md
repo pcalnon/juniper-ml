@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.78
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -80,6 +80,7 @@
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
 - [Ruleset Scope Guard](#ruleset-scope-guard)
 - [Sibling Packages](#sibling-packages)
+- [Training-stream resume and the connection cap](#training-stream-resume-and-the-connection-cap)
 - [Version History](#version-history)
 - [Build and Release](#build-and-release)
 - [Flood-Remediation CI Gates](#flood-remediation-ci-gates)
@@ -4694,6 +4695,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - **WS tunables are declared, not implicit** — `websocket/tunables.py` holds all eleven settings fields the WebSocket handlers read, each with its default and a `security` flag. Six are security controls: the Origin allowlist, the control-endpoint kill switch, the control rate limit, and the three handshake-cooldown parameters. Call sites pass only a name; the default lives in the registry.
   - The `getattr`-based decoupling is deliberate and kept — the shared package still never imports a consuming service's settings class. What changes is that a miss which looks like a misspelling now logs a WARNING naming both spellings, instead of silently reverting a security control to a library default forever (`ws_control_rate_limit_per_second` vs `..._per_sec`).
   - `resolve()` on an undeclared name raises rather than defaulting; `audit(settings)` is the boot-time counterpart, reporting defaulted security controls and suspected typos. Closes APD-SVCCORE-003 / -010. `tests/test_ws_tunables.py` pins the pre-refactor defaults byte-for-byte and source-scans both handlers so registry and call sites cannot drift.
+- **Training-stream resume is continuous only through `oldest_seq - 1`.** `replay_since` returns messages with `seq > last_seq`. One seq older than the retained window is `resume_failed` `out_of_range`, and the socket stays up as a fresh snapshot. Pending handshakes count toward the global cap (close **1013**), and address-less sockets share `"unknown"`. Operator surface: [Training-stream resume and the connection cap](#training-stream-resume-and-the-connection-cap).
 
 Operator surface: [`docs/REFERENCE.md` § juniper-service-core](#juniper-service-core).
 
@@ -8409,6 +8411,55 @@ The handshake runs **Origin → auth → per-source rate limit → accept → re
 
 Control receives rejects malformed/non-object JSON with close **1003** rather than an `AttributeError`.
 
+#### Training-stream resume and the connection cap
+
+`/ws/training` (`training_stream_handler` in `juniper_service_core.websocket.training_stream`) is the metrics stream a client resumes after a drop.
+It is not the snapshot player in [CAN-015 Replay Re-drive](#can-015-replay-re-drive).
+The handler authenticates, then `connect_pending`: the socket is accepted, receives `connection_established`, and is not broadcast-eligible yet.
+It waits up to `ws_resume_handshake_timeout_s` (default **5** seconds; the setting ends in `_s`, not `_sec`) for one text frame.
+Unless the client disconnected during that wait, the socket is promoted to active and registered on the `training` endpoint.
+A resume that did not succeed is then a fresh connect: `initial_status`, `state`, and an `initial_metrics` burst (`ws_initial_metrics_count`, default **100**).
+A resume that succeeded skips that burst.
+The rolling metrics window after a successful resume is a later `subscribe_metrics` frame, which replies with `initial_metrics`.
+
+`WebSocketManager.replay_since(last_seq)` returns buffered messages whose `seq` is strictly greater than `last_seq`, in order. Sequence numbers start at **1**. The default buffer keeps the last **1024** broadcasts. Continuity holds when `last_seq >= oldest_seq - 1`. The raise is `last_seq < oldest_seq - 1`.
+
+| Client `last_seq` | Buffer | What the client gets |
+|-------------------|--------|----------------------|
+| `0`, buffer empty | nothing has been broadcast | `resume_ok`, `replayed_count` 0. A negative `last_seq` on an empty buffer takes the same path |
+| `> 0`, buffer empty | nothing to check the claim against | `resume_failed` `out_of_range` (`Buffer empty, cannot verify continuity`) |
+| `oldest_seq - 1` | still holds `oldest_seq` | continuous: `resume_ok` and the whole buffer |
+| `oldest_seq` | holds `oldest_seq` | `resume_ok`; the replay starts at the next seq |
+| at or past the newest seq | the client is caught up, or ahead | `resume_ok`, empty replay. A future seq is not an error |
+| `< oldest_seq - 1` | the seq just before the window is already gone | `resume_failed` `out_of_range` (`Requested seq N older than oldest buffered seq M`) |
+| any, `max_replay_buffer_size <= 0` | replay is disabled | `resume_failed` `out_of_range` (`Replay buffer disabled`), including `last_seq` 0 |
+
+The frame's reason is only `out_of_range`. The exception text is an INFO log (`Resume failed: ...`), not a field on the frame. The socket stays open. After `resume_failed` the handler still promotes the socket and sends the fresh snapshot. A client that keeps its local tail and then appends later broadcasts has a hole. Discard the tail and take `initial_status` / `state` / `initial_metrics`.
+
+Two other resume failures are also not closes. A frame missing `last_seq` or `server_instance_id` is `malformed_resume`. A `server_instance_id` that does not match `connection_established` is `server_restarted` (new process, empty buffer, new id). No frame before the timeout, a non-JSON frame, or any other handshake error is a fresh connect and sends no `resume_failed`.
+
+**Chunking.** `broadcast` measures `len(json.dumps(message, default=str))`.
+A length `<= max_message_size_bytes` (default **60000**) is one frame, including a length equal to the limit.
+One byte over is split, before sequence assignment, into `chunked_message` envelopes.
+Each `data.payload` is a slice of that JSON text, at most `chunk_payload_size_bytes` (default **32000**), and concatenating the payloads restores the JSON.
+Each chunk has its own `seq` and its own replay slot, so a resume replays them in order.
+A message that is already `type: chunked_message` is not split again.
+`max_message_size_bytes <= 0` disables chunking and sends the original frame.
+
+**Caps.** Constructor defaults are `max_connections` **50** and `max_connections_per_ip` **5**.
+The global count is active sockets plus pending handshakes.
+At the cap, `connect` and `connect_pending` close **1013** `Maximum connections reached` and do not `accept()`.
+The per-IP cap closes **1013** `Per-IP connection limit reached`.
+`disconnect`, including the handler's `finally` when the resume wait ends in a disconnect, returns both slots.
+Pending sockets are absent from the per-endpoint sets, so an endpoint gauge can sit under the cap while a new handshake still closes 1013.
+
+A socket with no usable client address shares one bucket. `_source_ip` returns `"unknown"` when `client` is missing, not indexable, or the host is blank (`client[0]` empty). Those sockets share `max_connections_per_ip`. A hidden address is not its own budget. A socket that presents a host still has its own count.
+
+Gate: `juniper-service-core/tests/test_t2_websocket.py` (`test_replay_since_returns_tail`, `test_replay_since_out_of_range_raises`, `test_replay_buffer_disabled_raises`, `test_oversized_message_is_chunked`, `test_chunking_killswitch_passes_through`, `test_global_connection_limit`, `test_per_ip_connection_limit`, `test_training_resume_success_replays_zero`, `test_training_resume_rejects_restarted_server`).
+Also `tests/test_websocket_manager_extra.py` (`test_replay_since_empty_buffer_nonzero_seq_raises`, `test_source_ip_handles_empty_client_tuple`, `test_source_ip_handles_missing_client`, `test_connect_pending_rejects_at_global_limit`, `test_connect_pending_rejects_at_per_ip_limit`) and `tests/test_websocket_training_stream.py` (`test_handle_resume_out_of_range`, `test_handle_resume_malformed_frame`, `test_handle_resume_success_replays_events`).
+
+Source: `websocket/manager.py` (`replay_since`, `_maybe_chunk_message`, `connect`, `connect_pending`, `_source_ip`) and `websocket/training_stream.py` (`training_stream_handler`, `_handle_resume`).
+
 | Symptom | Check / Fix |
 |---------|-------------|
 | HTTP 429 arrives without `Retry-After` | `SecurityMiddleware` must pass `exc.headers` into the `JSONResponse` — RateLimiter unit tests alone do not cover that catch path. |
@@ -8426,6 +8477,11 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Non-ASCII `X-API-Key` returns 500 | Published `juniper-service-core` 0.7.0 compares keys as `str`; `hmac.compare_digest` raises `TypeError`, which is not an `HTTPException`. Fixed on `main` (UTF-8 bytes, `surrogatepass`; juniper-ml#2086, unreleased). Do not catch the `TypeError`. |
 | Non-ASCII key flood never 429s | `FailedAuthThrottle` records only HTTP 401s, so the 500 was never counted (default 10 failures / 60 s / source IP, then 429 with `Retry-After`). WebSocket closes are not on this throttle. Same fix. |
 | Sentry event contains the configured API key | Frame locals were captured: the scrubber redacts `api_key` by name, not the local holding the configured key. `configure_sentry` on `main` passes `include_local_variables=False` with no switch to re-enable; published `juniper-observability` 0.4.0 still uses the SDK default. |
+| Training client gets `resume_failed` `out_of_range`, then `initial_status` | The seq is older than `oldest_seq - 1`, the buffer is empty and `last_seq > 0`, or replay is disabled. The socket stayed up. Discard the local tail and take the snapshot. See [Training-stream resume](#training-stream-resume-and-the-connection-cap). |
+| A client that held the seq just before the window is told to resync | The check moved. `last_seq == oldest_seq - 1` is still continuous and must replay the whole buffer. |
+| Training WS closes 1013 while endpoint gauges look low | Pending resume handshakes count toward `max_connections` (default 50) and are not in the per-endpoint sets. Disconnect releases the slot. |
+| Several clients with no address hit the per-IP cap | They share the `"unknown"` bucket (`max_connections_per_ip`, default 5). A named host is a separate count. Close reason is `Per-IP connection limit reached`. |
+| One large metrics frame, then a hole on resume | The frame was split into `chunked_message` pieces, each with its own seq. Reassemble by `chunk_index`. A serialized length equal to `max_message_size_bytes` (default 60000) is still one frame. |
 
 ---
 
@@ -8448,6 +8504,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 
 | Version | Date       | Changes                                                                                                                                                                  |
 |---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.78  | 2026-11-04 | Training-stream resume: `replay_since` is continuous through `oldest_seq - 1`; one seq older is `resume_failed` `out_of_range` and the socket stays up as a fresh snapshot. Pending handshakes count toward the 1013 cap. Address-less sockets share `"unknown"`. A frame whose JSON length equals `max_message_size_bytes` is one frame. Skipped 0.6.64–0.6.77 (in-flight docs PRs; 0.6.77 is the anomaly-detector page). |
 | 0.6.49  | 2026-09-04 | PF scenario suites (Wave 7.3): operator surface for the six `util/experiments/suites/perf/` instruments — PF-1 matched epoch pair + matrix-axis repeats + scrapeability, `scrape_confirmed` vs `target_file_written`, PF-3 stall/wall, PF-4/PF-8 not driver suites |
 | 0.6.50  | 2026-09-05 | Topology step order + blast-radius IDs: `topostate` first or alone (M-TOPOLOGY-18 INDETERMINATE is a harness artifact); `W4-01..17` / `W1-12..14` **are** matrix §4 steps — F-E2E-007 claimed otherwise and was withdrawn; triage `pri_of` takes the first severity token in the header |
 | 0.6.51  | 2026-09-04 | P4 campaign suites: 19 YAML catalog; `include` does not inherit `matrix`; oversize stall is pool ≥ 16 **or** cap ≥ 64; timeout must sit **above** the driver wall; cap-128 H2H is n=2 (description still says 3); recurrence P4 cells report, they do not gate |
@@ -8964,6 +9021,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.78
 **Maintainer:** Paul Calnon

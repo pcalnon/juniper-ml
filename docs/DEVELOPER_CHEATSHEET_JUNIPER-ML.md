@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.78
+**Date**: 2026-11-04
 **Project**: juniper-ml
 
 ---
@@ -816,6 +816,8 @@ Tip: a non-ASCII `X-API-Key` is a **401** on HTTP and close **4001** on a WebSoc
 
 Tip: juniper-service-core invariants — `RequestBodyLimitMiddleware` always stream-caps POST/PUT/PATCH (`Content-Length` is a hint only); auth runs before rate limiting and 429s must pass `exc.headers` through; control-WS reject logs stay single-line via `_sanitize_for_log`; `ws_control_rate_limit_per_sec=0` yields `retry_after=3600` instead of dividing by zero; `/ws/workers` closes **4001** on bad auth and **4008** on a bad registration shape. See [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core).
 
+Tip: `/ws/training` resume is continuous through the seq just before the buffer (`last_seq == oldest - 1`). One older is `resume_failed` `out_of_range` and the socket stays up with a fresh snapshot — discard the local tail. Pending handshakes count toward the **1013** cap. Sockets with no client address share `"unknown"`. A JSON frame whose length equals 60000 bytes is still one frame. See [REFERENCE — Training-stream resume](REFERENCE.md#training-stream-resume-and-the-connection-cap).
+
 Tip: REST client `base_url` on GitHub-main data/cascor/recurrence clients is normalised (case-insensitive scheme, `hostname` required, trailing `/v1` stripped). `HTTPS://host` on an older wheel silently becomes `http://HTTPS://host`. Cascor WS streams stay rstrip-only. Host cascor is `:8201`, constructor default is `:8200`. See [REFERENCE — HTTP Client Base-URL](REFERENCE.md#http-client-base-url-contract).
 
 Tip: `predict_merge --pr` **hard-fails** (exit `2`) when `gh` exits nonzero or returns non-JSON, while `--batch` soft-`ERROR`s that row and keeps going. A deleted `.py` stays in `true_delta` for the symbol screen but is filtered out of the pre-commit battery, so a pure-deletion PR can be gate-clean and still `DAMAGED-FIX-FIRST`.
@@ -1074,6 +1076,8 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Control-WS reject log spans multiple lines | `_sanitize_for_log` regression — never interpolate raw Origin/command into logger format strings. |
 | Worker WS closes 4001 / 4008 | 4001 = API-key auth enabled (send `X-API-Key`); 4008 = registration shape (string `worker_id` + dict `capabilities`). |
 | Non-ASCII `X-API-Key` is a 500 | Published `juniper-service-core` 0.7.0: `hmac.compare_digest` raises on a non-ASCII `str`, which is not an `HTTPException`. `main` compares UTF-8 bytes (`surrogatepass`, juniper-ml#2086, unreleased). Do not catch the `TypeError`; do not re-enable Sentry locals. |
+| Training WS `resume_failed` `out_of_range`, then `initial_status` | The seq is older than the buffer's `oldest - 1`, the buffer is empty and `last_seq > 0`, or replay is disabled. The socket stayed up. Discard the local tail. [REFERENCE](REFERENCE.md#training-stream-resume-and-the-connection-cap). |
+| Training WS closes 1013 while few training sockets show | Pending resume handshakes count toward `max_connections` (default 50). Address-less clients share the `"unknown"` per-IP bucket (default 5). |
 | `--batch` row `verdict=ERROR` | Soft-fail for that tip only; the other PRs in the report remain valid. `--pr` would have exited `2` instead. |
 | Deleted `.py` gate-clean but `DAMAGED` | The battery skipped the missing path while the symbol screen saw `LOST` — expected. |
 | `snapshot_index` / classify / backfill: `h5py is required` | `conda activate JuniperCascor1` — all four tools import `h5py` via `snapshot_index`. |
@@ -1183,6 +1187,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-04
+**Version:** 1.0.78
 **Maintainer:** Paul Calnon
