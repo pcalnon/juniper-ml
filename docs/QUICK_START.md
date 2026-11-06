@@ -2,7 +2,7 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.73
+**Version:** 0.3.74
 **Status:** Active
 **Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -210,5 +210,5 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 ---
 
 **Last Updated:** 2026-11-06
-**Version:** 0.3.73
+**Version:** 0.3.74
 **Status:** Active

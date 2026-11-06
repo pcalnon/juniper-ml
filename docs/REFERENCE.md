@@ -2,7 +2,7 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.94
+**Version:** 0.6.95
 **Status:** Active
 **Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -9022,5 +9022,5 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 ---
 
 **Last Updated:** 2026-11-06
-**Version:** 0.6.94
+**Version:** 0.6.95
 **Maintainer:** Paul Calnon
