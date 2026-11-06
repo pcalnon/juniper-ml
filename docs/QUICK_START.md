@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.42
+**Version:** 0.3.72
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -128,6 +128,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Environment Floor Drift — Malformed Input](REFERENCE.md#malformed-operator-input) -- `env_floor_drift_check.py` exit 2 is a resolution failure, including a truthy non-mapping in `ecosystem.yaml`; a bad extra does not drop `dependencies` floors
 - [Cascor Primary Freeze Tell](REFERENCE.md#cascor-primary-freeze-tell) -- whether a live importer holds the cascor primary; exit 0 is "no user-owned importer", not "no importer"
 - [Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety) -- `predict_merge` + `Allow-Docs-Rewrite` trailer parity (#926)
+- [WEAKENED line bounds](REFERENCE.md#a-python-body-that-keeps-at-most-60-percent-and-loses-at-least-4-lines-is-weakened) -- a Python body fails Sequence Safety at exactly 60 percent and a drop of 4 lines; 15 lines down to 10 does not
 - [Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage) -- re-run after an `AGENTS.md` cut; the candidate count grows by construction (health is score ≥ 3)
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- why a required name that never reports leaves `main` unmergeable; re-run, do not quote the 2026-08-10 §1 counts
 - [Flood-Remediation CI Gates](REFERENCE.md#flood-remediation-ci-gates) -- G4 pre-commit split, required Sequence Safety (outside the Quality Gate) and advisory Fleet PR Lint, post-merge `main-verify` catch-up

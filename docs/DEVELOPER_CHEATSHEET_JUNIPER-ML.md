@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.93
+**Date**: 2026-11-06
 **Project**: juniper-ml
 
 ---
@@ -395,6 +395,9 @@ commit trailer in BASE..HEAD — the per-PR `allow-symbol-loss` label is WARN-on
 `NEEDS-UPDATE-BRANCH` means behind-main; `DAMAGED-FIX-FIRST` is gate **or** symbol **or** docs `fail`.
 Skip local pre-commit with `JUNIPER_FLEET_SKIP_PRECOMMIT=1`. Full contract:
 [REFERENCE.md § Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety).
+
+**WEAKENED bounds.** A Python function, class, or method is `WEAKENED` / `FAIL` only when the head keeps at most 60 percent of the base line count and the body lost at least 4 lines. Both bounds include equality: 10 lines down to 6 fails; 15 down to 10 does not; 7 down to 4 does not. A bash function at those bounds is `WARN`. Gutting a method can also fail the enclosing class, and each key needs its own `Allow-Symbol-Loss` token.
+[REFERENCE — WEAKENED bounds](REFERENCE.md#a-python-body-that-keeps-at-most-60-percent-and-loses-at-least-4-lines-is-weakened).
 
 **Ruleset context audit:** a required name that never reports leaves `main` unmergeable with every
 visible check green (2026-08-10 fleet-union of 30). Re-run the auditor; do not quote the note's

@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.93
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -2405,6 +2405,34 @@ Constraints (verified in the checkers):
 - `Allow-Docs-Rewrite: *` **is** accepted (waives every deleted `.md` in scope) — opposite of the symbol wildcard rule.
 - Per-PR labels `allow-symbol-loss` / `docs-rewrite` only demote the per-PR job via `--advisory` (WARN-only exit 0). That greens the required `Sequence Safety` context on the PR. They are invisible to `push:main` `main-verify` — use the commit trailer for post-merge green.
 - Exit codes: `0` clean, `1` ≥1 unwaived FAIL, `2` usage / bad ref. Gates: `tests/test_symbol_loss_check.py`, `tests/test_docs_additions_check.py`.
+- Python `WEAKENED` needs both arms, and both include equality. One arm alone does not fail. Detail: [A Python body that keeps at most 60 percent and loses at least 4 lines is WEAKENED](#a-python-body-that-keeps-at-most-60-percent-and-loses-at-least-4-lines-is-weakened).
+
+### A Python body that keeps at most 60 percent and loses at least 4 lines is WEAKENED
+
+`classify_file` in `juniper-ci-tools/juniper_ci_tools/symbol_loss_check.py` flags a Python function, class, or method as `WEAKENED` / `FAIL` only when both constants hold (`WEAKEN_RATIO = 0.6`, `WEAKEN_MIN_DELTA = 4`):
+
+- `head_lines <= 0.6 * base_lines` (60 percent exactly is included)
+- `base_lines - head_lines >= 4` (a drop of exactly 4 is included)
+
+The line count is the AST source segment: its newline count plus one. That includes the `def` or `class` line. A decorator on the line above the `def` is not part of the count. The finding's `ratio` field is `round(head_lines / base_lines, 2)`. The gate does not compare that rounded field. It compares the integer line counts with the two arms above. `0.6 * 10` is `6.0` and `0.6 * 15` is `9.0`; `0.6 * 7` is `4.2`.
+
+A bash function uses the same two arms. Its line count is the distance to the next function, and never less than 1. The verdict is `WARN`, so it does not fail the gate.
+
+| Base lines | Head lines | Result |
+|------------|------------|--------|
+| 10 | 6 | `WEAKENED` / `FAIL`. Ratio exactly 0.6, delta exactly 4. |
+| 7 | 3 | `WEAKENED` / `FAIL`. `3 <= 4.2`, delta exactly 4. Reported `ratio` is `0.43`. |
+| 15 | 10 | Not flagged. Five lines were removed, but `10 <= 9.0` is false. |
+| 7 | 4 | Not flagged. `4 <= 4.2`, but the delta is 3. |
+| 7 | 2 | `WEAKENED` / `FAIL`. `test_weakened_shrink_past_threshold_fails` (far past both arms). |
+| 4 | 3 | Not flagged. `test_small_shrink_below_threshold_is_not_flagged` (`3 <= 2.4` is false). |
+| same | same | Not flagged. `test_same_length_gutting_is_invisible_blind_spot` (delta 0). |
+
+Those three tests live in `juniper-ci-tools/tests/test_symbol_loss_check.py`. The equality rows are the `<=` and `>=` comparisons in `classify_file`.
+
+Shrinking a method shrinks the enclosing class segment too. One edit can emit `WEAKENED` / `FAIL` for both `method:C.m` and `class:C`. `Allow-Symbol-Loss` matches one finding key (or that key with the `func:` / `method:` / `class:` prefix removed). Naming the method does not waive the class.
+
+A deleted name is `LOST`, not `WEAKENED`. A name that appears twice at head is `DUPLICATED` and is not also scored as `WEAKENED`. Imports and module constants are never `WEAKENED`.
 
 ### `predict_merge.py` operator contract
 
@@ -3787,6 +3815,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Execute terminal `RELEASED`: publish run `completed`+`success` (both gates done) surfaces as final state with **no** halt issue — distinct from plan-time `ALREADY_RELEASED` (PyPI already serves target). Operator guidance: runbook §3.3.
 - `util/prompt_discovery/` -- Discovery helpers for the custom-agent suite (PR 4); path-invoked (`python util/prompt_discovery/cli.py --repo-root <path>`), emits a JSON grounding bundle (closed-world facts + provenance: `head_sha`/`dirty`/`ttl_seconds`/`per_probe_status`) from seven probes (`repo_context`, `test_status`, `file_probe`, `symbol_probe`, `dependency_facts`, `conventions`, `concurrency`). Accepts `--target-repo` (cross-repo alias of `--repo-root`). A discovery failure is a hard stop (exit 2).
 - The **sequence-safety screens** now ship in `juniper-ci-tools` (>=0.8.0) as two console scripts; rollout W3 deleted the inline `util/sequence_safety/` copy (unit tests → `juniper-ci-tools/tests/`; resurrection-guarded by `tests/test_ci_tools_drift.py`). `juniper-symbol-loss-check` -- symbol-loss screen (P2 gate G1/G3): AST inventory of BASE vs HEAD; FAIL on a deleted (`LOST`) / gutted (`WEAKENED`) / duplicated def, with an SF3 qualified-name relocation downgrade and a `Allow-Symbol-Loss:` trailer escape.
+  - Python `WEAKENED` needs both arms, including equality: [60 percent and 4 lines](#a-python-body-that-keeps-at-most-60-percent-and-loses-at-least-4-lines-is-weakened).
 - `juniper-docs-additions-check` -- docs deletion-magnitude screen (P2 gate G2 / G3 step 4): for `AGENTS.md` + `docs/**` + `notes/**`, FAIL on a deleted heading or a `>=N`-line deletion run (default 5, `--min-run`); WARN on small deletions / swaps / retitles; `Allow-Docs-Rewrite:` trailer escape.
 - Both screens keep `--base/--head [--files] [--advisory] [--json]`, exit 0/1/2, the WARN-only `--advisory` label hatch (SF5), and add a repeatable `--scope GLOB`. juniper-ml's `ci.yml` (per-PR) + `main-verify.yml` (post-merge G3) install the package; the symbol screen passes the explicit ml scope `--scope 'tests/*.py' --scope 'util/**/*.py' --scope 'util/**/*.bash'` (docs = universal default), reproducing the in-repo predicate byte-for-byte.
 - `util/fleet_triage/predict_merge.py` -- Deterministic predicted-merge triage for third-party fleet PRs (Stage-0 supervisor script layer; flood §4 item 7). Per PR, in a throwaway detached `git clone` under the system tempdir (never a `git worktree`, never a push), merges `origin/main` into the branch tip and on the result runs the repo-pinned fast gates + an AST symbol-loss screen + a docs additions-only screen. `--pr N | --batch [--json] [--repo-root P]`; exit 0/2. Tests: `tests/test_predict_merge.py`.
