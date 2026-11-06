@@ -193,6 +193,13 @@ class SummaryMdEvalBlocksTest(unittest.TestCase):
         self.assertEqual(held, f"### Eval scalars (final evaluation: test split, n=120, held out)\n\n- accuracy: 0.9\n- f1: 0.899749\n- precision: 0.902098\n- recall: 0.899417\n- roc_auc: 0.960545\n- basis: {ss.CASCOR_FINAL_EVAL_BASIS}\n\n")
         self.assertEqual(in_loop, f" (validation split, n=160, NOT held out: the in-loop split)\n\n- f1: 0.918721\n- precision: 0.91934\n- recall: 0.91875\n- roc_auc: 0.980781\n- basis: {ss.CASCOR_IN_LOOP_BASIS}\n\n")
 
+    def test_a_zero_accuracy_is_reported_not_omitted(self) -> None:
+        """0.0 is a score. ``_fmt`` prints it as ``0``; a truthiness check would drop the line and the 0.9 case above would still pass."""
+        held, _ = self._sections(with_final_accuracy(METRICS_FINAL_TEST_SPLIT, 0.0))
+        self.assertIn("- accuracy: 0\n", held)
+        self.assertNotIn("accuracy: not reported", held)
+        self.assertNotIn("undefined", held)
+
     def test_a_validation_split_final_evaluation_is_headed_not_held_out(self) -> None:
         held, _ = self._sections(METRICS_FINAL_VALIDATION_SPLIT)
         self.assertTrue(held.startswith("### Eval scalars (final evaluation: validation split, n=80, NOT held out: the in-loop split)\n\n- accuracy: not reported\n- f1: 0.349593\n"), held)
@@ -241,6 +248,24 @@ class EvalMetricsPlotTest(unittest.TestCase):
         blocks["eval_scalars"]["f1"] = True
         _, series, _ = plots.eval_metrics_series(blocks)
         self.assertEqual(sorted(series[0][2]), ["precision", "recall", "roc_auc"], "neither True nor the undefined accuracy is a score")
+
+    def test_a_zero_score_is_a_bar_and_false_is_not(self) -> None:
+        """0 and 0.0 are scores. False is a bool, so it is not a bar of height 0.
+
+        ``bool`` subclasses ``int``. Dropping the bool exclusion turns False into 0.0 and this fails;
+        dropping a falsy number drops a real zero while ``test_a_bool_or_a_null_is_no_bar`` stays green.
+        """
+        blocks = ss.cascor_eval_blocks(with_final_accuracy(METRICS_FINAL_TEST_SPLIT, 0.0))
+        blocks["eval_scalars"]["f1"] = 0
+        blocks["eval_scalars"]["precision"] = False
+        names, series, subtitle = plots.eval_metrics_series(blocks)
+        final = next(values for role, _, values in series if role == "final evaluation")
+        self.assertEqual(final["accuracy"], 0.0)
+        self.assertEqual(final["f1"], 0.0)
+        self.assertNotIn("precision", final)
+        self.assertIn("accuracy", names)
+        self.assertIn("f1", names)
+        self.assertEqual(subtitle, "eval scalars = the final evaluation (test split, n=120, held out)")
 
     def test_with_no_final_evaluation_only_the_in_loop_bars_are_drawn_under_their_own_label(self) -> None:
         names, series, subtitle = plots.eval_metrics_series(ss.cascor_eval_blocks(METRICS_FINAL_PRE_SWITCH))
