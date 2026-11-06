@@ -1470,6 +1470,10 @@ jobs:
           # null final, a service before juniper-cascor#614) says why and never borrows the in-loop numbers. Fixtures are real
           # `/v1/metrics` bodies from the run corpus (`tests/cascor_eval_fixtures.py`).
           python3 -m unittest -v tests/test_stats_summary_eval_blocks.py
+          # tests/test_cascor_eval_zero_and_enabled.py: juniper-ml#2064 comparisons the corpus fixtures do not pin.
+          # An in-loop scalar of 0.0 is a score, not "no in-loop eval scalars". enabled is False discards a populated
+          # final; a missing enabled key and enabled 0 do not. held_out is the exact split "test". A caption prints n=0.
+          python3 -m unittest -v tests/test_cascor_eval_zero_and_enabled.py
 
       - name: Run bash regression tests
         run: |
