@@ -64,6 +64,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>`, from a shallow
+  checkout.** Its scratch was `git clone --shared <checkout>`, and git turns a clone's local mode off for a shallow
+  source. juniper-ml's primary checkout has been shallow since 2026-09-10 (`.git/shallow`), so the clone ran an
+  upload-pack transport that wrote no alternate and carried only the checkout's local branches. Every fleet PR's head
+  then failed `update-ref` ("nonexistent object"), and 56 of 57 open PRs came back `ERROR` on 2026-11-06. The scratch
+  is now `git init` plus an `objects/info/alternates` entry naming the checkout's object store, matched to its object
+  format. Its git commands run with `GIT_LFS_SKIP_SMUDGE=1`, because the scratch has no remote to fetch LFS content
+  from and juniper-ml keeps `*.png` / `*.jpg` in LFS. `docs/REFERENCE.md` describes the new scratch.
+  `.claude/agents/fleet-supervisor.md` no longer says the rulesets' strict up-to-date policy is off; juniper-ml's
+  `juniper-ml-rules` has it on. Nor does it say a BEHIND branch is fixed by a rebase, which re-creates its commits
+  unsigned; GitHub's update-branch is the fix.
+
 - **Cascor suites carry headline columns: `aggregate.csv` and `REPORT.md` gain `train_accuracy` and `val_accuracy`, a
   finished suite gains them without re-running, and a NaN or infinite value fails every acceptance band** (register row
   `APD-ML-002`; the owner's four rulings of 2026-10-26; juniper-ml#2369). `util/experiments/run_suite.py`'s

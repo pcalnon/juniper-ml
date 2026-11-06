@@ -126,7 +126,17 @@ def _run(cmd: list, cwd: Optional[Path] = None) -> subprocess.CompletedProcess:
 
 
 def _git(repo: Path, *args: str) -> subprocess.CompletedProcess:
-    return _run(["git", "-C", str(repo), *args])
+    # Git LFS pointers stay pointers: the scratch repo has no remote to download LFS content from, and
+    # with ``filter.lfs.required`` a smudge that cannot download fails the checkout. A merge simulation
+    # needs no LFS content -- juniper-ml stores *.png / *.jpg in LFS.
+    env = dict(os.environ)
+    env["GIT_LFS_SKIP_SMUDGE"] = "1"
+    return subprocess.run(  # nosec B603 -- fixed argv, no shell, trusted tool names
+        ["git", "-C", str(repo), *[str(a) for a in args]],
+        capture_output=True,
+        text=True,
+        env=env,
+    )
 
 
 def _rev(repo: Path, ref: str) -> Optional[str]:
@@ -298,24 +308,36 @@ def _run_gate_battery(clone: Path, changed_existing: list, *, run_gates: bool, g
 # --------------------------------------------------------------------------- #
 
 def _scratch_clone(repo_root: Path, base_sha: str, branch_sha: str, scratch_parent: Path) -> tuple:
-    """Detached ``git clone`` under the system tempdir with ``base``/``branch`` pinned by SHA.
+    """Detached scratch repository under the system tempdir that BORROWS the source's object store.
 
-    ``git clone --shared`` references the source's WHOLE object store via an alternate (every
-    object reachable from any of the source's refs -- including remote-tracking ``origin/*`` and,
-    for a linked-worktree source, the shared common object store -- is visible), so both commit
-    SHAs are already present; a plain ``update-ref`` then binds them to stable
-    ``refs/fleet/{base,branch}``. ``--shared`` (not ``--local``) is cross-device-safe -- the
-    scratch lives under the system tempdir, typically a different filesystem from the repo, where
-    ``--local`` hardlinks fail with "Invalid cross-device link". No refspec disambiguation, no
-    network. The merge writes new objects only into the SCRATCH's own object dir; the source repo
+    ``git init`` plus an ``objects/info/alternates`` entry naming the source's object directory (the
+    COMMON dir's, so a linked-worktree source works too): every object reachable from any of the
+    source's refs -- remote-tracking ``origin/*`` included -- is visible, so both commit SHAs are
+    already present; a plain ``update-ref`` then binds them to stable ``refs/fleet/{base,branch}``.
+    No transport, no network, no hardlinks (cross-device-safe: the scratch usually lives on another
+    filesystem). The merge writes new objects only into the SCRATCH's own object dir; the source repo
     is READ only -- never written, never a worktree, never pruned during the seconds-long run.
+
+    This was ``git clone --shared <path>``, which writes the alternate only for a LOCAL clone, and git
+    turns local mode off for a SHALLOW source. juniper-ml's primary checkout has been shallow since
+    2026-09-10 (``.git/shallow``), so the clone ran an upload-pack transport that carried only objects
+    reachable from the source's local branches, and every PR head reachable only from ``origin/*``
+    failed ``update-ref`` ("nonexistent object"): 56 of 57 open PRs came back ERROR on 2026-11-06.
     """
+    common = _git(repo_root, "rev-parse", "--path-format=absolute", "--git-common-dir")
+    fmt = _git(repo_root, "rev-parse", "--show-object-format")
+    if common.returncode != 0 or fmt.returncode != 0:
+        raise PredictMergeError(f"cannot locate the object store of {repo_root}: {(common.stderr or fmt.stderr).strip()}")
+    objects_dir = Path(common.stdout.strip()) / "objects"
+    if not objects_dir.is_dir():
+        raise PredictMergeError(f"{repo_root}'s object store {objects_dir} is not a directory")
     scratch = Path(tempfile.mkdtemp(prefix="fleet-triage-", dir=str(scratch_parent)))
     clone = scratch / "clone"
-    cp = _run(["git", "clone", "--no-checkout", "--quiet", "--shared", str(repo_root), str(clone)])
+    cp = _run(["git", "init", "--quiet", f"--object-format={fmt.stdout.strip()}", str(clone)])
     if cp.returncode != 0:
         shutil.rmtree(scratch, ignore_errors=True)
-        raise PredictMergeError(f"git clone of {repo_root} failed: {cp.stderr.strip()}")
+        raise PredictMergeError(f"git init of the scratch repository failed: {cp.stderr.strip()}")
+    (clone / ".git" / "objects" / "info" / "alternates").write_text(f"{objects_dir}\n", encoding="utf-8")
     for ref_name, sha in (("refs/fleet/base", base_sha), ("refs/fleet/branch", branch_sha)):
         upd = _git(clone, "update-ref", ref_name, sha)
         if upd.returncode != 0:

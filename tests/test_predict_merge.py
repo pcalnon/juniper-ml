@@ -23,8 +23,10 @@ fixture repos (the ``tests/test_worktree_cleanup.py`` fixture idiom) -- no netwo
   the rest of the open-PR set) + ``suggest_order`` empty-``true_delta`` ERROR contention;
 * deleted-``.py`` paths stay in ``true_delta`` but are filtered out of the gate battery;
 * ``JUNIPER_FLEET_SKIP_PRECOMMIT`` forces skip_all when the default gate runner would run;
-* the detached-clone-never-mutates-source contract (a ``git clone`` under the system
-  tempdir, never a ``git worktree`` of -- and never a write to -- the invoking checkout);
+* the detached-clone-never-mutates-source contract (a scratch repository under the system
+  tempdir that borrows the source's objects through ``objects/info/alternates``, never a
+  ``git worktree`` of -- and never a write to -- the invoking checkout), including a PR head
+  reachable only from ``refs/remotes/origin/*``;
 * CLI exit codes (0 always-report / 2 usage / 2 non-git ``--repo-root`` / ``--pr``).
 
 ``util/`` is not pre-commit-lint-gated (flake8/black scope to ``scripts``+``tests``), so
@@ -473,6 +475,39 @@ class NoMutationTest(_RepoCase):
         clone = clones[0]
         self.assertFalse(str(clone).startswith(str(self.repo)), "scratch clone must not live inside the source repo")
         self.assertTrue((clone / ".git").is_dir(), "scratch must be a git clone (.git dir), not a worktree pointer")
+
+    def test_a_head_reachable_only_from_origin_resolves_in_the_scratch(self):
+        """A PR head reachable only from ``refs/remotes/origin/*`` -- every fleet PR's case -- is simulated, not ERROR.
+
+        The scratch was ``git clone --shared <path>``, and git turns a clone's local mode off for a SHALLOW source.
+        juniper-ml's primary checkout is shallow, so the clone ran an upload-pack transport that wrote no
+        ``objects/info/alternates`` and carried only the source's local branches, and ``update-ref`` failed on every such
+        head with "nonexistent object": 56 of 57 open PRs on 2026-11-06. The other fixtures are not shallow and keep a
+        local branch, which is why they never saw it.
+        """
+        _write(self.repo, "fileA.txt", "A0\n")
+        root = _commit(self.repo, "c0")
+        _publish_main(self.repo)
+        # Shallow, as the primary checkout is: a boundary at the root commit removes nothing.
+        (self.repo / ".git" / "shallow").write_text(root + "\n", encoding="utf-8")
+        self.assertEqual(_git(self.repo, "rev-parse", "--is-shallow-repository").stdout.strip(), "true")
+        _git(self.repo, "checkout", "-q", "-b", "cursor/remote-only")
+        _write(self.repo, "fileD.txt", "D\n")
+        _commit(self.repo, "add D")
+        _publish_branch(self.repo, "cursor/remote-only")
+        _git(self.repo, "checkout", "-q", "main")
+        _git(self.repo, "branch", "-q", "-D", "cursor/remote-only")
+        self.assertEqual(_git(self.repo, "for-each-ref", "refs/heads/cursor").stdout, "", "the head must have no local branch")
+
+        scratch_parent = self.tmp / "scratch-parent"
+        scratch_parent.mkdir()
+        v = pm.simulate_merge(self.repo, "origin/cursor/remote-only", run_gates=False, keep_scratch=True, scratch_parent=scratch_parent)
+        self.assertEqual(v["verdict"], "MERGE-CLEAN", v.get("error"))
+        self.assertEqual(v["true_delta"], ["fileD.txt"])
+
+        clone = next(scratch_parent.glob("fleet-triage-*/clone"))
+        alternates = (clone / ".git" / "objects" / "info" / "alternates").read_text(encoding="utf-8").split()
+        self.assertEqual([Path(a).resolve() for a in alternates], [(self.repo / ".git" / "objects").resolve()])
 
 
 # --------------------------------------------------------------------------- #
