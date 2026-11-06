@@ -35,6 +35,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The agent guard denies a `git push` that asks for a signed push by an unambiguous prefix of `--signed`.**
+  Git 2.43 runs `--si`, `--sig`, `--sign`, `--sign=true` and `--si=if-asked` as `--signed`: against a local
+  remote each one is the request the remote rejects with "does not support --signed push", or the
+  `if-asked` warning that a certificate would have been sent. The guard matched only the full spelling, so
+  `git push --si` was allowed while `git push --signed` was denied. `--s` stays allowed (ambiguous with
+  `--set-upstream`, and git does not run it). `--se` stays `--set-upstream`. `--no-si` and a value of
+  `false`, `no`, `off` or `0`, including `--si=false`, stay allowed. The installed hook is a copy; the
+  owner reinstalls it with `util/install_claude_agent_guard.bash`.
+
 - **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>` from a shallow
   checkout, and refuses a history that a shallow checkout cannot show.**
   - **The cause.** The scratch was `git clone --shared <checkout>`, which writes the alternate only for a local

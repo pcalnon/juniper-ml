@@ -203,7 +203,7 @@ RULES = (
     Rule("PRIV-ESCALATION", "Bash", "privilege escalation: sudo, su, doas, pkexec, or osascript with administrator privileges", "Anything needing the admin password is owner-run"),
     Rule("MACOS-DEFAULTS-WRITE", "Bash", "a macOS settings change: defaults write, delete, rename or import", "Agents measure host settings; they do not change them"),
     Rule("GPG-SECRET", "Bash", "a GnuPG secret-key or smart-card operation: gpg --card-status, --card-edit, -K, --list-secret-keys, --export-secret-keys or --export-secret-subkeys; ykman; gpg-card; gpg-connect-agent learn or scd", "Agents never touch the YubiKey or enumerate secret keys"),
-    Rule("GPG-SIGN", "Bash", "a signing or secret-key use that can prompt for the YubiKey PIN or touch: gpg --sign / --clearsign / --detach-sign / --decrypt; git commit|merge|rebase|cherry-pick|revert|am|pull|commit-tree -S; git tag -s / -u; git push --signed; git -c *.gpgsign=true", "Agent commits are unsigned by construction (D11 item 1); they land signed through util/open_signed_pr.py"),
+    Rule("GPG-SIGN", "Bash", "a signing or secret-key use that can prompt for the YubiKey PIN or touch: gpg --sign / --clearsign / --detach-sign / --decrypt; git commit|merge|rebase|cherry-pick|revert|am|pull|commit-tree -S; git tag -s / -u; git push --signed or an unambiguous prefix of it (--si, --sign=true); git -c *.gpgsign=true", "Agent commits are unsigned by construction (D11 item 1); they land signed through util/open_signed_pr.py"),
     Rule("GH-PR-WRITE", "Bash", "gh pr create, gh pr new or gh pr merge", "Agents land changes only through util/open_signed_pr.py, and merges are the owner's"),
     Rule("GH-KEY-ADMIN", "Bash", "GitHub key administration: gh repo deploy-key, gh ssh-key add|delete, gh gpg-key add|delete", "Deploy-key and key administration stays in the owner's own session (D11 item 5)"),
     Rule("GH-AUTH", "Bash", "gh auth (status, token, refresh, login, logout, setup-git, switch ...)", "gh auth subcommands are credential probes or credential changes"),
@@ -1285,7 +1285,7 @@ class BashAnalyzer(object):
             elif sub == "tag":
                 if text in ("--sign", "--local-user") or text.startswith(("--sign=", "--local-user=")) or _cluster_has(short, "su", "mFn"):
                     self.hit("GPG-SIGN", "git tag " + text)
-            elif sub == "push" and (text == "--signed" or (text.startswith("--signed=") and text.split("=", 1)[1].casefold() not in ("false", "no", "off", "0"))):
+            elif sub == "push" and _git_push_requests_signature(text):
                 self.hit("GPG-SIGN", "git push " + text)
 
     def _check_git_config(self, rest: list) -> None:
@@ -1581,6 +1581,36 @@ class BashAnalyzer(object):
             current = prev
             k -= 1
         return out
+
+
+_PUSH_SIGNED_OFF = ("false", "no", "off", "0")
+
+
+def _git_push_requests_signature(text: str) -> bool:
+    """True when ``text`` is a ``git push`` option that asks for a signed push.
+
+    Git 2.43 accepts an unambiguous prefix of ``--signed``. Against a local remote,
+    ``--si``, ``--sig``, ``--sign``, ``--sign=true``, ``--signed=1`` and
+    ``--si=if-asked`` all request a signed push (the remote answers that it does not
+    support one, or warns that it would have sent a certificate). ``--s`` is
+    ambiguous with ``--set-upstream`` and does not run, so a one-character prefix
+    is not this option. ``--se`` is ``--set-upstream``. ``--no-signed`` and
+    ``--no-si`` are the off switch. A value of ``false``, ``no``, ``off`` or ``0``
+    (any case), including on a prefix (``--si=false``), is also off. Any other
+    value, including ``true``, ``yes``, ``on``, ``if-asked``, ``1``, an empty
+    ``--signed=`` and ``00``, is a signing request, which is how the full spelling
+    was already judged.
+    """
+    if not text.startswith("--") or text.startswith("--no-"):
+        return False
+    body, separator, value = text[2:].partition("=")
+    name = "signed"
+    folded = body.casefold()
+    if len(folded) < 2 or len(folded) > len(name) or not name.startswith(folded):
+        return False
+    if separator == "":
+        return True
+    return value.casefold() not in _PUSH_SIGNED_OFF
 
 
 def _cluster_has(cluster: str, wanted: str, value_letters: str) -> bool:
@@ -2022,6 +2052,8 @@ def self_test() -> int:
             ("Bash", {"command": "gh pr merge 12 --squash"}, "GH-PR-WRITE"),
             ("Bash", {"command": "gh auth token"}, "GH-AUTH"),
             ("Bash", {"command": "git commit -S -m x"}, "GPG-SIGN"),
+            ("Bash", {"command": "git push --si origin"}, "GPG-SIGN"),
+            ("Bash", {"command": "git push --si=false origin"}, None),
             ("Bash", {"command": "security find-generic-password -s x"}, "KEYCHAIN-DUMP"),
             ("Bash", {"command": "defaults write com.example k v"}, "MACOS-DEFAULTS-WRITE"),
             ("Bash", {"command": 'cp x "$HOME"/.claude/settings.json'}, "SELF-PROTECT-BASH"),
