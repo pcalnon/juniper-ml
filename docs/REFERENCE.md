@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.70
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -4687,6 +4687,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - **CR-024 body limit** — `RequestBodyLimitMiddleware` treats `Content-Length` as an early-reject hint only and **always** stream-caps `POST` / `PUT` / `PATCH` against the cumulative limit (default 10 MiB), so an under-declared header or a chunked body with none still 413s. Skipping the stream when the declared length is present-and-small is the classic bypass.
 - **Auth before rate limit** — with API keys configured, `APIKeyAuth` runs first, so a 401 never consumes a rate-limit token. Blank / whitespace-only configured keys are filtered out (the `auth_posture.real_keys` rule) so an empty secret file cannot enable auth that then accepts an empty `X-API-Key`.
 - **Non-ASCII API keys are a 401, not a 500** — `APIKeyAuth.validate` compares UTF-8 bytes (`surrogatepass`). Comparing `str` with `hmac.compare_digest` raises `TypeError` on any non-ASCII character, which escaped as a 500, skipped `FailedAuthThrottle`, and (under Sentry's default local-variable capture) could ship the configured key. Published `juniper-service-core` 0.7.0 still has the `str` compare. Operator surface: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
+- **Failed-auth table cap** — past 10,000 source IPs, `_maybe_cleanup` drops the oldest `window_start` rows. Prune runs only from `record_failure`, every 100 failures, before that row is stored. `check()` must not insert. Operator surface: [The failed-auth table drops the oldest source IPs](#the-failed-auth-table-drops-the-oldest-source-ips).
 - **429 header passthrough** — `RateLimiter` raises `HTTPException` carrying `Retry-After` + `X-RateLimit-*`; `SecurityMiddleware.dispatch` must rebuild `JSONResponse(..., headers=exc.headers)`. RateLimiter unit tests alone do not exercise that catch path.
 - **Control-WS log sanitizing** — reject logs that interpolate untrusted Origin/command text; go through the module-local `_sanitize_for_log` helpers (`control_security` strips `\r`/`\n`; `control_stream` also drops other C0 controls, keeping tabs) so CRLF cannot forge multi-line control-plane records. Sanitizing changes log records only, never handshake outcomes or ack JSON.
 - **Zero rate limit** — `ws_control_rate_limit_per_sec=0` builds a `LeakyBucket` with no refill; `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop.
@@ -8335,6 +8336,7 @@ Publish and CI constraints:
 - **Blank API keys.** `APIKeyAuth` filters blank / whitespace-only configured keys (the `auth_posture.real_keys` rule), so an empty secret file cannot enable auth that would then accept an empty `X-API-Key`.
 - **Rate-limit keying.** `RateLimiter._get_key` buckets by `key:<api_key>` when the request is authenticated, otherwise by `ip:<client.host>` — falling back to `ip:unknown` when Starlette reports no client. Authenticated callers therefore get their own budget rather than sharing one per source IP (and a shared NAT egress cannot exhaust an authenticated client's budget).
 - **Worker mTLS half-config.** `TLSConfig` (`juniper_service_core.workers.security`) fails closed: with TLS enabled and only one of `cert_file` / `key_file` set, it raises `ValueError` naming both paths, rather than returning a bare `SSLContext` with neither chain nor key. A silent half-config is the dangerous shape — it looks "TLS enabled" to callers while presenting nothing.
+- **Failed-auth source cap.** The 10-failures / 60-second budget is per IP. The map itself keeps 10,000 source IPs and drops the oldest `window_start` rows. [The failed-auth table drops the oldest source IPs](#the-failed-auth-table-drops-the-oldest-source-ips).
 
 #### Non-ASCII API keys and Sentry frame locals
 
@@ -8345,7 +8347,7 @@ Publish and CI constraints:
 | HTTP | **401** `Invalid API key.` | `SecurityMiddleware` catches `HTTPException` and, for 401 only, records the source IP on `FailedAuthThrottle` |
 | WebSocket | close **4001** `Authentication required`, before `accept()` | `ws_authenticate` calls the same `validate`. `BaseHTTPMiddleware` does not see the upgrade, so the HTTP throttle does not cover `/ws/*` |
 
-`FailedAuthThrottle` defaults to **10** failed attempts per source IP per **60** seconds. Once that many 401s are recorded, a further request from that IP inside the window is **429** with `Retry-After`, and the comparison is not run. Only an HTTP 401 is recorded. A 500 is not.
+`FailedAuthThrottle` defaults to **10** failed attempts per source IP per **60** seconds. Once that many 401s are recorded, a further request from that IP inside the window is **429** with `Retry-After`, and the comparison is not run. Only an HTTP 401 is recorded. A 500 is not. A burst of distinct source IPs is not bounded by that window: past 10,000 rows the map drops the oldest. [The failed-auth table drops the oldest source IPs](#the-failed-auth-table-drops-the-oldest-source-ips).
 
 **Why the compare is bytes.** `hmac.compare_digest` raises `TypeError` when either `str` argument holds a non-ASCII character. Starlette decodes header bytes as latin-1, so any byte above `0x7f` arrives at `validate` as a non-ASCII `str`. An anonymous `X-API-Key: \xa0` raised inside the comparison (found by the validation of juniper-canopy#683, 2026-09-24, per the comment in `security.py`).
 
@@ -8364,6 +8366,35 @@ The option does not cover the opt-in `PureEvalIntegration` (sentry-sdk 2.58.0): 
 juniper-data carries its own `APIKeyAuth` (`juniper_data/api/security.py`). The same byte compare landed there in juniper-data#440 (merged 2026-09-25), after juniper-data 0.16.0 was published, so no juniper-data release carries it yet; juniper-data's `configure_sentry` is juniper-observability's.
 
 Gate: `juniper-service-core/tests/test_security.py`, `tests/test_middleware.py` (`test_security_middleware_401_not_500_on_a_non_ascii_key`, `test_non_ascii_key_failures_are_counted_by_the_throttle`), `tests/test_t2_websocket.py` (`test_ws_authenticate_closes_4001_on_a_non_ascii_key`); `juniper-observability/tests/test_sentry.py`.
+
+#### The failed-auth table drops the oldest source IPs
+
+`FailedAuthThrottle` (`juniper_service_core/security.py`) maps each source IP to `(count, window_start)`. The default budget is unchanged: **10** failures in **60** seconds, then HTTP **429** with `Retry-After`. Two class constants bound the map. Neither is a constructor argument.
+
+| Constant | Value | When it applies |
+|----------|-------|-----------------|
+| `_CLEANUP_INTERVAL` | 100 recorded failures | Prune runs at the start of that `record_failure`, before the new row is stored |
+| `_MAX_ENTRIES` | 10,000 source IPs | After the expiry pass, extra rows are deleted, oldest `window_start` first, until 10,000 remain |
+
+Expiry removes a row whose `window_start` is older than `now - (2 * window_seconds)`. A scan that presents a new source address on every request, all inside that horizon, does not expire. Only the cap bounds that table.
+
+The failure that triggered the prune is stored afterwards.
+
+- Right after a prune that dropped rows, the table holds **10,001** (the 10,000 kept, plus the triggering failure).
+- It can then record 99 more failures before the next prune. The high-water mark is **10,100**.
+- The first crossing peaks at 10,099 stored rows. That prune sees 10,099, because the 10,000th record's prune still ran while the table was under the cap, and it drops 99. Later prunes see 10,100 and drop 100. Both leave 10,001 after the store.
+
+`check()` does not insert and does not prune. An evicted IP reads as not blocked, and the lookup does not put it back. The next HTTP 401 opens a new window at count 1. Eviction resets the budget. It is not a window rollover.
+
+Oldest means the earliest `window_start`, not the least recent request. A repeat failure inside the same window increments the count and keeps the original timestamp. An IP that opened its window earlier is dropped before an IP that failed once just now, even when the earlier IP is still inside the window and had already reached 10.
+
+Open auth and valid-key traffic do not grow this table. The map is a plain `dict`, both reads use `.get`, and prune runs only from `record_failure`. `enabled=False` records nothing. Each process keeps its own table, the same constraint the class states for the failure budget.
+
+`RateLimiter` uses the same 10,000 cap and the same oldest-`window_start` drop, but it prunes from `check()` every 100 checks, and `check()` inserts. Allowed traffic can evict rate-limit keys. It cannot evict failed-auth rows.
+
+The on-tree expiry test does not pin the cap. `test_failed_auth_throttle_prunes_expired_entries` sets `window_seconds=0` and records `_CLEANUP_INTERVAL + 10` failures into 255 addresses. Every stored row is already expired when prune runs, and the table never nears 10,000, so deleting the hard-cap branch leaves that test green.
+
+The read-only probe is pinned by `test_failed_auth_throttle_check_does_not_track_unseen_ips` (1,000 unseen addresses leave the table empty). `RateLimiter`'s `test_maybe_cleanup_enforces_hard_cap` does pin oldest-drop, by shrinking `_MAX_ENTRIES` and calling `_maybe_cleanup` directly.
 
 #### Control WS log sanitizer
 
@@ -8425,6 +8456,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Two `task_assign` frames while the first task runs | A mid-task heartbeat must ack without dispatching — confirm the idle guard. |
 | Non-ASCII `X-API-Key` returns 500 | Published `juniper-service-core` 0.7.0 compares keys as `str`; `hmac.compare_digest` raises `TypeError`, which is not an `HTTPException`. Fixed on `main` (UTF-8 bytes, `surrogatepass`; juniper-ml#2086, unreleased). Do not catch the `TypeError`. |
 | Non-ASCII key flood never 429s | `FailedAuthThrottle` records only HTTP 401s, so the 500 was never counted (default 10 failures / 60 s / source IP, then 429 with `Retry-After`). WebSocket closes are not on this throttle. Same fix. |
+| A throttled source IP is allowed again inside its window | The 10,000-IP cap dropped that row (oldest `window_start`). The next 401 starts a fresh budget. `check()` does not restore the row. |
 | Sentry event contains the configured API key | Frame locals were captured: the scrubber redacts `api_key` by name, not the local holding the configured key. `configure_sentry` on `main` passes `include_local_variables=False` with no switch to re-enable; published `juniper-observability` 0.4.0 still uses the SDK default. |
 
 ---
@@ -8465,6 +8497,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.70  | 2026-11-04 | Failed-auth source-IP cap: prune keeps the 10,000 newest window starts and runs from `record_failure` every 100 failures, before that row is stored. The table holds 10,001 after a dropping prune and can climb to 10,100. `check()` does not insert or prune, so an evicted IP is not blocked and is not put back. The expiry test does not pin the cap. Skipped 0.6.64–0.6.69 (in-flight; #2418 holds 0.6.69). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8964,6 +8997,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-04
+**Version:** 0.6.70
 **Maintainer:** Paul Calnon
