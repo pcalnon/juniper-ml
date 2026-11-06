@@ -45,7 +45,7 @@ The pyproject pins matching `juniper-ml` 0.11.3:
 | `juniper-doc-tools`                           | `>=0.1.0,<0.2.0` |
 | `juniper-model-core`                          | `>=0.1.0,<0.4.0` |
 | `juniper-observability`                       | `>=0.4.1`        |
-| `juniper-recurrence`                          | `>=0.8.0,<0.9.0` |
+| `juniper-recurrence`                          | `>=0.8.1,<0.9.0` |
 | `juniper-recurrence-client`                   | `>=0.3.0,<0.4.0` |
 | `juniper-recurrence-model`                    | `>=0.6.0,<0.7.0` |
 | `juniper-service-core`                        | `>=0.7.1,<0.8.0` |
@@ -92,7 +92,7 @@ juniper-ml ──hosts independent package workflows──> juniper-observabilit
 | `servers`    | `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`, `juniper-cascor[api,juniper-data]>=0.12.0`, `juniper-data[api]>=0.17.1` |
 | `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.4.1`, `juniper-service-core>=0.7.1,<0.8.0` |
 | `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)         |
-| `recurrence` | `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
+| `recurrence` | `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.1,<0.9.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
 | `all`        | All of the above                                                                                 |
 
 ## Active Research Components
