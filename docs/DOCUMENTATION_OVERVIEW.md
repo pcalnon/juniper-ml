@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.55
+**Version:** 0.2.63
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-04
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -104,6 +104,7 @@
 | **Add or re-pin a required status-check context** | [REFERENCE — Required-Context Ruleset Writer](REFERENCE.md#required-context-ruleset-writer) (`--amend-integration-id`; do not hand-roll a ruleset PUT) | docs/    |
 | **Read the release-train detect summary / Slack** | [REFERENCE — Detect Summary and Slack](REFERENCE.md#release-train-detect-summary-and-slack)                             | docs/    |
 | **Understand the AGENTS.md date check** | [REFERENCE — AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check)                                                             | docs/    |
+| **Read a turing G-SEC firewall failure** | [REFERENCE — G-SEC block-all capture](REFERENCE.md#g-sec-block-all-is-the-getblockall-capture) (state 2's global-state line contains the ON sentence; the gate reads `security.blockall`) | docs/    |
 | **Audit `claude.yml` access safeguards**| [REFERENCE — Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) + [ANTHROPIC API key walkthrough](../notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md) | docs/ + notes/ |
 | **Operate the GitHub `@claude` assistant** | [REFERENCE — Claude Code Action](REFERENCE.md#claude-code-action) (live pin, `@claude` `if:`, template-snapshot drift) | docs/ |
 | **Debug service-core middleware / control-WS / workers** | [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core); a non-ASCII `X-API-Key` is a 401 on `main` (published 0.7.0 still 500s), and Sentry does not capture frame locals: [Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) | docs/    |
@@ -252,6 +253,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.2.55
+**Last Updated:** 2026-11-04
+**Version:** 0.2.63
 **Maintainer:** Paul Calnon
