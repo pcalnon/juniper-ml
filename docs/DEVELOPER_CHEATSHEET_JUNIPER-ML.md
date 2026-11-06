@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.93
+**Date**: 2026-11-06
 **Project**: juniper-ml
 
 ---
@@ -1158,6 +1158,8 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default `equities` is 422 at 14 symbols; unit is symbols because cost is per request
 - [Equities Dataset Id Does Not Pin Array Content](REFERENCE.md#equities-dataset-id-does-not-pin-array-content) -- `dataset_id` hashes the request; compare `meta.checksum`; `dividend` / `split_ratio` zero-fill when yfinance omits the columns
 - [Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) -- W0.8/W0.9 replay and matrix; exit 0 is not a passing crossval
+- [Lane A3 checks](REFERENCE.md#lane-a3-checks) -- numpy-only NPZ report; an all-constant last step exits 0 with `min-nonzero=none (no column has a std > 0)`
+- [Actions outage re-run](REFERENCE.md#actions-outage-re-run) -- exact `Actions` status `operational`; a malformed status page is `unknown` and exits 2
 - [F-039 Store Probe](REFERENCE.md#f-039-store-probe) -- apply / soak / report / revert; read the whole series; `--target topology` refuses
 - [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) -- throwaway wrapper on `8113`/`8214`/`8063`; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start
 - [Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- exit **2** is P-5 free-threaded; exit **4** is May-7 wheel layout

@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.93
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-06
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -72,6 +72,8 @@
 - [Equities Symbol Cap](#equities-symbol-cap)
 - [Equities Dataset Id Does Not Pin Array Content](#equities-dataset-id-does-not-pin-array-content)
 - [Recurrence Equities Crossval Instruments](#recurrence-equities-crossval-instruments)
+- [Lane A3 checks](#lane-a3-checks)
+- [Actions outage re-run](#actions-outage-re-run)
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
@@ -3661,8 +3663,8 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_save_model_recorded_cli_contract.py` -- The W1.9 save_model re-run through the launcher-recorded CLI (the path a real `--up` takes): the model-version probe and the train child both see the run's `JUNIPER_DATA_URL` and an empty `LD_LIBRARY_PATH` despite a poisoned parent env; numeric-zero hyperparameters are forwarded and `None` ones omitted; a non-string `cli` / `python` / `model_version` in the launch record is not coerced; `stderr_tail` and a failing probe's reason keep the tail, not the head; a query, fragment or userinfo URL sets the record aside; every recurrence train key maps to its CLI flag. No live services.
 - `tests/test_recurrence_operation_identity_and_dataset_budget.py` -- W1.5's driver half (`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; F-D5, F-S6, F-S9, F-CON1, F-CON2) against one loopback stub playing juniper-data and juniper-recurrence. `POST /v1/datasets` is bounded by `dataset_create_timeout_seconds` (CLI > YAML `outputs` > 120 s, positive and finite on both routes) and train / predict / crossval by the wall budget, neither feeding the other; an expired dataset budget is `timed_out` (exit 1) naming the knob on both paths, and nothing trains or stages after it. The plan's acceptance case, time scaled 1:100: a juniper-data that sleeps 40 s fails inside a service modelled on juniper-recurrence#192 (`502 juniper-data unreachable`) at the client's old 30 s default while the driver's budgets are untouched, and succeeds at the budget `run_suite.recurrence_data_timeout_env` exports. `X-Request-ID` goes out on train (sanitised, distinct per call); the returned `operation_id` comes back as `expect_operation_id` on predict and never on crossval; a model another caller replaced is refused (409, `degraded`); a missing, blank or non-string `operation_id` (juniper-recurrence 0.5.0) is never echoed; a timed-out train and a busy 409 each leave a note in `manifest.operation`. `save_model` carries the same id on `POST /v1/model/snapshots` and copies the snapshot to `model.npz`, size-checked; a 409, an unusable id or a size mismatch fails the phase with no re-fit, a snapshot the run cannot see is recorded rather than faked, and only a train response without an id re-fits (juniper-ml#2211). No live services.
 - `tests/test_yamaguchi_edit_target.py` -- Migration step 3 for `util/ad-hoc/yamaguchi_edit_target.py`, the passphrase-safe `TargetURL` repoint, which shipped with zero tests. A PUT of a new destination against a populated local job makes every remote volume look missing. Pins the refusals that must happen before that PUT (busy rc 3, same path / not a directory / unmounted / fewer volumes / different byte total rc 4, passphrase count / mask / fingerprint rc 5, no fstab entry rc 7) and the read-back that must happen after (a moved source or an unmasked passphrase is rc 6; a clean read-back is rc 0 and the PUT carried the real passphrase). `--allow-shrink` is the only way past the census and does not itself send the PUT; `--allow-non-durable` does not skip the census; `--dry-run` substitutes the passphrase in memory and sends nothing. `tests/duplicati_api_stub.py` replaces `urlopen`; `mountpoint` and `findmnt` are not executed, and neither secret is printed.
-- `tests/test_rerun_after_actions_outage.py` -- Hermetic gate for `util/ad-hoc/2026-10-05_rerun_after_actions_outage.py`. Only a completed failure, cancelled, timed_out or startup_failure run is re-run; any Actions status other than exactly `operational` (or exactly `degraded_performance` under `--accept-degraded`) never calls `gh`, and the wait gives up with exit 2; `--merge` returns `util/safe_merge.py`'s exit code and `--no-merge` never invokes it. `gh`, the status page and the clock are stubbed.
-- `tests/test_equities_lane_a3_report.py` -- The `checks` report of `util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py`, the numpy-only Lane A3 instrument of the consensus review of `notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`: a negative `dt` is flagged and a nonzero first `dt` column is not all-zero; a backwards `window_end_date` is not monotone; a missing archive is `NO ARTIFACT` and the report is still written, identical archive bytes match and one changed array does not; `meta_fields` keeps `access_count` 0 and drops unknown keys; `y_reg` wins over `y`; a non-finite target or `X` is not finite; fold 0's cut uses `n // (n_folds + 1)` and the embargo. The `compare` / `fold-threads` subcommands are not covered.
+- `tests/test_rerun_after_actions_outage.py` -- Hermetic gate for `util/ad-hoc/2026-10-05_rerun_after_actions_outage.py`. Only a completed failure, cancelled, timed_out or startup_failure run is re-run; any Actions status other than exactly `operational` (or exactly `degraded_performance` under `--accept-degraded`) never calls `gh`, and the wait gives up with exit 2; `--merge` returns `util/safe_merge.py`'s exit code and `--no-merge` never invokes it. Since helper 0.3.0 a payload that is not an object, or whose `components` is not a list of objects, reads as `unknown (...)` before any status is read, so an operational Actions object beside a non-object still exits 2 and re-runs nothing. `gh`, the status page and the clock are stubbed. Operator surface: [Actions outage re-run](#actions-outage-re-run).
+- `tests/test_equities_lane_a3_report.py` -- The `checks` report of `util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py`, the numpy-only Lane A3 instrument of the consensus review of `notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`: a negative `dt` is flagged and a nonzero first `dt` column is not all-zero; a backwards `window_end_date` is not monotone; a missing archive is `NO ARTIFACT` and the report is still written, identical archive bytes match and one changed array does not; `meta_fields` keeps `access_count` 0 and drops unknown keys; `y_reg` wins over `y`; a non-finite target or `X` is not finite; fold 0's cut uses `n // (n_folds + 1)` and the embargo. An all-constant last step still writes the JSON and exits 0; the summary says `min-nonzero=none (no column has a std > 0)` and `X_last_step_std_min_nonzero` is null. Before script 0.3.1 that line formatted the null with `.3e` after the write and the process exited 1. The `compare` / `fold-threads` subcommands are not covered. Operator surface: [Lane A3 checks](#lane-a3-checks).
 - `tests/test_archive_consensus_screen.py` -- The credential screen in `util/ad-hoc/2026-09-22_archive_consensus_reports.py`, which later archivers call before a report is written into public `notes/`. Pins the 30-40 character window and the `* @ $ %` mark, the path and URL exclusions, the `enc-v1:` and JWT shapes, a problem line that counts hits and never prints the value, last-assistant-message extraction, and a hit that refuses the whole archive (exit 2, nothing written) unless `--allow-shaped`. `--check` writes nothing and does not bypass the screen.
 - `tests/test_main_verify_screen_verdicts.py` -- Executes `main-verify.yml`'s own `symbol-screen` shells, extracted from the YAML and run under `bash -eo pipefail`, with the two screen console scripts and `git` as PATH stubs. `Assert screens reached a verdict` passes on a finding (exit 1 is a verdict, so the catch-up base advances) and fails on an invocation error (exit 2 or higher, 99 included) or an absent or empty code; `Assert screens clean` fails on any finding or missing code. The screens step records both codes from the human run, not the `--json` arm, and exits 0, falling back to `HEAD^1` on an empty or unresolvable base. `tests/test_main_verify_catchup_base.py` pins only the step names and order. Also run by `main-verify.yml`'s battery.
 - `tests/test_gitleaks_secret_assignment_rule.py` -- Backup recovery B9 (design P0.5a item 6). `.gitleaks.toml` must carry `[extend] useDefault = true`: without it gitleaks v8 loads only the file's own `[[rules]]`, of which there were none, so CI's Security Scan ran with zero rules from 2026-08-13 to 2026-10-10. Through a Python model of gitleaks 8.24.3's matcher (regex, the value group -- `secretGroup`, else the first non-empty group -- rule and global allowlists, compiled with `re.ASCII`), `juniper-secret-assignment` must fire on a backup credential literal (the 2026-09-20 shape: 36 characters carrying `* @ $ %`), and also on a diceware-style passphrase (lowercase words joined by `-` or `_`), a 12-15 character word-only value, hex, base64 and punctuated values, under every `export` / systemd `Environment=` / comment / argv form of every name. Since 2026-10-25 it must also fire on a QUOTED multi-word phrase in both quote styles under every name, reporting the whole phrase: a value opened by `"` or `'` right after the `=` runs to its own close quote, spaces included. The same phrases must stay silent in every unquoted form, which keeps the no-whitespace rule. It must stay silent on expansions, templates, `REDACTED` / `changeme` / `xxx` / `...` / `***`, empty values, prose, quoted prose (`passphrase="the one you set"`, held by a function-word allowlist), code, one-word fixtures, other variable names, and the documented boundary: under 12 characters, whitespace in a value not quoted right after the `=` (unquoted, unterminated, or systemd's `Environment="NAME=..."`), one lowercase word, and words joined by `.`. Every positive is assembled at runtime, so the file holds no literal the rule, the default ruleset or push protection flags. Also pins that every `.gitleaksignore` entry is commit-scoped and sits in a group under a comment naming its class, with the two S-1 entries present; and that `ci.yml`'s `GITLEAKS_VERSION` equals the pre-commit hook's `rev`. The `RealEngine` tests run the same samples through a gitleaks binary (`GITLEAKS_BIN` or PATH) and skip without one, except in the Security Scan job, which sets `GITLEAKS_PARITY_REQUIRED=1`. `util/ad-hoc/2026-10-10_gitleaks_rule_mutation_check.py` shows that each of 21 breakages turns the suite red, among them dropping the quoted branches, letting an unquoted value run on through spaces or a quoted value run past its close quote, and dropping the quoted-prose allowlist.
@@ -7956,6 +7958,23 @@ Two recorded runs use these names: `reports/2026-10-04_recurrence-equities-cv-ma
 | Conditioning `cond_2norm` is `inf` | `sigma_min` was 0. The script still returns 0 when it finishes the folds. |
 | You wanted resolved ridge, gamma, or per-fold theta from the HTTP body | `replay` saves that body as the service returned it. Those resolved values are what `matrix` reads off the in-process model (`theta_resolved`, `ridge_resolved`, `gamma_resolved`). |
 | A required flag was omitted | argparse usage (exit 2). Nothing is written. |
+| `checks` prints `min-nonzero=none (no column has a std > 0)` and exits 0 | Every last-step column has std that is not `> 0` (the pinned case is an all-constant last step). The JSON is already written and `X_last_step_std_min_nonzero` is null. Before script 0.3.1 the summary formatted that null with `.3e`, raised `TypeError`, and exited 1 on a valid report. See [Lane A3 checks](#lane-a3-checks). |
+
+### Lane A3 checks
+
+[`util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py`](../util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py) (script 0.3.1) is the numpy-only half of the same consensus review. `checks` shares no code with the matrix or the service: it reads one NPZ, rebuilds the `full` view, and writes one JSON. It does not import `juniper_data_client`, `juniper_recurrence`, or model-core. `compare` and `fold-threads` are separate subcommands; `fold-threads` does use the model instruments. The regression suite covers `checks` only (`tests/test_equities_lane_a3_report.py`).
+
+```bash
+python3 util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py checks \
+  --npz path/to/artifact.npz \
+  --out reports/lane-a3-checks.json
+```
+
+`--meta`, `--archive-npz` and `--archive-meta` are optional. `--n-folds` defaults to 5 and `--embargo` to 2, the same cut the matrix uses (`fold_size = n // (n_folds + 1)`). A missing `--npz` or `--out` is argparse usage (exit 2) and writes nothing.
+
+`cmd_checks` writes the JSON, then prints the summary, then returns 0. A negative `dt` (`dt_any_negative`), a non-finite `X` or target, and a missing archive (`archive.status` = `NO ARTIFACT`) are fields in that report, not a non-zero exit. Exit 0 means the report was written.
+
+Last-step feature stds are `X[:, -1, :]` reduced in float64 and again in float32. `X_last_step_std_min_nonzero` is the minimum among columns whose std is `> 0`, or JSON `null` when none are. The summary then reads `min-nonzero=none (no column has a std > 0)`. `X_last_step_n_zero_std_columns` counts `std == 0` only, so a null min-nonzero and a zero-std count answer different questions. The constant-column case the suite pins sets both: null, and a zero-std count equal to the feature count, with the constant values in `X_last_step_zero_std_columns_value`.
 
 ### Reading a run
 
@@ -7969,6 +7988,38 @@ Two recorded runs use these names: `reports/2026-10-04_recurrence-equities-cv-ma
 | A configured-theta row equals its fold-resolved twin | Expected on this artifact (91.0 everywhere). The matrix does not test theta as a lever. |
 
 The note's §2.5 records the instrument's limits: one ticker, one window, one dataset seed, `d` 16, five expanding folds, one RFF seed (seeds 0–5 span −0.115 … −0.252 on the E-H cell), a CV population whose fold 4 holds the whole `test` partition, and the private attributes above.
+
+---
+
+## Actions outage re-run
+
+`util/ad-hoc/2026-10-05_rerun_after_actions_outage.py` (helper 0.3.0) waits until GitHub's Actions component is exactly `operational`, re-runs abandoned workflow runs on a PR's current head, then optionally hands off to `util/safe_merge.py --execute`. It was written for the 2026-10-05 Actions outage, when queued jobs were cancelled with zero steps and the code under test had not failed. Pins: `tests/test_rerun_after_actions_outage.py`.
+
+```bash
+python3 util/ad-hoc/2026-10-05_rerun_after_actions_outage.py --repo juniper-ml --pr 2164 --no-merge
+python3 util/ad-hoc/2026-10-05_rerun_after_actions_outage.py --repo juniper-recurrence --pr 192 --merge --accept-degraded
+```
+
+`--merge` and `--no-merge` are mutually exclusive and one of them is required. The status page is `https://www.githubstatus.com/api/v2/components.json`. The component name that counts is exactly `Actions`. `actions` and `GitHub Actions` do not, even when their status is `operational`. `--accept-degraded` also accepts exactly `degraded_performance`. `Operational`, a trailing space, and any other string do not.
+
+Only a run that is `completed` with conclusion `failure`, `cancelled`, `timed_out`, or `startup_failure` is re-run (`gh run rerun` on that head). `--no-merge` returns 0 after those re-runs. `--merge` returns `util/safe_merge.py`'s exit code. Defaults: poll every 120 s, give up after 4 hours (`--poll-seconds`, `--max-wait-seconds`).
+
+### A bad status page is not operational
+
+Statuspage API v2 serves `components` as a list of objects. The helper checks that shape before it reads any `status`:
+
+| Payload | Reading |
+| --- | --- |
+| Request failed, or the body is not JSON | `unknown (<exception class>)` |
+| JSON is not an object | `unknown (payload is <type>, not an object)` |
+| `components` is not a list | `unknown (components is <type>, not a list)` |
+| Any element is not an object | `unknown (a component is <type>, not an object)` |
+| No object named `Actions` | `unknown (no Actions component)` |
+| `Actions` is present and `status` is missing | the string `None` |
+
+A list that contains a well-formed `{"name": "Actions", "status": "operational"}` beside `null` or an int is still `unknown`. The operational object is not read. Until 0.3.0 the walk sat outside the request `try`: a dict-shaped `components` raised `AttributeError` out of `main` and aborted the wait, and a non-object after an operational Actions object was ignored, so the page counted as operational.
+
+`unknown (...)` and the string `None` are not accepted statuses. The wait keeps polling and, at the budget, prints `GAVE UP` and exits 2. Nothing is re-run and `safe_merge` is not called.
 
 ---
 
@@ -8465,6 +8516,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.93  | 2026-11-06 | Lane A3 `checks` exits 0 on an all-constant last step (`min-nonzero=none (no column has a std > 0)`; the JSON is already written). Actions outage re-run treats a non-list `components` payload as `unknown` before reading any status, so a malformed page cannot count as operational. Skipped 0.6.64–0.6.92 (in-flight docs PRs; #2477 holds 0.6.92). |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
