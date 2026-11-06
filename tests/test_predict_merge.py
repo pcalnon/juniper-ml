@@ -26,7 +26,8 @@ fixture repos (the ``tests/test_worktree_cleanup.py`` fixture idiom) -- no netwo
 * the detached-clone-never-mutates-source contract (a scratch repository under the system
   tempdir that borrows the source's objects through ``objects/info/alternates``, never a
   ``git worktree`` of -- and never a write to -- the invoking checkout), including a PR head
-  reachable only from ``refs/remotes/origin/*``;
+  reachable only from ``refs/remotes/origin/*`` and a shallow boundary whose parent object is
+  missing (a clean behind-main merge stays ``NEEDS-UPDATE-BRANCH``, not a false ``CONFLICT``);
 * CLI exit codes (0 always-report / 2 usage / 2 non-git ``--repo-root`` / ``--pr``).
 
 ``util/`` is not pre-commit-lint-gated (flake8/black scope to ``scripts``+``tests``), so
@@ -475,6 +476,7 @@ class NoMutationTest(_RepoCase):
         clone = clones[0]
         self.assertFalse(str(clone).startswith(str(self.repo)), "scratch clone must not live inside the source repo")
         self.assertTrue((clone / ".git").is_dir(), "scratch must be a git clone (.git dir), not a worktree pointer")
+        self.assertFalse((clone / ".git" / "shallow").exists(), "a non-shallow source must not grow a shallow graft")
 
     def test_a_head_reachable_only_from_origin_resolves_in_the_scratch(self):
         """A PR head reachable only from ``refs/remotes/origin/*`` -- every fleet PR's case -- is simulated, not ERROR.
@@ -508,6 +510,64 @@ class NoMutationTest(_RepoCase):
         clone = next(scratch_parent.glob("fleet-triage-*/clone"))
         alternates = (clone / ".git" / "objects" / "info" / "alternates").read_text(encoding="utf-8").split()
         self.assertEqual([Path(a).resolve() for a in alternates], [(self.repo / ".git" / "objects").resolve()])
+
+    def test_a_missing_parent_past_the_shallow_boundary_is_not_a_false_conflict(self):
+        """A behind-main PR on a shallow checkout merges cleanly; a real content conflict still conflicts.
+
+        The scratch borrows objects and used to drop ``.git/shallow``. ``git merge`` then walked the boundary
+        commit's parent, which a shallow clone never fetched, and died with ``refusing to merge unrelated
+        histories``. ``simulate_merge`` mapped that to ``CONFLICT`` with an empty ``conflicted_files``. The
+        root-boundary fixture above never deletes a parent, so it stayed green.
+        """
+        _write(self.repo, "fileA.txt", "A0\n")
+        root = _commit(self.repo, "c0")
+        _write(self.repo, "fileA.txt", "A1\n")
+        boundary = _commit(self.repo, "c1")
+        _write(self.repo, "fileA.txt", "A2\n")
+        _commit(self.repo, "c2")
+        _publish_main(self.repo)
+
+        _git(self.repo, "checkout", "-q", "-b", "cursor/behind", boundary)
+        _write(self.repo, "fileD.txt", "D\n")
+        _commit(self.repo, "add D")
+        _publish_branch(self.repo, "cursor/behind")
+        _git(self.repo, "checkout", "-q", "main")
+        _git(self.repo, "branch", "-q", "-D", "cursor/behind")
+
+        _git(self.repo, "checkout", "-q", "-b", "cursor/conflict", boundary)
+        _write(self.repo, "fileA.txt", "branch\n")
+        _commit(self.repo, "edit A")
+        _publish_branch(self.repo, "cursor/conflict")
+        _git(self.repo, "checkout", "-q", "main")
+        _git(self.repo, "branch", "-q", "-D", "cursor/conflict")
+
+        shallow = self.repo / ".git" / "shallow"
+        shallow.write_text(boundary + "\n", encoding="utf-8")
+        parent = self.repo / ".git" / "objects" / root[:2] / root[2:]
+        self.assertTrue(parent.is_file(), "the boundary's parent must be a loose object before the test deletes it")
+        parent.unlink()
+        self.assertNotEqual(_git(self.repo, "cat-file", "-t", root, check=False).returncode, 0)
+        self.assertEqual(_git(self.repo, "rev-parse", "--is-shallow-repository").stdout.strip(), "true")
+        self.assertEqual(_git(self.repo, "merge-base", "origin/main", "origin/cursor/behind").stdout.strip(), boundary)
+
+        scratch_parent = self.tmp / "scratch-parent"
+        scratch_parent.mkdir()
+        behind = pm.simulate_merge(
+            self.repo, "origin/cursor/behind", run_gates=False, keep_scratch=True, scratch_parent=scratch_parent,
+        )
+        self.assertEqual(behind["verdict"], "NEEDS-UPDATE-BRANCH", behind)
+        self.assertTrue(behind["behind_main"])
+        self.assertEqual(behind["true_delta"], ["fileD.txt"])
+        self.assertEqual(behind["conflicted_files"], [])
+        self.assertFalse(parent.exists(), "simulating a merge must not write the missing parent back into the source")
+        self.assertEqual(shallow.read_text(encoding="utf-8"), boundary + "\n")
+
+        clone = next(scratch_parent.glob("fleet-triage-*/clone"))
+        self.assertEqual((clone / ".git" / "shallow").read_bytes(), shallow.read_bytes())
+
+        conflict = pm.simulate_merge(self.repo, "origin/cursor/conflict", run_gates=False)
+        self.assertEqual(conflict["verdict"], "CONFLICT", conflict)
+        self.assertIn("fileA.txt", conflict["conflicted_files"])
 
 
 # --------------------------------------------------------------------------- #
