@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`claudey` refuses an empty `CLAUDE_PROMPT_FILE` or `CLAUDE_PROMPT_PATH`.** Those variables used `${var:-}`, so an
+  exported empty value was treated as unset and the default prompt was sent. That is the environment form of
+  `-f "${HANDOFF}"` with `HANDOFF` unset, which the flag path already refuses. A value of one space is still a value.
+  Unset stays unset, and a `--file` on the command line still replaces an empty variable.
+
 ### Changed
 
 - **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive

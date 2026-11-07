@@ -240,6 +240,15 @@ CLAUDE_PROMPT_FILE_PARAM="${CLAUDE_PROMPT_FILE:-}"
 [[ "${DEBUG}" == "${TRUE}" ]] && echo "CLAUDE_PROMPT_FILE_PARAM: ${CLAUDE_PROMPT_FILE_PARAM}" || true
 CLAUDE_PROMPT_PATH_PARAM="${CLAUDE_PROMPT_PATH:-}"
 [[ "${DEBUG}" == "${TRUE}" ]] && echo "CLAUDE_PROMPT_PATH_PARAM: ${CLAUDE_PROMPT_PATH_PARAM}" || true
+# An exported empty name is not "no file". ${var:-} above collapses it the way an unset variable collapses, and the
+# branch below would then send the default prompt. That is the environment form of -f "${HANDOFF}" with HANDOFF unset,
+# which require_nonempty_value already refuses for the flag. ${var+x} is set (even to empty) and unset otherwise.
+if [[ "${CLAUDE_PROMPT_FILE+x}" == "x" && "${CLAUDE_PROMPT_FILE}" == "" ]]; then
+    usage 1 "Missing value for ${CLAUDE_PROMPT_FILE_FLAG}"
+fi
+if [[ "${CLAUDE_PROMPT_PATH+x}" == "x" && "${CLAUDE_PROMPT_PATH}" == "" ]]; then
+    usage 1 "Missing value for ${CLAUDE_PROMPT_PATH_FLAG}"
+fi
 # A prompt file replaces the default prompt (owner ruling, 2026-11-06). wake_the_claude.bash prefers --prompt to a prompt file, so the
 # default prompt sent alongside the file would silently discard it -- and so would an explicit prompt, which is refused instead.
 if [[ ( "${CLAUDE_PROMPT_FILE_PARAM}" != "" ) || ( "${CLAUDE_PROMPT_PATH_PARAM}" != "" ) ]]; then
