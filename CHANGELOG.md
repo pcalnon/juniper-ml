@@ -62,6 +62,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     line in `tests/test_host_state_check.py`'s entry, and #2432's on when `aggregate` falls back from `stats.json`
     in `tests/test_run_suite.py`'s, each without its link to a section only the docs carrier adds.
 
+- **Operator documentation consolidated from the Cursor flood-4 docs drafts** (ml#2409, #2412, #2417, #2418,
+  #2422, #2426, #2428, #2432, #2433, #2437, #2442, #2444, #2446, #2449, #2456, #2457, #2460, #2462, #2464 and
+  #2465), every claim re-derived from `main`, the sub-package code, PyPI and the Claude Code settings docs:
+  `docs/REFERENCE.md` 0.6.64, the developer cheatsheet, the documentation overview, the quick start, and the
+  `juniper-config-tools` and `juniper-service-core` READMEs. #2424 makes #2426's claim; only #2426's
+  wording is carried. Corrected where a draft had gone stale or was wrong: recurrence 0.8.1 has been on PyPI since
+  2026-11-06, so the crossval-500 page gives the fix instead of a wait; an undeclared `py.typed` still reaches a
+  wheel (setuptools adds it implicitly), and the 0.1.0 wheel is untyped because the file did not exist yet;
+  `juniper-config-tools` joined `[tools]` in juniper-ml 0.6.0, not 0.5.0; juniper-ml#2271 closed unmerged; a fit
+  that returns while paused is documented as the defect it is (after resume a start with data is a 409 until stop
+  or reset); seven sections that sat in the footer, split a paragraph or had swallowed existing text were moved.
+  Also corrected in `main`'s own pages: the first releases with the non-ASCII API-key and Sentry frame-locals
+  fixes (`juniper-service-core` 0.7.1 and `juniper-observability` 0.4.1; juniper-data 0.17.0, juniper-cascor
+  0.12.0 and juniper-canopy 0.9.0 for their own key compare); `accuracy` (juniper-cascor#731) first ships in
+  juniper-cascor 0.13.0; the CR-024 413 for an under-declared `Content-Length` holds only at the ASGI layer; and
+  juniper-data's HTTP body limit and the worker binary-frame cap are 10 MiB and 100 MiB.
+  From #2452 only the cheatsheet's `--fork-session` example is carried: its forwarded argv now shows the `--` that
+  `wake_the_claude.bash` puts before the prompt. Not carried: #2440, the same launcher claim; the rest of #2452's
+  launcher page predates #2468, whose own cheatsheet text is current.
+
 ### Changed
 
 - **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
