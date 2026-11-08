@@ -1470,6 +1470,12 @@ jobs:
           # null final, a service before juniper-cascor#614) says why and never borrows the in-loop numbers. Fixtures are real
           # `/v1/metrics` bodies from the run corpus (`tests/cascor_eval_fixtures.py`).
           python3 -m unittest -v tests/test_stats_summary_eval_blocks.py
+          # tests/test_host_api_filesystems_check.py: the yamaguchi securityfs incident (2026-10-27 unmount, 2026-11-07 report).
+          # util/host_api_filesystems_check.py judges /proc/self/mountinfo -- not systemctl's unit list, which cannot show PID 1's
+          # own API mounts once they are gone -- against systemd's API-filesystem table, and fails when AppArmor is enabled but its
+          # securityfs interface is missing. Fixtures are yamaguchi's real mount lines; the pid1 rows are pinned to the committed
+          # systemd v259.5 source excerpt under reports/. Stdlib only.
+          python3 -m unittest -v tests/test_host_api_filesystems_check.py
 
       - name: Run bash regression tests
         run: |

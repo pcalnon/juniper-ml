@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The yamaguchi securityfs incident: root cause, remedy, and a host check that would have caught
+  it (2026-11-07).** juniper-deploy's `make up` failed on every container with *"Could not check if
+  docker-default AppArmor profile was loaded: open /sys/kernel/security/apparmor/profiles: no such
+  file or directory"*. The cause is a missing mount, not a missing profile. A root `umount -a`-like
+  event on 2026-10-27 at 17:55:25 CDT unmounted everything not in use. The same-day repair restored
+  what `systemctl` lists: the snaps and the six unit-file API mounts. PID 1's own securityfs, pstore
+  and bpf mounts have no unit file, so nothing listed them and nothing remounted them. dockerd caches
+  AppArmor support once, at start, so it kept checking the absent interface. snap-confine has been
+  failing every snap since: the legacy k8s snaps, `helm`, and every snapd refresh.
+  - `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md`
+    holds the causal chain, each link pinned to evidence and to upstream source lines at the host's
+    exact versions. It also has the timeline, the blast radius, the rejected hypotheses, the
+    unconfirmed actor, and the vetting against the kubeadm install.
+  - `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md` is the
+    owner's root procedure: no reboot, legacy snap k8s services disabled first (decision D-1), three
+    `mount` commands with systemd's options, then validation.
+  - `util/host_api_filesystems_check.py` (new) judges `/proc/self/mountinfo` against systemd's
+    API-filesystem table and AppArmor's interface. Tests: `tests/test_host_api_filesystems_check.py`,
+    25 tests, CI-wired. Its mutation check kills 11 of 11, including "judge only unit-file mounts",
+    the repair's own blind spot.
+  - `reports/2026-11-07_yamaguchi-securityfs-unmount/` holds the evidence: probe, systemd timelines,
+    source pins, the validator's negative control, the deploy suite's main-vs-branch comparison, and
+    both mutation logs. The investigation scripts are kept in `util/ad-hoc/2026-11-07_*`.
+  - Finding 17 of `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`
+    carries an erratum: "repaired without a reboot" was incomplete.
+
 ### Changed
 
 - **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
