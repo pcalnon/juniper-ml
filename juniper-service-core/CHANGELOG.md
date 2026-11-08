@@ -39,8 +39,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the handshake closes 4001, but that is the ASGI close code. A close before accept never reaches
   the client as a close frame: uvicorn answers the upgrade with HTTP 403. So a non-ASCII key is
   rejected with ASGI close 4001, which is HTTP 403 on the wire.
-- **No module changes.** Everything above is tests and CHANGELOG text, so the package's code is
-  0.7.1's.
+- **One module change**: the `FailedAuthThrottle` rounding in the next entry. Everything above
+  is tests and CHANGELOG text.
+- **A throttled failed-auth caller is told to wait until the window actually closes.**
+  `FailedAuthThrottle.check` reported `max(1, int(window - elapsed))`. The floor of 1 stopped
+  `Retry-After: 0`, which `RateLimiter` already fixed (`APD-SVCCORE-004`), but truncation still
+  under-reports every remainder with a fractional part: 9.4s left said 9, and a client obeying
+  the header woke while the window was closed and was rejected again. The wait is now rounded
+  up, with the same floor of 1. A caller who is not blocked still gets `retry_after` 0.
+  `tests/test_failed_auth_retry_after.py` pins the direction with a frozen clock. (Carried from
+  ml#2514, opened by the Cursor automation.)
 
 ## [0.7.1] - 2026-10-09
 
