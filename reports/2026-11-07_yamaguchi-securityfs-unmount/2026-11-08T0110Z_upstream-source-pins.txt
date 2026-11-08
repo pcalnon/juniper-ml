@@ -1,0 +1,246 @@
+Fetched 2026-11-08T00:30:12Z by 2026-11-07_upstream_source_pins.bash
+
+---- moby/moby @ docker-v29.7.2 (6a43e3d5afddf4111da0f864bbc7cae5d7e95001) : daemon/oci_linux.go lines 124-150
+---- why: every non-privileged container start without an explicit profile calls loadDefaultAppArmorProfileIfMissing() when appArmorSupported() is true
+   124  // WithApparmor sets the apparmor profile
+   125  func WithApparmor(c *container.Container) coci.SpecOpts {
+   126  	return func(ctx context.Context, _ coci.Client, _ *containers.Container, s *coci.Spec) error {
+   127  		if appArmorSupported() {
+   128  			var appArmorProfile string
+   129  			if c.AppArmorProfile != "" {
+   130  				appArmorProfile = c.AppArmorProfile
+   131  			} else if c.HostConfig.Privileged {
+   132  				appArmorProfile = unconfinedAppArmorProfile
+   133  			} else {
+   134  				appArmorProfile = defaultAppArmorProfile
+   135  			}
+   136  
+   137  			if appArmorProfile == defaultAppArmorProfile {
+   138  				// Unattended upgrades and other fun services can unload AppArmor
+   139  				// profiles inadvertently. Since we cannot store our profile in
+   140  				// /etc/apparmor.d, nor can we practically add other ways of
+   141  				// telling the system to keep our profile loaded, in order to make
+   142  				// sure that we keep the default profile enabled we load it again
+   143  				// if it is missing.
+   144  				if err := loadDefaultAppArmorProfileIfMissing(); err != nil {
+   145  					return err
+   146  				}
+   147  			}
+   148  			if s.Process == nil {
+   149  				s.Process = &specs.Process{}
+   150  			}
+
+---- moby/moby @ docker-v29.7.2 (6a43e3d5afddf4111da0f864bbc7cae5d7e95001) : daemon/apparmor_default.go lines 26-40
+---- why: the exact error text: 'Could not check if docker-default AppArmor profile was loaded: <open error>'
+    26  func loadDefaultAppArmorProfileIfMissing() error {
+    27  	if !defaultAppArmorProfileSupported() {
+    28  		return nil
+    29  	}
+    30  
+    31  	loaded, err := aaprofile.IsLoaded(defaultAppArmorProfile)
+    32  	if err != nil {
+    33  		return fmt.Errorf("Could not check if %s AppArmor profile was loaded: %s", defaultAppArmorProfile, err)
+    34  	}
+    35  	if loaded {
+    36  		return nil
+    37  	}
+    38  
+    39  	return installDefaultAppArmorProfile()
+    40  }
+
+---- moby/moby @ docker-v29.7.2 (6a43e3d5afddf4111da0f864bbc7cae5d7e95001) : daemon/apparmor_linux.go lines 1-16
+---- why: appArmorSupported() is containerd's apparmor.HostSupports()
+     1  package daemon
+     2  
+     3  import (
+     4  	"github.com/containerd/containerd/v2/pkg/apparmor"
+     5  	"github.com/moby/moby/v2/daemon/internal/rootless"
+     6  )
+     7  
+     8  // appArmorSupported returns true if AppArmor is supported and accessible on the host.
+     9  func appArmorSupported() bool {
+    10  	if detachedNetNS, _ := rootless.DetachedNetNS(); detachedNetNS != "" {
+    11  		// AppArmor is inaccessible with detached-netns because sysfs is netns-scoped.
+    12  		// https://github.com/moby/moby/issues/52626
+    13  		return false
+    14  	}
+    15  	return apparmor.HostSupports()
+    16  }
+
+---- moby/moby @ docker-v29.7.2 (6a43e3d5afddf4111da0f864bbc7cae5d7e95001) : vendor/github.com/containerd/containerd/v2/pkg/apparmor/apparmor_linux.go lines 17-45
+---- why: HostSupports is computed ONCE per process (sync.Once): a dockerd started while securityfs was mounted keeps answering true after it is unmounted
+    17  package apparmor
+    18  
+    19  import (
+    20  	"os"
+    21  	"sync"
+    22  )
+    23  
+    24  var (
+    25  	appArmorSupported bool
+    26  	checkAppArmor     sync.Once
+    27  )
+    28  
+    29  // hostSupports returns true if apparmor is enabled for the host, if
+    30  // apparmor_parser is enabled, and if we are not running docker-in-docker.
+    31  //
+    32  // This is derived from libcontainer/apparmor.IsEnabled(), with the addition
+    33  // of checks for apparmor_parser to be present and docker-in-docker.
+    34  func hostSupports() bool {
+    35  	checkAppArmor.Do(func() {
+    36  		// see https://github.com/opencontainers/runc/blob/0d49470392206f40eaab3b2190a57fe7bb3df458/libcontainer/apparmor/apparmor_linux.go
+    37  		if _, err := os.Stat("/sys/kernel/security/apparmor"); err == nil && os.Getenv("container") == "" {
+    38  			if _, err = os.Stat("/sbin/apparmor_parser"); err == nil {
+    39  				buf, err := os.ReadFile("/sys/module/apparmor/parameters/enabled")
+    40  				appArmorSupported = err == nil && len(buf) > 1 && buf[0] == 'Y'
+    41  			}
+    42  		}
+    43  	})
+    44  	return appArmorSupported
+    45  }
+
+---- moby/moby @ docker-v29.7.2 (6a43e3d5afddf4111da0f864bbc7cae5d7e95001) : vendor/github.com/moby/profiles/apparmor/apparmor.go lines 110-120
+---- why: IsLoaded opens /sys/kernel/security/apparmor/profiles -- the ENOENT in the reported error
+   110  func IsLoaded(name string) (bool, error) {
+   111  	return isLoaded(name, "/sys/kernel/security/apparmor/profiles")
+   112  }
+   113  
+   114  func isLoaded(name string, fileName string) (bool, error) {
+   115  	f, err := os.Open(fileName)
+   116  	if err != nil {
+   117  		return false, err
+   118  	}
+   119  	defer func() { _ = f.Close() }()
+   120  
+
+---- systemd/systemd @ v259.5 (b3d8fc43e9cb531d958c17ef2cd93b374bc14e8a) : src/shared/mount-setup.c lines 112-140
+---- why: mount_table: securityfs is mounted by PID 1 itself (no unit file)
+   112  static const MountPoint mount_table[] = {
+   113          {
+   114                  .what = "proc",
+   115                  .where = "/proc",
+   116                  .type = "proc",
+   117                  .flags = MS_NOSUID|MS_NOEXEC|MS_NODEV,
+   118                  .mode = MNT_FATAL|MNT_IN_CONTAINER|MNT_FOLLOW_SYMLINK,
+   119          },
+   120          {
+   121                  .what = "sysfs",
+   122                  .where = "/sys",
+   123                  .type = "sysfs",
+   124                  .flags = MS_NOSUID|MS_NOEXEC|MS_NODEV,
+   125                  .mode = MNT_FATAL|MNT_IN_CONTAINER,
+   126          },
+   127          {
+   128                  .what = "devtmpfs",
+   129                  .where = "/dev",
+   130                  .type = "devtmpfs",
+   131                  .options = "mode=0755" TMPFS_LIMITS_DEV,
+   132                  .flags = MS_NOSUID|MS_STRICTATIME,
+   133                  .mode = MNT_FATAL|MNT_IN_CONTAINER,
+   134          },
+   135          {
+   136                  .what = "securityfs",
+   137                  .where = "/sys/kernel/security",
+   138                  .type = "securityfs",
+   139                  .flags = MS_NOSUID|MS_NOEXEC|MS_NODEV,
+   140          },
+
+---- systemd/systemd @ v259.5 (b3d8fc43e9cb531d958c17ef2cd93b374bc14e8a) : src/shared/mount-setup.c lines 205-232
+---- why: pstore, efivarfs (EFI boots only) and bpf are also PID 1 table entries with no unit file
+   205                  .mode = MNT_FATAL|MNT_IN_CONTAINER|MNT_CHECK_WRITABLE,
+   206          },
+   207  #if ENABLE_PSTORE
+   208          {
+   209                  .what = "pstore",
+   210                  .where = "/sys/fs/pstore",
+   211                  .type = "pstore",
+   212                  .flags = MS_NOSUID|MS_NOEXEC|MS_NODEV,
+   213          },
+   214  #endif
+   215  #if ENABLE_EFI
+   216          {
+   217                  .what = "efivarfs",
+   218                  .where = "/sys/firmware/efi/efivars",
+   219                  .type = "efivarfs",
+   220                  .flags = MS_NOSUID|MS_NOEXEC|MS_NODEV,
+   221                  .condition_fn = is_efi_boot,
+   222          },
+   223  #endif
+   224          {
+   225                  .what = "bpf",
+   226                  .where = "/sys/fs/bpf",
+   227                  .type = "bpf",
+   228                  .options = "mode=0700",
+   229                  .flags = MS_NOSUID|MS_NOEXEC|MS_NODEV,
+   230          },
+   231  };
+   232  
+
+---- systemd/systemd @ v259.5 (b3d8fc43e9cb531d958c17ef2cd93b374bc14e8a) : src/core/main.c lines 3184-3195
+---- why: mount_setup() runs on every PID 1 start, a re-exec (daemon-reexec) included; skip_setup only changes propagation handling
+  3184  
+  3185                  /* Load the kernel modules early. */
+  3186                  if (!skip_setup)
+  3187                          (void) kmod_setup();
+  3188  
+  3189                  /* Mount /proc, /sys and friends, so that /proc/cmdline and /proc/$PID/fd is available. */
+  3190                  r = mount_setup(loaded_policy, skip_setup);
+  3191                  if (r < 0) {
+  3192                          error_message = "Failed to mount API filesystems";
+  3193                          goto finish;
+  3194                  }
+  3195  
+
+---- systemd/systemd @ v259.5 (b3d8fc43e9cb531d958c17ef2cd93b374bc14e8a) : src/core/main.c lines 3005-3019
+---- why: skip_setup is true exactly when PID 1 is deserializing (a re-exec)
+  3005  static bool early_skip_setup_check(int argc, char *argv[]) {
+  3006          bool found_deserialize = false;
+  3007  
+  3008          /* Determine if this is a reexecution or normal bootup. We do the full command line parsing much
+  3009           * later, so let's just have a quick peek here. Note that if we have switched root, do all the
+  3010           * special setup things anyway, even if in that case we also do deserialization. */
+  3011  
+  3012          for (int i = 1; i < argc; i++)
+  3013                  if (streq(argv[i], "--switched-root"))
+  3014                          return false; /* If we switched root, don't skip the setup. */
+  3015                  else if (startswith(argv[i], "--deserialize=") || streq(argv[i], "--deserialize"))
+  3016                          found_deserialize = true;
+  3017  
+  3018          return found_deserialize; /* When we are deserializing, then we are reexecuting, hence avoid the extensive setup */
+  3019  }
+
+---- canonical/snapd @ 2.77.1 (8a77c5017df4443c8e8b4e0d74d1c51c904453c4) : cmd/libsnap-confine-private/apparmor-support.c lines 44-76
+---- why: snap-confine dies on aa_is_enabled() ENOENT: 'aa_is_enabled() failed unexpectedly' -- every snap app and snap service start fails
+    44  #ifdef HAVE_APPARMOR
+    45      // Use aa_is_enabled() to see if apparmor is available in the kernel and
+    46      // enabled at boot time. If it isn't log a diagnostic message and assume
+    47      // we're not confined.
+    48      if (aa_is_enabled() != true) {
+    49          switch (errno) {
+    50              case ENOSYS:
+    51                  debug("apparmor extensions to the system are not available");
+    52                  break;
+    53              case ECANCELED:
+    54                  debug("apparmor is available on the system but has been disabled at boot");
+    55                  break;
+    56              case EPERM:
+    57                  // NOTE: fall-through
+    58              case EACCES:
+    59                  debug("insufficient permissions to determine if apparmor is enabled");
+    60                  // since snap-confine is setuid root this should
+    61                  // never happen so likely someone is trying to
+    62                  // manipulate our execution environment - fail hard
+    63  
+    64                  // fall-through
+    65              case ENOENT:
+    66              case ENOMEM:
+    67              default:
+    68                  // this shouldn't happen under normal usage so it
+    69                  // is possible someone is trying to manipulate our
+    70                  // execution environment - fail hard
+    71                  die("aa_is_enabled() failed unexpectedly (%s)", strerror(errno));
+    72                  break;
+    73          }
+    74          apparmor->is_confined = false;
+    75          apparmor->mode = SC_AA_NOT_APPLICABLE;
+    76          return;

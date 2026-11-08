@@ -1,0 +1,11 @@
+== efficacy
+[FAIL] E1 API filesystems mounted, AppArmor consistent  (exit 1: host_api_filesystems_check: 4 problem(s))
+[FAIL] E2 AppArmor interface present  (exit 1: )
+[FAIL] E3 juniper-deploy AppArmor preflight  (exit 1: preflight_apparmor: AppArmor interface missing. Bypass with JUNIPER_APPARMOR_OK=1.)
+[FAIL] E4 a container starts confined  (got: docker: Error response from daemon: Could not check if docker-default AppArmor profile was loaded: open /sys/kernel/security/apparmor/profiles: no such file or directory
+
+Run 'docker run --help' for more information)
+[FAIL] E5 snap-confine runs a snap  (exit 1: aa_is_enabled() failed unexpectedly (No such file or directory): No such file or directory)
+== regression (fingerprint vs reports/2026-11-07_yamaguchi-securityfs-unmount/2026-11-08T0215Z_remount-fingerprint-incident-state.txt)
+[PASS] fingerprint unchanged
+== FAIL (5)

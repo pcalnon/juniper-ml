@@ -1,0 +1,16 @@
+baseline (unmutated): exit=0  18 passed in 0.51s
+[KILLED] securityfs always reported mounted  (3 failed, 15 passed in 0.46s)
+[KILLED] interface always present  (5 failed, 13 passed in 0.53s)
+[KILLED] dockerd always reported using AppArmor  (2 failed, 16 passed in 0.47s)
+[KILLED] kernel Y not recognised  (9 failed, 9 passed in 0.49s)
+[KILLED] FAIL path exits 0  (5 failed, 13 passed in 0.50s)
+[KILLED] WARN path blocks bring-up  (1 failed, 17 passed in 0.43s)
+[KILLED] bypass ignored  (1 failed, 17 passed in 0.45s)
+[KILLED] first mount at the point wins  (1 failed, 17 passed in 0.42s)
+[KILLED] fstype read from the wrong field  (1 failed, 17 passed in 0.45s)
+[KILLED] remount drops noexec  (2 failed, 16 passed in 0.45s)
+[KILLED] daemon error text drifts  (2 failed, 16 passed in 0.48s)
+[KILLED] daemon asked even when AppArmor is off  (4 failed, 14 passed in 1.36s)
+[KILLED] unreachable daemon treated as no AppArmor  (1 failed, 17 passed in 0.47s)
+[KILLED] restart advised before the remount  (1 failed, 17 passed in 0.47s)
+14 of 14 mutants killed

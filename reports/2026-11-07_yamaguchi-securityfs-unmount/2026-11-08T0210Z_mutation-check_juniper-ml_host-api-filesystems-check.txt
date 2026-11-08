@@ -1,0 +1,13 @@
+baseline (unmutated): exit=0
+[KILLED] bpf loses mode=0700  (FAILED (failures=2))
+[KILLED] securityfs treated as a unit-file mount  (FAILED (failures=4))
+[KILLED] repair-scoped: only unit-file mounts are judged  (FAILED (failures=5, errors=7))
+[KILLED] AppArmor consistency never fails  (FAILED (failures=4))
+[KILLED] first mount at a point wins  (FAILED (failures=1))
+[KILLED] applicability ignored  (FAILED (failures=10))
+[KILLED] CLI always exits 0  (FAILED (failures=3))
+[KILLED] octal escapes not decoded  (FAILED (failures=1))
+[KILLED] fstype not compared  (FAILED (failures=3))
+[KILLED] module parameter Y not recognised  (FAILED (failures=4))
+[KILLED] fstype read from the source field  (FAILED (failures=2))
+11 of 11 mutants killed
