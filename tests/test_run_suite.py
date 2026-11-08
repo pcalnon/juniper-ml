@@ -1293,6 +1293,25 @@ class RowMetricsTest(unittest.TestCase):
         self.assertEqual(run_suite._row_metrics({"run_dir": None, "metrics": None}), {})
         self.assertEqual(run_suite._row_metrics({"run_dir": "", "metrics": ["val_accuracy"]}), {})
 
+    def test_an_empty_object_is_a_readable_file_with_no_headline(self) -> None:
+        # ``{}`` parsed. A truthiness check (``stats or None``) treats that object as missing and
+        # substitutes the registry's recorded metrics. The file was readable; it has no headline.
+        run_dir = _stats_run_dir(self, {})
+        self.assertEqual(run_suite._read_stats(run_dir), {})
+        self.assertEqual(run_suite._row_metrics({"run_dir": str(run_dir), "metrics": {"val_accuracy": 0.5}}), {})
+
+    def test_a_json_value_that_is_not_an_object_falls_back_to_the_recorded_metrics(self) -> None:
+        # ``json.loads`` accepts these. They are not a stats object, so they are the missing-file case:
+        # the registry's recorded metrics, and no ``.get`` on the parsed value. ``[1]``, ``"stats"`` and
+        # ``true`` are truthy, so ``stats or None`` still hands them to ``_stats_headline``.
+        recorded = {"val_accuracy": 0.5}
+        for text in ("[]", "[1]", "null", "0", '"stats"', "true"):
+            with self.subTest(text=text):
+                run_dir = _stats_run_dir(self, None)
+                (run_dir / "artifacts" / "results" / "stats.json").write_text(text)
+                self.assertIsNone(run_suite._read_stats(run_dir))
+                self.assertEqual(run_suite._row_metrics({"run_dir": str(run_dir), "metrics": recorded}), recorded)
+
 
 class ReaggregateTest(unittest.TestCase):
     """APD-ML-002 ruling 3: ``--reaggregate SUITE_DIR`` re-renders ``aggregate.csv`` + ``REPORT.md`` from disk and LAUNCHES NOTHING.

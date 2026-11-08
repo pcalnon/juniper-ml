@@ -484,8 +484,21 @@ def test_tls_half_config_key_only_raises(tmp_path) -> None:
 
 
 # ======================================================================================
-# security: ConnectionRateLimiter stale-bucket cleanup
+# security: ConnectionRateLimiter refill cap and stale-bucket cleanup
 # ======================================================================================
+
+
+def _freeze_worker_clock(monkeypatch: pytest.MonkeyPatch, now: float) -> dict[str, float]:
+    """Pin ``workers.security.time.time`` so a bucket boundary is exact. No sleep.
+
+    ``_TokenBucket.last_refill`` is filled by the dataclass default, which captured ``time.time`` at
+    import, so the first ``allow`` of a new bucket still stamps the real clock. Callers therefore pass
+    a ``now`` in the future: the burst cap absorbs that one large elapsed gap, and every later stamp
+    is the frozen clock.
+    """
+    clock = {"t": now}
+    monkeypatch.setattr("juniper_service_core.workers.security.time.time", lambda: clock["t"])
+    return clock
 
 
 def test_rate_limiter_prunes_stale_buckets() -> None:
@@ -499,6 +512,73 @@ def test_rate_limiter_prunes_stale_buckets() -> None:
     assert limiter.allow("fresh-src") is True  # triggers _maybe_cleanup -> prunes 'stale-src'
     assert "stale-src" not in limiter._buckets
     assert "fresh-src" in limiter._buckets
+
+
+def test_rate_limiter_refills_only_up_to_burst_and_a_denial_spends_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
+    """One second at 60/min earns one token. A long idle stops at burst. A refusal does not spend one.
+
+    ``test_rate_limiter_allows_burst_then_blocks`` never leaves the exhausted instant, so deleting the
+    refill, dropping the ``min(burst, ...)`` cap, or charging a token on the way out all stay green.
+    60/min is exactly one token per second.
+    """
+    clock = _freeze_worker_clock(monkeypatch, float(int(time.time()) + 20_000))
+    limiter = ConnectionRateLimiter(max_connections_per_minute=60, burst_size=2, cleanup_interval=10_000.0)
+    assert limiter.allow("src") is True
+    assert limiter.allow("src") is True
+    assert limiter.allow("src") is False  # burst spent
+    assert limiter.allow("src") is False  # a refusal does not create the next token
+
+    assert limiter.allow("other") is True
+    other = limiter._buckets["other"]
+    other_tokens = other.tokens
+
+    clock["t"] += 1.0
+    assert limiter.allow("src") is True  # one second of refill
+    assert limiter.allow("src") is False  # and only one token
+
+    clock["t"] += 100.0
+    assert limiter.allow("src") is True
+    assert limiter.allow("src") is True
+    assert limiter.allow("src") is False  # 100s of idle does not exceed burst
+    assert limiter._buckets["other"] is other
+    assert other.tokens == other_tokens
+
+
+def test_rate_limiter_cleanup_keeps_a_bucket_aged_exactly_one_interval(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Cleanup drops a bucket only once it is strictly older than the interval.
+
+    Pruning at equality hands that source a fresh burst, which is a connection-rate bypass. The
+    far-past prune test never sits on the boundary, and the source it keeps is inserted after
+    cleanup, so deleting every bucket would still look green.
+    """
+    clock = _freeze_worker_clock(monkeypatch, float(int(time.time()) + 20_000))
+    interval = 300.0
+    limiter = ConnectionRateLimiter(max_connections_per_minute=60, burst_size=1, cleanup_interval=interval)
+    assert limiter.allow("live") is True
+    assert limiter.allow("aged") is True
+    assert limiter.allow("live") is False
+    assert limiter.allow("aged") is False
+
+    start = clock["t"]
+    clock["t"] = start + interval
+    live = limiter._buckets["live"]
+    aged = limiter._buckets["aged"]
+    live.last_access = start  # age == interval; `>` must keep it
+    live.last_refill = clock["t"]  # the probe call must not refill the kept bucket
+    live.tokens = 0.0
+    aged.last_access = start - 1.0  # age == interval + 1s
+    aged.tokens = 0.0
+    limiter._last_cleanup = start  # age == interval, so the `<` guard lets cleanup run
+
+    assert limiter.allow("live") is False
+    assert limiter._buckets["live"] is live
+    assert live.tokens == 0.0
+    assert "aged" not in limiter._buckets
+
+    assert limiter.allow("aged") is True  # pruned, so the next attempt is a new burst
+    assert limiter._buckets["aged"] is not aged
+    assert limiter._buckets["live"] is live
+    assert live.tokens == 0.0
 
 
 # ======================================================================================

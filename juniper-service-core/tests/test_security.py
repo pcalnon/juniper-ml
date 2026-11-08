@@ -376,3 +376,64 @@ class TestRateLimiterScopeIsStated:
         for phrase in ("single-process", "replica", "shared store"):
             assert phrase in throttle_doc, f"sibling lost its own disclosure: {phrase}"
             assert phrase in limiter_doc, f"RateLimiter is missing: {phrase}"
+
+
+class TestExhaustedWindowAdmitsAgainAtTheBoundary:
+    """The fixed window has to open again. The in-window tests never leave it.
+
+    ``TestRetryAfterNeverTellsTheClientZero`` and ``test_rate_limiter_blocks_after_limit``
+    both stay inside one window, so a ``check`` that stopped resetting would still pass:
+    the first request of a fresh key takes the rollover branch (the stored start is 0),
+    later requests in that window count, and nothing asks what happens when the window
+    actually ends. Forgetting the reset, or keeping the old count, locks a client out
+    for the life of the process. Forgetting the early return on that branch denies the
+    first request of the new window, because the unpacked count is still the old one.
+
+    The clock is frozen. A sleep long enough to cross the window is environment-sensitive;
+    these instants are exact, including the ``>=`` boundary.
+    """
+
+    def _freeze(self, monkeypatch: pytest.MonkeyPatch) -> dict[str, float]:
+        now = {"t": 1_000.0}
+        monkeypatch.setattr("juniper_service_core.security.time.time", lambda: now["t"])
+        return now
+
+    def test_the_boundary_starts_a_new_window_at_count_one(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        now = self._freeze(monkeypatch)
+        limiter = RateLimiter(requests_per_minute=2, window_seconds=10)
+
+        assert limiter.check("k") == (True, 1, 10)
+        assert limiter.check("k") == (True, 0, 10)
+        assert limiter.check("k") == (False, 0, 10)
+        assert limiter._counters["k"] == (2, 1_000.0)
+
+        # One millisecond remains. Still the old window, and a denial does not add a count.
+        now["t"] = 1_009.999
+        assert limiter.check("k") == (False, 0, 1)
+        assert limiter._counters["k"] == (2, 1_000.0)
+
+        # Elapsed == window. ``>`` would keep denying; the contract is ``>=``.
+        now["t"] = 1_010.0
+        assert limiter.check("k") == (True, 1, 10)
+        assert limiter._counters["k"] == (1, 1_010.0)
+
+        # The new window admits the budget again, and its reset rounds up (8.8s left is 9, not 8 and not 10).
+        now["t"] = 1_011.2
+        assert limiter.check("k") == (True, 0, 9)
+        assert limiter._counters["k"] == (2, 1_010.0)
+        assert limiter.check("k") == (False, 0, 9)
+        assert limiter._counters["k"] == (2, 1_010.0)
+
+    def test_rolling_one_key_leaves_every_other_key_in_its_own_window(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        now = self._freeze(monkeypatch)
+        limiter = RateLimiter(requests_per_minute=2, window_seconds=10)
+        limiter.check("other")
+        limiter.check("k")
+        limiter.check("k")
+        assert limiter.check("k")[0] is False
+
+        now["t"] = 1_010.0
+        assert limiter.check("k") == (True, 1, 10)
+        assert limiter._counters["k"] == (1, 1_010.0)
+        # Not checked, so its window did not move and its count was not cleared.
+        assert limiter._counters["other"] == (1, 1_000.0)

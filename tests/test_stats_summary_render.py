@@ -203,6 +203,24 @@ class GitAndKindRenderTest(unittest.TestCase):
                 self.assertIn("- theta: 91.0 (service default from service.default_theta; train.theta is unset)", rendered)
                 self.assertNotIn("data-driven", rendered)
 
+    def test_a_zero_theta_is_a_value(self) -> None:
+        """0 is a real θ. The service uses ``is not None``; a truthiness check would call both of these data-driven.
+
+        An explicit 0 outranks a service default. An unset train θ with ``default_theta`` 0.0 is that
+        service default, and ``summary.md`` prints the zero rather than dropping the line.
+        """
+        explicit = ss.build_stats(_manifest(), kind="recurrence", train_summary={}, train_config={"theta": 0}, service_config={"default_theta": 91.0})
+        self.assertEqual(explicit["recurrence"]["theta"], {"value": 0, "note": "explicit"})
+        rendered = ss.render_summary_md(explicit)
+        self.assertIn("- theta: 0 (explicit)", rendered)
+        self.assertNotIn("data-driven", rendered)
+
+        service_default = ss.build_stats(_manifest(), kind="recurrence", train_summary={}, train_config={"theta": None}, service_config={"default_theta": 0.0})
+        self.assertEqual(service_default["recurrence"]["theta"], {"value": 0.0, "note": "service default from service.default_theta; train.theta is unset"})
+        rendered = ss.render_summary_md(service_default)
+        self.assertIn("- theta: 0.0 (service default from service.default_theta; train.theta is unset)", rendered)
+        self.assertNotIn("data-driven", rendered)
+
     def test_theta_source_precedence(self) -> None:
         """An explicit ``train.theta`` outranks the service default; a null or absent default leaves θ data-driven."""
         data_driven = {"value": None, "note": "data-driven (resolved from per-window elapsed time)"}
