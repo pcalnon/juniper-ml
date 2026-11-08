@@ -2443,6 +2443,86 @@ class PlotRendererUnitTest(unittest.TestCase):
         self.assertIn("no eval metrics to plot", str(ctx.exception))
         self.assertFalse((self.tmp / "eval.png").exists())
 
+    def test_a_schema_1_cascor_block_is_not_drawn_as_the_run_eval_scalars(self) -> None:
+        """juniper-experiment-stats/1 stored the in-loop numbers under eval_scalars, with no split.
+
+        Re-plotting that block must not draw them as the run's eval scalars (juniper-ml#2064).
+        """
+        from tests.cascor_eval_fixtures import V1_STATS_CASCOR
+
+        legacy_f1 = V1_STATS_CASCOR["eval_scalars"]["f1"]
+        names, series, subtitle = self.plots.eval_metrics_series(V1_STATS_CASCOR)
+        self.assertEqual(series, [])
+        self.assertEqual(names, [])
+        self.assertEqual(subtitle, "no final evaluation (no labelled final-evaluation block): the in-loop bars are NOT the run's eval scalars")
+        self.assertNotIn(str(legacy_f1), subtitle)
+        with self.assertRaises(ValueError) as ctx:
+            self.plots.render_eval_metrics(V1_STATS_CASCOR, "legacy", self.tmp / "legacy.png")
+        self.assertIn("no eval metrics to plot", str(ctx.exception))
+        self.assertIn("no labelled final-evaluation block", str(ctx.exception))
+        self.assertNotIn(str(legacy_f1), str(ctx.exception))
+        self.assertFalse((self.tmp / "legacy.png").exists())
+
+    def test_unlabelled_numbers_beside_a_real_in_loop_block_stay_off_the_bars(self) -> None:
+        """The same unlabelled eval_scalars, next to a labelled in-loop block, are still not the final evaluation."""
+        from tests.cascor_eval_fixtures import V1_STATS_CASCOR
+
+        legacy = V1_STATS_CASCOR["eval_scalars"]
+        blocks = {
+            "eval_scalars": dict(legacy),
+            "eval_scalars_in_loop": {"split": "training", "n_samples": 200, "held_out": False, "absent": None, "f1": 0.4},
+        }
+        names, series, subtitle = self.plots.eval_metrics_series(blocks)
+        self.assertEqual([(role, label) for role, label, _ in series], [("in-loop", "in-loop: training split, n=200, NOT held out: the training split")])
+        self.assertEqual(series[0][2], {"f1": 0.4})
+        self.assertNotIn(legacy["f1"], series[0][2].values())
+        self.assertEqual(names, ["f1"])
+        self.assertEqual(subtitle, "no final evaluation (no labelled final-evaluation block): the in-loop bars are NOT the run's eval scalars")
+        raw = self.plots.render_eval_metrics(blocks, "mixed", self.tmp / "mixed.png").read_bytes()
+        self.assertTrue(raw.startswith(PNG_MAGIC))
+
+    def test_an_absent_block_keeps_stale_numbers_off_the_bars(self) -> None:
+        """A block that says why it is absent must not contribute bars, even when stale scores are still on it."""
+        reason = "eval metrics disabled (JUNIPER_CASCOR_EVAL_METRICS_ENABLED)"
+        stale = 0.9187214255011527
+        blocks = {
+            "eval_scalars": {"split": "test", "n_samples": 120, "held_out": True, "absent": reason, "f1": stale, "accuracy": 0.9},
+            "eval_scalars_in_loop": {"split": "validation", "n_samples": 160, "held_out": False, "absent": None, "f1": 0.5},
+        }
+        names, series, subtitle = self.plots.eval_metrics_series(blocks)
+        self.assertEqual([role for role, _, _ in series], ["in-loop"])
+        self.assertEqual(series[0][2], {"f1": 0.5})
+        self.assertNotIn(stale, series[0][2].values())
+        self.assertNotIn(0.9, series[0][2].values())
+        self.assertEqual(names, ["f1"])
+        self.assertEqual(subtitle, f"no final evaluation ({reason}): the in-loop bars are NOT the run's eval scalars")
+        blocks["eval_scalars_in_loop"]["absent"] = reason
+        blocks["eval_scalars_in_loop"]["f1"] = stale
+        with self.assertRaises(ValueError) as ctx:
+            self.plots.render_eval_metrics(blocks, "absent", self.tmp / "absent.png")
+        self.assertIn("no eval metrics to plot", str(ctx.exception))
+        self.assertIn(reason, str(ctx.exception))
+        self.assertFalse((self.tmp / "absent.png").exists())
+
+    def test_a_numeric_string_is_not_a_bar(self) -> None:
+        """A score stored as text is not a measurement. float() would accept it; the plot must not."""
+        blocks = {
+            "eval_scalars": {"split": "test", "n_samples": 120, "held_out": True, "absent": None, "f1": "0.9187214255011527", "accuracy": 0.5},
+            "eval_scalars_in_loop": {"split": "validation", "n_samples": 160, "held_out": False, "absent": None, "f1": "0.4"},
+        }
+        _, series, subtitle = self.plots.eval_metrics_series(blocks)
+        self.assertEqual([role for role, _, _ in series], ["final evaluation"])
+        self.assertEqual(series[0][2], {"accuracy": 0.5})
+        self.assertNotIn("it defined no metric", subtitle)
+        string_only = {
+            "eval_scalars": {"split": "test", "n_samples": 120, "held_out": True, "absent": None, "accuracy": "0.0", "f1": "0.9"},
+            "eval_scalars_in_loop": {"split": "validation", "n_samples": 160, "held_out": False, "absent": None, "f1": 0.4},
+        }
+        _, series, subtitle = self.plots.eval_metrics_series(string_only)
+        self.assertEqual([role for role, _, _ in series], ["in-loop"])
+        self.assertEqual(series[0][2], {"f1": 0.4})
+        self.assertEqual(subtitle, "eval scalars = the final evaluation (test split, n=120, held out); it defined no metric")
+
     def test_render_candidate_correlation_rejects_empty_cells(self) -> None:
         rows = [{"ts_unix": "1.0", "juniper_cascor_candidate_correlation": "", "current_hidden_units": "0"}]
         with self.assertRaises(ValueError):
