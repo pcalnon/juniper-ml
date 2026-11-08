@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.63
-**Date**: 2026-10-08
+**Version**: 1.0.64
+**Date**: 2026-11-07
 **Project**: juniper-ml
 
 ---
@@ -57,6 +57,7 @@
 | `jq '.outcome.timings' $RUN_DIR/artifacts/results/stats.json` | Read Wave 2.6 timings; recurrence train/crossval live here, not under `.recurrence` |
 | `jq '.cascor.training_step_duration.basis, .provenance.metrics_scraped.scrape_confirmed' $RUN_DIR/artifacts/results/stats.json` | Per-poll (not per-step) p50/p95; scrape_confirmed is tri-state |
 | `jq '{schema, eval: .cascor.eval_scalars, in_loop: .cascor.eval_scalars_in_loop}' $RUN_DIR/artifacts/results/stats.json` | Cascor eval scalars = the final evaluation (`split`, `n_samples`, `held_out`, or `absent` + why); in-loop values beside them. `/1` files hold in-loop values in `eval_scalars` (juniper-ml#2064) |
+| `jq '.cascor.eval_scalars.accuracy, .recurrence.theta' $RUN_DIR/artifacts/results/stats.json` | `0` / `0.0` is a measured value (`- accuracy: 0`, a bar of height 0, `test_*` column kept when `split` is `test`). A bool is text in `summary.md` and is dropped from the plot and from `aggregate.csv`. `train.theta: 0` stays `explicit`. [A zero is a measured value](REFERENCE.md#a-zero-is-a-measured-value) |
 | `python util/experiments/read_run_metrics.py SUITE_DIR` | Read ratified `step_count` / `mean_step_seconds` (not `wall_seconds` / `timings.drive`) |
 | `python util/experiments/make_baseline.py --tag TAG --suite SUITE_DIR` | Bless suite runs under `~/.local/state/juniper-experiments/baselines/<TAG>/` |
 | `python util/experiments/compare_baseline.py --baseline TAG --suite SUITE_DIR` | Split-compare a suite to a Q-8 baseline (exit 0 PASS/WAIVED, 1 FAIL, 2 REFUSED) |
@@ -142,6 +143,14 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 **Cascor-primary freeze:** `python3 util/ad-hoc/cascor_freeze_tell.py`. Exit 1 = a user-owned process holds `/home/pcalnon/Development/python/Juniper/juniper-cascor` — do not edit it. Exit 0 is "no user-owned importer", not "no importer" (root-owned `/proc/<pid>/{fd,environ,maps}` are invisible). Sibling `juniper-cascor-client` / `-worker` and both worktree roots are not holds. [REFERENCE.md § Cascor Primary Freeze Tell](REFERENCE.md#cascor-primary-freeze-tell).
 
+**G-SEC firewall:** `python3 util/host_state_check.py --host turing --section G-SEC --check`.
+A pass needs `State >= 1` on `--getglobalstate` and, on the separate `--getblockall` capture, the phrase `is blocking all non-essential incoming connections`.
+Turing's state-2 global line contains that phrase; paired with `has block all state set to disabled` the condition fails and the fix names only `--setblockall on`.
+`State = 0` fails even when block-all prints the on sentence.
+`--setblockall`'s confirmation (`is set to block all ...`), and the unknown and undefined getter sentences, are an error with no fix while the firewall is on.
+Stealth is reported in the message.
+[REFERENCE — The firewall gate reads getblockall](REFERENCE.md#the-firewall-gate-reads-getblockall).
+
 ---
 
 ## Secrets Management (SOPS)
@@ -190,6 +199,8 @@ the file. `-u` prints the usage text and exits 1.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 
+The tracked root `settings.local.json` is not a Claude Code settings file. `"idleCompaction": false` there does not turn idle compaction off. Put that key in gitignored `.claude/settings.local.json`, or in `~/.claude/settings.json`. See [Idle compaction and the tracked settings file](REFERENCE.md#idle-compaction-and-the-tracked-settings-file).
+
 ### Session ID and Resume
 
 ```bash
@@ -215,7 +226,7 @@ Example (alias input to canonical output):
 
 ```bash
 bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --fork --prompt "hello"
-# Forwards args to claude as: --resume <uuid> --fork-session "hello"
+# Forwards args to claude as: --resume <uuid> --fork-session -- hello
 ```
 
 This behavior is regression-tested in `tests/test_wake_the_claude.py`:
@@ -376,6 +387,7 @@ Tip: `csv_import` refuses sources over 128 MiB with HTTP **422** until `dataset.
 | Live `@claude` assistant | `.github/workflows/claude.yml` — SHA-pinned `anthropics/claude-code-action`; not a required check; see tip below |
 | Audit all siblings     | `JUNIPER_ROOT=/path/to/Juniper bash util/validate_claude_yaml_access.bash`                  |
 | AGENTS.md date bump    | **You bump it**; CI verifies on PRs touching `AGENTS.md` (`agents-md-touch-up.yml`; no bot commit) |
+| `safe_merge` result SHA | The `MERGED #` line's SHA is the verified head. Squash commit: `gh pr view N --json mergeCommit` |
 | Shared-package CI      | Path-scoped `ci-<pkg>.yml` under `.github/workflows/` (six packages; see REFERENCE)         |
 | Open-PR budget alarm   | Daily 14:00 UTC `pr-budget-alarm.yml` (report-only); `gh workflow run pr-budget-alarm.yml`  |
 | Ruleset context audit  | `python util/ad-hoc/2026-08-10_ruleset_context_audit.py` (read-only; see tip below)         |
@@ -674,6 +686,11 @@ Full contract: [REFERENCE — Isolated Stack E2E](REFERENCE.md#isolated-stack-e2
 
 Tip: a CAN-015 replay replaces that cascor's network. Bring the stack up with `util/ad-hoc/2026-10-04_replay_redrive_stack.bash` (`JUNIPER_REDRIVE_ECO` outside the primary tree; ports `8113`/`8214`/`8063`). Replay an explicit `POST /v1/snapshots`. An automatic `create_snapshot` has `length=0`. [REFERENCE — CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive).
 
+Tip: the shared `ReplaySession` (`POST /v1/snapshots/{id}/replay/control`) clamps speed to [-10, 10]. A magnitude below 0.1 stays `paused: false` and leaves the index.
+The thread sleeps `min(1/abs(speed), 0.5)`, so speed `1` advances every 0.5 s. Range `end` is exclusive, and an inverted range collapses.
+A `fit` that returns while the lifecycle is PAUSED leaves that status and writes `monitor.status` `completed`. Resume then reports STARTED with the thread already gone, and a start with data is refused (409) until `POST /v1/training/stop` or `/reset`.
+[REFERENCE — Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion).
+
 Tip: F-CANOPY-027 is **12-slot dash-renderer starvation**, not missing wiring (FIXED canopy#507/#509/#511). Terminal render callbacks lose `sortPriority` DESC arbitration.
 Do **not** add a new Interval/poller (F-027 rule; canopy#524 shared `metrics-panel-metrics-store`). Isolated stack only (`JuniperCanopy1`; empty `LD_LIBRARY_PATH`).
 Queues/ready/slots inherit `JUNIPER_E2E_CANOPY_URL` (no `--base-url`). See [REFERENCE — F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes).
@@ -682,10 +699,14 @@ Tip: `util/experiment_stack.bash` is the **per-run** launcher (data `8110–8139
 
 Tip: before `serve`, the recurrence leg of both launchers runs `bash util/recurrence_env_preflight.bash` (scoped `pip check`, the installed app's model / service-core pins, the `derive_full_split` import). A finding refuses the leg and tears the partial stack down; read `$RUN_DIR/logs/launch.log`.
 `--skip-env-preflight` warns and still serves. `run_suite.py` cannot pass it: export `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` (`isolated_stack.bash` reads `JUNIPER_E2E_SKIP_ENV_PREFLIGHT`). CUDA `pip check` lines are not findings.
-Full contract: [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight).
+`juniper-recurrence` 0.8.0 with `juniper-model-core` 0.2.0 still prints `ENV PREFLIGHT OK`, then every `POST /v1/crossval` raises `TypeError: walk_forward_folds() got an unexpected keyword argument 'groups'` (HTTP 500).
+The pin probe does not read model-core, and 0.8.0 declares `>=0.2.0`. Fixed in 0.8.1 (PyPI 2026-11-06): `python -m pip install -U "juniper-recurrence>=0.8.1,<0.9.0"`, or model-core `>=0.3.0,<0.4.0` alone to stay on 0.8.0.
+Full contract: [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight); the 0.8.0 + model-core 0.2.0 case: [REFERENCE — Crossval 500 with model-core 0.2.0](REFERENCE.md#crossval-500-with-model-core-020).
 
 Tip: `outputs.save_model: true` saves the recurrence model the run scored: `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, copied to `model.npz` (juniper-ml#2211); a 409 is `outcome: degraded` (exit 1) with no re-fit. Only a service that returns no `operation_id` gets the old re-fit, which re-runs the `juniper-recurrence` CLI the launcher recorded (`ports.json` `recurrence_launch.cli`, W1.9), and only under rerun parity: the same interpreter and `juniper-recurrence-model` version that `serve` ran. A mismatch is `outcome: degraded` (exit 1) and the CLI is not started.
 `recurrence_up` exports `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=$RUN_DIR/snapshots` (W1.10); a YAML `service:` key still outranks it and the two log knobs. Full contract: [REFERENCE — Recurrence launch record](REFERENCE.md#recurrence-launch-record-and-service-env).
+
+Tip: a snapshot save that gets any status but 201, loses the connection, disagrees on `size_bytes` (a missing field is `None`), or fails the copy does not re-fit either. The run stays `degraded` (exit 1), not exit 3. A bad copy deletes `artifacts/results/model.npz`; an HTTP error leaves an older file where it was. [REFERENCE — A failed snapshot save does not re-fit](REFERENCE.md#a-failed-snapshot-save-does-not-re-fit).
 
 Tip: `compare_baseline.py` is a **split** gate (exact `step_count`, ungated speed). The #1710 counterexample is
 **settled**: a corpus census (333 runs) showed all 29 divergences are explained by `completion_reason`, and #1733 made
@@ -715,6 +736,7 @@ Tip: `run_suite` `aggregate.csv` / `REPORT.md` now carry both gate inputs (`step
 
 Tip: a recurrence cell that trained but lost an enabled predict / crossval / `save_model` phase is `degraded` (W0.3): never counted as succeeded, re-run by `--resume`, suite exit 1.
 `train_r2` is `stats.recurrence.final_metrics.r2` and `cv_r2` is `crossval.eval_aggregate.r2` — blank, not 0, when crossval is null; `0.0` and `-18081.0` are real values. Cascor cells carry `train_accuracy` / `val_accuracy` from `stats.cascor.final` since 2026-10-26 (`APD-ML-002`); `val_accuracy` is selected-on, not held out. Since juniper-ml#2064 they also carry the held-out `test_accuracy` / `test_f1` / `test_precision` / `test_recall` / `test_roc_auc`, but only from a final evaluation of the TEST split (`stats.cascor.eval_scalars.split == "test"`): a validation final block, or none, leaves them blank, and `test_accuracy` needs a cascor with juniper-cascor#731. `final_accuracy` is refused. A NaN or infinite value fails any band. Backfill an older suite with `run_suite.py --reaggregate SUITE_DIR`, which launches nothing.
+A readable `stats.json` that is `{}` or has no headline columns is the source, so the registry's recorded metrics stay off the report. A missing, invalid, or non-object file is what prints those recorded metrics. See [REFERENCE — An empty stats.json is not a missing file](REFERENCE.md#an-empty-statsjson-is-not-a-missing-file).
 See [REFERENCE — Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics).
 
 Tip: on a failed `*_up` leg, `do_up` auto-calls `teardown_run` (because `ports.json` is written before launches). Expect `bring-up failed — tearing the partial run back down`, then inspect `$RUN_DIR/logs/` + `teardown.json` before retrying. Pidfile refuse → kill-by-port on the recorded port only (open #923).
@@ -765,6 +787,11 @@ The watchdog has no default job id — an absent `--backup-id` records `JOB_MISS
 Deploy with `bash util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id <id>` after the primary checkout is synced; do not copy the unit alone.
 Full contract: [REFERENCE — Yamaguchi Duplicati Server Client](REFERENCE.md#yamaguchi-duplicati-server-client).
 
+Tip: Phase D's settings-key write (`util/ad-hoc/2026-10-29_write_matched_settings_key.py`) re-derives the `ENV_ACTIVE_KEY` form and never prints the value or a hash.
+`--dry-run` writes nothing and still refuses an existing `--out`, an undeliverable form, or a second key hash. The real run is `O_EXCL`, mode `0600`. Trust the last `wrote` / `removed` line.
+The confinement trial is a byte copy of `duplicati.service` plus `util/ad-hoc/2026-10-29_duplicati-trial-override.conf`; its wrapper stays off `/run` (`noexec` → `203/EXEC`).
+Full contract: [REFERENCE — Phase D Trial Drop-In and Settings-Key Write](REFERENCE.md#phase-d-trial-drop-in-and-settings-key-write).
+
 Tip: `util/juniper-backup.bash` writes per-repo `.tbz2.gpg` (bzip2). Restore with `gpg -d FILE | tar -xjf -`, not `-xzf`. `--dry-run` must exit without writing. Exit 4 is PARTIAL (already-verified copies stay). Unattended verify is `--list-packets` only — it does not prove the tar is intact. Distinct from the Duplicati `$HOME` lane.
 Full contract: [REFERENCE — Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup).
 
@@ -813,11 +840,26 @@ Tip: the NPZ contract is SIX keys — `X_val` / `y_val`, never `X_eval`. Decisio
 
 Tip: a renderer `ValueError` is a per-plot SKIP (exit `0`, no PNG); missing matplotlib, a failed payload fetch, or any other render exception is SKIP **and** acceptance failure (exit `1`). Inspect `jq '.driver.plots' $RUN_DIR/manifest.json`. See [REFERENCE — Plot SKIP vs acceptance](REFERENCE.md#plot-skip-vs-acceptance-valueerror-contract).
 
+Tip: a `/ws/workers` close **4029** `Rate limited` is `ConnectionRateLimiter`, and only when `attach_worker_pool` was given one. Refill is `max_connections_per_minute / 60` tokens per second and stops at `burst_size` (defaults 10/min and 3). A refusal keeps the fractional token. The source is the client host, or `unknown`. `Too many rejected handshakes` is `HandshakeCooldown`, a `/ws/control` 4029; `/ws/workers` has no cooldown. See [REFERENCE — worker connection bucket](REFERENCE.md#the-worker-connection-bucket-refills-only-up-to-its-burst).
+
 Tip: PF-1 repeats are a **matrix axis**, not `include` entries (`include` does not inherit `matrix`). `max_epochs` and `output_epochs` must both be `4000`. `scrape_confirmed` is not `target_file_written` — five bridged PF-1 runs wrote the file while Prometheus held zero series. Thresholds are unratified; PF-4/PF-8 are not driver suites. See [REFERENCE — PF Scenario Suites](REFERENCE.md#pf-scenario-suites).
 
-Tip: a non-ASCII `X-API-Key` is a **401** on HTTP and close **4001** on a WebSocket, never a 500 — on `main`. Published `juniper-service-core` **0.7.0** still compares keys as `str` (`hmac.compare_digest` raises `TypeError`, a 500 that `FailedAuthThrottle` never counts). Do not catch that error, and do not turn Sentry frame locals back on — the comparison frame's locals hold the configured key. Published `juniper-observability` **0.4.0** still captures locals. See [REFERENCE — Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
+Tip: from `juniper-service-core` **0.7.1** a non-ASCII `X-API-Key` is a **401** on HTTP and close **4001** on a WebSocket, not a 500; earlier releases compare `str`, and `hmac.compare_digest` raises `TypeError`. Do not catch that error, and do not turn Sentry frame locals back on — the comparison frame's locals hold the configured key. `juniper-observability`'s `configure_sentry` sends no frame locals from **0.4.1**. See [REFERENCE — Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
 
 Tip: juniper-service-core invariants — `RequestBodyLimitMiddleware` always stream-caps POST/PUT/PATCH (`Content-Length` is a hint only); auth runs before rate limiting and 429s must pass `exc.headers` through; control-WS reject logs stay single-line via `_sanitize_for_log`; `ws_control_rate_limit_per_sec=0` yields `retry_after=3600` instead of dividing by zero; `/ws/workers` closes **4001** on bad auth and **4008** on a bad registration shape. See [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core).
+
+Tip: `juniper_config_tools.env_with_legacy_alias` treats `""` as set, hides its `DeprecationWarning` outside `__main__`, and must not be chained with `or` when `""` is a real value (chain on `is not None`). PyPI `0.1.1` includes `py.typed`, so a fresh install is typed. The `0.1.0` wheel does not, and a pin to it still reads as `Any`. See [REFERENCE — juniper-config-tools](REFERENCE.md#juniper-config-tools).
+
+Tip: `FailedAuthThrottle` keeps 10,000 source IPs and drops the oldest window starts. Prune runs from `record_failure` every 100 failures, before that row is stored, so the table can sit at 10,001 and climb to 10,100. An evicted IP is not blocked, and `check()` does not put it back — the next 401 starts a fresh budget. The expiry test (`window_seconds=0`) does not pin this; `test_failed_auth_throttle_caps_live_entries_by_dropping_the_oldest` does.
+Full contract: [REFERENCE — The failed-auth table drops the oldest source IPs](REFERENCE.md#the-failed-auth-table-drops-the-oldest-source-ips).
+
+Tip: `/ws/training` resume is continuous through the seq just before the buffer (`last_seq == oldest - 1`). One older is `resume_failed` `out_of_range` and the socket stays up with a fresh snapshot — discard the local tail. A `resume_ok` can still miss a broadcast made while no socket was active, or one that lands while the replay is being sent. Pending handshakes count toward the **1013** cap. Sockets with no client address share `"unknown"`. A broadcast whose `json.dumps` length equals 60000 is still one frame. See [REFERENCE — Training-stream resume](REFERENCE.md#training-stream-resume-and-the-connection-cap).
+
+Tip: a `/ws/control` or `/ws/workers` text frame of exactly **65536** characters is delivered (`len` of the decoded string). One more character closes control **1009** `Message too large` (next frame unread, rate limiter uncharged) or worker registration **4005**; the worker message loop reports the error and stays open.
+
+`/ws/training` does not measure text length. A binary frame of exactly 100 MiB passes the per-frame check (a result's attachments must total at most 100 MiB); stock uvicorn closes the connection with 1009 at `ws_max_size` (16 MiB) first. See [REFERENCE — a frame of 65536 characters](REFERENCE.md#a-websocket-text-frame-that-fills-65536-characters-is-delivered).
+
+Tip: a worker task assigned for exactly `task_reassignment_timeout` (default **120s**) stays assigned. Any larger age requeues on the next health sweep (default every **10s**, and only after `start_monitor()`). The worker stays registered and is not cancelled; its next idle heartbeat can receive the same task. A log line of `120.0s` is already over. See [REFERENCE — reassignment timeout](REFERENCE.md#a-task-assigned-for-exactly-the-reassignment-timeout-stays-assigned).
 
 Tip: REST client `base_url` on GitHub-main data/cascor/recurrence clients is normalised (case-insensitive scheme, `hostname` required, trailing `/v1` stripped). `HTTPS://host` on an older wheel silently becomes `http://HTTPS://host`. Cascor WS streams stay rstrip-only. Host cascor is `:8201`, constructor default is `:8200`. See [REFERENCE — HTTP Client Base-URL](REFERENCE.md#http-client-base-url-contract).
 
@@ -941,6 +983,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Duplicati timer silent after logout | Linger was `no` — the original failure class. Confirm `list-timers duplicati-backup.timer` |
 | Duplicati `FATAL` unmounted dest / tmpfs tempdir | Mount the backup volume; point `DUPLICATI_TEMP_DIR` at any disk-backed path (the runner refuses a RAM-backed one outright, and `/tmp` is tmpfs here) |
 | Duplicati skip then next run escalates | Expected — skip overwrites `result=OK`. Inspect `~/.local/state/duplicati/{last-run.status,failures.log}` |
+| Phase D key write `REFUSED: … already exists` or `NONE` after the probe matched | Never replace a key. `NONE` after an `ENV_ACTIVE_KEY` probe match means the probe and the tool disagree (are `--env` and `--db` the probe's own paths?) — stop and keep the `.env`. Trust a `wrote … both match` or `removed` line over the exit status |
 | `juniper-backup` restore `tar` fails | Use `-xjf`, not `-xzf`. Archives are bzip2 (`.tbz2.gpg`). |
 | `juniper-backup` exit 4 PARTIAL | A device/copy failed; already-verified archives stay. Re-run makes a new UUID. |
 | `juniper-backup` `FATAL: gpg recipient not found` | Both `ENCRYPT_KEYS` UIDs must resolve in the local keyring before tar starts. |
@@ -988,6 +1031,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Lockfile PR, pin lines unchanged | Expected. Diff `grep -v '^#'` of the new `conf/*_<timestamp>.*` snapshot against the untimestamped file. The snapshot is the pre-rewrite copy. |
 | `test_ci_tools_drift` red after a ci-tools bump | Widen the `<Y` ceiling in `lockfile-update.yml` + `ci.yml` + `docs-full-check.yml` in the same PR. |
 | `Verify AGENTS.md Last Updated` fails | You changed `AGENTS.md` without bumping `**Last Updated**:`. Set it to today's UTC date and push. |
+| `safe_merge` SHA is absent from `main` | Expected for a squash (the default). The line prints the verified `headRefOid`. Read `mergeCommit.oid` for the squash commit. `--repo` is the bare name. See [REFERENCE](REFERENCE.md#the-merged-lines-sha-is-the-verified-head). |
 | Soak `--dry-run` exits 2 with no preview | Pre-#1690 refuse-before-dry-run. After #1690 a terminal verdict still previews (NOTE on stderr). Do not pass `--force` just to see the preview. |
 | Soak real run exits 2 with `REFUSING` | Ledger is `BET-FAILING` / `HOLDS-AT-*`. `--force` overrides a real run only; disable the timer if the pooled question is done. |
 | Soak `--probe-id P19` → `no such probe` | Use the full slug (`P19-port-check-fail-opens`). |
@@ -1049,6 +1093,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Cell printed `degraded (crossval failed: …)`, suite exit 1 | Train succeeded; an enabled phase did not (W0.3). Read `phases` in `manifest.json`. An `X_full` 422 is F-E1 (a model without `derive_full_split`), not a science result. |
 | Recurrence `cv_r2` cell is blank in `aggregate.csv` | Crossval was null, disabled, or failed. Blank is not 0. `train_r2` still comes from `final_metrics.r2`. |
 | Cascor `aggregate.csv` has no accuracy column | Aggregated before 2026-10-26 (`APD-ML-002`). `run_suite.py --reaggregate SUITE_DIR` re-renders it and launches nothing; `--resume` would re-run incomplete cells. |
+| `aggregate.csv` blank while registry `metrics` are set | `stats.json` is a JSON object with no headline, including `{}`. A missing, invalid, or non-object file would have printed the recorded metrics. [An empty stats.json](REFERENCE.md#an-empty-statsjson-is-not-a-missing-file). |
 | Suite bridged vs unbridged hashes differ | Use `JUNIPER_SUITE_GRAFANA_BRIDGE=1`; do not put the bridge in the YAML. |
 | `residuals.png` has only 2 panels | Optional `target_dt_*` missing or length-mismatched — pred/truth still plotted; not a SKIP. |
 | PF-1 `--dry-run` shows ≠5 cells or mixed budgets | Repeats leaked into `include`, or the 4000/4000 epoch pair was split. Stop. |
@@ -1064,6 +1109,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Cascor `eval_scalars` all null, or differ from an older run's | `/2` (juniper-ml#2064): they are the final evaluation, and `absent` says why there is none. A `/1` file's `eval_scalars` are the in-loop values; check `schema` before comparing. |
 | Hand-written recurrence crossval blows up (eval r² ~ −2×10^4) while the E-H suite cell is ~ −0.1 | The body omitted the `train:` keys: each fold fits a new linear model at `default_ridge`, which the E-H YAML's own `service:` block pins to 0.0. Send the `train:` block. [REFERENCE — Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters). |
 | Recurrence train exit `4`, `HTTP 409` in `phases.train.error` | Another caller holds the service's `train_lock` (a timed-out driver fit keeps running). juniper-recurrence `main` names the holder in the 409 and in `GET /v1/training/status`. [REFERENCE — One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service). |
+| `outcome` is `degraded`, `phases.save_model` is `failed`, and `model.npz` is missing or was just deleted | Train returned an `operation_id`, so a failed snapshot save does not re-fit (`save_model_rerun` is null, exit 1, not 3). A size mismatch, including a missing `size_bytes`, or a copy `OSError` deletes `artifacts/results/model.npz`. An HTTP error does not. [REFERENCE — A failed snapshot save does not re-fit](REFERENCE.md#a-failed-snapshot-save-does-not-re-fit). |
 | Recurrence phase error quotes a header value | `map_data_error` relays upstream exception text, and the driver copies it into the manifest, `stats.json` and the suite registry. Rotate the key; do not paste those files. [REFERENCE — Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text). |
 | `scrape_confirmed` is null / `target_file_written` is true | Unreachable Prometheus ≠ zero series. Five PF-1 runs wrote a target and Prometheus held nothing. |
 | `python util/experiments/stats_summary.py` does nothing useful | No `__main__`. The driver writes the files; you `jq` them. |
@@ -1074,9 +1120,19 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | WS stream does not default `ws://` / reject hostless | Deliberate — `CascorTrainingStream` / `CascorControlStream` only `rstrip("/")`. |
 | A probe gets 429 on `/v1/health` | Health/docs/metrics are exempt in service-core — check an upstream proxy or a non-exempt path. |
 | Large POST accepted despite the body limit | The mutating-method stream cap must be unconditional; a `Content-Length`-only fast path is the bypass. |
+| POST of exactly the body cap returns 413 | Both checks use `>`. A body that fills `max_bytes`, including chunks that sum to it, is delivered on `request._body`. The next byte is 413 and the route does not run. [REFERENCE](REFERENCE.md#a-body-that-fills-the-cap-is-delivered). |
+| Large GET or DELETE accepted | Only POST, PUT, and PATCH are stream-capped. Other methods 413 only when `Content-Length` is an integer greater than the cap. |
 | Control-WS reject log spans multiple lines | `_sanitize_for_log` regression — never interpolate raw Origin/command into logger format strings. |
+| `/ws/control` takes a burst, then `rate_limited` | Token bucket. Idle time does not bank more than `ws_control_rate_limit_per_sec` tokens. A denial does not spend one. [REFERENCE](REFERENCE.md#control-channel-burst-origin-match-and-cooldown-edges). |
+| `/ws/control` is HTTP 403 | Pre-accept close; no log carries the code. uvicorn logs `"WebSocket /ws/control" 403`; the handler logs WARNING `blocked (cooldown)` for 4029 and INFO `not in allowlist` / `no Origin header` for 4003 (visible only with an INFO handler); the kill switch (1013) logs nothing, and a failed key (4001) logs nothing except on the rejection that starts the cooldown (WARNING `blocked for 300s (cooldown triggered)`, still a 4001). |
+| Control IP blocked on the 10th bad handshake | Default `>= 10` inside 60 s, then 300 s. A rejection aged exactly 60 s does not count. The block lifts at `blocked_until`. |
 | Worker WS closes 4001 / 4008 | 4001 = API-key auth enabled (send `X-API-Key`); 4008 = registration shape (string `worker_id` + dict `capabilities`). |
-| Non-ASCII `X-API-Key` is a 500 | Published `juniper-service-core` 0.7.0: `hmac.compare_digest` raises on a non-ASCII `str`, which is not an `HTTPException`. `main` compares UTF-8 bytes (`surrogatepass`, juniper-ml#2086, unreleased). Do not catch the `TypeError`; do not re-enable Sentry locals. |
+| GPU stays hot after the worker went idle | A heartbeat field omitted or sent as JSON `null` keeps the old reading. A reported `0` replaces it. [REFERENCE](REFERENCE.md#a-measured-zero-heartbeat-overwrites). |
+| Registry still lists a worker aged exactly 30 s, but the idle pool does not | `is_alive` is strict `<`. That worker is stale. The health monitor deregisters it; assignment can still happen until the sweep. |
+| Non-ASCII `X-API-Key` is a 500 | Before `juniper-service-core` 0.7.1, `hmac.compare_digest` raises on a non-ASCII `str`, which is not an `HTTPException`. The byte compare (`surrogatepass`) is first released in service-core 0.7.1; juniper-data, juniper-cascor and juniper-canopy carry their own copies, first comparing bytes in 0.17.0, 0.12.0 and 0.9.0. Do not catch the `TypeError`; do not re-enable Sentry locals. |
+| Training WS `resume_failed` `out_of_range`, then `initial_status` | The seq is older than the buffer's `oldest - 1`, the buffer is empty and `last_seq > 0`, or replay is disabled. The socket stayed up. Discard the local tail. [REFERENCE](REFERENCE.md#training-stream-resume-and-the-connection-cap). |
+| Training WS handshake refused (HTTP 403 on uvicorn; ASGI close 1013) while few training sockets show | Pending resume handshakes count toward `max_connections` (default 50). Address-less clients share the `"unknown"` per-IP bucket (default 5). |
+| A throttled source IP is allowed again inside its window | The 10,000-IP cap dropped that row (oldest window start). The next 401 starts a fresh budget. `check()` does not restore the row. |
 | `--batch` row `verdict=ERROR` | Soft-fail for that tip only; the other PRs in the report remain valid. `--pr` would have exited `2` instead. |
 | Deleted `.py` gate-clean but `DAMAGED` | The battery skipped the missing path while the symbol screen saw `LOST` — expected. |
 | `snapshot_index` / classify / backfill: `h5py is required` | `conda activate JuniperCascor1` — all four tools import `h5py` via `snapshot_index`. |
@@ -1097,6 +1153,9 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Suite cells `stalled` ~130 s then finish | Candidate-phase inert stall — set `execution.stall_seconds`; size `per_run_timeout_seconds` above the worst-case driver budget. |
 | `--resume` re-runs a green cell | Only `registry.jsonl` `succeeded` is skipped; missing resume dir is exit `2`. |
 | Repeats ran the smoke config | `include` does not inherit `matrix` — put the repeat axis on `matrix` (PF-1). |
+| Worker logs `suspiciously_fast: 0.000s` and still accepts | Score present, duration absent: the coordinator times it as `0.0`. The detector only warns. See [REFERENCE](REFERENCE.md#worker-result-anomaly-detector). |
+
+With an `AnomalyDetector` wired (the coordinator default is `None`), a scored worker result with no `duration` logs `suspiciously_fast: 0.000s` and is still accepted. Bounds are strict (`< 0.1` s, `> 0.999`, `abs(score) < 0.001`). When every retained score (window 10, at least three) prints the same to six decimals, the result is `duplicate_scores`. See [REFERENCE — Worker Result Anomaly Detector](REFERENCE.md#worker-result-anomaly-detector).
 
 ## Quick Reference Tables
 
@@ -1129,19 +1188,34 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
+## Host-check wording (turing)
+
+A G-TOOLS kubectl failure names task D3 first. Docker Desktop installs `/usr/local/bin/kubectl`, and on turing that link is the client the gate sees (v1.22.4, inside Docker.app). Task D4 (kubectl 1.36.x) still needs re-planning under the D6 ruling.
+
+G-MEM's memory line is `free + speculative + inactive`. `bash util/macvm_ctl.bash status` still prints `free + inactive` for the same MiB: its `free` row is Pages free plus Pages speculative. `conf/hosts/turing/expected.yaml` comments still use the older sentences. [REFERENCE — Host-Check Wording](REFERENCE.md#host-check-wording-e-h3).
+
+```bash
+python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM --check
+```
+
+---
+
 ## Cross-References
 
 - [Ecosystem Guide](../AGENTS.md) -- project map, dependency graph, conventions
 - [Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage) -- three scanners; the candidate count grows after a cut
 - [juniper-ml REFERENCE](REFERENCE.md) -- package metadata, extras, version history
+- [juniper-config-tools](REFERENCE.md#juniper-config-tools) -- `""` is set; `DeprecationWarning` is silent outside `__main__`; PyPI `0.1.1` ships `py.typed`; `0.1.0` does not
 - [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- seeded probes, characterisation vs least-covered, scoring pitfalls
 - [Perf-Lane Split Comparator](REFERENCE.md#perf-lane-split-comparator) -- identity first, work exact / speed reported, exit 0/1/2, waiver cannot mask REFUSED
 - [CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) -- 128 MiB, 422 until opt-in, experiment-stack `IMPORT_DIR` pitfall
 - [Defect Register Close Protocol](REFERENCE.md#defect-register-close-protocol) -- `**FIXED` token, cwd pitfall, third reading vs the two §4 counters
 - [Train / Val / Test Partition Contract](REFERENCE.md#train--val--test-partition-contract) -- shipped `*_full` vs design-closed `X_val`
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default 503-name universe, per-request cost, silent `max_symbols` slice
+- [Worker connection bucket](REFERENCE.md#the-worker-connection-bucket-refills-only-up-to-its-burst) -- `/ws/workers` 4029 `Rate limited`; refill stops at `burst_size`; a refusal keeps the fractional token
 - [Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) -- PF-5/6/7 report-only; `work_countable` third state; baseline/compare refuse
 - [Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) -- W0.2 (juniper-ml#2139): scoped `pip check`, installed pins, `derive_full_split` before recurrence `serve`; CUDA noise does not refuse; `--skip-env-preflight` warns
+- [Crossval 500 with model-core 0.2.0](REFERENCE.md#crossval-500-with-model-core-020) -- 0.8.0 plus model-core 0.2.0 stays `ENV PREFLIGHT OK` and 500s every `POST /v1/crossval`; fixed in 0.8.1 (PyPI 2026-11-06); model-core `>=0.3.0,<0.4.0` alone repairs a 0.8.0 env
 - [Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters) -- omitted readout is linear at `default_ridge` (0.0, and the E-H YAML pins it); omitted RFF ridge is `gcv`; crossval fits a fresh model per fold
 - [Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text) -- a 502 `detail` can contain a rejected data API key; the driver copies it into the run record
 - [One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service) -- one `train_lock` and one model per service; a busy train is a `409` (exit 4)
@@ -1150,7 +1224,11 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Suite Driver](REFERENCE.md#suite-driver) -- `run_suite.py` expansion, resume, cascor parallel floor, Grafana env toggle
 - [Recurrence Degraded Outcome and Headline Metrics](REFERENCE.md#recurrence-degraded-outcome-and-headline-metrics) -- `degraded` is not a success (exit 1); `train_r2` / `cv_r2` from nested `stats.recurrence`; cascor accuracy columns empty
 - [Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) -- `stats.json` / `summary.md` read-path; de-ratified wall; scrape_confirmed tri-state
+- [The MERGED line's SHA is the verified head](REFERENCE.md#the-merged-lines-sha-is-the-verified-head) -- `safe_merge` prints `headRefOid`; the squash commit is `mergeCommit.oid`
+- [A zero is a measured value](REFERENCE.md#a-zero-is-a-measured-value) -- accuracy `0` stays in `summary.md`, the plot, and the `test_accuracy` column (test split); a bool is text in `summary.md` only; `train.theta: 0` stays `explicit`
 - [Claude Code Action](REFERENCE.md#claude-code-action) -- live `claude.yml` pin, `@claude` `if:`, ungrouped Dependabot bumps
+- [Host-Check Wording](REFERENCE.md#host-check-wording-e-h3) -- kubectl's fix is task D3 (Docker Desktop) before D4; G-MEM names speculative pages; `macvm_ctl` keeps `free + inactive`
+- [Idle compaction and the tracked settings file](REFERENCE.md#idle-compaction-and-the-tracked-settings-file) -- root `settings.local.json` is not loaded; set `idleCompaction` in `.claude/settings.local.json`
 - [CodeQL Analysis](REFERENCE.md#codeql-analysis) -- `Analyze (python)`, SHA group, `merge_group` divergence, bare `open()` blocks merge
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy gate is authority for `main.py` (count 58); v1 is the name-matching negative example
 - [PF Scenario Suites](REFERENCE.md#pf-scenario-suites) -- Wave 7.3 instruments; PF-1 matched epoch pair + matrix-axis repeats; PF-4/PF-8 are not driver suites
@@ -1163,12 +1241,15 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) -- W0.8/W0.9 replay and matrix; exit 0 is not a passing crossval
 - [F-039 Store Probe](REFERENCE.md#f-039-store-probe) -- apply / soak / report / revert; read the whole series; `--target topology` refuses
 - [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) -- throwaway wrapper on `8113`/`8214`/`8063`; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start
+- [Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion) -- shared replay clamps speed to [-10, 10]; below 0.1 the index stays; a fit that returns while paused leaves the machine PAUSED and the monitor `completed`
 - [Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- exit **2** is P-5 free-threaded; exit **4** is May-7 wheel layout
 - [Environment Floor Drift — Malformed Input](REFERENCE.md#malformed-operator-input) -- a truthy non-mapping exits 2 with a reason; a bad extra does not drop `dependencies` floors
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local `MEMORY.md` gate; hook-not-line; CI cannot see `~/.claude`
 - [Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) -- `e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half
 - [Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) -- per-repo `.tbz2.gpg` (restore `-xjf`); not the Duplicati `$HOME` lane
 - [Yamaguchi Duplicati Server Client](REFERENCE.md#yamaguchi-duplicati-server-client) -- `127.0.0.1:8300`; export token; watchdog `--backup-id` has no default
+- [The failed-auth table drops the oldest source IPs](REFERENCE.md#the-failed-auth-table-drops-the-oldest-source-ips) -- 10,000-IP cap; eviction resets the budget; `check()` does not put the IP back
+- [Phase D Trial Drop-In and Settings-Key Write](REFERENCE.md#phase-d-trial-drop-in-and-settings-key-write) -- throwaway `duplicati-trial` drop-in; Procedure A re-derives the key and never prints it
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- required-context classifier; 2026-08-10 class; text-mode 0 can still carry `ERROR:`
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition; WITHDRAWN (`WITHDR`) is a fourth
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; exit 2 = failed to measure; idle populated is VALID
@@ -1186,6 +1267,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 1.0.63
+**Last Updated:** 2026-11-07
+**Version:** 1.0.64
 **Maintainer:** Paul Calnon

@@ -102,16 +102,20 @@ Any new Juniper model service should build on this rather than re-implementing t
 
 Only an HTTP 401 is recorded by `FailedAuthThrottle` (default 10 failures per source IP per 60 seconds, then **429**), so that flood was never throttled. The WebSocket handshake calls the same `validate` and closes **4001** instead of raising.
 
+The failure map is also trimmed to 10,000 source IPs at each prune (every 100 recorded failures, so it can briefly hold 10,100). Past that, prune drops the oldest window starts. An evicted address is not blocked, and `check()` does not put it back. The next 401 starts a fresh budget. Operator notes: [juniper-ml REFERENCE](../docs/REFERENCE.md#the-failed-auth-table-drops-the-oldest-source-ips).
+
 `surrogatepass` is required: it encodes a lone surrogate (a JSON-decoded config value can contain one) and it does not map two different strings onto the same bytes. `surrogateescape` does both of those wrong.
 
-Releases up to and including **0.7.0** compare `str` and still return a 500 on such a header; **0.7.1** is the first release with the bytes compare (juniper-ml#2086 made the change). Do not catch the `TypeError`. The Sentry half of the same incident — frame locals, including the one holding the configured key — is `juniper-observability`'s `configure_sentry`. Operator notes: [juniper-ml REFERENCE](../docs/REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
+**0.7.1** is the first release with the bytes compare (juniper-ml#2086). Do not catch the `TypeError`. The Sentry half of the same incident — frame locals, including the one holding the configured key — is `juniper-observability`'s `configure_sentry`, first fixed in 0.4.1. Operator notes: [juniper-ml REFERENCE](../docs/REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
 
 ## Status
 
 **Live** on PyPI (Beta). The current version is shown by the badge above; see
 [`CHANGELOG.md`](./CHANGELOG.md) for history. Pin with `juniper-service-core>=0.7.1,<0.8.0` —
 the range the `juniper-ml` meta-package uses for its `tools` / `all` extras. 0.7.1 is the security
-patch: a non-ASCII `X-API-Key` is a 401, not a 500, and `FailedAuthThrottle.check()` is bounded.
+patch: a non-ASCII `X-API-Key` is a 401, not a 500, and `FailedAuthThrottle.check()` is bounded
+(it does not insert). The 10,000-entry cap, which drops the oldest live source IPs, is a separate
+bound: [REFERENCE](../docs/REFERENCE.md#the-failed-auth-table-drops-the-oldest-source-ips).
 
 ### Compatibility policy — pinning, not deprecation cycles
 
