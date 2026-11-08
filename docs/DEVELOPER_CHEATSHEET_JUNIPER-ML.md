@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.92
-**Date**: 2026-11-07
+**Version**: 1.0.100
+**Date**: 2026-11-08
 **Project**: juniper-ml
 
 ---
@@ -175,7 +175,8 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 | `./claudey --prompt "..."`                                  | Custom prompt, default flags                                                                                                    |
 | `./claudey -w <name>`                                       | Names the worktree; a bare `-w` lets Claude Code name it                                                                        |
 | `./claudey --no-worktree --no-remote-control`               | Turns off the worktree and remote control, which are on by default                                                             |
-| `bash scripts/default_interactive_session_claude_code.bash` | Older default session (`--id --worktree --effort high`); `CLAUDE_SKIP_PERMISSIONS=1` adds `--dangerously-skip-permissions`      |
+| `./claudey --file <prompt file>`                            | Prompt from a file: `--file <file>`, `--path <file>`, or `--path <dir> --file <name>`; the default prompt is not sent           |
+| `bash scripts/default_interactive_session_claude_code.bash` | Older default session (`--id --worktree --remote-control --effort high`); `CLAUDE_SKIP_PERMISSIONS=1` adds `--dangerously-skip-permissions` |
 | `bash scripts/wake_the_claude.bash ...`                     | Direct launcher with full flag control                                                                                          |
 
 `claude_interactive.bash` ships `DEBUG=TRUE`, which adds `--dangerously-skip-permissions` to every launch.
@@ -183,8 +184,10 @@ Tip: `register_open_set.py` and `grep -cE '\*\*FIXED'` read the same §4-shaped 
 
 `wake_the_claude.bash` sends the prompt (from `--prompt`, or the contents of a `--file` / `--path` prompt file) as Claude
 Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` cannot take it as a value.
-`--remote-control` never takes a value. `--version` prints Claude Code's version; `-v` / `--script-version` print the
-script's. `-u` prints the usage text and exits 1.
+`--remote-control` never takes a value. In both `wake_the_claude.bash` and `claudey`, `-v`, `-V`, `--version` and
+`--claude-version` print Claude Code's version, as `claude -v` does, and `--script-version` prints the launcher's own.
+`claudey` refuses a prompt together with a prompt file (exit 1): `wake_the_claude.bash` would send the prompt and drop
+the file. `-u` prints the usage text and exits 1.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 
@@ -198,7 +201,7 @@ bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."        
 
 **Safety:** `--id` refuses symlink targets. Resume filenames must be `.txt` basenames (no `/`). File contents must be a valid UUID. Invalid/missing files are preserved.
 
-**Known pitfall:** `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`; prompt strings may split on spaces. Run regression tests after changes.
+`claude` is invoked with the quoted array `"${CLAUDE_CODE_PARAMS[@]}"` in both the interactive and the `nohup` call, so a multi-word prompt arrives as one argument; the tests pin the interactive call's. Run the regression tests after changes.
 
 ### Resume And Fork Alias Forwarding
 
@@ -238,7 +241,7 @@ This behavior is regression-tested in `tests/test_wake_the_claude.py`:
    - Documented extras tables: `AGENTS.md`, `README.md`, `docs/QUICK_START.md`, `docs/REFERENCE.md` (`ExtrasDocsLockstepTest` — pin strings must match `pyproject.toml` **exactly**; juniper-ml#907)
    - When adding a new extra, include it in `[all]` (except the `[doc-tools]` alias, already covered by `[tools]`)
 4. **Verify**: `python3 -m unittest -v tests/test_pyproject_extras.py` (covers both gates once #907 lands)
-5. **Recurrence floor**: this checkout's extra is `juniper-recurrence>=0.8.1,<0.9.0`, and its version is still 0.11.3. Published 0.11.3 still accepts 0.8.0. PyPI latest is 0.11.4, so `pip install -U juniper-ml[recurrence]` upgrades off 0.8.0; pin `==0.11.3` to keep it. 0.8.0 with model-core 0.2.0 answers every `POST /v1/crossval` with 500. [REFERENCE](REFERENCE.md#pypi-juniper-ml-0113-still-accepts-recurrence-080)
+5. **Recurrence floor**: this checkout's extra is `juniper-recurrence>=0.8.1,<0.9.0`, and its version is 0.11.4, matching PyPI latest. Published 0.11.3 still accepts 0.8.0. `pip install -U juniper-ml[recurrence]` upgrades off 0.8.0; pin `==0.11.3` to keep it. 0.8.0 with model-core 0.2.0 answers every `POST /v1/crossval` with 500. [REFERENCE](REFERENCE.md#pypi-juniper-ml-0113-still-accepts-recurrence-080)
 
 > Tip: Inline extras tables must keep the **full** pin in backticks (`juniper-foo>=X,<Y`). Stale `tools` ceilings (`model-core` / `service-core`) and omitted REFERENCE rows are the drift class #906 synced; after #907 merges, `ExtrasDocsLockstepTest` fails CI on that class. Current truth: `juniper-model-core>=0.1.0,<0.4.0`, `juniper-service-core>=0.2.0,<0.8.0`.
 > See: per-repo `pyproject.toml` | `juniper-data/notes/DEPENDENCY_UPDATE_WORKFLOW.md` | [REFERENCE.md § Extras Reference](REFERENCE.md#extras-reference)

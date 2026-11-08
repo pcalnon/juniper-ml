@@ -9,6 +9,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
+  session turns on remote control (owner rulings, 2026-11-06).** In `scripts/wake_the_claude.bash` (now 1.1.0), `-v`
+  joins `-V`, `--version` and `--claude-version`, as `claude -v` does; it printed the script's own version, which
+  `--script-version` alone now prints. `claudey` (`scripts/claude_interactive.bash`, now 0.2.0) runs `wake_the_claude.bash
+  --version` for all four, so they print Claude Code's version too; `-v` and `--version` printed claudey's,
+  which `--script-version` now prints. `claudey` forwards a prompt file, `--file` / `-f` / `--file-name` and `--path` /
+  `-l` / `--file-path` (or `CLAUDE_PROMPT_FILE` / `CLAUDE_PROMPT_PATH`), and then sends no default prompt:
+  `wake_the_claude.bash` prefers `--prompt` to a prompt file, so the default would have discarded the file. A prompt
+  together with a prompt file exits 1 for the same reason. `scripts/default_interactive_session_claude_code.bash` sends
+  a bare `--remote-control`, as `claudey` does. `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` describes all three, and no
+  longer says `claude` is invoked with an unquoted parameter array: both the interactive and the `nohup` call quote it.
+  Found in review:
+  - `claudey` exits with `wake_the_claude.bash`'s status. It always exited 0, so a prompt file that
+    `wake_the_claude.bash` refused ended in "Closed …" and success.
+  - It refuses an empty `--file` / `--path` value and an empty word. An empty word ended its parsing, and the words
+    after it were dropped, so `-f "${UNSET}"` or `-w '' --file f` launched with the default prompt. `-w ''` is now a
+    bare `-w`.
+  - `wake_the_claude.bash` prints its errors on stderr as well as in the debug log: a version flag with no `claude`
+    on `PATH` or no version printed, a prompt file that never resolves, and any flag it refuses. With `WTC_DEBUG=1`
+    each was a bare exit 1 or the usage text alone.
+  - `claudey`'s usage text names its own script instead of `wake_the_claude.bash`, lists `-h`, and shows a prompt
+    and a prompt file as alternatives. An empty word is reported as "(an empty word)". `claudey -v` prints no debug
+    log unless `WTC_DEBUG` asks for one.
+
+### Fixed
+
+- **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>` from a shallow
+  checkout, and refuses a history that a shallow checkout cannot show.**
+  - **The cause.** The scratch was `git clone --shared <checkout>`, which writes the alternate only for a local
+    clone, and git turns local mode off for a shallow source. juniper-ml's primary checkout has been shallow since
+    at least 2026-09-10 (a stray `.git/shallow` entry from 09-07). The clone was therefore a pack transfer that
+    carried only objects reachable from the checkout's local branches and tags. Every fleet PR's head failed
+    `update-ref` ("nonexistent object"): 44 of 45 open PRs came back `ERROR` on 2026-11-04, and 56 of 57 on
+    2026-11-06.
+  - **The fix.** The scratch is now `git init`, matched to the checkout's object format, plus an
+    `objects/info/alternates` entry naming the checkout's object store.
+  - **Four more defects, found by review of the fix, also fixed:**
+    - The scratch takes the source's `.git/shallow`. A merge or ancestor check that fails for any reason other than a
+      conflict is now an error, and so is a behind branch whose merge did not take `main`. A history cut above the
+      merge base had come back mergeable, unmerged.
+    - No filter driver runs in the scratch (`* -filter`), so `filter.lfs.required` configured without git-lfs
+      installed no longer breaks it.
+    - A binary file in a PR no longer raises `UnicodeDecodeError` mid-batch.
+    - An inherited `GIT_DIR` no longer re-initialises the source.
+  - **Docs.** `docs/REFERENCE.md` describes the new scratch. `.claude/agents/fleet-supervisor.md` drops three wrong
+    claims:
+    - the rulesets' strict up-to-date policy is off: it is on in juniper-ml, juniper-data and juniper-canopy;
+    - CI never runs on the merge result: a PR's CI runs on `refs/pull/N/merge`;
+    - a BEHIND branch is fixed by a rebase: GitHub's update-branch is the fix.
+
+## [0.11.4] - 2026-11-06
+
+### Changed
+
 - **`[recurrence]` now floors `juniper-recurrence>=0.8.1`** (`<0.9.0`), the release that floors
   `juniper-model-core[crossval]>=0.3.0,<0.4.0` (juniper-recurrence#229). The pin was
   `juniper-recurrence>=0.8.0,<0.9.0`. The owner approved the raise on 2026-11-06, with a 0.11.4 cut to carry it.
@@ -17,9 +71,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `juniper-model-core>=0.2.0`, so an environment holding model-core 0.2.0 passed `pip check` while every
     crossval request answered 500 (W0.1's bench on 2026-11-04: 4 of 41 failed). 0.8.1 is 0.8.0 with that floor
     fixed, on PyPI since 2026-11-06.
-  - **Who it reaches.** A fresh install already resolves 0.8.1, the newest release under `<0.9.0`. An environment
-    that already holds 0.8.0 keeps it under `pip install -U juniper-ml[recurrence]`, which upgrades a dependency
-    only when its requirement forces it; this floor forces it.
+  - **Who it reaches.** A fresh install already resolves 0.8.1, the newest release under `<0.9.0`. pip's default
+    `--upgrade-strategy` is `only-if-needed`. An environment that already holds 0.8.0 keeps it under
+    `pip install -U 'juniper-ml[recurrence]==0.11.3'`, because that extra is still `>=0.8.0`. PyPI latest is
+    0.11.4 (wheel uploaded 2026-11-07T22:59:23Z) and its extra is `>=0.8.1`, so
+    `pip install -U juniper-ml[recurrence]` upgrades recurrence. While 0.11.3 was the index latest, the
+    unpinned command left 0.8.0 installed.
   - **Pre-flighted against real PyPI** on 2026-11-06 with
     `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages and
     `[all]` in 95 on Python 3.12, 3.13 and 3.14, each to juniper-recurrence 0.8.1, juniper-recurrence-model 0.6.0,

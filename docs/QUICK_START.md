@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.71
+**Version:** 0.3.79
 **Status:** Active
-**Last Updated:** 2026-11-07
+**Last Updated:** 2026-11-08
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -63,7 +63,7 @@ pip install juniper-ml[all]
 | `recurrence`| `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.1,<0.9.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
 | `all`       | All packages from `clients` + `worker` + `servers` + `tools` + `recurrence`                                                                                                                                  |
 
-The `recurrence` row is this checkout's pin (`juniper-recurrence>=0.8.1,<0.9.0`). This checkout's version is still 0.11.3, and the published 0.11.3 wheel still accepts `juniper-recurrence` 0.8.0. That release with model-core 0.2.0 answers every `POST /v1/crossval` with 500. PyPI latest is 0.11.4, so `pip install -U juniper-ml[recurrence]` upgrades off 0.8.0; pin `==0.11.3` to keep it. [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](REFERENCE.md#pypi-juniper-ml-0113-still-accepts-recurrence-080).
+The `recurrence` row is this checkout's pin (`juniper-recurrence>=0.8.1,<0.9.0`). This checkout's version is 0.11.4, matching PyPI latest. The published 0.11.3 wheel still accepts `juniper-recurrence` 0.8.0. That release with model-core 0.2.0 answers every `POST /v1/crossval` with 500. `pip install -U juniper-ml[recurrence]` upgrades off 0.8.0; pin `==0.11.3` to keep it. [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](REFERENCE.md#pypi-juniper-ml-0113-still-accepts-recurrence-080).
 
 ### Shared Observability Package
 
