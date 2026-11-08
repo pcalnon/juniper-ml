@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.55
+**Version:** 0.2.56
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-07
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -28,8 +28,11 @@
 | **See extras and version info**         | [REFERENCE.md](REFERENCE.md)                                                                                                     | docs/    |
 | **Configure HTTP client `base_url`**    | [REFERENCE.md](REFERENCE.md#http-client-base-url-contract)                                                                       | docs/    |
 | **Run the local host stack**            | [REFERENCE.md](REFERENCE.md#host-orchestration-utilities)                                                                        | docs/    |
+| **Read a G-SEC firewall result**        | [REFERENCE — The firewall gate reads getblockall](REFERENCE.md#the-firewall-gate-reads-getblockall) (state-2 line is the global capture; block-all is `--getblockall`) | docs/    |
 | **Operate the scheduled Duplicati backup lane** | [REFERENCE — Scheduled Duplicati Backup Lane](REFERENCE.md#scheduled-duplicati-backup-lane)                                | docs/    |
 | **Talk to the Yamaguchi Duplicati server** | [REFERENCE — Yamaguchi Duplicati Server Client](REFERENCE.md#yamaguchi-duplicati-server-client) (`127.0.0.1:8300`; export token; watchdog `--backup-id` has no default) | docs/    |
+| **See why a throttled IP is allowed again** | [REFERENCE — The failed-auth table drops the oldest source IPs](REFERENCE.md#the-failed-auth-table-drops-the-oldest-source-ips) (10,000-IP cap; eviction resets the budget; `check()` does not put the IP back) | docs/    |
+| **Run Phase D's trial drop-in or settings-key write** | [REFERENCE — Phase D Trial Drop-In and Settings-Key Write](REFERENCE.md#phase-d-trial-drop-in-and-settings-key-write) (throwaway unit; key writer never prints the value; trust the last decision line) | docs/    |
 | **Archive the Juniper project tree to external media** | [REFERENCE — Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup) (per-repo `.tbz2.gpg`; restore `-xjf`; not Duplicati) | docs/    |
 | **Reap orphaned Juniper pytest children** | [REFERENCE.md](REFERENCE.md#pytest-orphan-reaper)                                                                              | docs/    |
 | **Run / score a pointer-follow soak probe** | [REFERENCE — Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) (least-covered vs characterisation; `source-recovered` denominator) | docs/    |
@@ -41,6 +44,7 @@
 | **Triage resident-hazard gaps after an AGENTS.md cut** | [REFERENCE — Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage) (count grows after a cut; health is score ≥ 3) + [fleet record](../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_RESIDENT-HAZARD-GAP-TRIAGE.md) | docs/ + notes/ |
 | **Run the isolated E2E trio**           | [Isolated-stack E2E checklist](../notes/JUNIPER_2026-07-21_JUNIPER-ECOSYSTEM_ISOLATED-STACK-E2E-CHECKLIST.md) + [REFERENCE — Isolated Stack](REFERENCE.md#isolated-stack-e2e-utilities) | notes/ + docs/ |
 | **Re-drive the CAN-015 replay player**  | [REFERENCE — CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) (throwaway wrapper `8113`/`8214`/`8063`; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start) | docs/ |
+| **Read shared replay speed, range, and a paused completion** | [REFERENCE — Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion) (speed clamps to [-10, 10]; below 0.1 the index stays; a fit that returns while paused leaves the machine PAUSED and the monitor `completed`) | docs/ |
 | **Write canopy E2E matrix verdicts**    | [REFERENCE — Canopy E2E Matrix Writes](REFERENCE.md#canopy-e2e-matrix-writes) (fill is dry-run; set-verdicts is not; do not plan from `e2e_row_coverage.py`) | docs/    |
 | **Diagnose F-CANOPY-027 poller starvation (12-slot pool)** | [REFERENCE — F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) + [cheatsheet](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/ |
 | **Triage canopy E2E findings (P0/P1 exit)** | [REFERENCE — Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) (`e2e_finding_triage.py`; WITHDRAWN ≠ ACCEPTED ≠ FIXED ≠ OPEN) | docs/ |
@@ -50,7 +54,8 @@
 | **Audit required-status-check contexts / why `main` is BLOCKED** | [REFERENCE — Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) (read-only; 2026-08-10 class; do not quote the note's §1 counts) | docs/    |
 | **Run a per-run experiment stack**      | [REFERENCE — Experiment Stack](REFERENCE.md#experiment-stack-utilities) (incl. partial-`--up` → `teardown_run`) + [CLI experimentation plan](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) | docs/ + notes/ |
 | **Refuse a stale recurrence env before serve** | [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) (W0.2, juniper-ml#2139: scoped `pip check`, installed pins, `derive_full_split`; CUDA `pip check` noise does not refuse; `/v1/health/ready` alone misses F-E1) | docs/ |
-| **Read a recurrence `save_model` record** | [REFERENCE — Recurrence launch record and service env](REFERENCE.md#recurrence-launch-record-and-service-env) (the scored model saved by `operation_id`, or, for a pre-W1.5 service, the launcher-recorded CLI re-fit under interpreter + model-version parity; a 409 or a mismatch is `degraded`) | docs/ |
+| **Stop a recurrence crossval 500 on model-core 0.2.0** | [REFERENCE — Crossval 500 with model-core 0.2.0](REFERENCE.md#crossval-500-with-model-core-020) (`juniper-recurrence` 0.8.0 declares `juniper-model-core[crossval]>=0.2.0`, so preflight stays `ENV PREFLIGHT OK`; fixed in 0.8.1, on PyPI since 2026-11-06; model-core `>=0.3.0,<0.4.0` alone repairs a 0.8.0 env) | docs/ |
+| **Read a recurrence `save_model` record** | [REFERENCE — Recurrence launch record and service env](REFERENCE.md#recurrence-launch-record-and-service-env) (the scored model saved by `operation_id`, or, for a pre-W1.5 service, the launcher-recorded CLI re-fit under interpreter + model-version parity; a 409 or a mismatch is `degraded`; a failed snapshot save does not re-fit: [A failed snapshot save does not re-fit](REFERENCE.md#a-failed-snapshot-save-does-not-re-fit)) | docs/ |
 | **Run a PF scenario suite (PF-1…PF-7)** | [REFERENCE — PF Scenario Suites](REFERENCE.md#pf-scenario-suites) (`--dry-run` first; PF-1 matched 4000/4000 epochs; `JUNIPER_SUITE_GRAFANA_BRIDGE`; PF-4/PF-8 are not driver suites) + [P1 design](../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md) | docs/ + notes/ |
 | **Bless / compare a perf-lane baseline** | [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) (`read_run_metrics` / `make_baseline` / `compare_baseline`; sound since ml#1743, but **never** wire the exact work gate to CI — P1 design §6 closed 2026-09-07; host identity blocks on hosted runners) | docs/ |
 | **Read ratified perf metrics / bless a baseline** | [REFERENCE — Perf-lane metrics and baselines](REFERENCE.md#perf-lane-metrics-and-baselines) (`read_run_metrics.py` / `make_baseline.py`; `step_count` FAIL behind workload fingerprint, not `config_sha256`) | docs/ |
@@ -64,6 +69,8 @@
 | **See whose recurrence fit holds the listener** | [REFERENCE — One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service) (busy `409`, `GET /v1/training/status`; a timed-out driver fit keeps the lock) | docs/ |
 | **Handle a recurrence error that quotes a header value** | [REFERENCE — Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text) (a 502 `detail` can contain the rejected data API key; the driver copies it into the run record) | docs/ |
 | **Read a run's `stats.json` / `summary.md`** | [REFERENCE — Experiment Stats Summary](REFERENCE.md#experiment-stats-summary-ss83) (de-ratified `wall_seconds`, per-poll step duration, `scrape_confirmed` tri-state, recurrence timings under `outcome.timings`) | docs/    |
+| **Tell an empty `stats.json` from a missing one** | [REFERENCE — An empty stats.json is not a missing file](REFERENCE.md#an-empty-statsjson-is-not-a-missing-file) (a JSON object with no headline, including `{}`, keeps an empty headline; a non-object file prints the registry's recorded metrics) | docs/ |
+| **Read a zero score or a zero theta** | [REFERENCE — A zero is a measured value](REFERENCE.md#a-zero-is-a-measured-value) (`- accuracy: 0` and a bar of height 0; a bool is text in `summary.md` only; `train.theta: 0` stays `explicit`) | docs/    |
 | **Check which generators an env can run** | [REFERENCE — Generator Availability Matrix](REFERENCE.md#generator-availability-matrix-on-host) (gates, mnist/equities install paths, probe one-liner) | docs/    |
 | **Run `equities` / `equities_seq` without a 422** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (14-symbol refuse; unit is symbols because cost is per request; silent slice deleted) | docs/    |
 | **Tell two `equities_seq` mints apart** | [REFERENCE — Equities Dataset Id Does Not Pin Array Content](REFERENCE.md#equities-dataset-id-does-not-pin-array-content) (`dataset_id` hashes the request; compare `meta.checksum`; an all-zero `dividend` is a silent fill) | docs/    |
@@ -90,6 +97,7 @@
 | **Understand flood CI gates / main-verify** | [REFERENCE.md § Flood-Remediation CI Gates](REFERENCE.md#flood-remediation-ci-gates) + [flood analysis](../notes/JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md) | docs/ + notes/ |
 | **Triage Sequence Safety red / Quality Gate green** | [REFERENCE — Flood-Remediation CI Gates](REFERENCE.md#flood-remediation-ci-gates) (`Sequence Safety` is required in `juniper-ml-rules`; QG green does not mean mergeable) | docs/    |
 | **Triage post-merge main-verify / G3.1**| [REFERENCE — Post-Merge Main Verification](REFERENCE.md#post-merge-main-verification) (incl. stable-title failure notify)       | docs/    |
+| **Read a `safe_merge` success SHA** | [REFERENCE — The MERGED line's SHA is the verified head](REFERENCE.md#the-merged-lines-sha-is-the-verified-head) (the line prints `headRefOid`; the squash commit is `mergeCommit.oid`) | docs/    |
 | **Provision YubiKey GPG (ed448 caveat)** | [REFERENCE — YubiKey GPG](REFERENCE.md#yubikey-gpg-provisioning) + [keytocard procedure](../notes/JUNIPER_2026-08-03_JUNIPER-ECOSYSTEM_YUBIKEY-GPG-ED448-KEYTOCARD-PROCEDURE.md) | docs/ + notes/ |
 | **Triage an open-PR budget WARN/ALARM** | [REFERENCE — Open-PR Budget Alarm](REFERENCE.md#open-pr-budget-alarm)                                                            | docs/    |
 | **Triage a Ruleset Scope Guard / `~ALL` fail** | [REFERENCE — Ruleset Scope Guard](REFERENCE.md#ruleset-scope-guard) (`~ALL` re-arms deleted bot bypass rows; exit 2 is not clean) | docs/    |
@@ -106,9 +114,19 @@
 | **Understand the AGENTS.md date check** | [REFERENCE — AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check)                                                             | docs/    |
 | **Audit `claude.yml` access safeguards**| [REFERENCE — Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) + [ANTHROPIC API key walkthrough](../notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md) | docs/ + notes/ |
 | **Operate the GitHub `@claude` assistant** | [REFERENCE — Claude Code Action](REFERENCE.md#claude-code-action) (live pin, `@claude` `if:`, template-snapshot drift) | docs/ |
-| **Debug service-core middleware / control-WS / workers** | [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core); a non-ASCII `X-API-Key` is a 401 on `main` (published 0.7.0 still 500s), and Sentry does not capture frame locals: [Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) | docs/    |
+| **Turn off Claude Code idle compaction** | [REFERENCE — Idle compaction and the tracked settings file](REFERENCE.md#idle-compaction-and-the-tracked-settings-file) (repo-root `settings.local.json` is not loaded) | docs/ |
+| **Read a turing host-check failure** | [REFERENCE — Host-Check Wording](REFERENCE.md#host-check-wording-e-h3) (kubectl's fix is task D3 first; G-MEM names speculative pages) | docs/ |
+| **Debug service-core middleware / control-WS / workers** | [REFERENCE — juniper-service-core](REFERENCE.md#juniper-service-core); a body that fills the cap is delivered (`>`): [exact fill](REFERENCE.md#a-body-that-fills-the-cap-is-delivered); a non-ASCII `X-API-Key` is a 401 from service-core 0.7.1, and observability 0.4.1's `configure_sentry` sends no frame locals: [Non-ASCII API keys](REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals) | docs/    |
+| **Read a canonical env var with a legacy alias** | [REFERENCE — juniper-config-tools](REFERENCE.md#juniper-config-tools) (`""` is set; the deprecation warning is silent outside `__main__`; PyPI `0.1.1` ships `py.typed`; the `0.1.0` wheel does not) | docs/    |
+| **Resume a `/ws/training` client** | [REFERENCE — Training-stream resume](REFERENCE.md#training-stream-resume-and-the-connection-cap) (`oldest - 1` is still continuous; `out_of_range` keeps the socket and sends a fresh snapshot; pending handshakes count toward close 1013) | docs/    |
+| **See why `/ws/control` 403s or rate-limits a burst** | [REFERENCE — Control channel edges](REFERENCE.md#control-channel-burst-origin-match-and-cooldown-edges) (burst cap, exact Origin match, cooldown blocks on the Nth rejection) | docs/    |
+| **See why a quiet worker still looks busy, or leaves the idle pool at the timeout** | [REFERENCE — A measured zero heartbeat overwrites](REFERENCE.md#a-measured-zero-heartbeat-overwrites) (`0` replaces the prior reading; age equal to the timeout is already stale) | docs/    |
+| **See whether a 65536-character WebSocket text frame is delivered** | [REFERENCE — a frame of 65536 characters is delivered](REFERENCE.md#a-websocket-text-frame-that-fills-65536-characters-is-delivered) (equality is in; control closes **1009**; worker registration closes **4005**; the worker loop stays open) | docs/    |
+| **See whether a worker task at the reassignment timeout is requeued** | [REFERENCE — a task assigned for exactly the reassignment timeout stays assigned](REFERENCE.md#a-task-assigned-for-exactly-the-reassignment-timeout-stays-assigned) (equality stays; any larger age requeues; the worker stays up and can be handed the same task) | docs/    |
 | **Create or clean a worktree**          | [Worktree setup](../notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md) / [cleanup V2](../notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md) + [REFERENCE — in-use probe](REFERENCE.md#wider-second-opinion-open-files-and-argv) | notes/ + docs/ |
 | **Check a worktree is idle before removing it** | [REFERENCE — Worktree Divergence](REFERENCE.md#worktree-divergence-is-a-memory-cost) (cwd-only liveness, then STRONG cwd/fd vs WEAK cmdline) | docs/ |
+| **See why a worker socket closed 4029 `Rate limited`** | [REFERENCE — The worker connection bucket refills only up to its burst](REFERENCE.md#the-worker-connection-bucket-refills-only-up-to-its-burst) (optional limiter; refill stops at the burst; a refusal keeps the fractional token) | docs/ |
+| **Read a worker anomaly warning**      | [REFERENCE — Worker Result Anomaly Detector](REFERENCE.md#worker-result-anomaly-detector) (warns only; a missing duration is `0.0` s; six-decimal duplicates) | docs/    |
 | **Understand the project**              | [README.md](../README.md)                                                                                                        | Root     |
 | **Use shared observability primitives** | [juniper-observability README](../juniper-observability/README.md)                                                               | juniper-observability/ |
 | **See development conventions**         | [AGENTS.md](../AGENTS.md)                                                                                                        | Root     |
@@ -243,6 +261,7 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 - **juniper-doc-tools** -- [Local docs](../juniper-doc-tools/README.md) (markdown link validator)
 - **juniper-ci-tools** -- [Local docs](../juniper-ci-tools/README.md) (dep-docs / coverage-gap / env-drift CLIs)
 - **juniper-service-core** -- [Local docs](../juniper-service-core/README.md) + [REFERENCE](REFERENCE.md#juniper-service-core) (shared FastAPI / WebSocket service tier, worker pool)
+- **juniper-config-tools** -- [Local docs](../juniper-config-tools/README.md) + [REFERENCE](REFERENCE.md#juniper-config-tools) (stdlib env-var alias helper; PyPI `0.1.1` ships `py.typed`; the `0.1.0` wheel does not)
 
 ### Upstream Services
 
@@ -252,6 +271,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.2.55
+**Last Updated:** 2026-11-07
+**Version:** 0.2.56
 **Maintainer:** Paul Calnon
