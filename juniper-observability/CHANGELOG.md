@@ -8,6 +8,8 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-11-08
+
 ### Security
 
 - **Transactions are scrubbed too: `configure_sentry` installs its hook as
