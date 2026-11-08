@@ -23,8 +23,9 @@
 #   E3  juniper-deploy's scripts/preflight_apparmor.sh exits 0 ([OK]), when that checkout carries it
 #   E4  a throwaway container (no network, removed on exit) runs CONFINED: its /proc/self/attr/current reads
 #       "docker-default (enforce)" -- the start succeeds AND AppArmor is applied, not merely tolerated
-#   E5  snap-confine works: `snap run helm version --short` succeeds (helm is a snap on yamaguchi, and its
-#       failure is why juniper-deploy's 17 helm tests fail during the incident)
+#   E5  snap-confine works: `snap run helm version` succeeds (helm is a snap on yamaguchi, and its
+#       failure is why juniper-deploy's 17 helm tests fail during the incident). Plain `version`, not
+#       `--short`: the check is about snap-confine, so it must not depend on one helm major's flags.
 #
 # Regression check (verify): every fingerprint key must be unchanged, except the keys the runbook changes
 # on purpose -- snap_service.* (runbook step 2 stops and disables the legacy snap k8s services) and
@@ -114,7 +115,7 @@ else
     echo "[FAIL] E4 a container starts confined  (got: $label)"
     failures=$((failures + 1))
 fi
-check "E5 snap-confine runs a snap" snap run helm version --short
+check "E5 snap-confine runs a snap" snap run helm version
 
 echo "== regression (fingerprint vs $file)"
 after="$(fingerprint)"

@@ -17,9 +17,11 @@
   dockerd, containerd or PID 1.
 - **Do not restart dockerd to "fix" Docker.** A dockerd started without securityfs runs every
   container without AppArmor confinement (RCA §9).
-- Run from a juniper-ml checkout that has this runbook's PR (`git pull` the primary after the merge).
-  The juniper-deploy checkout needs its AppArmor-preflight PR for check E3; without it E3 reports
-  `SKIP`, not a failure.
+- Run from a juniper-ml checkout that has this runbook's PR, juniper-ml#2516 (`git pull` the primary
+  after the merge).
+- The juniper-deploy checkout needs juniper-deploy#270, the AppArmor preflight, for check E3. It
+  merged 2026-11-08 as `5ed14290`, so `git pull` that checkout. Without it E3 reports `SKIP`, not a
+  failure.
 - Every command below is shown as you run it. `J=~/Development/python/Juniper` in the examples.
 
 ## 1. Decision D-1: the legacy snap Kubernetes services (yours)
@@ -97,7 +99,7 @@ Expect `== PASS`:
 | E2 | `/sys/kernel/security/apparmor/profiles` exists. |
 | E3 | juniper-deploy's `scripts/preflight_apparmor.sh` prints `[OK]`. |
 | E4 | A throwaway container (no network, removed on exit) reads `docker-default (enforce)` from `/proc/self/attr/current`. It **started**, and it is **confined**. If `docker-default` had been unloaded, dockerd reloads it here, itself. |
-| E5 | `snap run helm version --short` runs. |
+| E5 | `snap run helm version` runs. |
 | Regression | Only `snap_service.*` (step 2) and `mount.*` (step 3) keys changed. Unchanged: the held packages, `kubelet.service`, `/etc/kubernetes`, `/var/lib/kubelet`, containerd's config, the containerd/dockerd/PID 1 identities, k8s listeners (none) and `juniper-k8s` HEAD. |
 
 Optional, root: `sudo aa-status | head -3` shows the profile count again, and
