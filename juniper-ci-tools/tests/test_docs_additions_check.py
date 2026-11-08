@@ -19,7 +19,9 @@ trailer escape (enumerated + basename + wildcard), the tunable ``--min-run``, th
 ``--advisory`` downgrade, human + JSON output, exit codes 0/1/2, and the new
 ``--scope`` glob parameterization (default==universal predicate; a glob screens
 its surface; the extension gate still applies; ``--files`` still bypasses scope)
-+ ``_match_scope``.
++ ``_match_scope``. A fence indented 1-3 spaces is a fence (a list item's
+fence); a 4-space closer does not close one; a tilde fence may quote a backtick
+in its info string.
 """
 
 from __future__ import annotations
@@ -200,6 +202,24 @@ class DocsDeletionBehaviourTest(unittest.TestCase):
         self.assertEqual(rc, 1, msg=err)
         f = _reasons(report)["docs/REFERENCE.md"]
         self.assertEqual((f["reason"], f["severity"]), ("heading-deletion", "FAIL"))
+
+    def test_a_three_space_indented_fence_is_not_a_heading(self) -> None:
+        """A list item's fence is indented 3 spaces, and the ``#`` line inside it matches the heading pattern."""
+        doc = "# Title\n\n1. Install\n\n   ```bash\n   # install the extras\n   pip install -e .\n   ```\n\n## Keep\n\nbody\n"
+        rc, report, err = self._screen(doc, doc.replace("   # install the extras\n", ""))
+        self.assertEqual(rc, 0, msg=err)
+        f = _reasons(report)["docs/REFERENCE.md"]
+        self.assertEqual((f["reason"], f["severity"]), ("small-deletion", "WARN"))
+        self.assertNotIn("heading-deletion", report["stats"]["by_reason"])
+
+    def test_a_heading_after_a_three_space_fence_closes_still_fails(self) -> None:
+        """The same indented fence closes, so the heading after it is still a heading."""
+        doc = "# Title\n\n1. Install\n\n   ```bash\n   # install the extras\n   ```\n\n## Keep\n\nbody\n\n## Stay\n\nkeep\n"
+        rc, report, err = self._screen(doc, doc.replace("## Keep\n\nbody\n\n", ""))
+        self.assertEqual(rc, 1, msg=err)
+        f = _reasons(report)["docs/REFERENCE.md"]
+        self.assertEqual((f["reason"], f["severity"]), ("heading-deletion", "FAIL"))
+        self.assertEqual(f["detail"]["headings"], ["## Keep"])
 
     def test_agents_md_and_notes_are_in_scope(self) -> None:
         with TemporaryDirectory() as tmp:
@@ -527,6 +547,10 @@ class DocsDeletionHelperUnitTest(unittest.TestCase):
         self.assertEqual(dac.fenced_lines("```py\nb\n```"), {1, 2, 3})
         self.assertEqual(dac.fenced_lines("``` x`y\nb\n"), set(), "a backtick in a backtick fence's info string is not a fence")
         self.assertEqual(dac.fenced_lines("    ```\nb\n    ```"), set(), "4-space indent is an indented code block, not a fence")
+        self.assertEqual(dac.fenced_lines("   ```bash\n   # install the extras\n   ```"), {1, 2, 3}, "1-3 spaces of indent are a fence, which is how a list item quotes one")
+        self.assertEqual(dac.fenced_lines("```\n# inside\n   ```\n# a real heading\n"), {1, 2, 3}, "a closer indented 3 spaces still closes")
+        self.assertEqual(dac.fenced_lines("```\n# still fenced\n    ```\n# still fenced too\n```\n"), {1, 2, 3, 4, 5}, "a closer indented 4 spaces does not close")
+        self.assertEqual(dac.fenced_lines("~~~ has `tick\n# inside\n~~~\n"), {1, 2, 3}, "a tilde fence's info string may contain a backtick")
         self.assertEqual(dac.fenced_lines("```\nb\nc"), {1, 2, 3}, "an unclosed fence runs to the end")
         self.assertEqual(dac.fenced_lines("```\nb\n``` x\nc\n```\nd"), {1, 2, 3, 4, 5}, "a closer carries no info string")
         self.assertEqual(dac.fenced_lines("~~~\n```\nb\n~~~\nc"), {1, 2, 3, 4}, "only the same character closes")
