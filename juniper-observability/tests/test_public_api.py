@@ -98,7 +98,14 @@ def test_middleware_reexports_are_the_same_objects():
 
 
 def test_version_is_stable_string():
-    """0.4.1 — patch: fixes plus one security fix, no public-symbol change vs ``0.4.0``. Inbound
+    """0.4.2 — security patch, no public-symbol change vs ``0.4.1``. ``configure_sentry`` also
+    installs its hook as ``before_send_transaction``, so a sampled transaction no longer carries
+    the raw ``X-API-Key`` under ``send_pii=True`` (round-42 finding F2); the hook redacts the
+    request's parsed ``cookies``; and ``Proxy-Authorization``, ``Sec-WebSocket-Protocol``,
+    ``X-CSRF-Token`` and ``X-XSRF-Token`` join the scrubbed headers. The ``sentry`` extra floors
+    ``sentry-sdk[fastapi]>=2.35.0``. Consumers should pin ``juniper-observability>=0.4.2``.
+
+    0.4.1 — patch: fixes plus one security fix, no public-symbol change vs ``0.4.0``. Inbound
     ``X-Request-ID`` is validated on ingress (``APD-OBS-001``); ``py.typed`` ships in the wheel
     (``APD-OBS-002``); ``register_info_or_update`` declares its real return type and ``__all__``
     is pinned against the public surface (``APD-OBS-003`` / ``APD-OBS-004``); and
@@ -130,7 +137,7 @@ def test_version_is_stable_string():
     ``juniper_observability.testing.reset_prometheus_registry``; 0.1.1
     was the pre-helpers baseline.
     """
-    assert juniper_observability.__version__ == "0.4.1"
+    assert juniper_observability.__version__ == "0.4.2"
 
 
 def test_constants_match_documented_values():
