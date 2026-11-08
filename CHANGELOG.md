@@ -110,6 +110,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The pre-commit doc-link hook skips the repo's gitignored `tmp/`.** The hook runs
+  `juniper-check-doc-links` with `pass_filenames: false`, so the checker walks the whole checkout, `tmp/`
+  included, and scratch copies of notes kept there failed it. It reads `.txt` as well as markdown, so even
+  captured logs there can fail it. On 2026-11-08 the primary checkout failed with 2,424 broken-link lines,
+  every one under `tmp/`. With `--exclude tmp` it passes: 2,365 files scanned, every link valid. This
+  implements the 2026-10-26 owner ruling for the
+  hook only. The hunk is byte-identical to juniper-ml#2360's, so that PR still merges cleanly; it carries
+  the CI and documented invocations. `--exclude` matches a whole path component, so only directories named
+  exactly `tmp` are skipped; no tracked file lives in one.
+  `util/ad-hoc/2026-11-08_doc_links_tmp_exclusion_check.py` reads the hook's arguments from
+  `.pre-commit-config.yaml` and checks a fixture tree in four cases: a broken link under `tmp/` is skipped;
+  without the flag it fails; a broken link in `notes/` or in `tmp-archive/` still fails.
+
 - **The yamaguchi securityfs incident: remediated, recorded, and two defects in its validator fixed.**
   The owner ran the remount runbook on 2026-11-08, and the three filesystems have been mounted since
   08:28:29Z. The validator passes, all seven juniper containers run confined by `docker-default`, and
