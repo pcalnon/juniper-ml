@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **A throttled failed-auth caller is told to wait until the window actually closes.**
+  `FailedAuthThrottle.check` reported `max(1, int(window - elapsed))`. The floor of 1 stopped
+  `Retry-After: 0`, which `RateLimiter` already fixed (`APD-SVCCORE-004`), but truncation still
+  under-reports every other remainder: 9.4s left said 9, and a client obeying the header woke
+  while the window was closed and was rejected again. The wait is now rounded up, with the same
+  floor of 1. A caller who is not blocked still gets `retry_after` 0.
+  `tests/test_failed_auth_retry_after.py` pins the direction with a frozen clock.
+
 ## [0.7.1] - 2026-10-09
 
 ### Fixed

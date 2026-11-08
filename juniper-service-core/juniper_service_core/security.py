@@ -465,7 +465,12 @@ class FailedAuthThrottle:
             if now - window_start >= self._window:
                 return (False, 0)  # Window rolled over; the old count no longer applies.
             if count >= self._max_failures:
-                return (True, max(1, int(self._window - (now - window_start))))
+                # Same direction as RateLimiter._seconds_until_reset. int() truncates, so
+                # 9.4s left would say 9 and a client obeying Retry-After would wake while
+                # this window is still closed. The floor of 1 covers a remainder that
+                # ceil would report as 0.
+                remaining = self._window - (now - window_start)
+                return (True, max(1, math.ceil(remaining)))
             return (False, 0)
 
     def record_failure(self, client_ip: str) -> None:
