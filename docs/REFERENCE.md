@@ -4,7 +4,7 @@
 
 **Version:** 0.6.92
 **Status:** Active
-**Last Updated:** 2026-11-06
+**Last Updated:** 2026-11-07
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -142,7 +142,7 @@ pip install juniper-ml[recurrence]# Δt-native LMU model + FastAPI app + HTTP cl
 pip install juniper-ml[all]       # Everything
 ```
 
-The `recurrence` cell is this checkout's `pyproject.toml` pin (`juniper-recurrence>=0.8.1,<0.9.0`). PyPI `juniper-ml` 0.11.3 still accepts 0.8.0. [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](#pypi-juniper-ml-0113-still-accepts-recurrence-080).
+The `recurrence` cell is this checkout's `pyproject.toml` pin (`juniper-recurrence>=0.8.1,<0.9.0`). Published `juniper-ml` 0.11.3 still accepts 0.8.0; PyPI latest is 0.11.4 and requires `>=0.8.1`. [PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0](#pypi-juniper-ml-0113-still-accepts-recurrence-080).
 
 > **Extras lint contract (two gates).** Any edit to `[project.optional-dependencies]` in `pyproject.toml` must co-update, in the **same PR**:
 >
@@ -5460,9 +5460,14 @@ Q-8 baselines and the split comparator are a **separate** operator surface: [Per
 
 ## PyPI juniper-ml 0.11.3 still accepts recurrence 0.8.0
 
-The [Available Extras](#available-extras) table matches `pyproject.toml`. On this checkout the recurrence member is `juniper-recurrence>=0.8.1,<0.9.0`, and `[project].version` is still `0.11.3`. PyPI's latest `juniper-ml` is 0.11.3 (probed 2026-11-06). Its `recurrence` extra requires `juniper-recurrence<0.9.0,>=0.8.0`. An environment that already holds 0.8.0 satisfies that published requirement, so `pip install -U juniper-ml[recurrence]` from the index leaves 0.8.0 installed.
+The [Available Extras](#available-extras) table matches `pyproject.toml`. On this checkout the recurrence member is `juniper-recurrence>=0.8.1,<0.9.0`, and `[project].version` is still `0.11.3`.
+The published 0.11.3 wheel's `recurrence` extra is still `juniper-recurrence<0.9.0,>=0.8.0`.
+PyPI's latest `juniper-ml` is 0.11.4 (wheel uploaded 2026-11-07T22:59:23Z), and that extra is `juniper-recurrence<0.9.0,>=0.8.1`.
+An environment that already holds 0.8.0 satisfies 0.11.3, so `pip install -U 'juniper-ml[recurrence]==0.11.3'` leaves 0.8.0 installed.
+The same command without the pin installs 0.11.4 and upgrades recurrence, because 0.8.0 does not satisfy `>=0.8.1`.
+pip's default `--upgrade-strategy` is `only-if-needed`.
 
-The checkout floor applies to an install that uses this `pyproject.toml`: `pip install -e ".[recurrence]"` from this tree, or a later wheel that publishes the same extra. `CHANGELOG.md`'s `[Unreleased]` entry names a 0.11.4 cut as the carrier. 0.11.4 is not a PyPI release. The model pin `juniper-recurrence-model>=0.6.0,<0.7.0` and the client pin `juniper-recurrence-client>=0.3.0,<0.4.0` are unchanged here.
+The checkout floor applies to an install that uses this `pyproject.toml`: `pip install -e ".[recurrence]"` from this tree. `CHANGELOG.md`'s `[Unreleased]` entry names a 0.11.4 cut as the carrier. That cut is on PyPI as 0.11.4 (2026-11-07); this checkout's version line is still 0.11.3. The model pin `juniper-recurrence-model>=0.6.0,<0.7.0` and the client pin `juniper-recurrence-client>=0.3.0,<0.4.0` are unchanged here.
 
 PyPI `juniper-recurrence` 0.8.1 requires the same `juniper-recurrence-model<0.7.0,>=0.6.0` range that 0.8.0 requires.
 
@@ -5482,7 +5487,7 @@ pip install -U "juniper-recurrence>=0.8.1,<0.9.0"
 pip install -e ".[recurrence]"
 ```
 
-The first command makes the keyword legal and leaves recurrence at 0.8.0. The second moves the app onto the requirement that refuses model-core 0.2.0; pip then upgrades model-core into `>=0.3.0,<0.4.0` or the resolve fails. The third applies this checkout's extra, which 0.8.0 does not satisfy. `pip install -U juniper-ml[recurrence]` against PyPI 0.11.3 does not run any of those three.
+The first command makes the keyword legal and leaves recurrence at 0.8.0. The second moves the app onto the requirement that refuses model-core 0.2.0; pip then upgrades model-core into `>=0.3.0,<0.4.0` or the resolve fails. The third applies this checkout's extra, which 0.8.0 does not satisfy. `pip install -U 'juniper-ml[recurrence]==0.11.3'` does not run any of those three. The same command without the pin installs PyPI latest 0.11.4, whose extra is `>=0.8.1`, and that does move recurrence.
 
 `util/recurrence_env_preflight.bash` includes `juniper-model-core` in `CLOSURE` and runs a scoped `pip check`. It does not import `walk_forward_folds`. With recurrence 0.8.0 and model-core 0.2.0 the check is clean and the launcher reaches `serve`. With 0.8.1 installed and model-core 0.2.0 still present, the same line is a closure conflict: the launcher prints `ENV PREFLIGHT REFUSED` and does not `serve`.
 
@@ -5496,9 +5501,9 @@ The pin probe compares only installed `juniper-recurrence-model` and `juniper-se
 |---------|------------|
 | Health stays up and `POST /v1/crossval` is 500 | `build_folds` passed `groups=` and the installed model-core is 0.2.0. The crossval route returns 422 only for `ValueError`. A series with no ticker still passes `groups=None`. |
 | `pip check` and `ENV PREFLIGHT OK`, then crossval 500 | The installed app is recurrence 0.8.0. Model-core 0.2.0 meets `>=0.2.0`. The preflight never looks at the signature. |
-| `pip install -U juniper-ml[recurrence]` left 0.8.0 | The index artifact is juniper-ml 0.11.3. Its extra is still `>=0.8.0`. Upgrade `juniper-recurrence` itself, or install the extra from this checkout. |
+| `pip install -U juniper-ml[recurrence]` left 0.8.0 | The installed meta-package is 0.11.3 (or the command pinned `==0.11.3`). That extra is still `>=0.8.0`. PyPI latest is 0.11.4 and does not leave 0.8.0. Upgrade `juniper-recurrence` itself, or install this checkout's extra. |
 | `ENV PREFLIGHT REFUSED` names `juniper-model-core` | Recurrence 0.8.1 is installed beside model-core 0.2.0. Install `juniper-model-core[crossval]>=0.3.0,<0.4.0`. A CUDA line printed as `unrelated to recurrence` is not this finding. |
-| Extras table says `>=0.8.1` and the compatibility paragraph says 0.11.3 published `>=0.8.0` | The table is the lockstep copy of `pyproject.toml`. The paragraph is the published 0.11.0 through 0.11.3 history. PyPI has no juniper-ml wheel carrying `>=0.8.1`. |
+| Extras table says `>=0.8.1` and the compatibility paragraph says 0.11.3 published `>=0.8.0` | The table is the lockstep copy of this checkout's `pyproject.toml`, whose version is still 0.11.3. The paragraph is the published 0.11.0 through 0.11.3 history. PyPI 0.11.4 (2026-11-07) is the wheel that carries `>=0.8.1`. |
 
 ---
 
