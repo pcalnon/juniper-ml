@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **A test now counts the API-key compare's calls** (round-42 findings F3 and F8,
+  consolidated-plan item P3-07). No test saw `hmac.compare_digest` itself, and two mutants passed
+  the whole suite and juniper-ml's drift gate (round-42 validation, 2026-09-24): a bytes `==`
+  (right answers and no exception, but it leaks timing), and a `break` after `matched = True`,
+  which stops the walk at the first match. A spy now replaces `compare_digest`. Each of five
+  configured keys is presented in turn, then a key that is not configured, and each `validate`
+  call must make one compare per configured key, with bytes on both sides. So a walk that stops at
+  a match fails whatever order it walks in, and `any()`, APD-CASCOR-005's form of that early exit,
+  is pinned too. Counting calls does not show that the compare's answer decides, so a second test
+  forces `compare_digest` to answer "no", then "yes", and checks that `validate` follows it. That
+  catches a bytes `==` that can decide the result, `compare_digest(...) or presented ==
+  candidate` or an `==` that decides while `compare_digest` is called and ignored; both passed
+  every test until then. An `==` that runs and never decides is beyond any behavioural test. **Correction to the 0.7.1
+  entry**: it says of APD-CASCOR-005's walk that "No behavioural test pins this, and none can". A
+  test of `validate`'s result cannot, but these count and steer the compare's calls.
+- **The encoding matrix holds the surrogate pair, and five more probes** (round-42 finding F5, and
+  P3-07's own validation, 2026-11-08). Its comment claimed that only a total and injective
+  encoding passes every pair in it. UTF-16-LE with `surrogatepass` is total but not injective, and
+  it passed anyway: it gives the pair U+D83D U+DD11 the same bytes as U+1F511, and the matrix held
+  only U+1F511. It now holds both. Five probes are prepended for compares that also passed every
+  test: `REAL-KEY` (a case-folded compare), two 42-character keys that differ only in their last
+  character (a compare cut to 16 or 32 bytes), and the strings that `backslashreplace` (or `namereplace`) and
+  `xmlcharrefreplace` make of U+DCFF. The matrix is 13x13 (the 0.7.1 entry says 7x7). Its comment
+  now names the compares it catches, and says that no finite list proves an encoding injective.
+  The pair is built with `chr()`, and a test asserts that it is in the list and that the list
+  holds no duplicates: typed as an escape through some agent tools, the pair arrives as U+1F511.
+- **Correction to the 0.7.1 entry** (round-42 finding F9). `tests/test_t2_websocket.py` checks that
+  the handshake closes 4001, but that is the ASGI close code. A close before accept never reaches
+  the client as a close frame: uvicorn answers the upgrade with HTTP 403. So a non-ASCII key is
+  rejected with ASGI close 4001, which is HTTP 403 on the wire.
+- **No module changes.** Everything above is tests and CHANGELOG text, so the package's code is
+  0.7.1's.
+
 ## [0.7.1] - 2026-10-09
 
 ### Fixed

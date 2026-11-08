@@ -29,7 +29,7 @@ dependencies = [
 
 [project.optional-dependencies]
 prometheus = ["prometheus-client>=0.20.0"]
-sentry = ["sentry-sdk[fastapi]>=2.0.0"]
+sentry = ["sentry-sdk[fastapi]>=2.35.0"]
 all = ["juniper-observability[prometheus,sentry]"]
 test = [
     "pytest>=8.0",
@@ -38,7 +38,7 @@ test = [
     "httpx>=0.27",
     "fastapi>=0.110",
     "prometheus-client>=0.20.0",
-    "sentry-sdk[fastapi]>=2.0.0",
+    "sentry-sdk[fastapi]>=2.35.0",
 ]
 
 [project.urls]
