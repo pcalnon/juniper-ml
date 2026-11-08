@@ -1,0 +1,7 @@
+/juniper-canopy apparmor=docker-default state=running health=healthy started=2026-11-08T08:57:58.68995896Z
+/juniper-cascor apparmor=docker-default state=running health=healthy started=2026-11-08T08:57:52.636826408Z
+/juniper-data apparmor=docker-default state=running health=healthy started=2026-11-08T08:57:46.480009902Z
+/juniper-recurrence apparmor=docker-default state=running health=healthy started=2026-11-08T08:57:52.63748358Z
+/juniper-redis apparmor=docker-default state=running health=healthy started=2026-11-08T08:57:46.47944819Z
+/juniper-deploy-juniper-cascor-worker-1 apparmor=docker-default state=running health=healthy started=2026-11-08T08:57:58.689201188Z
+/juniper-deploy-juniper-cascor-worker-2 apparmor=docker-default state=running health=healthy started=2026-11-08T08:57:59.030598692Z

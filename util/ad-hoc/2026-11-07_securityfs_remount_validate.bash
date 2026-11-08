@@ -9,13 +9,25 @@
 # Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md (§3, §5)
 #             notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md
+#             util/ad-hoc/2026-11-08_remount_validate_baseline_gate_check.py (checks the baseline gate below)
 #
 # Modes
 #   capture FILE   Write a fingerprint of everything the remount must NOT change -- the Kubernetes install
 #                  (held kubeadm/kubelet/kubectl, kubelet.service, /etc/kubernetes, /var/lib/kubelet,
 #                  containerd's config, k8s listening ports, the juniper-k8s checkout), the daemons that
 #                  must not restart (containerd, dockerd, PID 1), and the legacy snap k8s services -- to FILE.
-#   verify FILE    Run the efficacy checks, recapture the fingerprint, and diff it against FILE.
+#                  Then apply the baseline gate to FILE, so a capture that did not land is caught at once.
+#   check FILE     Apply only the baseline gate to FILE. Reads FILE and nothing else.
+#   verify FILE    Apply the baseline gate, run the efficacy checks, recapture the fingerprint, and diff it
+#                  against FILE.
+#
+# Baseline gate (all three modes): FILE must be readable, not empty, and carry every key the fingerprint
+# prints whatever the host's state (REQUIRED_KEYS). Otherwise check and verify refuse it, exit 2, before
+# anything else runs. The gate fails closed: only the check's explicit "none" passes, so a check that dies
+# is a refusal. A file that is not a fingerprint makes the diff report every current value as a
+# difference. On 2026-11-08, runbook step 4 was run against an empty file: the probe's output file, left
+# empty by the shell's redirect because the probe script was not there yet. It printed 22 "UNEXPECTED"
+# lines for a host on which nothing unexpected had changed (RCA §14).
 #
 # Efficacy checks (verify):
 #   E1  util/host_api_filesystems_check.py exits 0: every systemd API filesystem is mounted, AppArmor consistent
@@ -32,7 +44,9 @@
 # mount.* (the remount itself). Those differences are printed as EXPECTED; any other is UNEXPECTED.
 #
 # Read-only except E4, which starts and removes one container with no network. Needs no root.
-# Writes only FILE (capture). Exit: 0 pass; 1 an efficacy check failed or an UNEXPECTED difference; 2 usage.
+# Writes only FILE (capture).
+# Exit: 0 pass; 1 an efficacy check failed, an UNEXPECTED difference, or a capture that is not a usable
+# baseline; 2 usage, or FILE is not a usable baseline (check, verify).
 set -uo pipefail
 
 JUNIPER="${JUNIPER_ROOT:-$HOME/Development/python/Juniper}"
@@ -41,6 +55,13 @@ DEPLOY="${JUNIPER_DEPLOY_DIR:-$JUNIPER/juniper-deploy}"
 IMAGE="${VALIDATE_IMAGE:-ghcr.io/pcalnon/juniper-recurrence:0.8.0}"
 SNAP_K8S_SERVICES=(snap.kubelet.daemon snap.kube-apiserver.daemon snap.kube-proxy.daemon snap.kube-scheduler.daemon
                    snap.kube-controller-manager.daemon snap.etcd.etcd)
+API_MOUNT_POINTS=(/sys/kernel/security /sys/fs/pstore /sys/fs/bpf)
+
+# The keys fingerprint() prints whatever the host's state: its printf lines. The dpkg-query and tree.* lines
+# are left out, because they depend on what is installed. Built from the same arrays fingerprint() loops over.
+REQUIRED_KEYS=(hold unit.kubelet containerd_config_sha256 k8s_listeners juniper_k8s_head pid.systemd pid.containerd pid.dockerd)
+for unit in "${SNAP_K8S_SERVICES[@]}"; do REQUIRED_KEYS+=("snap_service.$unit"); done
+for where in "${API_MOUNT_POINTS[@]}"; do REQUIRED_KEYS+=("mount.$where"); done
 
 fingerprint() {
     printf 'hold=%s\n' "$(apt-mark showhold 2>/dev/null | sort | paste -sd,)"
@@ -58,9 +79,45 @@ fingerprint() {
     for unit in "${SNAP_K8S_SERVICES[@]}"; do
         printf 'snap_service.%s=%s/%s\n' "$unit" "$(systemctl is-enabled "${unit}.service" 2>/dev/null)" "$(systemctl is-active "${unit}.service" 2>/dev/null)"
     done
-    for where in /sys/kernel/security /sys/fs/pstore /sys/fs/bpf; do
+    for where in "${API_MOUNT_POINTS[@]}"; do
         printf 'mount.%s=%s\n' "$where" "$(findmnt -no FSTYPE,OPTIONS --mountpoint "$where" 2>/dev/null)"
     done
+}
+
+baseline_problem() {  # baseline_problem FILE: print why FILE is not a usable baseline, or "none" if it is one
+    local file="$1" missing
+    local -a absent
+    if [[ ! -r "$file" ]]; then echo "no such file"; return; fi
+    if [[ ! -s "$file" ]]; then echo "empty file"; return; fi
+    # awk, not a bash associative array. A line that starts with "=" has an empty key, which bash rejects
+    # ("bad array subscript") by abandoning the whole function. Its output is then empty, which the first
+    # version of this gate read as "no problem", so it passed the probe's report, whose section headers
+    # start with "====" (util/ad-hoc/2026-11-08_bash_empty_assoc_key_abort_repro.bash; RCA §14).
+    missing="$(awk -F= -v keys="${REQUIRED_KEYS[*]}" '
+        BEGIN { n = split(keys, want, " ") }
+        index($0, "=") { have[$1] = 1 }
+        END { for (i = 1; i <= n; i++) if (!(want[i] in have)) print want[i] }' "$file")" \
+        || { echo "the key check itself failed"; return; }
+    if [[ -n "$missing" ]]; then
+        mapfile -t absent <<< "$missing"
+        echo "not a fingerprint: ${#absent[@]} of ${#REQUIRED_KEYS[@]} required keys missing, the first being ${absent[0]}"
+        return
+    fi
+    echo none
+}
+
+refuse() {  # refuse MODE FILE PROBLEM: say why FILE cannot be a baseline, and exit 2
+    echo "$1: $2: $3" >&2
+    echo "  A baseline is the file 'capture' writes BEFORE the remount (runbook step 1). The probe's report is" >&2
+    echo "  not one. If no baseline was captured, runbook step 4 names the fallback." >&2
+    exit 2  # refuse: not a usable baseline
+}
+
+gate() {  # gate MODE FILE: refuse FILE unless it is a usable baseline. Fails closed: only an explicit
+          # "none" passes, so a check that died and printed nothing is a refusal, not a pass.
+    local problem
+    problem="$(baseline_problem "$2")"
+    [[ "$problem" == none ]] || refuse "$1" "$2" "${problem:-the baseline check printed nothing}"
 }
 
 usage() { sed -n '2,/^set -uo/p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//; /^set -uo/d'; }
@@ -75,11 +132,21 @@ fi
 case "$mode" in
     capture)
         fingerprint > "$file"
-        echo "captured $(wc -l < "$file") fingerprint lines to $file"
+        problem="$(baseline_problem "$file")"
+        if [[ "$problem" != none ]]; then
+            echo "capture: $file: ${problem:-the baseline check printed nothing} -- this capture is NOT a usable baseline" >&2
+            exit 1
+        fi
+        echo "captured $(wc -l < "$file") fingerprint lines to $file (a usable baseline: all ${#REQUIRED_KEYS[@]} required keys)"
+        exit 0
+        ;;
+    check)
+        gate check "$file"
+        echo "check: $file is a usable baseline ($(wc -l < "$file") lines, all ${#REQUIRED_KEYS[@]} required keys)"
         exit 0
         ;;
     verify)
-        [[ -r "$file" ]] || { echo "verify: no such fingerprint: $file" >&2; exit 2; }
+        gate verify "$file"
         ;;
     *)
         usage >&2

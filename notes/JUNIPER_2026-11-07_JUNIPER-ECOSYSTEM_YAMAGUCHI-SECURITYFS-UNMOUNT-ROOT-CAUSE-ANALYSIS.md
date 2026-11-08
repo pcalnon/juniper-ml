@@ -2,7 +2,7 @@
 
 **Date**: 2026-11-07 (investigated 2026-11-07 23:30 CST to 2026-11-08 02:30 UTC)
 **Host**: yamaguchi (Ubuntu 26.04.1 LTS, kernel 7.0.0-31-generic, systemd 259.5, docker-ce 29.7.2, snapd 2.77.1)
-**Status**: root cause established; host remediation written and vetted, **awaiting the owner** (it needs root)
+**Status**: root cause established; **remediated 2026-11-08 at 08:28:29Z** by the owner (runbook steps 1–3), validated 08:51–08:58Z, every check passing (§14)
 **Author**: Paul Calnon (investigation session `piped-exploring-raven`)
 **Remediation**: `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md`
 **Evidence**: `reports/2026-11-07_yamaguchi-securityfs-unmount/` (its `README.md` lists every file and the command that made it)
@@ -24,8 +24,9 @@ The AppArmor profile is not the problem. The filesystem that exposes AppArmor's 
 not in use. The repair made that evening restarted what `systemctl` could see:
 `snapd.mounts.target` and the six API mounts that have unit files. It could not see three more,
 **securityfs, pstore and bpffs**. systemd's PID 1 mounts those itself at boot, from a table in its
-source, and they have no unit file. Once unmounted they leave no unit behind, so they appear in no
-`systemctl` listing and nothing remounts them.
+source, and by design never represents them as units, mounted or not. So they appear in no
+`systemctl` listing, and nothing remounted them. (Until 2026-11-08 this said their units are
+garbage-collected once unmounted. They never had one; §14 F1.)
 
 dockerd decides "this host supports AppArmor" once, when it starts. On yamaguchi that was
 2026-09-07, while securityfs was mounted. So it keeps applying `docker-default` and checks the
@@ -36,6 +37,12 @@ component snaps, which have been crash-looping since, and `helm`, which is a sna
 The fix is three `mount` commands with systemd's own options. Before running them, quiet the legacy
 snap k8s services, which the remount would otherwise bring back to life. Neither step touches the
 ongoing kubeadm install (§10). The runbook has the steps and a before/after validator.
+
+**Remediated 2026-11-08.** The owner ran the runbook's root steps, and the three filesystems have been
+mounted since 08:28:29Z. The validator passes, all seven containers run confined by
+`docker-default`, and juniper-deploy's suite has no failures (409 passed, where 17 had failed). §14
+is the record. It includes a correction to this analysis (F1) and two defects that the execution
+exposed in the validator, both fixed (F2, F3).
 
 ## 2. The report
 
@@ -56,10 +63,10 @@ exact versions in `…/2026-11-08T0110Z_upstream-source-pins.txt`.
 
 | # | Link | Evidence |
 |---|------|----------|
-| L1 | **Boot, 2026-09-07 23:12:17 CDT.** PID 1 mounts securityfs, pstore and bpf from `mount_table` in `src/shared/mount-setup.c`. They have no unit file. | `uptime -s`. systemd v259.5 `src/shared/mount-setup.c:112-140`, `:205-232` (pins file). |
+| L1 | **Boot, 2026-09-07 23:12:17 CDT.** PID 1 mounts securityfs, pstore and bpf from `mount_table` in `src/shared/mount-setup.c`. They have no unit file, and systemd never synthesizes a unit for them: every `mount_table` entry is an API mount point, and `mount_setup_unit()` skips those. | `uptime -s`. systemd v259.5 `src/shared/mount-setup.c:112-140`, `:205-232` (pins file); `:245-254` and `src/core/mount.c:1869-1893` (`…T0905Z_upstream-source-pins.txt`). |
 | L2 | **dockerd starts at 23:13:03 CDT and caches AppArmor support.** `appArmorSupported()` is containerd's `apparmor.HostSupports()`, a `sync.Once`. It is true when `/sys/kernel/security/apparmor` exists, `/sbin/apparmor_parser` exists, and `/sys/module/apparmor/parameters/enabled` starts with `Y`. It has been true since, and `docker info` still lists `name=apparmor`. | `ps -o lstart` for pid 13298 (probe §5). moby `docker-v29.7.2` `daemon/apparmor_linux.go:1-16`, vendored containerd v2.3.3 `pkg/apparmor/apparmor_linux.go:17-45`. Probe §6. |
 | L3 | **2026-10-27 17:55:25.43–17:55:28.30 CDT (22:55:25–28Z): every filesystem not in use is unmounted.** systemd recorded the deactivations. 298 snap mounts still carry an `InactiveEnterTimestamp` inside those three seconds; the backup arc counted 299 on the day. Also unmounted: the `extruder` and `EBC5-F0A3` media mounts (`DFF3-2782` was remounted later, which overwrote its timestamp), `binfmt_misc` (17:55:27.03), and at 17:55:28.26 `fusectl`, `configfs`, `tracefs`, `hugetlbfs`, `debugfs` and `mqueue`. Mounts in use survived: `/`, `/home`, `/mnt/Backups`, `/run`, and `cgroup2`, which systemd holds. | `…systemd-timeline-system-public_….tsv` (rows `InactiveEnterTimestamp`, 22:55:25–28Z). `util/ad-hoc/2026-11-07_systemd_unit_timeline.py`. |
-| L4 | **securityfs, pstore and bpf went in the same sweep. This is inferred: they left no record.** They were mounted at boot (L1), and dockerd's cached support (L2) shows securityfs was present at 23:13 CDT. They are absent now. The sweep took every mount not in use, and nothing holds these three open, so it would have taken them. The only alternative is a separate, traceless root unmount of exactly these three, and nothing points to one. Consistent with the inference: the snap kubelet was already failing in `aa_is_enabled()` at the journal's horizon (2026-10-30). | Probe §3 shows all three `MISSING`, while every other `/sys` API mount carries the high mount ids of its 2026-10-28 remount (`14679`–`14825`). `sys-kernel-security.mount`, `sys-fs-pstore.mount` and `sys-fs-bpf.mount` are `LoadState=not-found` (probe §4). A mount with no unit file is garbage-collected once inactive, so systemd kept no timestamp for them. |
+| L4 | **securityfs, pstore and bpf went in the same sweep. This is inferred: they left no record.** They were mounted at boot (L1), and dockerd's cached support (L2) shows securityfs was present at 23:13 CDT. They are absent now. The sweep took every mount not in use, and nothing holds these three open, so it would have taken them. The only alternative is a separate, traceless root unmount of exactly these three, and nothing points to one. Consistent with the inference: the snap kubelet was already failing in `aa_is_enabled()` at the journal's horizon (2026-10-30). | Probe §3 shows all three `MISSING`, while every other `/sys` API mount carries the high mount ids of its 2026-10-28 remount (`14679`–`14825`). `sys-kernel-security.mount`, `sys-fs-pstore.mount` and `sys-fs-bpf.mount` are `LoadState=not-found` (probe §4). systemd never creates a unit for an API mount point (`src/core/mount.c:1888-1893`), so it recorded no timestamp for them, at the sweep or ever. Until 2026-11-08 this cell said such a unit is garbage-collected once inactive; there was never a unit (§14 F1). |
 | L5 | **The 20:18 CDT repair restored only what `systemctl` could list.** `systemctl start snapd.mounts.target` remounted the snaps at 01:18:17Z (snap mounts carry that `ActiveEnterTimestamp`). The six unit-file mounts followed at 01:18:38Z, all six within 0.33 s. The repair record calls it complete: *"It was repaired without a reboot (`systemctl start snapd.mounts.target` and the six unit-file mounts)"* (`JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6 finding 17). Its list of unmounted filesystems omits securityfs, pstore and bpf. | `systemctl show --timestamp=us+utc` for `snap-*.mount` and the six units. Timeline TSV rows at 01:18:38Z. |
 | L6 | **Every container start now fails.** `WithApparmor` sees `appArmorSupported()` true and the default profile in use, so it calls `loadDefaultAppArmorProfileIfMissing()`. That calls `aaprofile.IsLoaded()`, which opens `/sys/kernel/security/apparmor/profiles` and gets ENOENT. The result is the reported error. | moby `daemon/oci_linux.go:124-150`, `daemon/apparmor_default.go:26-40`, vendored `moby/profiles/apparmor/apparmor.go:110-120`. `journalctl -u docker`: 6 failures, from 2026-11-06 07:29:43 CST, the first start attempt since the event. |
 
@@ -73,11 +80,14 @@ securityfs. **Only the interface is gone.**
 - **RC-1 (trigger).** A root process unmounted every filesystem not in use, at 17:55:25 CDT on
   2026-10-27 (§7). Unmounting the system's API filesystems has no legitimate everyday use.
 - **RC-2 (the defect that persisted).** The repair was scoped by systemd's unit list, and that list
-  cannot show the mounts PID 1 makes itself. `systemctl list-units --type=mount --all` lists only
-  *loaded* units. An inactive mount unit with no fragment is unloaded, so securityfs, pstore and bpf
-  vanished from the inventory used to judge the repair complete. This is the
+  never shows the mounts PID 1 makes itself. systemd creates no unit for an API mount point, mounted
+  or not (`src/core/mount.c:1869-1893`), and refuses a unit file for one (`:526-549`). So securityfs,
+  pstore and bpf were never in the inventory used to judge the repair complete, not even before the
+  sweep. On the remediated host all ten mounted `mount_table` points are `LoadState=not-found`, while
+  all six unit-file mounts are loaded units (`…T0912Z_systemd-api-mount-units.txt`). This is the
   "conformance to a declared set" trap: the check passed against the set it was given, not the
-  system.
+  system. (Until 2026-11-08 this bullet said their units were unloaded once inactive. The trap is
+  the same, and starker: the set could never have contained them.)
 - **RC-3 (why it surfaced eleven days late, and misleadingly).**
   - dockerd caches AppArmor support once, at start, so the host stayed "AppArmor-capable" to Docker
     with the interface gone.
@@ -106,17 +116,27 @@ securityfs. **Only the interface is gone.**
 | 20:18:38 | 01:18:38 | The six unit-file API mounts back. securityfs, pstore, bpf **not** | timeline TSV |
 | 2026-10-28 | | Backup handoff records "repaired without a reboot" | `HANDOFF_2026-10-28_backup-tiers-2-3-running-record-landed-then-phase-d.md` |
 | 2026-10-30 14:04:12 | 19:04:12 | Oldest retained journal entry; the snap kubelet is already failing in `aa_is_enabled()` | probe §7, §10 |
+| 2026-11-04 02:25:52 | 08:25:52 | The snap CUPS services (`cupsd`, `cups-browsed`) hit systemd's start limit after five snap-confine failures | `journalctl -u snap.cups.cupsd.service` |
 | 2026-11-06 07:29:43 | 13:29:43 | First `make up` after the event: every start fails | `journalctl -u docker` |
 | 2026-11-06 19:20 → 11-07 17:10 | | Four snapd auto-refreshes fail at security-profile setup (14 snaps in the last) | `snap changes` (probe §7) |
 | 2026-11-07 17:05–17:08 | 23:05–23:08 | The failed refresh restarts the legacy k8s snaps; four hit systemd's start limit | `journalctl -u snap.kube-*` |
 | 2026-11-07 16:26, 17:12 | 22:26, 23:12 | Further `make up` failures; the report | `journalctl -u docker` |
+| 2026-11-08 02:23:22 | 08:23:22 | Runbook step 1, on a checkout not yet pulled: no baseline captured, `probe-before.txt` left empty | §14 F4 |
+| 02:25–02:26 | 08:25–08:26 | Step 2: the six legacy snap k8s services stopped and disabled | `snap changes` (change 526348) |
+| **02:28:29** | **08:28:29** | **Step 3: securityfs, pstore and bpf mounted** | `journalctl -t sudo` |
+| 02:28:37 | 08:28:37 | The domotz agent snap service starts, after 8,255 restarts | `systemctl show` |
+| 02:51–02:58 | 08:51–08:58 | Validator PASS; `make up`; all seven containers healthy and confined | §14.1 |
 
 ## 6. Blast radius (as of 2026-11-08)
+
+This is the state before the remount. §14.2 gives each row's state after it.
 
 | Consumer | State | Evidence |
 |---|---|---|
 | Docker | Every non-privileged container start fails. Seven juniper containers sit in `created`. | probe §6, §7 |
 | Every snap app and snap service | snap-confine dies: `aa_is_enabled() failed unexpectedly (No such file or directory)`. snapd 2.77.1 treats ENOENT as tampering and refuses to run. | `cmd/libsnap-confine-private/apparmor-support.c:44-76` (pins file) |
+| The domotz agent (a snap service) | Crash-looping: 8,255 restarts. Found during the remediation. | `systemctl show snap.domotzpro-agent-publicstore.domotzpro-agent-deamon.service -p NRestarts` |
+| Snap CUPS (`cupsd`, `cups-browsed`) | `failed` at systemd's start limit since 2026-11-04 02:25:52 CST, after five snap-confine failures. The deb `cups.service` is active, so printing through it is unaffected. Found during the remediation. | `journalctl -u snap.cups.cupsd.service` |
 | `helm` (a snap on yamaguchi) | Cannot run. 17 juniper-deploy tests fail locally for this reason alone (`test_helm_chart_probes.py`, `test_helm_networkpolicy_data_egress.py`). | `…juniper-deploy-full-suite-main-vs-branch.txt` |
 | Legacy k8s component snaps (kubelet, kube-apiserver, kube-proxy, kube-scheduler, kube-controller-manager 1.35.9; etcd 3.4.36) | kubelet is crash-looping (`NRestarts=1136`). The other four are `failed` at the start limit since the 17:05 refresh. | probe §8 |
 | snapd refresh | Fails for every snap at "security profile setup" (four `Error` changes), so no snap, chromium included, receives updates. | `snap changes` |
@@ -186,6 +206,8 @@ Owner-executed, root, no reboot. It takes under ten minutes:
 5. Run `make up`.
 6. Run the regression suites.
 
+Executed on 2026-11-08; §14 is the record.
+
 Alternatives rejected:
 
 - **Reboot.** It would remount everything, but finding 17 of
@@ -221,7 +243,8 @@ Pis and turing's VM. yamaguchi is the workstation, and carries the held 1.36.5 d
 |---|---|---|---|
 | `scripts/preflight_apparmor.sh`, wired into `make up` / `demo` / `dev` / `monitor` / `obs-demo`, and `make apparmor-preflight` | juniper-deploy#270 (merged 2026-11-08, `5ed14290`) | Names the missing mount before `docker compose up` does. Fails when AppArmor is enabled but the interface is gone, whether dockerd still uses AppArmor (every start would fail) or no longer does (containers would run unconfined). Warns when the interface is back but dockerd never re-detected it. Bypass: `JUNIPER_APPARMOR_OK=1`. | `tests/test_apparmor_preflight.py` (18 tests). Mutation check 14 of 14. The full suite's failure set is identical to `main`'s (17 helm-snap failures, the same root cause). |
 | `util/host_api_filesystems_check.py` | juniper-ml#2516 | Judges `/proc/self/mountinfo` against systemd's API-filesystem table (PID 1's and the unit-file mounts), plus AppArmor consistency. Prints systemd's exact remount commands. Exit codes 0/1/2; `--json`. | `tests/test_host_api_filesystems_check.py` (25 tests, CI-wired). Mutation check 11 of 11, including the RC-2 mutant ("judge only unit-file mounts"). |
-| `util/ad-hoc/2026-11-07_securityfs_remount_validate.bash` | juniper-ml | The runbook's before/after validator: five efficacy checks (E1–E5) and a k8s/daemon fingerprint diff. | Negative control on the incident state: all five efficacy checks fail, and the fingerprint is unchanged (`…remount-validate-negative-control-incident-state.txt`). |
+| `util/ad-hoc/2026-11-07_securityfs_remount_validate.bash` | juniper-ml | The runbook's before/after validator: five efficacy checks (E1–E5) and a k8s/daemon fingerprint diff. From 2026-11-08 it refuses a baseline that is not a fingerprint (exit 2, failing closed) and has a `check` mode (§14 F2, F3). | Negative control on the incident state: all five efficacy checks fail, and the fingerprint is unchanged (`…remount-validate-negative-control-incident-state.txt`). On the remediated host: PASS (`…T0851Z_remount-validate-after-remediation-vs-incident-fingerprint.txt`), and the hardened version's output is byte-identical. Baseline gate: 14 of 14 cases pass, 10 of 10 seeded defects caught (`…T0911Z_remount-validate-baseline-gate-check.txt`). |
+| Runbook step 1 and step 4 | juniper-ml | Step 1 sets `J`, stops when the scripts are missing, and runs the probe only after a good capture. Step 4 names a fallback baseline (§14 F4). | Exercised by the 2026-11-08 run's failure mode: the gate refuses the empty file that run produced. |
 | Erratum on finding 17 | juniper-ml | Corrects "repaired without a reboot" in `JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`. | — |
 
 ## 12. Recommendations not done here
@@ -233,8 +256,9 @@ Pis and turing's VM. yamaguchi is the workstation, and carries the held 1.36.5 d
    `SystemMaxUse=`, would have kept 2026-10-27.
 3. **Run the host check on a timer** or from the session launcher, so a lost API mount is caught the
    same day, not at the next container start.
-4. **Desktop and VPN residue:** see runbook §8. Restarting `xdg-document-portal` and `gvfs-daemon`
-   (user units) remounts the two FUSE mounts. Check ExpressVPN split tunnelling if it is used.
+4. **Desktop, printing and VPN residue:** see runbook §4. Restarting `xdg-document-portal` and
+   `gvfs-daemon` (user units) remounts the two FUSE mounts. `sudo snap restart cups` restarts the
+   snap's CUPS, if it is used. Check ExpressVPN split tunnelling if it is used.
 5. **Ejecting drives:** keep to the backup arc's rule: desktop Eject or `udisksctl unmount -b /dev/sdX1`,
    never `umount -a`.
 
@@ -252,6 +276,9 @@ Scripts. All are retained, and none needs root:
 | `util/ad-hoc/2026-11-07_host_api_fs_check_mutation_check.py` | Mutation check for that check's suite |
 | `util/ad-hoc/2026-11-07_securityfs_remount_validate.bash` | The runbook's validator |
 | juniper-deploy `util/ad-hoc/2026-11-07_apparmor_preflight_mutation_check.py` | Mutation check for the preflight's suite |
+| `util/ad-hoc/2026-11-08_remount_validate_baseline_gate_check.py` | The validator's baseline gate: 14 cases, then 10 seeded defects (2026-11-08) |
+| `util/ad-hoc/2026-11-08_bash_empty_assoc_key_abort_repro.bash` | Reproduces why the first gate passed the probe's report (§14 F3) |
+| `util/ad-hoc/2026-11-08_api_mount_units_check.bash` | Tests the F1 correction live: no API mount point has a unit (§14 F1) |
 
 The repository is public, so two unredacted captures are kept out of it but retained on yamaguchi,
 in `juniper-ml/tmp/2026-11-07_yamaguchi-securityfs-unmount_private/`:
@@ -260,3 +287,92 @@ in `juniper-ml/tmp/2026-11-07_yamaguchi-securityfs-unmount_private/`:
 - the first probe run, which carried the root filesystem UUID.
 
 The committed copies were regenerated with `--public` and the redaction.
+
+## 14. Remediation record (2026-11-08)
+
+The owner ran runbook steps 1–4 from 08:23Z. Their terminal output is
+`…T0823Z_owner-run-runbook-steps-1-to-4.txt`, with times taken from the host. This session then ran
+the rest of step 4 and steps 5–6, from 08:51Z. Every file named below is in
+`reports/2026-11-07_yamaguchi-securityfs-unmount/`, whose `README.md` gives the command for each.
+
+### 14.1 Results
+
+| Check | Result | Evidence |
+|---|---|---|
+| Validator E1–E5 | All `PASS`: every API filesystem is mounted and AppArmor is consistent; the interface is present; juniper-deploy's preflight prints `[OK]`; a container starts confined (`docker-default (enforce)`); `snap run helm version` gives v4.3.1. | `…T0851Z_remount-validate-after-remediation-vs-incident-fingerprint.txt` |
+| Validator regression diff | `PASS` against the incident-state fingerprint captured at 02:15Z: only the three `mount.*` and six `snap_service.*` keys changed. Unchanged: the held kube debs, `kubelet.service`, `/etc/kubernetes`, `/var/lib/kubelet`, containerd's config, the k8s listeners (none), `juniper-k8s` HEAD, and the identities of PID 1, containerd and dockerd. That baseline predates the remount by 6 h 13 min, so a clean diff over the longer window covers the remount. | same file |
+| `make up` | First refused by the image-provenance preflight (F6). With the owner's choice, all four preflights pass, the AppArmor one with `[OK]`, and all seven containers start. | `…T0852Z_make-up-refused-by-image-provenance-preflight.txt`, `…T0857Z_make-up-after-remediation-released-images.txt` |
+| `make health`, `docker inspect` | All four services ready. All seven containers `running`, `healthy`, with AppArmor profile `docker-default`. | `…T0858Z_make-health-after-remediation.txt`, `…T0913Z_stack-containers-apparmor-profile.txt` |
+| juniper-deploy `pytest tests/`, at `53b948d8` | **409 passed, 48 skipped, 0 failed.** In the incident state: 17 failed, 392 passed. 392 + 17 = 409: the 17 helm tests now pass, and no other result changed. | `…T0853Z_juniper-deploy-full-suite-after-remediation.txt`, `…T0225Z_juniper-deploy-full-suite-main-vs-branch.txt` |
+| juniper-ml `tests/test_host_api_filesystems_check.py`, and the live check | 25 tests pass. `util/host_api_filesystems_check.py` exits 0. | E1 above |
+| The probe, after | Against the before-probe, only the expected changes: the three mounts, the securityfs tree, the legacy services disabled, the kubelet loop stopped. | `…T0853Z_probe-after-remediation.txt` |
+
+### 14.2 State after the remount, against §6
+
+| §6 consumer | After the remount |
+|---|---|
+| Docker | Fixed. Seven containers running, each confined by `docker-default`. |
+| Every snap app and service | Fixed (E5). The domotz agent has run since 08:28:37Z. |
+| `helm` | Fixed. The 17 helm tests pass. |
+| Legacy snap k8s services | Disabled (step 2). The kubelet loop stopped at 08:25:49Z, its last `aa_is_enabled()` failure. Four keep the `failed` state they had before; they are disabled, so it is inert. |
+| snapd refresh | Not observed yet. The next auto-refresh is due at 15:45Z (`snap refresh --time`); `sudo snap refresh` (runbook step 6c) would run one now. |
+| AppArmor userspace | The interface is back (E2). `aa-status` needs root and was not run. |
+| bpffs, pstore | Mounted (E1). |
+| Snap CUPS | Still `failed`: a unit stopped at its start limit does not restart by itself. Owner: `sudo snap restart cups`, if the snap's CUPS is used (runbook §4). |
+| Desktop session | Still unmounted (runbook §4; user units, no root). |
+| ExpressVPN | Unchanged, unverified. |
+| Journal | The kubelet loop's ~4,200 lines an hour have stopped. The hour to 08:53Z held 2,270, all from the half hour before step 2 stopped it. |
+
+The remounted securityfs is the kernel's original instance: its inodes carry the boot time
+(2026-09-07 23:12), not the remount time (probe §3–§4, before and after). That fits §3: AppArmor's
+policy stayed loaded in the kernel throughout, and only its interface was unreachable.
+
+### 14.3 What the execution found
+
+- **F1. Correction: systemd never gives an API mount point a unit.** After the remount, the three
+  filesystems were in PID 1's mount table and still `LoadState=not-found`. systemd v259.5 skips every
+  `mount_table` point when it builds units from `/proc/self/mountinfo` (`src/core/mount.c:1869-1893`,
+  "Ignore API and credential mount points"). `mount_verify()` refuses a unit file for one (`:526-549`)
+  (`…T0905Z_upstream-source-pins.txt`). `util/ad-hoc/2026-11-08_api_mount_units_check.bash` tests
+  this live (`…T0912Z_systemd-api-mount-units.txt`). None of the ten mounted `mount_table` points has a
+  unit, including seven never unmounted since boot (mount ids 28–36, `/sys/fs/cgroup` among them).
+  All six unit-file mounts are loaded units. Corrected here: §1, L1, L4 and RC-2; and in the
+  docstring of `util/host_api_filesystems_check.py`. The conclusion stands: the repair's inventory
+  could not contain these three.
+- **F2. The validator accepted an empty baseline.** Step 4 was run against `probe-before.txt`, which
+  step 1 had left empty. The diff then listed all 31 current fingerprint lines as differences, 22 of
+  them `UNEXPECTED`, on a host where nothing unexpected had changed. It failed, the safe direction,
+  for the wrong reason. A reader could have taken it for damage to the k8s install and undone the
+  remount, which would re-break Docker. Fixed: `capture`, `check` and `verify` apply a baseline gate.
+  The file must be readable, not empty, and carry the 17 keys the fingerprint always prints. `check`
+  and `verify` refuse anything else with exit 2, before any check runs.
+- **F3. The first version of that gate passed the probe's report.**
+  `util/ad-hoc/2026-11-08_remount_validate_baseline_gate_check.py` caught it, in cases C3 and C10
+  (`…T0908Z_remount-validate-baseline-gate-check_first-gate-FAILED.txt`). The gate collected keys in a
+  bash associative array. The probe's `==== …` headers give an empty key, which bash rejects
+  ("bad array subscript") by abandoning the whole function. The gate read the empty output that
+  followed as "no problem" (`util/ad-hoc/2026-11-08_bash_empty_assoc_key_abort_repro.bash`, bash
+  5.3.9). Fixed: the key check runs in `awk`, a failed key check is a refusal, and the gate fails
+  closed, passing only on an explicit `none`. The fixed gate passes 14 of 14 cases and catches 10 of
+  10 seeded defects (`…T0911Z_remount-validate-baseline-gate-check.txt`). On a valid baseline its
+  `verify` output is byte-identical to the original validator's.
+- **F4. Runbook step 1 could fail without stopping the run.** `J` was set only in the prose, the
+  checkout had not been pulled, and each command ran whether or not the one before it had worked.
+  Fixed in the runbook: step 1 sets `J`, stops when the scripts are missing, and runs the probe only
+  after a good capture. Step 4 names a fallback baseline.
+- **F5. Two consumers §6 had missed**, both snap services. The domotz agent (8,255 restarts) recovered
+  by itself 8 s after the remount. The snap CUPS daemons, start-limited since 2026-11-04 02:25:52
+  CST, are still `failed`. Both are now in §6.
+- **F6. `make up` then stopped at an unrelated preflight.** The image-provenance preflight refused
+  canopy 0.9.0 and data 0.17.1, each 2 commits behind its checkout. Those commits touch only tests,
+  docs, CI configuration and CHANGELOG (juniper-canopy#797, #802; juniper-data#518, #519). The owner
+  chose to run the released images (`JUNIPER_IMAGE_STALE_OK=1 make up`), so `make health` labels the
+  two `STALE`. That is drift against the checkouts, not a fault.
+
+### 14.4 Still open
+
+- The actor (§7) is unconfirmed.
+- The owner-only residue (runbook §4): the snap CUPS, the desktop FUSE mounts, ExpressVPN.
+- §12's recommendations.
+- The next snapd auto-refresh, due 15:45Z, should be the first to succeed since 2026-10-27.
+  `snap changes` will show it.

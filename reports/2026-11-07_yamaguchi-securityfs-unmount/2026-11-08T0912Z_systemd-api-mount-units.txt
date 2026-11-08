@@ -1,0 +1,24 @@
+# 2026-11-08T09:12:44Z on yamaguchi; systemd 259 (259.5-0ubuntu3.4)
+# mount id: topmost mount at the point in /proc/1/mountinfo; LoadState: systemctl show -p LoadState --value <unit>
+KIND      WHERE                       MOUNT_ID  UNIT                               LOADSTATE
+api       /proc                       29        proc.mount                         not-found
+api       /sys                        28        sys.mount                          not-found
+api       /dev                        30        dev.mount                          not-found
+api       /sys/kernel/security        878       sys-kernel-security.mount          not-found
+api       /sys/fs/smackfs             -         sys-fs-smackfs.mount               not-found
+api       /dev/shm                    35        dev-shm.mount                      not-found
+api       /dev/pts                    31        dev-pts.mount                      not-found
+api       /run                        32        run.mount                          not-found
+api       /sys/fs/cgroup              36        sys-fs-cgroup.mount                not-found
+api       /sys/fs/pstore              1070      sys-fs-pstore.mount                not-found
+api       /sys/firmware/efi/efivars   -         sys-firmware-efi-efivars.mount     not-found
+api       /sys/fs/bpf                 1289      sys-fs-bpf.mount                   not-found
+unit-file /sys/kernel/debug           14709     sys-kernel-debug.mount             loaded
+unit-file /sys/kernel/tracing         14679     sys-kernel-tracing.mount           loaded
+unit-file /sys/kernel/config          14739     sys-kernel-config.mount            loaded
+unit-file /sys/fs/fuse/connections    14769     sys-fs-fuse-connections.mount      loaded
+unit-file /dev/hugepages              14799     dev-hugepages.mount                loaded
+unit-file /dev/mqueue                 14825     dev-mqueue.mount                   loaded
+== mounted API points: 10; of them with a unit: 0 (claim: 0)
+== unit-file API mounts that are loaded units: 6 of 6 (claim: all)
+== PASS: systemd represents none of its mounted API points as a unit, and every unit-file mount as one

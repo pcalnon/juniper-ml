@@ -11,7 +11,7 @@
 #
 # Why: every mechanism claim in the RCA ("dockerd caches AppArmor support once", "snap-confine dies
 # on ENOENT", "securityfs/pstore/bpf have no unit file; PID 1 mounts them", "a PID 1 re-exec runs
-# mount_setup() again") is pinned here to a resolved commit SHA and a line range, so a reader can
+# mount_setup() again", and, from 2026-11-08, "systemd never gives an API mount point a unit") is pinned here to a resolved commit SHA and a line range, so a reader can
 # check the code rather than the prose. Versions are the ones installed on the host on 2026-11-07:
 # docker-ce 29.7.2 (moby tag docker-v29.7.2), systemd 259.5, snapd 2.77.1.
 #
@@ -49,5 +49,13 @@ pin systemd/systemd v259.5 src/core/main.c 3184 3195 \
     "mount_setup() runs on every PID 1 start, a re-exec (daemon-reexec) included; skip_setup only changes propagation handling"
 pin systemd/systemd v259.5 src/core/main.c 3005 3019 \
     "skip_setup is true exactly when PID 1 is deserializing (a re-exec)"
+# Added 2026-11-08, after the remount: the three filesystems were back in PID 1's mount table yet still had
+# no unit. These lines are why -- systemd never represents an API mount point as a unit, mounted or not.
+pin systemd/systemd v259.5 src/shared/mount-setup.c 245 254 \
+    "mount_point_is_api(): every mount_table entry (securityfs, pstore, bpf, cgroup2, /proc, /sys, /dev, /run ...) is an API mount point"
+pin systemd/systemd v259.5 src/core/mount.c 1869 1893 \
+    "mount_setup_unit() skips API mount points: no unit is ever synthesized from /proc/self/mountinfo for them, so systemctl never lists them"
+pin systemd/systemd v259.5 src/core/mount.c 526 549 \
+    "mount_verify() refuses a unit FILE for an API mount point: 'Cannot create mount unit for API file system'"
 pin canonical/snapd 2.77.1 cmd/libsnap-confine-private/apparmor-support.c 44 76 \
     "snap-confine dies on aa_is_enabled() ENOENT: 'aa_is_enabled() failed unexpectedly' -- every snap app and snap service start fails"

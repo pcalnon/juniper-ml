@@ -1,0 +1,28 @@
+make: Entering directory '/home/pcalnon/Development/python/Juniper/juniper-deploy'
+prepare-secrets: populated=8 placeholder/empty=0 from /home/pcalnon/Development/python/Juniper/juniper-deploy/.env.secrets.enc
+Juniper Platform — Bind-Posture Preflight
+  verify every *_LOOPBACK_PUBLISH_ATTESTED service publishes loopback-only
+  source: docker compose --profile full config
+
+  [OK]   juniper-canopy  JUNIPER_CANOPY_LOOPBACK_PUBLISH_ATTESTED=true  host binds: 127.0.0.1:8050
+  [OK]   juniper-cascor  JUNIPER_CASCOR_LOOPBACK_PUBLISH_ATTESTED=true  host binds: 127.0.0.1:8201
+
+  PASS — 2 attested service(s) publish loopback-only; bind posture verified.
+Juniper Platform — Image-Provenance Preflight
+  verify the built images about to run match the code on disk (org.opencontainers.image.revision)
+  source: docker compose --profile full config
+
+  [STALE     ] ghcr.io/pcalnon/juniper-canopy:0.9.0 image revision af650373 is 2 commit(s) behind juniper-canopy HEAD 63a2f3d7
+  [MATCH     ] ghcr.io/pcalnon/juniper-cascor-worker:0.6.1 revision 8977196 == juniper-cascor-worker HEAD 8977196
+  [MATCH     ] ghcr.io/pcalnon/juniper-cascor:0.13.0 revision f3dfee8 == juniper-cascor HEAD f3dfee8
+  [STALE     ] ghcr.io/pcalnon/juniper-data:0.17.1 image revision 2807855 is 2 commit(s) behind juniper-data HEAD 4f04fc8
+  [MATCH     ] ghcr.io/pcalnon/juniper-recurrence:0.8.0 revision 3529dfd == juniper-recurrence HEAD 3529dfd
+
+  FAIL — 2 image(s) about to run do NOT match the code on disk:
+    • ghcr.io/pcalnon/juniper-canopy:0.9.0 (/home/pcalnon/Development/python/Juniper/juniper-canopy): image revision af650373 is 2 commit(s) behind juniper-canopy HEAD 63a2f3d7.
+    • ghcr.io/pcalnon/juniper-data:0.17.1 (/home/pcalnon/Development/python/Juniper/juniper-data): image revision 2807855 is 2 commit(s) behind juniper-data HEAD 4f04fc8.
+      Fix: make build    (freshness-gated, then re-run the bring-up target)
+      Deliberately running the stale image instead: JUNIPER_IMAGE_STALE_OK=1 make <target> (or --allow-stale).
+  Image-provenance preflight FAILED — refusing to start images that do not match their checkouts.
+make: *** [Makefile:144: up] Error 1
+make: Leaving directory '/home/pcalnon/Development/python/Juniper/juniper-deploy'

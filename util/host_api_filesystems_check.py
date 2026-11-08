@@ -21,8 +21,10 @@ API mounts that have unit files -- and stopped there. Three more had gone:
 * ``bpf`` on ``/sys/fs/bpf``.
 
 systemd's PID 1 mounts those itself, from a table in ``src/shared/mount-setup.c``. They have no
-unit file, so once one is unmounted its unit is garbage-collected: ``systemctl list-units --all``
-cannot list it, and nothing remounts it. Eleven days later every ``docker compose up`` failed with
+unit file, and systemd never synthesizes a unit for an API mount point (``src/core/mount.c``,
+``mount_setup_unit()``), so ``systemctl list-units --all`` cannot list them, mounted or not, and
+nothing remounts them. (Until 2026-11-08 this said their units are garbage-collected once
+unmounted. They never had one.) Eleven days later every ``docker compose up`` failed with
 ``Could not check if docker-default AppArmor profile was loaded``, and every snap -- the k8s
 component snaps included -- died in snap-confine with ``aa_is_enabled() failed unexpectedly``.
 

@@ -4,6 +4,9 @@
 **Host**: yamaguchi only
 **Executor**: the owner. Steps 2, 3 and 6c need root; the session that wrote this has no sudo.
 **Time**: about 10 minutes. **No reboot.**
+**Status**: **executed 2026-11-08.** The owner ran steps 1–3 between 08:23Z and 08:28:29Z, and every check
+passed. The record, with two defects the run exposed in the validator and their fixes, is §14 of the RCA.
+Steps 1 and 4 below carry the fixes for how this run went wrong.
 **Why**: `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md`
 (the RCA). Its §9 lists the rejected alternatives, and its §10 vets this against the Kubernetes install.
 
@@ -22,7 +25,8 @@
 - The juniper-deploy checkout needs juniper-deploy#270, the AppArmor preflight, for check E3. It
   merged 2026-11-08 as `5ed14290`, so `git pull` that checkout. Without it E3 reports `SKIP`, not a
   failure.
-- Every command below is shown as you run it. `J=~/Development/python/Juniper` in the examples.
+- Every command below is shown as you run it. Step 1 sets `J=~/Development/python/Juniper`. Run every
+  step in that shell, or set `J` again: on 2026-11-08, with `J` unset, `cd $J/juniper-ml` failed.
 
 ## 1. Decision D-1: the legacy snap Kubernetes services (yours)
 
@@ -40,22 +44,29 @@ yamaguchi carries two Kubernetes installs:
 snapd refresh then succeeds and starts every enabled service: kube-apiserver on :6443, etcd on
 :2379, and the rest. They contend for `/var/lib/kubelet` and for the ports `kubeadm init` checks.
 
-| Option | What it does |
-|---|---|
-| **A (recommended).** Stop and disable the legacy services before the remount (step 2). | Reversible: `sudo snap start --enable …`. Removes nothing. Touches none of the 1.36.5 install. |
-| B. Leave them enabled. | Accept that they start after step 3. Skip step 2, and expect the validator to report their state change as `EXPECTED`. |
-| C. Remove the legacy snaps. | Out of scope here. Do it after this runbook if you want it. |
+| Option                                                                                 | What it does                                                                                                           |
+|----------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| **A (recommended).** Stop and disable the legacy services before the remount (step 2). | Reversible: `sudo snap start --enable …`. Removes nothing. Touches none of the 1.36.5 install.                         |
+| B. Leave them enabled.                                                                 | Accept that they start after step 3. Skip step 2, and expect the validator to report their state change as `EXPECTED`. |
+| C. Remove the legacy snaps.                                                            | Out of scope here. Do it after this runbook if you want it.                                                            |
 
 ## 2. Steps
 
 ### Step 1 — capture the before-state (no root)
 
 ```bash
-cd $J/juniper-ml
+J=~/Development/python/Juniper
+cd "$J/juniper-ml" && test -f util/ad-hoc/2026-11-07_securityfs_remount_validate.bash \
+    || echo "STOP: this checkout lacks the validator. Pull main (juniper-ml#2516), then start step 1 again."
 mkdir -p tmp/2026-11-07_remount
-bash util/ad-hoc/2026-11-07_securityfs_remount_validate.bash capture tmp/2026-11-07_remount/before.txt
-bash util/ad-hoc/2026-11-07_securityfs_apparmor_probe.bash > tmp/2026-11-07_remount/probe-before.txt
+bash util/ad-hoc/2026-11-07_securityfs_remount_validate.bash capture tmp/2026-11-07_remount/before.txt \
+    && bash util/ad-hoc/2026-11-07_securityfs_apparmor_probe.bash > tmp/2026-11-07_remount/probe-before.txt
 ```
+
+Expect `captured … fingerprint lines to tmp/2026-11-07_remount/before.txt (a usable baseline: all 17
+required keys)`. **Do not start step 2 without that line.** Step 4 needs that file to show that nothing
+else moved. On 2026-11-08 this step ran before the checkout was pulled. Neither script existed, so no
+baseline was written, and the shell's redirect left `probe-before.txt` empty (RCA §14 F4).
 
 ### Step 2 — (D-1 = A) stop and disable the legacy snap k8s services (root)
 
@@ -105,6 +116,25 @@ Expect `== PASS`:
 Optional, root: `sudo aa-status | head -3` shows the profile count again, and
 `sudo aa-status | grep docker-default` shows the profile.
 
+**The baseline must be step 1's `before.txt`.** `verify` refuses any other kind of file with exit 2
+before it runs a check: a missing or empty file, the probe's report, a fingerprint missing a key.
+`bash util/ad-hoc/2026-11-07_securityfs_remount_validate.bash check FILE` tests a file on its own.
+Before that gate existed, `verify` against the empty `probe-before.txt` listed every current value
+as a difference, 22 of them `UNEXPECTED`, on a host where nothing unexpected had changed
+(RCA §14 F2).
+
+If the remount has already run and there is no `before.txt`, use the newest fingerprint committed
+for this incident:
+
+```bash
+bash util/ad-hoc/2026-11-07_securityfs_remount_validate.bash verify \
+    reports/2026-11-07_yamaguchi-securityfs-unmount/2026-11-08T0215Z_remount-fingerprint-incident-state.txt
+```
+
+It is older than the remount, so anything that changed since its capture shows too. A `PASS` against
+it covers the remount, as on 2026-11-08. An `UNEXPECTED` line needs reading before it is blamed on
+the remount.
+
 ### Step 5 — bring the stack up (no root)
 
 ```bash
@@ -114,6 +144,12 @@ make health
 ```
 
 The seven containers left in `created` on 2026-11-06 are started.
+
+`make up` runs four preflights, and the image-provenance one has nothing to do with this runbook. It
+refuses a released image that is behind its local checkout. On 2026-11-08 it refused canopy 0.9.0 and
+data 0.17.1, each 2 commits behind (tests, docs and CI only). Choosing what runs is the owner's call:
+`make build` builds from the checkouts, and `JUNIPER_IMAGE_STALE_OK=1 make up` runs the released
+images, which is what the owner chose (RCA §14 F6).
 
 ### Step 6 — regression suites and after-evidence
 
@@ -144,20 +180,23 @@ diff tmp/2026-11-07_remount/probe-before.txt tmp/2026-11-07_remount/probe-after.
 ```
 
 Commit the after-probe as `reports/2026-11-07_yamaguchi-securityfs-unmount/<UTC>_probe-after-remediation.txt`.
-Its `UUID=` is already redacted.
+Its `UUID=` is already redacted. Done on 2026-11-08: `2026-11-08T0853Z_probe-after-remediation.txt`.
+Its diff against the committed before-probe (`2026-11-08T0135Z_probe-before-remediation.txt`) stood in
+for the missing `probe-before.txt`.
 
 ## 3. Test matrix
 
-| Test | Proves | Incident state (measured 2026-11-08) | After the runbook |
+| Test | Proves | Incident state (measured 2026-11-08) | After the runbook (measured 2026-11-08) |
 |---|---|---|---|
 | `util/host_api_filesystems_check.py` | All of systemd's API mounts are present; AppArmor consistent | exit 1, 4 problems | exit 0 |
-| `scripts/preflight_apparmor.sh` (juniper-deploy) | dockerd can load `docker-default` | `[FAIL]`, exit 1 | `[OK]`, exit 0 |
-| Validator E4 | A container starts AND is AppArmor-confined | the reported daemon error | `docker-default (enforce)` |
-| Validator E5 | snap-confine works | `aa_is_enabled() failed unexpectedly` | helm prints its version |
-| Validator regression diff | The k8s install, containerd and dockerd are untouched | unchanged (negative-control run) | only `snap_service.*` and `mount.*` change |
-| juniper-deploy `pytest tests/` | No regression; helm works | 17 failed (helm snap), 392 passed | 0 failed |
-| `tests/test_apparmor_preflight.py` / `tests/test_host_api_filesystems_check.py` | The new checks' behaviour | 18 / 25 pass (hermetic) | same |
-| The two mutation checks | The suites catch seeded defects | 14 of 14, 11 of 11 killed | same |
+| `scripts/preflight_apparmor.sh` (juniper-deploy) | dockerd can load `docker-default` | `[FAIL]`, exit 1 | `[OK]`, exit 0, both in E3 and inside `make up` |
+| Validator E4 | A container starts AND is AppArmor-confined | the reported daemon error | `docker-default (enforce)`; all seven stack containers run with `docker-default` |
+| Validator E5 | snap-confine works | `aa_is_enabled() failed unexpectedly` | helm prints v4.3.1 |
+| Validator regression diff | The k8s install, containerd and dockerd are untouched | unchanged (negative-control run) | only `snap_service.*` and `mount.*` change, against the 02:15Z fingerprint |
+| juniper-deploy `pytest tests/` | No regression; helm works | 17 failed (helm snap), 392 passed | **409 passed, 0 failed** |
+| `tests/test_apparmor_preflight.py` / `tests/test_host_api_filesystems_check.py` | The new checks' behaviour | 18 / 25 pass (hermetic) | 25 pass; the deploy suite's 409 include the 18 |
+| The two mutation checks | The suites catch seeded defects | 14 of 14, 11 of 11 killed | not re-run: the suites and the code they test are unchanged |
+| `util/ad-hoc/2026-11-08_remount_validate_baseline_gate_check.py` | The validator refuses a baseline that is not a fingerprint | (gate added after the run) | 14 of 14 cases pass; 10 of 10 seeded defects caught |
 
 ## 4. Residue the remediation does not cover (optional)
 
@@ -167,6 +206,12 @@ Its `UUID=` is already redacted.
 - **ExpressVPN's cgroup.** Listed as unmounted in the recovery plan's finding 17, and not present
   now. If you use split tunnelling, check it. Restarting the VPN daemon drops the tunnel briefly, so
   do it when nothing depends on it.
+- **The snap's CUPS.** `snap.cups.cupsd` and `snap.cups.cups-browsed` hit systemd's start limit on
+  2026-11-04 at 02:25:52 CST, after five snap-confine failures. A unit stopped at its start limit does
+  not restart by itself, so they are still `failed` after the remount. The deb `cups.service` is
+  active, so printing through it is unaffected. If you use the snap's CUPS: `sudo snap restart cups`.
+  (`snap.metamorphosis` and `snap.mynews` have been `failed` since boot, 2026-09-07 23:13:58 CDT,
+  before the incident. They are not this runbook's.)
 
 ## 5. Rollback
 

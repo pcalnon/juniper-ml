@@ -1,0 +1,27 @@
+== efficacy
+[PASS] E1 API filesystems mounted, AppArmor consistent  (host_api_filesystems_check: OK)
+[PASS] E2 AppArmor interface present  ()
+[PASS] E3 juniper-deploy AppArmor preflight  (  kernel=Y  securityfs on /sys/kernel/security=mounted  interface=present  dockerd AppArmor=yes)
+[PASS] E4 a container starts confined  (docker-default (enforce))
+[PASS] E5 snap-confine runs a snap  (version.BuildInfo{Version:"v4.3.1", GitCommit:"c0d08d0d6d9424d4a14febb5e8a3e51b0dd00dff", GitTreeState:"clean", GoVersion:"go1.27.2", KubeClientVersion:"v1.37"})
+== regression (fingerprint vs reports/2026-11-07_yamaguchi-securityfs-unmount/2026-11-08T0215Z_remount-fingerprint-incident-state.txt)
+  EXPECTED   < mount./sys/fs/bpf=
+  EXPECTED   < mount./sys/fs/pstore=
+  EXPECTED   < mount./sys/kernel/security=
+  EXPECTED   > mount./sys/fs/bpf=bpf rw,nosuid,nodev,noexec,relatime,mode=700
+  EXPECTED   > mount./sys/fs/pstore=pstore rw,nosuid,nodev,noexec,relatime
+  EXPECTED   > mount./sys/kernel/security=securityfs rw,nosuid,nodev,noexec,relatime
+  EXPECTED   < snap_service.snap.etcd.etcd=enabled/inactive
+  EXPECTED   < snap_service.snap.kube-apiserver.daemon=enabled/failed
+  EXPECTED   < snap_service.snap.kube-controller-manager.daemon=enabled/failed
+  EXPECTED   < snap_service.snap.kubelet.daemon=enabled/activating
+  EXPECTED   < snap_service.snap.kube-proxy.daemon=enabled/failed
+  EXPECTED   < snap_service.snap.kube-scheduler.daemon=enabled/failed
+  EXPECTED   > snap_service.snap.etcd.etcd=disabled/inactive
+  EXPECTED   > snap_service.snap.kube-apiserver.daemon=disabled/failed
+  EXPECTED   > snap_service.snap.kube-controller-manager.daemon=disabled/failed
+  EXPECTED   > snap_service.snap.kubelet.daemon=disabled/inactive
+  EXPECTED   > snap_service.snap.kube-proxy.daemon=disabled/failed
+  EXPECTED   > snap_service.snap.kube-scheduler.daemon=disabled/failed
+[PASS] only the runbook's intended differences
+== PASS
