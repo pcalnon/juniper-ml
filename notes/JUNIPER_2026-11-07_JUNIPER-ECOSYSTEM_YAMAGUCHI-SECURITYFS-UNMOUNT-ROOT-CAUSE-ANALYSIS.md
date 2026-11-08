@@ -127,9 +127,9 @@ securityfs. **Only the interface is gone.**
 | 02:28:37 | 08:28:37 | The domotz agent snap service starts, after 8,255 restarts | `systemctl show` |
 | 02:51–02:58 | 08:51–08:58 | Validator PASS; `make up`; all seven containers healthy and confined | §14.1 |
 
-## 6. Blast radius (as of 2026-11-08, before the remount)
+## 6. Blast radius (as of 2026-11-08)
 
-§14.2 gives each row's state after the remount.
+This is the state before the remount. §14.2 gives each row's state after it.
 
 | Consumer | State | Evidence |
 |---|---|---|
