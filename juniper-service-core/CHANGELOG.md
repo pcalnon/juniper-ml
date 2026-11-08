@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-11-08
+
 ### Fixed
 
 - **A test now counts the API-key compare's calls** (round-42 findings F3 and F8,
