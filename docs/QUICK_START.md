@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.42
+**Version:** 0.3.43
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-07
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -82,14 +82,14 @@ See [`../juniper-observability/README.md`](../juniper-observability/README.md) f
 pip list | grep juniper
 ```
 
-Expected output (with `[all]`): 18 lines, one per package. The versions are what `juniper-ml` 0.10.0
-resolved to on 2026-10-20 (`pip install --dry-run` against PyPI on Python 3.12, 3.13 and 3.14, which agree).
+Expected output (with `[all]`): 18 lines, one per package. The versions are what `juniper-ml` 0.11.4
+resolved to on 2026-11-07 (`pip install --dry-run` against PyPI on Python 3.12, 3.13 and 3.14, which agree).
 A later release inside each extra's range (the table above) is expected, not a failure. Two of these
 packages come in transitively: `juniper-cascor-model` and `juniper-cascor-protocol`.
 
 ```bash
 juniper-canopy              0.9.x
-juniper-cascor              0.11.x
+juniper-cascor              0.13.x
 juniper-cascor-client       0.8.x
 juniper-cascor-model        0.1.x
 juniper-cascor-protocol     0.2.x
@@ -99,7 +99,7 @@ juniper-config-tools        0.1.x
 juniper-data                0.17.x
 juniper-data-client         0.6.x
 juniper-doc-tools           0.1.x
-juniper-ml                  0.10.0
+juniper-ml                  0.11.4
 juniper-model-core          0.3.x
 juniper-observability       0.4.x
 juniper-recurrence          0.8.x
@@ -203,6 +203,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.3.41
+**Last Updated:** 2026-11-07
+**Version:** 0.3.43
 **Status:** Active
