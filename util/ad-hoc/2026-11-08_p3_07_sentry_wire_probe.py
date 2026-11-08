@@ -37,7 +37,7 @@ import sys
 import sentry_sdk
 from sentry_sdk.transport import Transport
 
-from juniper_observability import configure_sentry
+import juniper_observability
 
 # Built from parts so the whole value never appears in this file's source (the SDK ships
 # source context around frames, which would put a literal on the wire by another channel).
@@ -78,7 +78,7 @@ def _run(send_pii: bool) -> tuple[int, int, int, int]:
 
     sentry_sdk.init = init_with_local_transport
     try:
-        configure_sentry("http://public@127.0.0.1:9/1", "p307-probe", "0", send_pii=send_pii)
+        juniper_observability.configure_sentry("http://public@127.0.0.1:9/1", "p307-probe", "0", send_pii=send_pii)
     finally:
         sentry_sdk.init = real_init
 
@@ -135,8 +135,6 @@ def _run(send_pii: bool) -> tuple[int, int, int, int]:
 
 
 def main() -> int:
-    import juniper_observability
-
     print("sentry-sdk", sentry_sdk.VERSION, "| juniper_observability from", juniper_observability.__file__)
     total_leaks = 0
     for send_pii in (False, True):
