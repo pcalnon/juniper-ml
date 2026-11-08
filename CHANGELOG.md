@@ -53,6 +53,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       installed no longer breaks it.
     - A binary file in a PR no longer raises `UnicodeDecodeError` mid-batch.
     - An inherited `GIT_DIR` no longer re-initialises the source.
+  - **An inherited `GIT_SHALLOW_FILE` or `GIT_GRAFT_FILE` no longer reaches the scratch.** A shallow-file
+    path naming the branch tip made `git merge` refuse unrelated histories. A graft naming `main` as that
+    tip's parent reported `MERGE-CLEAN` for a branch that does not contain `main`. Both are dropped with
+    `GIT_DIR` and `GIT_INDEX_FILE`. `GIT_INDEX_FILE` was already dropped; a test now pins that the source
+    index bytes stay unchanged.
   - **Docs.** `docs/REFERENCE.md` describes the new scratch. `.claude/agents/fleet-supervisor.md` drops three wrong
     claims:
     - the rulesets' strict up-to-date policy is off: it is on in juniper-ml, juniper-data and juniper-canopy;

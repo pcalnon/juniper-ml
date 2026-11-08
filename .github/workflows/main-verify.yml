@@ -445,6 +445,7 @@ jobs:
           python3 -m unittest -v tests/test_main_verify_notify_dedup.py
           # Fleet PR Lint advisory rehearsal (mirror ci.yml).
           python3 -m unittest -v tests/test_ci_fleet_pr_lint.py
+          python3 -m unittest -v tests/test_predict_merge_inherited_git_env.py
           python3 -m unittest -v tests/test_doc_tools_drift.py
           python3 -m unittest -v tests/test_ci_tools_drift.py
           python3 -m unittest -v tests/test_coverage_gap_mapper_drift.py

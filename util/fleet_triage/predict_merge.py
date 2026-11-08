@@ -127,10 +127,14 @@ def _run(cmd: list, cwd: Optional[Path] = None) -> subprocess.CompletedProcess:
 
 
 # Variables that point a git command at another repository than the one ``-C`` names. Inherited (as
-# inside a git hook), GIT_DIR made the scratch's ``git init`` re-initialise the SOURCE.
+# inside a git hook), GIT_DIR made the scratch's ``git init`` re-initialise the SOURCE, and
+# GIT_INDEX_FILE made ``git checkout`` rewrite the source index. GIT_SHALLOW_FILE naming the branch
+# tip made ``git merge`` refuse unrelated histories. GIT_GRAFT_FILE reparenting that tip onto main
+# reported MERGE-CLEAN for a branch that does not contain main.
 _GIT_LOCATION_VARS = (
     "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR",
     "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_NAMESPACE",
+    "GIT_SHALLOW_FILE", "GIT_GRAFT_FILE",
 )
 
 
