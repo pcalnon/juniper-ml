@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.64
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-07
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -16,8 +16,11 @@
 - [Ecosystem Compatibility](#ecosystem-compatibility)
 - [HTTP Client Base-URL Contract](#http-client-base-url-contract)
 - [Host Orchestration Utilities](#host-orchestration-utilities)
+- [Host-Check Wording (E-H3)](#host-check-wording-e-h3)
+- [The firewall gate reads getblockall](#the-firewall-gate-reads-getblockall)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
 - [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client)
+- [Phase D Trial Drop-In and Settings-Key Write](#phase-d-trial-drop-in-and-settings-key-write)
 - [Juniper Project-Tree Backup](#juniper-project-tree-backup)
 - [Editable Install Drift Check](#editable-install-drift-check)
 - [Cascor Primary Freeze Tell](#cascor-primary-freeze-tell)
@@ -28,6 +31,7 @@
 - [Agent Suite Doctor](#agent-suite-doctor)
 - [Isolated Stack E2E Utilities](#isolated-stack-e2e-utilities)
 - [CAN-015 Replay Re-drive](#can-015-replay-re-drive)
+- [Replay speed, range, and a paused completion](#replay-speed-range-and-a-paused-completion)
 - [F-039 Store Probe](#f-039-store-probe)
 - [Canopy E2E Matrix Writes](#canopy-e2e-matrix-writes)
 - [F-CANOPY-027 Poller Starvation Probes](#f-canopy-027-poller-starvation-probes)
@@ -39,6 +43,7 @@
 - [Resident-Hazard Gap Triage](#resident-hazard-gap-triage)
 - [Ruleset Context Audit](#ruleset-context-audit)
 - [Worktree Divergence Is a Memory Cost](#worktree-divergence-is-a-memory-cost)
+- [The MERGED line's SHA is the verified head](#the-merged-lines-sha-is-the-verified-head)
 - [Post-Merge Main Verification](#post-merge-main-verification)
 - [Experiment Stack Utilities](#experiment-stack-utilities)
 - [Recurrence Env Preflight](#recurrence-env-preflight)
@@ -76,6 +81,7 @@
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
 - [Claude Code Action](#claude-code-action)
+- [Idle compaction and the tracked settings file](#idle-compaction-and-the-tracked-settings-file)
 - [CodeQL Analysis](#codeql-analysis)
 - [Required-Context Ruleset Writer](#required-context-ruleset-writer)
 - [Ruleset Scope Guard](#ruleset-scope-guard)
@@ -88,6 +94,7 @@
 - [Open-PR Budget Alarm](#open-pr-budget-alarm)
 - [Memory File Size Budget](#memory-file-size-budget)
 - [Memory-Budget Slack (Planning)](#memory-budget-slack-planning)
+- [Worker Result Anomaly Detector](#worker-result-anomaly-detector)
 
 ---
 
@@ -531,6 +538,110 @@ Troubleshooting:
 
 ---
 
+## Host-Check Wording (E-H3)
+
+`util/host_state_check.py` names the plan task behind a failing gate. Two of its sentences, the kubectl fix and the G-MEM memory message, were worded wrong until [juniper-ml#2392](https://github.com/pcalnon/juniper-ml/pull/2392) (erratum E-H3 in [`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`](../notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md) §18.3). The pass/fail result is the same. The sentence an operator follows is not.
+
+### kubectl: task D3, then task D4
+
+G-TOOLS reads `kubectl version --client -o json`. It passes when the client major matches `gates.G-TOOLS.kubectl.cluster` and the minor is within `max_minor_skew`. On turing that file sets cluster `1.36` and skew `1` (`conf/hosts/turing/expected.yaml`).
+
+A miss uses one remediation, including when the probe records `found: false` (`kubectl not found`):
+
+```text
+task D3 (owner) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl 1.36.x, which needs re-planning under the D6 ruling (erratum E-D6)
+```
+
+`1.36.x` is turing's cluster value with `.x` appended. Decision D7: Docker Desktop installs `/usr/local/bin/kubectl`. The bring-up plan records that on turing this link is the only kubectl on `PATH`, it points into Docker.app, and it is v1.22.4.
+
+Docker Desktop's symlink collides with Homebrew `kubernetes-cli` under the shared Intel prefix (decision D7). Task D3 (the owner's Docker Desktop upgrade) comes first. Task D4 still needs re-planning under the D6 ruling (erratum E-D6). `expected.yaml`'s comment on the kubectl block still names D4 only.
+
+A pass does not name a task. The message is `kubectl <gitVersion> is within <skew> minor of the cluster's <cluster>`.
+
+### G-MEM: three vm_stat rows, two labels
+
+The memory condition adds `Pages free`, `Pages speculative`, and `Pages inactive`, multiplies by the `vm_stat` header page size, and rounds down to whole MiB (`(free + speculative + inactive) * page // 1048576`). The sentence starts `free + speculative + inactive`. The need is the VM size plus `reserve_gib` (turing: 6 GiB configured, or the VM's `memory=` when that is larger, plus 4 GiB).
+
+`util/macvm_ctl.bash` adds the same three counts before `start`. Its status block prints a `free` row defined as Pages free plus Pages speculative, and its condition line still says `free + inactive`. The two MiB figures are the same sum. The labels differ on purpose: the check names every row, and `macvm_ctl` keeps the label it had when the gate landed.
+
+The CHANGELOG entry for #2392 records the speculative term on turing on 2026-10-27 as 88 MiB of a 6161 MiB sum. Treating the check's figure as "free + inactive" and adding speculative pages to it counts those pages a second time.
+
+`conf/hosts/turing/expected.yaml`'s G-MEM comment still says `free + inactive`, which is `macvm_ctl`'s condition label. Purgeable, file-backed, and compressor pages stay out of both sums (`macvm_ctl.bash` header): leaving them out errs toward macOS. Swap used still rounds up and must be at most `max_swap_gib` (2 GiB on turing).
+
+```bash
+python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM --check
+python3 util/host_state_check.py --host turing --probe-json probe.json --section G-MEM --json
+bash util/macvm_ctl.bash status
+```
+
+`--check` exits 1 while a gate fails and 2 when a condition cannot be evaluated. Without `--check` the report exits 0. `macvm_ctl status` exits 0 on a failing gate, and 2 on an environment error (VBoxManage missing or failing, the VM not registered) or an input that cannot be measured.
+
+| What the report says | Reading |
+|---|---|
+| kubectl remediation names task D3, then D4 | Current check (`_kubectl` in `util/host_state_check.py`) |
+| kubectl remediation names task D4 only | The pre-#2392 sentence. `expected.yaml`'s comment still reads that way |
+| `free + speculative + inactive` from `host_state_check.py` | Current check. The three `vm_stat` rows, in MiB |
+| `free + inactive` from `macvm_ctl.bash status` | Current `macvm_ctl` label for that same MiB. Its `free` row already includes speculative pages |
+| The two tools print different MiB | Compare page size, the three counts, and whether the VM's configured memory raised the bar |
+
+Pins: `FailureTest.test_the_kubectl_fix_puts_task_d3_before_d4` and `FailureTest.test_the_memory_figure_names_every_count_it_adds` in `tests/test_host_state_check.py`. The wording follow-up's four mutants live in `util/ad-hoc/2026-10-30_turing_check_wording_mutation_check.py`.
+
+---
+
+## The firewall gate reads getblockall
+
+G-SEC's `firewall` condition is `util/host_state_check.py` `_firewall` (bring-up task C2, owner ruling 2026-10-25). `util/host_state_probe.bash` records three captures from `/usr/libexec/ApplicationFirewall/socketfilterfw` (`SOCKETFILTERFW` overrides the binary). A pass needs the first two. Stealth is copied into the message and does not decide the condition.
+
+| Capture | Command | Role |
+|---------|---------|------|
+| `firewall` | `--getglobalstate` | Reads `State = N`. On is `N >= 1`. State 1's sentence, as the suite's fixture spells it, is `Firewall is enabled. (State = 1)`. State 2, turing after C2 on 2026-10-26, is `Firewall is blocking all non-essential incoming connections. (State = 2)`. |
+| `blockall` | `--getblockall` | On when the text contains `is blocking all non-essential incoming connections`. Off when it contains `has block all state set to disabled`. The on phrase is tested first. |
+| `stealth` | `--getstealthmode` | The first line is appended when the capture succeeds. A missing or failed stealth capture is left out. |
+
+The state-2 global-state line contains the on phrase. Block-all is still the `blockall` capture. That line paired with `Firewall has block all state set to disabled.` fails, and the fix names only `--setblockall on`.
+
+`State = 0` fails for every block-all result, including the on sentence. The fix names `--setglobalstate on`, then `--setblockall on` and `--setstealthmode on`.
+
+While `State` is 1 or greater, these `--getblockall` results are an error and carry no fix step:
+
+- `Firewall is set to block all non-essential incoming connections` — `--setblockall`'s confirmation. Turing's getter printed `Firewall is blocking all non-essential incoming connections.` on 2026-10-26 (erratum E-C2-GATE).
+- `Firewall has unknown block all state.`
+- `Firewall is in undefined block all state.`
+- A missing `blockall` key, a missing binary, a non-zero exit, or a timeout. The message is `the probe recorded no socketfilterfw --getblockall`, or `socketfilterfw --getblockall:` plus the failure.
+
+An unrecognized sentence reports `socketfilterfw --getblockall: no block-all state in '<first line>'`.
+
+While `State` is 0, those same results stay a failure. The message keeps the global-state line. When the `--getblockall` capture ran and exited 0, its first line is included, even a sentence the gate does not classify. A missing key, a missing binary, a timeout or a non-zero exit adds no block-all line, even when the command printed one. A successful stealth capture's line follows either way.
+
+Every remediation starts `task C2 (owner): sudo /usr/libexec/ApplicationFirewall/socketfilterfw` and ends `(block all incoming connections while nothing inbound is needed; owner ruling 2026-10-25)`.
+
+| Global `State` | `--getblockall` | Condition | Steps the fix names |
+|----------------|-----------------|-----------|---------------------|
+| `0` | any text, or a failed capture | fail | `--setglobalstate on`, then `--setblockall on` and `--setstealthmode on` |
+| `>= 1` | contains `is blocking all non-essential incoming connections` | pass | none |
+| `>= 1` | contains `has block all state set to disabled`, and not the on phrase | fail | `--setblockall on` |
+| `>= 1` | confirmation, unknown, undefined, missing, or failed | error | none |
+
+`--check` exits 1 for a failure and 2 for an error. Exit 2 wins when a selected gate has both. Without `--check` the report exits 0.
+
+```bash
+python3 util/host_state_check.py --host turing --section G-SEC --check
+```
+
+`FirewallTest` in `tests/test_host_state_check.py` pins the pass, the disabled sentence, the confirmation sentence, stealth, and a probe with no `blockall` key.
+
+### Operator pitfalls
+
+| What you see | What to do |
+|--------------|------------|
+| The global-state line says "is blocking" and the condition fails | Read the second sentence. `has block all state set to disabled` means run `--setblockall on`. The first sentence already supplied `State = 2`. |
+| `ERROR` and `no block-all state in 'Firewall is set to block all ...'` | That line is `--setblockall`'s confirmation. Re-probe. The passing sentence is `is blocking all non-essential incoming connections`. |
+| `ERROR` with `has unknown block all state` or `is in undefined block all state` while the firewall is on | The getter printed a sentence the gate does not classify. There is no remediation until `--getblockall` prints the on phrase or the off phrase. |
+| `State = 0` and the block-all line is the on sentence | Turn the firewall on first. The on sentence does not pass `State = 0`. |
+| Stealth mode is off and the condition passes | Expected. The stealth line is only in the message. |
+
+---
+
 ## Scheduled Duplicati Backup Lane
 
 Host-level `$HOME` backup under `systemd --user`, independent of the GNOME tray instance and of Duplicati's own scheduler (the server DB `Schedule` table was empty when this lane shipped). Merged in [juniper-ml#1292](https://github.com/pcalnon/juniper-ml/pull/1292). This is **not** `util/juniper-backup.bash` — that script is the project-tree / external-media leg. Operator surface: [Juniper Project-Tree Backup](#juniper-project-tree-backup).
@@ -625,6 +736,7 @@ Do **not** read `DUPLICATI_STALE_DAYS` as "N consecutive skips are allowed." The
 - `notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_DUPLICATI-DB-RESTORE-RUNBOOK.md` is **withdrawn** — restoring the archived job DB reproduces the wedge. Do not execute it.
 - Project-tree / external-media archives: [Juniper Project-Tree Backup](#juniper-project-tree-backup) (`util/juniper-backup.bash`).
 - The Duplicati **server** on `127.0.0.1:8300` is a third surface: [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client). It is not this lane's `duplicati-cli` timer.
+- Phase D's throwaway confinement trial and Procedure A's settings-key write: [Phase D Trial Drop-In and Settings-Key Write](#phase-d-trial-drop-in-and-settings-key-write). Neither changes this lane.
 
 Troubleshooting:
 
@@ -780,6 +892,85 @@ Job 2 is hard-coded, with no flag, in `util/ad-hoc/yamaguchi_switch_aes.py` (a `
 | `PAUSED_WITH_QUEUE` | `pause` is indefinite and survives reboot. `python3 util/ad-hoc/yamaguchi_server_api.py resume` |
 | The desktop never pops, and the log has the alert | `notify-send` is best-effort. Read `server-failures.log` |
 | A bare watchdog run notified the desktop | It writes the live state directory unless you pass `--state-dir` and `--no-notify` |
+
+---
+
+## Phase D Trial Drop-In and Settings-Key Write
+
+Phase D of the Duplicati server recovery ([juniper-ml#2391](https://github.com/pcalnon/juniper-ml/pull/2391)) added the two commands the assessment and the design named but did not give.
+The sitting's sequence is [`notes/JUNIPER_2026-10-29_JUNIPER-ECOSYSTEM_BACKUP-PHASE-D-STEP0-TRIAL-AND-KEY-WRITE-RUNBOOK.md`](../notes/JUNIPER_2026-10-29_JUNIPER-ECOSYSTEM_BACKUP-PHASE-D-STEP0-TRIAL-AND-KEY-WRITE-RUNBOOK.md).
+This section is the contract of those two files, verified against them on `origin/main`. Neither file is the scheduled `$HOME` lane or the project-tree archives.
+
+### Step 0(b): the confinement trial
+
+`util/ad-hoc/2026-10-29_duplicati-trial-override.conf` is a systemd drop-in for a **throwaway** unit, `duplicati-trial.service`. The unit file is `util/systemd/duplicati.service` copied byte for byte to `/run/systemd/system/duplicati-trial.service`, and the drop-in is installed beside it at `duplicati-trial.service.d/override.conf`. It does not edit the live `duplicati.service`.
+
+The drop-in resets four lists with an empty assignment: `ExecStart=`, `EnvironmentFile=`, `LoadCredential=`, and `SystemCallErrorNumber=`. It sets the first three again and leaves `SystemCallErrorNumber=` empty.
+An empty `LoadCredential=` resets the list (systemd v259 `load-fragment.c`). Without the reset, v259 would replace the path for the same credential id.
+It then adds four settings that are not confinement directives: `Restart=no`, `Environment=DUPLICATI_ENV_FILE=…`, console logging, and a `Description=` so `systemctl status` cannot be mistaken for the real unit.
+
+| Constraint | Why |
+|------------|-----|
+| Wrapper, defaults copy, and env contract live in `/usr/local/lib/duplicati-trial/`, root-owned `0755` | `/run` is `noexec` on this host, so a wrapper there fails every start with `203/EXEC` before any directive is tried. A directory the `duplicati` uid can replace is a code-injection path into a process that holds `CAP_DAC_READ_SEARCH`. |
+| Only the data folder stays under `/home/duplicati` | The server must own the folder it writes. |
+| Copied defaults change two words: `--webservice-port=8398` and the step-0 data folder | Port `8300` is the live server. The file's own quoting is what systemd parses. |
+| `ExecStart` appends `--phase-d-trial-unknown-option-marker` | Positive control for console logging. The journal should show exactly one `Unknown option supplied` line naming that marker. A second line is a production option the server does not know. None at all means logging did not reach the journal. |
+| `SystemCallErrorNumber=` is empty (kill, `SIGSYS`) | The real unit keeps EPERM, so a blocked call can fall back silently. The trial records what the server needs. It does not change production. |
+| `LoadCredential=settings-key:/etc/credstore/phase-d-trial-key` | Step 0(a)'s throwaway key. `/etc/credstore` is on the unit's `InaccessiblePaths=`, so the trial also checks that `LoadCredential=` still works: the manager reads the file before the mask applies. |
+| `Restart=no` | A failed trial must not restart itself. |
+| Unit and drop-in live on the `/run` tmpfs | A reboot removes them. The owner removes `/usr/local/lib/duplicati-trial` after the trial. |
+
+### Procedure A's settings-key write
+
+`util/ad-hoc/2026-10-29_write_matched_settings_key.py` (1.3.1) writes the form of the moved-aside service `.env`'s active `SETTINGS_ENCRYPTION_KEY` that the frozen server database is encrypted under, at the credential path.
+The wrapper reads that file with `$(<file)`, which drops every trailing newline. The wrapper refuses a NUL, a carriage return, or edge whitespace, and keeps quotes.
+A `noquote` match is written without its quotes. A quoted `raw` match keeps them.
+A match that exists only on the probe's `newline` variant cannot be delivered: the server would be handed the text without that newline.
+
+The tool re-derives the match from `--db`. It does not trust a hand-copied variant name. It prints candidate labels, counts, the matched labels, the value's length, and the outcome. It never prints the value or a hash, and the key is never placed on an argv. `SETTINGS_ENCRYPTION_KEY_OLD` is a different name and is never the active key.
+
+Run it from a checkout of `origin/main`, as root (`/etc/credstore` is root-owned). `--db` is the probe's scratch **copy** of `Duplicati-server.sqlite`, never the freeze itself. `--dry-run` is step 7, straight after the probe reports an `ENV_ACTIVE_KEY` label. The real run is step 9, after the installer and before that `.env` is shredded, and only when the dry run exited 0.
+
+```bash
+python3 util/ad-hoc/2026-10-29_write_matched_settings_key.py --dry-run \
+    --env /home/duplicati/.config/Duplicati.empty-2026-09-20/.env \
+    --db /root/phase-d-tmp/probe/Duplicati-server.sqlite \
+    --out /etc/credstore/duplicati-settings-key
+```
+
+`--dry-run` runs the same refusals as the real run through the deliverability check, and writes nothing. The real run creates `--out` with `O_CREAT|O_EXCL|O_NOFOLLOW`, mode `0600`, no trailing newline, owned by the effective user, and fsyncs the file and the directory. It then reads the file back twice: `util/ad-hoc/2026-10-03_rekey_gate.py`'s `read_key`, and bash `$(<file)`. Both must hash to the database's key hash. A failed read-back removes the file this run created.
+
+| Exit | Meaning |
+|------|---------|
+| `0` | Dry run passed, or the file was written and both read-backs match |
+| `1` | `REFUSED:` on stderr. Nothing left written, unless a WARNING says the created file could not be removed |
+| `2` | Usage, or `FATAL:` I/O |
+
+SIGINT, SIGTERM, SIGHUP, and SIGQUIT are deferred from just before the create until the decision line is printed. Only SIGKILL cannot be deferred. Core dumps are off for the whole run (`RLIMIT_CORE` 0), so a SIGQUIT cannot write the key's memory into the checkout. Trust the last decision line, whatever the status after it:
+
+- `wrote … both match` means written and verified.
+- `removed …` means nothing is left at the credential path.
+- A status of 128 or more with neither line is a kill before a decision. List the directory and remove an unverified key file before a re-run.
+
+A `NONE` line after step 7's probe reported an `ENV_ACTIVE_KEY` match means the two tools disagree. Stop, keep the `.env`, and do not treat that line as a route to procedure A0. Confirm `--env` and `--db` are the probe's own paths.
+
+### Operator pitfalls
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| `REFUSED: … already exists` | `--out` is present, including a symlink, and including on `--dry-run`. The tool never replaces a key. |
+| `REFUSED: … not owned by the effective user` | `/etc/credstore` is root's. Run from the owner's root shell. |
+| `REFUSED: … writable by its group or by others` | The output directory must not be group- or world-writable. A symlinked directory is refused earlier, as `REFUSED: cannot open … as a directory without following a symlink` (`O_NOFOLLOW`). |
+| `REFUSED: key-hash match: NONE` after the probe matched | `--env` or `--db` is not the probe's path, or the two tools disagree. Stop. Keep the `.env`. |
+| `REFUSED: … cannot be delivered` | The matched form holds a NUL, a carriage return, any newline, or leading or trailing whitespace (any Unicode space; stricter than the wrapper, never looser). Procedure A cannot run on this key. |
+| `REFUSED: … another key hash` | The re-key gate's five columns are not one key. Step 13's exit gate would fail. Stop and ask the owner. |
+| `REFUSED: … no uncommented SETTINGS_ENCRYPTION_KEY=` | The `.env` is the wrong file, or the only key line is `SETTINGS_ENCRYPTION_KEY_OLD` or a comment. |
+| Exit 128 or more, and no `wrote` or `removed` line | Killed before a decision. Remove any key file this run left, then re-run. |
+| `query error … (text not shown)` | The message names the exception class only. Do not paste a column's text; a decode error quotes it. |
+| Trial start `203/EXEC` | The wrapper was placed on `/run`, which is `noexec`. Use `/usr/local/lib/duplicati-trial/`. |
+| Trial journal has no `Unknown option supplied`, or more than one | Logging did not reach the journal, or a production option word is unknown to this server. The planted marker should be the only one. |
+
+Coverage: `tests/test_write_matched_settings_key.py`. The password-init helper, the probe's redirect, and procedure A0's command lines stay in the runbook linked above.
 
 ---
 
@@ -1828,6 +2019,94 @@ The driver opens the snapshot's `Load` menu (the replay item is a dropdown item;
 | The range readout is one past the last frame | `range.end` or `snapshot_window.end_epoch` was used as an inclusive index. |
 | `--down` stopped the shared trio | The ports were `8101` / `8202` / `8051`. Use the wrapper: it refuses those ports and refuses a pid it did not record. |
 | `--up` refuses port `8223` | That port is in the wrapper's listener set. Recurrence is not started, and the port still has to be free. |
+
+The shared `ReplaySession` (the speed clamp, the half-second tick cap) and the lifecycle's paused-completion edge are in [Replay speed, range, and a paused completion](#replay-speed-range-and-a-paused-completion).
+
+---
+
+## Replay speed, range, and a paused completion
+
+`ReplaySession` (`juniper-service-core/juniper_service_core/lifecycle/replay.py`) plays a snapshot's metric history for `POST /v1/snapshots/{id}/replay` and `POST /v1/snapshots/{id}/replay/control`. The session starts paused at frame 0. The body is `ReplayControlRequest`: `action`, plus `value` for speed, `time_index` for seek, and `start` / `end` for range. Snapshots disabled is HTTP 501. Otherwise, with no active session every action is HTTP 409; with a session, an unknown action is HTTP 422.
+
+`build_routers()` (`juniper_service_core.routes`) includes this router as `snapshots_router` for `create_app(routers=...)`; `create_app` itself mounts only the health router. The canopy re-drive in [CAN-015 Replay Re-drive](#can-015-replay-re-drive) talks to cascor's own player.
+
+### Speed
+
+`action: "speed"` stores `max(-10.0, min(10.0, float(value)))`. Omitting `value` leaves the current speed. The default is `1.0`. A request of `50` comes back as `10.0`; `-50` comes back as `-10.0`.
+
+`step()` moves one frame when the session is playing and `abs(speed) >= 0.1`. Exactly `0.1` and `-0.1` move. `0.099` and `-0.099` leave the index where it is and leave `paused` false. The playback thread treats that same test as idle: it waits on the wake event for at most `MAX_TICK_SECONDS` (`0.5`) and does not take the `1/abs(speed)` sleep.
+
+While a frame does advance, the thread sleeps `min(1/abs(speed), 0.5)` afterwards. The cap is there so pause and stop are noticed within half a second.
+
+| `speed` | Sleep after each frame that advances |
+|---------|--------------------------------------|
+| `±10` (the clamp) | `0.1` s |
+| `±2` | `0.5` s |
+| `±1` (the default) | `0.5` s |
+| `±0.1` (slowest speed that still moves) | `0.5` s |
+
+From absolute value `0.1` through `2`, the cadence is 2 Hz. At the clamp it is 10 Hz. A client value past the clamp never reaches the thread.
+
+```bash
+curl -s -X POST "$BASE/v1/snapshots/$ID/replay/control" \
+  -H 'content-type: application/json' \
+  -d '{"action":"speed","value":50}'
+```
+
+`data.replay.speed` in the response is `10.0`.
+
+### Range
+
+The range is half-open `[start, end)`. The last index that plays is `end - 1`. `start` is clamped into `[0, length]`, then `end` is clamped into `[start, length]`, so an inverted pair collapses to an empty range at `start`. On a history of length 10, `start: 5, end: 1` becomes `{"start": 5, "end": 5}` and the index is pulled to `5`. A negative start becomes `0`. An end past `length` becomes `length`.
+
+A step that would land outside does not change the index. It sets `paused` true. Forward does that when the next index would be `>= end`. Reverse does it when the next index would be `< start`. The first step of a collapsed range pauses in either direction.
+
+`seek` uses the same clamp. On `[1, 4)` a seek to `10` lands on `3`.
+
+```bash
+curl -s -X POST "$BASE/v1/snapshots/$ID/replay/control" \
+  -H 'content-type: application/json' \
+  -d '{"action":"range","start":5,"end":1}'
+```
+
+When the history has at least 5 frames, `data.replay.range` is `{"start": 5, "end": 5}` and a following play does not advance.
+
+`action: "pause"` and `action: "play"` change the session flag. The lifecycle status stays `REPLAYING`. `action: "stop"` stops the session and `RESET`s the lifecycle to `STOPPED`.
+
+### A fit that returns while paused
+
+`POST /v1/training/pause` is HTTP 409, detail `Training cannot be paused in the current state`, unless the lifecycle status is `STARTED`. `REPLAYING`, `INVESTIGATING`, and `RESUME_READY` take that 409. `mark_completed` and `mark_failed` also return false from those three, and the status stays.
+
+Pause from `STARTED` saves the current phase in `paused_phase` and blocks the training thread at its next event (`_pause_event.wait()` in `_handle_event`). A model that emits another event stays inside that wait until resume or stop.
+
+`mark_completed` returns true only from `STARTED`. If `fit` returns while the status is still `PAUSED` (the pause happened after the last event, so the wait never ran), the call returns false and both `phase` and `paused_phase` stay. A probed run that had paused in phase `candidate` was still `PAUSED` / `candidate` / `paused_phase: candidate` after `fit` returned. `mark_failed` from `PAUSED` returns true: status `FAILED`, phase `idle`, `paused_phase` cleared.
+
+The training thread does not read `mark_completed`'s return. On that path `_train_thread_target` still writes the monitor context as `status: completed`, `phase: idle`. `get_status()` then reports both:
+
+| Field | After `fit` returns while paused |
+|-------|----------------------------------|
+| `state_machine.status` | `PAUSED` |
+| `state_machine.phase` / `paused_phase` | the phase saved at pause (`candidate` in the probe) |
+| `monitor.status` | `completed` |
+| `monitor.phase` | `idle` |
+| `training_active` | true (`is_active()` is `STARTED` or `PAUSED`) |
+| training thread (observed; not a `get_status()` field) | already exited |
+
+`POST /v1/training/resume` still accepts that state. The probe's resume moved the machine to `STARTED`, restored `phase` to `candidate`, cleared `paused_phase`, set `monitor.status` to `running`, and left `training_active` true. The thread stayed exited. Resume does not start another `fit`. The machine then stays `STARTED` with no thread (`monitor.status` `running`), and a `POST /v1/training/start` with `inline_data` is refused (409, `Training cannot be started: Training already in progress`; without data it is a 400 first) until `POST /v1/training/stop` or `POST /v1/training/reset`.
+
+### What to check
+
+| Symptom | What it is |
+|---------|------------|
+| The `speed` you sent is not the `speed` you get | Values outside `[-10, 10]` are clamped. `50` is stored as `10`. |
+| `paused` is false and the index never moves | `abs(speed) < 0.1`, including `0`. The session is idle. Send `value` of `0.1` or greater. |
+| Speed `1` advances twice a second | The sleep is capped at `0.5` s. Speeds from `0.1` through `2` share that cadence. |
+| Playback stops one frame before `end` | `end` is exclusive. The last index is `end - 1`. |
+| An inverted range jumps the index and will not play | `end` is raised to `start`, so the range is empty. Send `end` greater than `start`. |
+| Status stays `PAUSED` after the model finished, and `monitor.status` is `completed` | `fit` returned during the pause. `mark_completed` does not apply from `PAUSED`, and the monitor write ignores that return. Resume reports `STARTED` and does not start a thread; a start with data is then a 409 until `POST /v1/training/stop` or `/reset`. |
+| `POST /v1/training/pause` during a replay is 409 | Training pause requires `STARTED`. Pause the playback with `POST /v1/snapshots/{id}/replay/control` and `"action": "pause"`. |
+
+On `main`, `juniper-service-core/tests/test_t2_replay.py` covers a speed of `2`, a seek clamped into `[1, 4)`, and the forward auto-pause at the last index (`test_replay_controls_are_synchronous`, `test_replay_step_auto_pauses_at_boundary`). The `±10` clamp, the `0.1` floor and the collapsed range are pinned by `test_replay_speed_range_edges.py`, and the paused `mark_completed` / `mark_failed` arms by `test_lifecycle_paused_terminal.py`. No test pins the manager-level rows (monitor `completed`, thread exited, resume starts no `fit`).
 
 ---
 
@@ -3830,6 +4109,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
     `update_branch` now polls until the ref moves, and such a rejection maps to a **refusal** (exit 1), not a hard error: nothing was merged, which is correct.
   - `BEHIND` is repaired with the server-side `update-branch` API (**GitHub-signed**, accepted by `required_signatures`); no local git is ever invoked, so no checkout is needed. Re-sync is bounded by `MAX_SYNC_CYCLES` -- sustained concurrent merges refuse rather than spin.
   - `--merge-method rebase` is **rejected outright** (exit 2): rebase re-creates commits unsigned. A zero exit from `gh pr merge` is not trusted -- the PR is re-read and must report `MERGED`.
+  - **The success line's SHA is the verified head.** `MERGED #<pr> at <head8> via squash` (or `merge`) prints the `headRefOid` captured before the wait, eight characters. A net that merged before this run's merge call prints no SHA; one that wins during the call prints the verified head. The squash commit on the base is `mergeCommit.oid`. Operator surface: [The MERGED line's SHA is the verified head](#the-merged-lines-sha-is-the-verified-head).
   - **Kill-resilience** (after a session's run was killed mid-wait, before its second PR merged): the waiter is spawned via `Popen` with `prctl(PR_SET_PDEATHSIG)`, so a SIGKILLed parent cannot orphan it -- measured before the fix, the orphan kept polling GitHub for up to 32 min.
     `SIGTERM`/`SIGINT`/`SIGHUP` reap the child and exit **4 = INTERRUPTED**, distinct from refused (1) and hard error (3), so a killed run is never read as a decision. `--dry-run` no longer blocks on the wait (~2 s, was up to the full timeout).
   - **Why the kill-resilience work exists, measured (2026-08-20).** Kill forensics §3.4 identified the mechanism: a background task runs on a `[bg]` worker, **spare workers hold a hard ~3600 s lease**, and a task **cannot outlive its host worker**. A task placed on a fresh spare gets an hour; the same command placed on a spare already 3372 s old gets 229 s. **The runway is not knowable in advance** — which is why elapsed-at-kill shows no duration pattern and why "it worked last time" predicts nothing. Hold the completion condition off-process.
@@ -3903,6 +4183,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - `util/home_path_literal_check.py` -- Gate G-PATH: `python3 util/home_path_literal_check.py [--root DIR] [--baseline FILE] [FILE ...]`, or the same with `--update-baseline [--dry-run]`. A tracked `.bash`/`.sh`/`.py`/`.yml` file under `util/`, `scripts/` or `.github/` may hold no more lines carrying `/home/pcalnon` than `conf/home_path_literal_baseline.json` allows it. When the gate landed that was 436 files and 651 lines, 427 of the files under `util/ad-hoc/`. A line ending in `# home-path-literal: allow` is not counted. With FILE arguments it checks those files, or the whole scope when the baseline is one of them; that is the `home-path-literal` pre-commit hook. Without arguments it checks every tracked file in scope; that is the whole-scope step in ci.yml's Pre-commit job. A count below its baseline is a NOTE: lower the baseline with `--update-baseline`. Exit 0 / 1 / 2. `GIT` is overridable. Turing bring-up G5, decision D12. Tests: `tests/test_home_path_literal_check.py`.
 - `util/host_state_probe.bash` -- Collects a macOS host's state, read-only: `bash util/host_state_probe.bash [--json] [--section NAME]... [--tool NAME]... [--root DIR] [--vm NAME] [--timeout SECONDS]`. Each fact is one command's capture: its argv, exit code, stdout and stderr. The sections are hardware, memory (G-MEM's inputs, as `util/macvm_ctl.bash` reads them), vm, network, power, security (with `socketfilterfw --getblockall` since 2026-10-25, for task C2), tools, env, alias (`util/git_remote_alias_check.py --json`) and signing (`util/configure_commit_signing.py --check --json` and `util/headless_signing_preflight.bash`). It judges nothing. A missing, failing or hung command is recorded, a hung one killed at `--timeout` (default 60 s); the probe exits 0, or 2 on a usage error. Under `~/.ssh` and `~/.gnupg` it tests names and permission bits only, and it runs no credential probe. Every program is overridable (`SYSCTL`, `VM_STAT`, `CSRUTIL`, ... `PYTHON`), and commands run with `LC_ALL=C`. The JSON schema is in its header. Turing bring-up G1. It graduates `util/ad-hoc/2026-10-15_turing_host_state_probe.bash`, whose output is the plan's Appendix A. Tests: `tests/test_host_state_probe.py`.
 - `util/host_state_check.py` -- Judges a host against `conf/hosts/<host>/expected.yaml`: `python3 util/host_state_check.py [--host NAME] [--expected FILE] [--probe-json FILE] [--root DIR] [--section GATE]... [--check] [--json]`. It runs the probe, or reads a saved `--probe-json`. It then evaluates seven of the plan's ten host gates, condition by condition, and names the plan task behind each failure: G-ALIAS; G-SIGN (erratum E-G-SIGN: `configure_commit_signing.py --check`, the preflight's pinentry, agent-socket and external-cache lines, and the I-SIGN record); G-SEC (its firewall condition needs the firewall on and blocking all incoming connections: task C2's block-all form, owner ruling 2026-10-25); G-TOOLS (erratum E-D6: each listed tool resolves from `~/.local/bin`, and kubectl is within a minor of the cluster); G-ENV; G-NET; and G-MEM (`util/macvm_ctl.bash`'s arithmetic). G-AUTH, G-PATH and G-AGENT are evaluated elsewhere, and the report names them. expected.yaml is validated first: a VM that cannot fit the machine is regression R-G1, the X2 class, and exits 2, as does a probe whose hardware does not match its `identity`. The report exits 0; with `--check` the exit is 0 / 1 / 2, and an unevaluable condition wins. PyYAML is required. `HOST_STATE_PROBE`, `HOST_STATE_BASH` and `JUNIPER_ROOT` are overridable. Turing's readiness when it landed was 0 of 7. Tests: `tests/test_host_state_check.py`.
+  - **Wording (erratum E-H3, juniper-ml#2392).** A failing kubectl condition names task D3 (upgrade Docker Desktop) before task D4. The G-MEM memory line says `free + speculative + inactive`. `macvm_ctl` still says `free + inactive` for the same sum. Operator surface: [Host-Check Wording](#host-check-wording-e-h3).
 - `util/host_api_filesystems_check.py` -- Checks that a Linux host still has the API filesystems systemd mounted at boot: `python3 util/host_api_filesystems_check.py [--mountinfo FILE] [--root DIR] [--json]`. It reads `/proc/self/mountinfo`, not `systemctl`. PID 1's own mounts (securityfs, cgroup2, pstore, efivarfs, bpf; systemd `src/shared/mount-setup.c`) have no unit file, so once unmounted they appear in no unit listing and nothing remounts them; that is how yamaguchi lost securityfs on 2026-10-27 and found out eleven days later. It also checks the six unit-file API mounts (debugfs, tracefs, configfs, fusectl, hugetlbfs, mqueue), each only where its directory exists, and that AppArmor's `/sys/kernel/security/apparmor/profiles` exists whenever the kernel reports AppArmor enabled. It prints, without running, systemd's exact remount command per missing mount. Exit 0 / 1 / 2. Read-only, stdlib only, no root. Remedy on yamaguchi: `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md`. Tests: `tests/test_host_api_filesystems_check.py`.
 - `util/mcp_setup.bash` -- Writes a checkout's `.mcp.json` Serena entry: `bash util/mcp_setup.bash [--host NAME] [--conf FILE] [--check | --remove] [--dry-run] [checkout]` (default: the checkout that holds the script; a worktree counts). The entry runs `uvx --from git+https://github.com/oraios/serena@<commit> serena start-mcp-server --context <context> --project <checkout> --open-web-dashboard False`, with `SERENA_USAGE_REPORTING=false` in its `env`: Serena v1.7.0 reports usage to `oraios-software.de` at every start unless that variable is exactly `false` (SER-E1 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md`; owner ruling 2026-10-25). `<commit>` (a full 40-hex sha) and `<context>` (a built-in name) come from `conf/hosts/<host>/mcp.json`, the host's approved pin; with no pin it refuses, so Serena never runs unpinned HEAD (decision D10). turing's pin is v1.7.0 (`949a27ef`), whose claude-code context excludes `execute_shell_command`; `.serena/project.yml` excludes it too. A pin bump must re-read the context's `excluded_tools`, and the usage-report check, at the new commit. It fixes audit A2-F1 (no `--project`) and A2-F4 (no `.mcp.json` in a worktree). Other servers and keys are kept; a changed file is backed up to `.mcp.json.bak-<UTC time>` (gitignored; it holds the old tokens) and keeps its mode; a second run writes nothing. `--check` exits 1 on a missing, unpinned, unbound or rebound entry, or one that leaves the usage report on. Exit 2 on usage or environment errors, including an existing `.mcp.json` that is not a JSON object, which it never overwrites. On turing, Serena v1.7.0 does not yet start: its exact `cryptography==50.0.0` pin has no Intel-macOS wheel, and building it needs Rust 1.83 (the host has 1.71). Tests: `tests/test_mcp_setup.py`.
 - `util/wait_for_checks.py` -- Waits for a PR's **required** status checks to finish, then reports honestly. The shared replacement for the hand-rolled "wait for CI" loops that sessions keep re-writing and keep getting wrong the same two ways. Read-only (only `gh pr view` / `gh api .../rules/...` reads — never merges, updates a branch, pushes, or comments), so any session can run it at any time.
@@ -4035,6 +4316,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - A busy recurrence `POST /v1/train` is a `409` and exit 4; the driver neither stops the holder nor retries, and after a wall-clock timeout its own fit keeps the service's lock: [One caller per recurrence service](#one-caller-per-recurrence-service).
   - Predict/crossval failures are recorded, and the run continues to the manifest (`outcome: degraded`, exit 1 — W0.3), never dying mid-evidence. `outputs.save_model: true` (G-18) saves the model the run trained and scored (juniper-ml#2211): `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, then a size-checked copy of `<snapshots_dir>/<id>.npz` to `.../model.npz`. A `409` (the service no longer holds this run's model) fails the phase, and nothing re-fits a substitute. Only a train response without an `operation_id` (a pre-W1.5 service) falls back to re-running the `juniper-recurrence train` CLI with `--dataset <dataset_id>` + identical hyperparam flags + `--out .../model.npz` (that pre-0.6.0 CLI has no `--params` flag — `train --params` / `--params-file` arrived with juniper-recurrence#190 in 0.6.0, the release that also returns an `operation_id` — so the dataset_id ref is the only faithful form); `manifest.save_model.source` names the path.
     That CLI is `ports.json` `recurrence_launch.cli` when the launcher recorded one (W1.9, F-D4; `shutil.which` on the driver's PATH otherwise), and rerun parity — the served process's interpreter and `juniper-recurrence-model` version — must hold, or the phase fails without running it.
+    Any other snapshot failure — a status other than 201, a dropped connection or socket timeout, a snapshot id that is not a usable path token, a missing or disagreeing `size_bytes`, or an `OSError` on the copy — fails the phase the same way and does not re-fit ([A failed snapshot save does not re-fit](#a-failed-snapshot-save-does-not-re-fit)).
     Every phase leaves a record in the manifest's `phases` block (`ok` / `failed` + `error` / `skipped` when not enabled / `not_reached`). `degraded` = train succeeded but an ENABLED predict, crossval or save_model phase did not; it is derived from those records, never from `acceptance.ok`, so a plot-only acceptance failure stays `succeeded`.
   - Collects `metrics_final.json` / `metrics_history.json` / `topology.json` / `decision_boundary.npz` (2-D input only) + optional `POST /v1/snapshots` (cascor), `train_response.json` / `predict_response.json` / `crossval_response.json` (recurrence); ALWAYS writes the §13.4 `manifest.json` (also for stalled / timed-out / failed runs) and prints a one-screen summary.
   - **409 preempt (§3.4)**: `start_fresh: true` does NOT stop a live run — the lifecycle lock is held, so the 409 is raised before `start_fresh` is consulted, and after a driver-side stall/budget abort the naive re-run dies on `Training already in progress`. A 409 now gets ONE preemption attempt: `POST /v1/training/stop`; wait for the lifecycle to leave the active set; retry starting once.
@@ -4062,7 +4344,7 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - A suite could always reach the budget through a dotted `outputs.max_wall_seconds` override (`suites/p4/e-i-cascor-cap-ceiling.yaml:71` does exactly that), but before this key, an un-overridden cell silently inherited `base_config`'s value — 3600 s for `spiral-baseline` — with no signal. Both mechanisms are accepted by the R-6 gate. Tests: `tests/test_run_suite.py`.
   - `degraded` (W0.3) is in `TERMINAL_OUTCOMES` but never a success: the summary line counts it on its own, `REPORT.md` lists it under `## Degraded cells`, the console prints `degraded (crossval failed: …)` from the manifest's `phases` record, `--resume` re-runs it and the exit stays `1`.
   - `_headline_metrics` (W0.4) reads `final_metrics.r2` → `train_r2`, `crossval.eval_aggregate.r2` → `cv_r2`, `crossval.eval_std.r2` → `cv_r2_std` and `dataset_descriptor.n_windows` → `n_windows` from `stats["recurrence"]`; a null `crossval` writes no `cv_*` value. Since 2026-10-26 (APD-ML-002) it reads `final.train_accuracy` → `train_accuracy` and `final.val_accuracy` → `val_accuracy` (selected-on) from `stats["cascor"]`, and `final_accuracy` is refused. Since juniper-ml#2064 it reads `test_accuracy` / `test_f1` / `test_precision` / `test_recall` / `test_roc_auc` from the labelled final-evaluation block `cascor.eval_scalars`, only when its `split` is `test` (`CASCOR_TEST_COLUMNS`); a `juniper-experiment-stats/1` stats.json re-derives that block from the run's `metrics_final.json`.
-  - `--reaggregate SUITE_DIR` (APD-ML-002) re-renders `aggregate.csv` + `REPORT.md` from `suite_manifest.json`, `registry.jsonl` and each run's `stats.json`, launching nothing; `aggregate` re-reads every headline column from the run dir. A NaN or infinite value fails any acceptance band. [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
+  - `--reaggregate SUITE_DIR` (APD-ML-002) re-renders `aggregate.csv` + `REPORT.md` from `suite_manifest.json`, `registry.jsonl` and each run's `stats.json`, launching nothing; `aggregate` re-reads every headline column from a JSON-object `stats.json` and falls back to recorded `metrics` when that read is not an object ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file)). A NaN or infinite value fails any acceptance band. [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
   - **`include` does not inherit `matrix`.** Empty matrix still yields one cell per `base_config`. P4 catalog + the cap-128 n=2 trap: [P4 Campaign Suites](#p4-campaign-suites).
 - `util/experiments/read_run_metrics.py` -- Canonical reader for the cascor perf-lane gate inputs (P2 item 0.4). Reads the last `metrics_series.csv` step-duration row (`step_count` / `step_sum`); `summarise().work_invariant` is true iff every cell shares one count.
   - `timings.drive` and `aggregate.csv` `wall_seconds` are de-ratified. `--sweep` is docstring-only, not a flag.
@@ -4695,18 +4977,52 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 
 `juniper-service-core` (this repo's `juniper-service-core/` subdirectory) owns the shared FastAPI middleware, the `/ws/control` security + command dispatch, and the distributed worker pool that model services inject executors into. The load-bearing invariants — the ones a well-meaning refactor silently breaks:
 
-- **CR-024 body limit** — `RequestBodyLimitMiddleware` treats `Content-Length` as an early-reject hint only and **always** stream-caps `POST` / `PUT` / `PATCH` against the cumulative limit (default 10 MiB), so an under-declared header or a chunked body with none still 413s. Skipping the stream when the declared length is present-and-small is the classic bypass.
+- **CR-024 body limit** — `RequestBodyLimitMiddleware` treats `Content-Length` as an early-reject hint only and **always** stream-caps `POST` / `PUT` / `PATCH` against the cumulative limit (default 10 MiB), so an under-declared header (at the ASGI layer; under uvicorn the parser truncates the body to the declared length first) or a chunked body with none still 413s. A body that fills the cap is delivered: [exact fill](#a-body-that-fills-the-cap-is-delivered). Skipping the stream when the declared length is present-and-small is the classic bypass.
 - **Auth before rate limit** — with API keys configured, `APIKeyAuth` runs first, so a 401 never consumes a rate-limit token. Blank / whitespace-only configured keys are filtered out (the `auth_posture.real_keys` rule) so an empty secret file cannot enable auth that then accepts an empty `X-API-Key`.
-- **Non-ASCII API keys are a 401, not a 500** — `APIKeyAuth.validate` compares UTF-8 bytes (`surrogatepass`). Comparing `str` with `hmac.compare_digest` raises `TypeError` on any non-ASCII character, which escaped as a 500, skipped `FailedAuthThrottle`, and (under Sentry's default local-variable capture) could ship the configured key. Published `juniper-service-core` 0.7.0 still has the `str` compare. Operator surface: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
+- **Non-ASCII API keys are a 401, not a 500** — `APIKeyAuth.validate` compares UTF-8 bytes (`surrogatepass`). Comparing `str` with `hmac.compare_digest` raises `TypeError` on any non-ASCII character, which escaped as a 500, skipped `FailedAuthThrottle`, and (under Sentry's default local-variable capture) could ship the configured key. The bytes compare is first released in 0.7.1. Operator surface: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
+- **Failed-auth table cap** — past 10,000 source IPs, `_maybe_cleanup` drops the oldest `window_start` rows. Prune runs only from `record_failure`, every 100 failures, before that row is stored. `check()` must not insert. Operator surface: [The failed-auth table drops the oldest source IPs](#the-failed-auth-table-drops-the-oldest-source-ips).
 - **429 header passthrough** — `RateLimiter` raises `HTTPException` carrying `Retry-After` + `X-RateLimit-*`; `SecurityMiddleware.dispatch` must rebuild `JSONResponse(..., headers=exc.headers)`. RateLimiter unit tests alone do not exercise that catch path.
 - **Control-WS log sanitizing** — reject logs that interpolate untrusted Origin/command text; go through the module-local `_sanitize_for_log` helpers (`control_security` strips `\r`/`\n`; `control_stream` also drops other C0 controls, keeping tabs) so CRLF cannot forge multi-line control-plane records. Sanitizing changes log records only, never handshake outcomes or ack JSON.
 - **Zero rate limit** — `ws_control_rate_limit_per_sec=0` builds a `LeakyBucket` with no refill; `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop.
-- **`/ws/workers` fail-closed** — a bad/missing `X-API-Key` closes **4001** without accepting; a non-object or shape-invalid registration closes **4008** with no `registration_ack`; `submit_result` rejects wrong-worker / unassigned results before the protocol parse; binary attachments over 100 MB get `Binary frame too large`. A clean disconnect and a mid-result transport abort (expected-binary-got-text / oversize) **requeue** the in-flight task rather than leaving it assigned until `task_reassignment_timeout`. Control receive rejects malformed / non-object JSON with close **1003** rather than an `AttributeError`.
+- **A measured zero heartbeat overwrites** — `None` (an omitted key or JSON `null`) keeps the prior enriched field; `0`, `0.0`, and `[]` replace it. `is_alive` is a strict `<` against `heartbeat_timeout` (default 30 s), so a heartbeat aged exactly one timeout is stale. The scrape emits a reported `0.0`, clamps a future heartbeat age at 0, and omits percentiles for a one-sample window. Operator surface: [A measured zero heartbeat overwrites](#a-measured-zero-heartbeat-overwrites).
+- **Control-channel edges** — the bucket banks at most `capacity` and admits at a balance of at least 1 (a denial does not spend a token); Origin match is exact, and an origin that strips to empty fails closed; the cooldown blocks on the Nth rejection and drops one aged exactly one window; a block lifts when `now` reaches `blocked_until`. Operator surface: [Control channel burst, origin match, and cooldown edges](#control-channel-burst-origin-match-and-cooldown-edges).
+- **`/ws/workers` fail-closed** — a bad/missing `X-API-Key` closes **4001** without accepting; a non-object or shape-invalid registration closes **4008** with no `registration_ack`; `submit_result` rejects wrong-worker / unassigned results before the protocol parse; binary attachments over 100 MiB get `Binary frame too large` (on stock uvicorn a frame over 16 MiB is closed 1009 first). A clean disconnect and a mid-result transport abort (expected-binary-got-text / oversize) **requeue** the in-flight task rather than leaving it assigned until `task_reassignment_timeout`. Control receive rejects malformed / non-object JSON with close **1003** rather than an `AttributeError`.
+- **Replay speed and a paused completion** — `ReplaySession` clamps speed to `[-10, 10]`, and a magnitude below `0.1` leaves the index where it is. A `fit` that returns while the lifecycle is `PAUSED` leaves that status while the monitor says `completed`; that is a known defect, not a contract to keep: after resume the machine is `STARTED` with no thread, and a start with data is refused (409) until stop or reset. Operator surface: [Replay speed, range, and a paused completion](#replay-speed-range-and-a-paused-completion).
+- **A text frame of 65536 characters is delivered** — `/ws/control` and `/ws/workers` compare `len` of the decoded string with `65536` using `>`. Equality is a normal message.
+  One more character is over: control acks `Message too large` and closes **1009** without reading another frame and without spending a rate-limit token; worker registration closes **4005**; the worker message loop sends the error and keeps the socket. `/ws/training` does not measure text length.
+  Operator surface: [A WebSocket text frame that fills 65536 characters is delivered](#a-websocket-text-frame-that-fills-65536-characters-is-delivered).
+- **Task reassignment is a strict greater-than** — `_check_task_timeouts` requeues only when `(now - dispatched_at) > task_reassignment_timeout` (default 120s). Equality stays assigned. The sweep is every `health_check_interval` (default 10s) after `start_monitor()`, and it does not cancel the socket. See [A task assigned for exactly the reassignment timeout stays assigned](#a-task-assigned-for-exactly-the-reassignment-timeout-stays-assigned).
 - **WS tunables are declared, not implicit** — `websocket/tunables.py` holds all eleven settings fields the WebSocket handlers read, each with its default and a `security` flag. Six are security controls: the Origin allowlist, the control-endpoint kill switch, the control rate limit, and the three handshake-cooldown parameters. Call sites pass only a name; the default lives in the registry.
   - The `getattr`-based decoupling is deliberate and kept — the shared package still never imports a consuming service's settings class. What changes is that a miss which looks like a misspelling now logs a WARNING naming both spellings, instead of silently reverting a security control to a library default forever (`ws_control_rate_limit_per_second` vs `..._per_sec`).
   - `resolve()` on an undeclared name raises rather than defaulting; `audit(settings)` is the boot-time counterpart, reporting defaulted security controls and suspected typos. Closes APD-SVCCORE-003 / -010. `tests/test_ws_tunables.py` pins the pre-refactor defaults byte-for-byte and source-scans both handlers so registry and call sites cannot drift.
+- **Training-stream resume is continuous only through `oldest_seq - 1`.** `replay_since` returns messages with `seq > last_seq`. A `last_seq` below `oldest_seq - 1` is `resume_failed` `out_of_range`, and the socket stays up as a fresh snapshot. A `resume_ok` can still miss a broadcast made while no socket was active (never sequenced) or one that lands during the replay send (buffered, but sent only to active sockets); that is current behaviour, not a guarantee. Pending handshakes count toward the global cap (ASGI close **1013**; HTTP 403 on uvicorn), and address-less sockets share `"unknown"`. Operator surface: [Training-stream resume and the connection cap](#training-stream-resume-and-the-connection-cap).
+- **Worker result anomalies warn.** `AnomalyDetector.check_result` flags a fast, perfect, stale, or duplicate score. `WorkerCoordinator.submit_result` logs that list and still accepts the result. No detector, or a `None` score, skips the check. A score with no duration is timed as `0.0` and logs `suspiciously_fast`. Operator surface: [Worker Result Anomaly Detector](#worker-result-anomaly-detector).
 
 Operator surface: [`docs/REFERENCE.md` § juniper-service-core](#juniper-service-core).
+
+---
+
+## The MERGED line's SHA is the verified head
+
+`python util/safe_merge.py --pr N [--repo R] [--execute]` prints one success line and exits 0 when the pull request has merged. Any SHA in that line is the head this run verified: `headRefOid`, read before the wait and passed to `gh pr merge --match-head-commit`, truncated to eight characters. The squash commit GitHub writes on the base is a different object. Read it with `gh pr view`.
+
+| How the merge finished | What stdout says | Which SHA |
+| --- | --- | --- |
+| This run's `gh pr merge` returned, and the re-read has `state` `MERGED` | `MERGED #<pr> at <head8> via squash` (or `via merge`) | The verified head |
+| This run armed a net, and the PR was already merged before that call (the net is the likely merger) | `MERGED #<pr> by the armed auto-merge net (required checks green)` | None |
+| No net was armed, and another actor merged it before that call | `MERGED #<pr> concurrently -- this run armed no net, so another actor merged it` | None |
+| The net or the other actor won during the `gh pr merge` call, and `headRefOid` is still the verified head | The sentence above, then ` at <head8>, winning the race against this run's own merge` | The verified head |
+| That same race, and `headRefOid` differs from the verified head | Exit 3, on stderr: `ERROR: PR #<pr> is MERGED at <other8>, but this run verified and tried to merge <head8>` | Both values are `headRefOid` |
+
+A squash writes a new commit on the base. The success line's SHA is the pull request head, so that object is absent from `main`'s history. The commit on the base is:
+
+```bash
+gh pr view <N> --repo pcalnon/<repo> --json mergeCommit --jq .mergeCommit.oid
+```
+
+`--repo` is the bare repository name (`juniper-ml`). The owner is `--owner` (default `pcalnon`). `util/wait_for_checks.py` uses the same split. Passing `pcalnon/juniper-ml` as `--repo` hands gh `pcalnon/pcalnon/juniper-ml`, which gh reads as HOST/OWNER/REPO: the first `gh pr view` fails (`error connecting to pcalnon`) and the run exits 3.
+
+Exit 0 with a `MERGED #` line means the pull request merged. The line is printed only after a re-read reports `state == MERGED`. Exit 1 is a refusal and disarms the net. Exit 4 is an interrupt and leaves the net armed. The squash SHA is still the `gh pr view` read above.
 
 ---
 
@@ -4959,6 +5275,8 @@ The rewrite goes through the same `write_ports_json` that wrote the file before 
 
 Since juniper-ml#2211 the driver's `save_model` saves the scored model through `POST /v1/model/snapshots` whenever `POST /v1/train` returned an `operation_id`, and copies it from `recurrence_launch.snapshots_dir` (`$RUN_DIR/snapshots` when the record has none) to `artifacts/results/model.npz`. `manifest.save_model` names the snapshot, the copy and its `sha256`, or says why no copy was made. The CLI re-run is the fallback for a service that returns no `operation_id`.
 
+A failure on that snapshot path does not fall through to the CLI. See [A failed snapshot save does not re-fit](#a-failed-snapshot-save-does-not-re-fit).
+
 The driver's `save_model` re-run executes `recurrence_launch.cli`. `shutil.which` on the driver's `PATH` is the fallback only when no CLI is recorded, and a recorded CLI that has gone missing fails the phase rather than falling back. Before the CLI runs, **rerun parity** must hold:
 
 - the CLI's interpreter, resolved exactly as the launcher resolves it, is `recurrence_launch.python` (compared as resolved paths, so `bin/python` and the `bin/python3.14` it links to are one interpreter);
@@ -4996,6 +5314,27 @@ jq '{outcome, phase: .phases.save_model, save: .save_model, rerun: .save_model_r
 | `.npz` files under `$RUN_DIR/recurrence-snapshots` | `JUNIPER_RECURRENCE_SNAPSHOTS_DIR` did not reach the service's settings: a run brought up before W1.10, a service not started by `recurrence_up`, or a staged YAML `service.snapshots_dir` (which outranks the env var). |
 | `--up` stops before `serve` and `launch.log` says the launch could not be recorded | `ports.json` could not be rewritten. Repair the run dir and bring the stack up again. |
 | Preflight refused, and `ports.json` has no `recurrence_launch` | Expected: a refused env records nothing. |
+| `phases.save_model` is `failed`, `save_model.source` is `snapshot`, and `save_model_rerun` is null | The snapshot save failed and the CLI did not run. `outcome` is `degraded` (exit 1). Read `phases.save_model.error` in [A failed snapshot save does not re-fit](#a-failed-snapshot-save-does-not-re-fit). |
+
+##### A failed snapshot save does not re-fit
+
+When `POST /v1/train` returned an `operation_id`, `save_model` calls `_save_model_snapshot` and nothing else. The CLI re-fit (`_save_model_rerun`) runs only in the other branch, where train returned no usable `operation_id`. A failed snapshot therefore leaves `save_model_rerun` null. The phase status is `failed`, `derive_recurrence_outcome` reports `degraded`, and the process exits 1 (`EXIT_ACCEPTANCE`). `acceptance.reasons` contains `save_model snapshot failed:` plus `phases.save_model.error`.
+
+`_save_model_snapshot` catches `ServiceUnreachable`, and `RequestTimeout` is a subclass of it. A dropped connection, or a socket timeout on `POST /v1/model/snapshots` (the timeout argument is the run's wall budget), becomes that phase error. It does not propagate to the run-level handler, so the outcome is not `torn_down_early` (exit 3) and not `timed_out`.
+
+The local copy is `artifacts/results/model.npz`. The service's `<snapshots_dir>/<id>.npz` is removed only by the service. This phase deletes the local path only after a copy that it cannot vouch for.
+
+| `phases.save_model.error` | Local `model.npz` |
+|---------------------------|-------------------|
+| Starts `HTTP ` (the status was not 201). Example: `HTTP 500: …`. A 409 also sets `save_model.note` (the identity refusal in the table above). | Not written by this attempt. A file already there is left in place, and it is not added to `artifacts`. |
+| Starts `POST ` and names `/v1/model/snapshots`, and is not the "usable snapshot id" row. No HTTP status came back. A timeout includes the words `timed out`. | Not touched. |
+| `POST /v1/model/snapshots answered 201 without a usable snapshot id` | Not copied. A usable id matches `[A-Za-z0-9][A-Za-z0-9_-]{0,63}` end to end, so it is one path segment. `service_path` is absent. |
+| Starts `copied ` and names `size_bytes`. The value is `repr`'d, so a missing field reads `size_bytes None`. | Deleted, including a file an earlier invocation left. The field is not defaulted to the copy's size. |
+| Starts `cannot copy snapshot` | `shutil.copyfile` or the following `stat` raised `OSError`. The local path is deleted. |
+
+The phase does not re-fit after any of these. Fitting another model is a separate train.
+
+Gate: `tests/test_recurrence_operation_identity_and_dataset_budget.py` (`SaveModelSnapshotTest`). The 409, the disagreeing `size_bytes`, and the unusable id are pinned there; the CLI re-fit is patched to fail the test if it runs while an `operation_id` was returned. The HTTP 500, dropped-connection, missing-`size_bytes` and copy-`OSError` cases are pinned by `test_a_snapshot_store_error_fails_the_phase_and_does_not_refit`, `test_a_dropped_snapshot_save_stays_a_failed_phase`, `test_a_snapshot_without_size_bytes_is_not_vouched_for` and `test_a_failed_copy_removes_the_partial_model_and_does_not_refit` in the same file; a socket timeout, which the `POST ` row also covers, is the only case no test pins.
 
 #### F-6 listener pid rule (binding)
 
@@ -5075,7 +5414,9 @@ Kind selection from YAML shape: `training:` → cascor path; `train:` / `crossva
 
 Always writes §13.4 `manifest.json` (including stalled / timed-out / failed runs). Also writes `artifacts/results/stats.json` + `summary.md` (Wave 2.6; stats failure → `stats_error` on the manifest, never fatal). Plots (Wave 2.4/2.5) render client-side when `outputs.plots` requests them — structurally unavailable data is a per-plot SKIP; render errors / missing matplotlib on a requested plot fail acceptance.
 
-Cascor path polls `GET /v1/training/status` and samples loopback `/metrics` (redirect-following — bare `/metrics` 307s) into `metrics_series.csv`; candidate correlation exists **only** there. Recurrence path uses synchronous `POST /v1/train` (response IS completion; Q-2 budget = socket timeout → `timed_out`). `outputs.save_model: true` re-runs `juniper-recurrence train --dataset <dataset_id> … --out …/model.npz` (G-18), using the launcher-recorded CLI under rerun parity (W1.9; [Recurrence launch record and service env](#recurrence-launch-record-and-service-env)).
+Cascor path polls `GET /v1/training/status` and samples loopback `/metrics` (redirect-following — bare `/metrics` 307s) into `metrics_series.csv`; candidate correlation exists **only** there. Recurrence path uses synchronous `POST /v1/train` (response IS completion; Q-2 budget = socket timeout → `timed_out`).
+
+`outputs.save_model: true` saves the scored model by `operation_id` (juniper-ml#2211). The CLI re-fit runs only when that response had no `operation_id`. A failed snapshot save does not re-fit ([A failed snapshot save does not re-fit](#a-failed-snapshot-save-does-not-re-fit); the re-fit's parity rules are [Recurrence launch record and service env](#recurrence-launch-record-and-service-env)).
 
 Coverage: `tests/test_run_experiment.py`.
 
@@ -5510,7 +5851,48 @@ Every check is `<python> -s …` run from `/`: `-s` keeps a `~/.local` package f
    A line outside pip's grammar is a finding when its first token is a closure name, so a reworded closure conflict cannot read as clean; otherwise it prints as `pip check also said (not a finding)`. A non-zero `pip check` that yields neither a recognised line nor a closure line is itself a finding (`pip check could not run`).
 2. **Pins the installed app declares.** Only `juniper-recurrence-model` and `juniper-service-core`, read from `importlib.metadata.requires("juniper-recurrence")` in the judged interpreter — for an editable install, its `pyproject.toml` as of the last `pip install -e`, not the checkout's current file. Evaluated with `packaging`, else `pip._vendor.packaging`, with `prereleases=True`.
    A violated pin, a missing dependency, an installed version that is not PEP 440, and missing `juniper-recurrence` metadata (`is this the env serve runs from?`) are findings. A requirement whose marker is false with `extra=""` (`extra == "torch"`) is not a pin. With neither `packaging` copy importable, the probe says so and does not refuse.
+   `juniper-model-core` is in the pip-check closure and absent from this pin list. A model-core version the installed app's own metadata still accepts is clean here. [Crossval 500 with model-core 0.2.0](#crossval-500-with-model-core-020) is that case.
 3. **Import.** `from juniper_recurrence_model.data import derive_full_split`. A failure records the last non-empty line of the interpreter's output.
+
+### Crossval 500 with model-core 0.2.0
+
+`juniper-recurrence` 0.8.0 passes `groups=` on every `POST /v1/crossval` that reaches the fold cut, including a series whose `ticker_code` is missing (a busy `409`, a dataset-fetch error, and `embargo_days` on an artifact with no `window_end_date` return earlier).
+That keyword first exists on `juniper-model-core` 0.3.0.
+Tag `juniper-model-core-v0.2.0` defines `walk_forward_folds(n_samples, *, n_folds, scheme, min_train, embargo, order)` and nothing further, so the call raises `TypeError: walk_forward_folds() got an unexpected keyword argument 'groups'`.
+The route maps `ValueError` from `build_folds` to HTTP 422 and leaves this `TypeError` unhandled, which is an HTTP 500.
+`/v1/health/ready` stays 200: the 0.2.0 function imports; it fails at the call.
+
+Verified against tags, not against a live stack:
+
+| Fact | Where |
+|------|--------|
+| 0.8.0 always passes `groups=` | `juniper-recurrence` tag `juniper-recurrence-v0.8.0`, `juniper_recurrence/_folds.py` (`walk_forward_folds(..., order=order, groups=groups)`) |
+| `groups` arrives in 0.3.0 | This repo, tag `juniper-model-core-v0.3.0`, `juniper-model-core/juniper_model_core/crossval/splits.py` |
+| 0.8.0 still allows 0.2.0 | Tag `juniper-recurrence-v0.8.0`, `juniper-recurrence/pyproject.toml`: `juniper-model-core[crossval]>=0.2.0,<0.4.0` |
+| The route's 422 mapping is `ValueError` only | Tag `juniper-recurrence-v0.8.0`, `juniper_recurrence/routers/crossval.py` (`except ValueError` around `build_folds`) |
+| The pin probe ignores model-core | `util/recurrence_env_preflight.bash` `PINNED_DISTS` is `juniper-recurrence-model` and `juniper-service-core`. `juniper-model-core` is only in `CLOSURE`, so `pip check` judges it against the floor the installed app declares |
+
+0.8.0's declared floor matches 0.2.0, so scoped `pip check` is clean and the preflight prints `ENV PREFLIGHT OK`.
+
+**Fixed in 0.8.1.** juniper-recurrence#229 (merged 2026-11-04, squash `2a467adb`, tag `juniper-recurrence-v0.8.1`) raises the floor to `juniper-model-core[crossval]>=0.3.0,<0.4.0`.
+PyPI has served `juniper-recurrence` 0.8.1 since 2026-11-06 09:35Z, with that floor in its metadata; juniper-ml#2454 archived its release notes.
+`juniper-ml`'s `[recurrence]` extra floors `juniper-recurrence>=0.8.1,<0.9.0` since juniper-ml#2473, first released in `juniper-ml` 0.11.4 (PyPI 2026-11-07), so a fresh install of the extra cannot resolve 0.8.0.
+
+Repair an env that still serves 0.8.0 by upgrading the app, which brings model-core 0.3.x with it:
+
+```bash
+python -m pip install -U "juniper-recurrence>=0.8.1,<0.9.0"
+python -m pip check
+```
+
+An env that must stay on 0.8.0 can take model-core 0.3.x alone. Every 0.3 release (0.3.0, 0.3.1, 0.3.2) has `groups`, and 0.8.0's own range (`<0.4.0`) accepts it:
+
+```bash
+python -m pip install -U "juniper-model-core[crossval]>=0.3.0,<0.4.0"
+python -m pip check
+```
+
+With 0.8.1 installed beside model-core 0.2.0, scoped `pip check` reports the violated floor, so the preflight refuses before `serve`. The pin probe still does not name model-core. Checked against PyPI on 2026-11-07.
 
 ### Exit codes, and where the report goes
 
@@ -5537,6 +5919,7 @@ tail -n 80 "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/<RUN
 | Symptom | What it is |
 |---------|------------|
 | `/v1/health/ready` is 200, then `POST /v1/crossval` is 422 missing `X_full` | F-E1's shape; readiness does not import `derive_full_split`. The launch passed `--skip-env-preflight`, or `serve` was started outside these two launchers (Compose has no launcher preflight; plan W3.0b would add the check to readiness). |
+| `/v1/health/ready` is 200, preflight prints `ENV PREFLIGHT OK`, and every `POST /v1/crossval` raises `TypeError: walk_forward_folds() got an unexpected keyword argument 'groups'` | The served app is `juniper-recurrence` 0.8.0 beside `juniper-model-core` 0.2.0. The declared floor still accepts 0.2.0, so none of the three checks fire. [Crossval 500 with model-core 0.2.0](#crossval-500-with-model-core-020). |
 | `ENV PREFLIGHT REFUSED` with `FINDING:` lines naming the model pin, the service-core pin, or `derive_full_split` | The interpreter `serve` would use failed the closure check. The repair is W0.1. Lines marked `unrelated to recurrence` are not the refusal. |
 | CUDA `pip check` lines on stdout, exit 0 | Unrelated; printed as `unrelated to recurrence (not a finding)`. |
 | `WARNING: ENV PREFLIGHT SKIPPED —` and the service still reaches ready | The emergency override, recorded in `launch.log`. A skipped `derive_full_split` finding still 422s every `split="full"` request. |
@@ -5918,7 +6301,7 @@ Design of record: [`notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN
 | `REPORT.md` **Gate inputs** | States `wall_seconds` is DE-RATIFIED, then two suite-level verdicts (computed independently, not via `summarise()`). |
 | `REPORT.md` **Baseline comparison** | Only when `--compare-baseline TAG` is passed. The text is `compare_baseline.render(...)`. |
 | Recurrence headline columns (W0.4) | `train_r2`, `cv_r2`, `cv_r2_std`, `n_windows` in both files, read from `stats.json`'s nested `recurrence` block. A cell whose crossval failed or was disabled leaves the `cv_*` cells **empty**, never `0`. |
-| Cascor headline columns (APD-ML-002, 2026-10-26) | `train_accuracy`, `val_accuracy` in both files, read from `stats.json`'s `cascor.final` block; `val_accuracy` is selected-on. Every headline column is re-read from the cell's `stats.json` at each aggregation, so a suite aggregated before a column existed gains it with `run_suite.py --reaggregate SUITE_DIR`, which launches nothing. See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). |
+| Cascor headline columns (APD-ML-002, 2026-10-26) | `train_accuracy`, `val_accuracy` in both files, read from `stats.json`'s `cascor.final` block; `val_accuracy` is selected-on. Every headline column is re-read from the cell's `stats.json` when that file is a JSON object, so a suite aggregated before a column existed gains it with `run_suite.py --reaggregate SUITE_DIR`, which launches nothing. An object with no headline does not fall back to recorded `metrics` ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file)). See [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002). |
 | Cascor held-out columns (juniper-ml#2064, 2026-10-27) | `test_accuracy`, `test_f1`, `test_precision`, `test_recall`, `test_roc_auc` in both files, from the labelled final-evaluation block `cascor.eval_scalars`, and only when its `split` is `test`: a cell whose final evaluation scored validation, or that has none, leaves them **empty**. A `juniper-experiment-stats/1` stats.json re-derives the block from the run's `metrics_final.json`, so `--reaggregate` adds the columns to an older suite without rewriting a run file. See [Held-out `test_*` columns](#held-out-test_-columns-juniper-ml2064). |
 | `REPORT.md` summary line + **Degraded cells** (W0.3) | `Cells: N total, X succeeded, Y degraded, Z failed/other, W not run.` A degraded cell is never counted as succeeded; each one is listed with the phase it lost. |
 
@@ -6108,6 +6491,7 @@ Coverage: `tests/test_run_suite.py` (expansion, project-dir override, cascor par
 | Cell printed `degraded (crossval failed: …)`, suite exit `1` | Train succeeded but an enabled phase did not (W0.3). Read the cell's `phases` in `registry.jsonl` / `manifest.json`. A crossval `422` naming `X_full` means the recurrence env serves a model without `derive_full_split` — F-E1 of [the equities audit plan](../notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md). |
 | `--only` one cell, exit `1`, cell succeeded | Aggregate scores the full expansion; unselected cells are not-run. |
 | A cascor `aggregate.csv` with no accuracy column | Aggregated before 2026-10-26 (APD-ML-002). `run_suite.py --reaggregate SUITE_DIR` re-renders it and launches nothing; do not `--resume` for this, which re-runs incomplete cells. |
+| `aggregate.csv` blank while `registry.jsonl` `metrics` are set | `stats.json` parsed as a JSON object and that object has no headline (`{}` and a schema-only object both do this). A missing, invalid, or non-object file would have printed the recorded metrics. [An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file). |
 | `--dry-run` still listed cells you `--only`'d out | Dry-run prints the full product. |
 | Bridged vs unbridged PF-1 hashes differ | Do not put the bridge in the suite YAML. Use `JUNIPER_SUITE_GRAFANA_BRIDGE=1`. |
 | Worktree ran worktree cascor against primary YAML | Set `JUNIPER_EXP_PROJECT_DIR` — the override wins over a resolving literal. |
@@ -6165,7 +6549,10 @@ A crossval `422` whose error names `X_full` is F-E1 of the plan: the env serves 
 
 ### Headline metrics (W0.4)
 
-`_headline_metrics` reads `artifacts/results/stats.json` and puts numeric columns on the registry row (`metrics`) when the cell runs; `aggregate` re-reads the same file for both `aggregate.csv` and the `REPORT.md` cell table, and uses the recorded `metrics` only when the run dir is gone. The recurrence paths are inside `stats["recurrence"]`, the block `stats_summary.build_stats` writes from the train response and the crossval payload:
+`_headline_metrics` reads `artifacts/results/stats.json` and puts numeric columns on the registry row (`metrics`) when the cell runs.
+`aggregate` re-reads the same file for both `aggregate.csv` and the `REPORT.md` cell table.
+It uses the recorded `metrics` when that read is not a JSON object, and the object's own headline when it is, including an object with no headline keys ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file)).
+The recurrence paths are inside `stats["recurrence"]`, the block `stats_summary.build_stats` writes from the train response and the crossval payload:
 
 | Column | Path under `stats.recurrence` |
 |--------|-------------------------------|
@@ -6176,7 +6563,10 @@ A crossval `422` whose error names `X_full` is F-E1 of the plan: the env serves 
 
 `dataset_descriptor` is the **train** response's `dataset` object — the same `n_windows` that `read_run_metrics._recurrence_fields` puts on the gate row and that `REPORT.md` prints on the recurrence **reported instead** line. It is not `stats.dataset.shapes.n_windows`, which is `meta.n_samples` over every partition: on the audited `equities_seq` AAPL cell the two were 1,346 (the train partition) and 1,698 (the `full` view the crossval ran on).
 
-A null or missing `crossval` writes **no** `cv_*` key, so the CSV cell is empty, not `0`. The test is `isinstance(value, (int, float))` with `bool` excluded, so `0.0` and `-18081.0` both reach the report; `None` and strings are dropped, and a missing, unreadable or non-object `stats.json` yields no columns at all.
+A null or missing `crossval` writes **no** `cv_*` key, so the CSV cell is empty, not `0`.
+The test is `isinstance(value, (int, float))` with `bool` excluded, so `0.0` and `-18081.0` both reach the report; `None` and strings are dropped.
+On the registry row written when the cell runs, a missing, unreadable, or non-object `stats.json` yields no columns: `_headline_metrics` returns `{}`.
+`aggregate` follows the other rule in [An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file).
 
 W0.4 fixed the recurrence half of register row `APD-ML-002` in [`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`](../notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md); the cascor half is below.
 
@@ -6201,7 +6591,9 @@ The cascor train / val half of register row `APD-ML-002` was fixed on 2026-10-26
 - **`final_accuracy` is gone.** It existed nowhere; a band naming it is refused at load (exit `2`), with that reason.
 - **NaN and ±inf fail any band**, and the columns print them as `nan` / `inf` (ruling 4).
 
-**Backfill.** `aggregate` re-reads every headline column from each cell's `stats.json` while the run dir is on disk (`_row_metrics`), the rule `_gate_metrics` already followed for `step_count`, so a suite aggregated before a column existed gains it without re-running anything:
+**Backfill.** `aggregate` re-reads every headline column from each cell's `stats.json` when that file is a JSON object (`_row_metrics`), the rule `_gate_metrics` already followed for `step_count`, so a suite aggregated before a column existed gains it without re-running anything.
+A readable object with no headline leaves the cells empty.
+A missing, unreadable, invalid, or non-object file prints the recorded `metrics` instead ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file)):
 
 ```bash
 python util/experiments/run_suite.py --reaggregate "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/suites/<SUITE_ID>"
@@ -6217,13 +6609,41 @@ python util/experiments/run_suite.py --reaggregate "${JUNIPER_EXP_RUN_ROOT:-$HOM
 jq '{train_accuracy: .cascor.final.train_accuracy, val_accuracy: .cascor.final.val_accuracy}' "$RUN_DIR/artifacts/results/stats.json"
 ```
 
+#### An empty stats.json is not a missing file
+
+`aggregate` and `--reaggregate` print `_row_metrics`. `_read_stats` chooses the source. It returns the parsed value only when `artifacts/results/stats.json` exists, `json.loads` succeeds, and the value is a JSON object. Every other outcome is `None`: the file is absent, the run dir is gone, the text is not JSON (a lone `{`), or the value is JSON and not an object (`[]`, `[1]`, `null`, `0`, `"stats"`, `true`).
+
+| What `_read_stats` returns | What `aggregate` prints |
+|----------------------------|-------------------------|
+| a dict, including `{}` and an object whose headline paths are absent | that object's headline. The registry row's `metrics` are not consulted. No headline keys means empty cells, except that a `cascor` block with no labelled `eval_scalars` (a `/1` file) still gets `test_*` re-derived from the run's `metrics_final.json`. |
+| `None` | the row's `metrics` when that value is a dict, otherwise `{}`. |
+
+`_headline_metrics` writes `metrics` when the cell runs. It never reads the registry.
+A `None` read becomes `{}` on that new row, and a readable object is reduced to its headline, which is `{}` when no headline key is present.
+`_row_metrics` returns that same headline for a readable object.
+It returns the registry's `metrics` only when the read is `None` and that value is a dict.
+A report can therefore show numbers the current file does not contain, and it can show an empty headline beside a registry row that still holds numbers.
+
+`{}` is falsy in Python. `[1]`, `"stats"`, and `true` are truthy. A `stats or None` selection treats a readable empty object as missing, and it passes a truthy non-object into `_stats_headline`, which calls `.get` on it. The implementation branches on `isinstance(stats, dict)` in `_read_stats`.
+
+A readable object wins when its only key is `schema`. `{"schema": "juniper-experiment-stats/1"}` beside a registry `metrics` of `{"val_accuracy": 0.5}` prints an empty headline. Deleting that file, or replacing it with `[]` or `null`, prints `0.5`.
+
+Pins in `tests/test_run_suite.py`, class `RowMetricsTest`: `test_a_readable_stats_file_wins_over_the_recorded_metrics`, `test_a_readable_file_with_no_headline_is_empty_even_if_the_row_recorded_some` (the schema-only object), `test_a_pruned_or_unreadable_run_falls_back_to_the_recorded_metrics` (missing file, `{`, gone directory), `test_no_run_dir_and_a_non_mapping_record_are_empty`, `test_an_empty_object_is_a_readable_file_with_no_headline` (`{}`), and `test_a_json_value_that_is_not_an_object_falls_back_to_the_recorded_metrics`.
+
+```bash
+jq -r 'type' "$RUN_DIR/artifacts/results/stats.json"
+jq -c '.metrics' "${JUNIPER_EXP_RUN_ROOT:-$HOME/.local/state/juniper-experiments}/suites/<SUITE_ID>/registry.jsonl"
+```
+
+`object` with no headline is an empty report. `array`, `null`, `number`, `string`, or `boolean` is the missing-file case, and the report used the registry's `metrics`.
+
 #### Held-out `test_*` columns (juniper-ml#2064)
 
 [juniper-ml#2064](https://github.com/pcalnon/juniper-ml/issues/2064) gives a cascor cell five held-out columns. They come from the labelled final-evaluation block `stats_summary.build_stats` writes as `cascor.eval_scalars` (cascor's `eval_metrics.final`; [Eval scalars: the final evaluation, labelled](#eval-scalars-the-final-evaluation-labelled-juniper-ml2064)), through `CASCOR_TEST_COLUMNS`, and **only when that block's `split` is `test`**:
 
 | Column | Key in the final-evaluation block |
 |--------|-----------------------------------|
-| `test_accuracy` | `accuracy`, new in [juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731), which is in no release on 2026-10-27 (PyPI's latest is 0.12.0). A service without it leaves this column empty while the other four fill. |
+| `test_accuracy` | `accuracy`, new in [juniper-cascor#731](https://github.com/pcalnon/juniper-cascor/pull/731), first released in juniper-cascor 0.13.0 (PyPI 2026-10-28). A service without it leaves this column empty while the other four fill. |
 | `test_f1` | `f1` |
 | `test_precision` | `precision` |
 | `test_recall` | `recall` |
@@ -6257,6 +6677,7 @@ jq '.cascor.eval_scalars | {split, n_samples, held_out, absent, accuracy, f1, ro
 | Plot skipped / matplotlib missing, outcome still `succeeded`, exit 1 | An acceptance failure that is not a phase. Not `degraded`. |
 | `make_baseline` refuses a degraded recurrence cell | Expected (`outcome != succeeded`); recurrence is not countable anyway. |
 | Cascor cell, headline accuracy columns empty | The suite was aggregated before 2026-10-26: re-render it with `--reaggregate SUITE_DIR` (see above). A cell whose run dir is gone keeps its recorded, empty `metrics`. |
+| `aggregate.csv` blank while the registry `metrics` are set | `stats.json` is a JSON object with no headline, including `{}`. A missing, invalid, or non-object file prints the recorded metrics. [An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file). |
 | A `test_*` band reads `absent` and fails the cell | The cell has no final evaluation of the test split: no test split was loaded (a `validation` block), there is no final evaluation, or, for `test_accuracy` alone, the cascor service predates juniper-cascor#731. Read `split` / `absent` in its `stats.json` `cascor.eval_scalars`. Use `mode: report` where that is expected. |
 | Cascor `test_*` columns empty on an older suite | `--reaggregate SUITE_DIR` re-derives them from each run's `metrics_final.json`. They stay empty where the final block scored validation or does not exist. |
 | A `final_accuracy` band refuses the suite, exit `2` | Removed 2026-10-26: no writer ever produced it. `val_accuracy` exists, and is selected-on. |
@@ -6611,7 +7032,7 @@ Both blocks always carry the same keys. With no final evaluation, every `eval_sc
 | `eval_metrics.final is null: cascor scores the finished model only after a run that completes successfully with a test or validation split loaded` | a run that stopped or failed, or one with no reportable split (cascor's golden `metrics_post_train.json` is this case) |
 | `the /v1/metrics body carries no eval_metrics block` / `no /v1/metrics body was collected` | an older service, or a failed collect |
 
-`summary.md` heads the section `### Eval scalars (final evaluation: test split, n=120, held out)`, or `(final evaluation: none)` with the reason and no number under it, and follows it with `### In-loop eval scalars (validation split, n=160, NOT held out: the in-loop split)`. A metric cascor could not compute prints `undefined (<reason>)`, and one the service does not report, such as `accuracy` before juniper-cascor#731, prints `not reported`. `eval_metrics.png` draws the final evaluation's bars beside the hatched in-loop ones, each labelled with the same caption, under a subtitle naming the eval scalars. With no final evaluation the subtitle gives the reason and says the in-loop bars are not the run's eval scalars. The plot is a recorded skip only when neither block holds a number.
+`summary.md` heads the section `### Eval scalars (final evaluation: test split, n=120, held out)`, or `(final evaluation: none)` with the reason and no number under it, and follows it with `### In-loop eval scalars (validation split, n=160, NOT held out: the in-loop split)`. A metric cascor could not compute prints `undefined (<reason>)`, and one the service does not report, such as `accuracy` before juniper-cascor#731, prints `not reported`. `eval_metrics.png` draws the final evaluation's bars beside the hatched in-loop ones, each labelled with the same caption, under a subtitle naming the eval scalars. With no final evaluation the subtitle gives the reason and says the in-loop bars are not the run's eval scalars. The plot is a recorded skip only when neither block holds a number. A reported `0` stays in `summary.md` and the plot, and in its `test_*` column when the final block's `split` is `test` — [A zero is a measured value](#a-zero-is-a-measured-value).
 
 **The boundary.** `cascor.eval_scalars` changed meaning, so the schema moved to `juniper-experiment-stats/2`. Files written as `/1` are not rewritten, and their `eval_scalars` are in-loop values. Check `schema` before comparing eval scalars across runs ([juniper-ml#2034](https://github.com/pcalnon/juniper-ml/issues/2034): provenance, not convention). `run_suite` re-derives a `/1` run's final block from its `metrics_final.json` for the `test_*` columns.
 
@@ -6622,6 +7043,21 @@ jq '.eval_metrics | {in_loop_split: .split, in_loop_n: .n_samples, final}' "$RUN
 ```
 
 Gate: `tests/test_stats_summary_eval_blocks.py`, on real `/v1/metrics` bodies from the run corpus (`tests/cascor_eval_fixtures.py`). The driver end to end is pinned by `tests/test_run_experiment.py` (`EvalScalarsEndToEndTest`).
+
+### A zero is a measured value
+
+`summary.md`, `eval_metrics.png`, and the `test_*` columns (a test-split final block only) keep a score of `0` or `0.0`. The summary line test is `value is not None` (`stats_summary._eval_lines`). The plot and the columns use `isinstance(value, (int, float))` and then exclude `bool`, because `bool` is a subclass of `int` (`plots_cascor.eval_metrics_series`, `run_suite._is_metric`). `_fmt` prints a float with `.6g`, so `0.0` renders as `0`. A bar label uses `.3f`, so the same zero is `0.000`.
+
+| Value in a labelled eval block | `summary.md` | `eval_metrics.png` | `aggregate.csv` / `REPORT.md` |
+|--------------------------------|--------------|--------------------|-------------------------------|
+| `0` or `0.0` | `- accuracy: 0` | a bar of height 0 | the `test_*` column is kept when the final block's `split` is `test` (a `validation` final block and the in-loop block fill no column) |
+| `False` or `True` | the words `False` or `True` | no bar (`True` is not a score of 1) | dropped |
+| `None` | `not reported`, or `undefined (<reason>)` when that name is in `undefined` | omitted from that series | dropped |
+| NaN or ±inf | `nan`, `inf` or `-inf` | included (they are floats) | kept, and any acceptance band fails them |
+
+`n_samples: 0` stays in the caption (`test split, n=0, held out`). A missing `n_samples` is the word `unknown`. A block whose values are only `None` or `bool` contributes no series; `0.0` does. The plot raises `ValueError` (a recorded skip) only when neither block contributes a series.
+
+`tests/test_stats_summary_eval_blocks.py` pins both plot edges: `EvalMetricsPlotTest.test_a_bool_or_a_null_is_no_bar` (`True` and an undefined accuracy are not bars) and `test_a_final_evaluation_with_every_metric_undefined_says_so` (a final block with `n_samples: 0` and every metric `null` (only `accuracy` carries an `undefined` reason) keeps the caption `n=0` and draws only the in-loop series). The zero cases are pinned by `test_a_zero_accuracy_is_reported_not_omitted` and `test_a_zero_score_is_a_bar_and_false_is_not` in the same file and by `test_a_zero_theta_is_a_value` in `tests/test_stats_summary_render.py`. Headline `0.0` is the `_is_metric` contract in [Cascor columns and `--reaggregate`](#cascor-columns-and---reaggregate-apd-ml-002).
 
 ### Step-duration honesty (cascor)
 
@@ -6640,7 +7076,7 @@ jq '.outcome.timings' "$RUN_DIR/artifacts/results/stats.json"
 jq '.recurrence.n_epochs, .dataset.shapes.n_windows' "$RUN_DIR/artifacts/results/stats.json"
 ```
 
-`theta.note` is `"explicit"` when the YAML sets `train.theta`. When it does not, the service fills θ from its `default_theta`, so the note is `"service default from service.default_theta; train.theta is unset"` (value: that default) when the YAML sets `service.default_theta`, and `"data-driven (resolved from per-window elapsed time)"` (value: null) when it sets neither. Sequence `n_windows` is input size (pinned: `test_build_stats_sequence_shapes_and_summary`).
+`theta.note` is `"explicit"` when the YAML sets `train.theta`. When it does not, the service fills θ from its `default_theta`, so the note is `"service default from service.default_theta; train.theta is unset"` (value: that default) when the YAML sets `service.default_theta`, and `"data-driven (resolved from per-window elapsed time)"` (value: null) when it sets neither. `theta_block` tests `is not None`, so `train.theta` of `0` or `0.0` is `"explicit"` and outranks `service.default_theta` (`summary.md` prints `theta: 0 (explicit)`, or `theta: 0.0 (explicit)` for `0.0`: the theta line does not go through `_fmt`). An unset `train.theta` with `service.default_theta: 0.0` is that service-default note and the value `0.0`. Data-driven is only the third branch. Sequence `n_windows` is input size (pinned: `test_build_stats_sequence_shapes_and_summary`).
 
 ### `scrape_confirmed` is tri-state
 
@@ -6676,6 +7112,9 @@ The driver now reports two named facts (`JUNIPER_EXP_PROMETHEUS_URL`, default `h
 | Compare `cascor.eval_scalars` across runs | Check `schema` first. A `/1` file's `eval_scalars` are the in-loop values; a `/2` file's are the final evaluation |
 | Treat `cascor.eval_scalars` as held out | Only when `held_out` is true (`split: test`). A `validation` final block is selected-on |
 | Read the in-loop block when `eval_scalars` is empty | It is a different quantity. `absent` says why there is no final evaluation |
+| Treat accuracy `0` as a missing score | `summary.md` prints `- accuracy: 0`, the plot draws a bar of height 0, and the `test_accuracy` column is kept when `split` is `test`. See [A zero is a measured value](#a-zero-is-a-measured-value) |
+| Read `precision: False` in `summary.md` as a score of 0 | The summary stringifies a bool. The plot and `aggregate.csv` drop every bool |
+| Read `theta: 0 (explicit)` as the service default | `train.theta` of `0` outranks `service.default_theta`. A default of `0.0` with `train.theta` unset is the service-default note |
 
 Coverage: `tests/test_run_experiment.py` (`StatsSummaryUnitTest` + e2e stats assertions for both kinds, `EvalScalarsEndToEndTest`), `tests/test_stats_summary_eval_blocks.py` (the labelled eval blocks). `util/` is not pre-commit-lint-gated; those unittests are the gate.
 
@@ -6737,7 +7176,7 @@ Canonical constants live in juniper-data `juniper_data/core/limits.py` (imported
 | Effective cap | `min(requested, settings.csv_import_max_bytes)` | A request may only **lower** the ceiling. The first draft let `max_bytes` win outright, which made the DoS bound caller-controlled; a generated client serialising schema defaults also sends `max_bytes=134217728` on every request and would have raised a *lower* operator ceiling. |
 | Enforcement | `stat` is a cheap pre-check; **the read is the bound** (`_read_capped_bytes(path, cap+1)`) | Trusting `stat` let a FIFO (`st_size == 0`) or a file that grew between stat and open be ingested without limit. `Settings.csv_import_max_bytes` carries `gt=0` because Python `read(-1)` is unbounded. |
 | Annotation | `DatasetMeta.truncation` (`truncated`, `reason=source_exceeded_byte_cap`, `bytes_read`, `bytes_total`, `cap_bytes`, `records_imported`) | Permanent, popped from the generate dict before checksum + NPZ persist (`TRUNCATION_META_KEY`, mirroring `core/scaling.py`). `None`/absent means complete — a caller must never distinguish "not truncated" from "the generator forgot to say". |
-| Path | `file_path` is relative to `JUNIPER_DATA_IMPORT_DIR` (default `/data/imports`) | Traversal outside that prefix is `ValueError`. This is **not** the 10 MB HTTP body limit. |
+| Path | `file_path` is relative to `JUNIPER_DATA_IMPORT_DIR` (default `/data/imports`) | Traversal outside that prefix is `ValueError`. This is **not** the 10 MiB HTTP body limit. |
 
 `InputTooLargeError` subclasses `ValueError` so a missed 422 mapping still lands 400, not 500.
 
@@ -8123,6 +8562,36 @@ Both `uses:` lines are SHA-pinned with a trailing `# vX.Y.Z` comment. Do not ret
 
 ---
 
+## Idle compaction and the tracked settings file
+
+The repository tracks [`settings.local.json`](../settings.local.json) at the repository root. Claude Code does not read that path. Its project-local file is `.claude/settings.local.json`. [`.gitignore`](../.gitignore) ignores `.claude/settings.local.json` and `**/.claude/settings.local.json`, and the custom-agent comment in that file says settings stay ignored. Nothing under `scripts/` or `util/` copies the root file into `.claude/`. `scripts/wake_the_claude.bash` does not pass `--settings`.
+
+On `main` the root file's keys are `permissions`, `enableAllProjectMcpServers`, and `enabledMcpjsonServers`. [juniper-ml#2271](https://github.com/pcalnon/juniper-ml/pull/2271) (`feat/disable-idle-compress-setting-for-claude-code`, closed unmerged on 2026-11-06) would have added `"idleCompaction": false` beside them, where it would not have loaded or changed a session's idle compaction. The `permissions` and MCP keys in the same root file are not loaded either.
+
+`util/claude_agent_guard.py` `check_file_tool` treats a settings write as in scope only when the parent directory is named `.claude` (the `settings_like` test). The root file is not that case, so the guard does not block an edit there.
+
+Put `"idleCompaction": false` in a file Claude Code loads:
+
+| File | Who it affects |
+|------|----------------|
+| `~/.claude/settings.json` | This machine, every project |
+| `.claude/settings.json` | Everyone who clones this repo, once it is committed. This repo's `.gitignore` (`.claude/*`) ignores it today, so committing it needs a `!.claude/settings.json` re-include or a forced add. A CLI session reads it from its primary working directory; a worktree session started from the desktop app reads the main checkout's copy |
+| `.claude/settings.local.json` | You, in this project only (a session in a git worktree reads the main checkout's copy); gitignored here |
+| Managed settings | The organization. A managed key is not overridden by the files above |
+
+Precedence, highest first: managed, command line, project local, shared project, user. Sources, fetched 2026-11-06 and re-checked 2026-11-07: [Settings files and precedence](https://code.claude.com/docs/en/settings) and [All settings](https://code.claude.com/docs/en/settings-reference) (`idleCompaction`, `autoCompactEnabled`).
+
+- `false` stops idle compaction. `true` compacts idle conversations that meet the conditions below. Default is `true`.
+- Claude Code before v2.1.290 ignores the key. On those versions set `autoCompactEnabled` to `false`. Turning auto-compact off also turns idle compaction off. `/compact` still works.
+- `DISABLE_AUTO_COMPACT` turns idle compaction off for one session, together with auto-compact. Whichever of that variable and `autoCompactEnabled` turns auto-compact off, the other cannot turn it back on.
+- Idle compaction runs only when every condition holds: an interactive terminal session, the VS Code chat panel, or a desktop Code tab on this machine or over SSH; auto-compact is on; the conversation uses the one-hour prompt-cache TTL; context has reached the token threshold (default 200,000); about an hour has passed since the last request and the computer stayed awake.
+- `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` sets that threshold. A positive whole number below `100000` is raised to `100000`.
+- `/config` → Idle compaction writes the choice to user settings and needs v2.1.302 or later. If another file already sets the key, change that file. Before v2.1.314, if feature flags cannot be fetched, idle compaction does not run.
+
+The gitignored `.claude/settings.local.json` is the live project file. Editing the tracked root copy does not change a session.
+
+---
+
 ## CodeQL Analysis
 
 [`.github/workflows/codeql.yml`](../.github/workflows/codeql.yml) is the Python semantic-SAST lane. It is **not** a Quality Gate `needs:` member — the check context **`Analyze (python)`** is promoted in the **branch ruleset** (`required_status_checks`), the same soak-then-promote path later jobs copy (see [Flood-Remediation CI Gates](#flood-remediation-ci-gates)). SARIF from the job also feeds the ruleset `code_scanning` rule (tool: CodeQL). There is no in-repo `tests/test_codeql_*.py` and no `.github/codeql-config.yml`; the live workflow file is the contract.
@@ -8316,13 +8785,92 @@ Available extras:
 | `sentry`     | `sentry-sdk[fastapi]>=2.0.0` |
 | `all`        | Both optional groups         |
 
-`configure_sentry` never sends frame-local variables (`include_local_variables=False`; there is no parameter to turn them back on), and its `before_send` hook also deletes frame `vars`. Published **0.4.0** still uses the SDK default (`True`). Why, and what a non-ASCII `X-API-Key` does to that path: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
+`configure_sentry` never sends frame-local variables (`include_local_variables=False`; there is no parameter to turn them back on), and its `before_send` hook also deletes frame `vars`. Both are first released in **0.4.1**. Why, and what a non-ASCII `X-API-Key` does to that path: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
 
 Publish and CI constraints:
 
 1. `ci-observability.yml` runs package tests on Python 3.12 and 3.13, then builds and validates the distribution.
 2. `publish-observability.yml` runs on `release: published` when the Release tag starts with `juniper-observability-v` (or on `workflow_dispatch`), builds from the subdirectory, publishes to TestPyPI, verifies installation, then publishes the same artifact to PyPI. It deliberately does **not** subscribe to `push: tags` — see [Independent Sibling Package Publish Pipelines](#independent-sibling-package-publish-pipelines).
 3. The publish workflow uses OIDC trusted publishing, GitHub-hosted `ubuntu-latest` runners, and SHA-pinned actions. If the runner type or pinned artifact actions change, verify compatibility before cutting a Release.
+
+### juniper-config-tools
+
+`juniper-config-tools` lives under `juniper-config-tools/` and publishes independently (`juniper-config-tools-v*` → `.github/workflows/publish-config-tools.yml`; CI: `ci-config-tools.yml`, Python 3.11–3.14, `--cov-fail-under=85`). It is the stdlib-only env-var alias helper (`os` and `warnings` only; no runtime dependencies). Since `juniper-ml` 0.6.0, the first release whose PyPI metadata declares it, it is aggregated under `[tools]` and `[all]` at `juniper-config-tools>=0.1.0,<0.2.0`. Package Python is `>=3.10`.
+
+| Field | Value |
+|-------|-------|
+| **PyPI name** | `juniper-config-tools` |
+| **Published version** | `0.1.1` (PyPI JSON and the 0.1.1 wheel file list, checked 2026-11-04). `0.1.0` remains on the index and has no `py.typed` |
+| **Tree version** | `0.1.1` on `main`, in `pyproject.toml` and `juniper_config_tools/_version.py` |
+| **Python** | `>=3.10` |
+| **Import** | `juniper_config_tools` |
+| **Public API** | `env_with_legacy_alias`, `__version__` (`__all__`) |
+| **CLI** | `python -m juniper_config_tools --version` only. No arguments exits 0. |
+| **Package docs** | [`../juniper-config-tools/README.md`](../juniper-config-tools/README.md) |
+
+The package exists because `juniper-cascor-worker` cannot depend on `juniper-observability` (that package requires pydantic) without breaking the no-Pydantic-at-runtime invariant (juniper-ml#168). Services that already use pydantic-settings keep their field validators. This helper is the constrained-runtime case, not a replacement for those validators.
+
+#### What `env_with_legacy_alias` returns
+
+```python
+from juniper_config_tools import env_with_legacy_alias
+
+url = env_with_legacy_alias(
+    "JUNIPER_CASCOR_WORKER_SERVER_URL",  # canonical name, always first
+    "CASCOR_SERVER_URL",                  # one legacy alias, or None
+    default="",                           # used only when neither name is set
+)
+```
+
+`env_with_legacy_alias(new_name, legacy_name=None, default=None) -> str | None` reads `os.environ` only. There is no mapping argument. `legacy_name=None` disables the fallback; the helper does not guess another variable name.
+
+| Environment | Returns | Warning |
+|-------------|---------|---------|
+| `new_name` is set, including `""` | that value. The legacy name is not read. | no |
+| only `legacy_name` is set, including `""` | that value | one `DeprecationWarning` |
+| both set | `new_name`'s value. The legacy value is ignored. | no |
+| neither set | `default` (`None` when the argument is omitted) | no |
+
+The warning text is `f"{legacy_name} is deprecated; use {new_name} instead."`, emitted with `stacklevel=2`, so the reported file is the caller, not `_env_aliases.py`.
+
+#### Operator pitfalls
+
+**An empty string is set.** `os.environ.get` returns `""`, and `""` is not `None`, so the helper returns `""`. It does not fall through to the legacy name, and it does not return `default`. An empty canonical value also suppresses the warning even when the legacy name is set. An empty legacy value still warns and returns `""`. Pins: `test_canonical_empty_string_is_returned` and `test_legacy_empty_string_is_returned` in `juniper-config-tools/tests/test_env_with_legacy_alias.py`.
+
+**The deprecation warning is silent in library code.** On Python 3.12 the default filters are `default::DeprecationWarning:__main__` and then `ignore::DeprecationWarning`. `stacklevel=2` attributes the warning to the caller. A call from any module other than `__main__` is ignored: the legacy value is still returned, and nothing is printed. A call from a script (`__main__`) is shown.
+
+The default action is also once per location, so a loop at one call site emits at most one warning even when the filter is opened. The package tests call `warnings.simplefilter("always")`, which is why they always see the warning. To see it from a service, run `python -W default` or set `PYTHONWARNINGS=default`.
+
+**Both names set is silent.** The canonical value wins. There is no warning that the legacy name is still present in the environment.
+
+**Do not chain hops with `or` when `""` is a real value.** The implementation allows one legacy name. The module docstring's multi-hop recipe is `env_with_legacy_alias("NEW", "MID") or env_with_legacy_alias("MID", "OLD")`. There is no variadic form.
+
+`""` is falsy, so an explicit empty `NEW` still evaluates the second call. That call treats `MID` as the canonical name. If `MID` is unset and `OLD` is set, the expression returns `OLD` and warns `OLD is deprecated; use MID instead`, and it never mentions `NEW`. Chain on `is not None`:
+
+```python
+value = env_with_legacy_alias("NEW", "MID")
+if value is None:
+    value = env_with_legacy_alias("MID", "OLD")
+```
+
+#### PyPI 0.1.1 ships `py.typed`; 0.1.0 does not
+
+PEP 561 needs a `py.typed` marker inside the installed distribution. The git tree has had all three of these since juniper-ml#1237:
+
+- the empty marker file `juniper_config_tools/py.typed`
+- `[tool.setuptools.package-data]` `juniper_config_tools = ["py.typed"]`
+- the classifier `Typing :: Typed`
+
+The declaration is not what ships the file today: setuptools' `build_py` adds `py.typed` and `*.pyi` implicitly (`_IMPLICIT_DATA_FILES`), so a build with the `package-data` entry removed still puts the marker in the wheel (setuptools 81.0.0 on the Linux host). The `0.1.0` wheel lacks it because the file did not exist yet: tag `juniper-config-tools-v0.1.0` has no `py.typed`. `tests/test_subpackage_py_typed.py` pins the file, the package-data entry, and the classifier for all six in-repo sub-packages. It also fails if a `package-data` table swallows `packages.find` keys (`include`, `exclude`, `where`, `namespaces`), which is how a mid-table header once packaged `juniper-model-core`'s tests.
+
+The wheel on PyPI at `juniper-config-tools==0.1.0` (file list checked 2026-11-04) contains `__init__.py`, `__main__.py`, `_env_aliases.py`, `_version.py`, and dist-info. It does not contain `py.typed`. That release's classifiers do not include `Typing :: Typed`. A type checker then skips the module (`import-untyped`) and `env_with_legacy_alias` is `Any`, even though `_env_aliases.py` annotates the function.
+
+`juniper-config-tools==0.1.1` (GitHub Release `juniper-config-tools-v0.1.1`, 2026-11-04) adds `juniper_config_tools/py.typed` and the classifier `Typing :: Typed`. The helper's behavior is unchanged. `pip install juniper-ml[tools]` accepts `>=0.1.0,<0.2.0` and resolves `0.1.1`, the newest match, so a fresh install is typed. A pin to `==0.1.0` still installs the untyped wheel. An editable install of this repo already has the marker on disk.
+
+```bash
+python3 -m pytest juniper-config-tools/tests
+python3 -m unittest -v tests/test_subpackage_py_typed.py
+```
 
 ### juniper-service-core
 
@@ -8339,13 +8887,32 @@ Publish and CI constraints:
 
 #### HTTP middleware contracts
 
-- **CR-024 request body limit.** `RequestBodyLimitMiddleware` caps mutating bodies (default 10 MiB). `Content-Length` is an **early-reject hint only**: a declared length over the max returns 413 immediately and an unparseable one returns 400 `Invalid Content-Length header`, but `POST` / `PUT` / `PATCH` are then **always** stream-read with a cumulative cap, so an under-declared `Content-Length` or a chunked body with none still hits 413. The read body is cached on `request._body` for downstream handlers (BUG-CC-15). Skipping the stream when the declared length is present-and-small is the classic bypass — do not reintroduce it.
+- **CR-024 request body limit.** `RequestBodyLimitMiddleware` caps mutating bodies (default 10 MiB). `Content-Length` is an **early-reject hint only**: a declared length over the max returns 413 immediately and an unparseable one returns 400 `Invalid Content-Length header`, but `POST` / `PUT` / `PATCH` are then **always** stream-read with a cumulative cap, so an under-declared `Content-Length` (at the ASGI layer; under uvicorn the parser truncates the body to the declared length first) or a chunked body with none still hits 413. The read body is cached on `request._body` for downstream handlers (BUG-CC-15). Skipping the stream when the declared length is present-and-small is the classic bypass — do not reintroduce it.
 - **Auth before rate limit.** When API-key auth is enabled, `APIKeyAuth` runs before the rate limiter, so a 401 never consumes a token.
 - **429 header passthrough.** `RateLimiter` raises `HTTPException` carrying `Retry-After` and the `X-RateLimit-*` headers; `SecurityMiddleware.dispatch` catches it and rebuilds `JSONResponse(..., headers=exc.headers)`. Dropping those headers makes well-behaved clients retry immediately, and `RateLimiter` unit tests alone do not exercise the catch path.
 - **Exempt paths.** `EXEMPT_PATHS` covers `/v1/health`, `/v1/health/live`, `/v1/health/ready`, `/docs`, `/openapi.json`, `/redoc`, and both literal `/metrics` forms (gated instead by the parallel `MetricsAuthMiddleware` allowlist). WebSocket upgrades are not intercepted by `BaseHTTPMiddleware`, so `/ws/*` is inherently outside this path.
 - **Blank API keys.** `APIKeyAuth` filters blank / whitespace-only configured keys (the `auth_posture.real_keys` rule), so an empty secret file cannot enable auth that would then accept an empty `X-API-Key`.
 - **Rate-limit keying.** `RateLimiter._get_key` buckets by `key:<api_key>` when the request is authenticated, otherwise by `ip:<client.host>` — falling back to `ip:unknown` when Starlette reports no client. Authenticated callers therefore get their own budget rather than sharing one per source IP (and a shared NAT egress cannot exhaust an authenticated client's budget).
 - **Worker mTLS half-config.** `TLSConfig` (`juniper_service_core.workers.security`) fails closed: with TLS enabled and only one of `cert_file` / `key_file` set, it raises `ValueError` naming both paths, rather than returning a bare `SSLContext` with neither chain nor key. A silent half-config is the dangerous shape — it looks "TLS enabled" to callers while presenting nothing.
+- **Failed-auth source cap.** The 10-failures / 60-second budget is per IP. The map itself is pruned to 10,000 source IPs every 100 failures (it can reach 10,100) and drops the oldest `window_start` rows. [The failed-auth table drops the oldest source IPs](#the-failed-auth-table-drops-the-oldest-source-ips).
+
+#### A body that fills the cap is delivered
+
+`RequestBodyLimitMiddleware` (`juniper_service_core/middleware.py`) admits a body whose size is exactly `max_bytes`. Both checks use `>`: the `Content-Length` early reject (`declared_length > self._max_bytes`) and the cumulative stream read (`size > self._max_bytes`). One more byte is HTTP 413 `{"detail": "Request body too large"}`, and the route is not called.
+
+The default cap is `_DEFAULT_MAX_REQUEST_BODY_BYTES`, 10 MiB (`10 * 1024 * 1024`). A caller passes a different `max_bytes` to the constructor. A cap of `0` admits an empty body and rejects the first byte. This is the HTTP body cap. It is not the 100 MiB worker binary-frame cap, and it is not the CSV import path cap.
+
+| Check | Delivered | 413 |
+|-------|-----------|-----|
+| `Content-Length`, any method | The declared integer is less than or equal to `max_bytes`. A non-integer header is **400** `Invalid Content-Length header`, and the route is not called. | The declared integer is greater than `max_bytes`. The response is sent before the body is read, including when the next chunk is empty. |
+| Stream read, `POST` / `PUT` / `PATCH` only | The chunks sum to at most `max_bytes`. They are joined onto `request._body`, and the route sees that one buffer. A missing or smaller `Content-Length` does not change the count: a real body that still fits is delivered. A declared length equal to the cap does not skip the read. | The chunk that pushes the running total past `max_bytes`. That chunk is not cached. |
+| Any other method | No stream read. A body with no `Content-Length`, or a declared length within the cap, is not measured against the cap. | Only the declared-length row above. |
+
+This table is the middleware at the ASGI layer (`TestClient`, direct ASGI). Under uvicorn the HTTP parser answers a non-integer `Content-Length` itself (400 `Invalid HTTP request received.` under httptools) and delivers only the declared length of an under-declared body, before this middleware runs.
+
+The body-limit tests in `test_middleware.py` and `test_toplevel_coverage.py` send a payload strictly inside the cap (`5` bytes at `100`, `20` bytes of a chunked body at `100`) or strictly outside it (`50` bytes at `10`, and an under-declared `Content-Length: 5` whose real body is `50` bytes at a cap of `10`). A comparison that rejects equality stays green against those tests and starts failing clients that fill the cap. `juniper-service-core/tests/test_request_body_limit_boundary.py` pins the equality arm: a body, a `Content-Length` and chunks that reach the cap exactly are delivered, and one byte over is a 413 before the route runs.
+
+Gate: `juniper-service-core/tests/test_middleware.py` (`test_body_limit_allows_within_limit`, `test_body_limit_allows_put_within_limit`, `test_body_limit_rejects_oversized_post`, `test_body_limit_rejects_oversized_put_and_patch`, `test_body_limit_rejects_invalid_content_length`, `test_body_limit_rejects_underdeclared_content_length`) and `juniper-service-core/tests/test_toplevel_coverage.py` (`test_body_limit_streams_within_cap_when_no_content_length`, `test_body_limit_rejects_oversized_chunked_stream`) and `juniper-service-core/tests/test_request_body_limit_boundary.py` (the equality arm).
 
 #### Non-ASCII API keys and Sentry frame locals
 
@@ -8356,7 +8923,7 @@ Publish and CI constraints:
 | HTTP | **401** `Invalid API key.` | `SecurityMiddleware` catches `HTTPException` and, for 401 only, records the source IP on `FailedAuthThrottle` |
 | WebSocket | close **4001** `Authentication required`, before `accept()` | `ws_authenticate` calls the same `validate`. `BaseHTTPMiddleware` does not see the upgrade, so the HTTP throttle does not cover `/ws/*` |
 
-`FailedAuthThrottle` defaults to **10** failed attempts per source IP per **60** seconds. Once that many 401s are recorded, a further request from that IP inside the window is **429** with `Retry-After`, and the comparison is not run. Only an HTTP 401 is recorded. A 500 is not.
+`FailedAuthThrottle` defaults to **10** failed attempts per source IP per **60** seconds. Once that many 401s are recorded, a further request from that IP inside the window is **429** with `Retry-After`, and the comparison is not run. Only an HTTP 401 is recorded. A 500 is not. A burst of distinct source IPs is not bounded by that window: past 10,000 rows the map drops the oldest. [The failed-auth table drops the oldest source IPs](#the-failed-auth-table-drops-the-oldest-source-ips).
 
 **Why the compare is bytes.** `hmac.compare_digest` raises `TypeError` when either `str` argument holds a non-ASCII character. Starlette decodes header bytes as latin-1, so any byte above `0x7f` arrives at `validate` as a non-ASCII `str`. An anonymous `X-API-Key: \xa0` raised inside the comparison (found by the validation of juniper-canopy#683, 2026-09-24, per the comment in `security.py`).
 
@@ -8364,17 +8931,46 @@ The exception is not an `HTTPException`, so it left `SecurityMiddleware` as a **
 
 **Why `surrogatepass`.** It is the built-in UTF-8 error handler that is both total and injective. A lone surrogate (for example `"\ud800"` from a JSON-decoded config value) encodes instead of raising, and no two distinct strings share an encoding. `surrogateescape` fails both tests: it raises on `"\ud800"`, and it maps `"\xe9"` and `"\udcc3\udca9"` onto the same bytes. Strict UTF-8 raises on a lone surrogate. Either of those would turn a config value into an exception again.
 
-**What Sentry received.** The SDK default is `include_local_variables=True`, which snapshots every frame's locals into the error event. `EventScrubber` redacts locals by **name**. `api_key` (the presented key) is on its default denylist; the local holding the **configured** key is not — `k` in published 0.7.0's generator expression, `candidate` in the loop that replaced it (juniper-ml#1974, unreleased) and in juniper-data's copy. No name list covers the next local.
+**What Sentry received.** The SDK default is `include_local_variables=True`, which snapshots every frame's locals into the error event. `EventScrubber` redacts locals by **name**. `api_key` (the presented key) is on its default denylist; the local holding the **configured** key is not. No name list covers the next local.
 
 `juniper_observability.sentry.configure_sentry` therefore passes `include_local_variables=False`, and there is deliberately no parameter to turn capture back on. The `before_send` hook `_strip_sensitive_headers` also deletes `vars` from each `exception.values[*].stacktrace`, each `threads.values[*].stacktrace`, and a top-level `stacktrace`.
 
 The option does not cover the opt-in `PureEvalIntegration` (sentry-sdk 2.58.0): its event processor writes frame `vars` without consulting the flag, and processors run before `before_send`. The hook keeps the name `_strip_sensitive_headers` because juniper-data and juniper-cascor import it by that name.
 
-**Published wheels do not have this yet** (PyPI, checked 2026-10-08). `juniper-service-core` is still **0.7.0** and `juniper-observability` is still **0.4.0**; both notes live under `[Unreleased]` (juniper-ml#2086). A service installed from those wheels still 500s on a non-ASCII key, still fails to throttle that flood, and can still send the configured key to Sentry. The fix is on `main` only. Do not catch the `TypeError`, and do not re-enable frame locals to see why the 500 happened — that is the leak.
+**First releases with the fix** (read in the PyPI wheels, 2026-11-07): `juniper-service-core` **0.7.1** compares keys as bytes; `juniper-observability` **0.4.1** passes `include_local_variables=False` and deletes frame `vars`. Do not catch the `TypeError`, and do not re-enable frame locals to see why the 500 happened — that is the leak.
 
-juniper-data carries its own `APIKeyAuth` (`juniper_data/api/security.py`). The same byte compare landed there in juniper-data#440 (merged 2026-09-25), after juniper-data 0.16.0 was published, so no juniper-data release carries it yet; juniper-data's `configure_sentry` is juniper-observability's.
+juniper-data, juniper-cascor and juniper-canopy carry their own `APIKeyAuth` (`juniper_data/api/security.py`; juniper-cascor's `src/api/security.py`; juniper-canopy's `src/security.py`). The byte compare is first released in juniper-data **0.17.0** (juniper-data#440), juniper-cascor **0.12.0** and juniper-canopy **0.9.0**.
 
 Gate: `juniper-service-core/tests/test_security.py`, `tests/test_middleware.py` (`test_security_middleware_401_not_500_on_a_non_ascii_key`, `test_non_ascii_key_failures_are_counted_by_the_throttle`), `tests/test_t2_websocket.py` (`test_ws_authenticate_closes_4001_on_a_non_ascii_key`); `juniper-observability/tests/test_sentry.py`.
+
+#### The failed-auth table drops the oldest source IPs
+
+`FailedAuthThrottle` (`juniper_service_core/security.py`) maps each source IP to `(count, window_start)`. The default budget is unchanged: **10** failures in **60** seconds, then HTTP **429** with `Retry-After`. Two class constants bound the map. Neither is a constructor argument. This is 0.7.1's table: in 0.6.0 and 0.7.0 the map was a `defaultdict`, so `check()` inserted every unseen source IP and the table had no high-water mark.
+
+| Constant | Value | When it applies |
+|----------|-------|-----------------|
+| `_CLEANUP_INTERVAL` | 100 recorded failures | Prune runs at the start of that `record_failure`, before the new row is stored |
+| `_MAX_ENTRIES` | 10,000 source IPs | After the expiry pass, extra rows are deleted, oldest `window_start` first, until 10,000 remain |
+
+Expiry removes a row whose `window_start` is older than `now - (2 * window_seconds)`. A scan that presents a new source address on every request, all inside that horizon, does not expire. Only the cap bounds that table.
+
+The failure that triggered the prune is stored afterwards.
+
+- Right after a prune that dropped rows, the table holds **10,001** (the 10,000 kept, plus the triggering failure).
+- It can then record 99 more failures before the next prune. The high-water mark is **10,100**.
+- The first crossing peaks at 10,099 stored rows. That prune sees 10,099, because the 10,000th record's prune still ran while the table was under the cap, and it drops 99. Later prunes see 10,100 and drop 100. Both leave 10,001 after the store.
+
+`check()` does not insert and does not prune. An evicted IP reads as not blocked, and the lookup does not put it back. The next HTTP 401 opens a new window at count 1. Eviction resets the budget. It is not a window rollover.
+
+Oldest means the earliest `window_start`, not the least recent request. A repeat failure inside the same window increments the count and keeps the original timestamp. An IP that opened its window earlier is dropped before an IP that failed once just now, even when the earlier IP is still inside the window and had already reached 10.
+
+Open auth and valid-key traffic do not grow this table. The map is a plain `dict`, both reads use `.get`, and prune runs only from `record_failure`. `enabled=False` records nothing. Each process keeps its own table, the same constraint the class states for the failure budget.
+
+`RateLimiter` uses the same 10,000 cap and the same oldest-`window_start` drop, but it prunes from `check()` every 100 checks, and `check()` inserts. Allowed traffic can evict rate-limit keys. It cannot evict failed-auth rows.
+
+The expiry test does not pin the cap; `test_failed_auth_throttle_caps_live_entries_by_dropping_the_oldest` in `juniper-service-core/tests/test_middleware.py` does. `test_failed_auth_throttle_prunes_expired_entries` sets `window_seconds=0` and records `_CLEANUP_INTERVAL + 10` (110) failures into 110 distinct addresses (`10.0.0.{i % 255}` never wraps). Every stored row is already expired when prune runs, and the table never nears 10,000, so deleting the hard-cap branch leaves that test green.
+
+The read-only probe is pinned by `test_failed_auth_throttle_check_does_not_track_unseen_ips` (1,000 unseen addresses leave the table empty). `RateLimiter`'s `test_maybe_cleanup_enforces_hard_cap` (in `juniper-service-core/tests/test_toplevel_coverage.py`) does pin oldest-drop, by shrinking `_MAX_ENTRIES` and calling `_maybe_cleanup` directly.
 
 #### Control WS log sanitizer
 
@@ -8389,16 +8985,118 @@ Sanitizing flattens log *records* only — it does not change handshake outcomes
 
 #### Control WS rate limiting (`ws_control_rate_limit_per_sec`)
 
-Control-plane WebSockets build a per-connection `LeakyBucket` from `ws_control_rate_limit_per_sec` (default `10`); a denied command acks `rate_limited` with `data.retry_after` from `LeakyBucket.retry_after`.
+Control-plane WebSockets build a per-connection `LeakyBucket` from `ws_control_rate_limit_per_sec` (default `10`). A denied command acks `rate_limited` with `data.result.retry_after` from `LeakyBucket.retry_after`.
+The class name says leaky bucket. The code is a token bucket, so a connection may spend a banked burst at once.
+The cap, the exact-token admit, Origin membership, and when a cooldown block lifts are [Control channel burst, origin match, and cooldown edges](#control-channel-burst-origin-match-and-cooldown-edges).
 
 | Setting | Effect |
 |---------|--------|
-| `> 0` (default) | Normal refill; `retry_after` is roughly the seconds until one token |
+| `> 0` (default) | Refill at that many tokens per second, banked up to the same number. `retry_after` is the deficit until one token, rounded to 0.1 s |
 | `= 0` | No refill — `retry_after` returns `3600.0` (hard backoff) rather than dividing by zero and tearing down the receive loop |
 
 A client seeing a very large `retry_after` on a zero limit is the expected hard-backoff path; raise the setting if you want faster refill.
 
-Repeated *rejected handshakes* are throttled separately by `HandshakeCooldown`, which tracks rejections per client IP: more than `max_rejections` (default **10**) within `window_sec` (default **60**) blocks that IP for `block_sec` (default **300**, i.e. 5 minutes) and closes further attempts with **4029** `Too many rejected handshakes`. The state is in memory only, so a server restart clears it — a deliberate NAT-hostile escape hatch, since many clients can share a single egress IP.
+Repeated *rejected handshakes* are throttled separately by `HandshakeCooldown`, one map per app, keyed by client IP.
+The **Nth** rejection blocks, where N is `ws_control_cooldown_rejections` (default **10**): the check is `len >= max_rejections` after the new stamp is stored, so the 10th rejection blocks and the 11th is not required.
+The window is `ws_control_cooldown_window_sec` (default **60**) and the block is `ws_control_cooldown_block_sec` (default **300**). Further attempts close **4029** `Too many rejected handshakes`.
+The map is in memory only, so a server restart clears it. That is a deliberate NAT-hostile escape hatch, since many clients can share one egress IP.
+
+#### Control channel burst, origin match, and cooldown edges
+
+`control_stream_handler` in `juniper_service_core.websocket.control_stream` is `/ws/control`. The handshake gates run before `accept()`. Commands then go through `LeakyBucket.try_acquire`.
+
+**Burst.** The handler passes the same number as capacity and as refill rate: `LeakyBucket(capacity=rate_limit, refill_rate=float(rate_limit))`.
+`try_acquire` sets the balance to `min(capacity, tokens + elapsed * rate)` and admits only when that balance is **at least 1**, then subtracts 1.
+A long idle banks at most `capacity`. It does not bank `elapsed * rate` past the cap. A refill that lands on exactly 1.0 is admitted and leaves 0.
+A denial does not subtract: a half token stays a half token.
+`retry_after` is `0.0` when a token is already available, `3600.0` when `refill_rate <= 0`, otherwise `round((1 - tokens) / rate, 1)`. A deficit of 0.88 s reports **0.9**.
+
+Pong frames do not spend a token. Keepalive is not a command. An oversize frame closes **1009** `Message too large` before the command handler, so it does not spend one either. An unknown command does spend one, because the acquire runs before the command-name check. `capacity` of 0 never admits: `min(0, …)` stays under 1.
+
+**Origin.** `validate_control_origin` runs only when `ws_control_allowed_origins` is a non-empty list. The default is `None`, which skips the check.
+With a list set, the header and each allowlist entry are lowercased and stripped of trailing `/`. Membership is exact.
+A missing Origin, or one that strips to empty (`/`, `///`), is rejected before that membership test, including when an allowlist entry strips to the same empty string.
+A longer host is not a prefix or a suffix: `https://app.example.evil` and `https://evil.app.example` both miss `https://app.example`. `HTTPS://App.Example/` matches `https://app.example`.
+A reject closes **4003** `Origin not allowed`.
+
+**Cooldown.** `record_rejection` keeps a stamp only when it is strictly newer than `now - window_sec`. A rejection aged exactly 60 s does not count. One a millisecond inside the window does.
+On the Nth kept stamp the IP is blocked until `now + block_sec` and that IP's history is cleared.
+`is_blocked` stays true only while `now < blocked_until`. At that exact instant the entry is removed and the handshake is allowed.
+`get_block_remaining` returns `None` at that instant and removes the entry. Slightly earlier it returns the remainder rounded to one decimal: 0.06 s remaining reports **0.1**. Under 0.05 s it reports **0.0** while the IP is still blocked, so the 4029 WARNING can print `remaining=0.0s`; from the exact end on it returns `None`.
+Every **50** recorded rejections, an IP whose every stamp is strictly older than `2 * window_sec` is dropped. A stamp aged exactly two windows stays.
+
+What increments the counter: a failed API-key check, and a failed Origin check. What does not: the kill switch (`disable_ws_control_endpoint`, close **1013** `Control endpoint disabled`), and an IP that is already blocked (close **4029**, no extra stamp). A socket with no client address is stored as `"unknown"`, and every such socket shares that one key.
+
+**What the browser sees.** All four refusals close before `accept()`: kill switch **1013**, cooldown **4029**, auth **4001**, Origin **4003**. Uvicorn turns a pre-accept close into HTTP **403** and drops the code and the reason (`APD-SVCCORE-016`). The code is not logged either: uvicorn's line is `"WebSocket /ws/control" 403`. The handler logs WARNING `blocked (cooldown)` for a 4029 and INFO `not in allowlist` / `no Origin header` for a 4003; the INFO lines appear only when the service logs `juniper_service_core` at INFO, because neither service-core nor uvicorn's default logging config gives it a handler. The kill switch (1013) and a failed key (4001) log nothing, except the rejection that reaches `ws_control_cooldown_rejections` (default the 10th): it logs WARNING `blocked for 300s (cooldown triggered)` and still closes 4001 or 4003; the next attempt is the 4029. Accepting first so the code is visible on the wire is the regression the handler is written to prevent.
+
+| Symptom | What it is |
+|---------|------------|
+| A burst of `capacity` commands, then `rate_limited` | Expected. Idle time does not raise the burst above `capacity`. |
+| `retry_after` is 3600 | `ws_control_rate_limit_per_sec` is 0, or the bucket was built with a non-positive refill rate. |
+| `retry_after` is 0.9 after a short wait | Rounded to 0.1 s. A deficit of 0.88 s reports 0.9. |
+| Origin rejected though the host "contains" an allowed origin | Exact match after lowercasing and stripping trailing slashes. Not a prefix or a suffix. |
+| Allowlist `["/"]` and Origin `/` still rejected | An origin that strips to empty fails closed before membership. |
+| The 10th bad handshake blocks the IP for 5 minutes | Default is `>= 10` inside 60 s, then 300 s. A stamp aged exactly 60 s does not count. |
+| The block is gone at its exact end, and remaining time is not 0 | Hold is `now < blocked_until`. Equality clears the entry and `get_block_remaining` is `None`. Under 0.05 s before the end it already reports `0.0`, while the IP is still blocked. |
+| The client sees HTTP 403, not close 4029 or 4003 | Pre-accept close; the code is not logged. WARNING `blocked (cooldown)` is 4029; INFO `not in allowlist` / `no Origin header` (visible only with an INFO handler) is 4003. WARNING `blocked for 300s (cooldown triggered)` belongs to the 4001 or 4003 attempt that started the block, not to a 4029. No other handler line points at the kill switch (1013) or a failed key (4001). |
+| Every client behind one NAT is blocked together | The key is the source IP. A missing address shares `"unknown"`. A restart clears the map. |
+
+Source: `juniper-service-core/juniper_service_core/websocket/control_security.py` and `control_stream.py`. Tests: `juniper-service-core/tests/test_websocket_control_security.py`, `test_websocket_control_stream.py`.
+
+#### A WebSocket text frame that fills 65536 characters is delivered
+
+`/ws/control` (`control_stream.py`, `_MAX_MESSAGE_SIZE`) and `/ws/workers` JSON (`worker_stream.py`, `_MAX_JSON_SIZE`) both use `len(raw) > 65536`. A decoded text frame of **exactly 65536 characters** is handled. A frame of **65537 characters** is over the cap. `len` counts Unicode code points of the string the server already decoded (`receive_text()`; `receive()["text"]` in the worker message loop). 65536 `é` characters pass this check and are 131072 UTF-8 bytes.
+
+The length check cannot run before that string exists. This package does not set uvicorn's `ws_max_size`. `uvicorn.config.Config` defaults it to `16 * 1024 * 1024` (16 MiB; confirmed on uvicorn 0.54.0). A frame above that default never reaches these `len` checks.
+
+| Channel | 65536 characters | 65537 characters |
+|---------|------------------|------------------|
+| `/ws/control` | The command is dispatched (`success` when the executor accepts it). A `pong` sets the keepalive event and spends no rate-limit token. | `command_response` with `data.error` `Message too large`, then close **1009** `Message too large`. The following frame on that socket stays unread. The command bucket is not charged. An over-cap `pong` takes this close, so it does not refresh the keepalive. |
+| `/ws/workers` registration | Valid JSON registers and the server sends `registration_ack`. | `error` `Registration message too large`, close **4005** `Message too large`. No `registration_ack`. |
+| `/ws/workers` message loop | A heartbeat (and any other in-cap JSON object) is handled. | `error` `Message too large`, and the socket stays open. The next frame is read. |
+| `/ws/training` | `training_stream.py` does not measure text length. The server `ws_max_size` is the limit. | Same. |
+
+Binary attachments on `/ws/workers` use the same `>` test, on `len(bytes)`:
+
+| Check | Admitted | Over the cap |
+|-------|----------|--------------|
+| One frame | `len == 104857600` (`100 * 1024 * 1024`) is kept and can be submitted | One more byte: `Binary frame too large`, and `release_worker_tasks(..., free_worker=True)` runs |
+| Sum of one result | `total == 104857600` is submitted. `_MAX_TOTAL_BINARY_SIZE` equals the per-frame cap and is a separate constant | One byte over: `Binary attachments exceed total size limit`. That return leaves the task assigned |
+| Declared names | Exactly **32** attachments are received | **33** is `Too many binary attachments` before the first binary `receive()` |
+
+On a stock uvicorn the per-frame 100 MiB check never fires: the server has already closed the connection (**1009**) on any frame over 16 MiB. The 100 MiB total still can: a result may declare 32 attachments, and seven of 16 MiB exceed it. The per-frame allocation that can actually happen is `ws_max_size`.
+
+Shipped tests pin the control over-cap close (`"x" * (65536 + 1)` → 1009) and that a second over-cap frame is never read (`test_recv_loop_rejects_oversized_message`, `test_oversized_frame_cannot_be_repeated_on_one_connection` in `juniper-service-core/tests/test_websocket_control_stream.py`). They do not pin the equality arm; `juniper-service-core/tests/test_ws_frame_exact_cap.py` does: a 65536-character control command, pong, registration and heartbeat are each handled, and one character more closes the control channel or the registration, or is refused on an open worker connection, which stays up.
+
+#### A task assigned for exactly the reassignment timeout stays assigned
+
+`WorkerCoordinator._check_task_timeouts` (`juniper_service_core/workers/coordinator.py`) requeues a task only when `assigned_worker_id` is set, `completed` is false, and `(now - dispatched_at) > task_reassignment_timeout`. The constructor default is **120.0** seconds. An age of exactly 120.0 seconds stays assigned: no warning, `tasks_failed` unchanged, and the worker stays busy. Any larger age takes the requeue path. A probe with `timeout + 1e-6` requeued; the equality case did not.
+
+`dispatched_at` is written in `get_next_assignment`, when a worker is handed the task. A task still sitting on `_unassigned_tasks` is not on this clock. An accepted result sets `completed` (`submit_result`) and the sweep skips it, however old the stamp is. At an age equal to the timeout the assignee can still submit, and that result is accepted.
+
+A configured timeout of **0** keeps a task dispatched at that same instant (`0 > 0` is false). An age of one second on that timeout requeues.
+
+The sweep runs on the health-monitor thread, and only after `start_monitor()`. That loop waits `health_check_interval` (default **10.0** seconds) before every pass, including the first, so the check is not a timer on the task. A sweep that observes an age equal to the timeout leaves the task; the next pass is one interval later. With the defaults a task can stay assigned for about 130 seconds: a sweep that sees exactly 120 s leaves it, and the next pass reads the clock at least one interval later.
+
+The warning formats the age with `%.1f`, so a line that reads `120.0s` is already past the timeout. Equality does not log.
+
+When the age is over the timeout the worker is not disconnected and no cancel is sent on the socket:
+
+| Registry state | Worker | Task |
+|----------------|--------|------|
+| `active_task_id` is this task | Stays registered. `complete_task(..., success=False)` increments `tasks_failed`, clears `active_task_id`, and the worker is idle. | `assigned_worker_id` cleared. Appended to the tail of `_unassigned_tasks` when it is not already there. `dispatched_at` becomes that sweep's `now`. |
+| `active_task_id` is a different task, or `None` | Stays registered. `tasks_failed` is not incremented, and any other active task stays. (`get_next_assignment` ignores `assign_task`'s `False`, so a busy worker can be handed a second task and later read idle while it is still that task's assignee.) | Same requeue. |
+| Worker already gone from the registry | No `complete_task`. | Same requeue. |
+
+A second sweep while the task is already unassigned does nothing more. `assigned_worker_id` is clear, so `tasks_failed` is not incremented again and the queue does not gain a duplicate.
+
+The sweep does not push `task_assign`. The stream dispatches on connect, after a result, and on a heartbeat only when `idle` (`active_task_id is None`). After a matching timeout the worker is idle, so its next heartbeat can be given the requeued task, including the same one, while the process may still be computing the copy it already has. Another idle worker can be handed it first. Dispatch pops the head of `_unassigned_tasks`, so tasks queued ahead of it go out before it. The original worker keeps the failure count.
+
+A result that arrives after the sweep is rejected while the task is still queued (`Result for unassigned task`), or once another worker holds it (`assigned to <id>`; `Duplicate result` once that worker's result is in). If the same worker was handed it again, the coordinator cannot tell the copies apart: the first result to arrive is accepted and, while the round lasts, the other is a `Duplicate result`. `submit_tasks` clears the duplicate set but keeps finished tasks in `_pending_tasks`, so a copy that arrives after the next round starts is accepted and counts toward that round, unless `cancel_round()` ran in between (it clears `_pending_tasks`, and the copy is then `Result for unknown task`). The next real dispatch writes a fresh `dispatched_at`. Time spent on the queue does not carry into that clock.
+
+This is not the heartbeat clock. `WorkerRegistration.is_alive` is `(now - last_heartbeat) < heartbeat_timeout` (registry default **30.0**). An age equal to that timeout is already not alive, and `_check_stale_workers` deregisters and requeues without incrementing `tasks_failed`. A worker that keeps heartbeating stays registered for the whole 120 second task clock.
+
+`test_task_timeout_reassigns` backdates a dispatch by 10 seconds against a 1 second timeout and asserts the requeue, `tasks_failed == 1`, and idle. It does not pin equality; `juniper-service-core/tests/test_task_reassignment_timeout_boundary.py` pins equality, a zero timeout, one second over, and a completed task. `test_parse_none_requeue_does_not_let_timeout_steal_newer_assignment` pins the orphan guard (a timed-out sticky assignment must not clear a newer `active_task_id`).
 
 #### `/ws/workers` contracts
 
@@ -8408,14 +9106,14 @@ The handshake runs **Origin → auth → per-source rate limit → accept → re
 |-------|-----------|-------|---------------|
 | 1 | Any `Origin` header present | **4003** | `Origin header not allowed on worker endpoint` — workers are not browsers, so any Origin is a browser/CSRF shape |
 | 2 | `ws_authenticate` fails (bad or missing `X-API-Key` while `app.state.api_key_auth` is enabled) | **4001** | `Authentication required` |
-| 3 | Optional `worker_rate_limiter` denies the source IP | **4029** | `Rate limited` |
+| 3 | Optional `worker_rate_limiter` denies the source IP | **4029** | `Rate limited`. [The worker connection bucket](#the-worker-connection-bucket-refills-only-up-to-its-burst) |
 | 4 | `worker_coordinator` or `worker_registry` missing | **4004** | `Worker system not initialized` — the pool never came up; not a client fault |
 | 5 | *(after accept)* registration shape invalid | **4008** | `Invalid registration` |
 
 - **Auth fail-closed.** The socket is never accepted on an auth failure — the close happens before `accept()`, so a client that sees a connection "open" has already passed auth.
 - **Registration shape.** After accept, registration requires a pattern-valid string `worker_id` and a dict `capabilities`; a non-object frame or a shape failure closes **4008** with no `registration_ack` (distinct from the malformed-JSON close). The client-supplied id is display-only — the server assigns `worker-{uuid12}`.
 - **Result ownership.** `WorkerCoordinator.submit_result` rejects wrong-worker / unassigned results before the protocol parse.
-- **Binary frame cap.** Attachments over `_MAX_BINARY_SIZE` (100 MB) get `Binary frame too large` before `submit_result`.
+- **Binary frame cap.** Attachments over `_MAX_BINARY_SIZE` (100 MiB) get `Binary frame too large` before `submit_result`. A frame of exactly that many bytes passes the per-frame check; the result is submitted only if all its attachments together stay within 100 MiB. Stock uvicorn closes the connection with **1009** earlier, at `ws_max_size` (default 16 MiB). See [A WebSocket text frame that fills 65536 characters is delivered](#a-websocket-text-frame-that-fills-65536-characters-is-delivered).
 - **Unknown lifecycle frames.** `build_frame_sink` maps unknown or missing frame types onto the generic `event` envelope rather than dropping or raising.
 
 Control receives rejects malformed/non-object JSON with close **1003** rather than an `AttributeError`.
@@ -8423,20 +9121,161 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | Symptom | Check / Fix |
 |---------|-------------|
 | HTTP 429 arrives without `Retry-After` | `SecurityMiddleware` must pass `exc.headers` into the `JSONResponse` — RateLimiter unit tests alone do not cover that catch path. |
+| Replay index frozen while `paused` is false, or status stays `PAUSED` after `fit` with `monitor.status` `completed` | [Replay speed, range, and a paused completion](#replay-speed-range-and-a-paused-completion). |
 | A health probe gets 429 | Health/docs/metrics are exempt in service-core — check an upstream proxy or a non-exempt path. |
 | A large POST is accepted despite the body limit | The mutating-method stream cap must be unconditional; a `Content-Length`-only fast path is the bypass class. |
+| A body of exactly `max_bytes` returns 413 | Both checks use `>`. A body that fills the cap, including chunks that sum to it, is delivered and cached on `request._body`. The next byte is 413 and the route does not run. [A body that fills the cap is delivered](#a-body-that-fills-the-cap-is-delivered). |
+| A large GET or DELETE is accepted | Only `POST`, `PUT`, and `PATCH` are stream-capped. Other methods 413 only when `Content-Length` is an integer greater than the cap. |
 | Multi-line or forged log record after a bad Origin/command | `_sanitize_for_log` regression — never interpolate unsanitized Origin/command into logger format strings. |
+| `/ws/control` admits a burst, then `rate_limited` | Token bucket: at most `capacity` (the rate-limit setting), even after a long idle. A denial does not spend a token. See [Control channel edges](#control-channel-burst-origin-match-and-cooldown-edges). |
+| `/ws/control` client sees HTTP 403 | Pre-accept close; no log carries the code. uvicorn logs `"WebSocket /ws/control" 403`; the handler logs WARNING `blocked (cooldown)` for 4029 and INFO `not in allowlist` / `no Origin header` for 4003 (visible only with an INFO handler); the kill switch (1013) logs nothing, and a failed key (4001) logs nothing except on the rejection that starts the cooldown (WARNING `blocked for 300s (cooldown triggered)`, still a 4001). |
+| Control cooldown blocked on the 10th failure | `len >= ws_control_cooldown_rejections` (default 10). A rejection aged exactly 60 s does not count. The block lifts when `now` reaches `blocked_until`. |
 | Worker WS closes 4001 before `connection_established` | API-key auth is enabled — send `X-API-Key`, or disable `app.state.api_key_auth` locally. |
 | Worker WS closes 4008 after accept | Fix the registration shape: string `worker_id` plus dict `capabilities`. |
 | Worker WS closes 4003 immediately | The client sent an `Origin` header — workers are not browsers; drop it from the client's WS options. |
-| Worker WS closes 4029 before accept | `HandshakeCooldown` or the per-source worker rate limiter is throttling that IP; back off, or restart the server to clear the in-memory block. |
+| Worker WS closes 4029 before accept | Reason `Rate limited` is the worker connection bucket: refill stops at the burst. It is the only 4029 on `/ws/workers` (`HandshakeCooldown`'s `Too many rejected handshakes` is a `/ws/control` close). It lives in process memory. [The worker connection bucket](#the-worker-connection-bucket-refills-only-up-to-its-burst). |
 | Worker WS closes 4004 | Server-side: `worker_coordinator` / `worker_registry` never initialized — check the service's worker-pool startup, not the client. |
+| `/ws/control` closes 1009 `Message too large` | The decoded text was longer than 65536 characters. A frame of exactly 65536 characters is delivered. The close spends no rate-limit token, and the next frame on that socket is not read. An over-cap `pong` closes the same way. |
+| Worker JSON says `Message too large` and the socket stays up | That is the message loop. Registration is the close: **4005** `Message too large`, error text `Registration message too large`. |
+| A huge worker binary never returns `Binary frame too large` | Stock uvicorn closes the connection with **1009** at `ws_max_size` (default 16 MiB) before the handler sees the frame; the reason depends on the WebSocket implementation (empty under the legacy `websockets` one) and is never `Message too large`. The server then deregisters the worker and requeues its task. |
+| A task is still assigned at exactly `task_reassignment_timeout` | Expected. The sweep uses `>` and runs only every `health_check_interval` (default 10 s) after `start_monitor()`. A warning that prints `120.0s` is already over; equality does not log. See [A task assigned for exactly the reassignment timeout stays assigned](#a-task-assigned-for-exactly-the-reassignment-timeout-stays-assigned). |
+| The same worker receives another `task_assign` after a timeout warning | The sweep counted `tasks_failed` and marked the worker idle. It did not cancel the in-flight compute. The next idle heartbeat can hand it the same task, and so can the dispatch that follows its late result; that late result was rejected as `Result for unassigned task`, so the new copy is then the only one. On the heartbeat path, whichever copy's result arrives first is accepted and, within the round, the other is a `Duplicate result`; a copy that arrives after the next round starts is accepted as that round's result, unless `cancel_round()` ran in between. |
 | Worker TLS "enabled" but presents no chain | Half-config — `TLSConfig` raises `ValueError` when only one of `cert_file` / `key_file` is set; supply both. |
 | One noisy IP throttles authenticated clients | Expected only for unauthenticated traffic — `RateLimiter` keys authenticated requests as `key:<api_key>`, so confirm the caller is actually sending `X-API-Key`. |
 | Two `task_assign` frames while the first task runs | A mid-task heartbeat must ack without dispatching — confirm the idle guard. |
-| Non-ASCII `X-API-Key` returns 500 | Published `juniper-service-core` 0.7.0 compares keys as `str`; `hmac.compare_digest` raises `TypeError`, which is not an `HTTPException`. Fixed on `main` (UTF-8 bytes, `surrogatepass`; juniper-ml#2086, unreleased). Do not catch the `TypeError`. |
+| GPU or last-task duration stays hot after the worker went idle | The heartbeat omitted the field or sent JSON `null`. A reported `0` replaces the prior reading. [A measured zero heartbeat overwrites](#a-measured-zero-heartbeat-overwrites). |
+| Registry still lists a worker aged exactly one timeout (the idle count already omits it) | `is_alive` is strict `<`. That worker is in `get_stale_workers`. The health monitor deregisters it; `get_next_assignment` can still hand it a task until that sweep. |
+| p50 is missing and there is no malformed-snapshot log | The duration window has fewer than two samples. One sample is not a percentile. |
+| Heartbeat age reads 0 after a clock step | `last_heartbeat` is the server's own `time.time()` at receipt, never the worker's clock. The collector clamps `now - last_heartbeat` at 0 when the scrape clock reads earlier than that stamp. |
+| `pending_tasks` is absent, or it reads 0 | Absent means no `pending_tasks_source`, or the source raised (logged). A wired source that returns 0 emits 0. |
+| Non-ASCII `X-API-Key` returns 500 | Before `juniper-service-core` 0.7.1, `APIKeyAuth` compares keys as `str`, and `hmac.compare_digest` raises `TypeError`, which is not an `HTTPException`. 0.7.1 compares UTF-8 bytes (`surrogatepass`; juniper-ml#2086). Do not catch the `TypeError`. |
 | Non-ASCII key flood never 429s | `FailedAuthThrottle` records only HTTP 401s, so the 500 was never counted (default 10 failures / 60 s / source IP, then 429 with `Retry-After`). WebSocket closes are not on this throttle. Same fix. |
-| Sentry event contains the configured API key | Frame locals were captured: the scrubber redacts `api_key` by name, not the local holding the configured key. `configure_sentry` on `main` passes `include_local_variables=False` with no switch to re-enable; published `juniper-observability` 0.4.0 still uses the SDK default. |
+| A throttled source IP is allowed again inside its window | The 10,000-IP cap dropped that row (oldest `window_start`). The next 401 starts a fresh budget. `check()` does not restore the row. |
+| Sentry event contains the configured API key | Frame locals were captured: the scrubber redacts `api_key` by name, not the local holding the configured key. From `juniper-observability` 0.4.1, `configure_sentry` passes `include_local_variables=False`, with no switch to re-enable. |
+| Training client gets `resume_failed` `out_of_range`, then `initial_status` | The seq is older than `oldest_seq - 1`, the buffer is empty and `last_seq > 0`, or replay is disabled. The socket stayed up. Discard the local tail and take the snapshot. See [Training-stream resume](#training-stream-resume-and-the-connection-cap). |
+| A client that held the seq just before the window is told to resync | The check moved. `last_seq == oldest_seq - 1` is still continuous and must replay the whole buffer. |
+| Training WS handshake refused (HTTP 403 on uvicorn; ASGI close 1013) while endpoint gauges look low | Pending resume handshakes count toward `max_connections` (default 50) and are not in the per-endpoint sets. Disconnect releases the slot. |
+| Several clients with no address hit the per-IP cap | They share the `"unknown"` bucket (`max_connections_per_ip`, default 5). A named host is a separate count. The ASGI close reason is `Per-IP connection limit reached`; uvicorn answers HTTP 403 without it, so look for the WARNING `per-IP limit of 5 reached for unknown`. |
+| One large metrics frame, then a hole on resume | The frame was split into `chunked_message` pieces, each with its own seq. Reassemble by `chunk_index`. A serialized length equal to `max_message_size_bytes` (default 60000) is still one frame. |
+
+#### The worker connection bucket refills only up to its burst
+
+`ConnectionRateLimiter` (`juniper_service_core.workers.security`) is the optional cap on `/ws/workers` connection attempts. `attach_worker_pool` sets `app.state.worker_rate_limiter` only when the caller passes `rate_limiter`. With that attribute absent, `worker_stream_handler` applies no connection cap. The handler runs the check after the Origin reject and `ws_authenticate`, and before `accept()`.
+
+The source id is `websocket.client[0]`, the client host, or the literal `unknown` when Starlette reports no client. Registration has not run yet, so the handler passes the host. Workers that share an address share a bucket. Clients with no address share the `unknown` bucket.
+
+A refusal closes **4029** with reason `Rate limited` and logs `Rate limited connection from <source>`. `HandshakeCooldown` closes **4029** `Too many rejected handshakes` only on `/ws/control`; `/ws/workers` has no cooldown.
+
+Constructed with no arguments, the limiter uses:
+
+| Argument | Default | Meaning |
+|----------|---------|---------|
+| `max_connections_per_minute` | 10 | Tokens added per second: this value divided by 60 |
+| `burst_size` | 3 | A new bucket starts full. Refill stops at this many tokens |
+| `cleanup_interval` | 300 | Seconds (`_RATE_LIMITER_CLEANUP_INTERVAL`). Stale buckets are dropped on this period |
+
+`allow` adds the elapsed refill, then spends one token when the bucket holds at least one:
+
+```text
+tokens = min(burst, tokens + elapsed_seconds * (max_connections_per_minute / 60))
+```
+
+The spend happens when that result is at least 1. A refusal leaves the fractional token in the bucket. Another call in the same instant leaves the bucket unchanged. After a long idle the same `min` stops the bucket at `burst`. At the defaults, three attempts succeed at once, and the fourth waits 6 seconds (one token at 10 per minute). A rate of 0 adds nothing: the bucket can still spend the burst it started with, and every later attempt is refused until a cleanup pass drops the bucket after more than `cleanup_interval` of quiet. `juniper-service-core/tests/test_t2_workers.py` (`test_rate_limiter_allows_burst_then_blocks`) pins a burst of 2 and a separate bucket per source. That test stays at the exhausted instant, so a refill that ignored the cap would still pass it. `test_rate_limiter_refills_only_up_to_burst_and_a_denial_spends_nothing` and `test_rate_limiter_cleanup_keeps_a_bucket_aged_exactly_one_interval` (`juniper-service-core/tests/test_workers_coverage.py`) pin the cap, the no-spend refusal and the keep at an age of exactly one interval.
+
+Buckets live in the process. Cleanup runs at the start of `allow` when `now - last_cleanup >= cleanup_interval`. It deletes a bucket when `now - last_access > cleanup_interval`. An age equal to the interval runs the pass and keeps the bucket. `last_access` moves on every attempt, including a refusal, so a source that keeps connecting stays in the map. A removed bucket is replaced, on the next attempt, by a new one that starts full. Removing a bucket at an age equal to the interval would hand an exhausted source a fresh burst. A source that stays quiet for longer than the interval is removed by the next cleanup pass, which runs only once `cleanup_interval` has passed since the last one; its next attempt after that is a full burst. At the defaults the refill alone restores the burst sooner (3 tokens in 18 s). The map has no numeric cap on distinct source ids. Every source that attempted inside the interval stays.
+
+| Limiter | What it counts | What the caller sees |
+|---------|----------------|----------------------|
+| `ConnectionRateLimiter` | `/ws/workers` attempts, per client host | close **4029** `Rate limited` |
+| `HandshakeCooldown` | rejected `/ws/control` handshakes, per client IP | close **4029** `Too many rejected handshakes` |
+| `RateLimiter` | HTTP requests, per API key or client IP | **429** |
+| `LeakyBucket` | commands on one control WebSocket | ack `rate_limited` |
+| `FailedAuthThrottle` | HTTP 401s, per source IP | **429** |
+
+Restarting the process clears the map. Waiting out the refill adds tokens with the process still up. Waiting quietly for longer than `cleanup_interval` lets the next cleanup pass replace the bucket with a full one.
+
+#### Training-stream resume and the connection cap
+
+`/ws/training` (`training_stream_handler` in `juniper_service_core.websocket.training_stream`) is the metrics stream a client resumes after a drop.
+It is not the snapshot player in [CAN-015 Replay Re-drive](#can-015-replay-re-drive).
+The handler authenticates, then `connect_pending`: the socket is accepted, receives `connection_established`, and is not broadcast-eligible yet.
+It waits up to `ws_resume_handshake_timeout_s` (default **5** seconds; the setting ends in `_s`, not `_sec`) for one text frame.
+Unless the client disconnected during that wait, the socket is promoted to active and registered on the `training` endpoint.
+A resume that did not succeed is then a fresh connect: `initial_status`, `state`, and an `initial_metrics` burst (`ws_initial_metrics_count`, default **100**).
+A resume that succeeded skips that burst.
+The rolling metrics window after a successful resume is a later `subscribe_metrics` frame, which replies with `initial_metrics`.
+
+`WebSocketManager.replay_since(last_seq)` returns buffered messages whose `seq` is strictly greater than `last_seq`, in order. Sequence numbers start at **1**. The default buffer keeps the last **1024** sequenced frames (each chunk of a split broadcast takes one). Continuity holds when `last_seq >= oldest_seq - 1`. The raise is `last_seq < oldest_seq - 1`. A `resume_ok` does not prove that nothing was missed (current behaviour, a defect candidate). A broadcast made while no socket is active, including during a sole client's pending resume, is never sequenced or buffered (`broadcast` returns first). One that lands while the replay is being sent is buffered but reaches only active sockets, and the resuming socket is promoted only after the replay, so the client can see a seq gap: `_handle_resume` sends the `replay_since` snapshot one awaited frame at a time while the socket is still pending.
+
+| Client `last_seq` | Buffer | What the client gets |
+|-------------------|--------|----------------------|
+| `0`, buffer empty | nothing has been broadcast | `resume_ok`, `replayed_count` 0. A negative `last_seq` on an empty buffer takes the same path |
+| `> 0`, buffer empty | nothing to check the claim against | `resume_failed` `out_of_range` (`Buffer empty, cannot verify continuity`) |
+| `oldest_seq - 1` | still holds `oldest_seq` | continuous: `resume_ok` and the whole buffer |
+| `oldest_seq` | holds `oldest_seq` | `resume_ok`; the replay starts at the next seq |
+| at or past the newest seq | the client claims every buffered message, or is ahead (it can still have missed one; see above) | `resume_ok`, empty replay. A future seq is not an error |
+| `< oldest_seq - 1` | the seq just before the window is already gone | `resume_failed` `out_of_range` (`Requested seq N older than oldest buffered seq M`) |
+| any, `max_replay_buffer_size <= 0` | replay is disabled | `resume_failed` `out_of_range` (`Replay buffer disabled`), including `last_seq` 0 |
+
+The frame's reason is only `out_of_range`. The exception text is an INFO log (`Resume failed: ...`), not a field on the frame. The socket stays open. After `resume_failed` the handler still promotes the socket and sends the fresh snapshot. A client that keeps its local tail and then appends later broadcasts has a hole. Discard the tail and take `initial_status` / `state` / `initial_metrics`.
+
+Two other resume failures are also not closes. A frame missing `last_seq` or `server_instance_id` is `malformed_resume`. A `server_instance_id` that does not match `connection_established` is `server_restarted` (new process, empty buffer, new id). No frame before the timeout, a non-JSON frame, or any other handshake error is a fresh connect and sends no `resume_failed`.
+
+**Chunking.** `broadcast` measures `len(json.dumps(message, default=str))`.
+A length `<= max_message_size_bytes` (default **60000**) is one frame, including a length equal to the limit.
+One byte over is split, before sequence assignment, into `chunked_message` envelopes.
+Each `data.payload` is a slice of that JSON text, at most `chunk_payload_size_bytes` (default **32000**), and concatenating the payloads restores the JSON.
+Each chunk has its own `seq` and its own replay slot, so a resume replays them in order.
+A message that is already `type: chunked_message` is not split again.
+`max_message_size_bytes <= 0` disables chunking and sends the original frame.
+
+**Caps.** Constructor defaults are `max_connections` **50** and `max_connections_per_ip` **5**.
+The global count is active sockets plus pending handshakes.
+At the cap, `connect` and `connect_pending` close **1013** `Maximum connections reached` and do not `accept()`.
+The per-IP cap closes **1013** `Per-IP connection limit reached`.
+`disconnect`, including the handler's `finally` when the resume wait ends in a disconnect, returns both slots.
+Pending sockets are absent from the per-endpoint sets, so an endpoint gauge can sit under the cap while a new handshake still closes 1013.
+
+A socket with no usable client address shares one bucket. `_source_ip` returns `"unknown"` when `client` is missing, not indexable, or the host is blank (`client[0]` empty). Those sockets share `max_connections_per_ip`. A hidden address is not its own budget. A socket that presents a host still has its own count.
+
+Gate: `juniper-service-core/tests/test_t2_websocket.py` (`test_replay_since_returns_tail`, `test_replay_since_out_of_range_raises`, `test_replay_buffer_disabled_raises`, `test_oversized_message_is_chunked`, `test_chunking_killswitch_passes_through`, `test_global_connection_limit`, `test_per_ip_connection_limit`, `test_training_resume_success_replays_zero`, `test_training_resume_rejects_restarted_server`).
+Also `tests/test_websocket_manager_extra.py` (`test_replay_since_empty_buffer_nonzero_seq_raises`, `test_source_ip_handles_empty_client_tuple`, `test_source_ip_handles_missing_client`, `test_connect_pending_rejects_at_global_limit`, `test_connect_pending_rejects_at_per_ip_limit`) and `tests/test_websocket_training_stream.py` (`test_handle_resume_out_of_range`, `test_handle_resume_malformed_frame`, `test_handle_resume_success_replays_events`).
+
+Source: `websocket/manager.py` (`replay_since`, `_maybe_chunk_message`, `connect`, `connect_pending`, `_source_ip`) and `websocket/training_stream.py` (`training_stream_handler`, `_handle_resume`).
+
+#### A measured zero heartbeat overwrites
+
+`WorkerRegistration.record_heartbeat` (`juniper_service_core.workers.registry`) updates a field only when the argument is not `None`. `WorkerRegistry.heartbeat` uses the same rule. `/ws/workers` forwards each enriched field with `msg.get` (`websocket/worker_stream.py`), so a missing key and JSON `null` both arrive as `None` and the prior reading stays. A present `0`, `0.0`, or `[]` is not `None`, so it replaces that reading. A later heartbeat that omits the field keeps the zero.
+
+| Reported value | What is stored |
+|----------------|----------------|
+| key omitted, or JSON `null` | the previous value |
+| `0` / `0.0` on `in_flight_tasks`, `rss_mb`, `tasks_completed`, `tasks_failed`, `last_task_duration_seconds`, `last_task_completed_at`, `gpu_utilization_pct` | that number |
+| `[]` on `recent_task_durations_seconds` | an empty window (a copy, not the caller's list) |
+
+`health_score` is `tasks_completed / (tasks_completed + tasks_failed)`, or `1.0` when both counters are 0. A tick that reports `tasks_completed: 0` and `tasks_failed: 4` scores `0.0`. A later tick that reports both counters as `0` scores `1.0`. Leaving the old failure count in place would keep a quiet worker looking failed. `get_idle_workers` sorts by this score, highest first.
+
+**Liveness.** `is_alive` is `(now - last_heartbeat) < timeout`. `WorkerRegistry` defaults `heartbeat_timeout` to `30.0` seconds. A heartbeat aged exactly one timeout is stale: `get_idle_workers` and `available_worker_count` omit that worker, and `get_stale_workers` includes it. One microsecond inside the window is still alive.
+
+`WorkerCoordinator._check_stale_workers` deregisters workers from that list and reassigns their task. It re-checks `is_alive` under the coordinator lock, so a heartbeat that landed after the snapshot is kept. `get_next_assignment` does not call `is_alive`. It assigns while the registration still exists, so a worker aged exactly one timeout can still be handed tasks, one after each result it submits (only a heartbeat refreshes `last_heartbeat`), until that sweep removes it.
+
+**Scrape.** `WorkerRegistryCollector.collect` (default prefix `juniper_service`) reads `snapshot_for_metrics`:
+
+- Heartbeat age is always emitted: `max(0.0, now - last_heartbeat)`. A timestamp ahead of the scrape clock is age `0`, not a negative series.
+- `<prefix>_worker_last_task_duration_seconds` and `<prefix>_worker_gpu_utilization_pct` are emitted when the field is not `None`, including `0.0`. `None` omits the series. A missing series means the worker has not reported the field. A `0` means it reported zero.
+- `<prefix>_worker_recent_task_duration_seconds_p50` and `_p95` are emitted only when the window has at least two samples. One sample is omitted, and it is not logged as a malformed snapshot. On Python 3.12 `statistics.quantiles` raises `StatisticsError` below two points, which the per-snapshot handler would log as a malformed snapshot; 3.13 and later return the single value. The length check comes first, so a one-sample window is omitted on every version. A two-sample window of `0.0` emits `0.0` for both percentiles (`n=20`, `method="inclusive"`, indexes 9 and 18).
+- `<prefix>_pending_tasks` is emitted only when a `pending_tasks_source` is wired. A source that returns `0` emits `0`. No source omits the gauge. A source that raises skips the gauge and logs the exception.
+- `rss_mb` and `in_flight_tasks` stay on the registration. They are not in the metrics snapshot, so this collector does not scrape them.
+
+A heartbeat that finds the worker busy still only acks. The idle guard that prevents a second `task_assign` is a separate check (`reg.idle` before `_try_dispatch_task`). It does not decide whether a reported `0` is stored.
+
+```json
+{"type": "heartbeat", "gpu_utilization_pct": 0, "last_task_duration_seconds": 0, "recent_task_durations_seconds": [], "in_flight_tasks": 0, "tasks_completed": 0, "tasks_failed": 0}
+```
+
+That tick stores the zeros, clears the duration window, and scores `1.0` because both task counters are 0. The next tick, `{"type": "heartbeat"}`, leaves those zeros in place.
+
+Source: `juniper-service-core/juniper_service_core/workers/registry.py` (`record_heartbeat`, `is_alive`, `get_idle_workers`, `get_stale_workers`, `snapshot_for_metrics`), `workers/metrics.py` (`collect`), `workers/coordinator.py` (`_check_stale_workers`, `get_next_assignment`), `websocket/worker_stream.py` (the `msg.get` forward). The preserve-on-`None` cases are `juniper-service-core/tests/test_registry_heartbeat_preserve.py`.
 
 ---
 
@@ -8476,6 +9315,7 @@ Control receives rejects malformed/non-object JSON with close **1003** rather th
 | 0.6.61  | 2026-09-05 | Perf-lane work gate: `step_count` is exact **within a termination branch** (juniper-ml#1733 census: 29 of 79 repeated-config divergences, 0 within a branch). Branch flip / truncating / absent `completion_reason` REFUSE; same-branch move still FAILS. Do not CI-wire — unmeasured-drop and fingerprint-collapse remain. Supersedes the in-flight #1715 "FAIL is uninterpretable" page. |
 | 0.6.62  | 2026-10-08 | Cursor flood-3 docs consolidation (22 fleet docs PRs carried or folded in, each claim re-derived from `main`): recurrence env preflight, degraded outcome and headline metrics, crossval hyperparameters and the E-H ridge-0 default, upstream error text (F-S10), one caller per recurrence service, the save_model launch record, the `dataset_id` vs array-content pin and three Equities Symbol Cap row fixes, the E-H crossval instruments; the Yamaguchi Duplicati server client and watchdog with the job-2 helper list; the CAN-015 replay re-drive; WITHDRAWN as a fourth triage disposition; malformed env-floor input exits 2; a pin-stable lockfile week still opens a PR; CodeQL's unclosed-`open()` threads block merges; non-ASCII API keys are a 401 and Sentry drops frame locals. Header was 0.6.59 while rows had reached 0.6.61. |
 | 0.6.63  | 2026-10-08 | Sequence Safety wording: the `ci.yml` file header and job banner now say REQUIRED (they said ADVISORY after the ruleset promotion); the two passages that warned about the stale banner are updated. Fleet PR Lint is still the one truly advisory job. |
+| 0.6.64  | 2026-11-07 | Cursor flood-4 docs consolidation (21 drafts, each claim re-derived): config-tools pitfalls and `py.typed`, host-check wording, G-SEC `getblockall`, Phase D trial drop-in, `safe_merge` SHA, a measured zero, empty `stats.json`, snapshot save, service-core limits and edges, recurrence crossval 500 (fixed in 0.8.1), idle compaction. Header 0.6.63 and footer 0.6.62 reconciled. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -8975,6 +9815,60 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+## Worker Result Anomaly Detector
+
+`AnomalyDetector` (`juniper_service_core.workers.security`) flags a remote worker result that looks too fast, too perfect, stuck near zero, or replayed. It does not reject the result. `WorkerCoordinator.submit_result` logs the flags and then stores the result the same way it would have without them. The coordinator's default detector is `None`, which skips the check. A service opts in with `WorkerCoordinator(..., anomaly_detector=AnomalyDetector())` or by assigning `coordinator.anomaly_detector`.
+
+The check runs only when a detector is set and `ParsedResult.score` is not `None`. `JsonTaskProtocol.parse_result` leaves a missing `score` or `duration` as `None`, and a missing score skips the check. A present score with a missing duration does not: the coordinator passes `parsed.duration or 0.0`, and `0.0` is under the fast bound, so the log says `suspiciously_fast` while the result is still stored.
+
+### Defaults
+
+With no constructor arguments the comparisons are strict. A value sitting on the bound is clean. The defaults assume a score in `[0, 1]`; a service whose score has another range passes its own thresholds.
+
+| Flag | Comparison | Default | On the bound |
+|------|------------|---------|--------------|
+| `suspiciously_fast` | `training_duration < min_training_time` | `0.1` seconds | `0.1` is clean; `0.099` flags `suspiciously_fast: 0.099s (min=0.1s)` |
+| `perfect_score` | `score > perfect_score_threshold` | `0.999` | `0.999` is clean; `0.9990001` flags |
+| `stale_score` | `abs(score) < stale_score_threshold` | `0.001` | `0.001` and `-0.001` are clean; `0.000999` and `-0.0005` flag |
+| `duplicate_scores` | every retained score prints the same to 6 decimals, and at least 3 are retained | window of `10` | two identical scores are clean; the third flags |
+
+A negative score uses its magnitude for the stale check only. `-0.5` is neither stale nor perfect. One result can carry more than one flag: score `1.0` in `0.0` seconds is both `suspiciously_fast` and `perfect_score`.
+
+The message formats the score to six decimals, so a value just over the perfect bound prints as the bound: `perfect_score: 0.999000` for `0.9990001`. Read the flag name. The printed digits can sit on the bound that the comparison treated as clean.
+
+### Duplicate window
+
+History is per `worker_id`, in memory, and trimmed to the last `duplicate_window` records after each append; a window of 0 disables trimming (`history[-0:]` is the whole list). The flag can fire only with a window of 0 or of at least 3: with 1 or 2 the history never holds the three scores the flag needs, and with 0 it compares every result recorded for the worker. `get_worker_stats(worker_id)["total_results"]` is the history's length: how many results it has recorded, capped at `duplicate_window` (no cap at 0). An unknown worker returns `{"total_results": 0}`. `clear_worker` drops the row. Two workers do not share a window.
+
+The duplicate flag needs every score still in the window to format as the same `f"{score:.6f}"` string, and at least three of them.
+
+- `0.42`, `0.4200004`, and `0.4199995` all print `0.420000`. The third result is a duplicate. Exact float equality would miss that stuck worker.
+- `0.4200006` prints `0.420001`. It is not a duplicate of `0.42`.
+- An older different score blocks the flag until it ages out. At a window of 0 nothing ages out, so it blocks the flag until `clear_worker` drops the row. With `duplicate_window=3`, the series `0.10`, `0.50`, `0.50` does not flag; the next `0.50` drops `0.10` and flags. `total_results` is then `3`, the retained window.
+- A later different score clears the flag on that result.
+- The message is `duplicate_scores: 1/<n> unique (hash=<8 hex>)`. `<n>` is how many scores are still in the window (3 through `duplicate_window`, for a window of 3 or more). The hash is the first 8 hex characters of SHA-256 over `str(sorted(raw_scores))`, not over the six-decimal text, so two windows that print as one score can carry different hashes.
+
+### What the warning does
+
+Both lines log at WARNING. `check_result` logs `ANOMALY: worker=<id> task=<id> anomalies=[...]`. The coordinator then logs `Anomalies detected for worker <id> on task <id>: [...]` and stores the result. That path does not close the socket, fail the task, call `WorkerMetrics.on_anomaly`, or emit an `AuditLogger` `ANOMALY_DETECTED` event.
+
+### Operator pitfalls
+
+| What you see | What it is |
+|--------------|------------|
+| No anomaly logs | `anomaly_detector` is still `None`, or the result has no `score` |
+| `suspiciously_fast: 0.000s` on every scored result | The payload has `score` and no `duration`. Missing duration becomes `0.0`. Send a duration, or treat the flag as noise |
+| `perfect_score: 0.999000` | The score was strictly above `0.999`. The message rounds to 6 decimals |
+| A stuck worker stays clean | A different score is still inside the window. The flag waits until that score ages out (at a window of 0, until `clear_worker` drops the row), and until at least three retained scores print the same |
+| `total_results` stuck at 10 | The default window keeps the last 10 |
+| The result was accepted | Expected. The detector only warns |
+
+Gate, all under `juniper-service-core/tests/`: `test_t2_workers.py` (`test_anomaly_detector_flags_and_passes`, `test_anomaly_detector_duplicate_scores`); `test_workers_coverage.py` (`test_anomaly_detector_trims_history_to_duplicate_window`, `test_anomaly_detector_clear_worker`, `test_submit_result_logs_anomaly_but_still_accepts`); `test_t2_worker_coordinator.py` (`test_anomaly_detector_skipped_when_score_is_none`); `test_anomaly_detector_edges.py` (the strict bounds and the six-decimal duplicate window); `test_submit_result_anomaly_accepts.py` (the missing-duration and zero-score submit paths).
+
+Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordinator.py` `submit_result`.
+
+---
+
+**Last Updated:** 2026-11-07
+**Version:** 0.6.64
 **Maintainer:** Paul Calnon
