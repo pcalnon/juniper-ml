@@ -425,6 +425,8 @@ jobs:
           python3 -m unittest -v tests/test_install_agents.py
           python3 -m unittest -v tests/test_agent_suite_doctor.py
           python3 -m unittest -v tests/test_agent_suite_summary.py
+          # An ERROR row's empty gates are absent, not a pass (mirror ci.yml).
+          python3 -m unittest -v tests/test_predict_merge_error_screen.py
           python3 -m unittest -v tests/test_requirements_drift_check.py
           python3 -m unittest -v tests/test_validate_claude_yaml_access.py
           python3 -m unittest -v tests/test_workflow_script_paths.py
