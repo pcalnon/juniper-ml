@@ -110,6 +110,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The yamaguchi securityfs incident: remediated, recorded, and two defects in its validator fixed.**
+  The owner ran the remount runbook on 2026-11-08, and the three filesystems have been mounted since
+  08:28:29Z. The validator passes, all seven juniper containers run confined by `docker-default`, and
+  juniper-deploy's suite has no failures (409 passed, where 17 had failed). The record is §14 of
+  `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md`.
+  - **The validator accepted an empty baseline.** Step 4 compared the host against an empty file and
+    listed 22 `UNEXPECTED` differences where nothing unexpected had changed.
+    `util/ad-hoc/2026-11-07_securityfs_remount_validate.bash` now refuses a baseline that is not a
+    fingerprint (exit 2, before any check runs), fails closed, and has a `check` mode. Its first
+    version passed the probe's report, because bash abandons a function on an empty
+    associative-array key; the key check now runs in `awk`.
+    `util/ad-hoc/2026-11-08_remount_validate_baseline_gate_check.py` runs 14 cases and 10 seeded
+    defects: all cases pass, and every defect is caught.
+  - **The analysis is corrected.** systemd never gives an API mount point a unit, mounted or not
+    (`src/core/mount.c`, `mount_setup_unit()`). The analysis had said the units are garbage-collected
+    once unmounted. `util/ad-hoc/2026-11-08_api_mount_units_check.bash` tests the correction live. The
+    conclusion stands.
+  - **Runbook step 1** sets `J`, stops when the scripts are missing, and runs the probe only after a
+    good capture. Step 4 names a fallback baseline.
+  - The evidence, from the owner's terminal output to the after-probe, is in
+    `reports/2026-11-07_yamaguchi-securityfs-unmount/`.
+
 - **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>` from a shallow
   checkout, and refuses a history that a shallow checkout cannot show.**
   - **The cause.** The scratch was `git clone --shared <checkout>`, which writes the alternate only for a local

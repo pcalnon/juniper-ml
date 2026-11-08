@@ -1,0 +1,31 @@
+# remount validator baseline-gate check, run 2026-11-08T09:08:03Z
+# validator: util/ad-hoc/2026-11-07_securityfs_remount_validate.bash  sha256 7faae84c93372edd35b56edce12c6356df40c7d3305171154ae5eb9823832ade
+# fixtures:  reports/2026-11-07_yamaguchi-securityfs-unmount/2026-11-08T0215Z_remount-fingerprint-incident-state.txt, reports/2026-11-07_yamaguchi-securityfs-unmount/2026-11-08T0135Z_probe-before-remediation.txt
+
+== cases, against the real validator
+[PASS] C1   check    missing                                        exit 2
+[PASS] C2   check    empty                                          exit 2
+[FAIL] C3   check    probe report                                   exit 0  -- exit 0, expected 2
+[PASS] C4   check    fingerprint minus pid.dockerd                  exit 2
+[PASS] C5   check    fingerprint minus snap_service.snap.etcd.etcd  exit 2
+[PASS] C6   check    fingerprint minus mount./sys/fs/bpf            exit 2
+[PASS] C7   check    committed fingerprint                          exit 0
+[PASS] C8   verify   missing                                        exit 2
+[PASS] C9   verify   empty                                          exit 2
+[FAIL] C10  verify   probe report                                   exit 1  -- exit 1, expected 2
+[PASS] C11  capture  fresh capture                                  exit 0
+[PASS] C12  check    fresh capture                                  exit 0
+[PASS] C13  capture  capture into a missing directory               exit 1
+
+== seeded defects in the gate (each must make at least one case fail)
+[KILLED]   M1 verify skips the baseline gate: caught by C3, C8, C9, C10
+[KILLED]   M2 check accepts any file: caught by C1, C2, C3, C4, C5, C6, C10
+[KILLED]   M3 a missing file is not reported as missing: caught by C1, C3, C8, C10
+[KILLED]   M4 an empty file is not reported as empty: caught by C2, C3, C9, C10
+[KILLED]   M5 required keys are never checked: caught by C3, C4, C5, C6, C10
+[KILLED]   M6 the snap service keys are not required: caught by C3, C4, C5, C7, C10, C11
+[KILLED]   M7 the mount keys are not required: caught by C3, C4, C6, C7, C10, C11
+[KILLED]   M8 a refused baseline exits 0: caught by C1, C2, C3, C4, C5, C6, C8, C9, C10
+[KILLED]   M9 capture does not check its own output: caught by C3, C10, C13
+
+== FAIL (2): 13 cases, 9 seeded defects
