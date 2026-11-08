@@ -1,0 +1,15 @@
+make: Entering directory '/home/pcalnon/Development/python/Juniper/juniper-deploy'
+Juniper Platform — Health Report
+
+  SERVICE            STATUS     VERSION    GIT_SHA    DRIFT    LATENCY
+  ──────────────── ──────── ──────── ──────── ────── ───────
+  juniper-data       ready      0.17.1     2807855    STALE    34ms
+    └── deps: storage=healthy
+  juniper-cascor     ready      0.13.0     f3dfee8    FRESH    53ms
+    └── deps: lifecycle=healthy, juniper_data=healthy 27ms
+  juniper-recurrence ready      n/a        n/a        ?        14ms
+  juniper-canopy     ready      0.9.0      af650373   STALE    58ms
+    └── deps: juniper_data=healthy 27ms, juniper_cascor=healthy 14ms
+
+  All services healthy.
+make: Leaving directory '/home/pcalnon/Development/python/Juniper/juniper-deploy'
