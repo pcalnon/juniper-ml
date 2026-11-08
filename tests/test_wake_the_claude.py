@@ -1814,6 +1814,79 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         self.assertEqual(args[2], "--model")
         self.assertIn(args[3], {"fable", "opus", "sonnet", "haiku"})
 
+    def test_effort_false_omits_the_effort(self) -> None:
+        """``--effort 1`` (false) omits effort from claude's argv instead of forwarding the ``1``.
+
+        ``--effort 0`` (true) is deliberately not pinned: it sends the script default, ``EFFORT_DEFAULT`` (``auto`` today),
+        and Claude Code 2.1.316-2.1.319 warns "Unknown --effort value 'auto'" and ignores it, so that default is an open
+        question for the owner, not behaviour to lock in.
+        """
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--effort", "1", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--", "hello"])
+
+    def test_missing_effort_value_fails_without_invoking_claude(self) -> None:
+        """A bare ``--effort``, or one whose next token is a flag, must not launch claude."""
+        cases = (
+            ["--resume", VALID_UUID, "--effort"],
+            ["--resume", VALID_UUID, "--effort", "--prompt", "hello"],
+        )
+        for script_args in cases:
+            with self.subTest(script_args=script_args):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    invocations_log, env = self._install_fake_claude(temp_dir)
+                    result = self._run_script(script_args, cwd=temp_dir, env=env)
+                    self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                    combined_output = result.stdout + result.stderr
+                    self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+                    invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+                    self.assertEqual(invocations, [])
+
+    def test_worktree_boolean_values_omit_or_let_claude_name(self) -> None:
+        """``--worktree 1`` (false) drops the flag; ``--worktree 0`` (true) sends a bare ``--worktree``, and the prompt still follows ``--``."""
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--worktree", "1", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--", "hello"])
+
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--worktree", "0", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "--", "hello"])
+
+    def test_remote_control_aliases_forward_canonical_flag_without_consuming_the_next(self) -> None:
+        """Every remote alias is sent as a bare ``--remote-control`` with the prompt after ``--``; a near-miss spelling does not launch."""
+        for remote_flag in ("-c", "--remote", "--control", "--remote-control"):
+            with self.subTest(remote_flag=remote_flag):
+                args = self._launch_and_get_args(["--resume", VALID_UUID, remote_flag, "--prompt", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--remote-control", "--", "hello"])
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--remote-controls", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertEqual((result.stdout + result.stderr).count("usage: wake_the_claude.bash"), 1)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
+    def test_permission_aliases_forward_canonical_flag_without_consuming_the_next(self) -> None:
+        """Skip-permission aliases are sent as ``--dangerously-skip-permissions`` with the prompt after ``--``; a near-miss does not launch."""
+        for permissions_flag in ("-s", "--skip", "--skip-permissions", "--dangerously-skip-permissions"):
+            with self.subTest(permissions_flag=permissions_flag):
+                args = self._launch_and_get_args(["--resume", VALID_UUID, permissions_flag, "--prompt", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--dangerously-skip-permissions", "--", "hello"])
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--dangerously-skip-permission", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertEqual((result.stdout + result.stderr).count("usage: wake_the_claude.bash"), 1)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
+            self.assertEqual(invocations, [])
+
     def test_prompt_file_that_never_resolves_says_why_with_debug_output_off(self) -> None:
         """The unresolved prompt file is named on stderr: with ``WTC_DEBUG=1`` the launch once ended in the usage text alone."""
         with tempfile.TemporaryDirectory() as temp_dir:
