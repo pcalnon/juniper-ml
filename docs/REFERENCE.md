@@ -4,7 +4,7 @@
 
 **Version:** 0.6.95
 **Status:** Active
-**Last Updated:** 2026-11-06
+**Last Updated:** 2026-11-07
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -185,7 +185,7 @@ pip install juniper-ml[all]       # Everything
 | 0.10.x     | >=0.15.0     | >=0.11.0       | >=0.8.1        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 | 0.11.x     | >=0.17.1     | >=0.12.0       | >=0.9.0        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.4.1               |
 
-The three `recurrence` pins have no column in that matrix. What 0.11.4 requires, and why an environment that already holds recurrence 0.8.0 does not move while PyPI still serves 0.11.3, is [juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor](#juniper-ml-0114-publishes-the-recurrence-081-floor).
+The three `recurrence` pins have no column in that matrix. What 0.11.4 requires, and why `pip install -U juniper-ml[recurrence]` now moves an environment off recurrence 0.8.0, is [juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor](#juniper-ml-0114-publishes-the-recurrence-081-floor).
 
 ### Service Ports
 
@@ -255,9 +255,9 @@ The split-default is intentional, not an oversight: `juniper-data` is a higher-r
 
 ## juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor
 
-This proposal's `[recurrence]` extra requires `juniper-recurrence>=0.8.1,<0.9.0` (`pyproject.toml`). The model pin `juniper-recurrence-model>=0.6.0,<0.7.0` and the client pin `juniper-recurrence-client>=0.3.0,<0.4.0` stay as 0.11.3 published them. `[tools]` still allows `juniper-model-core>=0.1.0,<0.4.0`; the model-core floor below is recurrence's own requirement, not the tools extra.
+`juniper-ml` 0.11.4's `[recurrence]` extra requires `juniper-recurrence>=0.8.1,<0.9.0` (`pyproject.toml`, and the wheel PyPI serves). The model pin `juniper-recurrence-model>=0.6.0,<0.7.0` and the client pin `juniper-recurrence-client>=0.3.0,<0.4.0` stay as 0.11.3 published them. `[tools]` still allows `juniper-model-core>=0.1.0,<0.4.0`; the model-core floor below is recurrence's own requirement, not the tools extra.
 
-PyPI's latest `juniper-ml` is still **0.11.3** (probed 2026-11-06). That wheel's recurrence extra is `juniper-recurrence<0.9.0,>=0.8.0`. `pip install juniper-ml[recurrence]` from the index installs 0.11.3, not this proposal.
+PyPI's latest `juniper-ml` is **0.11.4** (wheel uploaded 2026-11-07T22:59:23Z). Its recurrence extra is `juniper-recurrence<0.9.0,>=0.8.1`. `pip install juniper-ml[recurrence]` from the index installs 0.11.4. The 0.11.3 wheel remains on the index, and its extra is still `juniper-recurrence<0.9.0,>=0.8.0`.
 
 ### Why 0.8.0 with model-core 0.2.0 returns crossval 500
 
@@ -271,9 +271,8 @@ Published `juniper-model-core` 0.2.0's `walk_forward_folds` has no `groups` para
 ### Who an upgrade moves
 
 A fresh resolve of either range selects 0.8.1, the newest `juniper-recurrence` under `<0.9.0`.
-An environment that already has 0.8.0 keeps it under `pip install -U juniper-ml[recurrence]` while the installed meta-package is 0.11.3: pip's default `--upgrade-strategy` is `only-if-needed`, and 0.8.0 satisfies `>=0.8.0`.
-It does not satisfy this proposal's `>=0.8.1`, so the same command upgrades recurrence once 0.11.4 is the distribution being installed.
-Until the Release is on PyPI, that is this checkout (`pip install -e '.[recurrence]'`), not the index.
+An environment that already has 0.8.0 keeps it under `pip install -U 'juniper-ml[recurrence]==0.11.3'`: pip's default `--upgrade-strategy` is `only-if-needed`, and 0.8.0 satisfies `>=0.8.0`.
+It does not satisfy 0.11.4's `>=0.8.1`, so `pip install -U juniper-ml[recurrence]` from the index upgrades recurrence off 0.8.0.
 
 ### What preflight does not see
 
@@ -302,7 +301,7 @@ python3 -c "import importlib.metadata as m; print('recurrence', m.version('junip
 python3 util/ad-hoc/2026-11-06_juniper_ml_0_11_4_cut_cochanges.py --check
 ```
 
-The third command is a checkout of this proposal. An installed wheel has no `util/`.
+The third command is a checkout of the 0.11.4 tree. An installed wheel has no `util/`.
 
 ---
 
@@ -9021,6 +9020,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-11-06
+**Last Updated:** 2026-11-07
 **Version:** 0.6.95
 **Maintainer:** Paul Calnon

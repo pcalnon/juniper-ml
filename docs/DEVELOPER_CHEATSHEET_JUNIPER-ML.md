@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
 **Version**: 1.0.95
-**Date**: 2026-11-06
+**Date**: 2026-11-07
 **Project**: juniper-ml
 
 ---
@@ -681,8 +681,8 @@ Tip: before `serve`, the recurrence leg of both launchers runs `bash util/recurr
 `--skip-env-preflight` warns and still serves. `run_suite.py` cannot pass it: export `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1` (`isolated_stack.bash` reads `JUNIPER_E2E_SKIP_ENV_PREFLIGHT`). CUDA `pip check` lines are not findings.
 A clean preflight does not prove crossval can build folds.
 Recurrence 0.8.0 with model-core 0.2.0 passes `pip check`, and `POST /v1/crossval` returns 500 once the dataset has loaded, because `build_folds` passes `groups=` and 0.2.0's `walk_forward_folds` has no such parameter.
-PyPI `juniper-ml` 0.11.3 still allows 0.8.0; this proposal (0.11.4) requires `>=0.8.1`, which requires model-core `>=0.3.0`.
-`pip install -U juniper-ml[recurrence]` from the index leaves an installed 0.8.0 in place.
+PyPI `juniper-ml` 0.11.4 (wheel uploaded 2026-11-07T22:59:23Z) requires `juniper-recurrence>=0.8.1`, which requires model-core `>=0.3.0`.
+`pip install -U juniper-ml[recurrence]` from the index upgrades an installed 0.8.0. Pin `juniper-ml[recurrence]==0.11.3` to keep it: that wheel still allows `>=0.8.0`, and pip's default `--upgrade-strategy` is `only-if-needed`.
 Full contract: [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight). The 0.11.4 floor: [REFERENCE — juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor](REFERENCE.md#juniper-ml-0114-publishes-the-recurrence-081-floor).
 
 Tip: `outputs.save_model: true` saves the recurrence model the run scored: `POST /v1/model/snapshots` with the train response's `operation_id` as `expect_operation_id`, copied to `model.npz` (juniper-ml#2211); a 409 is `outcome: degraded` (exit 1) with no re-fit. Only a service that returns no `operation_id` gets the old re-fit, which re-runs the `juniper-recurrence` CLI the launcher recorded (`ports.json` `recurrence_launch.cli`, W1.9), and only under rerun parity: the same interpreter and `juniper-recurrence-model` version that `serve` ran. A mismatch is `outcome: degraded` (exit 1) and the CLI is not started.
@@ -1143,7 +1143,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default 503-name universe, per-request cost, silent `max_symbols` slice
 - [Recurrence Work Is Not Countable](REFERENCE.md#recurrence-work-is-not-countable) -- PF-5/6/7 report-only; `work_countable` third state; baseline/compare refuse
 - [Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) -- W0.2 (juniper-ml#2139): scoped `pip check`, installed pins, `derive_full_split` before recurrence `serve`; CUDA noise does not refuse; `--skip-env-preflight` warns
-- [juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor](REFERENCE.md#juniper-ml-0114-publishes-the-recurrence-081-floor) -- index 0.11.3 still allows recurrence 0.8.0; model-core 0.2.0 is a crossval 500; preflight stays OK
+- [juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor](REFERENCE.md#juniper-ml-0114-publishes-the-recurrence-081-floor) -- PyPI 0.11.4 requires recurrence `>=0.8.1`; 0.11.3 still allows 0.8.0; model-core 0.2.0 is a crossval 500; preflight stays OK
 - [Recurrence Crossval Hyperparameters](REFERENCE.md#recurrence-crossval-hyperparameters) -- omitted readout is linear at `default_ridge` (0.0, and the E-H YAML pins it); omitted RFF ridge is `gcv`; crossval fits a fresh model per fold
 - [Recurrence Upstream Error Text](REFERENCE.md#recurrence-upstream-error-text) -- a 502 `detail` can contain a rejected data API key; the driver copies it into the run record
 - [One caller per recurrence service](REFERENCE.md#one-caller-per-recurrence-service) -- one `train_lock` and one model per service; a busy train is a `409` (exit 4)
@@ -1188,6 +1188,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-11-06
+**Last Updated:** 2026-11-07
 **Version:** 1.0.95
 **Maintainer:** Paul Calnon

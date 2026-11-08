@@ -4,7 +4,7 @@
 
 **Version:** 0.2.87
 **Status:** Active
-**Last Updated:** 2026-11-06
+**Last Updated:** 2026-11-07
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -50,7 +50,7 @@
 | **Audit required-status-check contexts / why `main` is BLOCKED** | [REFERENCE — Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) (read-only; 2026-08-10 class; do not quote the note's §1 counts) | docs/    |
 | **Run a per-run experiment stack**      | [REFERENCE — Experiment Stack](REFERENCE.md#experiment-stack-utilities) (incl. partial-`--up` → `teardown_run`) + [CLI experimentation plan](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) | docs/ + notes/ |
 | **Refuse a stale recurrence env before serve** | [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) (W0.2, juniper-ml#2139: scoped `pip check`, installed pins, `derive_full_split`; CUDA `pip check` noise does not refuse; `/v1/health/ready` alone misses F-E1) | docs/ |
-| **See why recurrence 0.8.0 still answers crossval 500** | [REFERENCE — juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor](REFERENCE.md#juniper-ml-0114-publishes-the-recurrence-081-floor) (PyPI `juniper-ml` is still 0.11.3 and allows 0.8.0; `pip install -U` leaves that install; preflight stays OK with model-core 0.2.0) | docs/ |
+| **See why recurrence 0.8.0 still answers crossval 500** | [REFERENCE — juniper-ml 0.11.4 publishes the recurrence 0.8.1 floor](REFERENCE.md#juniper-ml-0114-publishes-the-recurrence-081-floor) (PyPI latest is 0.11.4 and requires `>=0.8.1`; pin `==0.11.3` to keep 0.8.0; preflight stays OK with model-core 0.2.0) | docs/ |
 | **Read a recurrence `save_model` record** | [REFERENCE — Recurrence launch record and service env](REFERENCE.md#recurrence-launch-record-and-service-env) (the scored model saved by `operation_id`, or, for a pre-W1.5 service, the launcher-recorded CLI re-fit under interpreter + model-version parity; a 409 or a mismatch is `degraded`) | docs/ |
 | **Run a PF scenario suite (PF-1…PF-7)** | [REFERENCE — PF Scenario Suites](REFERENCE.md#pf-scenario-suites) (`--dry-run` first; PF-1 matched 4000/4000 epochs; `JUNIPER_SUITE_GRAFANA_BRIDGE`; PF-4/PF-8 are not driver suites) + [P1 design](../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md) | docs/ + notes/ |
 | **Bless / compare a perf-lane baseline** | [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate) (`read_run_metrics` / `make_baseline` / `compare_baseline`; sound since ml#1743, but **never** wire the exact work gate to CI — P1 design §6 closed 2026-09-07; host identity blocks on hosted runners) | docs/ |
@@ -253,6 +253,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-11-06
+**Last Updated:** 2026-11-07
 **Version:** 0.2.87
 **Maintainer:** Paul Calnon
