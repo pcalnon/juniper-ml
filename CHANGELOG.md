@@ -33,6 +33,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and a prompt file as alternatives. An empty word is reported as "(an empty word)". `claudey -v` prints no debug
     log unless `WTC_DEBUG` asks for one.
 
+### Fixed
+
+- **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>` from a shallow
+  checkout, and refuses a history that a shallow checkout cannot show.**
+  - **The cause.** The scratch was `git clone --shared <checkout>`, which writes the alternate only for a local
+    clone, and git turns local mode off for a shallow source. juniper-ml's primary checkout has been shallow since
+    at least 2026-09-10 (a stray `.git/shallow` entry from 09-07). The clone was therefore a pack transfer that
+    carried only objects reachable from the checkout's local branches and tags. Every fleet PR's head failed
+    `update-ref` ("nonexistent object"): 44 of 45 open PRs came back `ERROR` on 2026-11-04, and 56 of 57 on
+    2026-11-06.
+  - **The fix.** The scratch is now `git init`, matched to the checkout's object format, plus an
+    `objects/info/alternates` entry naming the checkout's object store.
+  - **Four more defects, found by review of the fix, also fixed:**
+    - The scratch takes the source's `.git/shallow`. A merge or ancestor check that fails for any reason other than a
+      conflict is now an error, and so is a behind branch whose merge did not take `main`. A history cut above the
+      merge base had come back mergeable, unmerged.
+    - No filter driver runs in the scratch (`* -filter`), so `filter.lfs.required` configured without git-lfs
+      installed no longer breaks it.
+    - A binary file in a PR no longer raises `UnicodeDecodeError` mid-batch.
+    - An inherited `GIT_DIR` no longer re-initialises the source.
+  - **Docs.** `docs/REFERENCE.md` describes the new scratch. `.claude/agents/fleet-supervisor.md` drops three wrong
+    claims:
+    - the rulesets' strict up-to-date policy is off: it is on in juniper-ml, juniper-data and juniper-canopy;
+    - CI never runs on the merge result: a PR's CI runs on `refs/pull/N/merge`;
+    - a BEHIND branch is fixed by a rebase: GitHub's update-branch is the fix.
+
 ## [0.11.4] - 2026-11-06
 
 ### Changed

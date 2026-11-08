@@ -26,7 +26,7 @@
 |-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|----------|
 | **Install Juniper packages**            | [QUICK_START.md](QUICK_START.md)                                                                                                 | docs/    |
 | **See extras and version info**         | [REFERENCE.md](REFERENCE.md)                                                                                                     | docs/    |
-| **Tell a stale quick-start `pip list` from the floor** | [REFERENCE — Quick Start verify sample](REFERENCE.md#quick-start-verify-sample-is-not-the-current-floor) (a 0.10.0 sample's cascor 0.11.x is below `>=0.12.0`; published 0.11.4 resolves cascor 0.13.0, juniper-ml#2510) | docs/ |
+| **Tell a stale quick-start `pip list` from the floor** | [REFERENCE — Quick Start verify sample](REFERENCE.md#quick-start-verify-sample-and-the-cascor-floor) (the current sample is cascor 0.13.x from juniper-ml 0.11.4, #2510; a 0.10.0 copy's 0.11.x is below `>=0.12.0`) | docs/ |
 | **Configure HTTP client `base_url`**    | [REFERENCE.md](REFERENCE.md#http-client-base-url-contract)                                                                       | docs/    |
 | **Run the local host stack**            | [REFERENCE.md](REFERENCE.md#host-orchestration-utilities)                                                                        | docs/    |
 | **Operate the scheduled Duplicati backup lane** | [REFERENCE — Scheduled Duplicati Backup Lane](REFERENCE.md#scheduled-duplicati-backup-lane)                                | docs/    |

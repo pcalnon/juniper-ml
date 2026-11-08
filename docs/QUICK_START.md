@@ -82,14 +82,14 @@ See [`../juniper-observability/README.md`](../juniper-observability/README.md) f
 pip list | grep juniper
 ```
 
-Expected output (with `[all]`): 18 lines, one per package. The versions are what `juniper-ml` 0.10.0
-resolved to on 2026-10-20 (`pip install --dry-run` against PyPI on Python 3.12, 3.13 and 3.14, which agree).
+Expected output (with `[all]`): 18 lines, one per package. The versions are what `juniper-ml` 0.11.4
+resolved to on 2026-11-07 (`pip install --dry-run` against PyPI on Python 3.12, 3.13 and 3.14, which agree).
 A later release inside each extra's range (the table above) is expected, not a failure. Two of these
 packages come in transitively: `juniper-cascor-model` and `juniper-cascor-protocol`.
 
 ```bash
 juniper-canopy              0.9.x
-juniper-cascor              0.11.x
+juniper-cascor              0.13.x
 juniper-cascor-client       0.8.x
 juniper-cascor-model        0.1.x
 juniper-cascor-protocol     0.2.x
@@ -99,7 +99,7 @@ juniper-config-tools        0.1.x
 juniper-data                0.17.x
 juniper-data-client         0.6.x
 juniper-doc-tools           0.1.x
-juniper-ml                  0.10.0
+juniper-ml                  0.11.4
 juniper-model-core          0.3.x
 juniper-observability       0.4.x
 juniper-recurrence          0.8.x
@@ -108,9 +108,9 @@ juniper-recurrence-model    0.6.x
 juniper-service-core        0.7.x
 ```
 
-`[servers]` requires `juniper-cascor[api,juniper-data]>=0.12.0` (juniper-ml 0.11.2 and later). The 2026-10-20 sample for juniper-ml 0.10.0 printed `juniper-cascor 0.11.x`, which is below that floor. PyPI's latest `juniper-ml` is 0.11.4 (wheel uploaded 2026-11-07T22:59:23Z).
-A dry-run of `juniper-ml[all]==0.11.4` on 2026-11-08 (Python 3.12, Linux x86_64 wheels only, nothing installed) selected juniper-cascor 0.13.0 and juniper-recurrence 0.8.1, 18 juniper packages. [juniper-ml#2510](https://github.com/pcalnon/juniper-ml/pull/2510) writes that resolution into the block above (`juniper-cascor 0.13.x`, `juniper-ml 0.11.4`). If the block still prints `0.11.x`, it is the 2026-10-20 measurement. Compare `pip list` to the extras table.
-See [Quick Start verify sample is not the current floor](REFERENCE.md#quick-start-verify-sample-is-not-the-current-floor).
+`[servers]` requires `juniper-cascor[api,juniper-data]>=0.12.0` (juniper-ml 0.11.2 and later). The block above is the 2026-11-07 resolution of `juniper-ml` 0.11.4 ([juniper-ml#2510](https://github.com/pcalnon/juniper-ml/pull/2510)) and prints `juniper-cascor 0.13.x`, which meets that floor. The 2026-10-20 sample for `juniper-ml` 0.10.0 printed `juniper-cascor 0.11.x`, which does not.
+PyPI's latest `juniper-ml` is 0.11.4 (wheel uploaded 2026-11-07T22:59:23Z). A Python 3.12 dry-run of `juniper-ml[all]==0.11.4` on 2026-11-08 selected juniper-cascor 0.13.0. Compare `pip list` to the extras table.
+See [Quick Start verify sample and the cascor floor](REFERENCE.md#quick-start-verify-sample-and-the-cascor-floor).
 
 ```python
 # Verify client imports
@@ -127,7 +127,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 - [Documentation Overview](DOCUMENTATION_OVERVIEW.md) -- navigation index
 - [Reference](REFERENCE.md) -- extras, compatibility, and version reference
-- [Quick Start verify sample is not the current floor](REFERENCE.md#quick-start-verify-sample-is-not-the-current-floor) -- a 0.10.0 sample's cascor 0.11.x is below `>=0.12.0`; published 0.11.4 resolves cascor 0.13.0 (juniper-ml#2510)
+- [Quick Start verify sample and the cascor floor](REFERENCE.md#quick-start-verify-sample-and-the-cascor-floor) -- the current sample is cascor 0.13.x; a 0.10.0 copy's 0.11.x is below `>=0.12.0`
 - [Host Orchestration Utilities](REFERENCE.md#host-orchestration-utilities) -- run services on-host with `util/juniper_plant_all.bash` and `util/juniper_chop_all.bash`
 - [Conda Env Torch Shadow Diagnostic](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- classify `import torch` / `torch._C` (exit **2** = P-5 free-threaded; exit **4** = May-7; does not rebuild)
 - [Environment Floor Drift — Malformed Input](REFERENCE.md#malformed-operator-input) -- `env_floor_drift_check.py` exit 2 is a resolution failure, including a truthy non-mapping in `ecosystem.yaml`; a bad extra does not drop `dependencies` floors

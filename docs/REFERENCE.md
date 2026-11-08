@@ -14,7 +14,7 @@
 - [Package Overview](#package-overview)
 - [Extras Reference](#extras-reference)
 - [Ecosystem Compatibility](#ecosystem-compatibility)
-- [Quick Start verify sample is not the current floor](#quick-start-verify-sample-is-not-the-current-floor)
+- [Quick Start verify sample and the cascor floor](#quick-start-verify-sample-and-the-cascor-floor)
 - [HTTP Client Base-URL Contract](#http-client-base-url-contract)
 - [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
@@ -185,18 +185,17 @@ pip install juniper-ml[all]       # Everything
 | 0.10.x     | >=0.15.0     | >=0.11.0       | >=0.8.1        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 | 0.11.x     | >=0.17.1     | >=0.12.0       | >=0.9.0        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.4.1               |
 
-### Quick Start verify sample is not the current floor
+### Quick Start verify sample and the cascor floor
 
-`docs/QUICK_START.md` § Verify shows an 18-line `pip list` block. The extras table above is the floor. A later release inside a current range is still expected.
+`docs/QUICK_START.md` § Verify shows an 18-line `pip list` block. That block is the 2026-11-07 resolution of `juniper-ml` 0.11.4, merged in [juniper-ml#2510](https://github.com/pcalnon/juniper-ml/pull/2510). It prints `juniper-cascor              0.13.x` and `juniper-ml                  0.11.4`. The extras table above is the floor. A later release inside a current range is still expected.
 
-The 2026-10-20 block, measured for `juniper-ml` 0.10.0, prints `juniper-cascor              0.11.x`. That line is below the floor. `[servers]` requires `juniper-cascor[api,juniper-data]>=0.12.0` (`pyproject.toml`; the `0.11.x` row above). 0.11.2 raised that floor from `>=0.11.0`. On this branch the verify block is still that 2026-10-20 list.
+`[servers]` requires `juniper-cascor[api,juniper-data]>=0.12.0` (`pyproject.toml`; the `0.11.x` row above). 0.11.2 raised that floor from `>=0.11.0`. Cascor 0.13.x meets it. Cascor 0.11 does not. The 2026-10-20 block, measured for `juniper-ml` 0.10.0, printed `juniper-cascor              0.11.x`. That copy is below the floor. Do not read it as what 0.11.4 installs.
 
-PyPI's latest `juniper-ml` is **0.11.4** (wheel `juniper_ml-0.11.4-py3-none-any.whl`, uploaded 2026-11-07T22:59:23Z; probed 2026-11-08). Its `servers` extra requires `juniper-cascor[api,juniper-data]>=0.12.0`. Its `recurrence` extra requires `juniper-recurrence<0.9.0,>=0.8.1`. The 0.11.3 wheel remains on the index and still requires `juniper-cascor[api,juniper-data]>=0.12.0` and `juniper-recurrence<0.9.0,>=0.8.0`.
+PyPI's latest `juniper-ml` is **0.11.4** (wheel `juniper_ml-0.11.4-py3-none-any.whl`, uploaded 2026-11-07T22:59:23Z; probed 2026-11-08). Its `servers` extra requires `juniper-cascor[api,juniper-data]>=0.12.0`. Its `recurrence` extra requires `juniper-recurrence<0.9.0,>=0.8.1`. The 0.11.3 wheel remains on the index and still requires `juniper-cascor[api,juniper-data]>=0.12.0` and `juniper-recurrence<0.9.0,>=0.8.0`. PyPI's latest `juniper-cascor` is 0.13.0 (wheel uploaded 2026-10-28T11:43:24Z).
 
-A `pip install --dry-run --ignore-installed --only-binary=:all:` of `juniper-ml[all]==0.11.4` on 2026-11-08, Python 3.12, Linux x86_64 wheels, selected 18 juniper packages out of 96. Against the 2026-10-20 sample's minor buckets, juniper-cascor moves from `0.11.x` to 0.13.0 and juniper-ml from 0.10.0 to 0.11.4. The other sixteen juniper lines stay in the same minor bucket, including juniper-recurrence 0.8.1 (`0.8.x`).
-[juniper-ml#2510](https://github.com/pcalnon/juniper-ml/pull/2510) replaces the verify block with that resolution (`juniper-cascor 0.13.x`, `juniper-ml 0.11.4`). If the block in § Verify still prints `0.11.x`, it has not taken that replacement.
+A Python 3.12 `pip install --dry-run --ignore-installed --only-binary=:all:` of `juniper-ml[all]==0.11.4` on 2026-11-08 selected 18 juniper packages out of 96, including juniper-cascor 0.13.0 and juniper-recurrence 0.8.1. Those match the minor buckets in the block above. Against the 2026-10-20 sample, only cascor (0.11.x to 0.13.0) and juniper-ml (0.10.0 to 0.11.4) leave their minor bucket. The other sixteen juniper lines stay in the same minor bucket.
 
-Judge `pip list` against the extras table and the `0.11.x` row. Cascor 0.11 is short of the floor. A line inside the current range is expected.
+Judge `pip list` against the extras table and the `0.11.x` row. A list that stops at cascor 0.11 is short of the floor.
 
 ### Service Ports
 
@@ -2432,7 +2431,7 @@ JUNIPER_FLEET_SKIP_PRECOMMIT=1 python util/fleet_triage/predict_merge.py --pr 89
 
 Per PR, the script:
 
-1. Creates a throwaway **detached** `git clone --shared` under the system tempdir (never a worktree, never writes the source checkout, never pushes).
+1. Creates a throwaway **detached** scratch repository under the system tempdir: `git init` plus an `objects/info/alternates` entry naming the checkout's object store, so a PR head that exists only as `origin/<branch>` resolves, even from a shallow checkout (never a worktree, never writes the source checkout, never pushes). It was `git clone --shared` until 2026-11-06, which turns its local mode off for a shallow source and then carries only local branches.
 2. Merges `origin/main` into the branch tip (`git merge --no-ff`, `commit.gpgsign=false`).
 3. On the RESULT: runs `pre-commit` hooks `black` / `isort` / `flake8` / `mypy` / `check-ast` over `changed_existing` — the TRUE delta filtered to paths that still resolve as a blob at `HEAD` — and **only when that set contains at least one `.py` file**; otherwise each hook reports `status=skip` with detail `no .py files in delta` (docs-only / non-Python PRs never invoke the gate runner). A **deleted** `.py` therefore stays in `true_delta` for the symbol screen but is never handed to `pre-commit --files`, so a pure-deletion PR can be gate-clean and still `DAMAGED-FIX-FIRST` from the symbol screen. `JUNIPER_FLEET_SKIP_PRECOMMIT=1` forces `skip_all`. It also shells out to `juniper-symbol-loss-check (juniper-ci-tools) --repo-root <clone> --base <base> --head <result> --json` (same CLI as `main-verify` — juniper-ml#895 / ml#872); runs an **inline** docs additions-only screen that flags **any** removed content line on a changed `.md` (deliberately stricter than `juniper-docs-additions-check`'s heading / `--min-run` gate) and honors `Allow-Docs-Rewrite: <path>[, …]` / `*` trailers in `BASE..RESULT` (juniper-ml#926 — same escape hatch as sequence-safety so intentional rewrites are not forever `DAMAGED-FIX-FIRST`).
 4. Emits the **TRUE** changed-file delta from `git diff --name-only origin/main <result>` (not the stale `gh pr … --json files` list).
