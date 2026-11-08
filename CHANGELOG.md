@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Regression tests carried from 28 Cursor fleet drafts (the flood-4 consolidation, owner ruling 2026-11-06), each
+  mutation-checked against the code it pins.** In `juniper-service-core/tests/`: the failed-auth tracker drops the
+  oldest of its 10,000 source IPs (#2419); an exhausted rate-limit window admits again at its boundary (#2427); a
+  worker connection burst refills only up to its cap (#2430); a stuck worker's scores become a duplicate (#2436);
+  `/ws/control` refill and handshake edges (#2439); replay continuity at the buffer edge (#2441); an anomaly warning
+  still accepts the result (#2443); replay speed, range and paused terminal transitions (#2445); a measured zero
+  heartbeat overwrites and the exact timeout is stale (#2447); a request body, a WebSocket frame and a result's
+  attachments that exactly fill their caps are admitted (#2451, #2458, #2463); a task at the exact reassignment
+  timeout (#2461). In `juniper-ci-tools`: a list-item fence indented three spaces is not a heading (#2425). At the top
+  level: a zero score and a zero theta stay measured values (#2413); the `AGENTS.md` date check's three-dot diff,
+  whitespace and unset `BASE_SHA` (#2414); which capture decides G-SEC block-all (#2416); a non-object `stats.json`
+  (#2429); a failed snapshot save that does not re-fit (#2431); a schema-1 `eval_scalars` block (#2434); the Phase D
+  trial drop-in merged onto the live unit (#2421); and four new suites, wired into `ci.yml` and `docs/REFERENCE.md`:
+  `tests/test_claude_agent_guard_brace_cap.py` (#2466), `tests/test_per_run_timeout_boundary.py` (#2448),
+  `tests/test_host_state_gate_boundaries.py` (#2459) and `tests/test_release_train_exact_caps.py` (#2455).
+  - **Fixed before carrying.** #2455's six mypy errors (`list.append(...) or value` lambdas). #2410's wheel test keeps
+    its positive half and drops its negative control, whose premise is false: setuptools 81.0.0 and 84.2.1 package a
+    `py.typed` they find even undeclared; the same file's older text, which said an undeclared marker misses the
+    wheel, is corrected too. The regression job installs `setuptools` and `wheel` for it. #2403's and #2407's launcher
+    tests are rewritten against `main` after #2438 and #2468 (the `--` before the prompt, `-v` reporting Claude Code's
+    version, remote control on by default), and #2407's mypy error is fixed. #2403's effort test keeps only its
+    `--effort 1` half: its `--effort 0` half pinned `--effort auto`, which Claude Code rejects ("Unknown --effort
+    value"), so the script's default is left as an open question rather than locked in.
+  - **From two docs drafts**, the Test Suite Reference sentences this block owns: #2424's on the `--getglobalstate`
+    line in `tests/test_host_state_check.py`'s entry, and #2432's on when `aggregate` falls back from `stats.json`
+    in `tests/test_run_suite.py`'s, each without its link to a section only the docs carrier adds.
+
 ### Changed
 
 - **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
