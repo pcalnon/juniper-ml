@@ -2,23 +2,23 @@
 
 **Release Date:** 2026-11-08
 **Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Priority:** High: upgrade every service that calls `configure_sentry`
 **Package Affected:** juniper-observability
 
 ---
 
-This is a security-bearing release of `juniper-observability` v0.4.2. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a security-bearing release of `juniper-observability` v0.4.2. `configure_sentry` now scrubs Sentry transactions as well as error events, redacts the request's parsed cookies, and filters four more credential headers. Before it, a sampled transaction carried the raw `X-API-Key` whenever `send_pii` was on; a cookie under any name the SDK's denylist lacks reached error events and transactions alike; and `Sec-WebSocket-Protocol`, `X-CSRF-Token` and `X-XSRF-Token` reached every item even with `send_pii` off. Every vector needs Sentry to be configured, and the first two also need `send_pii=True`, which only juniper-data can turn on (it is off by default), so the release is rated Medium. There is no public API change. A consumer image receives it with its next lock refresh.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-observability` |
 | **Fixed in** | 0.4.2 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | Sensitive information sent to an external service ([CWE-201](https://cwe.mitre.org/data/definitions/201.html)) |
+| **Advisory** | None. Internal findings: round-42 finding F2 (2026-09-24) and the validation of consolidated-plan item P3-07 (2026-11-08); there is no CVE or Dependabot alert |
 
 ---
 
