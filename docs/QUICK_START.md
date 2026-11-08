@@ -4,7 +4,7 @@
 
 **Version:** 0.3.78
 **Status:** Active
-**Last Updated:** 2026-11-06
+**Last Updated:** 2026-11-08
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -108,7 +108,9 @@ juniper-recurrence-model    0.6.x
 juniper-service-core        0.7.x
 ```
 
-The block above is the 0.10.0 resolution of 2026-10-20. `juniper-cascor 0.11.x` is below the current `[servers]` floor `juniper-cascor[api,juniper-data]>=0.12.0` (juniper-ml 0.11.2 and later, including the PyPI 0.11.3 wheel). Compare `pip list` to the extras table on this page. See [Quick Start verify sample is not the current floor](REFERENCE.md#quick-start-verify-sample-is-not-the-current-floor).
+`[servers]` requires `juniper-cascor[api,juniper-data]>=0.12.0` (juniper-ml 0.11.2 and later). The 2026-10-20 sample for juniper-ml 0.10.0 printed `juniper-cascor 0.11.x`, which is below that floor. PyPI's latest `juniper-ml` is 0.11.4 (wheel uploaded 2026-11-07T22:59:23Z).
+A dry-run of `juniper-ml[all]==0.11.4` on 2026-11-08 (Python 3.12, Linux x86_64 wheels only, nothing installed) selected juniper-cascor 0.13.0 and juniper-recurrence 0.8.1, 18 juniper packages. [juniper-ml#2510](https://github.com/pcalnon/juniper-ml/pull/2510) writes that resolution into the block above (`juniper-cascor 0.13.x`, `juniper-ml 0.11.4`). If the block still prints `0.11.x`, it is the 2026-10-20 measurement. Compare `pip list` to the extras table.
+See [Quick Start verify sample is not the current floor](REFERENCE.md#quick-start-verify-sample-is-not-the-current-floor).
 
 ```python
 # Verify client imports
@@ -125,7 +127,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 - [Documentation Overview](DOCUMENTATION_OVERVIEW.md) -- navigation index
 - [Reference](REFERENCE.md) -- extras, compatibility, and version reference
-- [Quick Start verify sample is not the current floor](REFERENCE.md#quick-start-verify-sample-is-not-the-current-floor) -- the sample's `juniper-cascor 0.11.x` is the 0.10.0 dry-run; `[servers]` requires `>=0.12.0`
+- [Quick Start verify sample is not the current floor](REFERENCE.md#quick-start-verify-sample-is-not-the-current-floor) -- a 0.10.0 sample's cascor 0.11.x is below `>=0.12.0`; published 0.11.4 resolves cascor 0.13.0 (juniper-ml#2510)
 - [Host Orchestration Utilities](REFERENCE.md#host-orchestration-utilities) -- run services on-host with `util/juniper_plant_all.bash` and `util/juniper_chop_all.bash`
 - [Conda Env Torch Shadow Diagnostic](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- classify `import torch` / `torch._C` (exit **2** = P-5 free-threaded; exit **4** = May-7; does not rebuild)
 - [Environment Floor Drift — Malformed Input](REFERENCE.md#malformed-operator-input) -- `env_floor_drift_check.py` exit 2 is a resolution failure, including a truthy non-mapping in `ecosystem.yaml`; a bad extra does not drop `dependencies` floors
@@ -206,6 +208,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-11-06
+**Last Updated:** 2026-11-08
 **Version:** 0.3.78
 **Status:** Active
