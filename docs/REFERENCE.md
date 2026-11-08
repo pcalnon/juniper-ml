@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.63
+**Version:** 0.6.99
 **Status:** Active
-**Last Updated:** 2026-10-08
+**Last Updated:** 2026-11-08
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -14,6 +14,7 @@
 - [Package Overview](#package-overview)
 - [Extras Reference](#extras-reference)
 - [Ecosystem Compatibility](#ecosystem-compatibility)
+- [Quick Start verify sample and the cascor floor](#quick-start-verify-sample-and-the-cascor-floor)
 - [HTTP Client Base-URL Contract](#http-client-base-url-contract)
 - [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Scheduled Duplicati Backup Lane](#scheduled-duplicati-backup-lane)
@@ -183,6 +184,18 @@ pip install juniper-ml[all]       # Everything
 | 0.9.x      | >=0.14.0     | >=0.11.0       | >=0.8.1        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 | 0.10.x     | >=0.15.0     | >=0.11.0       | >=0.8.1        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 | 0.11.x     | >=0.17.1     | >=0.12.0       | >=0.9.0        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.4.1               |
+
+### Quick Start verify sample and the cascor floor
+
+`docs/QUICK_START.md` § Verify shows an 18-line `pip list` block. That block is the 2026-11-07 resolution of `juniper-ml` 0.11.4, merged in [juniper-ml#2510](https://github.com/pcalnon/juniper-ml/pull/2510). It prints `juniper-cascor              0.13.x` and `juniper-ml                  0.11.4`. The extras table above is the floor. A later release inside a current range is still expected.
+
+`[servers]` requires `juniper-cascor[api,juniper-data]>=0.12.0` (`pyproject.toml`; the `0.11.x` row above). 0.11.2 raised that floor from `>=0.11.0`. Cascor 0.13.x meets it. Cascor 0.11 does not. The 2026-10-20 block, measured for `juniper-ml` 0.10.0, printed `juniper-cascor              0.11.x`. That copy is below the floor. Do not read it as what 0.11.4 installs.
+
+PyPI's latest `juniper-ml` is **0.11.4** (wheel `juniper_ml-0.11.4-py3-none-any.whl`, uploaded 2026-11-07T22:59:23Z; probed 2026-11-08). Its `servers` extra requires `juniper-cascor[api,juniper-data]>=0.12.0`. Its `recurrence` extra requires `juniper-recurrence<0.9.0,>=0.8.1`. The 0.11.3 wheel remains on the index and still requires `juniper-cascor[api,juniper-data]>=0.12.0` and `juniper-recurrence<0.9.0,>=0.8.0`. PyPI's latest `juniper-cascor` is 0.13.0 (wheel uploaded 2026-10-28T11:43:24Z).
+
+A Python 3.12 `pip install --dry-run --ignore-installed --only-binary=:all:` of `juniper-ml[all]==0.11.4` on 2026-11-08 selected 18 juniper packages out of 96, including juniper-cascor 0.13.0 and juniper-recurrence 0.8.1. Those match the minor buckets in the block above. Against the 2026-10-20 sample, only cascor (0.11.x to 0.13.0) and juniper-ml (0.10.0 to 0.11.4) leave their minor bucket. The other sixteen juniper lines stay in the same minor bucket.
+
+Judge `pip list` against the extras table and the `0.11.x` row. A list that stops at cascor 0.11 is short of the floor.
 
 ### Service Ports
 
@@ -8964,6 +8977,6 @@ See [Snapshot Sidecar Chain](#snapshot-sidecar-chain) and [Snapshot Attribution 
 
 ---
 
-**Last Updated:** 2026-10-08
-**Version:** 0.6.62
+**Last Updated:** 2026-11-08
+**Version:** 0.6.99
 **Maintainer:** Paul Calnon
