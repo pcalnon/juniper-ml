@@ -16,11 +16,25 @@ where a ``bool`` is declared -- type-checks clean. The annotations exist
 (service-core alone carries 310+ annotated defs plus a 75-line ``TYPE_CHECKING``
 block); nothing was reading them.
 
-**Two independent things must both hold, which is why this gate checks both.**
-The marker file existing in the repo does *not* mean it reaches consumers:
-setuptools ships it only if it is also declared as package data, and these
-packages carry no ``MANIFEST.in``. A gate that checked only the file would go
-green while every wheel shipped without it -- the vacuous-pass class.
+**The source checks pin two things: the marker file, and its declaration.**
+The file is what a wheel cannot do without. The declaration is not what ships
+it today: ``build_py`` also packages a ``py.typed`` it finds undeclared
+(``_IMPLICIT_DATA_FILES = ('*.pyi', 'py.typed')`` in setuptools 81.0.0 and in
+84.2.1, the latest release, which CI's ``setuptools>=68`` resolves to), and a
+``juniper-config-tools`` wheel built with the entry emptied still carries the
+marker (built in a temporary copy, 2026-11-07). The
+declaration is pinned so the packaging states the marker explicitly instead of
+resting on that implicit pattern.
+
+The declaration is still not the wheel. At the ``juniper-config-tools-v0.1.0``
+tag the package directory held ``__init__.py``, ``__main__.py``,
+``_env_aliases.py`` and ``_version.py`` and no ``py.typed``, so the 0.1.0
+wheel could not carry one, and a type checker treats such a package as
+untyped. ``test_every_built_wheel_ships_py_typed`` builds each wheel and
+requires ``<import>/py.typed`` plus the ``Typing :: Typed`` classifier, so a
+marker missing from the tree, or a package the build no longer packages,
+fails here even while the declaration is intact. There is no omission
+control, for the reason above: a wheel built undeclared still ships the marker.
 
 ``test_package_data_does_not_swallow_packages_find_keys`` guards a regression
 observed while authoring this change: ``[tool.setuptools.package-data]`` was
@@ -38,6 +52,11 @@ Created: 2026-08-21
 
 from __future__ import annotations
 
+import json
+import shutil
+import subprocess  # nosec B404 -- sys.executable plus a fixed argv, never a shell
+import sys
+import tempfile
 import tomllib
 import unittest
 from pathlib import Path
@@ -63,6 +82,62 @@ TYPED_CLASSIFIER = "Typing :: Typed"
 # Keys that belong to [tool.setuptools.packages.find]; finding one inside
 # [tool.setuptools.package-data] means a table header was inserted mid-table.
 PACKAGES_FIND_KEYS: frozenset[str] = frozenset({"include", "exclude", "where", "namespaces"})
+
+# Isolated from the parent interpreter: setuptools keeps build state on the process, and a second
+# package built in-process can reuse the first package's discovered files. stdout/stderr stay in the
+# parent capture so the build log does not flood the regression step.
+_BUILD_WHEEL = r"""
+import contextlib
+import io
+import json
+import os
+import sys
+import zipfile
+from pathlib import Path
+
+import setuptools.build_meta as build_meta
+
+project, wheel_dir, out = (Path(arg) for arg in sys.argv[1:4])
+os.chdir(project)
+sink = io.StringIO()
+with contextlib.redirect_stdout(sink), contextlib.redirect_stderr(sink):
+    wheel_name = build_meta.build_wheel(str(wheel_dir))
+with zipfile.ZipFile(wheel_dir / wheel_name) as archive:
+    names = archive.namelist()
+    metadata_name = next(name for name in names if name.endswith(".dist-info/METADATA"))
+    metadata = archive.read(metadata_name).decode("utf-8")
+Path(out).write_text(json.dumps({"names": names, "metadata": metadata, "log": sink.getvalue()}), encoding="utf-8")
+"""
+
+
+def _built_wheel(project: Path) -> tuple[list[str], str]:
+    """Build ``project`` in a temp copy and return ``(wheel member names, METADATA text)``."""
+    with tempfile.TemporaryDirectory(prefix=f"py-typed-wheel-{project.name}-") as tmp:
+        root = Path(tmp)
+        copy = root / "project"
+        shutil.copytree(project, copy, ignore=shutil.ignore_patterns("build", "dist", "*.egg-info", "__pycache__", ".pytest_cache", ".mypy_cache"))
+        wheel_dir = root / "dist"
+        wheel_dir.mkdir()
+        out = root / "wheel.json"
+        proc = subprocess.run(  # nosec B603 -- sys.executable and a fixed argv, no shell
+            [sys.executable, "-c", _BUILD_WHEEL, str(copy), str(wheel_dir), str(out)],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if proc.returncode != 0:
+            detail = (proc.stderr or proc.stdout or "").strip()
+            if "No module named 'setuptools'" in detail or "No module named setuptools" in detail:
+                raise AssertionError("setuptools is required to build the wheel (the Regression Tests job installs setuptools>=68): " + detail[-500:]) from None
+            raise AssertionError(f"{project.name}: wheel build failed (exit {proc.returncode}): {detail[-800:]}")
+        payload = json.loads(out.read_text(encoding="utf-8"))
+        return list(payload["names"]), str(payload["metadata"])
+
+
+def _tests_packaged(names: list[str]) -> list[str]:
+    """Wheel members that are a ``tests`` package. The mid-table header bug shipped one."""
+    return [name for name in names if name == "tests" or name.startswith("tests/") or "/tests/" in name]
 
 
 def _find_repo_root(start: Path) -> Path:
@@ -107,7 +182,7 @@ class PyTypedMarkerTests(unittest.TestCase):
                 )
 
     def test_every_subpackage_declares_py_typed_as_package_data(self) -> None:
-        """The file alone is not enough: undeclared, setuptools omits it from the wheel."""
+        """Declared explicitly, so packaging does not rest on setuptools' implicit pattern (81.0.0 and 84.2.1 ship an undeclared marker too)."""
         for subdir in self.subdirs:
             with self.subTest(package=subdir.name):
                 pkg = _import_name(subdir)
@@ -115,7 +190,7 @@ class PyTypedMarkerTests(unittest.TestCase):
                 self.assertIn(
                     pkg,
                     package_data,
-                    f"{subdir.name}: [tool.setuptools.package-data] does not declare '{pkg}' -- " "the marker exists in the repo but never reaches a wheel (no MANIFEST.in here)",
+                    f"{subdir.name}: [tool.setuptools.package-data] does not declare '{pkg}' -- " "the marker would reach the wheel only through setuptools' implicit py.typed pattern, not a declaration",
                 )
                 self.assertIn(
                     "py.typed",
@@ -144,6 +219,19 @@ class PyTypedMarkerTests(unittest.TestCase):
                     strays,
                     f"{subdir.name}: {sorted(strays)} appears under [tool.setuptools.package-data] -- " "it belongs to [tool.setuptools.packages.find]; a table header was inserted mid-table, " "so packaging discovery silently lost it",
                 )
+
+    def test_every_built_wheel_ships_py_typed(self) -> None:
+        """The published artifact, not the declaration: 0.1.0's wheel imported and still had no marker."""
+        for subdir in self.subdirs:
+            with self.subTest(package=subdir.name):
+                pkg = _import_name(subdir)
+                names, metadata = _built_wheel(subdir)
+                marker = f"{pkg}/py.typed"
+                self.assertEqual(names.count(marker), 1, f"{subdir.name}: wheel members containing py.typed: {[name for name in names if 'py.typed' in name]}")
+                self.assertIn(f"{pkg}/__init__.py", names, f"{subdir.name}: wheel has no {pkg}/__init__.py -- the build did not package the library")
+                self.assertIn(f"Classifier: {TYPED_CLASSIFIER}\n", metadata, f"{subdir.name}: built METADATA has no {TYPED_CLASSIFIER!r} classifier")
+                packaged_tests = _tests_packaged(names)
+                self.assertFalse(packaged_tests, f"{subdir.name}: wheel packages a tests tree: {packaged_tests}")
 
 
 if __name__ == "__main__":
