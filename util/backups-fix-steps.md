@@ -92,7 +92,7 @@ Step 11, part A: rotate the UI password
 
 Watchdog: no redeploy needed under A0. The job ID is still 2, which is what the 10-05 deploy used. The watchdog reads the same credential file, so its daily 401 ends once that file holds the new password.
 
-1. Browser, http://localhost:8300:
+1. Browser, <http://localhost:8300>:
     - Log in with the S-5 password.
     - In Settings, set a new UI password. Generate it in the password manager and save it there first. A random one with no spaces is best.
     - Log out, then log in again with the new password to prove it works.
