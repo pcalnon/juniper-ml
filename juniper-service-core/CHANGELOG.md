@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **A `fit` that returns while the run is paused settles `COMPLETED` instead of wedging the
+  lifecycle** (the "paused-fit wedge" in §4 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`; owner ruling "Fix
+  now", 2026-11-08). Pause is cooperative: `ServiceLifecycleManager`'s event sink waits at the
+  model's next event. A pause that arrives after the model's last event, or during a `fit` that
+  emits none, is never waited on, so `fit` returns while the machine is still `PAUSED`.
+  `_train_thread_target` then called `mark_completed()`, which accepts only `STARTED`, ignored the
+  refusal, and wrote `monitor.status` `completed`. The machine stayed `PAUSED` with no training
+  thread behind it and `training_active` true, so every start was refused. A resume moved it to
+  `STARTED`, still with no thread, and every start with data stayed refused (HTTP 409,
+  `Training cannot be started: Training already in progress`; a start without data is a 400) until
+  a stop or reset. Every release that ships the manager has it, 0.2.0 through 0.7.2.
+
+  The thread now releases the pause with `RESUME`, the transition `resume_training` uses, then
+  records the completion: status `COMPLETED`, phase `idle`, `paused_phase` cleared, the pause gate
+  set. A resume afterwards is a 409, because nothing is paused, and a start runs a new `fit`, as
+  after any completed run. A stop that races the completion still settles `STOPPED`, and a resume
+  that lands before `fit` returns still completes the same run. A `fit` that raises while paused
+  still settles `FAILED`, and now releases the pause gate too: left closed, it held a later direct
+  `run()` on the same manager at its first event.
+
+  **`LifecycleStateMachine` is unchanged.** `mark_completed` still refuses `PAUSED`, as cascor's
+  machine does; only its docstring now says why that is safe. juniper-cascor's own manager follows
+  the same pattern (its `_run_training` calls `mark_completed()` without releasing a pause), but it
+  does not use this manager, so this change does not reach it.
+- **The training thread settles only a run it still owns.** A stop is seen at `fit`'s next event,
+  and a start sent before then clears it, so the stopped run's `fit` keeps running beside the new
+  run. When that `fit` ended, its thread settled whatever run was current: its return marked a
+  running new run `COMPLETED` while that run's `fit` was still training, after which a third start
+  was accepted beside it; its exception marked the new run `FAILED`; and a thread that had seen
+  the stop but was still unwinding when a start landed wrote `monitor.status` `stopped` over the new
+  run's context. Every settle branch of `_train_thread_target` is now guarded by
+  `self._thread is threading.current_thread()`. The run's result (`_last_result`, a private field
+  nothing reads yet) is recorded under the same guard, so a stopped run's result is no longer
+  recorded, unless a refused start has cleared its stop. Without the guard, the pause release above
+  would also have let a stale return resume a newer paused run and complete it mid-`fit`.
+
+  The overlap itself remains: the stopped run's `fit` still runs to its end, and its events still
+  pass through the shared sink: a `phase_change` sets the new run's phase, and a `training_end` sets
+  `monitor.status` `ended` while the new run trains. The pause gate is shared too, so the release
+  on a paused completion or failure also wakes a stopped run's `fit` that is waiting at it, and a
+  start is then accepted beside that `fit`; after a paused completion, 0.7.2's wedge had kept it
+  waiting. The owner has ruled that the stop-then-start race behind both gets
+  its own fix, in its own PR (§8, ruling 11 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+- **Tests**: `tests/test_lifecycle_paused_fit_return.py` (11 tests) pins both entries. With
+  `manager.py` reverted to 0.7.2's, 9 of them fail and the other 829 tests of the suite pass:
+  nothing else covered these paths. Nine mutants of `manager.py` (juniper-ml's
+  `util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py`: the fix reverted, each new step or
+  guard removed or replaced, the result recorded outside the guard, and the existing stop guard
+  removed) are each killed by this file and by no other test.
+
 ## [0.7.2] - 2026-11-08
 
 ### Fixed
