@@ -136,7 +136,7 @@ def message_loop_probe() -> None:
 
     from juniper_service_core.websocket import worker_stream
     from juniper_service_core.workers.coordinator import JsonTaskProtocol, WorkerCoordinator
-    from juniper_service_core.workers.registry import WorkerRegistry
+    import juniper_service_core.workers.registry as regmod
 
     class _Stop(Exception):
         pass
@@ -160,7 +160,7 @@ def message_loop_probe() -> None:
         async def send_bytes(self, data):
             sent.append(("bytes", len(data)))
 
-    registry = WorkerRegistry()
+    registry = regmod.WorkerRegistry()
     reg = registry.register("w", {})
     reg.record_heartbeat(gpu_utilization_pct=77.0, last_task_duration_seconds=3.0, recent_task_durations_seconds=[1.0, 2.0], in_flight_tasks=2, tasks_completed=1, tasks_failed=4)
     coord = WorkerCoordinator(registry, JsonTaskProtocol())

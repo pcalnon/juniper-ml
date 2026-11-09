@@ -47,7 +47,6 @@ def load_module(ml_root: str, tag: str) -> types.ModuleType:
     return mod
 
 
-_FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 _HEADING_RE = re.compile(r"^ {0,3}(#{1,6})\s+(.*?)\s*#*\s*$")
 _LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)\)")
 

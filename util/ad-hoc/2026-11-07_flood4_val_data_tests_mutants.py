@@ -214,7 +214,7 @@ def main() -> int:
             r = run_pytest(root, m["tests"], logdir / f"mutant_{safe}.log")
             if m.get("also_old_tests"):
                 drop_pycache(root)
-                r_old = run_pytest(root, [t for t in OLD517 if True], logdir / f"mutant_{safe}_wholeclass.log")
+                r_old = run_pytest(root, list(OLD517), logdir / f"mutant_{safe}_wholeclass.log")
                 row["whole_class"] = {"summary": r_old["summary"], "failed": r_old["failed"]}
         finally:
             target.write_bytes(original)
