@@ -1,14 +1,16 @@
 """Pin terminal transitions around PAUSE and the non-active snapshot states.
 
-``mark_completed`` is legal only from STARTED, so a completion that lands while the run
-is paused is refused and the machine stays PAUSED with ``paused_phase`` intact. Its only
-production caller, ``LifecycleManager._train_thread_target``, makes that call after
-``run()`` -- and so ``fit`` -- has returned, so a refused completion leaves a PAUSED
-machine with no training thread behind it; this file pins the state machine's refusal,
-not what the manager should do next. ``mark_failed`` is the
-opposite arm — PAUSED is an active state, so a failure (exception or user stop) from
-pause must settle FAILED and clear the remembered phase. Collapsing the two checks
-into ``is_active()`` would either complete a paused run or refuse to fail one.
+``mark_completed`` is legal only from STARTED (as in cascor's machine), so a completion
+that lands while the run is paused is refused and the machine stays PAUSED with
+``paused_phase`` intact. This file pins that refusal, the state machine's own contract. Its
+only production caller, ``ServiceLifecycleManager._train_thread_target``, runs after ``fit``
+has returned; when its own run is paused and no stop was requested, it first releases the
+pause with RESUME, so the run settles COMPLETED instead of leaving a PAUSED machine with no
+training thread behind it. ``tests/test_lifecycle_paused_fit_return.py`` pins that manager
+behaviour.
+``mark_failed`` is the opposite arm — PAUSED is an active state, so a failure (exception or
+user stop) from pause must settle FAILED and clear the remembered phase. Collapsing the two
+checks into ``is_active()`` would either complete a paused run or refuse to fail one.
 
 PAUSE, failure, and completion are also refused from REPLAYING, INVESTIGATING, and
 RESUME_READY. Those states are not a live fit; entering PAUSED from one of them would

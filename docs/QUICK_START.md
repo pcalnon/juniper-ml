@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.44
+**Version:** 0.3.45
 **Status:** Active
-**Last Updated:** 2026-11-07
+**Last Updated:** 2026-11-09
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -144,7 +144,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Ruleset Scope Guard](REFERENCE.md#ruleset-scope-guard) -- `~ALL` re-arms deleted dependabot/Copilot bypass rows; exit 2 is not clean
 - [Experiment Stack Utilities](REFERENCE.md#experiment-stack-utilities) -- per-run cascor/recurrence experiments via `util/experiment_stack.bash` + `run_experiment.py` (failed `--up` auto-tears down)
 - [Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) -- W0.2 (juniper-ml#2139): the recurrence leg refuses a stale env before `serve` (scoped `pip check`, installed pins, `derive_full_split`); `--skip-env-preflight` warns and still serves
-- [Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion) -- shared replay speed clamps to [-10, 10] and sleeps at most 0.5 s per frame; a fit that returns while paused leaves the lifecycle PAUSED and the monitor `completed`
+- [Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion) -- shared replay speed clamps to [-10, 10] and sleeps at most 0.5 s per frame; a fit that returns while paused settles COMPLETED (unreleased; first in the juniper-service-core release after 0.7.2; 0.7.2 and earlier stay wedged, PAUSED and then STARTED after a resume, until stop or reset)
 - [Crossval 500 with model-core 0.2.0](REFERENCE.md#crossval-500-with-model-core-020) -- `juniper-recurrence` 0.8.0 plus `juniper-model-core` 0.2.0 passes preflight, then every `POST /v1/crossval` is an unhandled `groups=` `TypeError` (HTTP 500). Fixed in 0.8.1 (PyPI 2026-11-06): upgrade `juniper-recurrence`, or install `juniper-model-core[crossval]>=0.3.0,<0.4.0` to stay on 0.8.0
 - [Recurrence launch record and service env](REFERENCE.md#recurrence-launch-record-and-service-env) -- `save_model` saves the scored model by `operation_id` (a pre-W1.5 service re-runs the launcher-recorded CLI under interpreter and model-version parity instead); per-run recurrence snapshots dir
 - [A failed snapshot save does not re-fit](REFERENCE.md#a-failed-snapshot-save-does-not-re-fit) -- with an `operation_id`, a non-201, a dropped connection, a bad `size_bytes`, or a copy error is `degraded` (exit 1) and does not call the CLI. A bad copy deletes `model.npz`.
@@ -223,6 +223,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-11-07
-**Version:** 0.3.44
+**Last Updated:** 2026-11-09
+**Version:** 0.3.45
 **Status:** Active

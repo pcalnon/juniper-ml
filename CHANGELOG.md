@@ -81,6 +81,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   From #2452 only the cheatsheet's `--fork-session` example is carried: its forwarded argv now shows the `--` that
   `wake_the_claude.bash` puts before the prompt. Not carried: #2440, the same launcher claim; the rest of #2452's
   launcher page predates #2468, whose own cheatsheet text is current.
+- **The Cursor flood-4 disposition record, with its render inputs and provenance scripts (round 1 complete).**
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` records how the 74-PR census was
+  disposed of: six carriers (juniper-data#518 and #519, juniper-canopy#797 and #802, juniper-ml#2517 and #2519)
+  merged, and all 68 census drafts assigned to them closed, 67 of them carried. It also records each carrier's 2 to
+  6 independent validation rounds, the defects found on `main`, the per-PR disposition (§5), the process traps, and
+  the owner's rulings 1–7 of 2026-11-08: round 2 takes 48 drafts; the launcher's effort default becomes `max`, and
+  an explicit `auto` will send no `--effort` flag; three of the four open defect rows in §4 get their own fixes
+  now; and juniper-ml#2271's one setting moved to user settings, with its branch deleted. Later rulings decide that
+  the agent guard's brace cap is to fail closed, that the gitleaks fix is to be ported to the seven other
+  repositories that run the action, and that four more defects found while the first fixes were built are to be
+  fixed, each in its own PR; none of these has landed yet. §5's six manifests and render config are archived under
+  `reports/2026-11-08_flood4-disposition/`, from which §5 re-rendered byte for byte (the renderer also reads each
+  PR's live state). The arc's 160 `util/ad-hoc/2026-11-07_flood4_*` and `2026-11-08_flood4_*` scripts, from the
+  nine of its worktrees that held them, are kept as provenance. Before upload they were made to pass gates G-TMP
+  and G-PATH and the secret scan, 21 of 28 predicted CodeQL alerts were fixed (the other 7 are pydantic fields the
+  prescreen misreads), and 29 probes gained provenance fields; nothing they compute changed. Round 1's closing
+  handoff and its successor are archived under `prompts/thread-handoff_automated-prompts/`.
 
 ### Changed
 
@@ -168,6 +185,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - the rulesets' strict up-to-date policy is off: it is on in juniper-ml, juniper-data and juniper-canopy;
     - CI never runs on the merge result: a PR's CI runs on `refs/pull/N/merge`;
     - a BEHIND branch is fixed by a rebase: GitHub's update-branch is the fix.
+
+- **`juniper-service-core`: a `fit` that returns while the run is paused settles `COMPLETED` instead
+  of wedging the lifecycle, and the training thread settles only a run it still owns** (the
+  "paused-fit wedge" in §4 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`;
+  owner ruling "Fix now", 2026-11-08). The training thread called `mark_completed()`, which refuses
+  `PAUSED`, and ignored the refusal. The machine stayed `PAUSED` with no thread behind it; after a
+  resume it read `STARTED`, and every start with data was a 409 until a stop or reset. The thread now
+  releases the pause before it records the completion, and the state machine is unchanged. Every
+  settle is also guarded by `self._thread is threading.current_thread()`, so a stopped run's `fit`
+  that outlives a following start no longer completes or fails the newer run when it ends. The overlap
+  itself remains: that `fit` still runs to its end, and its events still reach the shared sink. The
+  pause release on a paused completion or failure also wakes such a `fit` if it is waiting at the
+  shared pause gate, and a start is then accepted beside it. The owner has ruled that this race gets
+  its own fix, in its own PR (§8, ruling 11 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+  - Pinned by `juniper-service-core/tests/test_lifecycle_paused_fit_return.py` (11 tests).
+    `util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py` runs nine mutants of `manager.py`;
+    each is killed by that file and by no other test. `util/ad-hoc/2026-11-08_paused_fit_wedge_doc_stamps.py`
+    re-derives the four doc stamps below from `main`'s values, for a rebase.
+  - `docs/REFERENCE.md` 0.6.65, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` 1.0.65, `docs/QUICK_START.md`
+    0.3.45 and `docs/DOCUMENTATION_OVERVIEW.md` 0.2.57 describe the fixed behaviour and keep the old one
+    for juniper-service-core 0.7.2 and earlier, which still have it.
+  - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the juniper-service-core
+    release after 0.7.2.
 
 ## [0.11.4] - 2026-11-06
 

@@ -1,0 +1,135 @@
+{
+  "repo": "juniper-canopy",
+  "carrier": "docs",
+  "base_sha": "af650373518f9b9869799daa23551835f24a930d",
+  "base_recheck": "git -C <canopy primary> fetch -q origin at ~17:20 local: origin/main still af650373518f9b9869799daa23551835f24a930d. Main gained nothing on any touched doc since the drafts' merge-bases (513b1bda, 143afc46, d372df33 -- the last has main's tree).",
+  "worktree": "/home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--docs--flood4-consolidated-docs--20261107-1700--af650373",
+  "files": [
+    {"path": "CHANGELOG.md", "status": "modified"},
+    {"path": ".gitleaks.toml", "status": "modified", "note": "comment only (validator: main's false D-F1 claim at :26)"},
+    {"path": ".github/workflows/ci.yml", "status": "modified", "note": "comment only (validator: main's stale D-F2 claim at :293-294); banner left as is, as #779-#781 did"},
+    {"path": "docs/ci_cd/CICD_MANUAL.md", "status": "modified"},
+    {"path": "docs/ci_cd/CICD_QUICK_START.md", "status": "modified"},
+    {"path": "docs/ci_cd/CICD_REFERENCE.md", "status": "modified"},
+    {"path": "docs/ci_cd/CICD_ENVIRONMENT_SETUP.md", "status": "modified"},
+    {"path": "docs/DEVELOPER_CHEATSHEET.md", "status": "modified"},
+    {"path": "docs/QUICK_START.md", "status": "modified"},
+    {"path": "docs/REFERENCE.md", "status": "modified"},
+    {"path": "docs/USER_MANUAL.md", "status": "modified"},
+    {"path": "docs/api/API_REFERENCE.md", "status": "modified"},
+    {"path": "src/tests/regression/test_gitleaks_config.py", "status": "modified", "note": "comment only at :92 (round-2 F4: main's third copy of D-F1's false premise); the assertion message on :93 is true and unchanged"}
+  ],
+  "validator_round2": {
+    "F3": "applied in pr_body.txt / commit_body.txt / CHANGELOG entry: four false draft claims (D-F1 Gitleaks, D-F2 Dependabot token, D-F3 stage_dataset echo, D-F5 top-of-tree lane statements) plus the incomplete 422 list (D-F9); the 11 draft rewrites are listed in the PR body; the rebuild check covers 'the 12 changed files other than CHANGELOG.md'",
+    "F4": "applied: src/tests/regression/test_gitleaks_config.py:92 is a COMMENT, corrected (comment only) and listed in the PR body; main's CHANGELOG.md [Unreleased] #779 entry (Dependabot store lacks the token) left as a dated record and named in the PR body",
+    "F5": "applied: CICD_MANUAL and CICD_QUICK_START now say a pull request from a branch of this repository, Dependabot's included; a fork's pull request gets no secrets (gh api: visibility public, allow_forking true, forks_count 0). The CICD_MANUAL paragraph line was split at sentence boundaries (MD013: 563 > 512 after the rewording)",
+    "F6": "kept minor: docs/DOCUMENTATION_OVERVIEW.md:978 prescribes 'Minor (1.0.0 -> 1.1.0): New sections'. The PR body cites that rule and states that #729 (3029d07d) used patch bumps for the same kind of change (verified: DEVELOPER_CHEATSHEET 1.0.4 -> 1.0.5 beside five new ### headings). #729 is not cited as precedent for minor anywhere in the deliverables",
+    "re-runs": "util/ad-hoc/2026-11-07_flood4_canopy_validator_fixes_round2.py (exact single-occurrence edits); rebuild check with both --then rounds: 12/12 SAME (tmp/flood4/canopy/docs/rebuild_check_after_round2.log); pinned pre-commit on CHANGELOG.md, test_gitleaks_config.py, CICD_MANUAL.md, CICD_QUICK_START.md: exit 0 (precommit_round2.log); test_gitleaks_config.py with the pinned gitleaks 8.24.3 on PATH: 12 passed (pytest_round2_gitleaks_engine.log)"
+  },
+  "validator_findings": {
+    "D-F1": "applied (BLOCKER, re-derived): gitleaks 8.24.3 (pre-commit cache, ref v8.24.3) on main's .gitleaks.toml: as-is exit 2 (rules fire); without [extend] exit 1, 'Failed to load config ... generic-api-key: both |regex| and |path| are empty'; with [[rules]] also removed exit 0, no leaks. The pre-#764 file (da08414f^) held only [allowlist]. gitleaks-action e0c47f4f src/index.js:196-203: exit other than 0/2 -> 'ERROR: Unexpected exit code'. Corrected CICD_MANUAL (runbook paragraph, 'Reading a failure' bullet), CICD_REFERENCE, CICD_QUICK_START, and main's .gitleaks.toml:26 comment. Log: docs/gitleaks_noextend.log",
+    "D-F2": "applied (BLOCKER, re-derived): gh api repos/pcalnon/juniper-canopy/dependabot/secrets -> CODECOV_TOKEN created 2026-11-04T11:18:47Z. Corrected CICD_ENVIRONMENT_SETUP, CICD_MANUAL (and re-justified fail_ci_if_error false by --cov-fail-under gating coverage in the job), CICD_REFERENCE, CICD_QUICK_START, and main's ci.yml:293-294 comment. No logic on main depends on the stale premise (ci.yml has no Dependabot-conditioned Codecov logic), so no defect to report.",
+    "D-F3": "applied (BLOCKER, re-derived): main.py:4606 returns the backend's data; CascorServiceAdapter.stage_dataset passes the envelope's data; cascor origin/main routes/training.py:276-285 returns success_response(stage_dataset_config(**body.model_dump(exclude_none=True))) = {'status': 'staged', 'config': cfg}; the client's _request returns the parsed body; demo_mode.py:2512-2519 and recurrence_backend.py:537-548 return data={'status': 'staged', 'config': ...} (recurrence adds dataset_ref). API_REFERENCE now shows that shape.",
+    "D-F4": "applied (MAJOR, re-derived): main's CI/CD docs mention Gitleaks only at CICD_QUICK_START.md:117 and CICD_REFERENCE.md:371 (the ci.yml security job); #790's deleted runbook lines were `pip install -e .` and `pip-audit --strict --desc on`. CHANGELOG entry and PR body corrected.",
+    "D-F5": "applied: the top-of-tree symptom now says it fails Unit Tests + Coverage (TestNoTestModuleSitsAtTheTopOfTheTestTree, src/tests/regression, unit lane) and CICD_REFERENCE says 'none of the pull-request lanes' path lists' with the scheduled-lane caveat (scheduled-tests.yml:92-93 -m 'slow or integration', testpaths src/tests).",
+    "D-F6": "applied: docs/DOCUMENTATION_OVERVIEW.md:975-979 (Minor = new sections). The 7 docs that gain headings take a minor bump, still exactly once from main; CICD_ENVIRONMENT_SETUP and CICD_QUICK_START gain none and keep their patch bump.",
+    "D-F7": "applied in pr_body.txt and this manifest: 30 WARN = 18 stamp-only + 12 content hunks (the validator's 11 draft rewrites + D-F8's label-to-heading); 'two drafts failed Pre-commit on MD013 (#790, #793); #796 never ran CI'; 'every claim was re-derived' dropped.",
+    "D-F8": "applied: CICD_MANUAL '**Coverage report missing files:**' -> '##### Coverage report missing files' (MD024 is siblings_only; the blank line after it already exists).",
+    "D-F9": "applied: API_REFERENCE 422 row now names request validation (main.py StageDatasetRequest has typed Optional fields).",
+    "observation 3 (QUICK_START.md:933 links ../README.md#active-research-components, which has no such heading)": "not applied: predates the carrier and is not in scope; reported only"
+  },
+  "stamps": {
+    "rule": "each touched doc bumped once from main's value; header and footer agree; every draft stamp hunk dropped; minor where the doc gains a section, as docs/DOCUMENTATION_OVERVIEW.md:978 prescribes ('Minor: New sections'), patch otherwise. Canopy's practice differed: #729 (3029d07d) used patch bumps beside new sections",
+    "values": {
+      "docs/ci_cd/CICD_MANUAL.md": "0.27.2 -> 0.28.0 (gains 6 sections; drafts: 0.27.4 / 0.27.5 / 0.27.6)",
+      "docs/ci_cd/CICD_QUICK_START.md": "0.27.1 -> 0.27.2 (no new section; drafts: 0.27.4 / 0.27.5 / 0.27.6); two-space hard breaks on lines 3-5 kept",
+      "docs/ci_cd/CICD_REFERENCE.md": "0.29.0 -> 0.30.0 header and footer (gains 2 sections; drafts: 0.29.1 / 0.29.2 / 0.29.3)",
+      "docs/ci_cd/CICD_ENVIRONMENT_SETUP.md": "0.28.2 -> 0.28.3 (no new section; draft #791: 0.28.4)",
+      "docs/DEVELOPER_CHEATSHEET.md": "1.0.5 -> 1.1.0 header and footer (draft #796: 1.0.10, header only)",
+      "docs/QUICK_START.md": "0.25.4 -> 0.26.0 header and footer (draft #796: 0.25.9, header only)",
+      "docs/REFERENCE.md": "0.25.4 -> 0.26.0 header and footer (draft #796: 0.25.9, header only)",
+      "docs/USER_MANUAL.md": "0.26.3 -> 0.27.0 (draft #796: 0.26.8)",
+      "docs/api/API_REFERENCE.md": "1.4.3 -> 1.5.0 (draft #796: 1.4.4)"
+    },
+    "dates": "every Last Updated / Date stamp set to 2026-11-07 in each line's own style (ISO or 'November 7, 2026')"
+  },
+  "carried": [
+    {
+      "pr": 790,
+      "head_sha": "3f3aa0119eb4a97d84337987bf38200691809aa7",
+      "title": "docs(ci): document the Gitleaks ruleset contract",
+      "taken": ["own hunks 513b1bda..3f3aa011 (2 commits): docs/ci_cd/CICD_MANUAL.md, docs/ci_cd/CICD_QUICK_START.md, docs/ci_cd/CICD_REFERENCE.md"],
+      "fixes": [
+        "CICD_MANUAL.md: the one MD013 line (528 > 512, the `[extend]` / `useDefault = true` paragraph) wrapped at a sentence boundary",
+        "CICD_QUICK_START.md: the header hunk dropped entirely -- besides the stamps it stripped the two-space hard breaks from lines 3-5 (Last Updated / Time to Complete / Version), so they would render as one run-on line; main's bytes kept",
+        "Validator D-F1: the draft said an omitted `[extend]` leaves the step 'with nothing to fire' and exiting 0; with today's file gitleaks 8.24.3 refuses the config and the step fails. Corrected in four places (see validator_findings)."
+      ],
+      "dropped": ["stamp hunks (header of all 3 files, CICD_REFERENCE footer)"],
+      "outcome": "carried-with-fix",
+      "reason": "content re-derived on main: .gitleaks.toml [extend] useDefault, the AND-scoped generic-api-key allowlist and its conda paths, gitleaks-action v3.0.0 pin, GITLEAKS_VERSION 8.24.3, GITLEAKS_PARITY_REQUIRED 1; the weekly-scan runbook corrections (`pip install -e \".[dev]\"`, `pip-audit --desc on --skip-editable`, no gitleaks in security-scan.yml)"
+    },
+    {
+      "pr": 791,
+      "head_sha": "4fefdd8a29b887d9942dcdff360ef3c07c92f743",
+      "title": "docs(ci): document the unit-lane Codecov token and the test-tree root",
+      "taken": ["own hunks 513b1bda..4fefdd8a: docs/ci_cd/CICD_ENVIRONMENT_SETUP.md, CICD_MANUAL.md, CICD_QUICK_START.md, CICD_REFERENCE.md"],
+      "fixes": [
+        "Validator D-F2: the draft (committed 2026-11-04T09:30:40Z) said the Dependabot secret store lacks CODECOV_TOKEN; it has held it since 2026-11-04T11:18:47Z. Corrected in four places; fail_ci_if_error false re-justified without the Dependabot premise.",
+        "Validator D-F5: the top-of-tree symptom and the 'no path list' sentence corrected.",
+        "Validator D-F8: the sibling troubleshooting label made a heading like the new one."
+      ],
+      "dropped": ["stamp hunks (header of all 4 files, CICD_REFERENCE footer)"],
+      "outcome": "carried-with-fix",
+      "reason": "DAMAGED verdict re-derived as a false positive: the fence-aware docs screen (juniper-ci-tools 0.9.1 source with base_fenced/head_fenced maps, util/ad-hoc/2026-11-07_flood4_worktree_docs_screen.py) gives 0 FAIL; the flood-3 helper, which omits the fence maps, still reports the deleted ```yaml comment '# Check GitHub Actions logs' as a heading. Codecov inputs and lane wiring re-derived; agrees with #795's pins."
+    },
+    {
+      "pr": 793,
+      "head_sha": "abc947239a24d75f493d78b174c6953248be98f9",
+      "title": "docs(ci): document the AGENTS.md date check",
+      "taken": ["own hunks 143afc46..abc94723: docs/ci_cd/CICD_MANUAL.md, CICD_QUICK_START.md, CICD_REFERENCE.md"],
+      "fixes": [
+        "four MD013 lines wrapped at sentence boundaries (CICD_MANUAL x3, CICD_REFERENCE x1, continuation indented)",
+        "MD038: two code spans of `##` plus a trailing space, which markdownlint-cli v0.48.0's --fix rewrites to a bare `##` and so changes the stated rule (juniper_ci_tools.lint_agents_md_header ends the header at `line.strip() == \"---\" or line.startswith(\"## \")`), reworded"
+      ],
+      "dropped": ["stamp hunks (header of all 3 files, CICD_REFERENCE footer)"],
+      "outcome": "carried-with-fix",
+      "reason": "content re-derived on main: workflow 'AGENTS.md Date Check', job verify-date, verify-only; the workflow header still names tests/test_agents_md_{header_schema,version_drift}.py, absent from the tree (the doc says so). Agrees with #794's case list."
+    },
+    {
+      "pr": 796,
+      "head_sha": "e82d047523651a75875bf5a8cc7b55bdf6e5bf1c",
+      "title": "docs(staging): document the mnist declared-param filter",
+      "taken": ["own hunks d372df33..e82d0475 (+179/-12; d372df33 = its base fix/mnist-declared-params-778, whose tree equals main's): docs/DEVELOPER_CHEATSHEET.md, docs/QUICK_START.md, docs/REFERENCE.md, docs/USER_MANUAL.md, docs/api/API_REFERENCE.md"],
+      "fixes": [
+        "three MD013 lines wrapped (DEVELOPER_CHEATSHEET 576, QUICK_START 624, api/API_REFERENCE 561)",
+        "Validator D-F3: POST /api/stage_dataset's response schema showed {'status': 'success', 'data': {}} and said the staged config is not echoed; every shipped backend echoes it ({'status': 'staged', 'config': ...}). Corrected.",
+        "Validator D-F9: the 422 row now includes request-validation failures."
+      ],
+      "dropped": ["stamp hunks (it jumped 1.0.5 -> 1.0.10, 0.25.4 -> 0.25.9, 0.26.3 -> 0.26.8, header only)"],
+      "outcome": "carried-with-fix",
+      "reason": "stacked draft carried by its own hunks, so no retarget is needed; DECLARED_PARAM_DEFAULTS['mnist'] re-derived (13 fields, n_samples and flatten declared, noise absent, no spiral/xor/gaussian entry). Its body claim 'not on main' is stale (#788 merged 2026-11-04); not carried."
+    }
+  ],
+  "checks": [
+    {"what": "own-hunk extraction (merge-base..head per draft)", "command": "python3 util/ad-hoc/2026-11-07_flood4_canopy_extract_hunks.py <canopy primary> tmp/flood4/canopy/hunks", "result": "pass", "detail": "numstats match the triage (#796 +179/-12)", "log": "tmp/flood4/canopy/hunks/extract_summary.json"},
+    {"what": "strip stamp hunks and whitespace-only edits", "command": "python3 util/ad-hoc/2026-11-07_flood4_canopy_strip_stamp_hunks.py hunks/pr<N>.patch hunks/pr<N>.stripped.patch (N = 790 791 793 796)", "result": "pass", "detail": "only stamp lines and #790's QUICK_START 'Time to Complete' hard-break edit restored; #793's prose line `**Last Updated**: <today UTC>` kept", "log": "tmp/flood4/canopy/docs/strip_stamp_hunks.log"},
+    {"what": "every carried line present (before wrapping and before the validator fixes)", "command": "python3 util/ad-hoc/2026-10-08_flood3_verify_carried_lines.py <docs wt> pr790=... pr791=... pr793=... pr796=...", "result": "pass", "detail": "MISSING=0 for all four (65/50/45/119 lines checked)", "log": "tmp/flood4/canopy/docs/verify_carried_lines_pre_wrap.log"},
+    {"what": "pinned pre-commit before the wrap (to get markdownlint's real list)", "command": "cd <docs wt> && /opt/miniforge3/bin/pre-commit run --files <9 docs>", "result": "fail", "detail": "exactly the 8 MD013 lines the triage predicted, plus markdownlint --fix rewriting two MD038 code spans; both handled by the wrap step", "log": "tmp/flood4/canopy/docs/precommit_pre_wrap.log"},
+    {"what": "stamp bump + wrap + MD038 rewording", "command": "bump_doc_stamps --date 2026-11-07 <9 docs>; util/ad-hoc/2026-11-07_flood4_canopy_docs_wrap.py <docs wt>; main's own unflagged CICD_REFERENCE.md line (514 chars, no whitespace past col 512) rejoined", "result": "pass", "detail": "8 flagged lines wrapped, 2 spans reworded", "log": "tmp/flood4/canopy/docs/bump_and_wrap_output.log"},
+    {"what": "validator fixes, as exact single-occurrence replacements plus the D-F6 minor bumps", "command": "python3 util/ad-hoc/2026-11-07_flood4_canopy_docs_validator_fixes.py <docs wt>", "result": "pass", "detail": "15 edits in 7 files, 7 version bumps; the script refuses to write if any old text does not occur exactly once", "log": "tmp/flood4/canopy/docs/validator_fixes.log"},
+    {"what": "end-to-end rebuild: worktree == main + stripped drafts + one bump + wrap/rewording + validator fixes, nothing else", "command": "python3 util/ad-hoc/2026-11-07_flood4_canopy_docs_rebuild_check.py <docs wt> af650373 2026-11-07 <4 stripped patches> --then util/ad-hoc/2026-11-07_flood4_canopy_docs_validator_fixes.py", "result": "pass", "detail": "11/11 files SAME byte-for-byte (9 docs + .gitleaks.toml + ci.yml); the same check without --then gave 9/9 SAME before the validator fixes (rebuild_check.log)", "log": "tmp/flood4/canopy/docs/rebuild_check_after_validation.log"},
+    {"what": "pinned pre-commit on every touched file, after the validator fixes", "command": "cd <docs wt> && /opt/miniforge3/bin/pre-commit run --files CHANGELOG.md .gitleaks.toml .github/workflows/ci.yml <9 docs>", "result": "pass", "detail": "exit 0 (markdownlint, doc links, whitespace, EOF, YAML/TOML hooks as configured; no file modified)", "log": "tmp/flood4/canopy/docs/precommit_after_validation.log"},
+    {"what": "tests that read ci.yml / .gitleaks.toml, on the docs carrier", "command": "runner --src <docs wt>/src -- tests/regression/test_ci_lane_wiring.py tests/regression/test_gitleaks_config.py tests/unit/test_memory_budget_check.py; then test_gitleaks_config.py again with the pinned gitleaks 8.24.3 first on PATH", "result": "pass", "detail": "55 passed, 6 skipped (no gitleaks binary); with the binary: 12 passed, 0 skipped", "log": "tmp/flood4/canopy/docs/pytest_gitleaks_engine_after_validation.log"},
+    {"what": "cross-carrier: the tests carrier's ci.yml readers against the docs carrier's ci.yml", "command": "copy test_codecov_token_upload.py and test_bandit_sarif_upload.py into <docs wt>/src/tests/regression, run, remove (and their .pyc)", "result": "pass", "detail": "23 passed (16 + 7); worktree status afterwards: only the 12 carrier files", "log": "tmp/flood4/canopy/docs/pytest_cross_carrier_ci_yml.log"},
+    {"what": "code-span claim existence check (the drafts' added lines)", "command": "python3 util/ad-hoc/2026-11-07_flood4_canopy_docs_claims.py <docs wt> <4 stripped patches>", "result": "pass", "detail": "253 spans, 87 path/test/symbol spans looked up; 13 not found, each explained. Existence is not truth: the validators found three false claims among found tokens (D-F1..D-F3), now corrected.", "log": "tmp/flood4/canopy/docs/claims_check.log"},
+    {"what": "targeted re-derivation of load-bearing claims", "command": "python3 util/ad-hoc/2026-11-07_flood4_canopy_docs_rederive.py <docs wt> <juniper-ml worktree>; util/ad-hoc/2026-11-07_flood4_canopy_gitleaks_noextend.py <gitleaks 8.24.3> <.gitleaks.toml>", "result": "pass", "detail": "Gitleaks config/pins, security-scan.yml, Codecov inputs, lane dirs, lane-wiring tests, agents-md-touch-up.yml, the header rule, mnist's entry; gitleaks with and without [extend]", "log": "tmp/flood4/canopy/docs/gitleaks_noextend.log"},
+    {"what": "Sequence Safety docs screen, fence-aware (as CI's juniper-ci-tools 0.9.1), after the validator fixes", "command": "python3 util/ad-hoc/2026-11-07_flood4_worktree_docs_screen.py <docs wt> origin/main -- <9 docs> CHANGELOG.md", "result": "pass", "detail": "0 FAIL, 30 WARN small-deletion = 18 stamp-only hunks + 12 content hunks (11 in-place rewrites carried from the drafts: USER_MANUAL steps at 235 and 647, the security-scan runbook x2, the Codecov block x2, the security troubleshooting bullets, CICD_REFERENCE rows 191, 371, 450 and 455; plus D-F8's label-to-heading)", "log": "tmp/flood4/canopy/docs/warn_hunk_classification.log"},
+    {"what": "Sequence Safety docs screen, flood-3 helper (no fence maps)", "command": "python3 util/ad-hoc/2026-10-08_flood3_worktree_screens.py <docs wt> origin/main -- <9 docs> CHANGELOG.md", "result": "fail", "detail": "1 FAIL: CICD_MANUAL heading-deletion '# Check GitHub Actions logs' -- a YAML comment inside #791's deleted ```yaml block; the pre-0.9.1 false positive (see the fence-aware run)", "log": "tmp/flood4/canopy/docs/worktree_screens.log"}
+  ],
+  "mutations": [],
+  "open_questions": [
+    "Stamp dates use 2026-11-07 (the build date). If the carrier opens on a later day, re-run only the date lines, or accept the build date.",
+    "The docs carrier now touches .gitleaks.toml and .github/workflows/ci.yml (comments only, as the orchestrator asked). A reviewer may prefer those on main through their own PR.",
+    "QUICK_START.md:933 (913 on main) links ../README.md#active-research-components, and README.md has no such heading (validator observation; predates the carrier; juniper-check-doc-links does not catch it)."
+  ]
+}
