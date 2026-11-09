@@ -380,7 +380,7 @@ async def test_a_broadcast_scheduled_during_a_yielding_replay_send_is_delivered(
     late = asyncio.ensure_future(mgr.broadcast(_metrics("during-replay")))
     msg = {"type": "resume", "data": {"last_seq": 2, "server_instance_id": mgr.server_instance_id}}
     assert await training_stream._handle_resume(resuming, mgr, msg) is True
-    await late
+    await asyncio.gather(late)
     await mgr.promote_to_active(resuming)
     await mgr.broadcast(_metrics("after-promote"))
 
