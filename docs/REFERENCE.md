@@ -10325,6 +10325,4 @@ Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordi
 
 **Last Updated:** 2026-11-16
 **Version:** 0.6.77
-**Last Updated:** 2026-11-09
 **Maintainer:** Paul Calnon
->>>>>>> f85fbc8b (fix(service-core): a /ws/training resume_ok now misses nothing before the socket goes live (new promote_to_active replayed_through) (#2534))

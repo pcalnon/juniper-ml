@@ -43,7 +43,7 @@ name: Update Lockfiles
 
 on:
   schedule:
-    - cron: '0 8 * * 1'  # weekly Monday 08:00 UTC
+    - cron: "0 8 * * 1" # weekly Monday 08:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -56,10 +56,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.12"
           cache: pip
@@ -85,7 +85,7 @@ jobs:
           private-key: ${{ secrets.RELEASE_TRAIN_APP_PRIVATE_KEY }}
 
       - name: Open PR if lockfiles changed
-        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1  # v8.1.3
+        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         with:
           # App token when one was minted; otherwise the built-in token, whose PRs open
           # without checks. The `||` fallback is what makes the mint step optional: a
@@ -100,8 +100,8 @@ jobs:
           # the commit through the GitHub API so it is signed as
           # github-actions[bot].
           sign-commits: true
-          commit-message: 'chore(deps): refresh CI lockfiles'
-          title: 'chore(deps): refresh CI lockfiles'
+          commit-message: "chore(deps): refresh CI lockfiles"
+          title: "chore(deps): refresh CI lockfiles"
           body: |
             Automated weekly refresh of CI lockfiles via the
             `juniper-generate-dep-docs` console script from the
