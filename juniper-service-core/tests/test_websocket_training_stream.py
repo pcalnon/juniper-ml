@@ -81,20 +81,37 @@ class CloseFailAfterSendWS(TrainingFakeWS):
 class RecordingWsManager:
     """Records personal messages + stubs the resume surface training_stream_handler needs."""
 
-    def __init__(self, *, current_seq: int = 0, server_instance_id: str = "srv", replay: list | None = None, replay_error: Exception | None = None, connect_pending_result: bool = True) -> None:
+    def __init__(
+        self,
+        *,
+        current_seq: int = 0,
+        server_instance_id: str = "srv",
+        replay: list | None = None,
+        replay_error: Exception | None = None,
+        connect_pending_result: bool = True,
+        promote_result: bool = True,
+        promote_error: Exception | None = None,
+        undeliverable_types: frozenset[str] = frozenset(),
+    ) -> None:
         self.current_seq = current_seq
         self.server_instance_id = server_instance_id
         self.personal: list[dict] = []
         self._replay = replay or []
         self._replay_error = replay_error
         self._connect_pending_result = connect_pending_result
+        self._promote_result = promote_result
+        self._promote_error = promote_error
+        self._undeliverable_types = undeliverable_types
         self.event_loop_set = False
         self.promoted: list = []
+        self.replayed_through: list[int | None] = []
         self.registered: list[str] = []
         self.unregistered: list = []
         self.disconnected = False
 
     async def send_personal_message(self, websocket: object, message: dict) -> bool:
+        if message.get("type") in self._undeliverable_types:
+            return False
         self.personal.append(message)
         return True
 
@@ -109,8 +126,12 @@ class RecordingWsManager:
     async def connect_pending(self, websocket: object) -> bool:
         return self._connect_pending_result
 
-    async def promote_to_active(self, websocket: object) -> None:
+    async def promote_to_active(self, websocket: object, *, replayed_through: int | None = None) -> bool:
         self.promoted.append(websocket)
+        self.replayed_through.append(replayed_through)
+        if self._promote_error is not None:
+            raise self._promote_error
+        return self._promote_result
 
     def register_endpoint_connection(self, websocket: object, endpoint: str) -> None:
         self.registered.append(endpoint)
@@ -292,11 +313,64 @@ async def test_handle_resume_out_of_range() -> None:
 async def test_handle_resume_success_replays_events() -> None:
     events = [{"type": "metrics", "seq": 2}, {"type": "metrics", "seq": 3}]
     mgr = RecordingWsManager(server_instance_id="srv", replay=events)
-    result = await _handle_resume(TrainingFakeWS(), mgr, {"data": {"last_seq": 1, "server_instance_id": "srv"}})
+    ws = TrainingFakeWS()
+    result = await _handle_resume(ws, mgr, {"data": {"last_seq": 1, "server_instance_id": "srv"}})
     assert result is True
     assert mgr.personal[0]["type"] == "resume_ok"
     assert mgr.personal[0]["data"]["replayed_count"] == 2
     assert mgr.personal[1:] == events
+    # The resume promotes the socket itself, from the last seq it replayed, so the manager can
+    # deliver anything broadcast during the replay before the socket goes live.
+    assert mgr.promoted == [ws]
+    assert mgr.replayed_through == [3]
+
+
+@pytest.mark.asyncio
+async def test_handle_resume_with_nothing_to_replay_promotes_from_the_clients_last_seq() -> None:
+    mgr = RecordingWsManager(server_instance_id="srv", replay=[])
+    assert await _handle_resume(TrainingFakeWS(), mgr, {"data": {"last_seq": 7, "server_instance_id": "srv"}}) is True
+    assert mgr.personal[0]["data"]["replayed_count"] == 0
+    assert mgr.replayed_through == [7]
+
+
+@pytest.mark.asyncio
+async def test_handle_resume_closes_when_resume_ok_is_not_delivered() -> None:
+    mgr = RecordingWsManager(server_instance_id="srv", replay=[{"type": "metrics", "seq": 2}], undeliverable_types=frozenset({"resume_ok"}))
+    ws = TrainingFakeWS()
+    with pytest.raises(WebSocketDisconnect):
+        await _handle_resume(ws, mgr, {"data": {"last_seq": 1, "server_instance_id": "srv"}})
+    assert ws.closed == (1011, "Resume replay incomplete")
+    assert mgr.personal == []  # nothing replayed after the failed resume_ok
+    assert mgr.promoted == []
+
+
+@pytest.mark.asyncio
+async def test_handle_resume_closes_when_the_manager_cannot_keep_continuity() -> None:
+    mgr = RecordingWsManager(server_instance_id="srv", replay=[{"type": "metrics", "seq": 2}], promote_result=False)
+    ws = TrainingFakeWS()
+    with pytest.raises(WebSocketDisconnect):
+        await _handle_resume(ws, mgr, {"data": {"last_seq": 1, "server_instance_id": "srv"}})
+    assert ws.closed == (1011, "Resume replay incomplete")
+    assert mgr.replayed_through == [2]
+
+
+@pytest.mark.asyncio
+async def test_handle_resume_closes_when_the_manager_raises_after_resume_ok() -> None:
+    # resume_ok and the replay are out: an exception ends the resume with a close rather than
+    # falling back to a fresh connect, which would follow them with a snapshot.
+    mgr = RecordingWsManager(server_instance_id="srv", replay=[{"type": "metrics", "seq": 2}], promote_error=RuntimeError("boom"))
+    ws = TrainingFakeWS()
+    with pytest.raises(WebSocketDisconnect):
+        await _handle_resume(ws, mgr, {"data": {"last_seq": 1, "server_instance_id": "srv"}})
+    assert ws.closed == (1011, "Resume replay incomplete")
+    assert [m["type"] for m in mgr.personal] == ["resume_ok", "metrics"]
+
+
+@pytest.mark.asyncio
+async def test_handle_resume_abort_tolerates_a_close_that_raises() -> None:
+    mgr = RecordingWsManager(server_instance_id="srv", promote_result=False)
+    with pytest.raises(WebSocketDisconnect):
+        await _handle_resume(CloseFailAfterSendWS(), mgr, {"data": {"last_seq": 0, "server_instance_id": "srv"}})
 
 
 # ----------------------------------------------------------------------------------------

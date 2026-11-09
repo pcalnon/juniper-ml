@@ -172,10 +172,15 @@ async def test_broadcast_drops_failed_connection() -> None:
 
 
 @pytest.mark.asyncio
-async def test_broadcast_without_connections_is_noop() -> None:
+async def test_broadcast_without_connections_is_sequenced_and_buffered_but_not_sent() -> None:
+    # Until the resume-continuity fix this pinned the defect itself: an early return left
+    # current_seq at 0, so a broadcast made with nobody connected was never replayable. The
+    # resume pins are in test_websocket_resume_continuity.py.
     mgr = WebSocketManager()
-    await mgr.broadcast({"type": "metrics", "data": {}})  # no active clients -> early return
-    assert mgr.current_seq == 0  # no seq assigned
+    await mgr.broadcast({"type": "metrics", "data": {}})  # no active clients: nothing to send to
+    assert mgr.current_seq == 1
+    assert [m["seq"] for m in mgr.replay_since(0)] == [1]
+    assert mgr.transport_stats()["messages_sent_total"] == 0
 
 
 @pytest.mark.asyncio

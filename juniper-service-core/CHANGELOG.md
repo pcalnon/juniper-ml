@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`WebSocketManager.promote_to_active` takes a keyword-only `replayed_through` and returns a
+  `bool`.** This is new public API on an exported class (`WebSocketManager` is in
+  `juniper_service_core.__all__`), so the release carrying it is a minor, 0.8.0, not a patch: the
+  convention 0.7.0 followed for `release_worker_tasks` (SemVer's §7 is stated for 1.0.0 and later,
+  and its §4 leaves 0.y.z free). `replayed_through` is the last seq the resuming client holds. The
+  call sends every buffered frame above it, exactly as the live fan-out sent it, and repeats until
+  none is left. It then activates the socket in the same hold of the manager's lock as that last
+  check, with no `await` between them.
+  - It returns `False` when continuity cannot be kept: a frame the client still needs was evicted
+    from the replay buffer (or replay is disabled), a send failed, or the socket was disconnected
+    or closed meanwhile. The socket is then not promoted. The caller closes it and, as for any
+    pending socket, calls `disconnect()`, which releases its connection and per-IP slots.
+  - A negative cursor is read as 0. Without `replayed_through` the promotion is unconditional, as
+    before, and returns `True` (it returned `None`).
+  - A service that composes its own resume flow on this manager should pass the cursor. The
+    guarantee assumes every `broadcast()` runs on the manager's event loop (another thread must
+    use `broadcast_from_thread`) and that each socket is promoted once.
+
+### Changed
+
+- **`training_stream_handler` needs a manager whose `promote_to_active` accepts `replayed_through`
+  and returns `True` on success.** A resume answered `resume_ok` now promotes through it, and is
+  closed 1011 when that returns a false value or raises. A `WebSocketManager` subclass that
+  overrides `promote_to_active`, or a stand-in on `app.state.ws_manager`, must be updated. One that
+  returns `None` aborts every resume that reaches `resume_ok` with 1011. One without the keyword
+  raises `TypeError`, which also aborts it (see Fixed), and the WARNING names the `TypeError`.
+  Neither answers `resume_failed`, so a client that reconnects and resumes is closed the same way
+  each time, until its seq has left the buffer when it reconnects.
+
 ### Fixed
 
 - **A `fit` that returns while the run is paused settles `COMPLETED` instead of wedging the
@@ -60,6 +91,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py`: the fix reverted, each new step or
   guard removed or replaced, the result recorded outside the guard, and the existing stop guard
   removed) are each killed by this file and by no other test.
+
+- **A `resume_ok` on `/ws/training` now means the client missed nothing up to the moment its socket
+  goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
+  juniper-ml `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix
+  now" by the owner on 2026-11-08. A resumed client could be answered `resume_ok` and still have
+  missed broadcasts, two ways:
+  - **A broadcast with no socket active was never sequenced or buffered.**
+    `WebSocketManager.broadcast` returned at once when no socket was active, including while a
+    sole client was still pending its resume handshake, so the message got no seq and no replay
+    slot, and a client resuming from its last seq had no gap to see. `broadcast` now sequences
+    and buffers every message and fans out to whatever is active, possibly nothing.
+  - **A broadcast that landed while the replay was being sent reached the resuming client by
+    neither path.** It was buffered but fanned out only to the sockets already active, and the
+    resuming socket was promoted only after `_handle_resume` had sent the replay. The record's
+    validator reproduced it with a yielding send: buffered seqs 1-7, the client received 3, 4, 5,
+    7. `_handle_resume` now promotes through `promote_to_active(..., replayed_through=...)`
+    (Added), which sends those frames before the socket goes live.
+
+  **What the client receives**: `resume_ok`, the snapshot, the catch-up, then the live stream.
+  Every seq after its `last_seq` assigned before the activation arrives once, in seq order, before
+  the first live frame; `replayed_count` counts the snapshot only. Live frames have no stronger
+  ordering than for any other active socket: two broadcasts that overlap can interleave their
+  sends. The activation waits for as long as new broadcasts keep landing during each catch-up pass,
+  and nothing is lost meanwhile, but the socket is still pending: the handler runs no heartbeat and
+  reads no frame, and `ws_resume_handshake_timeout_s` does not bound the wait. A client slower than
+  the stream stays pending until it pauses, or is closed 1011 once the buffer evicts a seq it has
+  not been sent. `replay_since` now copies only the tail after the cut, so each pass costs what it
+  has left to send, not the whole buffer.
+
+  **Continuity that cannot be kept now ends the connection instead of leaving a hole.** After
+  `resume_ok`, the socket is closed **1011** `Resume replay incomplete` and never promoted when a
+  replay or catch-up send fails, when the buffer evicts a seq before it is sent (a burst during the
+  replay larger than the buffer absorbs), or when the manager raises. A failed replay send used to
+  be skipped silently. An exception was taken for a handshake error, which made the resume a fresh
+  connect and sent `initial_status` after `resume_ok`. The close is best effort: a transport that is
+  already gone carries no close frame. The client reconnects, then resumes again or takes
+  `out_of_range` and a fresh snapshot. A failed send ends the resume with an INFO line, not a
+  WARNING: it is most often a client that went away or a shutdown closing the socket, and the
+  manager still logs a send that timed out at WARNING. An eviction or an exception from the
+  manager is a WARNING.
+
+  **What moves when nobody is connected.** `current_seq` advances on every `broadcast` (a
+  `broadcast_from_thread` before the first `/ws/training` connect is still a no-op, as before).
+  `replay_buffer_size` fills to the buffer's capacity (default 1024) and holds there. That is up to
+  1024 frames of up to `max_message_size_bytes` (60,000 bytes) of JSON each, about 60 MB of JSON at
+  the defaults, the bound that already applied with a client connected. Held as Python objects they
+  take more: 1.6 to 2.7 times that, measured for frames of floats or of per-epoch metric dicts. The
+  chunk counters (`messages_chunked_total`, `chunks_emitted_total`) now count an oversized broadcast
+  made then, since its chunks are buffered. Its split is logged at DEBUG; with a socket active it
+  stays at INFO. The send counters (`messages_sent_total`, `bytes_sent_total`, the per-type maps,
+  `send_failures`) do not move. With `max_replay_buffer_size <= 0` every broadcast is still
+  numbered and none is kept. A broadcast made with nobody connected now costs the chunk-size
+  `json.dumps` and a buffer append, as it already did with one client connected.
+
+  **Pinned by** `tests/test_websocket_resume_continuity.py`: 70 tests (27 single tests, one more
+  run for three hang-up points, and 40 seeded interleavings) driving the real manager and handler.
+  Their send timeouts are out of reach, so no outcome depends on the wall clock; one test sets a
+  short timeout to pin that path. Against the previous code all 30 that are not seeds fail, and 34
+  of the 40 seeds do. Of the 30, 21 fail on the defect itself (a broadcast never sequenced, a seq
+  never delivered, no close), eight on the missing `replayed_through` parameter, and one on
+  `promote_to_active` returning `None`.
+  - Three of them pin the rules the catch-up relies on: two that its last check and the activation
+    are one hold of the manager's lock with no `await` between them, and one that a broadcast
+    assigns its seq and copies the active set with none between them.
+  - A client that hangs up mid-resume ends it at INFO; a send that times out keeps the manager's
+    WARNING.
+  - `tests/test_websocket_training_stream.py` has five new `_handle_resume` tests.
+  - `tests/test_websocket_manager_extra.py`'s `test_broadcast_without_connections_is_noop` pinned
+    the no-socket loss (`current_seq == 0`). It is now
+    `test_broadcast_without_connections_is_sequenced_and_buffered_but_not_sent`.
+  - juniper-ml's `util/ad-hoc/2026-11-08_service_core_resume_continuity_mutation_check.py` breaks
+    25 pieces of the fix one at a time, in a scratch copy of the sub-package, and each fails every
+    test it names (25/25 on Python 3.12, 3.13 and 3.14).
+  - juniper-cascor carries its own copies of the manager and handler, with both defects. They are
+    not changed here.
 
 ## [0.7.2] - 2026-11-08
 
