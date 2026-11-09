@@ -30,7 +30,10 @@ from __future__ import annotations
 import asyncio
 import bisect
 import contextlib
+<<<<<<< HEAD
 import functools
+=======
+>>>>>>> f85fbc8b (fix(service-core): a /ws/training resume_ok now misses nothing before the socket goes live (new promote_to_active replayed_through) (#2534))
 import itertools
 import json
 import logging
@@ -382,8 +385,12 @@ class WebSocketManager:
 
         From then on the socket is one of the active set, with no stronger ordering than any
         other: two broadcasts that overlap (each ``broadcast_from_thread`` call is its own task)
+<<<<<<< HEAD
         can interleave their sends, and a live send that fails drops the socket from the fan-out
         and closes it 1011 (:meth:`broadcast`).
+=======
+        can interleave their sends, and a live send that fails drops the socket from the fan-out.
+>>>>>>> f85fbc8b (fix(service-core): a /ws/training resume_ok now misses nothing before the socket goes live (new promote_to_active replayed_through) (#2534))
         The activation waits for as long as new broadcasts keep landing during each pass's sends;
         nothing is lost meanwhile, and a socket that falls more than the buffer behind is refused
         rather than promoted over the gap. The guarantee assumes every :meth:`broadcast` runs on
@@ -599,11 +606,14 @@ class WebSocketManager:
         Oversized messages are split into ``chunked_message`` envelopes before seq assignment so
         each chunk gets its own seq and replay slot.
 
+<<<<<<< HEAD
         A socket that a send raised on or timed out for is dropped from the fan-out and closed
         1011 ``Broadcast send failed or timed out`` (:meth:`_drop`); the other sockets are
         unaffected. Its client reconnects, and a resume from its last seq replays the frame it
         missed while that is still buffered.
 
+=======
+>>>>>>> f85fbc8b (fix(service-core): a /ws/training resume_ok now misses nothing before the socket goes live (new promote_to_active replayed_through) (#2534))
         Must run on the manager's event loop (the one the stream handlers serve on, which
         :meth:`set_event_loop` records); from another thread use :meth:`broadcast_from_thread`.
         A resume's continuity (:meth:`promote_to_active`) rests on a broadcast assigning its seq

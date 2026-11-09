@@ -9612,7 +9612,6 @@ A service that brings its own manager to `training_stream_handler` (a `WebSocket
 **A live socket whose broadcast send fails is closed** **1011** `Broadcast send failed or timed out` (unreleased; first in the next juniper-service-core release, 0.8.0). A send that raises, or does not complete within `send_timeout_seconds` (default **0.5** s), drops that socket from the fan-out, as before, and now also closes it, so the client reconnects; a resume from its last seq then replays the frame it missed, while that is still buffered. The other sockets are unaffected. The drop is one INFO line, `Broadcast of seq N failed for K socket(s): dropped them, and closing M with 1011`, plus the manager's WARNING `WebSocket send timed out` for a timeout; a close that fails (the transport is already gone) is DEBUG. A socket that Starlette already marks closed is not closed again: a send that met a dead transport (`OSError`), a socket the heartbeat or `close_all` closed, or one whose peer's disconnect has been received. Two overlapping broadcasts that both drop a socket close it once. The closes of one fan-out step run concurrently, and the broadcast waits for them at most `send_timeout_seconds` in all; a close still in flight then finishes in the background, and the broadcast never cancels it. After a close by the server (this one or the heartbeat's), the receive loop dispatches at most the one frame whose receive was already in progress, then discards frames until the ASGI server reports the disconnect. A `subscribe_metrics` that completes that receive still reads the metrics history, and its reply fails on the closed socket and counts in `send_failures`. Calling `receive_text()` again would raise Starlette's `RuntimeError`, and returning early would let uvicorn drop a close frame still waiting on a full write buffer. A failed `send_personal_message` neither drops nor closes the socket; the resume path closes with its own 1011 `Resume replay incomplete`.
 
 **A service's own handler now sees the manager close its socket.** A socket registered with `connect()` is in the fan-out, so a failed or timed-out broadcast send closes it too. A `receive_text()` that the handler starts after that close raises Starlette's `RuntimeError`, not `WebSocketDisconnect`; one already in progress still completes with the peer's next frame. Such a handler must stop calling `receive_text()` once `application_state` is `DISCONNECTED` and read with `receive()` until `websocket.disconnect`, as `_recv_pong_loop` does. Through 0.7.2 the manager never closed such a socket.
-
 **What the close does not fix.** Each of these is known and reported, and none is changed here.
 
 - **The per-IP cap while a dropped socket closes.** The drop still releases the socket's connection and per-IP slots at once, before the socket is gone, and `endpoint_counts()` counts the socket until its handler returns. So while the close is in progress, a new socket from the same address can be admitted past `max_connections_per_ip`. The close bounds that excess by its own length; through 0.7.2 it lasted for as long as the client kept the socket. With a client that takes the close it is an instant. With one that has stopped reading it is as long as the ASGI server takes to give up on the connection. Measured under real uvicorn, with a cap of 1, the default 0.5 s send timeout and a raw-socket client that completes the handshake and never reads again: two handlers from one address ran together, `endpoint_counts()["training"]` read 2 against a `connection_count` of 1, and the dropped socket's handler outlived the drop by 29.5 to 29.9 s under uvicorn's default implementation (`websockets`; two runs each on uvicorn 0.37.0 and 0.49.0). Under `wsproto` (uvicorn 0.37.0) it was still running when the observation ended 45 s later, the close frame unwritten.
@@ -9624,8 +9623,6 @@ Through juniper-service-core 0.7.2 the drop only forgot the socket. The handler'
 
 Through juniper-service-core 0.7.2, a `resume_ok` did not prove that nothing was missed. A broadcast made while no socket was active, including during a sole client's pending resume, was never sequenced or buffered (`broadcast` returned first). One that landed while the replay was being sent was buffered but reached only active sockets, and the resuming socket was promoted only after the replay, so the client could see a seq gap.
 
-| Client `last_seq` | Buffer | What the client gets |
-|-------------------|--------|----------------------|
 | `0`, buffer empty | nothing has been broadcast | `resume_ok`, `replayed_count` 0. A negative `last_seq` on an empty buffer takes the same path |
 | `> 0`, buffer empty | nothing to check the claim against | `resume_failed` `out_of_range` (`Buffer empty, cannot verify continuity`) |
 | `oldest_seq - 1` | still holds `oldest_seq` | continuous: `resume_ok` and the whole buffer |
@@ -9665,7 +9662,6 @@ Broadcast drop: `tests/test_websocket_broadcast_drop_close.py` drives the real m
 Source: `websocket/manager.py` (`replay_since`, `broadcast`, `_drop`, `disconnect`, `promote_to_active`, `_maybe_chunk_message`, `connect`, `connect_pending`, `_source_ip`) and `websocket/training_stream.py` (`training_stream_handler`, `_handle_resume`, `_deliver_resume`, `_abort_resume`, `_recv_pong_loop`, `_drain_until_disconnect`).
 
 #### A measured zero heartbeat overwrites
-
 `WorkerRegistration.record_heartbeat` (`juniper_service_core.workers.registry`) updates a field only when the argument is not `None`. `WorkerRegistry.heartbeat` uses the same rule. `/ws/workers` forwards each enriched field with `msg.get` (`websocket/worker_stream.py`), so a missing key and JSON `null` both arrive as `None` and the prior reading stays. A present `0`, `0.0`, or `[]` is not `None`, so it replaces that reading. A later heartbeat that omits the field keeps the zero.
 
 | Reported value | What is stored |
@@ -10327,8 +10323,8 @@ Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordi
 
 ---
 
-<<<<<<< HEAD
 **Last Updated:** 2026-11-16
 **Version:** 0.6.77
 **Last Updated:** 2026-11-09
-**Version:** 0.6.65
+**Maintainer:** Paul Calnon
+>>>>>>> f85fbc8b (fix(service-core): a /ws/training resume_ok now misses nothing before the socket goes live (new promote_to_active replayed_through) (#2534))
