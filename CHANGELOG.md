@@ -140,6 +140,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `.pre-commit-config.yaml` and checks a fixture tree in four cases: a broken link under `tmp/` is skipped;
   without the flag it fails; a broken link in `notes/` or in `tmp-archive/` still fails.
 
+- **`juniper-service-core`: a `resume_ok` on `/ws/training` now means the client missed nothing up to the moment
+  its socket goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix now" by the owner on
+  2026-11-08. A broadcast made with no socket active is now sequenced and buffered. One that lands while the
+  replay is being sent reaches the client before its socket goes live, through the new keyword-only
+  `promote_to_active(..., replayed_through=...)`. A resume that cannot stay continuous after `resume_ok` is closed
+  1011 `Resume replay incomplete` instead of being left with a hole.
+  - Unreleased. The new API makes the next juniper-service-core release a minor (0.8.0), and `[tools]` caps
+    `juniper-service-core<0.8.0`, so that cap has to rise when 0.8.0 ships. The current releases of
+    juniper-canopy, juniper-cascor, juniper-data (`[api]`) and juniper-recurrence cap it below 0.8.0 too, so
+    `[servers]`, `[recurrence]` and `[all]` stay on 0.7.x until they raise theirs.
+  - `docs/REFERENCE.md` (0.6.66) and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (1.0.66) describe the fixed
+    behaviour. `util/ad-hoc/2026-11-08_service_core_resume_continuity_mutation_check.py` is the mutation check
+    (25/25 arms).
+  - juniper-cascor's own copies of the manager and handler carry both defects and are not changed. Details are in
+    `juniper-service-core/CHANGELOG.md`.
+
 - **The yamaguchi securityfs incident: remediated, recorded, and two defects in its validator fixed.**
   The owner ran the remount runbook on 2026-11-08, and the three filesystems have been mounted since
   08:28:29Z. The validator passes, all seven juniper containers run confined by `docker-default`, and
