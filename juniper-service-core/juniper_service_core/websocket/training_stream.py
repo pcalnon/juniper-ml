@@ -5,8 +5,13 @@ streaming with optional resume. On connect:
 
 1. ``connection_established`` (from ``manager.connect_pending``).
 2. Optional resume handshake: the client sends a ``resume`` frame within the timeout.
-3. On resume success: replayed events + promote to active.
-4. On a fresh connect: ``initial_status`` + ``state`` + an ``initial_metrics`` burst + promote.
+3. On resume success: ``resume_ok``, the replayed events, then whatever was broadcast while they
+   were being sent, then promote to active: every seq after the client's ``last_seq`` up to the
+   promotion arrives once, in seq order, before the first live frame. A resume that cannot be
+   kept continuous after ``resume_ok`` is not promoted: the server stops sending and closes the
+   socket **1011** ``Resume replay incomplete`` (when the transport can still carry a close), so
+   what the client holds is a gap-free prefix, and the client reconnects.
+4. On a fresh connect: promote + ``initial_status`` + ``state`` + an ``initial_metrics`` burst.
 5. Ongoing ``metrics`` / ``state`` broadcasts during training (pushed by the lifecycle bridge).
 
 After promotion, the server sends application-level ``{"type":"ping","ts":<float>}`` heartbeats
@@ -27,9 +32,11 @@ defaults) instead of importing a service settings module.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 import time
+from typing import NoReturn
 
 from fastapi import WebSocket, WebSocketDisconnect
 
@@ -40,6 +47,13 @@ from juniper_service_core.websocket.tunables import resolve
 __all__ = ["training_stream_handler"]
 
 logger = logging.getLogger("juniper_service_core.websocket.training")
+
+#: The close for a resume answered ``resume_ok`` whose continuity could not then be kept: a send
+#: failed, or the replay buffer evicted a message the client still needed before it could be
+#: delivered. 1011, as for this handler's other server-side failures. The client reconnects and
+#: resumes again, or gets ``resume_failed`` ``out_of_range`` and a fresh snapshot.
+_RESUME_INCOMPLETE_CLOSE_CODE = 1011
+_RESUME_INCOMPLETE_CLOSE_REASON = "Resume replay incomplete"
 
 
 def _setting(websocket: WebSocket, name: str):
@@ -172,10 +186,12 @@ async def training_stream_handler(websocket: WebSocket) -> None:
     1. Authenticate via the API-key header.
     2. Accept as pending (``connect_pending`` -- not broadcast-eligible).
     3. Wait for an optional ``resume`` frame within the handshake timeout.
-    4. On resume: validate ``server_instance_id``, replay buffered events.
-    5. On fresh connect / failed resume: send ``initial_status`` + ``state``.
-    6. Promote to active (now receives broadcasts).
-    7. Heartbeat + keep-alive recv loop.
+    4. On resume: validate ``server_instance_id``, replay buffered events, deliver any broadcast
+       that landed meanwhile, and promote to active with no gap (``_handle_resume``) -- or close
+       1011 and return when that cannot be kept.
+    5. On fresh connect / failed resume: promote to active, then send ``initial_status`` +
+       ``state``.
+    6. Heartbeat + keep-alive recv loop.
     """
     if not await ws_authenticate(websocket):
         return
@@ -203,8 +219,11 @@ async def training_stream_handler(websocket: WebSocket) -> None:
         if disconnected:
             return
 
-        # Promote to active (now eligible for broadcasts).
-        await ws_manager.promote_to_active(websocket)
+        if not resumed:
+            # Promote to active (now eligible for broadcasts). A resumed socket is active already:
+            # _handle_resume promoted it once its replay, and anything broadcast meanwhile, was
+            # delivered.
+            await ws_manager.promote_to_active(websocket)
         ws_manager.register_endpoint_connection(websocket, "training")
 
         if not resumed:
@@ -222,18 +241,65 @@ async def training_stream_handler(websocket: WebSocket) -> None:
             await _recv_pong_loop(websocket, pong_received, ws_manager=ws_manager, lifecycle=lifecycle, subscribe_metrics_max_count=initial_metrics_count or 100)
         finally:
             ping_task.cancel()
-            try:
+            # CancelledError is expected when awaiting a task after explicit cancellation.
+            with contextlib.suppress(asyncio.CancelledError):
                 await ping_task
-                # Expected when awaiting a task after explicit cancellation during shutdown.
-            except asyncio.CancelledError:
-                pass
     finally:
         ws_manager.unregister_endpoint_connection(websocket)
         await ws_manager.disconnect(websocket)
 
 
+async def _abort_resume(websocket: WebSocket, why: str, *, level: int = logging.WARNING, exc_info: BaseException | None = None) -> NoReturn:
+    """End a resume whose continuity can no longer be kept: close the socket, report a disconnect.
+
+    ``resume_ok`` may already be on the wire, so a ``resume_failed`` could contradict it; the
+    close is the signal left. It is best effort: a transport that is already gone carries no
+    close frame. Raising ``WebSocketDisconnect`` takes the handler down its disconnected path
+    (``_await_resume_frame`` returns ``disconnected``), so the socket is never promoted.
+    """
+    logger.log(level, "Resume aborted after resume_ok: %s; closing %d so the client reconnects", why, _RESUME_INCOMPLETE_CLOSE_CODE, exc_info=exc_info)
+    with contextlib.suppress(Exception):
+        await websocket.close(code=_RESUME_INCOMPLETE_CLOSE_CODE, reason=_RESUME_INCOMPLETE_CLOSE_REASON)
+    raise WebSocketDisconnect(code=_RESUME_INCOMPLETE_CLOSE_CODE, reason=_RESUME_INCOMPLETE_CLOSE_REASON)
+
+
+async def _deliver_resume(websocket: WebSocket, ws_manager, last_seq: int, events: list[dict]) -> None:
+    """Send ``resume_ok`` and the replay, then promote through the manager's catch-up.
+
+    A frame that fails to send would leave a hole the client cannot see, so the resume ends
+    there instead of skipping it (:func:`_abort_resume`). That end is logged at INFO: a send
+    fails most often because the client went away, and the manager has already logged a send
+    that timed out at WARNING.
+    """
+    if not await ws_manager.send_personal_message(
+        websocket,
+        {"type": "resume_ok", "timestamp": time.time(), "data": {"replayed_count": len(events)}},
+    ):
+        await _abort_resume(websocket, "resume_ok was not delivered", level=logging.INFO)
+    # ``replayed_through`` is the last seq the client now holds.
+    replayed_through = last_seq
+    for event in events:
+        if not await ws_manager.send_personal_message(websocket, event):
+            await _abort_resume(websocket, f"replayed seq {event.get('seq')} was not delivered", level=logging.INFO)
+        replayed_through = event["seq"]
+    # A broadcast that landed while the replay was being sent is buffered, but went only to the
+    # sockets already active. The manager sends those, then activates the socket with no gap.
+    if not await ws_manager.promote_to_active(websocket, replayed_through=replayed_through):
+        # WebSocketManager has logged why: a WARNING for an eviction, INFO for a failed send or a
+        # socket closed meanwhile (a send that timed out also has its own WARNING). A service's own
+        # manager may log nothing, so this line can be the only record.
+        await _abort_resume(websocket, "the catch-up after the replay did not complete", level=logging.INFO)
+
+
 async def _handle_resume(websocket: WebSocket, ws_manager, msg: dict) -> bool:
-    """Handle a resume request. Returns ``True`` if resume succeeded."""
+    """Handle a resume request. Returns ``True`` if resume succeeded.
+
+    On success the socket is already active: every buffered seq after the client's ``last_seq``
+    assigned before the promotion has been sent to it once, in seq order, and every later one is
+    in the live fan-out. If that cannot be kept after ``resume_ok`` -- a send fails, the replay
+    buffer evicts a frame the client still needs, or the manager raises -- the socket is closed
+    1011 and ``WebSocketDisconnect`` is raised instead.
+    """
     data = msg.get("data", {})
     last_seq = data.get("last_seq")
     client_server_id = data.get("server_instance_id")
@@ -265,12 +331,15 @@ async def _handle_resume(websocket: WebSocket, ws_manager, msg: dict) -> bool:
         logger.info("Resume failed: %s", e)
         return False
 
-    # Resume succeeded.
-    await ws_manager.send_personal_message(
-        websocket,
-        {"type": "resume_ok", "timestamp": time.time(), "data": {"replayed_count": len(events)}},
-    )
-    for event in events:
-        await ws_manager.send_personal_message(websocket, event)
+    # Resume succeeded. From here ``resume_ok`` may be on the wire, so a failure must close the
+    # socket: ``_await_resume_frame`` turns any other exception into a fresh connect, which would
+    # follow ``resume_ok`` with a snapshot, and promote without the catch-up. (A manager whose
+    # ``promote_to_active`` predates ``replayed_through`` raises TypeError here, for one.)
+    try:
+        await _deliver_resume(websocket, ws_manager, last_seq, events)
+    except WebSocketDisconnect:
+        raise
+    except Exception as exc:  # noqa: BLE001 - after resume_ok, any failure ends the resume
+        await _abort_resume(websocket, f"{type(exc).__name__} while resuming", exc_info=exc)
     logger.info("Resume succeeded: replayed %d events from seq %d", len(events), last_seq)
     return True
