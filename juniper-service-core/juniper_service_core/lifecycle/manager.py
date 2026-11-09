@@ -21,7 +21,12 @@ weight/unit surgery, decision-boundary rendering, and the worker coordinator. Th
 boundaries: the per-event sink (which the model calls as it emits ``TrainingEvent``s) blocks
 while paused and raises :class:`TrainingInterrupted` on stop. A model that emits events
 during ``fit`` (the model-core contract encourages exactly this) is therefore interruptible
-with no model-specific hook.
+with no model-specific hook. A pause that arrives after the last boundary cannot hold ``fit``:
+it returns, and the run settles ``COMPLETED`` as if the pause had not been requested. A stop,
+likewise, is seen only at the next boundary, and a start issued before then clears it, so the
+stopped run's ``fit`` can keep running beside the new run, and the sink applies its events to
+the new run. When that ``fit`` ends, its thread settles nothing, because the newer run is not
+its own.
 """
 
 from __future__ import annotations
@@ -176,7 +181,11 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
                 dataset_name=dataset_name,
                 max_epochs=fit_kwargs.get("max_epochs"),
             )
-            if not self.state_machine.handle_command(LifecycleCommand.START):  # pragma: no cover - guarded above
+            # The is_active() check above does not cover this: START is also refused from
+            # INVESTIGATING and REPLAYING, which are not active. A start refused here has already
+            # replaced the dataset fields, cleared the stop event, opened the pause gate and
+            # rewritten the monitor context above.
+            if not self.state_machine.handle_command(LifecycleCommand.START):
                 raise RuntimeError("Cannot start training in the current state")
             self._last_error = None
             self._thread = threading.Thread(
@@ -269,27 +278,67 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         return self.model.fit(X, y, X_val=X_val, y_val=y_val, on_event=self._handle_event, **fit_kwargs)
 
     def _train_thread_target(self, X: np.ndarray, y: np.ndarray, X_val: np.ndarray | None, y_val: np.ndarray | None, fit_kwargs: dict[str, Any]) -> None:
-        """Background thread entry: run the body, then settle the state machine."""
+        """Background thread entry: run the body, then settle the state machine.
+
+        Every branch settles only a run this thread still owns (``self._thread`` is this
+        thread). A stop is honoured at ``fit``'s next event, so a start issued right after a
+        stop replaces ``self._thread`` while the stopped run's ``fit`` may still be running. When
+        that ``fit`` returns or raises, the newer run is not this thread's to settle: its state,
+        its pause gate, its monitor context, its error and its result are all left alone. Only
+        the settle is fenced. Until that ``fit`` ends, its events still go through
+        :meth:`_handle_event`, which applies them to the newer run's monitor and phase.
+
+        A ``fit`` that returns normally with no stop requested settles ``COMPLETED`` even when
+        the run is paused, so a normal return never leaves the machine ``PAUSED`` with no thread
+        behind it. A ``fit`` that raises settles ``FAILED`` and releases the pause gate too. The
+        manager has one pause gate for every ``fit`` it runs, so either release also wakes a
+        stopped run's ``fit`` waiting at it: one whose stop a newer start cleared, and which
+        reached its next event while that newer run was paused. It runs on with no command, and
+        a start is then accepted beside it.
+
+        A ``fit`` that raises after a stop or reset is still recorded as a failure: this branch
+        checks ownership, not the stop, and ``mark_failed`` refuses ``STOPPED``, so the machine
+        stays ``STOPPED`` while the status carries the error and the monitor reads ``failed``.
+        :meth:`shutdown` sets the stop event without a transition, so after it the machine can
+        still read ``STARTED`` or ``PAUSED``.
+        """
         try:
             result = self.run(X, y, X_val=X_val, y_val=y_val, **fit_kwargs)
         except TrainingInterrupted:
             logger.info("Training interrupted by stop request")
             with self._lock:
-                self.monitor.set_run_context(status="stopped", phase="idle")
+                if self._thread is threading.current_thread():
+                    self.monitor.set_run_context(status="stopped", phase="idle")
         except Exception as exc:  # noqa: BLE001 - any model failure must settle the FSM in FAILED
             logger.exception("Training failed")
             with self._lock:
-                self.state_machine.mark_failed(str(exc))
-                self._last_error = str(exc)
-                self.monitor.set_run_context(status="failed", phase="idle")
+                if self._thread is threading.current_thread():
+                    self.state_machine.mark_failed(str(exc))
+                    self._last_error = str(exc)
+                    self.monitor.set_run_context(status="failed", phase="idle")
+                    # A run that failed while paused has no pause left to hold. Left closed, the
+                    # gate would block a direct run() on this manager at its first event.
+                    self._pause_event.set()
         else:
             with self._lock:
                 # A stop racing with normal completion already moved the FSM to STOPPED;
-                # don't override it with COMPLETED.
-                if not self._stop_event.is_set():
+                # don't override it with COMPLETED. A thread whose run was stopped and then
+                # superseded by a newer start owns nothing here (see the docstring).
+                if not self._stop_event.is_set() and self._thread is threading.current_thread():
+                    if self.state_machine.is_paused():
+                        # No event followed the pause (fit's last event, if any, came first), so
+                        # the sink never waited on it and fit returned anyway: the run is over and
+                        # the pause holds nothing. mark_completed() accepts only STARTED, so
+                        # release the pause first, as resume_training does. Left PAUSED, the
+                        # machine would claim an active run with no thread behind it: a resume
+                        # would move it to STARTED and every start would be refused until a stop
+                        # or reset.
+                        logger.info("Training finished while paused (no event followed the pause); releasing the pause and settling Completed (no resume was requested)")
+                        self.state_machine.handle_command(LifecycleCommand.RESUME)
+                        self._pause_event.set()
                     self.state_machine.mark_completed()
                     self.monitor.set_run_context(status="completed", phase="idle")
-                self._last_result = result
+                    self._last_result = result
 
     def _handle_event(self, event: TrainingEvent) -> None:
         """Per-event sink passed to ``model.fit`` (runs on the training thread).

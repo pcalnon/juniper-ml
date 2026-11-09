@@ -237,7 +237,13 @@ class LifecycleStateMachine:
         logger.debug("Phase change: %s -> %s", prev, phase)
 
     def mark_completed(self) -> bool:
-        """Move ``STARTED`` → ``COMPLETED`` (terminal). Returns ``False`` from any other state."""
+        """Move ``STARTED`` → ``COMPLETED`` (terminal). Returns ``False`` from any other state.
+
+        ``PAUSED`` is refused too, as in cascor's machine. A ``fit`` can still return while the
+        run is paused (a pause that arrives after its last event is never waited on), so a
+        caller must release the pause with ``RESUME`` before recording the completion;
+        :class:`~juniper_service_core.lifecycle.manager.ServiceLifecycleManager` does.
+        """
         if self._status is LifecycleStatus.STARTED:
             self._status = LifecycleStatus.COMPLETED
             self._phase = PHASE_IDLE
