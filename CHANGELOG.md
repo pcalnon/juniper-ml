@@ -186,6 +186,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - CI never runs on the merge result: a PR's CI runs on `refs/pull/N/merge`;
     - a BEHIND branch is fixed by a rebase: GitHub's update-branch is the fix.
 
+- **`juniper-service-core`: a `fit` that returns while the run is paused settles `COMPLETED` instead
+  of wedging the lifecycle, and the training thread settles only a run it still owns** (the
+  "paused-fit wedge" in §4 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`;
+  owner ruling "Fix now", 2026-11-08). The training thread called `mark_completed()`, which refuses
+  `PAUSED`, and ignored the refusal. The machine stayed `PAUSED` with no thread behind it; after a
+  resume it read `STARTED`, and every start with data was a 409 until a stop or reset. The thread now
+  releases the pause before it records the completion, and the state machine is unchanged. Every
+  settle is also guarded by `self._thread is threading.current_thread()`, so a stopped run's `fit`
+  that outlives a following start no longer completes or fails the newer run when it ends. The overlap
+  itself remains: that `fit` still runs to its end, and its events still reach the shared sink. The
+  pause release on a paused completion or failure also wakes such a `fit` if it is waiting at the
+  shared pause gate, and a start is then accepted beside it. The owner has ruled that this race gets
+  its own fix, in its own PR (§8, ruling 11 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+  - Pinned by `juniper-service-core/tests/test_lifecycle_paused_fit_return.py` (11 tests).
+    `util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py` runs nine mutants of `manager.py`;
+    each is killed by that file and by no other test. `util/ad-hoc/2026-11-08_paused_fit_wedge_doc_stamps.py`
+    re-derives the four doc stamps below from `main`'s values, for a rebase.
+  - `docs/REFERENCE.md` 0.6.65, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` 1.0.65, `docs/QUICK_START.md`
+    0.3.45 and `docs/DOCUMENTATION_OVERVIEW.md` 0.2.57 describe the fixed behaviour and keep the old one
+    for juniper-service-core 0.7.2 and earlier, which still have it.
+  - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the juniper-service-core
+    release after 0.7.2.
+
 ## [0.11.4] - 2026-11-06
 
 ### Changed
