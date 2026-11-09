@@ -280,6 +280,10 @@ repos:
           - development
           - --exclude
           - CHANGELOG.md
+          # The repo's gitignored tmp/ (2026-10-26 rule): the checker walks the tree, not git's files,
+          # so scratch copies of notes/ there would be scanned and fail.
+          - --exclude
+          - tmp
           - --cross-repo
           - skip
         pass_filenames: false
