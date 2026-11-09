@@ -1,0 +1,1279 @@
+{
+  "repo": "pcalnon/juniper-ml",
+  "carrier": "docs",
+  "base_sha": "bbdeb75823c011e780058f20d4df902a79f436ba",
+  "worktree": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/agent-ab56f3c71e4f75377",
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "status": "modified"
+    },
+    {
+      "path": "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+      "status": "modified"
+    },
+    {
+      "path": "docs/DOCUMENTATION_OVERVIEW.md",
+      "status": "modified"
+    },
+    {
+      "path": "docs/QUICK_START.md",
+      "status": "modified"
+    },
+    {
+      "path": "docs/REFERENCE.md",
+      "status": "modified"
+    },
+    {
+      "path": "juniper-config-tools/README.md",
+      "status": "modified"
+    },
+    {
+      "path": "juniper-service-core/README.md",
+      "status": "modified"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_extract.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_apply.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_fixes.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_manifest.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_missing_explained.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_rebase_merge.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_test_names_check.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_fixes_round3.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_fixes_round4.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_fixes_round5.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_wheel_probe.py",
+      "status": "added"
+    },
+    {
+      "path": "util/ad-hoc/2026-11-07_flood4_ml_docs_fixes_round6.py",
+      "status": "added"
+    }
+  ],
+  "carried": [
+    {
+      "pr": 2409,
+      "head_sha": "16b3599ff200cffb3e8926fa324490d90ece5d4a",
+      "title": "docs(reference): config-tools alias pitfalls and the untyped 0.1.0 wheel",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md",
+        "juniper-config-tools/README.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'Since `juniper-ml` 0.5.0 it is aggregated under `[tools]` an' rewritten -- PyPI juniper-ml 0.5.0 requires_dist has no juniper-config-tools; 0.6.0 (2026-05-23) is the first with it",
+        "docs/REFERENCE.md: 'The file alone does not reach a wheel. These packages have n' rewritten -- #2410's negative control failed for all six sub-packages; setuptools build_py.py:25 _IMPLICIT_DATA_FILES = ('*.pyi', 'py.typed')",
+        "juniper-config-tools/README.md: '`Typing :: Typed`. The marker file has to be package data. T' rewritten -- same as above: an undeclared py.typed does reach the wheel",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'and must not be chained with `or`.' rewritten -- claims-A F5: _env_aliases.py:20-22 recommends the or chain"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "config-tools alias pitfalls and the py.typed history verified (code, PyPI wheels, tags); two false statements fixed"
+    },
+    {
+      "pr": 2412,
+      "head_sha": "0dd5a111d1684f9aa1a2dad6a994b4b8104b5d8a",
+      "title": "docs(reference): host-check wording for kubectl D3 and G-MEM pages",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: \"`1.36` is turing's cluster value with `.x` appended.\" rewritten -- host_state_check.py:835 appends .x to 1.36",
+        "docs/REFERENCE.md: 'Treating the check\\'s figure as \"free + inactive, plus specul' rewritten -- host_state_check.py:1069 already includes speculative",
+        "docs/REFERENCE.md: '`macvm_ctl status` exits 0 on a failing gate.' rewritten -- macvm_ctl.bash:39-48,496-508",
+        "docs/REFERENCE.md: 'Two of those sentences were wrong until' rewritten -- only the kubectl fix names a task (f1f5938a^:util/host_state_check.py)",
+        "docs/REFERENCE.md: 'Upgrading kubectl beside that install leaves the gate on Doc' rewritten -- unsupported claim replaced by the plan's D7 text (TURING-HOST-BRINGUP plan :311)",
+        "docs/REFERENCE.md: 'and 2 when VBoxManage is missing, the VM is not registered, ' rewritten -- claims-A F9: macvm_ctl.bash:233, :496-508"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "E-H3 wording verified against host_state_check.py and macvm_ctl.bash; three false sentences and one unsupported sentence fixed"
+    },
+    {
+      "pr": 2417,
+      "head_sha": "160eb5a12eb893bcf01a4f5477d3a3ac51e0e677",
+      "title": "docs(reference): a zero score and a zero theta stay measured values",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'the column is kept, including a `test_*` column when `split`' rewritten -- run_suite.py:174-181,931-940: only test_* columns, only for split test",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'a bar of height 0, column kept)' rewritten -- as above",
+        "docs/REFERENCE.md: 'and the suite column is kept.' rewritten -- as above",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'and the suite column;' rewritten -- as above",
+        "docs/QUICK_START.md: 'and the suite column;' rewritten -- as above",
+        "docs/REFERENCE.md: '| `nan` or `inf` |' rewritten -- stats_summary.py:458-461 prints -inf (probe)",
+        "docs/REFERENCE.md: '(`summary.md` prints `theta: 0 (explicit)`)' rewritten -- stats_summary.py:564 uses str() (probe)",
+        "docs/REFERENCE.md: 'every metric undefined' rewritten -- tests/test_stats_summary_eval_blocks.py:251-256; cascor_eval_fixtures.py:136-143",
+        "docs/REFERENCE.md: block moved -- the inserted heading took over **The boundary.**, the jq block and the Gate: line of the Eval scalars section; moved after that Gate: line",
+        "docs/REFERENCE.md: 'A reported `0` stays on all three surfaces \u2014 [A zero is a me' rewritten -- claims-A F3: run_suite.py:170-174, :931-941",
+        "docs/REFERENCE.md: '`summary.md`, `eval_metrics.png`, and the suite columns keep' rewritten -- claims-A F3",
+        "docs/REFERENCE.md: 'Headline `0.0` is the `_is_metric` contract in' rewritten -- claims-A F10: tests carrier test_stats_summary_eval_blocks.py:196,252; test_stats_summary_render.py:206",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: '; a bool does not;' rewritten -- round-2 F3: summary.md prints the words False / True (REFERENCE's zero table)",
+        "docs/QUICK_START.md: '; a bool does not;' rewritten -- round-2 F3",
+        "docs/DOCUMENTATION_OVERVIEW.md: '**Read a zero score or a zero \u03b8**' rewritten -- round-2 F14: the overview is ASCII apart from the em dash"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "zero handling verified by probe (summary, plot, columns, theta); the column scope, -inf, theta 0.0 and fixture sentences fixed, and the section moved out of the Eval scalars section it had split"
+    },
+    {
+      "pr": 2418,
+      "head_sha": "10a51ae3350ffc9c0dccb457eee1c2f99e8ca4a9",
+      "title": "docs(reference): Phase D trial drop-in and settings-key write",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'The drop-in resets four lists with an empty assignment, then' rewritten -- override.conf:67 leaves SystemCallErrorNumber= empty; #2421 TrialDropInMerge asserts []",
+        "docs/REFERENCE.md: 'Without the `LoadCredential=` reset, systemd v259 replaces t' rewritten -- the draft had the reset's effect backwards (override.conf:27-30)",
+        "docs/REFERENCE.md: 'The wrapper reads that file with `$(<file)`, which drops eve' rewritten -- $(<file) drops a NUL silently; the wrapper's own checks refuse (duplicati-wrapper.bash:197-206)",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: '`NONE` after an `ENV_ACTIVE_KEY` probe match means the paths' rewritten -- write_matched_settings_key.py:379-381",
+        "docs/REFERENCE.md: 'A symlinked directory is refused as well (`O_NOFOLLOW`).' rewritten -- write_matched_settings_key.py:298-300",
+        "docs/REFERENCE.md: '| `1` | `REFUSED:` on stderr. Nothing left written |' rewritten -- claims-A F8: write_matched_settings_key.py:401-408, :429-436"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "drop-in and key-writer contract verified line by line; the reset-list, LoadCredential, wrapper, NONE and symlink sentences fixed"
+    },
+    {
+      "pr": 2422,
+      "head_sha": "1afd51ec018d9ee2b57bf25955e579a53ad9edb6",
+      "title": "docs(reference): the failed-auth table drops the oldest source IPs",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md",
+        "juniper-service-core/README.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'records `_CLEANUP_INTERVAL + 10` failures into 255 addresses' rewritten -- juniper-service-core/tests/test_middleware.py:478-483",
+        "juniper-service-core/README.md: 'The failure map is also hard-capped at 10,000 source IPs.' rewritten -- security.py:481-491",
+        "docs/REFERENCE.md: 'The map itself keeps 10,000 source IPs and drops the oldest ' rewritten -- security.py:481-491",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'The expiry test (`window_seconds=0`) does not pin this.' rewritten -- the tests carrier (landing first) adds #2419's test (refs/flood4/pr/2419 test_middleware.py:486)",
+        "docs/REFERENCE.md: 'The on-tree expiry test does not pin the cap.' rewritten -- as above",
+        "docs/REFERENCE.md: \"`RateLimiter`'s `test_maybe_cleanup_enforces_hard_cap` does \" rewritten -- claims-A F6: test_toplevel_coverage.py:262",
+        "docs/REFERENCE.md: 'Two class constants bound the map. Neither is a constructor ' rewritten -- round-5 F6: service-core 0.6.0/0.7.0 FailedAuthThrottle builds a defaultdict and check() reads self._failures[client_ip] (:428), which inserts; prune runs only from record_failure; 0.7.1 has neither, and its class is identical to main's (wheel_probe.log; wheel_probe_fat_0.7.0.log; fat_0.7.1_vs_main.diff empty)"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "failed-auth cap mechanics verified by probe; the 255-address test description and the 10,000 peak wording fixed, and the expiry-test sentences name #2419's cap test (tests carrier)"
+    },
+    {
+      "pr": 2424,
+      "head_sha": "9864b6876fd8c17908a8d135d509412931a68233",
+      "title": "docs(reference): G-SEC block-all is the getblockall capture",
+      "taken": [],
+      "fixes": [],
+      "dropped": [
+        "the whole draft; its claim is carried once, through #2426"
+      ],
+      "outcome": "not-carried",
+      "reason": "same claim as #2426, which is better grounded: #2424 has two false statements, drops still-true util-entry text, puts its section just before Version History, and edits a Test Suite Reference line"
+    },
+    {
+      "pr": 2426,
+      "head_sha": "d40b7411bd25e76ed0b9b511974c5dce4c27fba4",
+      "title": "docs(reference): G-SEC's firewall gate reads getblockall",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'When `--getblockall` produced stdout, its first line is incl' rewritten -- host_state_check.py:522-533,721-732 (probe: State 0 + failed blockall + stealth)",
+        "docs/REFERENCE.md: 'State 1 is `Firewall is enabled. (State = 1)`.' rewritten -- only tests/test_host_state_check.py:196 shows it; the code reads only State = N (:719)",
+        "docs/REFERENCE.md: '- [The firewall gate reads getblockall](#the-firewall-gate-r' rewritten -- claims-A F7 / fidelity F2: the body has Host-Check first"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "G-SEC getblockall gate verified (decision table confirmed by probe); the State-0 message sentence fixed and the State-1 sentence qualified"
+    },
+    {
+      "pr": 2428,
+      "head_sha": "4fb31bb9d5e3736011b117a3e3a5c6980599f196",
+      "title": "docs(reference): the safe_merge success SHA is the verified head",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'Passing `pcalnon/juniper-ml` as `--repo` asks GitHub for a r' rewritten -- measured; safe_merge.py:453,463,1217-1219",
+        "docs/REFERENCE.md: 'Exit 3. `PR #<pr> is MERGED at <other8>, but this run verifi' rewritten -- safe_merge.py:1129-1133,1218 print it to stderr",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Expected. The line prints the verified `headRefOid`.' rewritten -- with --merge-method merge the head is in main's history",
+        "docs/REFERENCE.md: '| The armed net merged before that call |' rewritten -- the wording depends on _ARMED, not on who merged (safe_merge.py:804-817)",
+        "docs/REFERENCE.md: 'A net that merges first prints no SHA.' rewritten -- claims-A F4: safe_merge.py:1134-1136",
+        "docs/REFERENCE.md: \"- [The MERGED Line's SHA Is the Verified Head](#the-merged-l\" rewritten -- claims-A F7 / fidelity F2: the heading's own text"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "MERGED-line SHA semantics verified; the --repo owner/repo consequence (measured), the exit-3 stream, the squash-only 'Expected' and the net-row label fixed"
+    },
+    {
+      "pr": 2432,
+      "head_sha": "8fd14990c1ec2f37e206e7a10886894b16bbf179",
+      "title": "docs(reference): an empty stats.json is not a missing file",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/DOCUMENTATION_OVERVIEW.md: '(a JSON object, including `{}`, keeps an empty headline;' rewritten -- run_suite.py:996-998: an object with headline values prints them",
+        "docs/REFERENCE.md: 'No headline keys means empty cells.' rewritten -- run_suite.py:907-940 (probe: four test_* columns)",
+        "docs/REFERENCE.md: block moved -- the inserted heading took over the existing jq '{train_accuracy...}' block; moved after it",
+        "docs/REFERENCE.md: '(missing file, `{`, gone directory), and `test_no_run_dir_an' rewritten -- claims-A F10: tests carrier tests/test_run_suite.py:1296,1303"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)",
+        "its one line under REFERENCE.md '## Test Suite Reference' (that block belongs to the tests carrier)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "_read_stats/_row_metrics verified by probe; the overview scope and the /1 re-derivation exception fixed, and the section moved below the jq block it had swallowed"
+    },
+    {
+      "pr": 2433,
+      "head_sha": "c9ec2e00787bb782e9f30428e40ac1b5d4a78bb5",
+      "title": "docs(reference): the worker connection bucket refills only up to its burst",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'Reason `Too many rejected handshakes` is `HandshakeCooldown`' rewritten -- HandshakeCooldown is wired only into control_stream.py:84-138; worker_stream.py has none",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: '`Too many rejected handshakes` is `HandshakeCooldown`, the o' rewritten -- as above",
+        "docs/REFERENCE.md: '`HandshakeCooldown` also closes **4029**, with reason `Too m' rewritten -- as above",
+        "docs/REFERENCE.md: '| rejected handshakes, per client IP |' rewritten -- as above",
+        "docs/REFERENCE.md: 'A source that stays quiet for longer than the interval is re' rewritten -- workers/security.py:145-150,171-173 (probe: quiet 400 s, last pass 150 s earlier, still mapped)",
+        "docs/REFERENCE.md: 'Waiting quietly for longer than `cleanup_interval` replaces ' rewritten -- as above",
+        "docs/QUICK_START.md: 'a quiet source past the cleanup interval gets a new full bur' rewritten -- as above",
+        "docs/REFERENCE.md: 'and every later attempt is refused.' rewritten -- as above",
+        "docs/REFERENCE.md: '`tests/test_t2_workers.py` (`test_rate_limiter_allows_burst_' rewritten -- the root-relative path does not exist",
+        "docs/REFERENCE.md: block moved -- the inserted heading took over the 'Control receives rejects' line and the service-core symptom table; moved after the table",
+        "docs/REFERENCE.md: 'That test stays at the exhausted instant, so a refill that i' rewritten -- claims-A F2: tests carrier test_workers_coverage.py:517,547",
+        "docs/REFERENCE.md: '- [The Worker Connection Bucket Refills Only up to Its Burst' rewritten -- claims-A F7: main's TOC lists only ## sections; this target is ####"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "token-bucket maths verified by probe; HandshakeCooldown scoped to /ws/control, the cleanup-pass timing, the rate-0 refusal and the test path fixed, and the section moved below the symptom table it had swallowed"
+    },
+    {
+      "pr": 2437,
+      "head_sha": "b5a5a5265c62e862bc945328519a0789d12856d7",
+      "title": "docs(reference): a failed snapshot save does not re-fit",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: '| `save_model` is `degraded` and `model.npz` is missing or w' rewritten -- run_experiment.py:2621-2626: degraded is the outcome, the phase is failed",
+        "docs/DOCUMENTATION_OVERVIEW.md: '(scored model by `operation_id`, or a pre-W1.5 CLI re-fit). ' rewritten -- the draft's replacement dropped still-true text of main's row",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: block moved -- the new Tip split main's save_model Tip from its `recurrence_up` continuation line; moved after it",
+        "docs/REFERENCE.md: 'The connection, timeout, missing-`size_bytes`, and `OSError`' rewritten -- claims-A F2: tests carrier tests/test_recurrence_operation_identity_and_dataset_budget.py:649,667,691,706",
+        "docs/REFERENCE.md: '- [Experiment Stack Utilities](#experiment-stack-utilities)\\n' rewritten -- claims-A F7: main's TOC lists only ## sections; this target is #####"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "save path verified (operation_id branch, failed phase, degraded exit 1); the cheatsheet symptom label and the overview row's dropped text fixed, and the cheatsheet Tip moved below the line it had split"
+    },
+    {
+      "pr": 2440,
+      "head_sha": "a96e4916c872185d4e4b1b7ec34840bdaa65e94f",
+      "title": "docs(reference): claudey defaults, prompt after --, and version flags",
+      "taken": [],
+      "fixes": [],
+      "dropped": [
+        "the whole draft"
+      ],
+      "outcome": "not-carried",
+      "reason": "carries #2438's pre-squash commit and conflicts in five files; its launcher docs describe the scripts before #2468, whose own cheatsheet text (DEVELOPER_CHEATSHEET 173-188 on main) is current; its one still-true correction (the -- in the --fork-session example) is carried once, through #2452"
+    },
+    {
+      "pr": 2442,
+      "head_sha": "8218636f98674aac1cc116353da2442e7a5b072f",
+      "title": "docs(reference): a worker anomaly warning does not reject the result",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Three scores that print the same to six decimals are `duplic' rewritten -- security.py:242-247; probe: 0.1, 0.5, 0.5, 0.5 does not flag",
+        "docs/REFERENCE.md: block moved -- the draft placed its section inside the footer (between **Version:** and **Maintainer:**); moved above the footer rule",
+        "docs/REFERENCE.md: 'Both loggers are `WARNING`.' rewritten -- claims-B W10: security.py:250 and coordinator.py:460 are logger.warning calls; no setLevel",
+        "docs/REFERENCE.md: 'fail the task, or call `AuditLogger.on_anomaly`.' rewritten -- claims-B W2: audit.py:46 AuditLogger has log/get_counts/reset_counts; :87/:123 WorkerMetrics.on_anomaly; nothing emits ANOMALY_DETECTED",
+        "docs/REFERENCE.md: 'A service opts in by assigning `coordinator.anomaly_detector' rewritten -- claims-B W4: coordinator.py:220 constructor keyword",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'A scored worker result with no `duration` logs `suspiciously' rewritten -- claims-B W5: coordinator.py:220 default None",
+        "docs/REFERENCE.md: 'History is per `worker_id`, in memory, and trimmed to the la' rewritten -- claims-B W9 (reworded: window 0 can still flag): security.py:239-247",
+        "docs/REFERENCE.md: '(3 through `duplicate_window`)' rewritten -- claims-B W9",
+        "docs/REFERENCE.md: '`test_t2_worker_coordinator.py` (`test_anomaly_detector_skip' rewritten -- claims-B W3: both files are in the tests carrier, which merges first",
+        "docs/REFERENCE.md: 'See [PF Scenario Suites](#pf-scenario-suites).\\n\\n## Worker Re' rewritten -- fidelity F1: every other ## section is preceded by a rule; the draft had one",
+        "docs/REFERENCE.md: '`get_worker_stats(worker_id)[\"total_results\"]` is that retai' rewritten -- round-3 F1: security.py:239-240 keeps everything at window 0; :263 total_results = len(history)",
+        "docs/REFERENCE.md: 'records after each append. The flag needs a window of 3 or m' rewritten -- round-4 F3/F4: juniper_service_core/workers/security.py:239-240 trims only when len > window, and history[-0:] keeps everything; :242-247 need len >= 3 and one six-decimal string over history[-window:], so windows 1-2 never flag and window 0 compares all; :263 total_results = len(history) = min(results, window), uncapped at 0 (val-round4 anomaly_window.txt: w10/5 -> 5, w10/14 -> 10, w0/25 -> 25, w0 five identical -> flags on results 3-5)",
+        "docs/REFERENCE.md: '- An older different score blocks the flag until it ages out' rewritten -- round-5 F5: juniper_service_core/workers/security.py:239-240 never trims at window 0 (history[-0:] is the whole list); clear_worker (:273) pops the row",
+        "docs/REFERENCE.md: 'The flag waits until that score ages out, and until at least' rewritten -- round-5 F5: same code"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "anomaly detector bounds, duplicate window and accept-with-warning verified by probe; the duplicate-rule sentence fixed, windows 0, 1 and 2 and total_results stated as the code computes them (security.py:239-247, :263), and the section moved out of the REFERENCE footer"
+    },
+    {
+      "pr": 2444,
+      "head_sha": "5c305bf2b3e2d5d66c9b16479f3586cf9bfffe13",
+      "title": "docs(reference): a training resume one seq before the window is still continuous",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: block moved -- same defect: the inserted heading took over the service-core symptom table; moved after the table",
+        "docs/REFERENCE.md: 'One seq older than the retained window is `resume_failed` `o' rewritten -- manager.py:379; the draft contradicted its own heading",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'A JSON frame whose length equals 60000 bytes is still one fr' rewritten -- manager.py:409-413 measures json.dumps before seq is added; the wire frame differs",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: '| Training WS closes 1013 while few training sockets show |' rewritten -- pre-accept close; uvicorn websockets_impl.py:278-286 answers 403",
+        "docs/REFERENCE.md: '| Training WS closes 1013 while endpoint gauges look low |' rewritten -- pre-accept close; uvicorn answers 403",
+        "docs/REFERENCE.md: 'Close reason is `Per-IP connection limit reached`.' rewritten -- manager.py:302-310",
+        "docs/REFERENCE.md: 'The default buffer keeps the last **1024** broadcasts. Conti' rewritten -- claims-B S2+S6; round-2 F1: training_stream.py:205-206 promotes after :259-274's awaited replay sends; manager.py:456 sends to active sockets only: manager.py:451-452 returns with no active socket; :312-314 pending is not active; :453-454 one seq per chunk",
+        "docs/REFERENCE.md: '| at or past the newest seq | the client is caught up, or ah' rewritten -- claims-B S2; round-2 F1",
+        "docs/REFERENCE.md: 'Pending handshakes count toward the global cap (close **1013' rewritten -- claims-B S2; the 403 matches the round-1 #2444 fix",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Pending handshakes count toward the **1013** cap.' rewritten -- claims-B S2; round-2 F1",
+        "docs/REFERENCE.md: '- [Training-stream resume and the connection cap](#training-' rewritten -- claims-A F7: main's TOC lists only ## sections; this target is ####"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "replay continuity, chunking and connection caps verified by probe; the out-of-range sentence, the 60000 framing and three pre-accept-close rows fixed"
+    },
+    {
+      "pr": 2446,
+      "head_sha": "658fb317fa61f573296c743750926ab2ed879fe3",
+      "title": "docs(reference): /ws/control banks at most its burst and blocks on the Nth handshake",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'acks `rate_limited` with `data.retry_after` from `LeakyBucke' rewritten -- messages.py:184-190 puts it under payload result",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Pre-accept close. The log has 1013 (disabled), 4029 (cooldow' rewritten -- uvicorn logs only the 403 line (0.46-0.54); control_stream.py:130-143",
+        "docs/REFERENCE.md: 'Pre-accept close. The log has 1013 (disabled), 4029 (cooldow' rewritten -- uvicorn logs only the 403 line (0.46-0.54); control_stream.py:130-143",
+        "docs/REFERENCE.md: 'The code remains the ASGI reason in the server log.' rewritten -- uvicorn drops the close code; control_stream.py:123-124's docstring is wrong too",
+        "docs/REFERENCE.md: 'Pre-accept close. Read the server log for 1013, 4029, 4001, ' rewritten -- as above",
+        "docs/REFERENCE.md: 'The code is not logged either: uvicorn\\'s line is `\"WebSocket' rewritten -- claims-B C1+C6: control_security.py:171-175 warns inside record_rejection; control_stream.py:141-143; no basicConfig/dictConfig in service-core",
+        "docs/REFERENCE.md: '| The client sees HTTP 403, not close 4029 or 4003 | Pre-acc' rewritten -- claims-B C1",
+        "docs/REFERENCE.md: 'the kill switch (1013) and a failed key (4001) log nothing. ' rewritten -- claims-B C1",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'the kill switch (1013) and a failed key (4001) log nothing. ' rewritten -- claims-B C1",
+        "docs/REFERENCE.md: 'Slightly earlier it returns the remainder rounded to one dec' rewritten -- claims-B C5: control_security.py:183-185 round(remaining, 1)",
+        "docs/REFERENCE.md: 'Equality clears the entry and `get_block_remaining` is `None' rewritten -- claims-B C5",
+        "docs/REFERENCE.md: '(logged at INFO) is 4003' rewritten -- round-3 F5: the caveat the other two rows carry; control_security.py:44,49 are logger.info"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "burst, Origin and cooldown edges verified by probe; the retry_after path and four sentences claiming a log carries the close code fixed (uvicorn logs only the 403)"
+    },
+    {
+      "pr": 2449,
+      "head_sha": "0b4612741ae5d5c7f37b405ba82e16e7080946d1",
+      "title": "docs(reference): a measured zero heartbeat overwrites, and the exact timeout is stale",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'Idle count still includes a worker aged exactly one timeout' rewritten -- registry.py:177,279 exclude it at equality",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Idle pool still lists a worker aged exactly 30 s' rewritten -- registry.py:177,279",
+        "docs/REFERENCE.md: '| Heartbeat age is 0 while the worker clock is ahead | The c' rewritten -- registry.py:60,107; metrics.py:107",
+        "docs/REFERENCE.md: '`statistics.quantiles` raises `StatisticsError` below two po' rewritten -- 3.12.8 raises; 3.13.13 and 3.14.7 return the value (probe); metrics.py:121",
+        "docs/REFERENCE.md: 'A `0` means it reported idle.' rewritten -- metrics.py:110-116 emits the raw number",
+        "docs/REFERENCE.md: 'Absent means no `pending_tasks_source`.' rewritten -- metrics.py:139-143",
+        "docs/DOCUMENTATION_OVERVIEW.md: '**See why a quiet worker still looks busy or stays idle at t' rewritten -- registry.py:177,279",
+        "docs/REFERENCE.md: 'so a worker aged exactly one timeout can take one more task ' rewritten -- claims-B R6: coordinator.py:378-379 checks registration only; worker_stream.py:325-326"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "heartbeat None-versus-zero contract verified by probe; seven rows or sentences fixed (idle pool at equality, clock clamp, StatisticsError on 3.12 only, a zero is not idle, a raising source)"
+    },
+    {
+      "pr": 2452,
+      "head_sha": "414a63de179aa7fc8865acc110476c87662ced80",
+      "title": "docs(reference): local Claude launcher prompt, defaults, and version flags",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md (one line: the --fork-session example's forwarded-argv comment)"
+      ],
+      "fixes": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: '# Forwards args to claude as: --resume <uuid> --fork-session' rewritten -- fidelity F4: wake_the_claude.bash:342 CLAUDE_END_OF_OPTIONS_FLAG=\"--\"; tests/test_wake_the_claude.py:1331 asserts [..., '--fork-session', '--', 'hello']"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)",
+        "everything else: the REFERENCE 'Local Claude Launcher' page and its links, written against wake 1.0.0 / claudey 0.1.1"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "only its still-true correction is carried: main's --fork-session example comment now shows the -- that wake_the_claude.bash:342 sends before the prompt (tests/test_wake_the_claude.py:1331); the rest of its launcher page predates #2468, whose own cheatsheet text is current"
+    },
+    {
+      "pr": 2456,
+      "head_sha": "6b23a8c04611360df367a92e2bd78a9da68f3675",
+      "title": "docs(reference): a request body that fills the cap is delivered",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'A comparison that rejects equality stays green against those' rewritten -- the tests carrier (landing first) adds #2451's test_request_body_limit_boundary.py; test names at refs/flood4/pr/2451 :77-130",
+        "docs/REFERENCE.md: 'The shipped body-limit tests send a payload strictly inside ' rewritten -- claims-B C3+C4: uvicorn httptools_impl.py:174-175; HTTP/1.1 Content-Length framing",
+        "docs/REFERENCE.md: '(`test_body_limit_allows_within_limit`, `test_body_limit_rej' rewritten -- claims-B C3: test_middleware.py:132 on main",
+        "docs/REFERENCE.md: '`test_body_limit_rejects_oversized_chunked_stream`).' rewritten -- claims-B C3",
+        "docs/REFERENCE.md: 'so an under-declared header or a chunked body with none stil' rewritten -- round-2 F2, a fix to main's CR-024 wording: true only at the ASGI layer (uvicorn httptools_impl.py:169-177 owns Content-Length framing; test_middleware.py:143-152 drives ASGI directly)",
+        "docs/DOCUMENTATION_OVERVIEW.md: 'a non-ASCII `X-API-Key` is a 401 on `main` (published 0.7.0 ' rewritten -- round-2 F16, a fix to main's wording: PyPI juniper-service-core 0.7.1 uploaded 2026-10-10T10:04Z",
+        "docs/REFERENCE.md: 'It is not the 100 MB worker binary-frame cap' rewritten -- round-4 F5: juniper_service_core/websocket/worker_stream.py:72 _MAX_BINARY_SIZE = 100 * 1024 * 1024"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "body-cap equality verified by probe; the table scoped to the ASGI layer (under uvicorn the parser answers a bad Content-Length first), the worker binary-frame cap given as 100 MiB (worker_stream.py:72), and one sentence added naming the boundary suite the tests carrier lands first"
+    },
+    {
+      "pr": 2457,
+      "head_sha": "e0938d755da2fe9c8cc047837d58367a7105bfa7",
+      "title": "docs(reference): recurrence 0.8.0 crossval 500 on model-core 0.2.0",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'juniper-recurrence#229 (merged 2026-11-04, squash `2a467adb`' rewritten -- PyPI juniper-recurrence 0.8.1 uploaded 2026-11-06T09:35:42Z, requires juniper-model-core[crossval]<0.4.0,>=0.3.0; pyproject.toml:110 floors >=0.8.1 (ml#2473); PyPI juniper-ml 0.11.4 uploaded 2026-11-07T22:59Z",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Until 0.8.1 is on PyPI, `python -m pip install -U \"juniper-m' rewritten -- 0.8.1 on PyPI since 2026-11-06T09:35:42Z",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'install model-core `>=0.3.0,<0.4.0` until 0.8.1 is on PyPI' rewritten -- 0.8.1 on PyPI since 2026-11-06T09:35:42Z",
+        "docs/DOCUMENTATION_OVERVIEW.md: 'install `juniper-model-core[crossval]>=0.3.0,<0.4.0` until 0' rewritten -- 0.8.1 on PyPI since 2026-11-06T09:35:42Z",
+        "docs/QUICK_START.md: 'Until 0.8.1 is on PyPI: `python -m pip install -U \"juniper-m' rewritten -- 0.8.1 on PyPI since 2026-11-06T09:35:42Z",
+        "docs/REFERENCE.md: '`juniper-recurrence` 0.8.0 passes `groups=` on every `POST /' rewritten -- claims-B B-own-2: v0.8.0 routers/crossval.py lock/map_data_error/build_folds; _folds.py embargo_days ValueError precedes walk_forward_folds",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Full contract: [REFERENCE \u2014 Crossval 500 with model-core 0.2' rewritten -- fidelity F3: the draft replaced main's still-true contract pointer"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "0.8.0 + model-core 0.2.0 crossval 500 verified at the tags; remedy rewritten: 0.8.1 on PyPI since 2026-11-06 09:35Z, and juniper-ml 0.11.4 floors [recurrence] at >=0.8.1"
+    },
+    {
+      "pr": 2460,
+      "head_sha": "2f48ada3dcc7a5c0404773b3790168c3f93c83c1",
+      "title": "docs(reference): replay speed clamps to 10, and a paused fit stays paused",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: '`create_app` mounts this router from `juniper_service_core.r' rewritten -- app.py:64-66; routes/__init__.py:51-60",
+        "docs/REFERENCE.md: 'The clamp at `\u00b110`, the `0.1` floor, the collapsed range, an' rewritten -- 'this checkout' has no meaning in REFERENCE.md; the pins arrive with the tests carrier",
+        "docs/REFERENCE.md: ', a magnitude below `0.1` leaves the index where it is, and ' rewritten -- claims-B R1: lifecycle/manager.py:164-165, :210-217, :283-290",
+        "docs/REFERENCE.md: 'Resume does not start another `fit`.' rewritten -- claims-B R1: routes/training.py:58-61; state_machine.py:87 RESET always valid",
+        "docs/REFERENCE.md: 'Resume reports `STARTED` and does not start a thread. |' rewritten -- claims-B R1",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Resume then reports STARTED with the thread already gone.' rewritten -- claims-B R1",
+        "docs/REFERENCE.md: 'An unknown action is HTTP 422. No active session is HTTP 409' rewritten -- claims-B R2: lifecycle/manager.py:520-522 checks the session before replay.py:75-76 validates the action",
+        "docs/REFERENCE.md: '`replay.speed` in the response is `10.0`.' rewritten -- claims-B R3: routes/snapshots.py:133 success_response envelope",
+        "docs/REFERENCE.md: '`replay.range` is `{\"start\": 5, \"end\": 5}`' rewritten -- claims-B R3",
+        "docs/REFERENCE.md: '| training thread | already exited |' rewritten -- claims-B R3: _status_dict (lifecycle/manager.py:600-610) has no thread field",
+        "docs/REFERENCE.md: 'The shared `ReplaySession` in this repo (the speed clamp, th' rewritten -- claims-B R4: replay.py has no fit/lifecycle code",
+        "docs/REFERENCE.md: 'so an inverted pair collapses to a point.' rewritten -- claims-B R5: replay.py:89-91 end = max(start, ...)",
+        "docs/REFERENCE.md: ' (both from the tests carrier, #2445)' rewritten -- claims-B B-own-4: a permanent page must not name a transient process"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "replay clamps and paused completion verified by probe; the router-mount sentence and the 'this checkout' provenance sentence fixed"
+    },
+    {
+      "pr": 2462,
+      "head_sha": "cdc01084f69164c43ccdbf341f11f59b33075650",
+      "title": "docs(reference): a WebSocket text frame of 65536 characters is delivered",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'On a stock uvicorn the 100 MiB constants do not run: the ser' rewritten -- worker_stream.py:80,89,344,368-372",
+        "docs/REFERENCE.md: '`len` counts Unicode code points of the string `receive_text' rewritten -- worker_stream.py:224,286-290",
+        "docs/REFERENCE.md: 'They leave the equality arm to the `>` comparison above.' rewritten -- the tests carrier (landing first) adds #2458's test_ws_frame_exact_cap.py; test names at refs/flood4/pr/2458 :99-194",
+        "docs/REFERENCE.md: 'A heartbeat (and any other in-cap JSON) is handled.' rewritten -- worker_stream.py:299 has no object guard",
+        "docs/REFERENCE.md: '| A huge worker binary never returns `Binary frame too large' rewritten -- claims-B S1: worker_stream.py:193-208 finally releases tasks and deregisters",
+        "docs/REFERENCE.md: 'A frame of exactly that many bytes is submitted. Stock uvico' rewritten -- claims-B S1+S4: worker_stream.py:89 _MAX_TOTAL_BINARY_SIZE = _MAX_BINARY_SIZE; :368-372",
+        "docs/REFERENCE.md: 'the server has already refused any frame over 16 MiB.' rewritten -- claims-B S1",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'A binary frame of exactly 100 MiB is submitted; stock uvicor' rewritten -- claims-B S1+S4",
+        "docs/DOCUMENTATION_OVERVIEW.md: '**See whether a 64 KB WebSocket text frame is delivered**' rewritten -- claims-B S5: the cap counts code points (control_stream.py:230)",
+        "docs/REFERENCE.md: '- [A WebSocket text frame that fills 65536 characters is del' rewritten -- claims-A F7: main's TOC lists only ## sections; this target is ####",
+        "docs/REFERENCE.md: 'Attachments over `_MAX_BINARY_SIZE` (100 MB)' rewritten -- round-2 F15, a fix to main's wording: worker_stream.py:72 _MAX_BINARY_SIZE = 100 * 1024 * 1024"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "65536-character equality verified (code points, not bytes); the 100 MiB total cap, the receive() path and the JSON-object qualifier fixed, and the boundary suite named"
+    },
+    {
+      "pr": 2464,
+      "head_sha": "6ee5af8fd03eedae99bc5850902c9f2bbbf19429",
+      "title": "docs(reference): a task at the reassignment timeout stays assigned",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: 'A result that arrives after the sweep is rejected (`Result f' rewritten -- coordinator.py:409,422,425-432 (probe: the late first-copy result is accepted)",
+        "docs/REFERENCE.md: 'The next idle heartbeat dispatches, and a late result for th' rewritten -- as above",
+        "docs/REFERENCE.md: 'Another idle worker can take it off the tail first.' rewritten -- coordinator.py:383 pops the head; :617 appends at the tail",
+        "docs/REFERENCE.md: 'With the defaults a task can stay assigned until just under ' rewritten -- coordinator.py:563-565,597-600",
+        "docs/REFERENCE.md: 'or once another worker holds it (`assigned to <id>`). If the' rewritten -- claims-B W1+W7; round-2 F10: coordinator.py:540-546: coordinator.py:352 clears _completed_task_ids only; :409 duplicate check precedes :422-432 ownership",
+        "docs/REFERENCE.md: 'The next idle heartbeat dispatches. If that is the same task' rewritten -- claims-B W1+W8: worker_stream.py:325-326 dispatches after every task_result",
+        "docs/REFERENCE.md: '| `active_task_id` is a different task | Stays registered. `' rewritten -- claims-B W6: coordinator.py:389-391 ignores registry.py:254-261's False",
+        "docs/REFERENCE.md: 'It does not pin equality.' rewritten -- claims-B W3: tests carrier test_task_reassignment_timeout_boundary.py:56,82,106,141",
+        "docs/REFERENCE.md: '- [A task assigned for exactly the reassignment timeout stay' rewritten -- claims-A F7: main's TOC lists only ## sections; this target is ####"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "strict > at the reassignment timeout verified by probe; the late-result, tail-dispatch and ~130 s sentences fixed"
+    },
+    {
+      "pr": 2465,
+      "head_sha": "a3723e9af9485b6befe8afcef94fb228a7da2322",
+      "title": "docs(reference): root settings file does not disable idle compaction",
+      "taken": [
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md",
+        "docs/DOCUMENTATION_OVERVIEW.md",
+        "docs/QUICK_START.md",
+        "docs/REFERENCE.md"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md: '(`feat/disable-idle-compress-setting-for-claude-code`) adds ' rewritten -- gh: #2271 CLOSED 2026-11-06T13:04:21Z",
+        "docs/REFERENCE.md: '| `.claude/settings.local.json` | This checkout only; gitign' rewritten -- code.claude.com/docs/en/settings: 'In a worktree, it uses the file at the main checkout's root'",
+        "docs/REFERENCE.md: 'Sources, fetched 2026-11-06:' rewritten -- re-fetched settings and settings-reference pages 2026-11-07; every quoted fact matched",
+        "docs/REFERENCE.md: '| `.claude/settings.json` | Everyone who clones this repo |' rewritten -- claims-B B-own-1: git check-ignore -> .gitignore:179 .claude/*; settings docs: read from the primary working directory",
+        "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: block moved -- fidelity F6: the note split #2468's launcher contract; moved after the Interactive/Headless paragraph"
+      ],
+      "dropped": [
+        "its Version History row and every version/date stamp hunk (the carrier bumps each doc once and adds one row)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "the root settings.local.json is not a Claude Code settings file (repo files, and the code.claude.com settings pages re-fetched 2026-11-07); #2271's closed state and the worktree nuance fixed"
+    }
+  ],
+  "fix_layers": "fixes_all.json",
+  "main_text_fixes": [
+    "docs/REFERENCE.md: 'Fleet PR Lint is still the one truly advisory job. |\\n' rewritten -- the carrier's one Version History row; every draft's own row is dropped",
+    "CHANGELOG.md: '## [Unreleased]\\n\\n### Changed\\n' rewritten -- the carrier's CHANGELOG entry, under the current top [Unreleased]",
+    "docs/REFERENCE.md: '**Published wheels do not have this yet** (PyPI, checked 202' rewritten -- round-3 F2, a fix to main's text: 0.7.1 wheel security.py:88-91 compares UTF-8 bytes; 0.4.1 wheel sentry.py:134 include_local_variables=False",
+    "docs/QUICK_START.md: 'a 401 (WebSocket close 4001) on `main`; published service-co' rewritten -- round-3 F2, a fix to main's text: same wheels",
+    "docs/REFERENCE.md: 'so an under-declared `Content-Length` or a chunked body with' rewritten -- round-3 F3, a fix to main's text: the second CR-024 copy of round-2 F2",
+    "docs/REFERENCE.md: 'binary attachments over 100 MB get `Binary frame too large`.' rewritten -- round-3 F4, a fix to main's text: worker_stream.py:72 is 100 * 1024 * 1024; uvicorn ws_max_size 16 MiB",
+    "CHANGELOG.md: \"#2424 makes #2426's claim and is carried once, in\\n  #2426's \" rewritten -- round-3 F7: #2424 itself is listed as not carried",
+    "docs/REFERENCE.md: 'could ship the configured key. Published `juniper-service-co' rewritten -- round-4 F1, a fix to main's text: service-core 0.7.0 wheel security.py:66 any(hmac.compare_digest(api_key, k) ...); 0.7.1 wheel (PyPI 2026-10-10) security.py:88-91 compares UTF-8 bytes in a `for candidate` loop; #2086 merged 2026-09-24, after 0.7.0 (2026-08-31), and no release sits between 0.7.0 and 0.7.1",
+    "docs/REFERENCE.md: 'and its `before_send` hook also deletes frame `vars`. Publis' rewritten -- round-4 F1, a fix to main's text: observability 0.4.0 wheel sentry.py:68-74 calls sentry_sdk.init without include_local_variables and its before_send only scrubs headers; 0.4.1 wheel (PyPI 2026-10-10) sentry.py:134 include_local_variables=False and :65 frame.pop('vars')",
+    "docs/REFERENCE.md: \"`k` in published 0.7.0's generator expression, `candidate` i\" rewritten -- round-4 F1, a fix to main's text: #1974 merged 2026-09-21; 0.7.0 wheel security.py:66 (`k`), 0.7.1 wheel :90 (`candidate`); juniper-data 0.16.0 api/security.py:100 and 0.17.0 :116 (`candidate`)",
+    "docs/REFERENCE.md: 'A service still on service-core **0.7.0** or observability *' rewritten -- round-4 F2 (round 3's rewrite of main's text): the 500 and the throttle miss follow service-core alone (0.7.1 security.py:88-91 encodes with surrogatepass, which cannot raise); the key reaches Sentry only when 0.4.0's frame locals ride on that 500 (0.4.1 sentry.py:134); the same statement as QUICK_START's link line",
+    "docs/REFERENCE.md: 'after juniper-data 0.16.0 was published, so no juniper-data ' rewritten -- round-4 F1 sweep, a fix to main's text: juniper-data#440 merged 2026-09-25T01:57Z, after 0.16.0 (2026-09-24T18:35Z); the 0.16.0 wheel's api/security.py:100-101 compares str, the 0.17.0 wheel's (2026-10-10) :114-117 UTF-8 bytes with surrogatepass; PyPI has no release between them",
+    "docs/REFERENCE.md: '| Published `juniper-service-core` 0.7.0 compares keys as `s' rewritten -- round-4 F1, a fix to main's text: service-core 0.7.0 wheel security.py:66 any(hmac.compare_digest(api_key, k) ...); 0.7.1 wheel (PyPI 2026-10-10) security.py:88-91 compares UTF-8 bytes in a `for candidate` loop; #2086 merged 2026-09-24, after 0.7.0 (2026-08-31), and no release sits between 0.7.0 and 0.7.1",
+    "docs/REFERENCE.md: '`configure_sentry` on `main` passes `include_local_variables' rewritten -- round-4 F1, a fix to main's text: observability 0.4.0 wheel sentry.py:68-74 calls sentry_sdk.init without include_local_variables and its before_send only scrubs headers; 0.4.1 wheel (PyPI 2026-10-10) sentry.py:134 include_local_variables=False and :65 frame.pop('vars')",
+    "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'never a 500 \u2014 on `main`. Published `juniper-service-core` **' rewritten -- round-4 F1, a fix to main's text: service-core 0.7.0 wheel security.py:66 any(hmac.compare_digest(api_key, k) ...); 0.7.1 wheel (PyPI 2026-10-10) security.py:88-91 compares UTF-8 bytes in a `for candidate` loop; #2086 merged 2026-09-24, after 0.7.0 (2026-08-31), and no release sits between 0.7.0 and 0.7.1",
+    "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Published `juniper-observability` **0.4.0** still captures l' rewritten -- round-4 F1, a fix to main's text: observability 0.4.0 wheel sentry.py:68-74 calls sentry_sdk.init without include_local_variables and its before_send only scrubs headers; 0.4.1 wheel (PyPI 2026-10-10) sentry.py:134 include_local_variables=False and :65 frame.pop('vars')",
+    "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: '| Published `juniper-service-core` 0.7.0: `hmac.compare_dige' rewritten -- round-4 F1, a fix to main's text: service-core 0.7.0 wheel security.py:66 any(hmac.compare_digest(api_key, k) ...); 0.7.1 wheel (PyPI 2026-10-10) security.py:88-91 compares UTF-8 bytes in a `for candidate` loop; #2086 merged 2026-09-24, after 0.7.0 (2026-08-31), and no release sits between 0.7.0 and 0.7.1",
+    "CHANGELOG.md: 'had swallowed existing text were moved.\\n' rewritten -- round-4 F1, this carrier's CHANGELOG entry: records the rounds-3/4 corrections of main's text (REFERENCE, cheatsheet, QUICK_START) for a reader of the entry",
+    "docs/REFERENCE.md: 'could ship the configured key. `juniper-service-core` 0.7.0 ' rewritten -- round-5 ruling: first-release facts only, no cross-package advice: service-core 0.1.0-0.7.0 str compare (k), 0.7.1 first byte compare (wheel_probe.log)",
+    "docs/REFERENCE.md: 'Both are from **0.4.1**; **0.4.0** uses the SDK default (`Tr' rewritten -- round-5 ruling: first-release facts only, no cross-package advice: observability: include_local_variables=False and pop('vars') first in 0.4.1, in no earlier release (wheel_probe.log)",
+    "docs/REFERENCE.md: 'the local holding the **configured** key is not \u2014 `k` in 0.7' rewritten -- round-5 F3 under the ruling: no published service-core sent `candidate` (0.7.1 ships the loop already comparing bytes); the str copies use k (service-core <=0.7.0, cascor <=0.11.0) or candidate (juniper-data 0.7.0-0.16.0) (wheel_probe.log)",
+    "docs/REFERENCE.md: '**Fixed in the published wheels** (PyPI, re-checked 2026-11-' rewritten -- round-5 F1/F4 under the ruling: the mixed-install sentence and 'Upgrade both' deleted (false for juniper-cascor <=0.11.0 and juniper-data <=0.16.0, which carry their own str compare); service-core 0.1.0-0.7.0 str compare (k), 0.7.1 first byte compare (wheel_probe.log); observability: include_local_variables=False and pop('vars') first in 0.4.1, in no earlier release (wheel_probe.log)",
+    "docs/REFERENCE.md: 'juniper-data carries its own `APIKeyAuth` (`juniper_data/api' rewritten -- round-5 F1 under the ruling: names cascor's copy; the cross-package configure_sentry sentence deleted; juniper-data 0.17.0 and juniper-cascor 0.12.0 are each package's first byte compare; every earlier release with APIKeyAuth compares str or calls no compare_digest (wheel_probe.log)",
+    "docs/REFERENCE.md: '| `juniper-service-core` 0.7.0 compares keys as `str`; `hmac' rewritten -- round-5 F4 under the ruling: service-core 0.1.0-0.7.0 str compare (k), 0.7.1 first byte compare (wheel_probe.log)",
+    "docs/REFERENCE.md: '`juniper-observability` 0.4.0 uses the SDK default; from 0.4' rewritten -- round-5 F4 under the ruling: observability: include_local_variables=False and pop('vars') first in 0.4.1, in no earlier release (wheel_probe.log)",
+    "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'Tip: a non-ASCII `X-API-Key` is a **401** on HTTP and close ' rewritten -- round-5 F4 under the ruling: service-core 0.1.0-0.7.0 str compare (k), 0.7.1 first byte compare (wheel_probe.log) (0.7.1 security.py:118-122 401, websocket/manager.py:72-73 close 4001); the throttle parenthetical deleted (service-core has no FailedAuthThrottle before 0.6.0); observability: include_local_variables=False and pop('vars') first in 0.4.1, in no earlier release (wheel_probe.log)",
+    "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: '| `juniper-service-core` 0.7.0: `hmac.compare_digest` raises' rewritten -- round-5 F1/F4 under the ruling: service-core 0.1.0-0.7.0 str compare (k), 0.7.1 first byte compare (wheel_probe.log); juniper-data 0.17.0 and juniper-cascor 0.12.0 are each package's first byte compare; every earlier release with APIKeyAuth compares str or calls no compare_digest (wheel_probe.log)",
+    "docs/DOCUMENTATION_OVERVIEW.md: 'a non-ASCII `X-API-Key` is a 401 from 0.7.1 (0.7.0 still 500' rewritten -- round-5 F2 under the ruling: the Sentry clause named no release; service-core 0.1.0-0.7.0 str compare (k), 0.7.1 first byte compare (wheel_probe.log); observability: include_local_variables=False and pop('vars') first in 0.4.1, in no earlier release (wheel_probe.log)",
+    "docs/QUICK_START.md: 'a non-ASCII `X-API-Key` is a 401 (WebSocket close 4001) from' rewritten -- round-5 F4 under the ruling: the mixed-install clause deleted; service-core 0.1.0-0.7.0 str compare (k), 0.7.1 first byte compare (wheel_probe.log); observability: include_local_variables=False and pop('vars') first in 0.4.1, in no earlier release (wheel_probe.log); juniper-data 0.17.0 and juniper-cascor 0.12.0 are each package's first byte compare; every earlier release with APIKeyAuth compares str or calls no compare_digest (wheel_probe.log)",
+    "juniper-service-core/README.md: 'Releases up to and including **0.7.0** compare `str` and sti' rewritten -- round-5 ruling: first-release facts only, no cross-package advice: service-core 0.1.0-0.7.0 str compare (k), 0.7.1 first byte compare (wheel_probe.log); observability: include_local_variables=False and pop('vars') first in 0.4.1, in no earlier release (wheel_probe.log)",
+    "CHANGELOG.md: \"  Also corrected in `main`'s own pages: the non-ASCII API-ke\" rewritten -- this carrier's CHANGELOG entry, kept in step with the round-5 corrections of main's text",
+    "docs/REFERENCE.md: 'new in [juniper-cascor#731](https://github.com/pcalnon/junip' rewritten -- round-5 F7, a fix to main's text: #731 merged 2026-10-27T00:11Z (752a797f); gh compare: v0.12.0 is behind it, v0.13.0 ahead 5 / behind 0; PyPI 0.13.0 uploaded 2026-10-28T11:43Z",
+    "docs/REFERENCE.md: 'This is **not** the 10 MB HTTP body limit.' rewritten -- round-5 F7, a fix to main's text: juniper_data/api/constants.py MAX_REQUEST_BODY_BYTES = 10 * 1024 * 1024 in every release that has it, 0.7.0-0.17.1 (wheel_probe.log)",
+    "docs/REFERENCE.md: 'the local holding the **configured** key (`k` or `candidate`' rewritten -- round-6 F2: the names came before any copy is introduced and did not say which copy uses which; dropped",
+    "docs/REFERENCE.md: 'juniper-data and juniper-cascor carry their own `APIKeyAuth`' rewritten -- round-6 F1: juniper-canopy 0.8.1 security.py:74 str compare (k); 0.9.0 :52 encode('utf-8', 'surrogatepass') in _compare_bytes, :134-137 bytes; 0.3.0-0.8.0 define no APIKeyAuth (wheel_probe.log)",
+    "docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md: 'The byte compare (`surrogatepass`) is first released in serv' rewritten -- round-6 F1: juniper-canopy 0.8.1 security.py:74 str compare (k); 0.9.0 :52 encode('utf-8', 'surrogatepass') in _compare_bytes, :134-137 bytes; 0.3.0-0.8.0 define no APIKeyAuth (wheel_probe.log); the completeness wording 'each in its own copy' dropped",
+    "docs/QUICK_START.md: \"juniper-data's and juniper-cascor's own copies compare bytes\" rewritten -- round-6 F1: juniper-canopy 0.8.1 security.py:74 str compare (k); 0.9.0 :52 encode('utf-8', 'surrogatepass') in _compare_bytes, :134-137 bytes; 0.3.0-0.8.0 define no APIKeyAuth (wheel_probe.log)",
+    "CHANGELOG.md: '  fixes (`juniper-service-core` 0.7.1 and `juniper-observabi' rewritten -- round-6 F1, this carrier's CHANGELOG entry: juniper-canopy 0.8.1 security.py:74 str compare (k); 0.9.0 :52 encode('utf-8', 'surrogatepass') in _compare_bytes, :134-137 bytes; 0.3.0-0.8.0 define no APIKeyAuth (wheel_probe.log)"
+  ],
+  "checks": [
+    {
+      "what": "new base: refs/flood4/ml-tests-carrier fetched from origin/test/flood4-consolidated-tests = bbdeb758 (tree c1313645), i.e. main a1ab41af plus the tests carrier (#2517); worktree detached there, the 7 files merged on top",
+      "command": "git fetch -q origin +refs/heads/test/flood4-consolidated-tests:refs/flood4/ml-tests-carrier; git rev-parse refs/flood4/ml-tests-carrier refs/flood4/ml-tests-carrier^{tree}",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/work/rebase_theirs_blobs.txt"
+    },
+    {
+      "what": "carrier rebuilt unbumped on 303ccc0b (20 drafts' hunks + 161 recorded fixes, FAILED=0), stored as blobs, then 3-way merged per file (ours = bbdeb758, base = 303ccc0b, theirs = carrier) in file mode (merge-file --object-id hits git 2.53 'BUG: repository.c:171' here). 5 files clean; REFERENCE.md 1 conflict (both sides inserted after the util/host_state_check.py bullet: kept #2412's E-H3 sub-bullet under its parent, then #2516's host_api_filesystems_check bullet); CHANGELOG.md 1 conflict (kept #2516's and #2517's entries, then this entry, under the single existing ### Added)",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_docs_rebase_merge.py . 303ccc0b4613dadcbe5ef16985a862beccec7a1a tmp/flood4/ml-docs/work/rebase_theirs_blobs.txt",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/work/rebase_merge.log"
+    },
+    {
+      "what": "stamps bumped once from bbdeb758's values, header == footer: REFERENCE 0.6.63/0.6.62 -> 0.6.64; QUICK_START 0.3.43 (#2510) -> 0.3.44; OVERVIEW 0.2.55 -> 0.2.56; CHEATSHEET 1.0.63 -> 1.0.64; dates 2026-11-07. #2510's QUICK_START content intact (the carrier's QUICK_START diff against bbdeb758 removes no line)",
+      "command": "python3 util/ad-hoc/2026-10-08_fleet_flood3_bump_doc_stamps.py --date 2026-11-07 <4 docs>",
+      "result": "pass",
+      "log": "n/a (printed old -> new per file)"
+    },
+    {
+      "what": "every carried draft line present, or explained over all six fix layers (204 entries): 138 recorded fixes, 18 dropped history rows, 1 protected skip, 0 unexplained",
+      "command": "python3 util/ad-hoc/2026-10-08_flood3_verify_carried_lines.py . <20 label=own diff> ; python3 util/ad-hoc/2026-11-07_flood4_ml_docs_missing_explained.py tmp/flood4/ml-docs/docs/verify_carried_final.log tmp/flood4/ml-docs/work/own tmp/flood4/ml-docs/work/fixes_all.json --skipped 'APD-ML-002 (`CascorHeadlineMetricsTest`'",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/verify_carried_final.log; tmp/flood4/ml-docs/docs/missing_explained_final.log"
+    },
+    {
+      "what": "D-ml-docs: every test file and test function the carrier's added lines name exists on the rebased tree: 27 distinct test files (32 spellings) and 64 tests, 0 missing; test_accuracy excluded explicitly (run_suite.py's suite column, :156/:171). The first version of the tool skipped names written as Class.test_name (round-3 F6). Re-run after round 6: unchanged",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_docs_test_names_check.py --ignore test_accuracy . HEAD <7 files>",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/test_names_check.log"
+    },
+    {
+      "what": "fence-aware Sequence Safety screens (repo's juniper-ci-tools 0.9.1 source), worktree vs bbdeb758, after round 6: 0 FAIL (small-deletion WARNs only; the round-6 layer and the edited wheel probe CLEAN)",
+      "command": "python3 util/ad-hoc/2026-10-08_flood3_worktree_screens.py . HEAD -- <7 files> util/ad-hoc/2026-11-07_flood4_ml_docs_fixes_round6.py util/ad-hoc/2026-11-07_flood4_ml_docs_wheel_probe.py",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/screens_final.log"
+    },
+    {
+      "what": "CI's markdown structure delta on two local, unsigned (%G? = N), never-pushed probe commits of the round-6 tree 6c516530 (separate GIT_INDEX_FILE, real index untouched): fb3b6cab (parent bbdeb758) and 3b6fe390 (parent main 7bc9d3e2, whose tree c1313645 equals bbdeb758's). 7 touched markdown files, 0 regressions each",
+      "command": "python3 util/markdown_structure_delta.py --base bbdeb75823c011e780058f20d4df902a79f436ba --head fb3b6cab09d9f2e6dba1e9b05820e35b994b7056; python3 util/markdown_structure_delta.py --base 7bc9d3e2cf7e2a8e4c569777c5a76b15cd02b0a1 --head 3b6fe3903ba02d3fd7f752f8a78f4e6d971fb547",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/markdown_structure_delta.log; tmp/flood4/ml-docs/docs/markdown_structure_delta_main.log"
+    },
+    {
+      "what": "merge-tree of main 7bc9d3e2 (origin/main per ls-remote, unchanged since round 4) and the main-parented probe 3b6fe390: clean, tree 6c516530. A commit parented on bbdeb758 conflicts with main in CHANGELOG.md at the #2517 squash boundary (round 4's measurement), so the PR branch is cut from main 7bc9d3e2",
+      "command": "git merge-tree --write-tree 7bc9d3e2cf7e2a8e4c569777c5a76b15cd02b0a1 3b6fe3903ba02d3fd7f752f8a78f4e6d971fb547",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/merge_tree_main.log (exit 0); tmp/flood4/ml-docs/docs/merge_tree.log (round 4's pre-squash-parent artifact)"
+    },
+    {
+      "what": "doc-link check with ci.yml's exact args, plus --exclude tmp, after round 6",
+      "command": "juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude pull_requests --exclude releases --exclude analysis --exclude fixes --exclude development --exclude CHANGELOG.md --exclude tmp --cross-repo skip",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/doclinks_ci_args.log"
+    },
+    {
+      "what": "no hunk inside REFERENCE.md '## Test Suite Reference' on bbdeb758 (lines 3122-3705), after round 6",
+      "command": "git diff -U0 HEAD -- docs/REFERENCE.md + hunk-range check",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/reference_u0.diff (64 hunks, 0 in range)"
+    },
+    {
+      "what": "pinned pre-commit on the 19 changed paths (7 docs, 12 scripts), with no .md under tmp/ (the frozen copies removed first; re-frozen afterwards)",
+      "command": "/opt/miniforge3/bin/pre-commit run --files <19 changed paths>",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/precommit_final.log (exit 0)"
+    },
+    {
+      "what": "CodeQL prescreen on the twelve new util/ad-hoc scripts (the round-6 layer and the edited wheel probe included)",
+      "command": "python3 util/ad-hoc/2026-10-05_codeql_python_prescreen.py <12 scripts>",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/codeql_prescreen_final.log (0 predicted alerts in 12 files)"
+    },
+    {
+      "what": "CHANGELOG: one ### Added under the top [Unreleased] (line 10); this entry (lines 65-83) after #2516's and #2517's; ### Changed at 85; [0.11.4] below (line 137)",
+      "command": "grep -n '^## \\[\\|^### ' CHANGELOG.md",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/changelog_entry.txt"
+    },
+    {
+      "what": "the 7 files re-frozen with SHA256SUMS.txt after the round-6 layer and every gate",
+      "command": "cp -p ...; sha256sum ... > SHA256SUMS.txt",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/rebase_bbdeb758/SHA256SUMS.txt"
+    },
+    {
+      "what": "round-3 fix layer (7 entries) applied on the rebased tree, FAILED=0; explained-missing over both layers (168 entries): 0 unexplained",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_docs_fixes_round3.py tmp/flood4/ml-docs/work/fixes_round3.json; python3 util/ad-hoc/2026-11-07_flood4_ml_docs_apply.py . tmp/flood4/ml-docs/work/own --fixes tmp/flood4/ml-docs/work/fixes_round3.json --",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/apply_round3.log; tmp/flood4/ml-docs/docs/missing_explained_final.log"
+    },
+    {
+      "what": "round-4 fix layer (13 entries: 10 corrections of main's text, 1 of this carrier's CHANGELOG entry, #2442's window sentence, #2456's 100 MiB) applied on the round-3 tree, FAILED=0; then a sweep of the 7 files for main-only / unreleased / not-yet-published / on-main claims about service-core, observability or the key compare: none left",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_docs_fixes_round4.py tmp/flood4/ml-docs/work/fixes_round4.json; python3 util/ad-hoc/2026-11-07_flood4_ml_docs_apply.py . tmp/flood4/ml-docs/work/own --fixes tmp/flood4/ml-docs/work/fixes_round4.json --log tmp/flood4/ml-docs/docs/apply_round4.log --; grep -n -i -E 'unreleased|main only|not yet (published|released)|no .*release carries|on `main`|published `?juniper-(service-core|observability)|still (has|uses|captures|compares)' <7 files> | grep -i -E 'service-core|observab|sentry|X-API-Key|non-ASCII|compare_digest|#2086|#1974|#440'",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/apply_round4.log (the remaining sweep hits are true: 0.7.0 'still' compares str, REFERENCE:2109 is a statement about main's tests)"
+    },
+    {
+      "what": "round-4 evidence re-derived from the published wheels (PyPI JSON API, 2026-11-07) and gh pr view: service-core 0.7.0 security.py:66 str compare with local k; 0.7.1 (2026-10-10T10:04Z) :88-91 UTF-8 bytes, local candidate; observability 0.4.0 init without include_local_variables, hook scrubs headers only; 0.4.1 (2026-10-10T09:14Z) :134 include_local_variables=False and :65 frame.pop('vars'); juniper-data 0.16.0 api/security.py:100-101 str compare, 0.17.0 (2026-10-10T09:02Z) :114-117 bytes, no release between; #1974 merged 2026-09-21, #2086 2026-09-24, juniper-data#440 2026-09-25T01:57Z; service-core releases on PyPI: 0.1.0-0.7.1 with none between 0.7.0 and 0.7.1",
+      "command": "python3 -I (urllib + zipfile over https://pypi.org/pypi/<pkg>/<ver>/json wheels); gh pr view 1974 / 2086 --repo pcalnon/juniper-ml; gh pr view 440 --repo pcalnon/juniper-data; gh release list --repo pcalnon/juniper-ml",
+      "result": "pass",
+      "log": "n/a (printed; recorded in each fix's why in fixes_round4.json)"
+    },
+    {
+      "what": "duplicate window re-derived from juniper_service_core/workers/security.py:239-247 and :263 (trim only when len > window; history[-0:] is the whole list; the flag needs len >= 3 and one six-decimal string; total_results = len(history)) and val-round4's anomaly_window.txt (w10/5 results -> 5, w10/14 -> 10, w0/25 -> 25, w1 and w2 never flag, w0 five identical flags on results 3-5)",
+      "command": "sed -n '200,275p' juniper-service-core/juniper_service_core/workers/security.py",
+      "result": "pass",
+      "log": "n/a"
+    },
+    {
+      "what": "round-5 fix layer (18 entries: 12 rewrites of the release-lineage text under the orchestrator's first-release-only ruling, across REFERENCE (7), the cheatsheet (2), the overview, QUICK_START and the service-core README; the CHANGELOG entry; #2442's two window-0 lines; #2422's 0.7.1-table sentence; main's cascor#731 and 10 MiB lines) applied on the round-4 tree, FAILED=0; then a sweep of the 7 files for lineage claims other than first releases: none left",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_docs_fixes_round5.py tmp/flood4/ml-docs/work/fixes_round5.json; python3 util/ad-hoc/2026-11-07_flood4_ml_docs_apply.py . tmp/flood4/ml-docs/work/own --fixes tmp/flood4/ml-docs/work/fixes_round5.json --log tmp/flood4/ml-docs/docs/apply_round5.log --",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/apply_round5.log"
+    },
+    {
+      "what": "per-release facts from every published wheel, parsed with ast and never imported: service-core 0.1.0-0.7.0 compare_digest(api_key, k) on str, 0.7.1 first byte compare (and its FailedAuthThrottle is identical to main's; 0.6.0/0.7.0 build a defaultdict read by check()); observability: no release before 0.4.1 passes include_local_variables or pops frame vars, 0.4.1 does both; juniper-cascor (own APIKeyAuth in api/ and src/api/security.py) 0.5.0-0.11.0 str with k, 0.12.0 first byte compare; juniper-data 0.7.0-0.16.0 str with candidate (0.4.2/0.6.0 call no compare_digest), 0.17.0 first byte compare; juniper-data MAX_REQUEST_BODY_BYTES = 10 * 1024 * 1024 in 0.7.0-0.17.1. Also: 0.7.1 security.py:118-122 raises 401 on a failed validate and websocket/manager.py:72-73 closes 4001; cascor#731 merged 2026-10-27T00:11Z, gh compare v0.12.0 behind it and v0.13.0 ahead 5 / behind 0, 0.13.0 on PyPI 2026-10-28T11:43Z",
+      "command": "python3 -I util/ad-hoc/2026-11-07_flood4_ml_docs_wheel_probe.py; python3 -I util/ad-hoc/2026-11-07_flood4_ml_docs_wheel_probe.py --dump FailedAuthThrottle juniper-service-core 0.7.0 (and 0.7.1, diffed against main's class); gh pr view 731 --repo pcalnon/juniper-cascor; gh api repos/pcalnon/juniper-cascor/compare/752a797f...v0.12.0 and ...v0.13.0",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/wheel_probe.log; tmp/flood4/ml-docs/docs/wheel_probe_fat_0.7.0.log; tmp/flood4/ml-docs/docs/fat_0.7.1_vs_main.diff (empty)"
+    },
+    {
+      "what": "round-6 fix layer (5 entries: juniper-canopy 0.9.0 added to REFERENCE :8942, the cheatsheet :1132 (its 'each in its own copy' completeness wording dropped), QUICK_START :201 and the CHANGELOG entry; REFERENCE :8934's variable names dropped) applied on the round-5 tree, FAILED=0",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_docs_fixes_round6.py tmp/flood4/ml-docs/work/fixes_round6.json; python3 util/ad-hoc/2026-11-07_flood4_ml_docs_apply.py . tmp/flood4/ml-docs/work/own --fixes tmp/flood4/ml-docs/work/fixes_round6.json --log tmp/flood4/ml-docs/docs/apply_round6.log --",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/apply_round6.log"
+    },
+    {
+      "what": "juniper-canopy read in every published wheel: 0.3.0-0.8.0 define no APIKeyAuth; 0.8.1 (2026-09-18) security.py:40 APIKeyAuth, validate :61, :74 any(hmac.compare_digest(api_key, k) ...) on str, imported at middleware.py:16; 0.9.0 (2026-10-17) _compare_bytes :42-52 returns text.encode('utf-8', 'surrogatepass'), validate :134-137 compares _compare_bytes(api_key) with _compare_bytes(candidate). No wheel of juniper-recurrence, -recurrence-model, -recurrence-client, -cascor-worker, -cascor-client, -data-client, -model-core, -cascor-protocol, -cascor-model, -ci-tools, -config-tools, -doc-tools or juniper-ml (every release) defines APIKeyAuth or calls compare_digest",
+      "command": "python3 -I util/ad-hoc/2026-11-07_flood4_ml_docs_wheel_probe.py (juniper-canopy now in its default set); python3 -I (urllib + zipfile) over those thirteen packages' wheels",
+      "result": "pass",
+      "log": "tmp/flood4/ml-docs/docs/wheel_probe.log (49 releases); tmp/flood4/ml-docs/docs/wheel_probe_canopy.log"
+    }
+  ],
+  "mutations": [],
+  "open_questions": [
+    "No test file is carried, so brief rule 11 (mutation of carried tests) does not apply.",
+    "Base: bbdeb758 (#2517's head), whose tree c1313645 is main 7bc9d3e2's (#2517's squash, merged 2026-11-08T01:49:41Z; origin/main per ls-remote at round 6). Cut the PR branch from main 7bc9d3e2: the carrier's tree 6c516530 on that parent merges clean, while a commit on bbdeb758 conflicts with main in CHANGELOG.md at the squash boundary. If main moves again, re-run util/ad-hoc/2026-11-07_flood4_ml_docs_rebase_merge.py against the new head and repeat the gates.",
+    "The frozen copies under tmp/flood4/ml-docs/rebase_bbdeb758/ are .md files: until #2360 lands, the local pre-commit doc-link hook scans tmp/ and will flag their relative links. Run pre-commit in this worktree only with them moved aside, or pass the hook's --exclude tmp.",
+    "Launcher page (#2440/#2452): no REFERENCE launcher page; main's cheatsheet (from #2468) is current and #2452's one still-true line is carried.",
+    "Outside a docs carrier (report only): WorkerCoordinator.submit_tasks keeps finished tasks across rounds (coordinator.py:352); the paused-completion wedge (lifecycle/manager.py:283-290); the resume race (training_stream.py:205-206 vs :259-274); a duplicate_window of 1 or 2 can never flag (security.py:239-247); control_stream.py:123-124's docstring; the tests carrier's test_lifecycle_paused_terminal.py:3-5 docstring (claims-B R8); juniper-canopy 0.8.1's internal-token check (security.py:230) also called compare_digest on str (0.9.0 compares bytes at :300).",
+    "Main's CHANGELOG [Unreleased] (#2517's entry, lines 61-63) says #2424's and #2432's Test Suite Reference sentences each lack 'its link to a section only the docs carrier adds'; true for #2432 (its section is carried), not for #2424 (its #g-sec-block-all-is-the-getblockall-capture section is not; #2426's equivalent is #the-firewall-gate-reads-getblockall). Left alone here (round-4 F6); a follow-up could add #2426's link to that Test Suite Reference line, which this carrier must not touch.",
+    "Release lineage of the non-ASCII key / Sentry frame-locals fixes is stated only as each package's first fixed release (round-5 ruling). Not stated, by design: which observability version a juniper-data, juniper-cascor or juniper-canopy install pulls, and juniper-cascor's own src/main.py sentry_sdk.init, which first passes include_local_variables=False in 0.12.0 (its comment says the service path goes through configure_sentry).",
+    "Stamps and 're-checked' dates are 2026-11-07, the host's local date (CST); UTC passed 2026-11-08 during round 4.",
+    "Verifier agents left gitignored bytecode in this worktree (util/__pycache__/, util/experiments/__pycache__/). Probe commits e3ad7a30, 660f82e0, 7925f2ea, 601f0c78, 29be75fc, cbfb25a4, c5517856, 955a3608, fb3b6cab and 3b6fe390 are unreferenced local objects, unsigned and never pushed."
+  ],
+  "validator_findings": [
+    {
+      "id": "claims-A F1",
+      "outcome": "no change",
+      "why": "dependency finding; the orchestrator ruled the docs carrier lands after the tests carrier, which carries test_middleware.py:486"
+    },
+    {
+      "id": "claims-A F2",
+      "outcome": "applied",
+      "why": "tests carrier pins #2437's 500/connection/size/copy rows (test_recurrence_operation_identity_and_dataset_budget.py:649,667,691,706) and #2433's cap/no-spend/equal-age (test_workers_coverage.py:517,547)"
+    },
+    {
+      "id": "claims-A F3",
+      "outcome": "applied",
+      "why": "run_suite.py:170-174, :931-941: only test_* columns, only for a test-split final block"
+    },
+    {
+      "id": "claims-A F4",
+      "outcome": "applied",
+      "why": "safe_merge.py:1134-1136 prints the head in the race case"
+    },
+    {
+      "id": "claims-A F5",
+      "outcome": "applied",
+      "why": "_env_aliases.py:20-22 recommends the or chain; the ban is conditional"
+    },
+    {
+      "id": "claims-A F6",
+      "outcome": "applied",
+      "why": "test_toplevel_coverage.py:262"
+    },
+    {
+      "id": "claims-A F7",
+      "outcome": "applied",
+      "why": "TOC order swapped, label = heading text, five TOC entries for #### / ##### headings dropped (main's TOC lists only ## sections)"
+    },
+    {
+      "id": "claims-A F8",
+      "outcome": "applied",
+      "why": "write_matched_settings_key.py:401-408, :429-436"
+    },
+    {
+      "id": "claims-A F9",
+      "outcome": "applied",
+      "why": "macvm_ctl.bash:233 'exited ${rc}', :496-508 env_error -> exit 2"
+    },
+    {
+      "id": "claims-A F10",
+      "outcome": "applied",
+      "why": "tests carrier test_run_suite.py:1296,1303; test_stats_summary_eval_blocks.py:196,252; test_stats_summary_render.py:206"
+    },
+    {
+      "id": "claims-B C1",
+      "outcome": "applied",
+      "why": "control_security.py:171-175 logs WARNING 'blocked for %ds (cooldown triggered)' inside record_rejection, on the attempt that closes 4001/4003"
+    },
+    {
+      "id": "claims-B W1",
+      "outcome": "applied",
+      "why": "coordinator.py:352 clears _completed_task_ids only; a finished task keeps its assignee (:463-466), so a later-round copy is accepted"
+    },
+    {
+      "id": "claims-B W2",
+      "outcome": "applied",
+      "why": "audit.py:46 AuditLogger (log/get_counts/reset_counts); :87/:123 WorkerMetrics.on_anomaly; nothing emits ANOMALY_DETECTED"
+    },
+    {
+      "id": "claims-B B-own-1",
+      "outcome": "applied",
+      "why": "git check-ignore -> .gitignore:179 '.claude/*' ignores .claude/settings.json"
+    },
+    {
+      "id": "claims-B DEP1",
+      "outcome": "no change",
+      "why": "dependency finding; covered by the land-after-tests ruling"
+    },
+    {
+      "id": "claims-B R1",
+      "outcome": "applied",
+      "why": "lifecycle/manager.py:164-165, :210-217, :283-290; routes/training.py:58-61 409; state_machine.py:87 RESET from any state"
+    },
+    {
+      "id": "claims-B S1",
+      "outcome": "applied",
+      "why": "worker_stream.py:193-208 finally releases tasks and deregisters after the 1009 close"
+    },
+    {
+      "id": "claims-B S2",
+      "outcome": "applied",
+      "why": "websocket/manager.py:451-452 broadcast returns when no socket is active; :312-314 pending is not active"
+    },
+    {
+      "id": "claims-B B-own-2",
+      "outcome": "applied",
+      "why": "v0.8.0 routers/crossval.py 409 / map_data_error before build_folds; _folds.py embargo_days ValueError precedes walk_forward_folds (REFERENCE only, as the finding says)"
+    },
+    {
+      "id": "claims-B B-own-3",
+      "outcome": "applied",
+      "why": "JR-ML-SEC-018 exists (notes/requirements/by-area/SEC.md:266, proposed P0); PR body gains '## Requirements' with 'References'. No other JR id in the drafts' bodies or the docs diff"
+    },
+    {
+      "id": "claims-B B-own-4",
+      "outcome": "applied",
+      "why": "'(both from the tests carrier, #2445)' dropped; the CHANGELOG no longer names the tests carrier"
+    },
+    {
+      "id": "claims-B B-own-5",
+      "outcome": "no change",
+      "why": "merge-time CHANGELOG conflict; left for the orchestrator per its message"
+    },
+    {
+      "id": "claims-B C3",
+      "outcome": "applied",
+      "why": "boundary file pins the equality arm; test_body_limit_allows_put_within_limit is test_middleware.py:132 on main"
+    },
+    {
+      "id": "claims-B C4",
+      "outcome": "applied",
+      "why": "uvicorn httptools_impl.py:174-175 answers parser errors itself; HTTP/1.1 Content-Length framing"
+    },
+    {
+      "id": "claims-B C5",
+      "outcome": "applied",
+      "why": "control_security.py:183-185 round(remaining, 1)"
+    },
+    {
+      "id": "claims-B C6",
+      "outcome": "applied",
+      "why": "no basicConfig/dictConfig in service-core; uvicorn's LOGGING_CONFIG names only uvicorn loggers"
+    },
+    {
+      "id": "claims-B R2",
+      "outcome": "applied",
+      "why": "lifecycle/manager.py:520-522 session check precedes replay.py:75-76"
+    },
+    {
+      "id": "claims-B R3",
+      "outcome": "applied",
+      "why": "routes/snapshots.py:133 + responses.py:96-98 envelope; _status_dict (manager.py:600-610) has no thread field"
+    },
+    {
+      "id": "claims-B R4",
+      "outcome": "applied",
+      "why": "replay.py has no fit/lifecycle code"
+    },
+    {
+      "id": "claims-B R5",
+      "outcome": "applied",
+      "why": "replay.py:89-91 end = max(start, ...) -> [5, 5) is empty"
+    },
+    {
+      "id": "claims-B R6",
+      "outcome": "applied",
+      "why": "coordinator.py:378-379 checks registration only; worker_stream.py:325-326 dispatches after each result"
+    },
+    {
+      "id": "claims-B R8",
+      "outcome": "rejected for this carrier",
+      "why": "it targets the tests carrier's test docstring (test_lifecycle_paused_terminal.py:3-5), not docs text; the docs (REFERENCE 'A fit that returns while paused') already say the thread has exited"
+    },
+    {
+      "id": "claims-B S4",
+      "outcome": "applied",
+      "why": "worker_stream.py:89 _MAX_TOTAL_BINARY_SIZE = _MAX_BINARY_SIZE; :368-372"
+    },
+    {
+      "id": "claims-B S5",
+      "outcome": "applied",
+      "why": "control_stream.py:230 measures len() of the decoded str (code points)"
+    },
+    {
+      "id": "claims-B S6",
+      "outcome": "applied",
+      "why": "websocket/manager.py:453-454 one seq and slot per chunk"
+    },
+    {
+      "id": "claims-B W10",
+      "outcome": "applied",
+      "why": "security.py:250, coordinator.py:460 are logger.warning calls"
+    },
+    {
+      "id": "claims-B W3",
+      "outcome": "applied",
+      "why": "tests carrier test_task_reassignment_timeout_boundary.py:56,82,106,141; test_anomaly_detector_edges.py; test_submit_result_anomaly_accepts.py"
+    },
+    {
+      "id": "claims-B W4",
+      "outcome": "applied",
+      "why": "coordinator.py:220 constructor keyword"
+    },
+    {
+      "id": "claims-B W5",
+      "outcome": "applied",
+      "why": "coordinator.py:220 default None"
+    },
+    {
+      "id": "claims-B W6",
+      "outcome": "applied",
+      "why": "coordinator.py:389-391 ignores registry.py:254-261's False"
+    },
+    {
+      "id": "claims-B W7",
+      "outcome": "applied",
+      "why": "coordinator.py:409 duplicate check precedes :422-432 ownership"
+    },
+    {
+      "id": "claims-B W8",
+      "outcome": "applied",
+      "why": "worker_stream.py:325-326"
+    },
+    {
+      "id": "claims-B W9",
+      "outcome": "applied with changed wording",
+      "why": "the validator's 'below 3 the flag never fires' is wrong for 0: security.py:239-243 trims only when len > window and history[-0:] is the whole list, so with 0 every result is compared and the flag can fire; text says 1 or 2 never fire, 0 disables trimming"
+    },
+    {
+      "id": "fidelity F1",
+      "outcome": "applied",
+      "why": "'---' restored before '## Worker Result Anomaly Detector' (the draft had it)"
+    },
+    {
+      "id": "fidelity F2",
+      "outcome": "applied",
+      "why": "same fix as claims-A F7"
+    },
+    {
+      "id": "fidelity F3",
+      "outcome": "applied",
+      "why": "main's 'Full contract: [REFERENCE - Recurrence Env Preflight]' kept beside the new crossval link"
+    },
+    {
+      "id": "fidelity F4",
+      "outcome": "applied",
+      "why": "wake_the_claude.bash:342 CLAUDE_END_OF_OPTIONS_FLAG='--'; tests/test_wake_the_claude.py:1331 asserts [..., '--fork-session', '--', 'hello']; carried as #2452's one line"
+    },
+    {
+      "id": "fidelity F5",
+      "outcome": "no change",
+      "why": "merge-time, per the orchestrator"
+    },
+    {
+      "id": "fidelity F6",
+      "outcome": "applied",
+      "why": "idle-compaction note moved after the Interactive/Headless paragraph"
+    },
+    {
+      "id": "round2 F1 (BLOCKER)",
+      "outcome": "applied",
+      "why": "training_stream.py:259 snapshots replay_since, :269-274 awaits each send while pending, :205-206 promotes afterwards; manager.py:456 sends to active sockets only. The four resume texts now say resume_ok can miss (a) broadcasts with no active socket and (b) broadcasts during the replay send, as current behaviour (defect candidate)"
+    },
+    {
+      "id": "round2 F2",
+      "outcome": "applied (fix to main's text)",
+      "why": "main's CR-024 bullet is true only at the ASGI layer; under uvicorn the parser truncates an under-declared body (httptools_impl.py:169-177)"
+    },
+    {
+      "id": "round2 F3",
+      "outcome": "applied",
+      "why": "summary.md prints the words False / True; 'a bool is text in summary.md only'"
+    },
+    {
+      "id": "round2 F4",
+      "outcome": "applied",
+      "why": "no socket-timeout row: the timeout is a case of the POST row (REFERENCE table); #2431's dropped-connection test raises ServiceUnreachable only"
+    },
+    {
+      "id": "round2 F5",
+      "outcome": "applied",
+      "why": "control_security.py:182-187 returns None for any remaining <= 0"
+    },
+    {
+      "id": "round2 F6",
+      "outcome": "applied",
+      "why": "uvicorn wsproto_impl.py:232 reason 'Message exceeds the maximum size (...)'; reason is implementation-dependent"
+    },
+    {
+      "id": "round2 F7",
+      "outcome": "applied",
+      "why": "the window caveat is the flag's condition; with window 0 total_results is a lifetime count (security.py:239-247)"
+    },
+    {
+      "id": "round2 F8",
+      "outcome": "applied",
+      "why": "a forced add also commits an ignored file; a desktop-app worktree session reads the main checkout's settings (Claude Code worktrees page)"
+    },
+    {
+      "id": "round2 F9",
+      "outcome": "applied",
+      "why": "routes/training.py:41-42 answers a start without inline_data with 400 before the lifecycle; 'a start with data is refused (409)' everywhere, CHANGELOG and PR body included"
+    },
+    {
+      "id": "round2 F10",
+      "outcome": "applied",
+      "why": "coordinator.py:540-546 cancel_round clears _pending_tasks; the late copy is then 'Result for unknown task'"
+    },
+    {
+      "id": "round2 F11",
+      "outcome": "applied",
+      "why": "no logging config in service-core; '(visible only with an INFO handler)' added to both rows"
+    },
+    {
+      "id": "round2 F12",
+      "outcome": "applied",
+      "why": "PR body now says 44 applied, 4 left by ruling, 1 rejected of 49 (10/33/6)"
+    },
+    {
+      "id": "round2 F13",
+      "outcome": "applied",
+      "why": "CHANGELOG and commit body: 'sat in the footer, split a paragraph or swallowed existing text'"
+    },
+    {
+      "id": "round2 F14",
+      "outcome": "applied",
+      "why": "overview 'a zero theta' (ASCII)"
+    },
+    {
+      "id": "round2 F15",
+      "outcome": "applied (fix to main's text)",
+      "why": "worker_stream.py:72 _MAX_BINARY_SIZE = 100 * 1024 * 1024 is 100 MiB"
+    },
+    {
+      "id": "round2 F16",
+      "outcome": "applied (fix to main's text, overview row only)",
+      "why": "PyPI juniper-service-core 0.7.1 since 2026-10-10T10:04Z; REFERENCE.md's two older mentions left for a follow-up, as the finding says"
+    },
+    {
+      "id": "round3 F1",
+      "outcome": "applied",
+      "why": "security.py:239-240 keeps everything at window 0 and :263 total_results = len(history): 'that retained length (a lifetime count only when the window is 0)'"
+    },
+    {
+      "id": "round3 F2",
+      "outcome": "applied (fix to main's text)",
+      "why": "PyPI wheels re-probed: juniper-service-core 0.7.1 (2026-10-10T10:04Z) compares UTF-8 bytes (security.py:88-91); juniper-observability 0.4.1 (2026-10-10T09:14Z) passes include_local_variables=False (sentry.py:134). REFERENCE 'Fixed in the published wheels' and QUICK_START 'a 401 from service-core 0.7.1'"
+    },
+    {
+      "id": "round3 F3",
+      "outcome": "applied (fix to main's text)",
+      "why": "the second CR-024 bullet gets the ASGI-layer qualifier"
+    },
+    {
+      "id": "round3 F4",
+      "outcome": "applied (fix to main's text)",
+      "why": "worker_stream.py:72 100 MiB; stock uvicorn closes a frame over 16 MiB with 1009 first"
+    },
+    {
+      "id": "round3 F5",
+      "outcome": "applied",
+      "why": "control_security.py:44,49 are logger.info; '(visible only with an INFO handler)' as in the other two rows"
+    },
+    {
+      "id": "round3 F6",
+      "outcome": "applied",
+      "why": "the tool's regex skipped Class.test_name spellings; corrected tool: 27 distinct files (32 spellings), 64 tests, 0 missing"
+    },
+    {
+      "id": "round3 F7",
+      "outcome": "applied",
+      "why": "#2517's CHANGELOG records it carried #2424's and #2432's Test Suite Reference lines; PR body 'Not carried' says so; CHANGELOG 'only #2426's wording is carried'"
+    },
+    {
+      "id": "round4 F1",
+      "outcome": "applied (fixes to main's text)",
+      "why": "wheels re-read: service-core 0.7.1 compares bytes (security.py:88-91), observability 0.4.1 passes include_local_variables=False (sentry.py:134); REFERENCE:4982, :8788, :8934, :9151, :9154 and cheatsheet:847 (two sentences), :1132 now name 0.7.1 / 0.4.1. The required sweep also found REFERENCE:8942 ('no juniper-data release carries it yet'): juniper-data 0.17.0's wheel has the byte compare, so it now names 0.17.0. The carrier's CHANGELOG entry gains one sentence recording these corrections"
+    },
+    {
+      "id": "round4 F2",
+      "outcome": "applied",
+      "why": "REFERENCE:8940 now says a service on service-core 0.7.0 still 500s and is unthrottled, and that the 500 can send the key to Sentry only if it is also on observability 0.4.0 (0.7.1's surrogatepass encode cannot raise; 0.4.1 drops locals), matching QUICK_START:201"
+    },
+    {
+      "id": "round4 F3",
+      "outcome": "applied",
+      "why": "security.py:263 total_results = len(history) = min(results recorded, window), uncapped at 0: 'how many results it has recorded, capped at duplicate_window (no cap at 0)'"
+    },
+    {
+      "id": "round4 F4",
+      "outcome": "applied",
+      "why": "security.py:239-247: the flag can fire only with a window of 0 or of at least 3; at 1 or 2 the history never holds three scores, at 0 every recorded result is compared"
+    },
+    {
+      "id": "round4 F5",
+      "outcome": "applied",
+      "why": "worker_stream.py:72 _MAX_BINARY_SIZE = 100 * 1024 * 1024: REFERENCE:8903 (#2456's line) says 100 MiB"
+    },
+    {
+      "id": "round4 F6",
+      "outcome": "applied (PR body only)",
+      "why": "#2424's Test Suite Reference link pointed at #2424's own #g-sec-block-all-is-the-getblockall-capture (own/2424.diff, its line for tests/test_host_state_check.py), which this PR does not add; #2426's equivalent is #the-firewall-gate-reads-getblockall (REFERENCE:591). Main's CHANGELOG (#2517's entry, lines 61-63) carries the same loose wording; left alone, as the validator allowed, and listed as an open question"
+    },
+    {
+      "id": "round5 F1 (MAJOR)",
+      "outcome": "resolved under the round-5 ruling (deleted, not qualified)",
+      "why": "REFERENCE:8940's mixed-install sentence and 'Upgrade both' deleted (false for juniper-cascor <=0.11.0 and juniper-data <=0.16.0, which carry their own str compare); :8942 names both own copies and their first byte-compare releases, juniper-data 0.17.0 and juniper-cascor 0.12.0 (wheel_probe.log); the PR body's 'follow service-core 0.7.0 alone' removed; the cross-package 'juniper-data's configure_sentry is juniper-observability's' sentence deleted"
+    },
+    {
+      "id": "round5 F2 (MAJOR)",
+      "outcome": "resolved under the round-5 ruling",
+      "why": "overview:119 now 'a 401 from service-core 0.7.1, and observability 0.4.1's configure_sentry sends no frame locals'; the PR body lists the overview row"
+    },
+    {
+      "id": "round5 F3",
+      "outcome": "resolved under the round-5 ruling",
+      "why": "REFERENCE:8934 keeps only the mechanism: the configured key's local is `k` or `candidate`, depending on the copy (service-core <=0.7.0 and cascor <=0.11.0 use k, juniper-data 0.7.0-0.16.0 candidate); no release claim"
+    },
+    {
+      "id": "round5 F4",
+      "outcome": "resolved under the round-5 ruling",
+      "why": "no sentence names one old release as the affected one: each states the first fixed release ('from 0.7.1', 'Before juniper-service-core 0.7.1', 'first released in 0.4.1'); service-core 0.1.0-0.7.0 all compare str, no observability release before 0.4.1 passes the flag (wheel_probe.log)"
+    },
+    {
+      "id": "round5 F5",
+      "outcome": "applied",
+      "why": "REFERENCE:9847 and :9862 (#2442): at a window of 0 nothing ages out, so an older different score blocks the flag until clear_worker drops the row (security.py:239-240, :273)"
+    },
+    {
+      "id": "round5 F6",
+      "outcome": "applied",
+      "why": "REFERENCE:8948 (#2422): 'This is 0.7.1's table: in 0.6.0 and 0.7.0 the map was a defaultdict, so check() inserted every unseen source IP and the table had no high-water mark' (0.7.0 wheel FailedAuthThrottle: defaultdict, check() reads self._failures[client_ip]; 0.7.1's class identical to main's)"
+    },
+    {
+      "id": "round5 F7",
+      "outcome": "applied (fixes to main's text)",
+      "why": "REFERENCE:6646 'first released in juniper-cascor 0.13.0 (PyPI 2026-10-28)' (gh compare: v0.12.0 behind #731's merge, v0.13.0 ahead); :7179 '10 MiB' (juniper-data MAX_REQUEST_BODY_BYTES = 10 * 1024 * 1024 in every release that has it)"
+    },
+    {
+      "id": "round6 F1 (MAJOR)",
+      "outcome": "applied",
+      "why": "juniper-canopy's own APIKeyAuth: 0.8.1 str compare (security.py:74), 0.9.0 first byte compare with surrogatepass read in the wheel (_compare_bytes :52). Added to every list of the copies (REFERENCE:8942 with its repo path src/security.py, cheatsheet:1132, QUICK_START:201, CHANGELOG:77-78, the PR body). The cheatsheet's 'each in its own copy' is reworded; the list is complete for published Juniper packages (thirteen others scanned, none defines APIKeyAuth), and the PR body says so"
+    },
+    {
+      "id": "round6 F2",
+      "outcome": "applied",
+      "why": "REFERENCE:8934 drops the variable names: 'the local holding the configured key is not'"
+    }
+  ]
+}

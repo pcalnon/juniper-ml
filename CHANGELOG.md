@@ -81,6 +81,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   From #2452 only the cheatsheet's `--fork-session` example is carried: its forwarded argv now shows the `--` that
   `wake_the_claude.bash` puts before the prompt. Not carried: #2440, the same launcher claim; the rest of #2452's
   launcher page predates #2468, whose own cheatsheet text is current.
+- **The Cursor flood-4 disposition record, with its render inputs and provenance scripts (round 1 complete).**
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` records how the 74-PR census was
+  disposed of: six carriers (juniper-data#518 and #519, juniper-canopy#797 and #802, juniper-ml#2517 and #2519)
+  merged, and all 68 census drafts assigned to them closed, 67 of them carried. It also records each carrier's 2 to
+  6 independent validation rounds, the defects found on `main`, the per-PR disposition (§5), the process traps, and
+  the owner's rulings 1–7 of 2026-11-08: round 2 takes 48 drafts; the launcher's effort default becomes `max`, and
+  an explicit `auto` will send no `--effort` flag; three of the four open defect rows in §4 get their own fixes
+  now; and juniper-ml#2271's one setting moved to user settings, with its branch deleted. Later rulings decide that
+  the agent guard's brace cap is to fail closed, that the gitleaks fix is to be ported to the seven other
+  repositories that run the action, and that four more defects found while the first fixes were built are to be
+  fixed, each in its own PR; none of these has landed yet. §5's six manifests and render config are archived under
+  `reports/2026-11-08_flood4-disposition/`, from which §5 re-rendered byte for byte (the renderer also reads each
+  PR's live state). The arc's 160 `util/ad-hoc/2026-11-07_flood4_*` and `2026-11-08_flood4_*` scripts, from the
+  nine of its worktrees that held them, are kept as provenance. Before upload they were made to pass gates G-TMP
+  and G-PATH and the secret scan, 21 of 28 predicted CodeQL alerts were fixed (the other 7 are pydantic fields the
+  prescreen misreads), and 29 probes gained provenance fields; nothing they compute changed. Round 1's closing
+  handoff and its successor are archived under `prompts/thread-handoff_automated-prompts/`.
 
 ### Changed
 
