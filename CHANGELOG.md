@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`HARCOT` joins the `notes/` repository tokens (2026-11-10).** juniper-harcot, the private
+  equities-analysis repository built on juniper-recurrence, names its notes
+  `JUNIPER_<date>_JUNIPER-HARCOT_<phrase>.md`. The token is added everywhere the list is stated:
+  `notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md` (§2, with an assignment
+  rule), `AGENTS.md`, `.claude/agents/{planner,auditor}.md`, and
+  `prompts/agent_templates/{audit,plan,code-review}.md`.
+  Documentation only; no script enforces the token list.
+
 - **The yamaguchi securityfs incident: root cause, remedy, and a host check that would have caught
   it (2026-11-07).** juniper-deploy's `make up` failed on every container with *"Could not check if
   docker-default AppArmor profile was loaded: open /sys/kernel/security/apparmor/profiles: no such

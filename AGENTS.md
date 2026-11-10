@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.11.4
-**Last Updated**: 2026-11-08
+**Last Updated**: 2026-11-10
 
 ---
 
@@ -220,7 +220,7 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 
 - Python >=3.12 required (classifiers include 3.12, 3.13, 3.14)
 - Line length: 512 for all linters (flake8, markdownlint)
-- `notes/` documents are named `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<CONTENTS-DESCRIPTION-PHRASE>.md` (REPO one of ML / CANOPY / RECURRENCE / CASCOR / CASCOR-CLIENT / CASCOR-WORKER / DATA / DATA-CLIENT / DEPLOY / ECOSYSTEM). Exempt: `notes/{templates,releases,requirements,legacy}/` and README files. Full rules + migration record: [`notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`](notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md)
+- `notes/` documents are named `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<CONTENTS-DESCRIPTION-PHRASE>.md` (REPO one of ML / CANOPY / RECURRENCE / CASCOR / CASCOR-CLIENT / CASCOR-WORKER / DATA / DATA-CLIENT / DEPLOY / HARCOT / ECOSYSTEM). Exempt: `notes/{templates,releases,requirements,legacy}/` and README files. Full rules + migration record: [`notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`](notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md)
 - **Name every document a summary REFERENCES or CHANGES** (mandatory, ecosystem-wide, 2026-09-01; widened 2026-09-02). In a step-completion or work-arc summary:
   - every **reference** to a document carries its filename — by section number, by role ("the plan", "the analysis"), or by implication. One document cited → name it on first reference; two or more → **every** reference carries its filename.
   - the summary **lists by filename** every document the step created or modified.
