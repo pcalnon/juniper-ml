@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **Document Type**: Convention (design-of-record)
 **Status**: Ratified (owner decision 2026-07-04)
-**Last Updated**: 2026-07-04
+**Last Updated**: 2026-11-10
 
 ---
 
@@ -28,7 +28,7 @@ description phrase is UPPER-KEBAB-CASE (`[A-Z0-9-]`); no other underscores, spac
 | ----- | ---- |
 | `JUNIPER` | Literal prefix, always. |
 | `<YYYY-MM-DD>` | The document date. For new documents: the date the document is created (or last substantively re-issued). For the 2026-07-04 migration: the date already embedded in the old filename when present, else the file's last git-commit date (worktree mtimes are checkout-time and therefore unusable). |
-| `JUNIPER-<REPO>` | The subject repository: `ML`, `CANOPY`, `RECURRENCE`, `CASCOR`, `CASCOR-CLIENT`, `CASCOR-WORKER`, `DATA`, `DATA-CLIENT`, `DEPLOY`, or `ECOSYSTEM`. |
+| `JUNIPER-<REPO>` | The subject repository: `ML`, `CANOPY`, `RECURRENCE`, `CASCOR`, `CASCOR-CLIENT`, `CASCOR-WORKER`, `DATA`, `DATA-CLIENT`, `DEPLOY`, `HARCOT`, or `ECOSYSTEM`. |
 | `<CONTENTS-DESCRIPTION-PHRASE>` | What the document is about, UPPER-KEBAB-CASE. Documents produced by the planner / auditor / code-review agents end the phrase with the doc type: `-DESIGN`, `-PLAN`, `-ROADMAP`, `-ANALYSIS`, `-AUDIT`, `-CODE-REVIEW`. |
 
 ### Repo-tag assignment rules
@@ -36,6 +36,7 @@ description phrase is UPPER-KEBAB-CASE (`[A-Z0-9-]`); no other underscores, spac
 - **`ECOSYSTEM`** — cross-repo or platform-wide subjects (ecosystem audits, cross-repo CI/roadmap/release docs, the canopy↔cascor interface program, stack-wide regression/security work, shared procedures such as PyPI publishing or conda-env rebuilds).
 - **Sub-packages hosted in this repo** (`juniper-model-core`, `juniper-service-core`, `juniper-observability`, `juniper-ci-tools`, `juniper-doc-tools`, `juniper-config-tools`) and juniper-ml's own tooling (launcher scripts, custom-agent suite, worktree/handoff procedures) → **`ML`**.
 - **The recurrence family** (`juniper-recurrence`, `juniper-recurrence-model`, `juniper-recurrence-client`, and the pre-rename `juniper-recurse` working notes) → **`RECURRENCE`**.
+- **`HARCOT`** (added 2026-11-10) — `juniper-harcot`, the private equities-analysis repository built on juniper-recurrence. Its notes live in its own `notes/` and use this convention. General juniper-recurrence behaviour stays under `RECURRENCE`.
 - Otherwise: the single repo the document most concerns.
 
 ## 3. Scope and exemptions

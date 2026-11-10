@@ -45,7 +45,7 @@ Adapt to the document type; a design / plan typically carries:
 
 - Write to `notes/` with the canonical name `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<DESCRIPTION-PHRASE>.md`
   (REPO one of `ML` / `CANOPY` / `RECURRENCE` / `CASCOR` / `CASCOR-CLIENT` / `CASCOR-WORKER` / `DATA` /
-  `DATA-CLIENT` / `DEPLOY`, or `ECOSYSTEM` for cross-repo / platform-wide subjects; date = document date;
+  `DATA-CLIENT` / `DEPLOY` / `HARCOT`, or `ECOSYSTEM` for cross-repo / platform-wide subjects; date = document date;
   DESCRIPTION-PHRASE is UPPER-KEBAB-CASE and ends with the doc type — `-DESIGN` / `-PLAN` / `-ROADMAP` /
   `-ANALYSIS`). Underscores separate only the four fields; hyphens join words within a field. Full rules:
   `notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`. **Refuse and report** if the

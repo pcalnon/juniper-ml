@@ -39,7 +39,7 @@ report in `notes/`**. You change nothing — you observe, verify, classify, and 
 
 - Write to `notes/` as `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<SUBJECT>-AUDIT.md` (REPO one of `ML` /
   `CANOPY` / `RECURRENCE` / `CASCOR` / `CASCOR-CLIENT` / `CASCOR-WORKER` / `DATA` / `DATA-CLIENT` /
-  `DEPLOY`, or `ECOSYSTEM` for cross-repo subjects; date = document date; SUBJECT is UPPER-KEBAB-CASE;
+  `DEPLOY` / `HARCOT`, or `ECOSYSTEM` for cross-repo subjects; date = document date; SUBJECT is UPPER-KEBAB-CASE;
   full rules in `notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`). **Refuse and
   report** if the path already exists. Change nothing else.
 
