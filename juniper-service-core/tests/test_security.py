@@ -7,12 +7,15 @@ props), and the pure config-injected factories.
 
 from __future__ import annotations
 
+import hmac
 import time
+from types import SimpleNamespace
 
 import pytest
 from fastapi import HTTPException
 from starlette.requests import Request
 
+from juniper_service_core import security as security_module
 from juniper_service_core.security import (
     APIKeyAuth,
     FailedAuthThrottle,
@@ -94,11 +97,33 @@ def test_non_ascii_presented_key_is_a_mismatch_not_an_exception(presented):
     assert APIKeyAuth(["real-key"]).validate(presented) is False
 
 
-#: Strings chosen to separate the candidate encodings. "\ud800" is a lone HIGH surrogate --
-#: ``strict`` and ``surrogateescape`` both raise on it; "\udcc3\udca9" is what
-#: ``surrogateescape`` encodes to the same bytes as "\xe9". Only an encoding that is both
-#: total and injective gives ``validate(x) == (x in keys)`` for every pair below.
-_ENCODING_PROBES = ["real-key", "cl\xe9", "\xe9", "\udcc3\udca9", "\ud800-key", "\udcff", "\U0001f511"]
+#: Strings chosen so that a compare which is not exactly ``==`` on the two strings gets at least
+#: one pair below wrong, by raising or by matching two unequal strings. The alternatives it
+#: catches, each checked against this list on 2026-11-08:
+#:
+#: - UTF-8 ``strict``, and latin-1: they raise on the lone surrogates (U+D800, U+DCFF, and
+#:   U+DCC3 U+DCA9). ``surrogateescape`` raises on U+D800 and gives U+DCC3 U+DCA9 the bytes
+#:   of U+00E9.
+#: - UTF-8 ``replace`` and ``ignore``: unequal surrogate strings collapse to the same ``?``
+#:   marks, or to nothing.
+#: - UTF-8 ``backslashreplace`` and ``namereplace``: U+DCFF becomes the six characters
+#:   backslash, ``udcff``, and those are a probe. ``xmlcharrefreplace``: it becomes
+#:   ``&#56575;``, also a probe.
+#: - UTF-16 with ``surrogatepass`` (LE, or with a BOM) and UTF-7: total, but NOT injective.
+#:   They give the surrogate PAIR U+D83D U+DD11 the bytes of U+1F511, and both are probes
+#:   (round-42 finding F5: until the pair was listed, the UTF-16-LE mutant passed every test
+#:   in this package).
+#: - A case-folded compare (``REAL-KEY``), and one cut to fewer than 42 bytes (the two
+#:   42-character keys differ only in their last character).
+#:
+#: No finite list proves an encoding injective. UTF-32-LE with ``surrogatepass`` is injective
+#: and passes, as it should; an encoding that is lossy only outside these probes would pass too.
+_ENCODING_PROBES = ["REAL-KEY", "k" * 40 + "-1", "k" * 40 + "-2", chr(92) + "udcff", "&#56575;", "real-key", "cl\xe9", "\xe9", "\udcc3\udca9", "\ud800-key", "\udcff", "\U0001f511"]
+
+
+# Built with ``chr()``: an escape for a surrogate PAIR, typed through some editors and agent
+# tools, arrives in the file as the one astral character U+1F511, which is already listed.
+_ENCODING_PROBES.append(chr(0xD83D) + chr(0xDD11))
 
 
 @pytest.mark.parametrize("configured", _ENCODING_PROBES)
@@ -106,6 +131,68 @@ _ENCODING_PROBES = ["real-key", "cl\xe9", "\xe9", "\udcc3\udca9", "\ud800-key", 
 def test_validate_matches_exactly_when_the_strings_are_equal(configured, presented):
     """The bytes compare must accept what ``==`` accepts: no raise, no collision."""
     assert APIKeyAuth([configured]).validate(presented) is (presented == configured)
+
+
+def test_encoding_probes_hold_the_surrogate_pair_and_its_astral_twin():
+    """The pair is two code points and its twin one. If the pair ever collapses to U+1F511, the F5 probe is gone.
+
+    Checked by value, not position, and with no duplicates: a collapsed pair would be a second
+    copy of the twin.
+    """
+    assert chr(0xD83D) + chr(0xDD11) in _ENCODING_PROBES
+    assert chr(0x1F511) in _ENCODING_PROBES
+    assert len(set(_ENCODING_PROBES)) == len(_ENCODING_PROBES)
+
+
+def test_validate_compares_every_configured_key_through_compare_digest_as_bytes(monkeypatch):
+    """Every configured key is compared, by ``hmac.compare_digest``, with bytes on both sides.
+
+    Round-42 findings F3 and F8: no test here saw the compare itself, and two mutants passed
+    every test in this package and juniper-ml's drift gate. One was a bytes ``==``: it never
+    raises and answers correctly, but leaks timing. The other was a ``break`` after the first
+    match. ``any()``, APD-CASCOR-005's form of that early exit, is pinned here too.
+
+    Each configured key is presented in turn, then one that is not configured. Whatever order
+    the walk takes, some presented key is not the last one it meets, so a walk that stops at a
+    match makes fewer calls than there are keys for that key. (This test's first draft, with
+    three keys, presented only the first key of the set's own order: a sorted walk with a
+    ``break`` passed it under 8 of 30 hash seeds, and a walk in the configured order with a
+    ``break`` under 12.)
+
+    Counting calls does not show that the compare's ANSWER decides; the next test does.
+    """
+    calls = []
+
+    def spy(presented, candidate):
+        calls.append((presented, candidate))
+        return hmac.compare_digest(presented, candidate)
+
+    monkeypatch.setattr(security_module, "hmac", SimpleNamespace(compare_digest=spy))
+    keys = ["key-one", "key-two", "key-three", "key-four", "key-five"]
+    auth = APIKeyAuth(keys)
+
+    for presented in [*keys, "not-a-configured-key"]:
+        calls.clear()
+        assert auth.validate(presented) is (presented in keys)
+        assert len(calls) == len(keys), presented
+        assert all(isinstance(left, bytes) and isinstance(right, bytes) for left, right in calls), presented
+        assert {left for left, _right in calls} == {presented.encode("utf-8")}, presented
+        assert {right for _left, right in calls} == {key.encode("utf-8") for key in keys}, presented
+
+
+@pytest.mark.parametrize(("answer", "presented"), [(False, "key-one"), (True, "not-a-configured-key")], ids=["forced-mismatch", "forced-match"])
+def test_validate_follows_what_compare_digest_answers(monkeypatch, answer, presented):
+    """``validate``'s result is ``compare_digest``'s answer, not a second compare's.
+
+    Round 2 of P3-07's validation: with only the call-counting spy above, ``compare_digest(...)
+    or presented == candidate`` passed every test, though it runs a short-circuiting bytes ``==``
+    against every key that does not match (round-42 finding F3's timing leak), and so did a bytes
+    ``==`` that decides while ``compare_digest`` is called and ignored. Forced to answer "no",
+    the compare must make a configured key fail; forced to answer "yes", an unknown key pass.
+    An ``==`` that runs and never decides is beyond any behavioural test, this one included.
+    """
+    monkeypatch.setattr(security_module, "hmac", SimpleNamespace(compare_digest=lambda _presented, _candidate: answer))
+    assert APIKeyAuth(["key-one", "key-two"]).validate(presented) is answer
 
 
 def _make_raw_request(raw_headers: list[tuple[bytes, bytes]]) -> Request:
@@ -376,3 +463,64 @@ class TestRateLimiterScopeIsStated:
         for phrase in ("single-process", "replica", "shared store"):
             assert phrase in throttle_doc, f"sibling lost its own disclosure: {phrase}"
             assert phrase in limiter_doc, f"RateLimiter is missing: {phrase}"
+
+
+class TestExhaustedWindowAdmitsAgainAtTheBoundary:
+    """The fixed window has to open again. The in-window tests never leave it.
+
+    ``TestRetryAfterNeverTellsTheClientZero`` and ``test_rate_limiter_blocks_after_limit``
+    both stay inside one window, so a ``check`` that stopped resetting would still pass:
+    the first request of a fresh key takes the rollover branch (the stored start is 0),
+    later requests in that window count, and nothing asks what happens when the window
+    actually ends. Forgetting the reset, or keeping the old count, locks a client out
+    for the life of the process. Forgetting the early return on that branch denies the
+    first request of the new window, because the unpacked count is still the old one.
+
+    The clock is frozen. A sleep long enough to cross the window is environment-sensitive;
+    these instants are exact, including the ``>=`` boundary.
+    """
+
+    def _freeze(self, monkeypatch: pytest.MonkeyPatch) -> dict[str, float]:
+        now = {"t": 1_000.0}
+        monkeypatch.setattr("juniper_service_core.security.time.time", lambda: now["t"])
+        return now
+
+    def test_the_boundary_starts_a_new_window_at_count_one(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        now = self._freeze(monkeypatch)
+        limiter = RateLimiter(requests_per_minute=2, window_seconds=10)
+
+        assert limiter.check("k") == (True, 1, 10)
+        assert limiter.check("k") == (True, 0, 10)
+        assert limiter.check("k") == (False, 0, 10)
+        assert limiter._counters["k"] == (2, 1_000.0)
+
+        # One millisecond remains. Still the old window, and a denial does not add a count.
+        now["t"] = 1_009.999
+        assert limiter.check("k") == (False, 0, 1)
+        assert limiter._counters["k"] == (2, 1_000.0)
+
+        # Elapsed == window. ``>`` would keep denying; the contract is ``>=``.
+        now["t"] = 1_010.0
+        assert limiter.check("k") == (True, 1, 10)
+        assert limiter._counters["k"] == (1, 1_010.0)
+
+        # The new window admits the budget again, and its reset rounds up (8.8s left is 9, not 8 and not 10).
+        now["t"] = 1_011.2
+        assert limiter.check("k") == (True, 0, 9)
+        assert limiter._counters["k"] == (2, 1_010.0)
+        assert limiter.check("k") == (False, 0, 9)
+        assert limiter._counters["k"] == (2, 1_010.0)
+
+    def test_rolling_one_key_leaves_every_other_key_in_its_own_window(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        now = self._freeze(monkeypatch)
+        limiter = RateLimiter(requests_per_minute=2, window_seconds=10)
+        limiter.check("other")
+        limiter.check("k")
+        limiter.check("k")
+        assert limiter.check("k")[0] is False
+
+        now["t"] = 1_010.0
+        assert limiter.check("k") == (True, 1, 10)
+        assert limiter._counters["k"] == (1, 1_010.0)
+        # Not checked, so its window did not move and its count was not cleared.
+        assert limiter._counters["other"] == (1, 1_000.0)

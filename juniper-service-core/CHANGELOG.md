@@ -7,6 +7,211 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`WebSocketManager.promote_to_active` takes a keyword-only `replayed_through` and returns a
+  `bool`.** This is new public API on an exported class (`WebSocketManager` is in
+  `juniper_service_core.__all__`), so the release carrying it is a minor, 0.8.0, not a patch: the
+  convention 0.7.0 followed for `release_worker_tasks` (SemVer's §7 is stated for 1.0.0 and later,
+  and its §4 leaves 0.y.z free). `replayed_through` is the last seq the resuming client holds. The
+  call sends every buffered frame above it, exactly as the live fan-out sent it, and repeats until
+  none is left. It then activates the socket in the same hold of the manager's lock as that last
+  check, with no `await` between them.
+  - It returns `False` when continuity cannot be kept: a frame the client still needs was evicted
+    from the replay buffer (or replay is disabled), a send failed, or the socket was disconnected
+    or closed meanwhile. The socket is then not promoted. The caller closes it and, as for any
+    pending socket, calls `disconnect()`, which releases its connection and per-IP slots.
+  - A negative cursor is read as 0. Without `replayed_through` the promotion is unconditional, as
+    before, and returns `True` (it returned `None`).
+  - A service that composes its own resume flow on this manager should pass the cursor. The
+    guarantee assumes every `broadcast()` runs on the manager's event loop (another thread must
+    use `broadcast_from_thread`) and that each socket is promoted once.
+
+### Changed
+
+- **`training_stream_handler` needs a manager whose `promote_to_active` accepts `replayed_through`
+  and returns `True` on success.** A resume answered `resume_ok` now promotes through it, and is
+  closed 1011 when that returns a false value or raises. A `WebSocketManager` subclass that
+  overrides `promote_to_active`, or a stand-in on `app.state.ws_manager`, must be updated. One that
+  returns `None` aborts every resume that reaches `resume_ok` with 1011. One without the keyword
+  raises `TypeError`, which also aborts it (see Fixed), and the WARNING names the `TypeError`.
+  Neither answers `resume_failed`, so a client that reconnects and resumes is closed the same way
+  each time, until its seq has left the buffer when it reconnects.
+
+### Fixed
+
+- **A `fit` that returns while the run is paused settles `COMPLETED` instead of wedging the
+  lifecycle** (the "paused-fit wedge" in §4 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`; owner ruling "Fix
+  now", 2026-11-08). Pause is cooperative: `ServiceLifecycleManager`'s event sink waits at the
+  model's next event. A pause that arrives after the model's last event, or during a `fit` that
+  emits none, is never waited on, so `fit` returns while the machine is still `PAUSED`.
+  `_train_thread_target` then called `mark_completed()`, which accepts only `STARTED`, ignored the
+  refusal, and wrote `monitor.status` `completed`. The machine stayed `PAUSED` with no training
+  thread behind it and `training_active` true, so every start was refused. A resume moved it to
+  `STARTED`, still with no thread, and every start with data stayed refused (HTTP 409,
+  `Training cannot be started: Training already in progress`; a start without data is a 400) until
+  a stop or reset. Every release that ships the manager has it, 0.2.0 through 0.7.2.
+
+  The thread now releases the pause with `RESUME`, the transition `resume_training` uses, then
+  records the completion: status `COMPLETED`, phase `idle`, `paused_phase` cleared, the pause gate
+  set. A resume afterwards is a 409, because nothing is paused, and a start runs a new `fit`, as
+  after any completed run. A stop that races the completion still settles `STOPPED`, and a resume
+  that lands before `fit` returns still completes the same run. A `fit` that raises while paused
+  still settles `FAILED`, and now releases the pause gate too: left closed, it held a later direct
+  `run()` on the same manager at its first event.
+
+  **`LifecycleStateMachine` is unchanged.** `mark_completed` still refuses `PAUSED`, as cascor's
+  machine does; only its docstring now says why that is safe. juniper-cascor's own manager follows
+  the same pattern (its `_run_training` calls `mark_completed()` without releasing a pause), but it
+  does not use this manager, so this change does not reach it.
+- **The training thread settles only a run it still owns.** A stop is seen at `fit`'s next event,
+  and a start sent before then clears it, so the stopped run's `fit` keeps running beside the new
+  run. When that `fit` ended, its thread settled whatever run was current: its return marked a
+  running new run `COMPLETED` while that run's `fit` was still training, after which a third start
+  was accepted beside it; its exception marked the new run `FAILED`; and a thread that had seen
+  the stop but was still unwinding when a start landed wrote `monitor.status` `stopped` over the new
+  run's context. Every settle branch of `_train_thread_target` is now guarded by
+  `self._thread is threading.current_thread()`. The run's result (`_last_result`, a private field
+  nothing reads yet) is recorded under the same guard, so a stopped run's result is no longer
+  recorded, unless a refused start has cleared its stop. Without the guard, the pause release above
+  would also have let a stale return resume a newer paused run and complete it mid-`fit`.
+
+  The overlap itself remains: the stopped run's `fit` still runs to its end, and its events still
+  pass through the shared sink: a `phase_change` sets the new run's phase, and a `training_end` sets
+  `monitor.status` `ended` while the new run trains. The pause gate is shared too, so the release
+  on a paused completion or failure also wakes a stopped run's `fit` that is waiting at it, and a
+  start is then accepted beside that `fit`; after a paused completion, 0.7.2's wedge had kept it
+  waiting. The owner has ruled that the stop-then-start race behind both gets
+  its own fix, in its own PR (§8, ruling 11 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+- **Tests**: `tests/test_lifecycle_paused_fit_return.py` (11 tests) pins both entries. With
+  `manager.py` reverted to 0.7.2's, 9 of them fail and the other 829 tests of the suite pass:
+  nothing else covered these paths. Nine mutants of `manager.py` (juniper-ml's
+  `util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py`: the fix reverted, each new step or
+  guard removed or replaced, the result recorded outside the guard, and the existing stop guard
+  removed) are each killed by this file and by no other test.
+
+- **A `resume_ok` on `/ws/training` now means the client missed nothing up to the moment its socket
+  goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
+  juniper-ml `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix
+  now" by the owner on 2026-11-08. A resumed client could be answered `resume_ok` and still have
+  missed broadcasts, two ways:
+  - **A broadcast with no socket active was never sequenced or buffered.**
+    `WebSocketManager.broadcast` returned at once when no socket was active, including while a
+    sole client was still pending its resume handshake, so the message got no seq and no replay
+    slot, and a client resuming from its last seq had no gap to see. `broadcast` now sequences
+    and buffers every message and fans out to whatever is active, possibly nothing.
+  - **A broadcast that landed while the replay was being sent reached the resuming client by
+    neither path.** It was buffered but fanned out only to the sockets already active, and the
+    resuming socket was promoted only after `_handle_resume` had sent the replay. The record's
+    validator reproduced it with a yielding send: buffered seqs 1-7, the client received 3, 4, 5,
+    7. `_handle_resume` now promotes through `promote_to_active(..., replayed_through=...)`
+    (Added), which sends those frames before the socket goes live.
+
+  **What the client receives**: `resume_ok`, the snapshot, the catch-up, then the live stream.
+  Every seq after its `last_seq` assigned before the activation arrives once, in seq order, before
+  the first live frame; `replayed_count` counts the snapshot only. Live frames have no stronger
+  ordering than for any other active socket: two broadcasts that overlap can interleave their
+  sends. The activation waits for as long as new broadcasts keep landing during each catch-up pass,
+  and nothing is lost meanwhile, but the socket is still pending: the handler runs no heartbeat and
+  reads no frame, and `ws_resume_handshake_timeout_s` does not bound the wait. A client slower than
+  the stream stays pending until it pauses, or is closed 1011 once the buffer evicts a seq it has
+  not been sent. `replay_since` now copies only the tail after the cut, so each pass costs what it
+  has left to send, not the whole buffer.
+
+  **Continuity that cannot be kept now ends the connection instead of leaving a hole.** After
+  `resume_ok`, the socket is closed **1011** `Resume replay incomplete` and never promoted when a
+  replay or catch-up send fails, when the buffer evicts a seq before it is sent (a burst during the
+  replay larger than the buffer absorbs), or when the manager raises. A failed replay send used to
+  be skipped silently. An exception was taken for a handshake error, which made the resume a fresh
+  connect and sent `initial_status` after `resume_ok`. The close is best effort: a transport that is
+  already gone carries no close frame. The client reconnects, then resumes again or takes
+  `out_of_range` and a fresh snapshot. A failed send ends the resume with an INFO line, not a
+  WARNING: it is most often a client that went away or a shutdown closing the socket, and the
+  manager still logs a send that timed out at WARNING. An eviction or an exception from the
+  manager is a WARNING.
+
+  **What moves when nobody is connected.** `current_seq` advances on every `broadcast` (a
+  `broadcast_from_thread` before the first `/ws/training` connect is still a no-op, as before).
+  `replay_buffer_size` fills to the buffer's capacity (default 1024) and holds there. That is up to
+  1024 frames of up to `max_message_size_bytes` (60,000 bytes) of JSON each, about 60 MB of JSON at
+  the defaults, the bound that already applied with a client connected. Held as Python objects they
+  take more: 1.6 to 2.7 times that, measured for frames of floats or of per-epoch metric dicts. The
+  chunk counters (`messages_chunked_total`, `chunks_emitted_total`) now count an oversized broadcast
+  made then, since its chunks are buffered. Its split is logged at DEBUG; with a socket active it
+  stays at INFO. The send counters (`messages_sent_total`, `bytes_sent_total`, the per-type maps,
+  `send_failures`) do not move. With `max_replay_buffer_size <= 0` every broadcast is still
+  numbered and none is kept. A broadcast made with nobody connected now costs the chunk-size
+  `json.dumps` and a buffer append, as it already did with one client connected.
+
+  **Pinned by** `tests/test_websocket_resume_continuity.py`: 70 tests (27 single tests, one more
+  run for three hang-up points, and 40 seeded interleavings) driving the real manager and handler.
+  Their send timeouts are out of reach, so no outcome depends on the wall clock; one test sets a
+  short timeout to pin that path. Against the previous code all 30 that are not seeds fail, and 34
+  of the 40 seeds do. Of the 30, 21 fail on the defect itself (a broadcast never sequenced, a seq
+  never delivered, no close), eight on the missing `replayed_through` parameter, and one on
+  `promote_to_active` returning `None`.
+  - Three of them pin the rules the catch-up relies on: two that its last check and the activation
+    are one hold of the manager's lock with no `await` between them, and one that a broadcast
+    assigns its seq and copies the active set with none between them.
+  - A client that hangs up mid-resume ends it at INFO; a send that times out keeps the manager's
+    WARNING.
+  - `tests/test_websocket_training_stream.py` has five new `_handle_resume` tests.
+  - `tests/test_websocket_manager_extra.py`'s `test_broadcast_without_connections_is_noop` pinned
+    the no-socket loss (`current_seq == 0`). It is now
+    `test_broadcast_without_connections_is_sequenced_and_buffered_but_not_sent`.
+  - juniper-ml's `util/ad-hoc/2026-11-08_service_core_resume_continuity_mutation_check.py` breaks
+    25 pieces of the fix one at a time, in a scratch copy of the sub-package, and each fails every
+    test it names (25/25 on Python 3.12, 3.13 and 3.14).
+  - juniper-cascor carries its own copies of the manager and handler, with both defects. They are
+    not changed here.
+
+## [0.7.2] - 2026-11-08
+
+### Fixed
+
+- **A test now counts the API-key compare's calls** (round-42 findings F3 and F8,
+  consolidated-plan item P3-07). No test saw `hmac.compare_digest` itself, and two mutants passed
+  the whole suite and juniper-ml's drift gate (round-42 validation, 2026-09-24): a bytes `==`
+  (right answers and no exception, but it leaks timing), and a `break` after `matched = True`,
+  which stops the walk at the first match. A spy now replaces `compare_digest`. Each of five
+  configured keys is presented in turn, then a key that is not configured, and each `validate`
+  call must make one compare per configured key, with bytes on both sides. So a walk that stops at
+  a match fails whatever order it walks in, and `any()`, APD-CASCOR-005's form of that early exit,
+  is pinned too. Counting calls does not show that the compare's answer decides, so a second test
+  forces `compare_digest` to answer "no", then "yes", and checks that `validate` follows it. That
+  catches a bytes `==` that can decide the result, `compare_digest(...) or presented ==
+  candidate` or an `==` that decides while `compare_digest` is called and ignored; both passed
+  every test until then. An `==` that runs and never decides is beyond any behavioural test. **Correction to the 0.7.1
+  entry**: it says of APD-CASCOR-005's walk that "No behavioural test pins this, and none can". A
+  test of `validate`'s result cannot, but these count and steer the compare's calls.
+- **The encoding matrix holds the surrogate pair, and five more probes** (round-42 finding F5, and
+  P3-07's own validation, 2026-11-08). Its comment claimed that only a total and injective
+  encoding passes every pair in it. UTF-16-LE with `surrogatepass` is total but not injective, and
+  it passed anyway: it gives the pair U+D83D U+DD11 the same bytes as U+1F511, and the matrix held
+  only U+1F511. It now holds both. Five probes are prepended for compares that also passed every
+  test: `REAL-KEY` (a case-folded compare), two 42-character keys that differ only in their last
+  character (a compare cut to 16 or 32 bytes), and the strings that `backslashreplace` (or `namereplace`) and
+  `xmlcharrefreplace` make of U+DCFF. The matrix is 13x13 (the 0.7.1 entry says 7x7). Its comment
+  now names the compares it catches, and says that no finite list proves an encoding injective.
+  The pair is built with `chr()`, and a test asserts that it is in the list and that the list
+  holds no duplicates: typed as an escape through some agent tools, the pair arrives as U+1F511.
+- **Correction to the 0.7.1 entry** (round-42 finding F9). `tests/test_t2_websocket.py` checks that
+  the handshake closes 4001, but that is the ASGI close code. A close before accept never reaches
+  the client as a close frame: uvicorn answers the upgrade with HTTP 403. So a non-ASCII key is
+  rejected with ASGI close 4001, which is HTTP 403 on the wire.
+- **One module change**: the `FailedAuthThrottle` rounding in the next entry. Everything above
+  is tests and CHANGELOG text.
+- **A throttled failed-auth caller is told to wait until the window actually closes.**
+  `FailedAuthThrottle.check` reported `max(1, int(window - elapsed))`. The floor of 1 stopped
+  `Retry-After: 0`, which `RateLimiter` already fixed (`APD-SVCCORE-004`), but truncation still
+  under-reports every remainder with a fractional part: 9.4s left said 9, and a client obeying
+  the header woke while the window was closed and was rejected again. The wait is now rounded
+  up, with the same floor of 1. A caller who is not blocked still gets `retry_after` 0.
+  `tests/test_failed_auth_retry_after.py` pins the direction with a frozen clock. (Carried from
+  ml#2514, opened by the Cursor automation.)
+
 ## [0.7.1] - 2026-10-09
 
 ### Fixed

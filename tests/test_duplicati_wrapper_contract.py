@@ -22,6 +22,12 @@ What the 2026-09 outage and the Phase B validation round showed cannot be left t
   the WHOLE step sequence in order -- the first test matched first occurrences and was blind to
   three dangerous re-orderings (Lane C) -- with ``rm`` of the drop-in and never ``systemctl revert``
   (which deletes the installed unit when a vendor unit exists: the round's BLOCKER);
+* Phase D's throwaway trial drop-in, merged onto ``util/systemd/duplicati.service`` the way
+  systemd merges a drop-in: an empty assignment clears a list, a later value appends, and a
+  scalar is replaced. The trial wrapper, defaults file and key replace the live ones; a blocked
+  syscall becomes a kill (SIGSYS) in place of the unit's ``EPERM``; ``Restart=no``; the unit's
+  confinement keys are untouched. The trial is
+  not started;
 * the re-key's exit gate ``util/ad-hoc/2026-10-03_rekey_gate.py`` on a scratch database: PASS under
   the right key, FAIL under another key, FAIL with one blob under another key in ANY of the five
   encrypted columns (``ConnectionString.BaseUrl`` is the one the product's own rewrite never
@@ -56,6 +62,84 @@ INSTALLER = REPO_ROOT / "util" / "install_duplicati_service.bash"
 PASSWORD_INIT = REPO_ROOT / "util" / "ad-hoc" / "2026-10-03_password_init_hand_start.bash"
 REKEY = REPO_ROOT / "util" / "ad-hoc" / "2026-10-03_rekey_settings_key.bash"
 GATE = REPO_ROOT / "util" / "ad-hoc" / "2026-10-03_rekey_gate.py"
+UNIT = REPO_ROOT / "util" / "systemd" / "duplicati.service"
+TRIAL_DROPIN = REPO_ROOT / "util" / "ad-hoc" / "2026-10-29_duplicati-trial-override.conf"
+
+# Settings the trial drop-in resets with an empty assignment. For the list settings systemd keeps
+# every earlier value unless that empty line comes first (systemd.service(5), systemd.exec(5);
+# LoadCredential= resets in load-fragment.c). SystemCallErrorNumber= is a single errno or "kill",
+# not a list, but its empty assignment likewise resets it, to the default kill, so it is modelled
+# here the same way: [] is kill. Every other key is a scalar: the last assignment wins.
+_LIST_KEYS = frozenset(
+    {
+        "ExecStart",
+        "EnvironmentFile",
+        "LoadCredential",
+        "SystemCallErrorNumber",
+        "Environment",
+    }
+)
+_TRIAL_EXEC = "/usr/local/lib/duplicati-trial/duplicati-wrapper.bash $DAEMON_OPTS --phase-d-trial-unknown-option-marker"
+_CONFINEMENT_KEYS = (
+    "User",
+    "Group",
+    "ProtectSystem",
+    "ProtectHome",
+    "IPAddressDeny",
+    "IPAddressAllow",
+    "AmbientCapabilities",
+    "CapabilityBoundingSet",
+    "NoNewPrivileges",
+    "InaccessiblePaths",
+    "ReadWritePaths",
+    "SystemCallFilter",
+    "PrivateTmp",
+)
+
+
+def _unit_assignments(text: str) -> dict[str, list[tuple[str, str]]]:
+    """section -> [(key, value), ...] in file order. A full-line comment is not an assignment.
+    An empty value is kept: on a list key it is the reset."""
+    sections: dict[str, list[tuple[str, str]]] = {}
+    section = None
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line[0] in "#;":
+            continue
+        if line.startswith("[") and line.endswith("]"):
+            section = line[1:-1]
+            sections.setdefault(section, [])
+            continue
+        if section is None or "=" not in line:
+            raise AssertionError(f"unparsed unit line: {raw!r}")
+        key, value = line.split("=", 1)
+        sections[section].append((key.strip(), value))
+    return sections
+
+
+def _assign(merged: dict[str, list[str]], key: str, value: str) -> None:
+    if key in _LIST_KEYS:
+        if value == "":
+            merged[key] = []
+        else:
+            merged.setdefault(key, []).append(value)
+        return
+    merged[key] = [value] if value != "" else []
+
+
+def _merge_unit(unit: dict[str, list[tuple[str, str]]], dropin: dict[str, list[tuple[str, str]]]) -> dict[str, dict[str, list[str]]]:
+    """The unit, then the drop-in, one section at a time. This is the merge systemd performs
+    before it starts the trial unit."""
+    merged: dict[str, dict[str, list[str]]] = {}
+    for section in set(unit) | set(dropin):
+        values: dict[str, list[str]] = {}
+        for key, value in unit.get(section, []):
+            _assign(values, key, value)
+        for key, value in dropin.get(section, []):
+            _assign(values, key, value)
+        merged[section] = values
+    return merged
+
 
 # Everything the installer reads from the repository, relative to its root (REPO_DIR = installer/..).
 INSTALLER_SOURCES = (
@@ -665,6 +749,46 @@ class RecoveryHelperGates(_Scratch):
                 self.assertEqual(list(self.data.glob(".password-init-*")), [], "the parameters file must be shredded")
                 self.assertNotIn("dummy", r.stderr + r.stdout)
 
+    def test_password_init_runs_the_server_with_the_units_environment_and_its_own_tmpdir(self):
+        """1.4.0 (Phase D lane A, A-8): `sudo -u` drops the unit's DO_NOT_TRACK / USAGEREPORTER / AUTOUPDATER lines,
+        and the server starts its usage reporter before the 102 return; TMPDIR keeps .NET's socket out of /tmp. The
+        three are removed from the test's own environment first, so an inherited value cannot pass for the script's."""
+        stub = self.tmp / "server-env"
+        report = self.tmp / "seen-env"
+        stub.write_text("#!/usr/bin/env bash\n" 'printf "%s\\n" "DO_NOT_TRACK=${DO_NOT_TRACK:-}" "USAGEREPORTER_Duplicati_LEVEL=${USAGEREPORTER_Duplicati_LEVEL:-}" ' '"AUTOUPDATER_Duplicati_SKIP_UPDATE=${AUTOUPDATER_Duplicati_SKIP_UPDATE:-}" "TMPDIR=${TMPDIR:-}" > "$STUB_REPORT"\n' "exit 102\n")
+        stub.chmod(0o700)
+        env = RedactedEnv(os.environ, DUPLICATI_RUN_AS=self.me, DUPLICATI_SERVER=str(stub), STUB_REPORT=str(report), TMPDIR=str(self.tmp))
+        for name in ("DO_NOT_TRACK", "USAGEREPORTER_Duplicati_LEVEL", "AUTOUPDATER_Duplicati_SKIP_UPDATE"):
+            env.pop(name, None)
+        cmd = ["bash", str(PASSWORD_INIT), "--data-folder", str(self.data), "--settings-key-file", str(self.key), "--ui-password-file", str(self.pw), "--port", "1"]
+        r = _run(cmd, env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        seen = report.read_text().splitlines()
+        self.assertEqual(seen, ["DO_NOT_TRACK=1", "USAGEREPORTER_Duplicati_LEVEL=none", "AUTOUPDATER_Duplicati_SKIP_UPDATE=1", f"TMPDIR={self.data}"])
+        dry = self.pwinit()
+        self.assertIn(f"env DO_NOT_TRACK=1 USAGEREPORTER_Duplicati_LEVEL=none AUTOUPDATER_Duplicati_SKIP_UPDATE=1 TMPDIR={self.data} ", dry.stderr)
+
+    def test_password_init_root_branch_hands_the_server_the_units_environment_through_sudo(self):
+        """Phase D round 2 (R2A-3): the SAME_USER test cannot see the ROOT branch, where `sudo -u` resets the
+        environment -- so RUN_ENV placed before `sudo`, or emptied unless SAME_USER, passed. Here a PATH-stub `id`
+        reports root and a PATH-stub `sudo` resets the environment as sudo's env_reset does, then runs the command."""
+        fakebin = self.tmp / "fakebin"
+        fakebin.mkdir()
+        (fakebin / "id").write_text('#!/bin/sh\ncase "$*" in\n  -un) echo root ;;\n  -u) echo 0 ;;\n  *) exec /usr/bin/id "$@" ;;\nesac\n')
+        (fakebin / "sudo").write_text("#!/bin/sh\n" '[ "$1" = -u ] && [ "$3" = -- ] || { echo "stub sudo: unexpected argv" >&2; exit 99; }\n' "shift 3\n" 'exec /usr/bin/env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin STUB_REPORT="$STUB_REPORT" "$@"\n')
+        stub = self.tmp / "server-env"
+        report = self.tmp / "seen-env"
+        stub.write_text("#!/bin/sh\n" 'printf "%s\\n" "DO_NOT_TRACK=${DO_NOT_TRACK:-}" "USAGEREPORTER_Duplicati_LEVEL=${USAGEREPORTER_Duplicati_LEVEL:-}" ' '"AUTOUPDATER_Duplicati_SKIP_UPDATE=${AUTOUPDATER_Duplicati_SKIP_UPDATE:-}" "TMPDIR=${TMPDIR:-}" > "$STUB_REPORT"\n' "exit 102\n")
+        for f in (fakebin / "id", fakebin / "sudo", stub):
+            f.chmod(0o755)
+        env = RedactedEnv(os.environ, PATH=f"{fakebin}:{os.environ['PATH']}", DUPLICATI_RUN_AS=self.me, DUPLICATI_SERVER=str(stub), STUB_REPORT=str(report), TMPDIR=str(self.tmp))
+        for name in ("DO_NOT_TRACK", "USAGEREPORTER_Duplicati_LEVEL", "AUTOUPDATER_Duplicati_SKIP_UPDATE"):
+            env.pop(name, None)
+        cmd = ["bash", str(PASSWORD_INIT), "--data-folder", str(self.data), "--settings-key-file", str(self.key), "--ui-password-file", str(self.pw), "--port", "1"]
+        r = _run(cmd, env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(report.read_text().splitlines(), ["DO_NOT_TRACK=1", "USAGEREPORTER_Duplicati_LEVEL=none", "AUTOUPDATER_Duplicati_SKIP_UPDATE=1", f"TMPDIR={self.data}"])
+
     def test_password_init_refuses_a_secret_with_edge_whitespace(self):
         """The server trims every parameters-file line, so a value with edge whitespace would not survive verbatim."""
         self.pw.write_text(" dummy \n")
@@ -963,6 +1087,71 @@ class RekeyGate(unittest.TestCase):
         bad = self.tmp / "not-a-db.sqlite"
         bad.write_text("not a database")
         self.assertEqual(self.unrewritten(bad).returncode, 2)
+
+
+class TrialDropInMerge(unittest.TestCase):
+    """Phase D step 0(b). The drop-in is installed beside a byte copy of duplicati.service.
+    Deleting an empty reset, placing it after the new value, pointing ExecStart at the live
+    wrapper or at /run, or assigning a confinement key changes what the trial would run."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.unit = _unit_assignments(UNIT.read_text(encoding="utf-8"))
+        cls.dropin = _unit_assignments(TRIAL_DROPIN.read_text(encoding="utf-8"))
+        cls.merged = _merge_unit(cls.unit, cls.dropin)
+        cls.unit_only = _merge_unit(cls.unit, {})
+
+    def test_the_trial_replaces_the_live_inputs_and_keeps_the_units_confinement(self):
+        service = self.merged["Service"]
+        self.assertEqual(service["ExecStart"], [_TRIAL_EXEC])
+        words = service["ExecStart"][0].split()
+        self.assertEqual(
+            words,
+            [
+                "/usr/local/lib/duplicati-trial/duplicati-wrapper.bash",
+                "$DAEMON_OPTS",
+                "--phase-d-trial-unknown-option-marker",
+            ],
+        )
+        self.assertNotIn("/run", service["ExecStart"][0])
+        self.assertNotIn("/home/duplicati", service["ExecStart"][0])
+        self.assertNotIn("8300", service["ExecStart"][0])
+        self.assertEqual(service["EnvironmentFile"], ["/usr/local/lib/duplicati-trial/duplicati.default"])
+        self.assertEqual(service["LoadCredential"], ["settings-key:/etc/credstore/phase-d-trial-key"])
+        self.assertEqual(service["SystemCallErrorNumber"], [])
+        self.assertEqual(service["Restart"], ["no"])
+        self.assertEqual(
+            service["Environment"],
+            [
+                "AUTOUPDATER_Duplicati_SKIP_UPDATE=1",
+                "USAGEREPORTER_Duplicati_LEVEL=none",
+                "DO_NOT_TRACK=1",
+                "DUPLICATI_ENV_FILE=/usr/local/lib/duplicati-trial/env",
+                "DUPLICATI__LOG_CONSOLE=true",
+                "DUPLICATI__LOG_LEVEL=Warning",
+            ],
+        )
+        live = self.unit_only["Unit"]["Description"][0]
+        trial = self.merged["Unit"]["Description"]
+        self.assertEqual(len(trial), 1)
+        self.assertNotEqual(trial[0], live)
+        self.assertIn("trial", trial[0].lower())
+        self.assertIn("throwaway", trial[0].lower())
+        for key in _CONFINEMENT_KEYS:
+            self.assertEqual(service[key], self.unit_only["Service"][key], key)
+
+    def test_the_dropin_assigns_only_the_documented_keys(self):
+        allowed = {
+            ("Unit", "Description"),
+            ("Service", "ExecStart"),
+            ("Service", "EnvironmentFile"),
+            ("Service", "LoadCredential"),
+            ("Service", "SystemCallErrorNumber"),
+            ("Service", "Restart"),
+            ("Service", "Environment"),
+        }
+        got = {(section, key) for section, pairs in self.dropin.items() for key, _ in pairs}
+        self.assertEqual(got, allowed)
 
 
 if __name__ == "__main__":

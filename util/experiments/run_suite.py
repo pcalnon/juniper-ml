@@ -112,8 +112,8 @@ RUN_ID_BANNER = re.compile(r"Experiment run (\S+) is up")
 
 SUITE_KEYS = frozenset({"schema_version", "suite", "execution", "matrix", "include", "exclude", "outputs", "acceptance"})
 # W5.4 (F-D3 / F-SCI4): acceptance bands. A band names one headline metric (a column `_headline_metrics`
-# reads through `RECURRENCE_HEADLINE_PATHS` / `CASCOR_HEADLINE_PATHS`, or a `PENDING_ACCEPTANCE_METRICS`
-# name -- `ACCEPTANCE_METRICS`, below the tables), a `min` and / or `max` bound, and a `mode`. Bands
+# reads through `RECURRENCE_HEADLINE_PATHS` / `CASCOR_HEADLINE_PATHS` / `CASCOR_TEST_COLUMNS`, or a
+# `PENDING_ACCEPTANCE_METRICS` name -- `ACCEPTANCE_METRICS`, below the tables), a `min` and / or `max` bound, and a `mode`. Bands
 # live on the SUITE (every cell) or on an `include` row (that row only -- the R5 band is row-scoped to
 # the E-H equities row because the irregular-sine control's cv_r2 0.975 would fail +0.5). Outcome
 # semantics are R6's: a `gate` miss makes a succeeded cell `failed` (non-zero exit); a `report` miss
@@ -158,30 +158,42 @@ RECURRENCE_HEADLINE_PATHS = (
 #
 # `val_accuracy` keeps its name and is SELECTED-ON, not held out: the VAL split drove early stopping (and,
 # before decision 11, the service's "val" was the `X_test` partition doing the same job). The held-out
-# columns come later, from a labelled block juniper-ml#2064 will add to `build_stats`.
-#
-# `eval_scalars` (f1 / precision / recall / roc_auc) are deliberately NOT mapped: they are live
-# mid-training values, 19 corpus runs computed them on the TRAINING split, and juniper-ml#2064 will change
-# what they mean.
+# columns are `CASCOR_TEST_COLUMNS`, below.
 CASCOR_HEADLINE_PATHS = (
     ("train_accuracy", ("final", "train_accuracy")),
     ("val_accuracy", ("final", "val_accuracy")),
 )
 
+# juniper-ml#2064 (APD-ML-002 ruling 1's "test later", 2026-10-27): the held-out columns, each with the key it
+# reads in the labelled final-evaluation block `stats["cascor"]["eval_scalars"]` (`stats_summary.cascor_eval_blocks`:
+# cascor's `eval_metrics.final`). They are read ONLY when that block's `split` is `CASCOR_HELD_OUT_SPLIT`. With no
+# test split loaded cascor scores the validation split instead, which early stopping read, and a `validation`
+# block must never fill a `test_*` column. `test_accuracy` exists from juniper-cascor#731; an older service
+# reports no accuracy, so the column is absent there. The in-loop values (`eval_scalars_in_loop`) are never
+# mapped: live mid-training values, and 19 corpus runs computed them on the TRAINING split.
+CASCOR_HELD_OUT_SPLIT = "test"
+CASCOR_TEST_COLUMNS = (
+    ("test_accuracy", "accuracy"),
+    ("test_f1", "f1"),
+    ("test_precision", "precision"),
+    ("test_recall", "recall"),
+    ("test_roc_auc", "roc_auc"),
+)
+
 #: APD-ML-002 ruling 2 (2026-10-26): band metrics ``parse_acceptance`` ACCEPTS although no run produces them
 #: yet, each with the reason ``main`` prints before any launch. A band on one reads ``absent`` until its
-#: producer lands -- so a ``gate`` band fails its cell, and a ``report`` band flags it.
-PENDING_ACCEPTANCE_METRICS = {
-    "test_accuracy": "cascor's final evaluation will compute it (juniper-cascor#731) and the labelled block juniper-ml#2064 adds to stats_summary.build_stats will carry it into stats.json; until both land no run produces it",
-}
+#: producer lands -- so a ``gate`` band fails its cell, and a ``report`` band flags it. EMPTY since
+#: juniper-ml#2064 gave ``test_accuracy``, its only entry, a path (``CASCOR_TEST_COLUMNS``); kept for the next
+#: name a ruling accepts ahead of its producer.
+PENDING_ACCEPTANCE_METRICS: "dict[str, str]" = {}
 
 #: Band metrics that are REFUSED, each with the reason the refusal prints (APD-ML-002 ruling 2).
 RETIRED_ACCEPTANCE_METRICS = {
     "final_accuracy": "removed 2026-10-26 (APD-ML-002): no writer has ever produced it, at any depth of stats.json",
 }
 
-#: Every name a band may use: a column a path table above can produce, or a pending name.
-ACCEPTANCE_METRICS = frozenset(column for column, _ in RECURRENCE_HEADLINE_PATHS + CASCOR_HEADLINE_PATHS) | frozenset(PENDING_ACCEPTANCE_METRICS)
+#: Every name a band may use: a column a table above can produce, or a pending name.
+ACCEPTANCE_METRICS = frozenset(column for column, _ in RECURRENCE_HEADLINE_PATHS + CASCOR_HEADLINE_PATHS + CASCOR_TEST_COLUMNS) | frozenset(PENDING_ACCEPTANCE_METRICS)
 
 
 class SuiteError(Exception):
@@ -323,10 +335,11 @@ def parse_acceptance(spec, where: str) -> "list[dict]":
 def pending_band_warnings(cells: "list[dict]") -> "list[str]":
     """One warning per ``PENDING_ACCEPTANCE_METRICS`` name a band names, saying why it reads ``absent``.
 
-    APD-ML-002 ruling 2 (2026-10-26) keeps ``test_accuracy`` a band metric while nothing produces it, so
-    such a band is accepted at load and then reads ``absent`` on every cell -- a ``gate`` band fails the
-    cell. ``main`` prints these before anything launches (and under ``--dry-run``), once per metric however
-    many cells carry the band, rather than letting the first sign be a failed suite.
+    APD-ML-002 ruling 2 (2026-10-26) lets a band name a metric while nothing produces it, so such a band
+    is accepted at load and then reads ``absent`` on every cell -- a ``gate`` band fails the cell. ``main``
+    prints these before anything launches (and under ``--dry-run``), once per metric however many cells
+    carry the band, rather than letting the first sign be a failed suite. ``test_accuracy`` was the one
+    such name until juniper-ml#2064 gave it a path; the set is empty now, so this returns nothing.
     """
     counts: "dict[str, int]" = {}
     for cell in cells:
@@ -877,10 +890,11 @@ def _dig(block, path: "tuple[str, ...]"):
     return block
 
 
-def _read_stats(run_dir: Path) -> "dict | None":
+def _read_stats(run_dir: Path, name: str = "stats.json") -> "dict | None":
     """The run's ``artifacts/results/stats.json`` as a mapping, or ``None`` when it is missing, unreadable
-    or not a JSON object -- which ``_row_metrics`` must tell apart from a readable file with no headline."""
-    stats_file = run_dir / "artifacts" / "results" / "stats.json"
+    or not a JSON object -- which ``_row_metrics`` must tell apart from a readable file with no headline.
+    ``name`` reads another results file the same way: ``_final_eval_block`` reads ``metrics_final.json``."""
+    stats_file = run_dir / "artifacts" / "results" / name
     if not stats_file.exists():
         return None
     try:
@@ -890,8 +904,46 @@ def _read_stats(run_dir: Path) -> "dict | None":
     return stats if isinstance(stats, dict) else None
 
 
-def _stats_headline(stats: dict) -> dict:
-    """Every path-table column whose value in this parsed stats.json is a number (``_is_metric``)."""
+def _final_eval_block(stats: dict, run_dir: "Path | None") -> "dict | None":
+    """The labelled final-evaluation block behind a parsed stats.json (juniper-ml#2064), or ``None``.
+
+    A stats.json written since juniper-ml#2064 (``juniper-experiment-stats/2``) carries it as
+    ``cascor.eval_scalars``. One written before (``/1``) does not: its ``eval_scalars`` are the in-loop values,
+    unlabelled, and are never read as held out. For such a file the block is re-derived from the run's own
+    ``metrics_final.json`` -- the ``/v1/metrics`` body the stats were built from, which has carried
+    ``eval_metrics.final`` since juniper-cascor#614 -- by the writer's own ``stats_summary.cascor_eval_blocks``.
+    stats.json is not rewritten. This is how ``--reaggregate`` gives a suite run before juniper-ml#2064 its
+    ``test_*`` columns.
+    """
+    cascor = stats.get("cascor")
+    if not isinstance(cascor, dict):
+        return None
+    # Not wrapped in try/except ImportError, like `_gate_metrics`: a missing sibling is a packaging bug.
+    from experiments import stats_summary as ss
+
+    block = cascor.get("eval_scalars")
+    if ss.is_labelled_eval_block(block):
+        return block
+    body = _read_stats(run_dir, "metrics_final.json") if run_dir is not None else None
+    return ss.cascor_eval_blocks(body)["eval_scalars"] if body is not None else None
+
+
+def _held_out_columns(stats: dict, run_dir: "Path | None") -> dict:
+    """``CASCOR_TEST_COLUMNS`` from the final-evaluation block, and ONLY when it scored the ``test`` split.
+
+    A ``validation`` block is the finished model scored on the split early stopping read; it fills no
+    ``test_*`` column, and neither does an absent block. Each value passes ``_is_metric``, as every column does.
+    """
+    block = _final_eval_block(stats, run_dir)
+    if not isinstance(block, dict) or block.get("split") != CASCOR_HELD_OUT_SPLIT:
+        return {}
+    return {column: block[key] for column, key in CASCOR_TEST_COLUMNS if _is_metric(block.get(key))}
+
+
+def _stats_headline(stats: dict, run_dir: "Path | None" = None) -> dict:
+    """Every path-table column whose value in this parsed stats.json is a number (``_is_metric``), plus the
+    held-out ``test_*`` columns (``_held_out_columns``; ``run_dir`` lets a pre-juniper-ml#2064 stats.json
+    re-derive them from its ``metrics_final.json``)."""
     out: dict = {}
     for block_name, table in (("cascor", CASCOR_HEADLINE_PATHS), ("recurrence", RECURRENCE_HEADLINE_PATHS)):
         block = stats.get(block_name)
@@ -901,6 +953,7 @@ def _stats_headline(stats: dict) -> dict:
             value = _dig(block, path)
             if _is_metric(value):
                 out[column] = value
+    out.update(_held_out_columns(stats, run_dir))
     return out
 
 
@@ -912,19 +965,21 @@ def _headline_metrics(run_dir: Path) -> dict:
     ``CASCOR_HEADLINE_PATHS`` (APD-ML-002, 2026-10-26) -- ``train_accuracy`` and ``val_accuracy`` from
     ``stats["cascor"]["final"]``. A missing or null ``crossval`` block yields no ``cv_*`` key at all: an
     absent cross-validation is not a cross-validation that scored nothing. Likewise a run with no val
-    split yields no ``val_accuracy``.
+    split yields no ``val_accuracy``. The held-out ``test_*`` columns (juniper-ml#2064,
+    ``CASCOR_TEST_COLUMNS``) come from the labelled final-evaluation block, and only when it scored the
+    ``test`` split (``_held_out_columns``).
 
     The test is ``_is_metric`` for every column: ``0.0`` is kept, ``bool`` / ``None`` / strings are
     dropped, and a NaN or infinite number is KEPT -- it is a result, and ``evaluate_acceptance`` fails it
     against any band rather than calling it absent. Names at the TOP of either block are never read: the
     pre-fix readers looked there (``final_accuracy`` / ``test_accuracy`` / ``val_accuracy``, ``r2`` /
-    ``train_r2`` / ``cv_r2``) and no writer ever put anything there. ``test_accuracy`` has no path yet
-    (``PENDING_ACCEPTANCE_METRICS``), and ``final_accuracy`` is gone (``RETIRED_ACCEPTANCE_METRICS``).
+    ``train_r2`` / ``cv_r2``) and no writer ever put anything there. ``final_accuracy`` is gone
+    (``RETIRED_ACCEPTANCE_METRICS``).
 
     A missing, unreadable or non-object stats.json yields ``{}``.
     """
     stats = _read_stats(run_dir)
-    return {} if stats is None else _stats_headline(stats)
+    return {} if stats is None else _stats_headline(stats, run_dir)
 
 
 def _row_metrics(row: dict) -> dict:
@@ -935,12 +990,13 @@ def _row_metrics(row: dict) -> dict:
     dir pruned, moved or never written). The recorded value is what ``apply_acceptance`` judged when the
     cell ran, and ``registry.jsonl`` keeps it unchanged; reading the file again is what lets a suite
     aggregated before a column existed gain it (``--reaggregate``, APD-ML-002), and keeps it gained after
-    a later ``--resume`` re-aggregates the suite.
+    a later ``--resume`` re-aggregates the suite. A stats.json written before juniper-ml#2064 gains the
+    ``test_*`` columns from the run's ``metrics_final.json`` the same way (``_final_eval_block``).
     """
     run_dir = row.get("run_dir")
     stats = _read_stats(Path(run_dir)) if isinstance(run_dir, str) and run_dir else None
     if stats is not None:
-        return _stats_headline(stats)
+        return _stats_headline(stats, Path(run_dir))
     recorded = row.get("metrics")
     return recorded if isinstance(recorded, dict) else {}
 

@@ -1,0 +1,103 @@
+# The owner's execution of runbook steps 1 to 4 on yamaguchi, 2026-11-08, as pasted into the investigation session.
+#
+# Verbatim, except: the session's paste markers are removed, runs of blank lines are cut to one, and the padding
+# that snap's progress spinner left in the "Run service command" line is collapsed to one space.
+#
+# Times are not in the paste. They come from the host:
+#   step 1  08:23:22Z  mtime of tmp/2026-11-07_remount/ and of the empty probe-before.txt (stat)
+#   step 2  08:25-08:26Z  snap change 526348 "Running service command" (snap changes); the snap kubelet's last
+#                      aa_is_enabled() failure is 08:25:49Z (journalctl -u snap.kubelet.daemon.service)
+#   step 3  08:28:29Z  three sudo records, TTY /dev/pts/36 (journalctl -t sudo)
+#   pull    08:30:54Z  juniper-ml primary fast-forwarded (its .git/logs/HEAD); juniper-deploy at 08:33:30Z
+#   step 4  after 08:33:30Z (E3 passes, so juniper-deploy already had the AppArmor preflight)
+#
+# What it shows (RCA §14):
+#   * Step 1 ran before the checkout was pulled: $J was unset, so `cd $J/juniper-ml` failed (the shell stayed in
+#     juniper-ml), and neither script existed yet. The capture wrote nothing. The probe's redirect created
+#     probe-before.txt EMPTY (0 bytes), because the shell opens the redirect target before it finds the script
+#     missing.
+#   * Steps 2 and 3 succeeded: six "disabled", and three silent mounts.
+#   * Step 4: `verify before.txt` found no file. `verify probe-before.txt` passed all five efficacy checks, then
+#     diffed against the EMPTY file. Every one of the 31 current fingerprint lines is a `>` line (only in the
+#     current state), and there is no `<` line (nothing removed or changed). That is an empty baseline, not a
+#     regression: against the incident-state fingerprint committed at 02:15Z, the same host shows only the
+#     intended changes (…T0851Z_remount-validate-after-remediation-vs-incident-fingerprint.txt).
+
+(JuniperCascor1) pcalnon@yamaguchi:~/Development/python/Juniper/juniper-ml$ cd $J/juniper-ml
+mkdir -p tmp/2026-11-07_remount
+bash util/ad-hoc/2026-11-07_securityfs_remount_validate.bash capture tmp/2026-11-07_remount/before.txt
+bash util/ad-hoc/2026-11-07_securityfs_apparmor_probe.bash > tmp/2026-11-07_remount/probe-before.txt
+
+bash: cd: /juniper-ml: No such file or directory
+bash: util/ad-hoc/2026-11-07_securityfs_remount_validate.bash: No such file or directory
+bash: util/ad-hoc/2026-11-07_securityfs_apparmor_probe.bash: No such file or directory
+
+root@yamaguchi:/home/pcalnon/Development/python/Juniper/juniper-ml# snap stop --disable kubelet kube-apiserver kube-proxy kube-scheduler kube-controller-manager etcd
+systemctl is-enabled snap.kubelet.daemon.service snap.kube-apiserver.daemon.service snap.kube-proxy.daemon.service \
+    snap.kube-scheduler.daemon.service snap.kube-controller-manager.daemon.service snap.etcd.etcd.service
+
+Run service command "stop" for services ["daemon"] of snap "kube-controller-manager" /
+Stopped.
+disabled
+disabled
+disabled
+disabled
+disabled
+disabled
+
+root@yamaguchi:/home/pcalnon/Development/python/Juniper/juniper-ml# mountpoint -q /sys/kernel/security || sudo mount -t securityfs -o nosuid,nodev,noexec securityfs /sys/kernel/security
+mountpoint -q /sys/fs/pstore       || sudo mount -t pstore     -o nosuid,nodev,noexec        pstore     /sys/fs/pstore
+mountpoint -q /sys/fs/bpf          || sudo mount -t bpf        -o nosuid,nodev,noexec,mode=0700 bpf     /sys/fs/bpf
+
+root@yamaguchi:/home/pcalnon/Development/python/Juniper/juniper-ml#
+
+(JuniperCascor1) pcalnon@yamaguchi:~/Development/python/Juniper/juniper-ml$ bash util/ad-hoc/2026-11-07_securityfs_remount_validate.bash verify tmp/2026-11-07_remount/before.txt
+verify: no such fingerprint: tmp/2026-11-07_remount/before.txt
+
+(JuniperCascor1) pcalnon@yamaguchi:~/Development/python/Juniper/juniper-ml$ l tmp/2026-11-07_remount/
+total 44
+drwxrwxr-x   2 pcalnon pcalnon  4096 Nov  8 02:23 ./
+drwxrwxr-x 378 pcalnon pcalnon 36864 Nov  8 02:23 ../
+-rw-rw-r--   1 pcalnon pcalnon     0 Nov  8 02:23 probe-before.txt
+
+(JuniperCascor1) pcalnon@yamaguchi:~/Development/python/Juniper/juniper-ml$ bash util/ad-hoc/2026-11-07_securityfs_remount_validate.bash verify tmp/2026-11-07_remount/probe-before.txt
+== efficacy
+[PASS] E1 API filesystems mounted, AppArmor consistent  (host_api_filesystems_check: OK)
+[PASS] E2 AppArmor interface present  ()
+[PASS] E3 juniper-deploy AppArmor preflight  (  kernel=Y  securityfs on /sys/kernel/security=mounted  interface=present  dockerd AppArmor=yes)
+[PASS] E4 a container starts confined  (docker-default (enforce))
+[PASS] E5 snap-confine runs a snap  (version.BuildInfo{Version:"v4.3.1", GitCommit:"c0d08d0d6d9424d4a14febb5e8a3e51b0dd00dff", GitTreeState:"clean", GoVersion:"go1.27.2", KubeClientVersion:"v1.37"})
+== regression (fingerprint vs tmp/2026-11-07_remount/probe-before.txt)
+  UNEXPECTED > containerd_config_sha256=e2bdf61ad4c980e7439ed09a1ab65441afadede63087761679a97cc77cd4d20d
+  UNEXPECTED > hold=kubeadm,kubectl,kubelet
+  UNEXPECTED > juniper_k8s_head=29aed3f0554cd4612e315b9b70f411edee783878
+  UNEXPECTED > k8s_listeners=
+  EXPECTED   > mount./sys/fs/bpf=bpf rw,nosuid,nodev,noexec,relatime,mode=700
+  EXPECTED   > mount./sys/fs/pstore=pstore rw,nosuid,nodev,noexec,relatime
+  EXPECTED   > mount./sys/kernel/security=securityfs rw,nosuid,nodev,noexec,relatime
+  UNEXPECTED > pid.containerd=11194
+  UNEXPECTED > pid.dockerd=13298
+  UNEXPECTED > pid.systemd=Mon Sep  7 23:12:17 2026
+  UNEXPECTED > pkg.containerd.io=2.3.3-1~ubuntu.25.10~questing ii
+  UNEXPECTED > pkg.docker-ce=5:29.7.2-1~ubuntu.25.10~questing ii
+  UNEXPECTED > pkg.kubeadm=1.36.5-1.1 hi
+  UNEXPECTED > pkg.kubectl=1.36.5-1.1 hi
+  UNEXPECTED > pkg.kubelet=1.36.5-1.1 hi
+  UNEXPECTED > pkg.kubernetes-cni=1.9.1-1.1 ii
+  EXPECTED   > snap_service.snap.etcd.etcd=disabled/inactive
+  EXPECTED   > snap_service.snap.kube-apiserver.daemon=disabled/failed
+  EXPECTED   > snap_service.snap.kube-controller-manager.daemon=disabled/failed
+  EXPECTED   > snap_service.snap.kubelet.daemon=disabled/inactive
+  EXPECTED   > snap_service.snap.kube-proxy.daemon=disabled/failed
+  EXPECTED   > snap_service.snap.kube-scheduler.daemon=disabled/failed
+  UNEXPECTED > tree./etc/kubernetes=d 775 4096 2026-09-26_02:43
+  UNEXPECTED > tree./etc/kubernetes/manifests=d 775 4096 2026-09-26_02:43
+  UNEXPECTED > tree./etc/kubernetes/manifests/.kubelet-keep=f 644 0 2026-09-23_12:31
+  UNEXPECTED > tree./var/lib/kubelet=d 755 4096 2026-09-26_02:43
+  UNEXPECTED > tree./var/lib/kubelet/.kubelet-keep=f 644 0 2026-09-23_12:31
+  UNEXPECTED > tree./var/lib/kubelet/pki=d 755 4096 2024-10-24_01:58
+  UNEXPECTED > tree./var/lib/kubelet/pki/kubelet.crt=f 644 2275 2024-10-24_01:58
+  UNEXPECTED > tree./var/lib/kubelet/pki/kubelet.key=f 600 1679 2024-10-24_01:58
+  UNEXPECTED > unit.kubelet=enabled/inactive
+[FAIL] 22 unexpected fingerprint difference(s)
+== FAIL (1)

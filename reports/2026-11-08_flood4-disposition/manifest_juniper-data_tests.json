@@ -1,0 +1,266 @@
+{
+  "repo": "pcalnon/juniper-data",
+  "carrier": "tests",
+  "base_sha": "2807855896942603eee38071d48aa984d4d1c057",
+  "worktree": "/home/pcalnon/Development/python/Juniper/worktrees/juniper-data--test--flood4-consolidated-tests--20261107-1701--28078558",
+  "worktree_state": "detached HEAD at base_sha; changes STAGED in the worktree's own index (git add -A), never committed. Round 3 (second validator round) re-staged: tree 3741659c58b87b2dc2a37efa114c98a889c20986.",
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "status": "modified"
+    },
+    {
+      "path": "juniper_data/tests/unit/test_bandit_sarif_upload.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper_data/tests/unit/test_check_module_coverage.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper_data/tests/unit/test_run_coverage_gates.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper_data/tests/unit/test_publish_image_manifest_identity.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper_data/tests/unit/test_publish_manifest_tag_gates.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper_data/tests/unit/test_testpypi_install_verify.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper_data/tests/unit/test_middleware.py",
+      "status": "modified"
+    }
+  ],
+  "carried": [
+    {
+      "pr": 512,
+      "head_sha": "b390248217b748c10f12d7e833d387c2751b56e6",
+      "title": "test(ci): pin local coverage gates and the Bandit SARIF upload",
+      "taken": [
+        "juniper_data/tests/unit/test_bandit_sarif_upload.py",
+        "juniper_data/tests/unit/test_check_module_coverage.py",
+        "juniper_data/tests/unit/test_run_coverage_gates.py"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "Required checks green (triage); all three files byte-identical to the head blobs; 22 pass alone; mutants M1-M3 killed. Triage note kept: 2 of 4 asserts in the 7-row parametrize test the table against itself (padding, not vacuous: M1 kills 7). Validator T-F2 (kept as drafted, per the orchestrator): 6 of the 7 parametrize rows add nothing -- every row runs the same two workflow-binding asserts, and the other two restate the table itself. Padding, not vacuity."
+    },
+    {
+      "pr": 513,
+      "head_sha": "3329d05b3b4b113002ca16b30afb3e1d32029990",
+      "title": "test: pin the published image manifest's digest identity",
+      "taken": [
+        "juniper_data/tests/unit/test_publish_image_manifest_identity.py"
+      ],
+      "fixes": [
+        "Validator T-F1: the harness ran the step under `bash -eo pipefail` and its docstring called that GitHub's default. A run: step that names no shell runs as `bash -e {0}` (GitHub's workflow-syntax shell table; the v0.17.1 Publish manifest job log shows `shell: /usr/bin/bash -e {0}` for all four rehearsed steps, val-tests/ci_publish_manifest_v0.17.1_job_114308353499.log:646,715,760,836; publish-image.yml has no defaults:/shell:). `shell: bash` is what adds pipefail. The harness now runs `bash -e -c`, and the docstring/comment say so (a named shell would stop the rehearsal matching the runner). test_publish_image_manifest_identity.py:127 argv; :138 docstring."
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "Required checks green incl. macOS (triage); content TRUE; 8 pass alone under `bash -e`; mutant M4 killed. Carrier differs from the head blob only by the T-F1 fix."
+    },
+    {
+      "pr": 514,
+      "head_sha": "2a9f130f1194212c7cdcd26dc8194a4e7ccc6a26",
+      "title": "test(image): pin the publish job's tag gates",
+      "taken": [
+        "juniper_data/tests/unit/test_publish_manifest_tag_gates.py (net content of both draft commits f243d06 + 2a9f130, merge-base d83ca58..head)"
+      ],
+      "fixes": [
+        "_run() executed '/usr/bin/bash', absent on macOS (bash is /bin/bash): the required 'Unit Tests + Coverage (Python 3.12 on macos-latest)' lane failed with FileNotFoundError (class O, the PR's own; job 126500087239, 5 failed before --maxfail=5 stopped the lane, so 5 more of its shell tests never ran on macOS).",
+        "Now: module constant _SYSTEM_PATH = os.pathsep.join(('/usr/bin', '/bin')); _run() resolves bash = shutil.which('bash', path=_SYSTEM_PATH) -- the same directories the step's shell sees, as #513's PATH-resolved 'bash' does -- and calls pytest.fail when there is none (T-F4; round 1 called pytest.skip there); env PATH reuses _SYSTEM_PATH (same value as before).",
+        "Portability of what it executes was read, not assumed: the three run: blocks use only bash-3.2-safe constructs (here-strings, for f in *, [ ], printf) plus jq, the same as #513's identity shell, which is green on the macOS lane.",
+        "Validator T-F1: the harness ran the step under `bash -eo pipefail` and its docstring called that GitHub's default. A run: step that names no shell runs as `bash -e {0}` (GitHub's workflow-syntax shell table; the v0.17.1 Publish manifest job log shows `shell: /usr/bin/bash -e {0}` for all four rehearsed steps, val-tests/ci_publish_manifest_v0.17.1_job_114308353499.log:646,715,760,836; publish-image.yml has no defaults:/shell:). `shell: bash` is what adds pipefail. The harness now runs `bash -e -c`, and the docstring/comment say so (a named shell would stop the rehearsal matching the runner). test_publish_manifest_tag_gates.py:15-17 docstring, :74-75 comment, :161 argv.",
+        "Validator T-F4: the bash lookup now calls pytest.fail, not pytest.skip, when /usr/bin:/bin has no bash. A skip would let 10 of its 12 tests skip on a required lane while the lane read green; bash is present on every runner."
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "Content TRUE on main (12 pass under `bash -e`; mutant M5 killed after the fixes). Carrier differs from the head blob only by the bash-path, shell-semantics and fail-not-skip fixes (blob_compare.log)."
+    },
+    {
+      "pr": 516,
+      "head_sha": "a849f0fa6152daa28ee6d1e415a2c282d42931c9",
+      "title": "test(publish): pin the TestPyPI install verify",
+      "taken": [
+        "juniper_data/tests/unit/test_testpypi_install_verify.py"
+      ],
+      "fixes": [
+        "Validator T-F3: the docstrings said the step checks the installed version against the tag (:4 'checks the installed version'; :167 'A publish whose installed version does not match the tag is not a success'). publish.yml:48 only prints m.version('juniper-data') -- the workflow's own comment calls it a 'Version-only check' -- and the tag match is pip's `juniper-data==${VERSION}` (:45). Both docstrings now say that; no assertion changed.",
+        "Validator R2-F1: the `\"shell\" not in step` message (:125) said 'a named shell drops GitHub's bash -e, and a failing pip would not fail the step'. False: shell: bash runs `bash --noprofile --norc -eo pipefail {0}` and shell: sh runs `sh -e {0}`, both keeping -e (the validator ran the real step with a failing pip stub under all three: each exits 1 at pip; only a custom `bash {0}` passes, val-round2/named_shell_probe.json). The message now says a named shell replaces the `bash -e {0}` this rehearsal reproduces, and that only a custom template such as `bash {0}` would drop -e. Message only; the harness already ran `bash -e` (:100)."
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "Required checks green (triage); 6 pass alone; mutant M6 (add --extra-index-url pypi.org) killed, 4 failed. Carrier differs from the head blob only by the T-F3 docstrings."
+    },
+    {
+      "pr": 517,
+      "head_sha": "8ad79d4057d3841aae284804b8a665b8964c3552",
+      "title": "test(security): pin the failed-auth throttle cap, prune horizon, and window reset",
+      "taken": [
+        "juniper_data/tests/unit/test_middleware.py: the draft's one hunk (+79, three TestFailedAuthThrottle tests) applied onto main"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "test_middleware.py and api/security.py unchanged on main since the draft's merge-base c7c5685, so the result equals the head blob; the 3 new tests pass; mutants M7 (cutoff 2w->1w) and M8 (evict newest) each killed by a NEW test."
+    }
+  ],
+  "checks": [
+    {
+      "what": "juniper_data imports from the tests worktree, not the primary's editable install (juniper-data 0.12.0 editable at the primary exists in JuniperData)",
+      "command": "cd <worktree> && conda run -n JuniperData python -c 'import juniper_data; print(juniper_data.__file__)'  (pyproject pythonpath=['.'] keeps it under pytest; from /home/pcalnon the same command prints the primary's path)",
+      "result": "pass",
+      "log": "inline: <worktree>/juniper_data/__init__.py, /opt/miniforge3/envs/JuniperData/bin/python 3.14.2; runtime proof: mutants M7/M8 of <worktree>/juniper_data/api/security.py were killed"
+    },
+    {
+      "what": "full suite on the carrier tree",
+      "command": "cd <worktree> && conda run --no-capture-output -n JuniperData python -m pytest juniper_data/tests/",
+      "result": "pass",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/pytest_full_r2.log (round 2: 2563 passed, 7 skipped, 14 subtests passed, 0 failed, 161s, pytest exit 0; round 1: /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/pytest_full.log, same counts)"
+    },
+    {
+      "what": "each carried file alone, unmutated (baselines)",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_data_tests_mutation_check.py <worktree> <log dir>  (conda run -n JuniperData python -B -m pytest -p no:cacheprovider <files>)",
+      "result": "pass",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation_r2/baseline_{512,513,514,516,517}.log (round 2: #512 22 passed, #513 8, #514 12, #516 6, #517 3)"
+    },
+    {
+      "what": "mutation check, every carried test file (brief rule 11)",
+      "command": "same script; harness exit 0",
+      "result": "pass",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation_r2/mutation_results.json (round 2, after the fixes: 8/8 killed, 5/5 baselines green, 0 arms errored, sha256 restored; round 1 in /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation/)"
+    },
+    {
+      "what": "carried files vs draft head blobs",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_data_blob_compare.py <worktree> /home/pcalnon/Development/python/Juniper/juniper-data",
+      "result": "pass",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/blob_compare.log (round 2: 4/7 byte-identical -- #512 x3, #517; #513, #514, #516 differ only by their recorded fixes)"
+    },
+    {
+      "what": "portability grep of carried tests and the shell they execute (base64 -w, date -d, sed -i, /usr/bin/..., readlink -f, stat -c, grep -P, mapfile, declare -A, ...)",
+      "command": "grep -nE over the 7 test files, util/run_coverage.bash, publish.yml 'Verify TestPyPI install', publish-image.yml merge-job steps",
+      "result": "pass",
+      "log": "inline: only hit is the new comment naming /usr/bin/bash; executed shells use POSIX/BSD-safe forms"
+    },
+    {
+      "what": "pinned pre-commit on every changed file (ruff, ruff-format, mypy tests, check-ast, doc-links, ...)",
+      "command": "cd <worktree> && /opt/miniforge3/bin/pre-commit run --files CHANGELOG.md <7 test files>",
+      "result": "pass",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/precommit_r2.log (round 2: exit 0; sha256 of all 8 files unchanged, precommit_r2_sha_before.txt)"
+    },
+    {
+      "what": "CodeQL prescreen on the 7 test files",
+      "command": "python3 util/ad-hoc/2026-10-05_codeql_python_prescreen.py <7 files>",
+      "result": "fail",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/codeql_prescreen.log (6 predicted: unused-global pytestmark in each new file). Adjudicated FALSE POSITIVE for this repo: 57 test files on main define module-level pytestmark (e.g. #490, #458 merged through required CodeQL), and juniper-data's 15 open py/unused-global-variable alerts are all in juniper_data/api/settings.py, none a pytestmark (gh api code-scanning/alerts, read-only). Round 2 on the 3 touched files: only the same pytestmark predictions (/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/codeql_prescreen_r2.log). The validator independently found no pytestmark alert in juniper-data's 60-alert history, and CodeQL already analysed the five draft heads with no new alerts."
+    },
+    {
+      "what": "CHANGELOG entry under the top [Unreleased]",
+      "command": "grep -n '^## \\[' CHANGELOG.md",
+      "result": "pass",
+      "log": "inline: [Unreleased] at line 8 (### Added, first bullet at line 57); next heading [0.17.1]"
+    },
+    {
+      "what": "the two juniper-data carriers merge with each other",
+      "command": "git -C <primary> commit-tree <tree> -p 28078558 (local unsigned probes, never pushed: round 3 tests 459d5fc5 = tree 3741659c; docs 9391efaa = tree a7d5a940) then git merge-tree --write-tree 459d5fc5 9391efaa",
+      "result": "pass",
+      "log": "inline: exit 0, merged tree d8c8a6225793f9c3b38d4a038869574588e1766e (round 1 and round 2 probes also merged clean); both entries under [Unreleased] (docs in ### Changed, tests in ### Added): /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/merged_probe_CHANGELOG.txt is from round 2"
+    },
+    {
+      "what": "round 3: the touched test file alone (message-only change)",
+      "command": "cd <worktree> && conda run -n JuniperData python -B -m pytest -p no:cacheprovider juniper_data/tests/unit/test_testpypi_install_verify.py",
+      "result": "pass",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/round3_test_516.log (6 passed)"
+    },
+    {
+      "what": "round 3: pinned pre-commit on the touched paths",
+      "command": "cd <worktree> && /opt/miniforge3/bin/pre-commit run --files CHANGELOG.md juniper_data/tests/unit/test_testpypi_install_verify.py",
+      "result": "pass",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/precommit_r3.log (exit 0; sha256 unchanged, precommit_r3_sha_before.txt)"
+    }
+  ],
+  "mutations": [
+    {
+      "test_file": "juniper_data/tests/unit/test_bandit_sarif_upload.py",
+      "mutant": ".github/workflows/ci.yml:611 continue-on-error: ${{ github.event_name != 'pull_request' }} -> continue-on-error: true",
+      "result": "killed",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation/mutation_M1-512-bandit-continue-on-error-true.log (7 failed, 1 passed)"
+    },
+    {
+      "test_file": "juniper_data/tests/unit/test_check_module_coverage.py",
+      "mutant": "scripts/check_module_coverage.py:119 if aggregate < AGGREGATE_FAIL_UNDER -> <=",
+      "result": "killed",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation/mutation_M2-512-aggregate-lt-to-le.log (1 failed, 4 passed)"
+    },
+    {
+      "test_file": "juniper_data/tests/unit/test_run_coverage_gates.py",
+      "mutant": "util/run_coverage.bash:57 drop --enforce from juniper-coverage-gap-map",
+      "result": "killed",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation/mutation_M3-512-gapmap-drops-enforce.log (3 failed, 6 passed)"
+    },
+    {
+      "test_file": "juniper_data/tests/unit/test_publish_image_manifest_identity.py",
+      "mutant": ".github/workflows/publish-image.yml:413 images= jq drops | select(.platform.os==\"linux\") (attestations counted)",
+      "result": "killed",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation/mutation_M4-513-index-resolution-keeps-attestations.log (2 failed, 6 passed)"
+    },
+    {
+      "test_file": "juniper_data/tests/unit/test_publish_manifest_tag_gates.py",
+      "mutant": ".github/workflows/publish-image.yml:371 [ \"${arches}\" != \"amd64,arm64\" ] -> [ -z \"${arches}\" ] (run on the FIXED file)",
+      "result": "killed",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation/mutation_M5-514-arch-check-only-empty.log (1 failed, 11 passed)"
+    },
+    {
+      "test_file": "juniper_data/tests/unit/test_testpypi_install_verify.py",
+      "mutant": ".github/workflows/publish.yml:45 add --extra-index-url https://pypi.org/simple/",
+      "result": "killed",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation/mutation_M6-516-extra-index-url-pypi.log (4 failed, 2 passed)"
+    },
+    {
+      "test_file": "juniper_data/tests/unit/test_middleware.py (#517's 3 new tests only)",
+      "mutant": "juniper_data/api/security.py:384 cutoff = now - (2 * self._window) -> (1 * ...)",
+      "result": "killed",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation/mutation_M7-517-cleanup-cutoff-one-window.log (1 failed, 2 passed)"
+    },
+    {
+      "test_file": "juniper_data/tests/unit/test_middleware.py (#517's 3 new tests only)",
+      "mutant": "juniper_data/api/security.py:391 sorted(..., key=ts) -> reverse=True (cap evicts newest)",
+      "result": "killed",
+      "log": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/tests/mutation/mutation_M8-517-cap-evicts-newest.log (1 failed, 2 passed)"
+    }
+  ],
+  "open_questions": [
+    "#514's macOS fix is proven only on Linux here (12 pass, M5 killed). The macOS lane itself is first exercised by the carrier PR's CI; the read-through says its three run: blocks are bash-3.2 and BSD safe and rely on /usr/bin/jq, as #513 already does green on macos-latest.",
+    "With -o pipefail removed, the rehearsal matches production: a pipeline later added to one of these steps fails open on the runner, and now fails open in the test too. That is the intent (the test pins what the runner does), not lost strictness to restore.",
+    "Ordering vs the docs carrier: the two merge cleanly with each other (merge-tree exit 0), so the expected CHANGELOG conflict does not occur; the second to land still needs update-branch (strict ruleset)."
+  ],
+  "validator_round": {
+    "findings": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/val-tests/findings.json",
+    "applied": [
+      "T-F1 (#513, #514: bash -e, docstrings)",
+      "T-F3 (#516 docstrings)",
+      "T-F4 (#514 fail, not skip)"
+    ],
+    "noted_not_changed": [
+      "T-F2 (#512 parametrize padding), per the orchestrator"
+    ],
+    "each_re_derived_before_applying": "T-F1 production log lines 646/715/760/836 + no defaults:/shell: in publish-image.yml or publish.yml; T-F3 publish.yml:45-48; T-F4 read of _run(): 10 of 12 tests go through it."
+  },
+  "validator_round_2": {
+    "findings": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4/data/val-round2/findings.json",
+    "applied": [
+      "R2-F1 (#516 :125 assert message: a named shell replaces bash -e {0}; shell: bash / shell: sh keep -e; only a custom 'bash {0}' drops it) -- also in the PR body, the CHANGELOG #516 bullet and the commit body",
+      "R2-F5 (this manifest: #514 fixes[1] now says pytest.fail; the skip precedent is dropped)",
+      "R2-F6 (PR body summary: bash -eo pipefail is what GitHub uses for shell: bash; these steps name no shell and run as bash -e {0})"
+    ],
+    "each_re_derived_before_applying": "R2-F1: the harness runs bash -e (:100) and GitHub's shell table keeps -e for bash and sh, consistent with T-F1's production log; R2-F5: test_publish_manifest_tag_gates.py:144-147 calls pytest.fail; R2-F6: the same shell table."
+  }
+}

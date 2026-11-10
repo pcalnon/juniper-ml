@@ -1,0 +1,4 @@
+bash 5.3.9(1)-release
+command substitution exit status: 1
+captured output: [util/ad-hoc/2026-11-08_bash_empty_assoc_key_abort_repro.bash: line 28: present["${line%%=*}"]: bad array subscript]
+RESULT: the function was abandoned before its last line; only the text above came back

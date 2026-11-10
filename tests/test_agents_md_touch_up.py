@@ -14,6 +14,12 @@ Contract pinned here (juniper-ml#1099 -- the lane VERIFIES, it never mutates):
 - AGENTS.md changed but the date line NOT changed in this PR -> exit 1 with the
   exact line to write.
 - AGENTS.md changed AND the date line changed -> exit 0.
+- Surrounding whitespace still parses; only the first header line is the value.
+- A base tip that moved the header does not make an unbumped PR look bumped
+  (three-dot against the merge base, not two-dot against the tip).
+- Prose that mentions the marker is not a bump.
+- An already-today header passes with ``BASE_SHA`` unset. On the diff path an
+  unset ``BASE_SHA`` is an unbound variable.
 - ANTI-RESURRECTION: the shell must never ``sed -i`` / ``git commit`` / ``git push``.
   It used to do exactly that, which produced two failure classes under the
   2026-08-12 ``required_signatures`` normalization -- an UNSIGNED commit (rejected,
@@ -127,11 +133,19 @@ class AgentsMdDateCheckStructuralTest(unittest.TestCase):
         self.assertIn("BASE_SHA", (self.step.get("env") or {}))
 
     def test_checkout_has_full_history(self) -> None:
-        """The three-dot diff needs a resolvable merge base."""
+        """The three-dot diff needs a resolvable merge base, of the PR head.
+
+        juniper-ml#2402 pinned the action to a commit. A floating tag
+        (``actions/checkout@v7``) would still satisfy a prefix check and could
+        move under the pin.
+        """
         steps = self.job.get("steps") or []
         checkout = next((s for s in steps if str(s.get("uses", "")).startswith("actions/checkout")), None)
         self.assertIsNotNone(checkout, "verify lane must check out the PR head")
-        self.assertEqual((checkout.get("with") or {}).get("fetch-depth"), 0)
+        self.assertRegex(str(checkout.get("uses") or ""), r"^actions/checkout@[0-9a-f]{40}$")
+        with_ = checkout.get("with") or {}
+        self.assertEqual(with_.get("ref"), "${{ github.event.pull_request.head.sha }}")
+        self.assertEqual(with_.get("fetch-depth"), 0)
 
 
 class AgentsMdDateCheckRehearsalTest(unittest.TestCase):
@@ -179,7 +193,7 @@ class AgentsMdDateCheckRehearsalTest(unittest.TestCase):
         self._git(repo, "add", "AGENTS.md")
         self._git(repo, "commit", "-m", "pr change")
 
-    def _run(self, repo: Path, base_sha: str, *, git_log: Path) -> tuple:
+    def _run(self, repo: Path, base_sha: str | None, *, git_log: Path) -> tuple:
         with tempfile.TemporaryDirectory() as td:
             td_path = Path(td)
             script_path = td_path / "verify.sh"
@@ -206,7 +220,10 @@ class AgentsMdDateCheckRehearsalTest(unittest.TestCase):
 
             env = RedactedEnv(os.environ)
             env["PATH"] = str(stub_bin) + os.pathsep + env.get("PATH", "")
-            env["BASE_SHA"] = base_sha
+            if base_sha is None:
+                env.pop("BASE_SHA", None)
+            else:
+                env["BASE_SHA"] = base_sha
 
             proc = subprocess.run(  # nosec B603,B607 - workflow shell, fixed argv
                 ["bash", str(script_path)],
@@ -324,6 +341,111 @@ class AgentsMdDateCheckRehearsalTest(unittest.TestCase):
             rc, out = self._run(repo, base, git_log=git_log)
             self.assertEqual(rc, 0, out)
             self.assertIn("was bumped in this PR", out)
+            self._assert_no_mutation(repo, head, git_log)
+
+    def test_surrounding_whitespace_still_parses(self) -> None:
+        """Trailing whitespace is not part of the date. Dropping the strip turns a real bump into a malformed value."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo, base = self._init_repo(root, base_body=self._agents_body(last_updated=STALE_DATE))
+            self._pr_commit(repo, self._agents_body(last_updated=" \t 2026-08-10 \t ", version="0.7.2"))
+            head = self._git(repo, "rev-parse", "HEAD")
+            git_log = root / "git.log"
+            git_log.write_text("", encoding="utf-8")
+            rc, out = self._run(repo, base, git_log=git_log)
+            self.assertEqual(rc, 0, out)
+            self.assertIn("was bumped in this PR", out)
+            self._assert_no_mutation(repo, head, git_log)
+
+    def test_only_the_first_header_line_is_the_value(self) -> None:
+        """A later ``**Last Updated**:`` line is not the header the check reads."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo, base = self._init_repo(root, base_body=self._agents_body(last_updated=STALE_DATE))
+            self._pr_commit(repo, self._agents_body(last_updated="not-a-date") + "**Last Updated**: 2026-08-14\n")
+            git_log = root / "git.log"
+            git_log.write_text("", encoding="utf-8")
+            rc, out = self._run(repo, base, git_log=git_log)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("not a YYYY-MM-DD date", out)
+            self.assertIn("not-a-date", out)
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo, base = self._init_repo(root, base_body=self._agents_body(last_updated=STALE_DATE))
+            self._pr_commit(repo, self._agents_body(last_updated=FIXED_TODAY) + "**Last Updated**: not-a-date\n")
+            git_log = root / "git.log"
+            git_log.write_text("", encoding="utf-8")
+            rc, out = self._run(repo, base, git_log=git_log)
+            self.assertEqual(rc, 0, out)
+            self.assertIn("already today's UTC date", out)
+
+    def test_prose_mention_is_not_a_bump(self) -> None:
+        """An unchanged header fails even when the diff mentions the marker in prose."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo, base = self._init_repo(root, base_body=self._agents_body(last_updated=STALE_DATE))
+            body = self._agents_body(last_updated=STALE_DATE, version="0.7.2")
+            body += "\nSee the **Last Updated**: field; this sentence is not the header.\n"
+            self._pr_commit(repo, body)
+            head = self._git(repo, "rev-parse", "HEAD")
+            git_log = root / "git.log"
+            git_log.write_text("", encoding="utf-8")
+            rc, out = self._run(repo, base, git_log=git_log)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("does not bump", out)
+            self._assert_no_mutation(repo, head, git_log)
+
+    def test_moved_base_tip_does_not_count_the_old_line_as_a_bump(self) -> None:
+        """``git diff base...HEAD`` is from the merge base. Two-dot against a tip that
+        moved the header shows the PR's old line as an addition and would pass."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo, merge_base = self._init_repo(root, base_body=self._agents_body(last_updated=STALE_DATE))
+            self._git(repo, "checkout", "-b", "base-tip")
+            self._pr_commit(repo, self._agents_body(last_updated="2026-08-01"))
+            base_tip = self._git(repo, "rev-parse", "HEAD")
+            self._git(repo, "checkout", "-b", "pr", merge_base)
+            self._pr_commit(repo, self._agents_body(last_updated=STALE_DATE, version="0.7.2"))
+            two_dot = self._git(repo, "diff", f"{base_tip}..HEAD", "--", "AGENTS.md")
+            three_dot = self._git(repo, "diff", f"{base_tip}...HEAD", "--", "AGENTS.md")
+            self.assertTrue(any(line.startswith("+**Last Updated**:") for line in two_dot.splitlines()), two_dot)
+            self.assertFalse(any(line.startswith("+**Last Updated**:") for line in three_dot.splitlines()), three_dot)
+            head = self._git(repo, "rev-parse", "HEAD")
+            git_log = root / "git.log"
+            git_log.write_text("", encoding="utf-8")
+            rc, out = self._run(repo, base_tip, git_log=git_log)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("does not bump", out)
+            self._assert_no_mutation(repo, head, git_log)
+
+    def test_already_today_passes_with_base_sha_unset(self) -> None:
+        """Today exits before the diff, so a missing BASE_SHA must not fail that PR."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo, _base = self._init_repo(root, base_body=self._agents_body(last_updated=FIXED_TODAY))
+            self._pr_commit(repo, self._agents_body(last_updated=FIXED_TODAY, version="0.7.2"))
+            head = self._git(repo, "rev-parse", "HEAD")
+            git_log = root / "git.log"
+            git_log.write_text("", encoding="utf-8")
+            rc, out = self._run(repo, None, git_log=git_log)
+            self.assertEqual(rc, 0, out)
+            self.assertIn("already today's UTC date", out)
+            self._assert_no_mutation(repo, head, git_log)
+
+    def test_unset_base_sha_on_the_diff_path_is_unbound(self) -> None:
+        """A past bump reaches ``git diff``. An unset BASE_SHA fails closed instead of
+        diffing an empty revision and reporting a bump."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo, _base = self._init_repo(root, base_body=self._agents_body(last_updated=STALE_DATE))
+            self._pr_commit(repo, self._agents_body(last_updated="2026-08-10", version="0.7.2"))
+            head = self._git(repo, "rev-parse", "HEAD")
+            git_log = root / "git.log"
+            git_log.write_text("", encoding="utf-8")
+            rc, out = self._run(repo, None, git_log=git_log)
+            self.assertNotEqual(rc, 0, out)
+            self.assertIn("unbound variable", out)
+            self.assertNotIn("was bumped", out)
             self._assert_no_mutation(repo, head, git_log)
 
 

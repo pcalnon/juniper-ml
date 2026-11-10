@@ -1,0 +1,1379 @@
+{
+  "repo": "pcalnon/juniper-ml",
+  "carrier": "tests",
+  "base_sha": "a1ab41af81c39eb889a92a0324661147e86d196f",
+  "worktree": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/agent-a7674bdaf3240b78b",
+  "index_state": "every carrier path is staged in the worktree's index (git apply --3way implies --index); nothing is committed",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "status": "modified"
+    },
+    {
+      "path": "AGENTS.md",
+      "status": "modified"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "status": "modified"
+    },
+    {
+      "path": "docs/REFERENCE.md",
+      "status": "modified"
+    },
+    {
+      "path": "juniper-ci-tools/tests/test_docs_additions_check.py",
+      "status": "modified"
+    },
+    {
+      "path": "juniper-service-core/tests/test_anomaly_detector_edges.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper-service-core/tests/test_attachment_budget_exact.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper-service-core/tests/test_lifecycle_paused_terminal.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper-service-core/tests/test_middleware.py",
+      "status": "modified"
+    },
+    {
+      "path": "juniper-service-core/tests/test_registry_measured_zero.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper-service-core/tests/test_replay_speed_range_edges.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper-service-core/tests/test_request_body_limit_boundary.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper-service-core/tests/test_security.py",
+      "status": "modified"
+    },
+    {
+      "path": "juniper-service-core/tests/test_submit_result_anomaly_accepts.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper-service-core/tests/test_task_reassignment_timeout_boundary.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper-service-core/tests/test_websocket_control_security.py",
+      "status": "modified"
+    },
+    {
+      "path": "juniper-service-core/tests/test_websocket_replay_continuity.py",
+      "status": "added"
+    },
+    {
+      "path": "juniper-service-core/tests/test_workers_coverage.py",
+      "status": "modified"
+    },
+    {
+      "path": "juniper-service-core/tests/test_ws_frame_exact_cap.py",
+      "status": "added"
+    },
+    {
+      "path": "tests/test_agents_md_touch_up.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_claude_agent_guard_brace_cap.py",
+      "status": "added"
+    },
+    {
+      "path": "tests/test_claude_interactive.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_duplicati_wrapper_contract.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_host_state_check.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_host_state_gate_boundaries.py",
+      "status": "added"
+    },
+    {
+      "path": "tests/test_per_run_timeout_boundary.py",
+      "status": "added"
+    },
+    {
+      "path": "tests/test_recurrence_operation_identity_and_dataset_budget.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_release_train_exact_caps.py",
+      "status": "added"
+    },
+    {
+      "path": "tests/test_run_experiment.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_run_suite.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_stats_summary_eval_blocks.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_stats_summary_render.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_subpackage_py_typed.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/test_wake_the_claude.py",
+      "status": "modified"
+    }
+  ],
+  "carried": [
+    {
+      "pr": 2466,
+      "head_sha": "1be82437351fe5926dd9e22a806bac2890b656c0",
+      "title": "test(guard): pin brace expansion at the 64-alternative cap",
+      "taken": [
+        ".github/workflows/ci.yml (own hunk: comment + invocation after tests/test_claude_agent_guard.py)",
+        "tests/test_claude_agent_guard_brace_cap.py (new, whole file = own hunk)"
+      ],
+      "fixes": [
+        "docs/REFERENCE.md re-derived instead of taking the draft's two hunks: run-list line after tests/test_claude_agent_guard.py and a new Test Suite Reference entry (via util/ad-hoc/2026-11-07_flood4_wire_ml_tests.py); the util/claude_agent_guard.py bullet only gains the suite in its 'Tests:' list"
+      ],
+      "dropped": [
+        "the draft's behaviour prose in the util/claude_agent_guard.py bullet (docs lane; carried as the suite's Test Suite Reference description instead)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "test clean on the merged tree; REFERENCE.md limited to suite registrations per the brief"
+    },
+    {
+      "pr": 2419,
+      "head_sha": "289e446b138f31f59b76ac1b7eaa1dd9c4ad6f4c",
+      "title": "test(service-core): cap live failed-auth source IPs by dropping the oldest",
+      "taken": [
+        "juniper-service-core/tests/test_middleware.py (+40/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [
+        "VALIDATION (subpkg F2): added test_failed_auth_throttle_trims_a_table_one_row_over_the_cap -- a cleanup call finding exactly cap + 1 in-window rows (window 86,400 s so the expiry pass deletes nothing) must drop the single oldest; the carried burst test reaches its trim at cap + interval - 1 rows, so `> _MAX_ENTRIES + 1` (security.py:432) survived it; it is killed by the new test (mutation/batch4)"
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "carried test clean; a trigger-boundary pin added"
+    },
+    {
+      "pr": 2427,
+      "head_sha": "8f84fcc4212c30a8d3bfa3d0da52cf18601f0a02",
+      "title": "test(service-core): an exhausted rate-limit window admits again at the boundary",
+      "taken": [
+        "juniper-service-core/tests/test_security.py (+61/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2430,
+      "head_sha": "2420bc1282f560471099057ea5e87f1494e5d25b",
+      "title": "test(service-core): a connection burst refills only up to its cap",
+      "taken": [
+        "juniper-service-core/tests/test_workers_coverage.py (+81/-1, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2436,
+      "head_sha": "ddf9d2fc250e8242453ea20132b7c461328824dd",
+      "title": "test(service-core): pin how a stuck worker's scores become a duplicate",
+      "taken": [
+        "juniper-service-core/tests/test_anomaly_detector_edges.py (+102/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2439,
+      "head_sha": "9763d23159a125a5fcc4dfce95302c3b00345c71",
+      "title": "test(service-core): pin control-channel refill and handshake boundaries",
+      "taken": [
+        "juniper-service-core/tests/test_websocket_control_security.py (+121/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2441,
+      "head_sha": "5ffcce2e6137b01c2d95bea4b913ead17c4b6fea",
+      "title": "test(service-core): pin replay continuity at the buffer edge",
+      "taken": [
+        "juniper-service-core/tests/test_websocket_replay_continuity.py (+115/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [
+        "VALIDATION (subpkg F1): module docstring claimed main's replay tests stay green under `last_seq < oldest - 1` -> `<=`; false -- tests/test_t2_websocket.py::test_replay_since_returns_tail calls replay_since(0) with oldest seq 1 (the oldest-1 boundary). Reworded to the true half: they survive `< oldest - 2`, which this file's evicted-edge test pins"
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "tests clean; docstring claim corrected"
+    },
+    {
+      "pr": 2443,
+      "head_sha": "f5a7d197a210693f40caaeb41a977c93fa598f77",
+      "title": "test(workers): an anomaly warning still accepts the result",
+      "taken": [
+        "juniper-service-core/tests/test_submit_result_anomaly_accepts.py (+131/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2445,
+      "head_sha": "b40874e20d2fe2a93a5f55b44ec4e38fce032478",
+      "title": "test(service-core): pin replay speed, range, and paused terminal transitions",
+      "taken": [
+        "juniper-service-core/tests/test_lifecycle_paused_terminal.py (+85/-0, own hunks via git apply --3way)",
+        "juniper-service-core/tests/test_replay_speed_range_edges.py (+97/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [
+        "VALIDATION (R8): test_lifecycle_paused_terminal.py's docstring said a completion while paused finds 'the training thread is still inside fit'; LifecycleManager._train_thread_target (lifecycle/manager.py:271-292) calls mark_completed in the else arm after self.run() returned. Reworded: the refusal leaves a PAUSED machine with no training thread; the file pins the state machine's refusal"
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "tests clean; docstring claim corrected"
+    },
+    {
+      "pr": 2447,
+      "head_sha": "c3e680a25c404d0198208da55235fff2a6222168",
+      "title": "test(service-core): a measured zero heartbeat overwrites, and the exact timeout is stale",
+      "taken": [
+        "juniper-service-core/tests/test_registry_measured_zero.py (+195/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2451,
+      "head_sha": "eaf394c0f9d8b13b02b52de9cfb7870ae8622793",
+      "title": "test(service-core): admit a request body that exactly fills the cap",
+      "taken": [
+        "juniper-service-core/tests/test_request_body_limit_boundary.py (+138/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2458,
+      "head_sha": "1600b02862e5712ad1d6badac3b460cd00e98676",
+      "title": "test(service-core): admit a WebSocket frame that fills the 64KB cap",
+      "taken": [
+        "juniper-service-core/tests/test_ws_frame_exact_cap.py (+211/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2461,
+      "head_sha": "4d0f586d64259e0f990d9f0a6046c0eb29e0a712",
+      "title": "test(service-core): pin task reassignment at the exact timeout",
+      "taken": [
+        "juniper-service-core/tests/test_task_reassignment_timeout_boundary.py (+161/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2463,
+      "head_sha": "b9c190a70642b2df23286883adbfe2896a3cfab3",
+      "title": "test(service-core): admit a worker result that fills each attachment budget",
+      "taken": [
+        "juniper-service-core/tests/test_attachment_budget_exact.py (+168/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2425,
+      "head_sha": "647ada18d51558f1d6eca4eed0de02de0b301e86",
+      "title": "test(ci-tools): a list-item fence indented 3 spaces is not a heading",
+      "taken": [
+        "juniper-ci-tools/tests/test_docs_additions_check.py (+25/-1, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2413,
+      "head_sha": "a48821b7e4c488e10f8905cc85a32fb558083f67",
+      "title": "test(experiments): a zero score and a zero theta stay measured values",
+      "taken": [
+        "tests/test_stats_summary_eval_blocks.py (+25/-0, own hunks via git apply --3way)",
+        "tests/test_stats_summary_render.py (+18/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2414,
+      "head_sha": "6706a211b96fed445a72826562a6815af01510ca",
+      "title": "test(agents-md): pin three-dot, whitespace, and unset BASE_SHA on the date check",
+      "taken": [
+        "tests/test_agents_md_touch_up.py (+126/-4, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2416,
+      "head_sha": "1bebe04bb673e6056d6f21136c624a1b2db06248",
+      "title": "test(turing): pin which capture decides G-SEC block-all",
+      "taken": [
+        "tests/test_host_state_check.py (+42/-5, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2429,
+      "head_sha": "673a43691d0570c555fca50d923c18809be55006",
+      "title": "test(experiments): a non-object stats.json is not an empty headline",
+      "taken": [
+        "tests/test_run_suite.py (+19/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2431,
+      "head_sha": "b499cc2b4a90d7e4aed6ae45081008d39afefbf2",
+      "title": "test(experiments): a failed snapshot save leaves no model and does not re-fit",
+      "taken": [
+        "tests/test_recurrence_operation_identity_and_dataset_budget.py (+97/-4, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2434,
+      "head_sha": "c36ddf47db268e3dbf0032a1cf7f4f4bd85625fe",
+      "title": "test(experiments): a schema-1 eval_scalars block is not the final evaluation",
+      "taken": [
+        "tests/test_run_experiment.py (+80/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2421,
+      "head_sha": "281403730eceb5152530538de08c23ddf03bae96",
+      "title": "test(backup): pin how the Phase D trial drop-in merges onto the live unit",
+      "taken": [
+        ".github/workflows/ci.yml (own hunk: the test_duplicati_wrapper_contract.py comment)",
+        "tests/test_duplicati_wrapper_contract.py (own hunk)"
+      ],
+      "fixes": [
+        "VALIDATION (tests F3): 'a blocked syscall stays a kill' (test docstring and ci.yml comment) -> 'becomes a kill (SIGSYS) in place of the unit's EPERM' (util/systemd/duplicati.service:86 SystemCallErrorNumber=EPERM; the drop-in's empty assignment resets it); the _LIST_KEYS comment now says SystemCallErrorNumber= is a single errno or 'kill' whose empty assignment resets it, modelled as [] = kill (behaviour unchanged)"
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "test/CI half only (docs pair #2418 is the docs carrier's); wording corrected"
+    },
+    {
+      "pr": 2448,
+      "head_sha": "f477ad0a2ade4f2970cea6679cb7b13a25bc9817",
+      "title": "test(experiments): refuse a per-run timeout equal to the driver budget",
+      "taken": [
+        ".github/workflows/ci.yml (+5/-0, own hunks via git apply --3way)",
+        "docs/REFERENCE.md (+1/-0, own hunks via git apply --3way)",
+        "tests/test_per_run_timeout_boundary.py (+82/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [
+        "added the missing Test Suite Reference entry for tests/test_per_run_timeout_boundary.py (after tests/test_run_suite.py)",
+        "VALIDATION (tests F2): the module docstring and the Test Suite Reference entry claimed tests/test_run_suite.py survives `>` -> `>=`; false -- main's test_a_timeout_at_or_below_the_budget_refuses_the_suite_before_any_launch (tests/test_run_suite.py:2063-2073) runs 390 against the 390 s budget. Both now say that suite already refuses equality through main() and list what is new here (zero budget, tie, undeclared default, empty map)",
+        "ROUND 2 (R2-F5): 'the undeclared default' was not new either -- main's test_the_default_is_named_as_the_default (tests/test_run_suite.py:2091-2097) pins its wording through main(); docstring and REFERENCE entry now say only 'the undeclared default at equality' is new"
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "test clean; registration completed in all three lists; coverage-gap text corrected"
+    },
+    {
+      "pr": 2459,
+      "head_sha": "dff63681e7d1f240823aa9ee37a54c5b4e800366",
+      "title": "test(host): pin kubectl skew and the throughput floor",
+      "taken": [
+        ".github/workflows/ci.yml (+4/-0, own hunks via git apply --3way)",
+        "docs/REFERENCE.md (+2/-0, own hunks via git apply --3way)",
+        "tests/test_host_state_gate_boundaries.py (+130/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "own hunks 3-way applied onto origin/main; carried tests pass and kill a one-line mutant"
+    },
+    {
+      "pr": 2410,
+      "head_sha": "9c62b0772b0058c4de6c0eb8ff985b8d32b4ca0c",
+      "title": "test(packaging): built wheels must ship py.typed",
+      "taken": [
+        ".github/workflows/ci.yml (own hunks: pip install setuptools>=68 in the regression job; the test_subpackage_py_typed.py comment)",
+        "tests/test_subpackage_py_typed.py (own hunks: _BUILD_WHEEL, _built_wheel, _tests_packaged, test_every_built_wheel_ships_py_typed)"
+      ],
+      "fixes": [
+        "DROPPED the negative control test_an_undeclared_marker_is_omitted_from_the_wheel: its premise is false -- setuptools 81.0.0's build_py packages py.typed undeclared (_IMPLICIT_DATA_FILES = ('*.pyi', 'py.typed'), setuptools/command/build_py.py:25), observed directly by util/ad-hoc/2026-11-07_flood4_py_typed_undeclared_probe.py (tmp/flood4/ml-tests/py_typed_undeclared_probe.log: juniper-config-tools with package-data emptied still ships py.typed); asserting the inverse would pin setuptools, not this repo",
+        "_built_wheel lost its drop_py_typed parameter (only the dropped test used it)",
+        "module docstring paragraph rewritten: the 0.1.0 claim re-verified from the juniper-config-tools-v0.1.0 tag (its package dir has no py.typed at all), no claim that an undeclared marker misses the wheel",
+        "both ci.yml comments corrected (no 'an undeclared py.typed never reaches the wheel' / 'an emptied package-data list must omit the marker'); the setuptools install comment now says Python 3.12+ no longer bundles setuptools",
+        "VALIDATION (tests F4): the job now installs \"setuptools>=68\" and wheel -- the sub-packages' [build-system] requires both (e.g. juniper-config-tools/pyproject.toml:2), and the test builds in-process without isolation, so a setuptools in the range that lacks its own bdist_wheel would fail without wheel (84.2.1 and 81.0.0 ship setuptools/command/bdist_wheel.py; the version that introduced it was not verified here, hence installing wheel rather than raising the floor)",
+        "VALIDATION (tests F6 / fidelity F4): the module docstring states the implicit-py.typed fact once, for setuptools 81.0.0 (local) and 84.2.1 (latest on PyPI, what CI's floor resolves to; build_py.py:25 checked in the downloaded wheel, tmp/flood4/ml-tests/setuptools_84_2_1_check.log)"
+      ],
+      "dropped": [
+        "test_an_undeclared_marker_is_omitted_from_the_wheel (false premise; failed 6 of 6 sub-packages on the merged tree)"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "positive wheel test kept and mutation-checked (a packages.find mutant that every source check misses kills it)"
+    },
+    {
+      "pr": 2455,
+      "head_sha": "1a673b1effb246961bbd65764b1aabc8993cae69",
+      "title": "test(release-train): pin archive and PR-body caps at equality",
+      "taken": [
+        ".github/workflows/ci.yml (+6/-0, own hunks via git apply --3way)",
+        "docs/REFERENCE.md (+1/-0, own hunks via git apply --3way)",
+        "tests/test_release_train_exact_caps.py (+198/-0, own hunks via git apply --3way)"
+      ],
+      "fixes": [
+        "six mypy func-returns-value errors at the propose-source lambdas (calls.append(...) or value) replaced by a typed module-level _record helper; calls typed list[tuple[object, ...]]",
+        "CodeQL prescreen predicted import-and-import-from (import unittest + from unittest import mock): now from unittest.mock import patch",
+        "added the missing Test Suite Reference entry (after tests/test_release_train_ceremony.py)",
+        "black added one blank line after _record (pinned pre-commit hook)"
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "mypy failed on the draft; tests passed"
+    },
+    {
+      "pr": 2403,
+      "head_sha": "61cd7cd4517895a929da8ed7523f94d274548b9f",
+      "title": "test(launchers): pin wake_the_claude boolean and alias flag edges",
+      "taken": [
+        "tests/test_wake_the_claude.py: the draft's five tests, rebuilt onto origin/main's file by util/ad-hoc/2026-11-07_flood4_ml_tests_rewrite_2403.py at the draft's own anchor (after test_model_boolean_values_omit_or_default_the_model)"
+      ],
+      "fixes": [
+        "every expected argv now carries the '--' main inserts before the prompt (juniper-ml#2438); the draft's 3-way apply conflicted with a test main added at the same spot",
+        "test_missing_effort_value_fails_without_invoking_claude carried unchanged (already passed on main)",
+        "docstrings claim only the stub-recorded argv (auto-memory reference_claude_cli_optional_flag_eats_the_prompt.md)"
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "4 of its 5 tests expected the pre-#2438 argv (10 failures with subtests: 1 + 1 + 4 + 4); rewritten against current main, near-miss refusals (--remote-controls, --dangerously-skip-permission) kept because no main test pins them. VALIDATION (tests F1): the effort test keeps only its --effort 1 half (now test_effort_false_omits_the_effort); its --effort 0 half pinned `--effort auto`, which Claude Code 2.1.316-2.1.319 rejects ('Unknown --effort value'; re-checked here with 2.1.319). The script default (scripts/wake_the_claude.bash:259 EFFORT_DEFAULT, #2396) is an open owner question and is not changed. Batch 1's #2403 mutant (EFFORT_DEFAULT auto -> max) was killed by the dropped half and no longer applies; batch 4's three mutants (false-effort branch, -s alias, -c alias) cover the file now, all killed"
+    },
+    {
+      "pr": 2407,
+      "head_sha": "15b3937ef24de860b6bede1c338b69b4660ea175",
+      "title": "test(launchers): pin claudey flag, env, and version edges",
+      "taken": [
+        "tests/test_claude_interactive.py: CLAUDE_RESUME added to _base_env's scrub list; five tests appended to ClaudeInteractiveLauncherRuntimeTests (util/ad-hoc/2026-11-07_flood4_ml_tests_rewrite_2407.py)"
+      ],
+      "fixes": [
+        "mypy var-annotated at the draft's line 435: cases: tuple[tuple[str, list[str], dict[str, str]], ...]",
+        "remote control is on by default since #2468: the two tests that need it absent set CLAUDE_REMOTE_CONTROL=1, so only the flag turns it on",
+        "test_version_flag_reports_this_scripts_own_version_and_does_not_launch became test_script_version_ignores_an_inherited_script_version_and_does_not_launch: -v/--version now report Claude Code's version (#2468; pinned by main's test_version_flags_report_claude_codes_version), so the carried part is --script-version vs an inherited SCRIPT_VERSION",
+        "test_help_flags_print_usage_and_do_not_launch expects claudey's own usage line (f'Usage: {launcher_path.name} '), not 'Usage: wake_the_claude.bash', which claudey never prints",
+        "VALIDATION (tests F5 / fidelity F2): test_boolean_false_omits_the_option_instead_of_substituting_the_default's docstring said the `--` separator is inserted in front of the valued options; scripts/claude_interactive.bash:274 appends it after them -- now 'which claudey appends only after a valued option'"
+      ],
+      "dropped": [
+        "the draft's -v / --version expectations (claudey's own version), made wrong by #2468"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "conflicted with main and failed mypy; rebuilt from main's file"
+    },
+    {
+      "pr": 2424,
+      "head_sha": "9864b6876fd8c17908a8d135d509412931a68233",
+      "title": "docs draft #2424: its '## Test Suite Reference' hunk only (the docs carrier carries the rest)",
+      "taken": [
+        "docs/REFERENCE.md @@ -3688 +3689 @@ (the tests/test_host_state_check.py entry)"
+      ],
+      "fixes": [
+        "the link dropped: its anchor is a section only the docs carrier adds, so it is broken in this tree (juniper-check-doc-links reported 'heading not found')"
+      ],
+      "dropped": [
+        "the hunk's cross-link"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "util/host_state_check.py reads sec = ctx.probe['security'] and get_capture(sec, 'blockall', 'socketfilterfw --getblockall'); #2416's carried test_state_2_global_line_is_not_the_block_all_capture pins it (state 2 + getblockall disabled -> fail, remediation only --setblockall on)"
+    },
+    {
+      "pr": 2432,
+      "head_sha": "8fd14990c1ec2f37e206e7a10886894b16bbf179",
+      "title": "docs draft #2432: its '## Test Suite Reference' hunk only (the docs carrier carries the rest)",
+      "taken": [
+        "docs/REFERENCE.md @@ -3556 +3556 @@ (the APD-ML-002 sub-bullet of the tests/test_run_suite.py entry)"
+      ],
+      "fixes": [
+        "the link dropped: same reason (anchor exists only in the docs carrier)"
+      ],
+      "dropped": [
+        "the hunk's cross-link"
+      ],
+      "outcome": "carried-with-fix",
+      "reason": "util/experiments/run_suite.py _read_stats returns None for a missing file, OSError/ValueError and a non-dict; #2429's carried tests pin {} beating recorded metrics and non-object JSON falling back"
+    }
+  ],
+  "checks": [
+    {
+      "what": "every own-diff applied onto origin/main 303ccc0b (24 clean; #2403 and #2407 conflicted and were rebuilt from main's blob)",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_tests_apply.py <scratch>; then ..._rewrite_2403.py / ..._rewrite_2407.py",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/apply.log; tmp/flood4/ml-tests/apply_2407.log"
+    },
+    {
+      "what": "CI regression list, sequential (as CI schedules it)",
+      "command": "python3 util/ad-hoc/2026-10-08_run_ci_regression_suites.py --out tmp/flood4/ml-tests/ci_regression_report.log",
+      "result": "fail",
+      "log": "STOPPED by the builder at suite 31 of 231 after ~7.5 min (projected ~55 min; time box); it writes its report only at the end, so tmp/flood4/ml-tests/ci_regression_stdout.log is empty. Replaced by the parallel run below."
+    },
+    {
+      "what": "CI regression list, all 231 suites, one `python3 -m unittest <suite>` process each, 6 at a time, then every failure re-run ALONE (interpreter /opt/miniforge3/envs/JuniperCascor1/bin/python3, 3.14.7)",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_run_ci_regression_suites_parallel.py --jobs 6 --out tmp/flood4/ml-tests/ci_regression_parallel_report.log",
+      "result": "fail",
+      "log": "tmp/flood4/ml-tests/ci_regression_parallel_report.log: 226 passed, 5 failed alone (exit 1). All 5 are environmental and untouched by the carrier: each builds a temp dir under TMPDIR=juniper-ml/tmp that the suite requires to be outside /home/pcalnon, a git checkout or the ecosystem root -- test_a0_restore_scripts.py ('is inside the backup Source (/home/pcalnon)'), test_configure_commit_signing.py ('the include file ... is inside a git' repository), test_e2e_f037_render_census.py (the root walk finds the real Juniper root), test_replay_redrive_stack_refusal.py ('JUNIPER_REDRIVE_ECO is inside the real ecosystem root'), test_workflow_script_paths.py (ancestors hold .github/workflows). Not re-run outside the tree: the only such places on this host are /tmp-class paths, which the owner forbids. Every carried and new suite passed, as did the ci.yml / REFERENCE.md readers (test_ci_test_wiring_drift.py, test_ci_host_tooling_macos.py)."
+    },
+    {
+      "what": "juniper-service-core suite with ci-service-core.yml's pytest + coverage command, on 3.14.7 only, worktree code on PYTHONPATH (import path verified). NOT run by the builder: CI's 3.12/3.13 matrix and the blocking per-file gate (juniper-coverage-gap-map --enforce); the carrier's validator ran both: pass",
+      "command": "PYTHONPATH=<wt>/juniper-service-core python3 -m pytest juniper-service-core/tests/ -q -p no:cacheprovider --cov=juniper_service_core --cov-fail-under=80",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/service_core_pytest.log (exit 0, coverage 98.49%)"
+    },
+    {
+      "what": "juniper-ci-tools suite as ci-ci-tools.yml runs it, worktree code on PYTHONPATH (import path verified)",
+      "command": "cd juniper-ci-tools && PYTHONPATH=<wt>/juniper-ci-tools python3 -m pytest -q -p no:cacheprovider --cov=juniper_ci_tools --cov-fail-under=85",
+      "result": "fail",
+      "log": "tmp/flood4/ml-tests/ci_tools_pytest.log (296 passed, 9 failed: all repo-root autodiscovery tests in test_lint_agents_md_header.py / test_lint_agents_md_version.py / test_lint_workflow_paths.py, untouched files; TMPDIR is inside a checkout on this host; the carried test_docs_additions_check.py passed)"
+    },
+    {
+      "what": "REFERENCE.md run list vs ci.yml vs tests on disk",
+      "command": "python3 util/ad-hoc/2026-09-10_agents_md_test_list_drift.py",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/test_list_drift.log (0 / 0 / 0, 231 suites on disk)"
+    },
+    {
+      "what": "wiring of the four new suites in all three lists",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_wire_ml_tests.py --spec tmp/flood4/ml-tests/wire_spec.json (then --check)",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/wire.log"
+    },
+    {
+      "what": "pinned pre-commit on all 41 changed paths",
+      "command": "/opt/miniforge3/bin/pre-commit run --files <41 paths>",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/precommit_final.log (earlier runs: precommit_1.log black reformatted tests/test_release_train_exact_caps.py; precommit_2..6 pass)"
+    },
+    {
+      "what": "mypy hook on the four launcher/caps/py.typed test files",
+      "command": "/opt/miniforge3/bin/pre-commit run mypy --files tests/test_release_train_exact_caps.py tests/test_claude_interactive.py tests/test_wake_the_claude.py tests/test_subpackage_py_typed.py",
+      "result": "pass",
+      "log": "(console) Type check with MyPy ... Passed"
+    },
+    {
+      "what": "CodeQL prescreen on every new/changed .py",
+      "command": "python3 util/ad-hoc/2026-10-05_codeql_python_prescreen.py <files>",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/codeql_prescreen_1.log, codeql_prescreen_2.log: predictions only on unchanged lines main already has (test_run_experiment.py:67/85/92, test_run_suite.py:22, test_docs_additions_check.py:418-513); the one on a carried line (test_release_train_exact_caps.py:28) was fixed"
+    },
+    {
+      "what": "mutation check, 30 carried test files",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_tests_mutation_check.py tmp/flood4/ml-tests/mutation/spec{1,2,3}.json <out>",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/mutation/run1.log, run2.log, run3.log (30 of 30 killed; one inapplicable mutant for #2429 replaced)"
+    },
+    {
+      "what": "cited JR ids",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_tests_jr_ids.py tmp/flood4/ml-tests/jr_ids.json <28 PRs>",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/jr_ids.json (no draft cites a JR id; PR body has no Requirements section)"
+    },
+    {
+      "what": "origin/main unmoved at the end of the first build pass",
+      "command": "git fetch -q origin && git rev-parse origin/main",
+      "result": "pass",
+      "log": "303ccc0b4613dadcbe5ef16985a862beccec7a1a"
+    },
+    {
+      "what": "base moved during the validation fixes: origin/main became 58397dbb (#2510 quick-start, #2511 plan v1.15.14 + handoff), touching 7 paths, none of them a carrier path; the worktree was detached onto it with the staged carrier carried across",
+      "command": "git diff --name-only 303ccc0b 58397dbb (7 paths) vs git diff --cached --name-only 303ccc0b (45): comm -12 -> empty; git checkout -q --detach 58397dbb; git write-tree -> fccec276; commit-tree -p 58397dbb -> 42e19c62 (local, never pushed); git merge-tree --write-tree origin/main 42e19c62",
+      "result": "pass",
+      "log": "merge-tree printed fccec2763164faf68e7be3ac0966784d429bbc9d (= the carrier tree), rc 0; tests/test_ci_test_wiring_drift.py, test_env_repr_safety.py, test_home_path_literal_check.py, test_agents_md_header_schema.py re-run on the new base: 67 tests OK"
+    },
+    {
+      "what": "staged carrier tree is a clean merge onto origin/main",
+      "command": "git write-tree -> f530c1b0; git -c commit.gpgsign=false commit-tree f530c1b0 -p 303ccc0b (local probe 61c10173, never pushed); git merge-tree --write-tree origin/main 61c10173",
+      "result": "pass",
+      "log": "merge-tree printed f530c1b0f715615dd83765711ac5f38bfd2b3830 (= the carrier tree), rc 0. After the follow-up: tree ddfae11e73e0663bf798fef2834dfc559493e7fe, probe af80cd27, merge-tree printed ddfae11e, rc 0"
+    },
+    {
+      "what": "an undeclared py.typed still ships (the premise of #2410's negative control)",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_py_typed_undeclared_probe.py juniper-config-tools",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/py_typed_undeclared_probe.log (setuptools 81.0.0: package-data emptied -> py.typed in wheel: True)"
+    },
+    {
+      "what": "every new juniper-service-core test is collected under its pytest config (python_classes = Test*)",
+      "command": "PYTHONPATH=<wt>/juniper-service-core python3 -m pytest --collect-only -q -p no:cacheprovider <the 10 new files>",
+      "result": "pass",
+      "log": "(console) collected count >= def test_ count in all 10 files"
+    },
+    {
+      "what": "follow-up (orchestrator): suites whose files the follow-up touched, plus the wiring gate",
+      "command": "python3 -m unittest tests/test_subpackage_py_typed.py tests/test_ci_test_wiring_drift.py tests/test_run_suite.py tests/test_host_state_check.py",
+      "result": "pass",
+      "log": "(console) Ran 277 tests, OK"
+    },
+    {
+      "what": "follow-up: pinned pre-commit on every path it touched",
+      "command": "/opt/miniforge3/bin/pre-commit run --files tests/test_subpackage_py_typed.py docs/REFERENCE.md CHANGELOG.md util/ad-hoc/2026-11-07_flood4_docs_test_ref_hunks.py util/ad-hoc/2026-11-07_flood4_ml_tests_manifest.py",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/precommit_10.log .. precommit_13.log (precommit_9.log failed only on the scratch dump docs_test_ref_hunks.txt, which the doc-link hook scans; renamed to .log)"
+    },
+    {
+      "what": "follow-up: docs-draft hunks in REFERENCE.md's Test Suite Reference",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_docs_test_ref_hunks.py tmp/flood4/ml-tests/docs_test_ref_hunks.log <23 docs drafts>",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/docs_test_ref_hunks.log: #2424 and #2432 one hunk each; the other 21 none"
+    },
+    {
+      "what": "validation fixes: touched top-level suites, the wiring gate, the AGENTS.md header/budget suites and the ci.yml readers",
+      "command": "python3 -m unittest tests/test_wake_the_claude.py tests/test_per_run_timeout_boundary.py tests/test_duplicati_wrapper_contract.py tests/test_claude_interactive.py tests/test_subpackage_py_typed.py tests/test_ci_test_wiring_drift.py tests/test_agents_md_header_schema.py tests/test_memory_budget_check.py tests/test_ci_host_tooling_macos.py tests/test_ci_quality_gate.py tests/test_ci_tools_drift.py tests/test_doc_tools_drift.py tests/test_ci_precommit_g4.py tests/test_ci_sequence_safety_hatch.py tests/test_coverage_gap_mapper_drift.py tests/test_env_drift_check_drift.py",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/followup2_suites.log (Ran 371 tests, OK (skipped=2))"
+    },
+    {
+      "what": "validation fixes: touched service-core files plus the replay suite the continuity docstring now cites",
+      "command": "PYTHONPATH=<wt>/juniper-service-core python3 -m pytest -q -p no:cacheprovider juniper-service-core/tests/{test_websocket_replay_continuity,test_middleware,test_lifecycle_paused_terminal,test_t2_websocket}.py",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/followup2_service_core.log"
+    },
+    {
+      "what": "validation fixes: pinned pre-commit (mypy included) on every touched path; pinned mypy 1.13.0 on the three touched service-core test files",
+      "command": "/opt/miniforge3/bin/pre-commit run --files <14 paths>; <pre-commit env>/bin/mypy --ignore-missing-imports --no-strict-optional --python-version=3.12 --follow-imports=silent <3 files>",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/precommit_14.log; tmp/flood4/ml-tests/mypy_service_core_tests.log (without --follow-imports=silent mypy reports 2 errors in the untouched juniper_service_core/launcher.py:81/162, none in the test files)"
+    },
+    {
+      "what": "validation fixes: 4 new mutants",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_tests_mutation_check.py tmp/flood4/ml-tests/mutation/spec4.json tmp/flood4/ml-tests/mutation/batch4",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/mutation/run4.log (4 of 4 killed: > _MAX_ENTRIES + 1 by the new cap + 1 test; the false-effort branch forwarding --effort 1; dropping the -s alias; dropping the -c alias)"
+    },
+    {
+      "what": "validation fixes: the real Claude Code CLI rejects --effort auto",
+      "command": "claude --effort auto --version; claude --effort max --version",
+      "result": "pass",
+      "log": "(console) 2.1.319: \"Warning: Unknown --effort value 'auto' -- ignoring it and using the default effort. Valid values: low, medium, high, xhigh, max.\"; max: no warning"
+    },
+    {
+      "what": "validation fixes: setuptools 84.2.1 (latest) carries the implicit py.typed pattern and its own bdist_wheel",
+      "command": "pip index versions setuptools; pip download setuptools==84.2.1 --no-deps; unzip -p ... setuptools/command/build_py.py | grep _IMPLICIT_DATA_FILES",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/setuptools_84_2_1_check.log (the downloaded wheel was deleted after the check)"
+    },
+    {
+      "what": "validation fixes: memory budget after the AGENTS.md edit",
+      "command": "python3 util/memory_budget_check.py",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/memory_budget_check.log (AGENTS.md 25930 / 28000 OK)"
+    },
+    {
+      "what": "round 2: the EFFORT_DEFAULT auto -> max mutant re-run on the final tree",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_ml_tests_mutation_check.py tmp/flood4/ml-tests/mutation/spec5.json tmp/flood4/ml-tests/mutation/batch5",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/mutation/run5.log: survived (baseline rc 0, 6 selected) -- expected: its only killing assertion (#2403's --effort 0 -> auto) was removed; the effort default is unpinned on purpose pending the owner's ruling. Final tally: 35 mutants, 33 killed, 1 inapplicable (replaced), 1 survives by design; every one of the 30 carried test files kills at least one"
+    },
+    {
+      "what": "rebase onto juniper-ml#2516 (147263ec) and #2518 (a1ab41af): the four shared files 3-way merged (base 58397dbb, ours main, theirs the carrier), conflicts resolved main-first by explicit asserted rules; the other 30 carrier paths untouched by either commit",
+      "command": "python3 util/ad-hoc/2026-11-07_flood4_rebase_147263ec_merge.py --inspect|--write|--freeze tmp/flood4/ml-tests/rebase_work tmp/flood4/ml-tests/rebase_147263ec; git restore --staged --worktree -- <4 files>; git checkout -q --detach 147263ec, then a1ab41af (#2518 moved main during the step: AGENTS.md Last Updated -> 2026-11-08, the carrier's own value, and the RCA note); merged files installed and staged",
+      "result": "pass",
+      "log": "conflicts: AGENTS.md count line (-> 232, the true count of the merged ci.yml list), CHANGELOG [Unreleased] ### Added (main's entry, then the carrier's, one heading), REFERENCE.md tally (main's **228** then the carrier's **232**); ci.yml merged clean. ci.yml and the REFERENCE run list: 232 each, same order. tests/test_ci_test_wiring_drift.py + tests/test_host_api_filesystems_check.py + tests/test_agents_md_header_schema.py OK; list drift 0/0/0 (232 on disk); memory budget AGENTS.md 25930/28000 OK; pinned pre-commit on the 4 files rc 0 (tmp/flood4/ml-tests/rebase_work/precommit_4files_a1ab41af.log); tree c1313645, probe e8cce5f4 (local), git merge-tree --write-tree origin/main(a1ab41af) e8cce5f4 -> c1313645, rc 0; frozen copies + SHA256SUMS in tmp/flood4/ml-tests/rebase_147263ec/"
+    },
+    {
+      "what": "round 2: final staged tree merges cleanly onto origin/main (re-fetched: still 58397dbb)",
+      "command": "git write-tree -> aaa55cec; git -c commit.gpgsign=false commit-tree aaa55cec -p 58397dbb (local probe 12b074da, never pushed); git merge-tree --write-tree origin/main 12b074da",
+      "result": "pass",
+      "log": "merge-tree printed aaa55cecc817a73617715b9b49d7ae15cf842fb4 (= the staged 34-path carrier tree), rc 0"
+    },
+    {
+      "what": "round 2: PR upload set",
+      "command": "git restore --staged -- <the 11 util/ad-hoc/2026-11-07_flood4_*.py helpers>; git diff --cached --name-only HEAD",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/pr_upload_paths.log: 34 paths staged = manifest files[]; the 11 helper scripts stay in the worktree UNTRACKED, as provenance to commit separately (git worktree remove would refuse or delete them: keep them)"
+    },
+    {
+      "what": "round 2: pinned pre-commit over all 34 PR paths in one run; touched suites",
+      "command": "/opt/miniforge3/bin/pre-commit run --files <34 paths>; python3 -m unittest tests/test_per_run_timeout_boundary.py tests/test_ci_test_wiring_drift.py tests/test_subpackage_py_typed.py; python3 util/ad-hoc/2026-09-10_agents_md_test_list_drift.py",
+      "result": "pass",
+      "log": "tmp/flood4/ml-tests/precommit_final_34.log (rc 0); tmp/flood4/ml-tests/round2_suites.log (Ran 26 tests, OK); drift 0 / 0 / 0"
+    },
+    {
+      "what": "repo-wide lint suites re-run on the final tree (helper scripts were added after the first runs)",
+      "command": "python3 -m unittest tests/test_env_repr_safety.py tests/test_home_path_literal_check.py tests/test_workflow_script_paths.py tests/test_ci_test_wiring_drift.py",
+      "result": "fail",
+      "log": "(console) 76 tests, 1 failure: test_workflow_script_paths RepoRootDiscoveryTest.test_raises_when_no_dot_github_workflows_in_ancestors -- tempfile.TemporaryDirectory() lands under TMPDIR=juniper-ml/tmp, whose ancestors hold .github/workflows; untouched file, environmental"
+    }
+  ],
+  "mutations": [
+    {
+      "pr": 2427,
+      "test_file": "juniper-service-core/tests/test_security.py",
+      "mutant": "juniper-service-core/juniper_service_core/security.py: 'if now - window_start >= self._window:\\n                self._counters[key] = (1, now)' -> 'if now - window_start > self._window:\\n                self._counters[key] = (1, now)'",
+      "result": "killed",
+      "selection": [
+        "test_rolling_one_key_leaves_every_other_key_in_its_own_window",
+        "test_the_boundary_starts_a_new_window_at_count_one"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch2/mut_pr2427_test_security.log"
+    },
+    {
+      "pr": 2443,
+      "test_file": "juniper-service-core/tests/test_submit_result_anomaly_accepts.py",
+      "mutant": "juniper-service-core/juniper_service_core/workers/coordinator.py: 'logger.warning(\"Anomalies detected for worker %s on task %s: %s\", worker_id, task_id, anomalies)' -> 'raise ValueError(f\"anomalies: {anomalies}\")'",
+      "result": "killed",
+      "selection": [
+        "test_clean_result_stores_with_no_anomaly_warning",
+        "test_missing_duration_warns_fast_and_stores_the_result",
+        "test_zero_score_is_checked_for_staleness_and_stored"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch2/mut_pr2443_test_submit_result_anomaly_accepts.log"
+    },
+    {
+      "pr": 2461,
+      "test_file": "juniper-service-core/tests/test_task_reassignment_timeout_boundary.py",
+      "mutant": "juniper-service-core/juniper_service_core/workers/coordinator.py: '(now - task.dispatched_at) > self._task_reassignment_timeout:' -> '(now - task.dispatched_at) >= self._task_reassignment_timeout:'",
+      "result": "killed",
+      "selection": [
+        "test_a_completed_task_older_than_the_budget_is_not_requeued",
+        "test_elapsed_equal_to_the_budget_keeps_the_assignee",
+        "test_one_second_past_the_budget_reassigns_once",
+        "test_zero_budget_keeps_a_task_dispatched_at_this_instant"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch2/mut_pr2461_test_task_reassignment_timeout_boundary.log"
+    },
+    {
+      "pr": 2425,
+      "test_file": "juniper-ci-tools/tests/test_docs_additions_check.py",
+      "mutant": "juniper-ci-tools/juniper_ci_tools/docs_additions_check.py: '_FENCE_RE = re.compile(r\"^ {0,3}(`{3,}|~{3,})(.*)$\")' -> '_FENCE_RE = re.compile(r\"^ {0,2}(`{3,}|~{3,})(.*)$\")'",
+      "result": "killed",
+      "selection": [
+        "test_a_heading_after_a_three_space_fence_closes_still_fails",
+        "test_a_three_space_indented_fence_is_not_a_heading",
+        "test_agents_md_and_notes_are_in_scope"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch2/mut_pr2425_test_docs_additions_check.log"
+    },
+    {
+      "pr": 2429,
+      "test_file": "tests/test_run_suite.py",
+      "mutant": "util/experiments/run_suite.py: 'if not isinstance(doc, dict):' -> 'if not isinstance(doc, (dict, list)):'",
+      "result": "error: old string occurs 2 times",
+      "selection": [
+        "test_a_json_value_that_is_not_an_object_falls_back_to_the_recorded_metrics",
+        "test_an_empty_object_is_a_readable_file_with_no_headline"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": null,
+      "log": "tmp/flood4/ml-tests/mutation/batch2/mut_pr2429_test_run_suite.log"
+    },
+    {
+      "pr": 2429,
+      "test_file": "tests/test_run_suite.py",
+      "mutant": "util/experiments/run_suite.py: 'return stats if isinstance(stats, dict) else None' -> 'return stats'",
+      "result": "killed",
+      "selection": [
+        "test_a_json_value_that_is_not_an_object_falls_back_to_the_recorded_metrics",
+        "test_an_empty_object_is_a_readable_file_with_no_headline"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch3/mut_pr2429_test_run_suite.log"
+    },
+    {
+      "pr": 2413,
+      "test_file": "tests/test_stats_summary_eval_blocks.py",
+      "mutant": "util/experiments/plots_cascor.py: 'isinstance(block.get(name), (int, float)) and not isinstance(block.get(name), bool)}' -> 'isinstance(block.get(name), (int, float))}'",
+      "result": "killed",
+      "selection": [
+        "test_a_validation_split_final_evaluation_is_headed_not_held_out",
+        "test_a_zero_accuracy_is_reported_not_omitted",
+        "test_a_zero_score_is_a_bar_and_false_is_not",
+        "test_with_no_final_evaluation_only_the_in_loop_bars_are_drawn_under_their_own_label"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch3/mut_pr2413_test_stats_summary_eval_blocks.log"
+    },
+    {
+      "pr": 2413,
+      "test_file": "tests/test_stats_summary_render.py",
+      "mutant": "util/experiments/stats_summary.py: 'if train.get(\"theta\") is not None:' -> 'if train.get(\"theta\"):'",
+      "result": "killed",
+      "selection": [
+        "test_a_zero_theta_is_a_value",
+        "test_theta_source_precedence"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch3/mut_pr2413_test_stats_summary_render.log"
+    },
+    {
+      "pr": 2434,
+      "test_file": "tests/test_run_experiment.py",
+      "mutant": "util/experiments/plots_cascor.py: 'isinstance(block.get(name), (int, float)) and not isinstance(block.get(name), bool)}' -> 'isinstance(block.get(name), (int, float, str)) and not isinstance(block.get(name), bool)}'",
+      "result": "killed",
+      "selection": [
+        "test_a_numeric_string_is_not_a_bar",
+        "test_a_schema_1_cascor_block_is_not_drawn_as_the_run_eval_scalars",
+        "test_an_absent_block_keeps_stale_numbers_off_the_bars",
+        "test_render_candidate_correlation_rejects_empty_cells",
+        "test_unlabelled_numbers_beside_a_real_in_loop_block_stay_off_the_bars"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch3/mut_pr2434_test_run_experiment.log"
+    },
+    {
+      "pr": 2414,
+      "test_file": "tests/test_agents_md_touch_up.py",
+      "mutant": ".github/workflows/agents-md-touch-up.yml: 'if git diff \"${BASE_SHA}...HEAD\" -- AGENTS.md \\\\' -> 'if git diff \"${BASE_SHA}..HEAD\" -- AGENTS.md \\\\'",
+      "result": "killed",
+      "selection": [
+        "test_already_today_passes_with_base_sha_unset",
+        "test_moved_base_tip_does_not_count_the_old_line_as_a_bump",
+        "test_only_the_first_header_line_is_the_value",
+        "test_prose_mention_is_not_a_bump",
+        "test_surrounding_whitespace_still_parses",
+        "test_unset_base_sha_on_the_diff_path_is_unbound"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch3/mut_pr2414_test_agents_md_touch_up.log"
+    },
+    {
+      "pr": 2431,
+      "test_file": "tests/test_recurrence_operation_identity_and_dataset_budget.py",
+      "mutant": "util/experiments/run_experiment.py: 'save_ok = bool(save_model_record.get(\"ok\"))' -> 'save_ok = True'",
+      "result": "killed",
+      "selection": [
+        "test_a_dropped_snapshot_save_stays_a_failed_phase",
+        "test_a_failed_copy_removes_the_partial_model_and_does_not_refit",
+        "test_a_snapshot_store_error_fails_the_phase_and_does_not_refit",
+        "test_a_snapshot_without_size_bytes_is_not_vouched_for",
+        "test_the_snapshots_dir_is_the_recorded_one_else_the_launchers"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch3/mut_pr2431_test_recurrence_operation_identity_and_dataset_budget.log"
+    },
+    {
+      "pr": 2419,
+      "test_file": "juniper-service-core/tests/test_middleware.py",
+      "mutant": "juniper-service-core/juniper_service_core/security.py: 'if len(self._failures) > self._MAX_ENTRIES:' -> 'if len(self._failures) > self._MAX_ENTRIES + 1:'",
+      "result": "killed",
+      "selection": [
+        "test_failed_auth_throttle_trims_a_table_one_row_over_the_cap"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch4/mut_pr2419_test_middleware.log"
+    },
+    {
+      "pr": 2403,
+      "test_file": "tests/test_wake_the_claude.py",
+      "mutant": "scripts/wake_the_claude.bash: 'PERMISSIONS_FLAGS=\"-s | --skip | --skip-permissions | ${CLAUDE_PERMISSIONS_FLAGS}\"' -> 'PERMISSIONS_FLAGS=\"--skip | --skip-permissions | ${CLAUDE_PERMISSIONS_FLAGS}\"'",
+      "result": "killed",
+      "selection": [
+        "test_effort_false_omits_the_effort",
+        "test_missing_effort_value_fails_without_invoking_claude",
+        "test_permission_aliases_forward_canonical_flag_without_consuming_the_next",
+        "test_prompt_file_that_never_resolves_says_why_with_debug_output_off",
+        "test_remote_control_aliases_forward_canonical_flag_without_consuming_the_next",
+        "test_worktree_boolean_values_omit_or_let_claude_name"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch4/mut_pr2403_test_wake_the_claude.log"
+    },
+    {
+      "pr": 2403,
+      "test_file": "tests/test_wake_the_claude.py",
+      "mutant": "scripts/wake_the_claude.bash: 'CLAUDE_EFFORT_VALUE=() && shift  # shift to consume the effort boolean false value' -> 'CLAUDE_EFFORT_VALUE=(\"${CLAUDE_EFFORT_FLAGS}\" \"${current_effort}\") && shift  # shift to consume the effort boolean false value'",
+      "result": "killed",
+      "selection": [
+        "test_effort_false_omits_the_effort"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch4/mut_pr2403_test_wake_the_claude.log"
+    },
+    {
+      "pr": 2403,
+      "test_file": "tests/test_wake_the_claude.py",
+      "mutant": "scripts/wake_the_claude.bash: 'REMOTE_CONTROL_FLAGS=\"-c | --remote | --control | ${CLAUDE_REMOTE_CONTROL_FLAGS}\"' -> 'REMOTE_CONTROL_FLAGS=\"--remote | --control | ${CLAUDE_REMOTE_CONTROL_FLAGS}\"'",
+      "result": "killed",
+      "selection": [
+        "test_remote_control_aliases_forward_canonical_flag_without_consuming_the_next"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch4/mut_pr2403_test_wake_the_claude.log"
+    },
+    {
+      "pr": 2403,
+      "test_file": "tests/test_wake_the_claude.py",
+      "mutant": "scripts/wake_the_claude.bash: 'EFFORT_DEFAULT=\"${EFFORT_AUTO}\"' -> 'EFFORT_DEFAULT=\"${EFFORT_MAX}\"'",
+      "result": "survived",
+      "selection": [
+        "test_effort_false_omits_the_effort",
+        "test_missing_effort_value_fails_without_invoking_claude",
+        "test_permission_aliases_forward_canonical_flag_without_consuming_the_next",
+        "test_prompt_file_that_never_resolves_says_why_with_debug_output_off",
+        "test_remote_control_aliases_forward_canonical_flag_without_consuming_the_next",
+        "test_worktree_boolean_values_omit_or_let_claude_name"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/batch5/mut_pr2403_test_wake_the_claude.log"
+    },
+    {
+      "pr": 2466,
+      "test_file": "tests/test_claude_agent_guard_brace_cap.py",
+      "mutant": "util/claude_agent_guard.py: 'return [str(v) for v in range(a, b + step, step)[:MAX_BRACE_ALTERNATIVES]]  # range slices lazily' -> 'return [str(v) for v in range(a, b + step, step)[:MAX_BRACE_ALTERNATIVES - 1]]  # range slices lazily'",
+      "result": "killed",
+      "selection": [
+        "test_last_slot_of_a_full_list_assembles_ssh_and_is_denied",
+        "test_numeric_range_of_exactly_the_cap_includes_both_ends",
+        "test_numeric_range_one_past_the_cap_drops_the_far_end",
+        "test_one_past_the_cap_drops_the_assembled_ssh_name"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2466_test_claude_agent_guard_brace_cap.log"
+    },
+    {
+      "pr": 2448,
+      "test_file": "tests/test_per_run_timeout_boundary.py",
+      "mutant": "util/experiments/run_suite.py: 'if not timeout > sum(terms.values())}' -> 'if not timeout >= sum(terms.values())}'",
+      "result": "killed",
+      "selection": [
+        "test_a_timeout_equal_to_the_largest_budget_is_refused",
+        "test_a_timeout_one_second_above_the_largest_budget_is_admitted",
+        "test_a_zero_timeout_does_not_clear_a_zero_budget",
+        "test_an_empty_budget_map_is_not_a_refusal",
+        "test_an_undeclared_timeout_at_equality_names_the_default",
+        "test_cells_tied_for_the_largest_sum_are_all_counted_and_the_first_is_named"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2448_test_per_run_timeout_boundary.log"
+    },
+    {
+      "pr": 2459,
+      "test_file": "tests/test_host_state_gate_boundaries.py",
+      "mutant": "util/host_state_check.py: 'if abs(gap) <= skew:' -> 'if abs(gap) < skew:'",
+      "result": "killed",
+      "selection": [
+        "test_a_different_major_fails_when_the_minor_matches",
+        "test_a_measurement_equal_to_the_floor_passes_and_one_below_fails",
+        "test_a_plus_suffix_on_the_exact_edge_still_counts",
+        "test_a_zero_skew_admits_only_the_cluster_minor",
+        "test_exactly_the_allowed_skew_passes_either_way",
+        "test_one_minor_past_the_allowance_fails_either_way"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2459_test_host_state_gate_boundaries.log"
+    },
+    {
+      "pr": 2455,
+      "test_file": "tests/test_release_train_exact_caps.py",
+      "mutant": "util/release_train/ceremony.py: 'if encoded_len > cap:' -> 'if encoded_len >= cap:'",
+      "result": "killed",
+      "selection": [
+        "test_a_body_that_exactly_fills_the_limit_keeps_the_notes",
+        "test_an_archive_that_exactly_fills_the_cap_is_planned_and_one_byte_over_halts",
+        "test_execute_opens_a_body_that_exactly_fills_the_limit",
+        "test_execute_refuses_one_byte_over_before_any_write",
+        "test_one_byte_over_the_limit_drops_the_notes"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2455_test_release_train_exact_caps.log"
+    },
+    {
+      "pr": 2416,
+      "test_file": "tests/test_host_state_check.py",
+      "mutant": "util/host_state_check.py: 'blocks_all = _blocks_all(blockall)' -> 'blocks_all = True'",
+      "result": "killed",
+      "selection": [
+        "test_a_disabled_firewall_fails_even_when_block_all_reads_on",
+        "test_state_2_global_line_is_not_the_block_all_capture",
+        "test_unknown_and_undefined_block_all_cannot_pass_an_enabled_firewall"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2416_test_host_state_check.log"
+    },
+    {
+      "pr": 2421,
+      "test_file": "tests/test_duplicati_wrapper_contract.py",
+      "mutant": "util/ad-hoc/2026-10-29_duplicati-trial-override.conf: 'Restart=no' -> 'Restart=on-failure'",
+      "result": "killed",
+      "selection": [
+        "test_the_dropin_assigns_only_the_documented_keys",
+        "test_the_trial_replaces_the_live_inputs_and_keeps_the_units_confinement"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2421_test_duplicati_wrapper_contract.log"
+    },
+    {
+      "pr": 2410,
+      "test_file": "tests/test_subpackage_py_typed.py",
+      "mutant": "juniper-config-tools/pyproject.toml: 'include = [\"juniper_config_tools*\"]' -> 'include = [\"juniper_config_toolz*\"]'",
+      "result": "killed",
+      "selection": [
+        "test_every_built_wheel_ships_py_typed"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2410_test_subpackage_py_typed.log"
+    },
+    {
+      "pr": 2407,
+      "test_file": "tests/test_claude_interactive.py",
+      "mutant": "scripts/claude_interactive.bash: '\"--resume-session\" | \"--resume\" | \"-rs\" | \"-r\") CLAUDE_RESUME=\"${TRUE}\" && shift ;;' -> '\"--resume-session\" | \"--resume\" | \"-rs\" | \"-r\") CLAUDE_RESUME=\"${TRUE}\" && shift 2 ;;'",
+      "result": "killed",
+      "selection": [
+        "test_boolean_false_omits_the_option_instead_of_substituting_the_default",
+        "test_boolean_flags_do_not_consume_the_following_prompt",
+        "test_environment_values_are_one_argument_and_a_flag_overrides_only_that_setting",
+        "test_help_flags_print_usage_and_do_not_launch",
+        "test_script_version_ignores_an_inherited_script_version_and_does_not_launch"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2407_test_claude_interactive.log"
+    },
+    {
+      "pr": 2441,
+      "test_file": "juniper-service-core/tests/test_websocket_replay_continuity.py",
+      "mutant": "juniper-service-core/juniper_service_core/websocket/manager.py: 'if last_seq < oldest_seq - 1:' -> 'if last_seq < oldest_seq:'",
+      "result": "killed",
+      "selection": [
+        "test_empty_replay_buffer_accepts_only_a_client_that_has_seen_nothing",
+        "test_message_exactly_at_the_size_limit_is_one_frame_and_one_byte_over_is_chunked",
+        "test_pending_handshake_consumes_and_releases_a_global_slot",
+        "test_replay_at_the_evicted_edge_is_continuous_and_one_before_is_a_gap",
+        "test_sockets_with_no_client_address_share_one_per_ip_bucket"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2441_test_websocket_replay_continuity.log"
+    },
+    {
+      "pr": 2445,
+      "test_file": "juniper-service-core/tests/test_replay_speed_range_edges.py",
+      "mutant": "juniper-service-core/juniper_service_core/lifecycle/replay.py: 'self._speed = max(-10.0, min(10.0, float(params.get(\"value\", self._speed))))' -> 'self._speed = max(-10.0, min(9.0, float(params.get(\"value\", self._speed))))'",
+      "result": "killed",
+      "selection": [
+        "test_negative_speed_auto_pauses_at_the_range_start_without_wrapping",
+        "test_non_numeric_speed_raises_and_leaves_the_previous_speed",
+        "test_range_clamps_into_the_history_and_an_inverted_window_collapses",
+        "test_speed_below_the_dead_zone_does_not_advance_and_the_boundary_does",
+        "test_speed_clamps_to_ten_and_keeps_the_current_value_when_omitted"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2445_test_replay_speed_range_edges.log"
+    },
+    {
+      "pr": 2445,
+      "test_file": "juniper-service-core/tests/test_lifecycle_paused_terminal.py",
+      "mutant": "juniper-service-core/juniper_service_core/lifecycle/state_machine.py: 'Returns ``False`` from any other state.\"\"\"\\n        if self._status is LifecycleStatus.STARTED:' -> 'Returns ``False`` from any other state.\"\"\"\\n        if self._status in (LifecycleStatus.STARTED, LifecycleStatus.PAUSED):'",
+      "result": "killed",
+      "selection": [
+        "test_mark_completed_while_paused_keeps_the_remembered_phase",
+        "test_mark_failed_while_paused_settles_failed_and_clears_the_phase",
+        "test_pause_failure_and_completion_rejected_outside_an_active_fit",
+        "test_second_pause_does_not_replace_the_remembered_phase"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2445_test_lifecycle_paused_terminal.log"
+    },
+    {
+      "pr": 2458,
+      "test_file": "juniper-service-core/tests/test_ws_frame_exact_cap.py",
+      "mutant": "juniper-service-core/juniper_service_core/websocket/control_stream.py: 'if len(raw) > _MAX_MESSAGE_SIZE:' -> 'if len(raw) >= _MAX_MESSAGE_SIZE:'",
+      "result": "killed",
+      "selection": [
+        "test_both_channels_share_the_documented_64kb_cap",
+        "test_control_command_one_byte_over_the_cap_closes",
+        "test_control_command_that_fills_the_cap_is_executed",
+        "test_control_pong_that_fills_the_cap_is_keepalive",
+        "test_worker_heartbeat_one_byte_over_keeps_the_connection",
+        "test_worker_heartbeat_that_fills_the_cap_is_acked",
+        "test_worker_registration_one_byte_over_the_cap_closes",
+        "test_worker_registration_that_fills_the_cap_registers"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2458_test_ws_frame_exact_cap.log"
+    },
+    {
+      "pr": 2451,
+      "test_file": "juniper-service-core/tests/test_request_body_limit_boundary.py",
+      "mutant": "juniper-service-core/juniper_service_core/middleware.py: 'if declared_length > self._max_bytes:' -> 'if declared_length >= self._max_bytes:'",
+      "result": "killed",
+      "selection": [
+        "test_a_body_that_fills_the_cap_is_delivered",
+        "test_a_content_length_at_the_cap_still_rejects_one_extra_byte",
+        "test_an_empty_body_is_admitted_when_the_cap_is_zero",
+        "test_chunks_that_sum_to_the_cap_are_delivered_whole",
+        "test_content_length_equal_to_the_cap_is_admitted",
+        "test_content_length_one_byte_over_the_cap_is_rejected_before_the_route",
+        "test_one_byte_over_the_cap_is_rejected_and_the_route_is_not_called",
+        "test_the_chunk_that_crosses_the_cap_is_rejected"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2451_test_request_body_limit_boundary.log"
+    },
+    {
+      "pr": 2439,
+      "test_file": "juniper-service-core/tests/test_websocket_control_security.py",
+      "mutant": "juniper-service-core/juniper_service_core/websocket/control_security.py: 'self._tokens = min(self._capacity, self._tokens + elapsed * self._refill_rate)' -> 'self._tokens = self._tokens + elapsed * self._refill_rate'",
+      "result": "killed",
+      "selection": [
+        "test_block_lifts_at_the_exact_instant",
+        "test_cleanup_keeps_a_history_aged_exactly_two_windows",
+        "test_exactly_one_refilled_token_is_admitted",
+        "test_origin_match_is_exact_and_an_empty_origin_fails_closed",
+        "test_refill_is_capped_and_a_short_token_is_not_spent",
+        "test_rejection_exactly_one_window_old_does_not_count"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2439_test_websocket_control_security.log"
+    },
+    {
+      "pr": 2419,
+      "test_file": "juniper-service-core/tests/test_middleware.py",
+      "mutant": "juniper-service-core/juniper_service_core/security.py: 'oldest = sorted(self._failures, key=lambda ip: self._failures[ip][1])' -> 'oldest = sorted(self._failures, key=lambda ip: self._failures[ip][1], reverse=True)'",
+      "result": "killed",
+      "selection": [
+        "test_failed_auth_throttle_caps_live_entries_by_dropping_the_oldest"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2419_test_middleware.log"
+    },
+    {
+      "pr": 2430,
+      "test_file": "juniper-service-core/tests/test_workers_coverage.py",
+      "mutant": "juniper-service-core/juniper_service_core/workers/security.py: 'self.tokens = min(float(self.burst), self.tokens + elapsed * self.rate)' -> 'self.tokens = self.tokens + elapsed * self.rate'",
+      "result": "killed",
+      "selection": [
+        "test_rate_limiter_cleanup_keeps_a_bucket_aged_exactly_one_interval",
+        "test_rate_limiter_prunes_stale_buckets",
+        "test_rate_limiter_refills_only_up_to_burst_and_a_denial_spends_nothing"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2430_test_workers_coverage.log"
+    },
+    {
+      "pr": 2447,
+      "test_file": "juniper-service-core/tests/test_registry_measured_zero.py",
+      "mutant": "juniper-service-core/juniper_service_core/workers/registry.py: 'if in_flight_tasks is not None:' -> 'if in_flight_tasks:'",
+      "result": "killed",
+      "selection": [
+        "test_collector_emits_measured_zeros_and_clamps_a_future_heartbeat",
+        "test_heartbeat_aged_exactly_one_timeout_is_stale",
+        "test_measured_zero_overwrites_the_prior_heartbeat",
+        "test_registry_heartbeat_zero_reaches_the_metrics_snapshot"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2447_test_registry_measured_zero.log"
+    },
+    {
+      "pr": 2463,
+      "test_file": "juniper-service-core/tests/test_attachment_budget_exact.py",
+      "mutant": "juniper-service-core/juniper_service_core/websocket/worker_stream.py: 'if len(attachment_names) > _MAX_ATTACHMENTS:' -> 'if len(attachment_names) >= _MAX_ATTACHMENTS:'",
+      "result": "killed",
+      "selection": [
+        "test_a_frame_that_fills_the_per_frame_cap_is_delivered",
+        "test_a_full_attachment_list_is_accepted",
+        "test_a_zero_total_budget_still_admits_an_empty_frame",
+        "test_frames_that_sum_to_the_total_budget_are_delivered"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2463_test_attachment_budget_exact.log"
+    },
+    {
+      "pr": 2436,
+      "test_file": "juniper-service-core/tests/test_anomaly_detector_edges.py",
+      "mutant": "juniper-service-core/juniper_service_core/workers/security.py: 'recent_scores = [r.score for r in history[-self._duplicate_window :]]' -> 'recent_scores = [r.score for r in history[-(self._duplicate_window - 1) :]]'",
+      "result": "killed",
+      "selection": [
+        "test_a_difference_at_the_sixth_decimal_is_not_a_duplicate",
+        "test_a_later_different_score_clears_the_duplicate",
+        "test_an_older_different_score_blocks_the_flag_until_it_ages_out",
+        "test_float_noise_that_prints_to_the_same_six_decimals_is_one_score",
+        "test_one_result_can_carry_both_a_fast_time_and_a_perfect_score",
+        "test_thresholds_are_strict_and_a_negative_score_uses_its_magnitude",
+        "test_two_identical_scores_are_not_a_duplicate_and_the_third_is",
+        "test_workers_do_not_share_a_window"
+      ],
+      "baseline_rc": 0,
+      "restored_sha256_match": true,
+      "log": "tmp/flood4/ml-tests/mutation/mut_pr2436_test_anomaly_detector_edges.log"
+    }
+  ],
+  "main_text_fixes": [
+    {
+      "path": "tests/test_subpackage_py_typed.py",
+      "what": "fix to MAIN's text (not a draft's), at the orchestrator's request: the module docstring paragraph 'setuptools ships it only if it is also declared as package data ... A gate that checked only the file would go green while every wheel shipped without it' now says what was verified -- setuptools 81.0.0's build_py packages an undeclared py.typed (_IMPLICIT_DATA_FILES = ('*.pyi', 'py.typed')), and a juniper-config-tools wheel built with the entry emptied still carries it (util/ad-hoc/2026-11-07_flood4_py_typed_undeclared_probe.py, tmp/flood4/ml-tests/py_typed_undeclared_probe.log); the declaration is pinned so packaging states the marker explicitly",
+      "verified": "probe run: setuptools 81.0.0, package-data emptied -> py.typed in wheel: True"
+    },
+    {
+      "path": "tests/test_subpackage_py_typed.py",
+      "what": "fix to MAIN's text: test_every_subpackage_declares_py_typed_as_package_data's docstring ('undeclared, setuptools omits it from the wheel') and its assertion message ('the marker exists in the repo but never reaches a wheel (no MANIFEST.in here)') rewritten to the implicit-pattern wording; the assertions themselves are unchanged",
+      "verified": "same probe; tests/test_subpackage_py_typed.py passes"
+    }
+  ],
+  "validation_fixes_outside_drafts": [
+    {
+      "path": "docs/REFERENCE.md",
+      "what": "ROUND 2 (R2-F4): the '### Running every suite' intro tally (line 3126, a suite count in this carrier's block, not a version stamp) ended at '**227** on 2026-10-29'; appended '**231** on 2026-11-08 with the four flood-4 suites' (named)",
+      "verified": "util/ad-hoc/2026-09-10_agents_md_test_list_drift.py: 0 / 0 / 0, 231 on disk; ci.yml and the run list both 231"
+    },
+    {
+      "path": "tests/test_subpackage_py_typed.py",
+      "what": "ROUND 2: the module docstring no longer names util/ad-hoc/2026-11-07_flood4_py_typed_undeclared_probe.py, which this PR does not upload (helper scripts land separately); it says the wheel was built in a temporary copy on 2026-11-07",
+      "verified": "grep of all 34 PR paths for util/ad-hoc/2026-11-07: no match"
+    },
+    {
+      "path": "AGENTS.md",
+      "what": "VALIDATION (fidelity F1): line 65 counted 227 suites; the carrier makes 231 (ci.yml and the REFERENCE.md run list both 231). **Last Updated** bumped 2026-11-06 -> 2026-11-08, the UTC date when edited (agents-md-touch-up.yml accepts either today's date or a bumped line in the PR diff)",
+      "verified": "util/memory_budget_check.py: AGENTS.md 25930 / 28000 OK; tests/test_agents_md_header_schema.py and tests/test_memory_budget_check.py pass"
+    }
+  ],
+  "docs_handoff": {
+    "scope": "every docs draft hunk landing in docs/REFERENCE.md's '## Test Suite Reference' (which holds '### Running every suite'), found by util/ad-hoc/2026-11-07_flood4_docs_test_ref_hunks.py over #2409 #2412 #2417 #2418 #2422 #2424 #2426 #2428 #2432 #2433 #2437 #2440 #2442 #2444 #2446 #2449 #2452 #2456 #2457 #2460 #2462 #2464 #2465 (heads checked against GitHub's headRefOid: all match); log tmp/flood4/ml-tests/docs_test_ref_hunks.log",
+    "hunks": [
+      {
+        "pr": 2424,
+        "head_sha": "9864b6876fd8c17908a8d135d509412931a68233",
+        "hunk": "@@ -3688 +3689 @@ (the tests/test_host_state_check.py entry)",
+        "claim": "The state-2 --getglobalstate line contains that same sentence; the gate still reads the security.blockall capture ([G-SEC block-all capture](#g-sec-block-all-is-the-getblockall-capture)).",
+        "verified": "util/host_state_check.py reads sec = ctx.probe['security'] and get_capture(sec, 'blockall', 'socketfilterfw --getblockall'); #2416's carried test_state_2_global_line_is_not_the_block_all_capture pins it (state 2 + getblockall disabled -> fail, remediation only --setblockall on)",
+        "outcome": "carried-with-fix",
+        "fix": "the link dropped: its anchor is a section only the docs carrier adds, so it is broken in this tree (juniper-check-doc-links reported 'heading not found')"
+      },
+      {
+        "pr": 2432,
+        "head_sha": "8fd14990c1ec2f37e206e7a10886894b16bbf179",
+        "hunk": "@@ -3556 +3556 @@ (the APD-ML-002 sub-bullet of the tests/test_run_suite.py entry)",
+        "claim": "aggregate re-reads a JSON-object stats.json (an object with no headline, including {}, wins over recorded metrics) and falls back to the recorded metrics when the file is missing, unreadable, invalid, or not an object ([An empty stats.json is not a missing file](#an-empty-statsjson-is-not-a-missing-file))",
+        "verified": "util/experiments/run_suite.py _read_stats returns None for a missing file, OSError/ValueError and a non-dict; #2429's carried tests pin {} beating recorded metrics and non-object JSON falling back",
+        "outcome": "carried-with-fix",
+        "fix": "the link dropped: same reason (anchor exists only in the docs carrier)"
+      }
+    ],
+    "no_hunk_in_section": [
+      2409,
+      2412,
+      2417,
+      2418,
+      2422,
+      2426,
+      2428,
+      2433,
+      2437,
+      2440,
+      2442,
+      2444,
+      2446,
+      2449,
+      2452,
+      2456,
+      2457,
+      2460,
+      2462,
+      2464,
+      2465
+    ]
+  },
+  "open_questions": [
+    "scripts/wake_the_claude.bash:259 EFFORT_DEFAULT=\"${EFFORT_AUTO}\" (#2396) sends `--effort auto`, which Claude Code 2.1.316-2.1.319 rejects with 'Unknown --effort value' (re-checked with 2.1.319). The orchestrator is raising the default with the owner; the carrier deliberately pins neither the default nor `auto`.",
+    "AGENTS.md: this carrier now bumps **Last Updated** (2026-11-08) and the suite count. If the docs carrier also edits AGENTS.md's header, the second to merge must take main's line first.",
+    "The two docs-draft sentences were carried without their cross-links (#g-sec-block-all-is-the-getblockall-capture, #an-empty-statsjson-is-not-a-missing-file) because those headings exist only in the docs carrier, which lands after this one. The docs carrier can add the two links once its sections are on main.",
+    "Local suites break under the 2026-10-26 repo-tmp TMPDIR convention, independent of this carrier. 5 of 231 CI regression suites fail even when run alone: test_a0_restore_scripts, test_configure_commit_signing, test_e2e_f037_render_census, test_replay_redrive_stack_refusal and test_workflow_script_paths. 9 juniper-ci-tools tests fail too: the repo-root autodiscovery tests in test_lint_agents_md_header, test_lint_agents_md_version and test_lint_workflow_paths. Each needs a temp dir outside /home/pcalnon, outside a git checkout, or outside the ecosystem root, and TMPDIR=juniper-ml/tmp is inside all three. None is a carried file or imports carrier-changed code. CI runners use /tmp, where they pass. They were not re-run outside the tree, because the only such paths here are the /tmp class the owner forbids. Accept for this carrier? Make those suites TMPDIR-robust in a follow-up?",
+    "tests/test_host_state_gate_boundaries.py (#2459) is a host-tooling suite but is not added to ci.yml's host-tooling-macos job list (the draft did not add it, and tests/test_ci_host_tooling_macos.py pins that list). Add it there in a follow-up?",
+    "Version stamp of docs/REFERENCE.md deliberately not bumped (brief): the docs carrier must bump it once, and it lands after this carrier."
+  ]
+}

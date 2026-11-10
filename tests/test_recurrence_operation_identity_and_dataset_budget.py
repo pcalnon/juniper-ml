@@ -23,9 +23,10 @@ What this module pins, against one loopback stub that plays both juniper-data an
   that returns no usable ``operation_id`` (juniper-recurrence 0.5.0) is never sent the key; the
   manifest's ``operation`` block records all of it, including that a timed-out fit is not cancelled.
 * **save_model persists the scored model** (juniper-ml#2211). The same id goes on ``POST
-  /v1/model/snapshots``; the snapshot is copied to ``model.npz`` and size-checked; a 409, an
-  unusable id or a size that disagrees fails the phase with no re-fit standing in; a snapshot the run
-  cannot see is recorded, not faked; only a train response without an id re-fits.
+  /v1/model/snapshots``; the snapshot is copied to ``model.npz`` and size-checked; a 409, any other
+  HTTP failure, a dropped connection, an unusable id, a size that disagrees or is absent, or a copy
+  that fails, fails the phase with no re-fit standing in; a failed copy removes the partial file; a
+  snapshot the run cannot see is recorded, not faked; only a train response without an id re-fits.
 
 **Time is scaled 1:100** so a real 40 s sleep is not needed: the 40 s data server sleeps 0.4 s, the
 client's old 30 s default is 0.3 s and the driver's 120 s default budget is 1.2 s. Only ordering
@@ -105,6 +106,10 @@ class _State:
         self.snapshot_writes = True
         self.snapshot_id = SNAPSHOT_ID
         self.snapshot_size_lie: "int | None" = None
+        # A non-201 answer after the identity check (the store is down). None keeps the 201 path.
+        self.snapshot_status: "int | None" = None
+        # A 201 that omits size_bytes. The copy must not be accepted by defaulting the missing field.
+        self.snapshot_omit_size = False
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -183,11 +188,17 @@ class _Handler(BaseHTTPRequestHandler):
             message = f"expect_operation_id {expected} does not match the operation that produced the in-memory model ({state.model_operation_id}); another caller may have trained or restored since"
             self._send(409, {"detail": {"message": message, "expected_operation_id": expected, "model_operation_id": state.model_operation_id}})
             return
+        if state.snapshot_status is not None:
+            self._send(state.snapshot_status, {"detail": "snapshot store unavailable"})
+            return
         if state.snapshot_writes and state.snapshots_dir is not None:
             state.snapshots_dir.mkdir(parents=True, exist_ok=True)
             (state.snapshots_dir / f"{state.snapshot_id}.npz").write_bytes(SNAPSHOT_BYTES)
         size = len(SNAPSHOT_BYTES) if state.snapshot_size_lie is None else state.snapshot_size_lie
-        self._send(201, {"id": state.snapshot_id, "created": "2026-10-21T22:00:00Z", "size_bytes": size, "description": body.get("description", ""), "meta": {"schema": 2, "d": 4}})
+        payload: dict[str, Any] = {"id": state.snapshot_id, "created": "2026-10-21T22:00:00Z", "description": body.get("description", ""), "meta": {"schema": 2, "d": 4}}
+        if not state.snapshot_omit_size:
+            payload["size_bytes"] = size
+        self._send(201, payload)
 
     def _train(self, state: _State) -> None:
         if state.train_busy:
@@ -634,6 +645,88 @@ class SaveModelSnapshotTest(_Case):
         self.assertEqual(code, rx.EXIT_ACCEPTANCE)
         self.assertIn("without a usable snapshot id", manifest["phases"]["save_model"]["error"])
         self.assertNotIn("service_path", manifest["save_model"])
+
+    def test_a_snapshot_store_error_fails_the_phase_and_does_not_refit(self) -> None:
+        # A 500 is not the 409 "this is not your model" refusal, and it is not a reason to fit a second model.
+        self.state.snapshot_status = 500
+        code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+        self.assertEqual(manifest["outcome"], "degraded")
+        error = manifest["phases"]["save_model"]["error"]
+        self.assertTrue(error.startswith("HTTP 500: "), error)
+        self.assertIn("snapshot store unavailable", error)
+        record = manifest["save_model"]
+        self.assertNotIn("note", record)
+        self.assertNotIn("service_path", record)
+        self.assertIsNone(record["model_path"])
+        self.assertIn(f"save_model snapshot failed: {error}", manifest["acceptance"]["reasons"])
+        self.assertFalse((self.results / "model.npz").exists())
+        self.assertFalse(self.snapshots.exists(), "a failed save writes nothing")
+        self.refit.assert_not_called()
+
+    def test_a_dropped_snapshot_save_stays_a_failed_phase(self) -> None:
+        # The helper catches ServiceUnreachable. If that catch goes, the run becomes torn_down_early
+        # (exit 3) instead of a failed save_model phase, and a re-fit must still not run.
+        real = rx._http_json
+
+        def drop_snapshot(method: str, url: str, *args: Any, **kwargs: Any) -> Any:
+            if str(url).endswith(rx.SNAPSHOT_ROUTE):
+                raise rx.ServiceUnreachable(f"POST {url}: connection reset by peer")
+            return real(method, url, *args, **kwargs)
+
+        with mock.patch.object(rx, "_http_json", side_effect=drop_snapshot):
+            code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+        self.assertNotEqual(code, rx.EXIT_UNREACHABLE)
+        self.assertEqual(manifest["outcome"], "degraded")
+        self.assertNotEqual(manifest["outcome"], "torn_down_early")
+        error = manifest["phases"]["save_model"]["error"]
+        self.assertIn("connection reset by peer", error)
+        self.assertNotIn("note", manifest["save_model"])
+        self.assertIsNone(manifest["save_model"]["model_path"])
+        self.assertIn(f"save_model snapshot failed: {error}", manifest["acceptance"]["reasons"])
+        self.assertFalse((self.results / "model.npz").exists())
+        self.refit.assert_not_called()
+
+    def test_a_snapshot_without_size_bytes_is_not_vouched_for(self) -> None:
+        # size_bytes omitted is not "the size we copied". Defaulting the missing field would accept it.
+        self.state.snapshot_omit_size = True
+        code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+        self.assertEqual(manifest["outcome"], "degraded")
+        error = manifest["phases"]["save_model"]["error"]
+        self.assertIn("size_bytes None", error)
+        self.assertIn(SNAPSHOT_ID, error)
+        self.assertIsNone(manifest["save_model"]["model_path"])
+        self.assertFalse((self.results / "model.npz").exists(), "a copy the run cannot vouch for is not left behind")
+        self.assertTrue((self.snapshots / f"{SNAPSHOT_ID}.npz").is_file(), "the service's snapshot stays")
+        self.assertNotIn("artifacts/results/model.npz", manifest["artifacts"])
+        self.refit.assert_not_called()
+
+    def test_a_failed_copy_removes_the_partial_model_and_does_not_refit(self) -> None:
+        model = self.results / "model.npz"
+        real_copy = rx.shutil.copyfile
+
+        def fail_model_copy(src: str, dst: str, *, follow_symlinks: bool = True) -> str:
+            # The run also copies experiment.yaml with this function. Only the model copy fails.
+            if Path(dst).name != "model.npz":
+                return real_copy(src, dst, follow_symlinks=follow_symlinks)
+            Path(dst).parent.mkdir(parents=True, exist_ok=True)
+            Path(dst).write_bytes(b"partial")
+            raise OSError(28, "No space left on device")
+
+        with mock.patch.object(rx.shutil, "copyfile", side_effect=fail_model_copy):
+            code, manifest = self._run(self._save_only())
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE)
+        self.assertEqual(manifest["outcome"], "degraded")
+        error = manifest["phases"]["save_model"]["error"]
+        self.assertIn(f"cannot copy snapshot {SNAPSHOT_ID}", error)
+        self.assertIn("No space left on device", error)
+        self.assertIsNone(manifest["save_model"]["model_path"])
+        self.assertFalse(model.exists(), "a partial copy is not left looking like the scored model")
+        self.assertTrue((self.snapshots / f"{SNAPSHOT_ID}.npz").is_file(), "the service's snapshot stays; only the local copy is removed")
+        self.assertNotIn("artifacts/results/model.npz", manifest["artifacts"])
+        self.refit.assert_not_called()
 
     def test_the_snapshots_dir_is_the_recorded_one_else_the_launchers(self) -> None:
         self.assertEqual(rx._snapshots_dir({"snapshots_dir": "/srv/snapshots"}, self.run_dir), Path("/srv/snapshots"))

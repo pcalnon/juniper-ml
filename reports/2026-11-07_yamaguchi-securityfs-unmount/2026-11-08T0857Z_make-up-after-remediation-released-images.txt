@@ -1,0 +1,57 @@
+make: Entering directory '/home/pcalnon/Development/python/Juniper/juniper-deploy'
+prepare-secrets: populated=8 placeholder/empty=0 from /home/pcalnon/Development/python/Juniper/juniper-deploy/.env.secrets.enc
+Juniper Platform — Bind-Posture Preflight
+  verify every *_LOOPBACK_PUBLISH_ATTESTED service publishes loopback-only
+  source: docker compose --profile full config
+
+  [OK]   juniper-canopy  JUNIPER_CANOPY_LOOPBACK_PUBLISH_ATTESTED=true  host binds: 127.0.0.1:8050
+  [OK]   juniper-cascor  JUNIPER_CASCOR_LOOPBACK_PUBLISH_ATTESTED=true  host binds: 127.0.0.1:8201
+
+  PASS — 2 attested service(s) publish loopback-only; bind posture verified.
+Juniper Platform — Image-Provenance Preflight
+  verify the built images about to run match the code on disk (org.opencontainers.image.revision)
+  source: docker compose --profile full config
+
+  [STALE-OK  ] ghcr.io/pcalnon/juniper-canopy:0.9.0 image revision af650373 is 2 commit(s) behind juniper-canopy HEAD 63a2f3d7 — allowed by JUNIPER_IMAGE_STALE_OK
+  [MATCH     ] ghcr.io/pcalnon/juniper-cascor-worker:0.6.1 revision 8977196 == juniper-cascor-worker HEAD 8977196
+  [MATCH     ] ghcr.io/pcalnon/juniper-cascor:0.13.0 revision f3dfee8 == juniper-cascor HEAD f3dfee8
+  [STALE-OK  ] ghcr.io/pcalnon/juniper-data:0.17.1 image revision 2807855 is 2 commit(s) behind juniper-data HEAD 4f04fc8 — allowed by JUNIPER_IMAGE_STALE_OK
+  [MATCH     ] ghcr.io/pcalnon/juniper-recurrence:0.8.0 revision 3529dfd == juniper-recurrence HEAD 3529dfd
+
+  PASS — 3 image(s) match their checkouts; 2 warning(s) above (unverifiable/deliberate states do not block).
+[OK]         /home/pcalnon/Development/python/Juniper/juniper-cascor/cascor-snapshots (29186 .h5)
+[EMPTY]      /home/pcalnon/Development/python/Juniper/juniper-recurrence/recurrence-snapshots
+             no .npz present — expected on a first run, suspicious otherwise
+preflight_snapshot_root: 1 warning(s); continuing.
+Juniper Platform — AppArmor-Interface Preflight
+  verify dockerd can load docker-default for the containers about to start
+  [OK]   AppArmor interface present; dockerd confines containers with docker-default
+  kernel=Y  securityfs on /sys/kernel/security=mounted  interface=present  dockerd AppArmor=yes
+ Container juniper-redis Starting 
+ Container juniper-data Starting 
+ Container juniper-redis Started 
+ Container juniper-data Started 
+ Container juniper-data Waiting 
+ Container juniper-data Waiting 
+ Container juniper-data Healthy 
+ Container juniper-data Healthy 
+ Container juniper-cascor Starting 
+ Container juniper-recurrence Starting 
+ Container juniper-cascor Started 
+ Container juniper-redis Waiting 
+ Container juniper-data Waiting 
+ Container juniper-cascor Waiting 
+ Container juniper-cascor Waiting 
+ Container juniper-recurrence Started 
+ Container juniper-redis Healthy 
+ Container juniper-data Healthy 
+ Container juniper-cascor Healthy 
+ Container juniper-deploy-juniper-cascor-worker-1 Starting 
+ Container juniper-cascor Healthy 
+ Container juniper-canopy Starting 
+ Container juniper-deploy-juniper-cascor-worker-1 Started 
+ Container juniper-deploy-juniper-cascor-worker-2 Starting 
+ Container juniper-canopy Started 
+ Container juniper-deploy-juniper-cascor-worker-2 Started 
+Services starting. Run 'make logs' to follow output.
+make: Leaving directory '/home/pcalnon/Development/python/Juniper/juniper-deploy'

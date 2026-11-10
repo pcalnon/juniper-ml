@@ -1,0 +1,294 @@
+
+==== 1. identity ====
+$ date -u +%Y-%m-%dT%H:%M:%SZ
+2026-11-08T00:33:51Z
+[exit=0]
+$ hostname
+yamaguchi
+[exit=0]
+$ uname -r
+7.0.0-31-generic
+[exit=0]
+$ grep -E ^PRETTY_NAME= /etc/os-release
+PRETTY_NAME="Ubuntu 26.04.1 LTS"
+[exit=0]
+$ uptime -s
+2026-09-07 23:12:17
+[exit=0]
+$ systemctl --version
+systemd 259 (259.5-0ubuntu3.4)
++PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE
+[exit=0]
+$ docker version --format client={{.Client.Version}} server={{.Server.Version}} api={{.Server.APIVersion}}
+client=29.7.2 server=29.7.2 api=1.55
+[exit=0]
+$ snap version
+snap          2.77.1
+snapd         2.77.1
+series        16
+ubuntu        26.04
+kernel        7.0.0-31-generic
+architecture  amd64
+[exit=0]
+$ apparmor_parser --version
+AppArmor parser version 5.0.2
+Copyright (C) 1999-2008 Novell Inc.
+Copyright 2009-2018 Canonical Ltd.
+[exit=0]
+
+==== 2. kernel AppArmor state (procfs and module parameter need no securityfs) ====
+$ cat /sys/module/apparmor/parameters/enabled
+Y
+[exit=0]
+$ cat /proc/self/attr/apparmor/current
+unconfined
+[exit=0]
+$ grep -E ^CONFIG_(LSM|SECURITY_APPARMOR|SECURITYFS)= /boot/config-7.0.0-31-generic
+CONFIG_SECURITYFS=y
+CONFIG_SECURITY_APPARMOR=y
+CONFIG_LSM="landlock,lockdown,yama,integrity,apparmor"
+[exit=0]
+$ sed -E s/UUID=[^ ]+/UUID=<redacted>/g /proc/cmdline
+BOOT_IMAGE=/boot/vmlinuz-7.0.0-31-generic root=UUID=<redacted> ro quiet splash crashkernel=2G-4G:320M,4G-32G:512M,32G-64G:1024M,64G-128G:2048M,128G-:4096M
+[exit=0]
+
+==== 3. systemd API filesystems: expected vs mounted (from /proc/self/mountinfo) ====
+$ (awk over /proc/self/mountinfo for each expected API mount)
+WHERE                        FSTYPE      FROM  STATE     MOUNT_ID PROPAGATION
+/sys/kernel/security         securityfs  pid1  MISSING   -        -
+/sys/fs/cgroup               cgroup2     pid1  MOUNTED   36       shared:8 
+/sys/fs/pstore               pstore      pid1  MISSING   -        -
+/sys/firmware/efi/efivars    efivarfs    pid1  N/A       -        -
+/sys/fs/bpf                  bpf         pid1  MISSING   -        -
+/sys/kernel/debug            debugfs     unit  MOUNTED   14709    shared:8191 
+/sys/kernel/tracing          tracefs     unit  MOUNTED   14679    shared:8172 
+/sys/kernel/config           configfs    unit  MOUNTED   14739    shared:8210 
+/sys/fs/fuse/connections     fusectl     unit  MOUNTED   14769    shared:8229 
+/dev/hugepages               hugetlbfs   unit  MOUNTED   14799    shared:8248 
+/dev/mqueue                  mqueue      unit  MOUNTED   14825    shared:8263 
+$ ls -la /sys/kernel/security/
+total 0
+dr-xr-xr-x  2 root root 0 Nov  4 12:30 .
+drwxr-xr-x 19 root root 0 Nov  6 07:31 ..
+[exit=0]
+$ stat -c %n %F mtime=%y /sys/kernel/security /sys/kernel/security/apparmor/profiles
+/sys/kernel/security directory mtime=2026-11-04 12:30:48.594713195 -0600
+stat: cannot statx '/sys/kernel/security/apparmor/profiles': No such file or directory
+[exit=1]
+$ findmnt -R /sys -o TARGET,FSTYPE,ID,PROPAGATION
+TARGET                        FSTYPE      ID PROPAGATION
+/sys                          sysfs       28 shared
+├─/sys/fs/cgroup              cgroup2     36 shared
+├─/sys/kernel/tracing         tracefs  14679 shared
+├─/sys/kernel/debug           debugfs  14709 shared
+│ └─/sys/kernel/debug/tracing tracefs     59 shared
+├─/sys/kernel/config          configfs 14739 shared
+└─/sys/fs/fuse/connections    fusectl  14769 shared
+[exit=0]
+
+==== 4. systemd's record of the /sys and /dev API mount units (state-change times, UTC) ====
+$ systemctl show --timestamp=us+utc -p Id -p LoadState -p ActiveState -p FragmentPath -p InactiveEnterTimestamp -p ActiveEnterTimestamp sys-kernel-security.mount sys-fs-pstore.mount sys-fs-bpf.mount sys-firmware-efi-efivars.mount sys-kernel-debug.mount sys-kernel-tracing.mount sys-kernel-config.mount sys-fs-fuse-connections.mount dev-hugepages.mount dev-mqueue.mount proc-sys-fs-binfmt_misc.automount snapd.mounts.target
+Id=sys-kernel-security.mount
+LoadState=not-found
+ActiveState=inactive
+FragmentPath=
+ActiveEnterTimestamp=
+InactiveEnterTimestamp=
+
+Id=sys-fs-pstore.mount
+LoadState=not-found
+ActiveState=inactive
+FragmentPath=
+ActiveEnterTimestamp=
+InactiveEnterTimestamp=
+
+Id=sys-fs-bpf.mount
+LoadState=not-found
+ActiveState=inactive
+FragmentPath=
+ActiveEnterTimestamp=
+InactiveEnterTimestamp=
+
+Id=sys-firmware-efi-efivars.mount
+LoadState=not-found
+ActiveState=inactive
+FragmentPath=
+ActiveEnterTimestamp=
+InactiveEnterTimestamp=
+
+Id=sys-kernel-debug.mount
+LoadState=loaded
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/sys-kernel-debug.mount
+ActiveEnterTimestamp=Wed 2026-10-28 01:18:38.552605 UTC
+InactiveEnterTimestamp=Tue 2026-10-27 22:55:28.266715 UTC
+
+Id=sys-kernel-tracing.mount
+LoadState=loaded
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/sys-kernel-tracing.mount
+ActiveEnterTimestamp=Wed 2026-10-28 01:18:38.552955 UTC
+InactiveEnterTimestamp=Tue 2026-10-27 22:55:28.264047 UTC
+
+Id=sys-kernel-config.mount
+LoadState=loaded
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/sys-kernel-config.mount
+ActiveEnterTimestamp=Wed 2026-10-28 01:18:38.553281 UTC
+InactiveEnterTimestamp=Tue 2026-10-27 22:55:28.263215 UTC
+
+Id=sys-fs-fuse-connections.mount
+LoadState=loaded
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/sys-fs-fuse-connections.mount
+ActiveEnterTimestamp=Wed 2026-10-28 01:18:38.712943 UTC
+InactiveEnterTimestamp=Tue 2026-10-27 22:55:28.262275 UTC
+
+Id=dev-hugepages.mount
+LoadState=loaded
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/dev-hugepages.mount
+ActiveEnterTimestamp=Wed 2026-10-28 01:18:38.713469 UTC
+InactiveEnterTimestamp=Tue 2026-10-27 22:55:28.265907 UTC
+
+Id=dev-mqueue.mount
+LoadState=loaded
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/dev-mqueue.mount
+ActiveEnterTimestamp=Wed 2026-10-28 01:18:38.713878 UTC
+InactiveEnterTimestamp=Tue 2026-10-27 22:55:28.267457 UTC
+
+Id=proc-sys-fs-binfmt_misc.automount
+LoadState=loaded
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/proc-sys-fs-binfmt_misc.automount
+ActiveEnterTimestamp=Tue 2026-09-08 04:12:25.849069 UTC
+InactiveEnterTimestamp=
+
+Id=snapd.mounts.target
+LoadState=loaded
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/snapd.mounts.target
+ActiveEnterTimestamp=Tue 2026-09-08 04:12:30.813376 UTC
+InactiveEnterTimestamp=
+[exit=0]
+
+==== 5. start times of the processes that cache AppArmor support (and their neighbours) ====
+pid=1        start=Mon Sep  7 23:12:17 2026   cmd=/usr/lib/systemd/systemd --system --deserialize=48 splash
+pid=13362    start=Mon Sep  7 23:13:03 2026   cmd=/usr/lib/systemd/systemd --user --deserialize=10
+pid=1156747  start=Tue Sep  8 06:35:51 2026   cmd=/usr/lib/systemd/systemd --user --deserialize=8
+pid=11194    start=Mon Sep  7 23:12:57 2026   cmd=/usr/bin/containerd
+pid=13298    start=Mon Sep  7 23:13:03 2026   cmd=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+pid=752656   start=Tue Sep 29 23:33:56 2026   cmd=/snap/snapd/current/usr/lib/snapd/snapd
+
+==== 6. Docker's view ====
+$ docker info --format SecurityOptions={{json .SecurityOptions}} Warnings={{json .Warnings}}
+SecurityOptions=["name=apparmor","name=seccomp,profile=builtin","name=cgroupns"] Warnings=null
+[exit=0]
+$ docker ps -a --format {{.Names}}\t{{.State}}\t{{.Status}}\t{{.CreatedAt}}
+juniper-canopy	created	Created	2026-11-06 07:29:42 -0600 CST
+juniper-deploy-juniper-cascor-worker-1	created	Created	2026-11-06 07:29:42 -0600 CST
+juniper-deploy-juniper-cascor-worker-2	created	Created	2026-11-06 07:29:42 -0600 CST
+juniper-cascor	created	Created	2026-11-06 07:29:42 -0600 CST
+juniper-recurrence	created	Created	2026-11-06 07:29:42 -0600 CST
+juniper-data	created	Created	2026-11-06 07:29:42 -0600 CST
+juniper-redis	created	Created	2026-11-06 07:29:42 -0600 CST
+[exit=0]
+
+==== 7. failing AppArmor consumers (journal; unit-indexed queries only, so this stays fast) ====
+$ journalctl -u snap.kubelet.daemon.service | grep -c aa_is_enabled ; first ; last
+166474
+2026-10-30T14:04:15-05:00 yamaguchi kubelet.daemon[2202028]: aa_is_enabled() failed unexpectedly (No such file or directory): No such file or directory
+2026-11-07T18:34:00-06:00 yamaguchi kubelet.daemon[3178375]: aa_is_enabled() failed unexpectedly (No such file or directory): No such file or directory
+$ journalctl -u docker.service | grep -c "Could not check if docker-default" ; first ; last
+6
+2026-11-06T07:29:43-06:00 yamaguchi dockerd[13298]: time="2026-11-06T07:29:43.015193020-06:00" level=error msg="Handler for POST /containers/{name:.*}/start returned error" error-response="Could not check if docker-defau
+2026-11-07T17:12:41-06:00 yamaguchi dockerd[13298]: time="2026-11-07T17:12:41.794650030-06:00" level=error msg="Handler for POST /containers/{name:.*}/start returned error" error-response="Could not check if docker-defau
+$ snap changes
+ID      Status  Spawn                   Ready                   Summary
+526344  Error   yesterday at 19:20 CST  yesterday at 19:22 CST  Auto-refresh 4 snaps
+526345  Error   today at 02:55 CST      today at 02:56 CST      Auto-refresh 5 snaps
+526346  Error   today at 06:55 CST      today at 06:56 CST      Auto-refresh snaps "kf6-core24", "sublime-text"
+526347  Error   today at 17:05 CST      today at 17:10 CST      Auto-refresh 14 snaps
+
+[exit=0]
+
+==== 8. Kubernetes install state on this host (the remediation must leave this unchanged) ====
+$ apt-mark showhold
+kubeadm
+kubectl
+kubelet
+[exit=0]
+$ dpkg-query -W kubeadm kubelet kubectl kubernetes-cni containerd.io docker-ce
+containerd.io 2.3.3-1~ubuntu.25.10~questing ii 
+docker-ce 5:29.7.2-1~ubuntu.25.10~questing ii 
+kubeadm 1.36.5-1.1 hi 
+kubectl 1.36.5-1.1 hi 
+kubelet 1.36.5-1.1 hi 
+kubernetes-cni 1.9.1-1.1 ii 
+$ systemctl show -p Id -p UnitFileState -p ActiveState -p SubState -p NRestarts kubelet.service containerd.service docker.service
+Id=kubelet.service
+ActiveState=inactive
+SubState=dead
+UnitFileState=enabled
+NRestarts=0
+
+Id=containerd.service
+ActiveState=active
+SubState=running
+UnitFileState=enabled
+NRestarts=0
+
+Id=docker.service
+ActiveState=active
+SubState=running
+UnitFileState=enabled
+NRestarts=0
+[exit=0]
+$ systemctl show (legacy snap k8s services)
+Id=snap.kubelet.daemon.service ActiveState=activating SubState=auto-restart UnitFileState=enabled Result=exit-code NRestarts=1198
+Id=snap.kube-apiserver.daemon.service ActiveState=failed SubState=failed UnitFileState=enabled Result=exit-code NRestarts=5
+Id=snap.kube-proxy.daemon.service ActiveState=failed SubState=failed UnitFileState=enabled Result=exit-code NRestarts=9
+Id=snap.kube-scheduler.daemon.service ActiveState=failed SubState=failed UnitFileState=enabled Result=exit-code NRestarts=10
+Id=snap.kube-controller-manager.daemon.service ActiveState=failed SubState=failed UnitFileState=enabled Result=exit-code NRestarts=16
+Id=snap.etcd.etcd.service ActiveState=inactive SubState=dead UnitFileState=enabled Result=success NRestarts=0
+$ ls -la --time-style=full-iso /etc/kubernetes /etc/kubernetes/manifests /var/lib/kubelet
+/etc/kubernetes:
+total 20
+drwxrwxr-x   3 root root  4096 2026-09-26 02:43:31.781545165 -0500 .
+drwxr-xr-x 203 root root 12288 2026-11-04 08:12:16.827702656 -0600 ..
+drwxrwxr-x   2 root root  4096 2026-09-26 02:43:32.146546130 -0500 manifests
+
+/etc/kubernetes/manifests:
+total 8
+drwxrwxr-x 2 root root 4096 2026-09-26 02:43:32.146546130 -0500 .
+drwxrwxr-x 3 root root 4096 2026-09-26 02:43:31.781545165 -0500 ..
+-rw-r--r-- 1 root root    0 2026-09-23 12:31:17.000000000 -0500 .kubelet-keep
+
+/var/lib/kubelet:
+total 12
+drwxr-xr-x   3 root root 4096 2026-09-26 02:43:32.147546132 -0500 .
+drwxr-xr-x 107 root root 4096 2026-10-26 15:01:48.800808043 -0500 ..
+-rw-r--r--   1 root root    0 2026-09-23 12:31:17.000000000 -0500 .kubelet-keep
+drwxr-xr-x   2 root root 4096 2024-10-24 01:58:54.247813398 -0500 pki
+[exit=0]
+$ ss -ltnH (k8s control-plane / node ports only)
+(none listening)
+
+==== 9. residual desktop FUSE mounts the same unmount took (user session) ====
+/run/user/1000/doc           MISSING
+/run/user/1000/gvfs          MISSING
+
+==== 10. journal retention (why the original actor left no log) ====
+$ journalctl --disk-usage
+Archived and active journals take up 4G in the file system.
+[exit=0]
+$ journalctl --no-pager -o short-iso | head -1   (oldest retained entry)
+2026-10-30T14:04:12-05:00 yamaguchi fluent-bit.service[11081]: [0] cpu.local: [1793387047.689131727, {"cpu_p"=>13.812500, "user_p"=>11.312500, "system_p"=>2.500
+$ journalctl -u snap.kubelet.daemon.service --since -1h | wc -l
+4216
+$ journalctl -u fluent-bit.service --since -1h | wc -l
+1
+$ grep -hE ^\s*(SystemMaxUse|SystemKeepFree|MaxRetentionSec|MaxFileSec)= /etc/systemd/journald.conf /etc/systemd/journald.conf.d/
+grep: /etc/systemd/journald.conf.d/: No such file or directory
+[exit=2]

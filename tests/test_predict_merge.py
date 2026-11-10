@@ -23,8 +23,10 @@ fixture repos (the ``tests/test_worktree_cleanup.py`` fixture idiom) -- no netwo
   the rest of the open-PR set) + ``suggest_order`` empty-``true_delta`` ERROR contention;
 * deleted-``.py`` paths stay in ``true_delta`` but are filtered out of the gate battery;
 * ``JUNIPER_FLEET_SKIP_PRECOMMIT`` forces skip_all when the default gate runner would run;
-* the detached-clone-never-mutates-source contract (a ``git clone`` under the system
-  tempdir, never a ``git worktree`` of -- and never a write to -- the invoking checkout);
+* the detached-clone-never-mutates-source contract (a scratch repository under the system
+  tempdir that borrows the source's objects through ``objects/info/alternates``, never a
+  ``git worktree`` of -- and never a write to -- the invoking checkout), including a PR head
+  reachable only from ``refs/remotes/origin/*``;
 * CLI exit codes (0 always-report / 2 usage / 2 non-git ``--repo-root`` / ``--pr``).
 
 ``util/`` is not pre-commit-lint-gated (flake8/black scope to ``scripts``+``tests``), so
@@ -473,6 +475,143 @@ class NoMutationTest(_RepoCase):
         clone = clones[0]
         self.assertFalse(str(clone).startswith(str(self.repo)), "scratch clone must not live inside the source repo")
         self.assertTrue((clone / ".git").is_dir(), "scratch must be a git clone (.git dir), not a worktree pointer")
+
+    def test_a_head_reachable_only_from_origin_resolves_in_the_scratch(self):
+        """A PR head reachable only from ``refs/remotes/origin/*`` -- every fleet PR's case -- is simulated, not ERROR.
+
+        The scratch was ``git clone --shared <path>``, and git turns a clone's local mode off for a SHALLOW source.
+        juniper-ml's primary checkout is shallow, so the clone ran an upload-pack transport that wrote no
+        ``objects/info/alternates`` and carried only the source's local branches, and ``update-ref`` failed on every such
+        head with "nonexistent object": 56 of 57 open PRs on 2026-11-06. The other fixtures are not shallow and keep a
+        local branch, which is why they never saw it.
+        """
+        _write(self.repo, "fileA.txt", "A0\n")
+        root = _commit(self.repo, "c0")
+        _publish_main(self.repo)
+        # Shallow, as the primary checkout is: a boundary at the root commit removes nothing.
+        (self.repo / ".git" / "shallow").write_text(root + "\n", encoding="utf-8")
+        self.assertEqual(_git(self.repo, "rev-parse", "--is-shallow-repository").stdout.strip(), "true")
+        _git(self.repo, "checkout", "-q", "-b", "cursor/remote-only")
+        _write(self.repo, "fileD.txt", "D\n")
+        _commit(self.repo, "add D")
+        _publish_branch(self.repo, "cursor/remote-only")
+        _git(self.repo, "checkout", "-q", "main")
+        _git(self.repo, "branch", "-q", "-D", "cursor/remote-only")
+        self.assertEqual(_git(self.repo, "for-each-ref", "refs/heads/cursor").stdout, "", "the head must have no local branch")
+
+        scratch_parent = self.tmp / "scratch-parent"
+        scratch_parent.mkdir()
+        v = pm.simulate_merge(self.repo, "origin/cursor/remote-only", run_gates=False, keep_scratch=True, scratch_parent=scratch_parent)
+        self.assertEqual(v["verdict"], "MERGE-CLEAN", v.get("error"))
+        self.assertEqual(v["true_delta"], ["fileD.txt"])
+
+        clone = next(scratch_parent.glob("fleet-triage-*/clone"))
+        alternates = (clone / ".git" / "objects" / "info" / "alternates").read_text(encoding="utf-8").split()
+        self.assertEqual([Path(a).resolve() for a in alternates], [(self.repo / ".git" / "objects").resolve()])
+
+    def test_a_shallow_source_cut_above_the_merge_base_is_an_error_not_a_verdict(self):
+        """A head fetched with ``--depth=1``, whose history is cut above the merge base, must not come back mergeable.
+
+        Without the source's ``.git/shallow``, the scratch's ``git merge`` printed "could not parse commit", then
+        "Already up to date.", and exited 0, so the UNMERGED branch tip was screened as the predicted result
+        (review of juniper-ml#2474, 2026-11-06).
+        """
+        upstream = self.tmp / "upstream"
+        _init_repo(upstream)
+        _write(upstream, "fileA.txt", "A0\n")
+        _commit(upstream, "m0")
+        _write(upstream, "fileB.txt", "B\n")
+        _commit(upstream, "m1")
+        source = self.tmp / "source"
+        _git(self.tmp, "clone", "-q", f"file://{upstream}", str(source))
+        _git(upstream, "checkout", "-q", "-b", "pr")
+        _write(upstream, "fileP.txt", "P\n")
+        _commit(upstream, "c1")
+        _write(upstream, "fileA.txt", "A-pr\n")
+        _commit(upstream, "c2")
+        _git(upstream, "checkout", "-q", "main")
+        _write(upstream, "fileA.txt", "A-main\n")
+        _commit(upstream, "m2")
+        _git(source, "fetch", "-q", "origin", "main:refs/remotes/origin/main")
+        _git(source, "fetch", "-q", "--depth=1", "origin", "pr:refs/remotes/origin/pr")
+        self.assertEqual(_git(source, "rev-parse", "--is-shallow-repository").stdout.strip(), "true")
+
+        with self.assertRaises(pm.PredictMergeError):
+            pm.simulate_merge(source, "origin/pr", run_gates=False, scratch_parent=self.tmp)
+
+    def test_a_configured_filter_whose_binary_is_absent_does_not_break_the_scratch(self):
+        """``filter.lfs.required`` with no git-lfs on the host: the scratch runs no filter, so a PR with a .png still triages."""
+        quiet_config = self.tmp / "empty.gitconfig"
+        quiet_config.write_text("", encoding="utf-8")
+        with mock.patch.dict(os.environ, {"GIT_CONFIG_GLOBAL": str(quiet_config), "GIT_CONFIG_NOSYSTEM": "1"}):
+            _write(self.repo, ".gitattributes", "*.png filter=lfs diff=lfs merge=lfs -text\n")
+            _write(self.repo, "fileA.txt", "A0\n")
+            _commit(self.repo, "c0")
+            _publish_main(self.repo)
+            _git(self.repo, "checkout", "-q", "-b", "png-pr")
+            (self.repo / "pic.png").write_bytes(b"\x89PNG\r\n\x1a\nnot-a-real-image")
+            _commit(self.repo, "add pic")
+            _publish_branch(self.repo, "png-pr")
+            _git(self.repo, "checkout", "-q", "main")
+            _write(self.repo, "fileB.txt", "B\n")
+            _commit(self.repo, "main moves on")
+            _publish_main(self.repo)
+        broken = self.tmp / "broken-lfs.gitconfig"
+        broken.write_text(
+            '[filter "lfs"]\n\trequired = true\n\tclean = no-such-git-lfs clean -- %f\n' "\tsmudge = no-such-git-lfs smudge -- %f\n\tprocess = no-such-git-lfs filter-process\n",
+            encoding="utf-8",
+        )
+        with mock.patch.dict(os.environ, {"GIT_CONFIG_GLOBAL": str(broken), "GIT_CONFIG_NOSYSTEM": "1"}):
+            v = pm.simulate_merge(self.repo, "origin/png-pr", run_gates=False, scratch_parent=self.tmp)
+        self.assertEqual(v["verdict"], "NEEDS-UPDATE-BRANCH", v.get("error"))
+        self.assertIn("pic.png", v["true_delta"])
+
+    def test_a_binary_file_in_the_delta_does_not_crash_the_run(self):
+        """A PR adding a non-UTF-8 file (a PDF, a png outside LFS) is triaged; its bytes once raised UnicodeDecodeError."""
+        _write(self.repo, "fileA.txt", "A0\n")
+        _commit(self.repo, "c0")
+        _publish_main(self.repo)
+        _git(self.repo, "checkout", "-q", "-b", "bin-pr")
+        (self.repo / "paper.pdf").write_bytes(b"%PDF-1.7\n\xff\xfe\x00\x01\x80binary")
+        _commit(self.repo, "add pdf")
+        v = pm.simulate_merge(self.repo, "bin-pr", run_gates=False, scratch_parent=self.tmp)
+        self.assertEqual(v["verdict"], "MERGE-CLEAN")
+        self.assertEqual(v["true_delta"], ["paper.pdf"])
+
+    def test_an_inherited_git_dir_neither_breaks_the_run_nor_touches_the_source(self):
+        """An inherited ``GIT_DIR`` (as inside a git hook) once made the scratch's ``git init`` re-initialise the SOURCE."""
+        _write(self.repo, "fileA.txt", "A0\n")
+        _commit(self.repo, "c0")
+        _publish_main(self.repo)
+        _git(self.repo, "checkout", "-q", "-b", "clean")
+        _write(self.repo, "fileD.txt", "D\n")
+        _commit(self.repo, "add D")
+        refs_before = _for_each_ref(self.repo)
+        head_before = (self.repo / ".git" / "HEAD").read_text(encoding="utf-8")
+        with mock.patch.dict(os.environ, {"GIT_DIR": str(self.repo / ".git"), "GIT_WORK_TREE": str(self.repo)}):
+            v = pm.simulate_merge(self.repo, "clean", run_gates=False, scratch_parent=self.tmp)
+        self.assertEqual(v["verdict"], "MERGE-CLEAN")
+        self.assertEqual(_for_each_ref(self.repo), refs_before)
+        self.assertEqual((self.repo / ".git" / "HEAD").read_text(encoding="utf-8"), head_before)
+        self.assertEqual(list(self.tmp.glob("fleet-triage-*")), [], "the scratch must be removed")
+
+    def test_a_linked_worktree_source_borrows_the_common_object_store(self):
+        """``--repo-root`` may be a linked worktree: the scratch borrows the COMMON dir's objects, not the worktree's gitdir."""
+        _write(self.repo, "fileA.txt", "A0\n")
+        _commit(self.repo, "c0")
+        _publish_main(self.repo)
+        linked = self.tmp / "linked"
+        _git(self.repo, "worktree", "add", "-q", "-b", "wt-pr", str(linked))
+        _write(linked, "fileW.txt", "W\n")
+        _commit(linked, "add W in the worktree")
+        scratch_parent = self.tmp / "scratch-parent"
+        scratch_parent.mkdir()
+        v = pm.simulate_merge(linked, "wt-pr", run_gates=False, keep_scratch=True, scratch_parent=scratch_parent)
+        self.assertEqual(v["verdict"], "MERGE-CLEAN")
+        self.assertEqual(v["true_delta"], ["fileW.txt"])
+        clone = next(scratch_parent.glob("fleet-triage-*/clone"))
+        alternates = (clone / ".git" / "objects" / "info" / "alternates").read_text(encoding="utf-8").split()
+        self.assertEqual([Path(a).resolve() for a in alternates], [(self.repo / ".git" / "objects").resolve()])
 
 
 # --------------------------------------------------------------------------- #

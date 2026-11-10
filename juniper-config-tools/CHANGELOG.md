@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] -- 2026-11-04
+
+A packaging patch. The API and behaviour are unchanged.
+
+### Fixed
+
+- **The wheel now ships `py.typed`** (juniper-ml#1237, `APD-SVCCORE-008` /
+  `APD-OBS-002`). The published 0.1.0 wheel carries no `py.typed` marker
+  (its file list is `__init__.py`, `__main__.py`, `_env_aliases.py`,
+  `_version.py` and the dist-info, checked against PyPI on 2026-11-04).
+  Under PEP 561 a type checker therefore treats `juniper_config_tools` as
+  untyped, and `env_with_legacy_alias` reads as `Any` in every consumer
+  even though its source is fully annotated. The marker is now package
+  data, and the classifiers include `Typing :: Typed`.
+
+### Changed
+
+- The repository-internal test and lint configuration only; no shipped
+  code changed. pytest now runs with `--strict-markers` and
+  `--strict-config` and refuses to autoload the `dash` and `playwright`
+  plugins (juniper-ml#490), and Ruff governs the package (juniper-ml#508).
+  The notes links in the README and the docstrings follow the 2026-07-04
+  notes naming convention.
+
 ## [0.1.0] -- 2026-05-22
 
 Initial release — Wave 0 of the

@@ -11,6 +11,26 @@ regression this suite locks.
 Convention note (script-local, inverted vs the default launcher):
   TRUE="0", FALSE="1"  — so ``CLAUDE_SKIP_PERMISSIONS=0`` means *enabled*.
 
+Owner rulings, 2026-11-03 (juniper-ml#2396) and 2026-11-04:
+  * the session id is OPT-IN: the shipped ``DEFAULT_ID`` is FALSE, and ``-i``
+    or ``CLAUDE_ID`` turns it on;
+  * worktree and remote control are ON by default (2026-11-04, replacing the
+    2026-11-03 opt-in): ``DEFAULT_WORKTREE`` / ``DEFAULT_REMOTE_CONTROL`` are
+    TRUE. The worktree goes bare, so Claude Code names it, unless ``-w`` names
+    one; remote control never takes a value. ``--no-worktree`` /
+    ``--no-remote-control``, or the matching ``CLAUDE_*`` set to FALSE, turn
+    them off;
+  * model and effort are FLAGS ONLY (``-m`` / ``-e``); a bare positional
+    argument is rejected with the usage message.
+
+Owner rulings, 2026-11-06:
+  * ``-v``, ``-V``, ``--version`` and ``--claude-version`` report Claude
+    Code's version, as ``claude -v`` does, through wake_the_claude.bash;
+    claudey's own version is ``--script-version``;
+  * ``--file`` / ``--path`` forward a prompt file to wake_the_claude.bash,
+    and the default prompt is then not sent: wake_the_claude.bash prefers
+    ``--prompt`` to a prompt file, so the default would discard the file.
+
 Hermetic: copies the launcher into a temp ``scripts/`` dir beside a fake
 ``wake_the_claude.bash`` that only logs argv (same stack as
 ``DefaultInteractiveLauncherRuntimeTests`` in ``test_wake_the_claude.py``).
@@ -126,6 +146,9 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             "CLAUDE_ID",
             "CLAUDE_WORKTREE",
             "CLAUDE_PROMPT",
+            "CLAUDE_PROMPT_FILE",
+            "CLAUDE_PROMPT_PATH",
+            "CLAUDE_RESUME",
             "BASH_ENV",
             "ENV",
         ):
@@ -140,6 +163,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
         env: RedactedEnv,
         extra_args: list[str] | None = None,
     ) -> subprocess.CompletedProcess[str]:
+        # Bounded: a flag whose value is missing once left the parse loop spinning forever.
         return subprocess.run(
             ["bash", str(launcher_path), *(extra_args or [])],
             cwd=temp_dir,
@@ -147,6 +171,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             text=True,
             capture_output=True,
             check=False,
+            timeout=60,
         )
 
     def test_script_and_claudey_symlink_exist(self) -> None:
@@ -183,10 +208,15 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             defaults = shipped_defaults("DEFAULT_MODEL", "DEFAULT_EFFORT", "DEFAULT_PROMPT")
             self.assertEqual(args[args.index("--model") + 1], defaults["DEFAULT_MODEL"])
             self.assertEqual(args[args.index("--effort") + 1], defaults["DEFAULT_EFFORT"])
-            self.assertIn("--remote-control", args)
-            self.assertEqual(args[args.index("--id") + 1], SCRIPT_TRUE)
+            # The session id is opt-in (owner ruling, 2026-11-03); worktree and remote control are on by default
+            # (2026-11-04): a worktree of TRUE, so Claude Code names it, and a remote control with no value. Pinned
+            # explicitly, so a silent flip of any of the three is a red build rather than a surprise.
+            self.assertNotIn("--id", args)
             self.assertEqual(args[args.index("--worktree") + 1], SCRIPT_TRUE)
-            self.assertIn(defaults["DEFAULT_PROMPT"], args)
+            self.assertEqual(args.count("--remote-control"), 1)
+            self.assertTrue(args[args.index("--remote-control") + 1].startswith("-"), "--remote-control must not be given a value")
+            # The prompt reaches wake_the_claude.bash as ONE argument, without literal quote characters.
+            self.assertEqual(args[args.index("--prompt") + 1], defaults["DEFAULT_PROMPT"])
 
     def test_shipped_defaults_are_values_the_launcher_supports(self) -> None:
         """Guard against the switch itself being broken.
@@ -213,7 +243,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             args = self._extract_logged_args(args_log)
             self.assertTrue(args, "Expected wrapper to invoke wake_the_claude.bash")
             self.assertNotIn("--dangerously-skip-permissions", args)
-            self.assertIn("--remote-control", args)
+            self.assertIn("--remote-control", args)  # on by default (owner ruling, 2026-11-04), DEBUG or not
 
     def test_debug_false_includes_skip_permissions_when_opted_in(self) -> None:
         """Explicit opt-in uses the script's TRUE=\"0\" convention."""
@@ -261,41 +291,556 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             self.assertIn("--dangerously-skip-permissions", args)
 
     def test_remote_control_false_omits_flag(self) -> None:
+        """Remote control is on by default; ``--no-remote-control`` or ``CLAUDE_REMOTE_CONTROL=1`` turns it off."""
+        for extra_args, env_value in ((["--no-remote-control"], None), ([], SCRIPT_FALSE)):
+            with self.subTest(extra_args=extra_args, env_value=env_value), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                if env_value is not None:
+                    env["CLAUDE_REMOTE_CONTROL"] = env_value
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertTrue(args, "Expected wrapper to invoke wake_the_claude.bash")
+                self.assertNotIn("--remote-control", args)
+
+    def test_remote_control_opt_in_adds_flag(self) -> None:
+        """The flag or ``CLAUDE_REMOTE_CONTROL=0`` asks for remote control (also the default), and it never takes a value."""
+        for extra_args, env_value in ((["--remote-control"], None), (["-rc"], None), ([], SCRIPT_TRUE)):
+            with self.subTest(extra_args=extra_args, env_value=env_value), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                if env_value is not None:
+                    env["CLAUDE_REMOTE_CONTROL"] = env_value
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertEqual(args.count("--remote-control"), 1)
+                self.assertTrue(args[args.index("--remote-control") + 1].startswith("-"), "--remote-control must not be given a value")
+
+    def test_session_id_and_worktree_opt_in_flags(self) -> None:
+        """``-i`` / ``-w`` forward their values to wake_the_claude.bash's ``--id`` / ``--worktree``."""
         with tempfile.TemporaryDirectory() as temp_dir:
             launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
             env = self._base_env(args_log)
-            env["CLAUDE_REMOTE_CONTROL"] = SCRIPT_FALSE
 
-            result = self._run_launcher(launcher_path, temp_dir, env)
+            result = self._run_launcher(launcher_path, temp_dir, env, ["-i", SCRIPT_TRUE, "-w", "feature-tree"])
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
 
             args = self._extract_logged_args(args_log)
-            self.assertNotIn("--remote-control", args)
+            self.assertEqual(args[args.index("--id") + 1], SCRIPT_TRUE)
+            self.assertEqual(args[args.index("--worktree") + 1], "feature-tree")
 
-    def test_positional_model_and_effort(self) -> None:
-        """Positional ``$1``/``$2`` become ``--model`` / ``--effort``.
+    def test_model_and_effort_flags(self) -> None:
+        """``-m`` / ``-e`` (and their long forms) become ``--model`` / ``--effort``."""
+        for extra_args in (["-m", "sonnet", "-e", "high"], ["--model", "sonnet", "--effort-level", "high"]):
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
 
-        Note: the script does not ``shift`` after reading effort, so the
-        leftover effort token is also appended as a passthrough arg. Pin
-        that current compose (a silent second ``shift`` would drop it).
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertEqual(args[args.index("--model") + 1], "sonnet")
+                self.assertEqual(args[args.index("--effort") + 1], "high")
+                # Every flag value was consumed: nothing trails the prompt as a stray argument.
+                self.assertEqual(args[-2], "--prompt")
+
+    def test_positional_arguments_are_rejected(self) -> None:
+        """Model and effort are flags only (owner ruling, 2026-11-03): a bare word fails with usage."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+            env = self._base_env(args_log)
+
+            result = self._run_launcher(launcher_path, temp_dir, env, ["sonnet", "high"])
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("Unknown argument: sonnet", result.stdout)
+            self.assertEqual(self._extract_logged_args(args_log), [], "wake_the_claude.bash must not be invoked")
+
+    def test_prompt_is_forwarded_as_one_argument(self) -> None:
+        """A multi-word prompt with shell metacharacters reaches wake_the_claude.bash intact.
+
+        The launcher once built a string and ``eval``-ed it: the default prompt arrived as
+        ``"Hello`` / ``World,`` / ``Claude!"`` -- three arguments with literal quotes -- and a
+        ``$(...)`` in a prompt would have run.
+        """
+        prompt = 'two words "quoted" $(echo injected) *.txt'
+        with tempfile.TemporaryDirectory() as temp_dir:
+            launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+            env = self._base_env(args_log)
+
+            result = self._run_launcher(launcher_path, temp_dir, env, ["-p", prompt])
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            args = self._extract_logged_args(args_log)
+            self.assertEqual(args[args.index("--prompt") + 1], prompt)
+            self.assertEqual(args[-1], prompt)
+
+    def test_resume_flag_forwards_explicit_true(self) -> None:
+        """``-r`` forwards ``--resume 0``: wake_the_claude.bash rejects a ``--resume`` with nothing after it."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+            env = self._base_env(args_log)
+
+            result = self._run_launcher(launcher_path, temp_dir, env, ["-r"])
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            args = self._extract_logged_args(args_log)
+            self.assertEqual(args[args.index("--resume") + 1], SCRIPT_TRUE)
+
+    def test_worktree_and_remote_control_turn_off_with_their_no_flags(self) -> None:
+        """``--no-worktree`` / ``--no-remote-control``, ``-w 1``, or the ``CLAUDE_*`` variables at FALSE turn the defaults off."""
+        cases: tuple[tuple[list[str], dict[str, str]], ...] = (
+            (["--no-worktree", "--no-remote-control"], {}),
+            (["-w", SCRIPT_FALSE, "--no-remote-control"], {}),
+            ([], {"CLAUDE_WORKTREE": SCRIPT_FALSE, "CLAUDE_REMOTE_CONTROL": SCRIPT_FALSE}),
+        )
+        for extra_args, env_values in cases:
+            with self.subTest(extra_args=extra_args, env_values=env_values), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                env.update(env_values)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertTrue(args, "Expected wrapper to invoke wake_the_claude.bash")
+                self.assertNotIn("--worktree", args)
+                self.assertNotIn("--remote-control", args)
+
+    def test_worktree_name_is_optional_and_never_the_next_flag(self) -> None:
+        """``-w`` with no name -- the input ends, or a flag such as ``--prompt`` is next -- lets Claude Code name the worktree.
+
+        The parser once took the next word whatever it was: ``-w --prompt hi`` named the worktree ``--prompt`` and then failed
+        on ``hi``, and a trailing ``-w`` spun forever on a ``shift 2`` that could not shift.
+        """
+        cases = (
+            (["-w"], SCRIPT_TRUE, None),
+            (["--worktree", "--prompt", "hi"], SCRIPT_TRUE, "hi"),
+            (["--worktree", "feature-tree", "--prompt", "hi"], "feature-tree", "hi"),
+            (["--worktree-name", SCRIPT_TRUE], SCRIPT_TRUE, None),
+        )
+        for extra_args, worktree_value, prompt in cases:
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertEqual(args.count("--worktree"), 1)
+                self.assertEqual(args[args.index("--worktree") + 1], worktree_value)
+                if prompt is not None:
+                    self.assertEqual(args[args.index("--prompt") + 1], prompt)
+
+    def test_a_flag_missing_its_value_fails_instead_of_hanging(self) -> None:
+        """``-m`` / ``--effort`` / ``--id`` / ``--prompt`` / ``--file`` / ``--path`` with nothing after them exit 1 with usage.
+
+        Each ran ``shift 2`` on one remaining argument, which fails without shifting, so the parse loop never ended.
+        """
+        for flag in ("-m", "--effort", "--id", "--prompt", "--file", "--path"):
+            with self.subTest(flag=flag), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, [flag])
+                self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                self.assertIn(f"Missing value for {flag}", result.stdout)
+                self.assertEqual(self._extract_logged_args(args_log), [], "wake_the_claude.bash must not be invoked")
+
+    def test_script_version_flag_reports_claudeys_own_version(self) -> None:
+        """``--script-version`` prints claudey's version, the one its header states, without starting wake_the_claude.bash."""
+        version = shipped_defaults("SCRIPT_VERSION")["SCRIPT_VERSION"]
+        header = re.search(r"^# Version:\s+(\S+)$", LAUNCHER_SRC.read_text(encoding="utf-8"), re.MULTILINE)
+        self.assertIsNotNone(header, msg="claude_interactive.bash's header must state its version")
+        assert header is not None
+        self.assertEqual(header.group(1), version)
+        for extra_args in (["--script-version"], ["--no-worktree", "--script-version"]):
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertEqual(result.stdout.strip(), version)
+                self.assertEqual(self._extract_logged_args(args_log), [], "wake_the_claude.bash must not be invoked")
+
+    def test_a_prompt_file_replaces_the_default_prompt(self) -> None:
+        """``--file`` / ``--path`` reach wake_the_claude.bash, and the default prompt, which it would prefer to the file, is not sent."""
+        cases: tuple[tuple[list[str], dict[str, str], list[tuple[str, str]]], ...] = (
+            (["--file", "prompt.md"], {}, [("--file", "prompt.md")]),
+            (["-f", "prompt.md"], {}, [("--file", "prompt.md")]),
+            (["--path", "prompts/prompt.md"], {}, [("--path", "prompts/prompt.md")]),
+            (["-l", "prompts", "--file-name", "prompt.md"], {}, [("--file", "prompt.md"), ("--path", "prompts")]),
+            ([], {"CLAUDE_PROMPT_FILE": "prompt.md"}, [("--file", "prompt.md")]),
+            ([], {"CLAUDE_PROMPT_PATH": "prompts/prompt.md"}, [("--path", "prompts/prompt.md")]),
+            (["--file", "prompt.md"], {"CLAUDE_PROMPT": SCRIPT_FALSE}, [("--file", "prompt.md")]),
+        )
+        for extra_args, env_values, expected_pairs in cases:
+            with self.subTest(extra_args=extra_args, env_values=env_values), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                env.update(env_values)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertNotIn("--prompt", args)
+                for flag, value in expected_pairs:
+                    self.assertEqual(args.count(flag), 1)
+                    self.assertEqual(args[args.index(flag) + 1], value)
+
+    def test_a_prompt_and_a_prompt_file_are_refused_together(self) -> None:
+        """An explicit prompt with ``--file`` / ``--path`` exits 1: wake_the_claude.bash would silently drop the file for the prompt."""
+        cases: tuple[tuple[list[str], dict[str, str]], ...] = (
+            (["--prompt", "hi", "--file", "prompt.md"], {}),
+            (["--path", "prompt.md", "-p", "hi"], {}),
+            (["--file", "prompt.md"], {"CLAUDE_PROMPT": "hi"}),
+        )
+        for extra_args, env_values in cases:
+            with self.subTest(extra_args=extra_args, env_values=env_values), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                env.update(env_values)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                self.assertIn("A prompt and a prompt file are exclusive", result.stdout)
+                self.assertEqual(self._extract_logged_args(args_log), [], "wake_the_claude.bash must not be invoked")
+
+    def test_a_prompt_file_flag_with_an_empty_value_is_refused(self) -> None:
+        """``--file ''`` / ``--path ''`` exit 1: ``-f "${HANDOFF}"`` with the variable unset once launched with the default prompt."""
+        for extra_args in (["--file", ""], ["--path", ""], ["-f", "", "--no-worktree"], ["-l", "", "-f", "prompt.md"]):
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                self.assertIn(f"Missing value for {extra_args[0]}", result.stdout)
+                self.assertEqual(self._extract_logged_args(args_log), [], "wake_the_claude.bash must not be invoked")
+
+    def test_an_empty_word_is_parsed_not_the_end_of_the_input(self) -> None:
+        """An empty word is refused, and ``-w ''`` is a bare ``-w``: the parse loop once stopped at an empty word.
+
+        The words after it reached wake_the_claude.bash unparsed, after the default prompt, and it stops at an empty word as well,
+        so ``-w '' --file f`` and ``'' --file f`` launched with the default prompt in place of the file.
         """
         with tempfile.TemporaryDirectory() as temp_dir:
             launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
             env = self._base_env(args_log)
+            result = self._run_launcher(launcher_path, temp_dir, env, ["", "--file", "prompt.md"])
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("Unknown argument: (an empty word)", result.stdout)
+            self.assertEqual(self._extract_logged_args(args_log), [], "wake_the_claude.bash must not be invoked")
 
-            result = self._run_launcher(
-                launcher_path,
-                temp_dir,
-                env,
-                extra_args=["sonnet", "high"],
-            )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+            env = self._base_env(args_log)
+            result = self._run_launcher(launcher_path, temp_dir, env, ["-w", "", "--file", "prompt.md"])
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-
             args = self._extract_logged_args(args_log)
-            self.assertEqual(args[args.index("--model") + 1], "sonnet")
-            self.assertEqual(args[args.index("--effort") + 1], "high")
-            # Leftover positional after the unshifted effort read.
-            self.assertEqual(args[-1], "high")
+            self.assertEqual(args[args.index("--worktree") + 1], SCRIPT_TRUE)
+            self.assertEqual(args[args.index("--file") + 1], "prompt.md")
+            self.assertNotIn("--prompt", args)
+            self.assertNotIn("", args)
+
+    def test_claudey_exits_with_wake_the_claudes_status(self) -> None:
+        """claudey's exit status is wake_the_claude.bash's: a launch it refused once ended in "Closed ..." and exit 0."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+            fake_wake = launcher_path.parent / "wake_the_claude.bash"
+            fake_wake.write_text(fake_wake.read_text(encoding="utf-8") + "exit 3\n", encoding="utf-8")
+            env = self._base_env(args_log)
+
+            result = self._run_launcher(launcher_path, temp_dir, env, [])
+            self.assertEqual(result.returncode, 3, msg=result.stdout + result.stderr)
+            self.assertTrue(self._extract_logged_args(args_log), "Expected wrapper to invoke wake_the_claude.bash")
+
+    def test_boolean_flags_do_not_consume_the_following_prompt(self) -> None:
+        """Permission, resume, and remote-control flags shift once, so the prompt after them still arrives whole.
+
+        With DEBUG off, ``--dangerously-skip-permissions`` is added only when one of these flags asks for it. Remote control is
+        on by default, so ``CLAUDE_REMOTE_CONTROL=1`` turns it off here and only the flag turns it back on. A ``shift 2`` on any
+        of them would swallow ``-p`` and either launch without that prompt or not launch at all.
+        """
+        prompt = 'two words "quoted" $(echo injected)'
+        cases = (
+            ("-sp", True, False, False),
+            ("--skip-permissions", True, False, False),
+            ("--dangerously-skip-permissions", True, False, False),
+            ("-r", False, True, False),
+            ("--resume", False, True, False),
+            ("-rs", False, True, False),
+            ("-rc", False, False, True),
+            ("--remote-control", False, False, True),
+            ("--remote-control-session", False, False, True),
+        )
+        for flag, expect_skip, expect_resume, expect_remote in cases:
+            with self.subTest(flag=flag), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                env["CLAUDE_REMOTE_CONTROL"] = SCRIPT_FALSE
+
+                result = self._run_launcher(launcher_path, temp_dir, env, [flag, "-p", prompt])
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertEqual(args[args.index("--prompt") + 1], prompt)
+                self.assertEqual(args[-1], prompt)
+                self.assertLess(args.index("--effort"), args.index("--"))
+                self.assertLess(args.index("--"), args.index("--prompt"))
+                if expect_skip:
+                    skip_at = args.index("--dangerously-skip-permissions")
+                    self.assertLess(args.index("--"), skip_at)
+                    self.assertNotEqual(args[skip_at + 1], prompt)
+                else:
+                    self.assertNotIn("--dangerously-skip-permissions", args)
+                if expect_resume:
+                    self.assertEqual(args[args.index("--resume") + 1], SCRIPT_TRUE)
+                else:
+                    self.assertNotIn("--resume", args)
+                if expect_remote:
+                    remote_at = args.index("--remote-control")
+                    self.assertLess(args.index("--"), remote_at)
+                    self.assertNotEqual(args[remote_at + 1], prompt)
+                else:
+                    self.assertNotIn("--remote-control", args)
+
+    def test_boolean_false_omits_the_option_instead_of_substituting_the_default(self) -> None:
+        """``1`` is FALSE here: the option is omitted, and the shipped default is not put in its place.
+
+        ``CLAUDE_RESUME=0`` still forwards ``--resume 0``. No valued option was added, so the ``--`` separator,
+        which claudey appends only after a valued option, is absent. Remote control, on by default, is held off.
+        """
+        flag_args = ["--model", SCRIPT_FALSE, "--effort", SCRIPT_FALSE, "--id", SCRIPT_FALSE, "--worktree", SCRIPT_FALSE, "-p", SCRIPT_FALSE]
+        env_false = {
+            "CLAUDE_MODEL": SCRIPT_FALSE,
+            "CLAUDE_EFFORT": SCRIPT_FALSE,
+            "CLAUDE_ID": SCRIPT_FALSE,
+            "CLAUDE_WORKTREE": SCRIPT_FALSE,
+            "CLAUDE_PROMPT": SCRIPT_FALSE,
+        }
+        cases: tuple[tuple[str, list[str], dict[str, str]], ...] = (
+            ("flags", flag_args, {}),
+            ("environment", [], env_false),
+            ("resume-env", [], {**env_false, "CLAUDE_RESUME": SCRIPT_TRUE}),
+        )
+        defaults = shipped_defaults("DEFAULT_MODEL", "DEFAULT_EFFORT", "DEFAULT_PROMPT")
+        for name, extra_args, env_extra in cases:
+            with self.subTest(source=name), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                env["CLAUDE_REMOTE_CONTROL"] = SCRIPT_FALSE
+                env.update(env_extra)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertIn("__CALL__", args_log.read_text(encoding="utf-8"))
+
+                args = self._extract_logged_args(args_log)
+                for value in defaults.values():
+                    self.assertNotIn(value, args)
+                self.assertNotIn("--model", args)
+                self.assertNotIn("--effort", args)
+                self.assertNotIn("--id", args)
+                self.assertNotIn("--worktree", args)
+                self.assertNotIn("--prompt", args)
+                self.assertNotIn("--", args)
+                if name == "resume-env":
+                    self.assertEqual(args, ["--resume", SCRIPT_TRUE])
+                else:
+                    self.assertEqual(args, [])
+
+    def test_environment_values_are_one_argument_and_a_flag_overrides_only_that_setting(self) -> None:
+        """Environment values reach wake_the_claude.bash unsplit; ``-m`` replaces the model and leaves the rest."""
+        prompt = 'env "prompt" $(echo injected) *.txt'
+        for extra_args, expected_model in (([], "haiku"), (["-m", "sonnet"], "sonnet")):
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
+                env = self._base_env(args_log)
+                env["CLAUDE_MODEL"] = "haiku"
+                env["CLAUDE_EFFORT"] = "low"
+                env["CLAUDE_PROMPT"] = prompt
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                args = self._extract_logged_args(args_log)
+                self.assertEqual(args[args.index("--model") + 1], expected_model)
+                self.assertEqual(args[args.index("--effort") + 1], "low")
+                self.assertEqual(args[args.index("--prompt") + 1], prompt)
+                self.assertEqual(args[-1], prompt)
+                self.assertLess(args.index("--effort"), args.index("--"))
+                self.assertLess(args.index("--"), args.index("--prompt"))
+
+    def test_script_version_ignores_an_inherited_script_version_and_does_not_launch(self) -> None:
+        """``--script-version`` prints the version in claudey's header, not a ``SCRIPT_VERSION`` inherited from the environment.
+
+        The assignment is unconditional, including when ``--script-version`` is not the first argument, and it must not start
+        a session. (``-v`` / ``--version`` report Claude Code's version since 2026-11-06: test_version_flags_report_claude_codes_version.)
+        """
+        header = re.search(r"^# Version:\s+(\S+)\s*$", LAUNCHER_SRC.read_text(encoding="utf-8"), re.MULTILINE)
+        self.assertIsNotNone(header, msg="claude_interactive.bash's header must state its version")
+        assert header is not None
+        self.assertEqual(shipped_defaults("SCRIPT_VERSION")["SCRIPT_VERSION"], header.group(1))
+        inherited_version = "9.9.9-inherited-from-the-environment"
+        for extra_args in (["--script-version"], ["-m", "sonnet", "--script-version"]):
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=True)
+                env = self._base_env(args_log)
+                env["SCRIPT_VERSION"] = inherited_version
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertEqual(result.stdout, f"{header.group(1)}\n")
+                self.assertNotIn(inherited_version, result.stdout)
+                self.assertFalse(args_log.exists(), "wake_the_claude.bash must not be invoked")
+
+    def test_help_flags_print_usage_and_do_not_launch(self) -> None:
+        """``--help`` exits 0 with claudey's usage text and does not start a session, including after another flag."""
+        for extra_args in (["--help"], ["-h"], ["-?"], ["-m", "sonnet", "--help"]):
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=True)
+                env = self._base_env(args_log)
+
+                result = self._run_launcher(launcher_path, temp_dir, env, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertIn(f"Usage: {launcher_path.name} ", result.stdout)
+                self.assertNotIn("Unknown argument", result.stdout)
+                self.assertFalse(args_log.exists(), "wake_the_claude.bash must not be invoked")
+
+
+class ClaudeInteractiveEndToEndTests(unittest.TestCase):
+    """claudey, the REAL wake_the_claude.bash, and a stub claude that records the argv Claude Code itself is handed.
+
+    The runtime tests above stop at wake_the_claude.bash's argv. Claude Code's own parser is where a bare flag with an
+    optional value (``--worktree [name]``, ``--remote-control [name]``) would take the prompt as that value.
+    """
+
+    def _launch(self, temp_dir: str, extra_args: list[str], env_extra: dict[str, str] | None = None) -> tuple[subprocess.CompletedProcess[str], list[str]]:
+        scripts_dir = Path(temp_dir) / "scripts"
+        scripts_dir.mkdir(exist_ok=True)
+        for name in ("claude_interactive.bash", "wake_the_claude.bash"):
+            target = scripts_dir / name
+            target.write_text((REPO_ROOT / "scripts" / name).read_text(encoding="utf-8"), encoding="utf-8")
+            target.chmod(0o755)
+        bin_dir = Path(temp_dir) / "bin"
+        bin_dir.mkdir(exist_ok=True)
+        argv_log = Path(temp_dir) / "claude_argv.nul"
+        argv_log.unlink(missing_ok=True)
+        fake_claude = bin_dir / "claude"
+        fake_claude.write_text(
+            '#!/usr/bin/env bash\nif [[ "$1" == "--version" ]]; then echo "claude-test-version"; exit 0; fi\nprintf \'%s\\0\' "$@" >> "$CLAUDE_ARGV_NUL_LOG"\n',
+            encoding="utf-8",
+        )
+        fake_claude.chmod(0o755)
+
+        env = RedactedEnv(os.environ)
+        for var in ("CLAUDE_SKIP_PERMISSIONS", "CLAUDE_REMOTE_CONTROL", "CLAUDE_MODEL", "CLAUDE_EFFORT", "CLAUDE_ID", "CLAUDE_WORKTREE", "CLAUDE_PROMPT", "CLAUDE_PROMPT_FILE", "CLAUDE_PROMPT_PATH", "WTC_DEBUG", "BASH_ENV", "ENV"):
+            env.pop(var, None)
+        env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
+        env["CLAUDE_ARGV_NUL_LOG"] = str(argv_log)
+        env["WTC_SESSIONS_DIR"] = str(Path(temp_dir) / "sessions")
+        env["WTC_LOGS_DIR"] = str(Path(temp_dir) / "logs")
+        env.update(env_extra or {})
+        result = subprocess.run(
+            ["bash", str(scripts_dir / "claude_interactive.bash"), *extra_args],
+            cwd=temp_dir,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=60,
+        )
+        argv = argv_log.read_bytes().decode("utf-8").split("\0")[:-1] if argv_log.exists() else []
+        return result, argv
+
+    def test_claude_gets_a_bare_worktree_and_remote_control_and_the_prompt_last(self) -> None:
+        """Claude Code receives the worktree and remote control bare, and the prompt as its last argument, after ``--``."""
+        defaults = shipped_defaults("DEFAULT_MODEL", "DEFAULT_EFFORT", "DEFAULT_PROMPT")
+        cases: tuple[tuple[list[str], str, str | None], ...] = (
+            ([], defaults["DEFAULT_PROMPT"], None),
+            (["-w", "feature-tree", "-p", "two words, 'quoted'"], "two words, 'quoted'", "feature-tree"),
+        )
+        for extra_args, prompt, worktree_name in cases:
+            with self.subTest(extra_args=extra_args), tempfile.TemporaryDirectory() as temp_dir:
+                result, argv = self._launch(temp_dir, extra_args)
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertTrue(argv, "Expected claude to be invoked")
+
+                self.assertEqual(argv[-2:], ["--", prompt])
+                self.assertEqual(argv.count("--"), 1)
+                self.assertFalse({"--prompt", "-p", "--prompt-string"} & set(argv[:-1]), "no prompt flag reaches claude")
+                self.assertEqual(argv[argv.index("--model") + 1], defaults["DEFAULT_MODEL"])
+                self.assertEqual(argv[argv.index("--effort") + 1], defaults["DEFAULT_EFFORT"])
+                after_remote_control = argv[argv.index("--remote-control") + 1]
+                self.assertTrue(after_remote_control.startswith("-"), f"--remote-control was given {after_remote_control!r}")
+                after_worktree = argv[argv.index("--worktree") + 1]
+                if worktree_name is None:
+                    self.assertTrue(after_worktree.startswith("-"), f"--worktree was given {after_worktree!r}")
+                else:
+                    self.assertEqual(after_worktree, worktree_name)
+
+    def test_a_prompt_that_reads_like_a_flag_does_not_undo_an_opt_out(self) -> None:
+        """``--no-remote-control --prompt --remote-control`` keeps remote control off: the prompt is text (juniper-ml#2438 review)."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result, argv = self._launch(temp_dir, ["--no-remote-control", "--prompt", "--remote-control"])
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertEqual(argv[-2:], ["--", "--remote-control"])
+            self.assertNotIn("--remote-control", argv[:-2])
+
+    def test_version_flags_report_claude_codes_version(self) -> None:
+        """``-v`` / ``-V`` / ``--version`` / ``--claude-version`` print Claude Code's version and start no session (2026-11-06).
+
+        They printed claudey's own version until then, which ``--script-version`` now prints.
+        """
+        claudey_version = shipped_defaults("SCRIPT_VERSION")["SCRIPT_VERSION"]
+        for flag in ("-v", "-V", "--version", "--claude-version"):
+            with self.subTest(flag=flag), tempfile.TemporaryDirectory() as temp_dir:
+                result, argv = self._launch(temp_dir, [flag])
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                self.assertIn("claude-test-version", result.stdout)
+                self.assertNotIn(claudey_version, result.stdout.split())
+                self.assertNotIn("wake_the_claude.bash: ", result.stderr, "the version needs no debug log")
+                self.assertEqual(argv, [], "no Claude Code session may start")
+
+    def test_a_prompt_file_wake_the_claude_refuses_fails_claudey(self) -> None:
+        """A missing or empty prompt file starts no session, claudey exits 1, as wake_the_claude.bash does, and stderr says why.
+
+        With the debug log off (``WTC_DEBUG=1``), so the ``Error:`` line can only come from the errors themselves.
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            (Path(temp_dir) / "empty.md").write_text("\n", encoding="utf-8")
+            for extra_args in (["--file", "missing.md"], ["--file", "empty.md"], ["--path", "no-such-dir", "--file", "empty.md"]):
+                with self.subTest(extra_args=extra_args):
+                    result, argv = self._launch(temp_dir, extra_args, {"WTC_DEBUG": "1"})
+                    self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+                    self.assertNotIn("wake_the_claude.bash: ", result.stderr, "the debug log must be off")
+                    self.assertIn("Error:", result.stderr)
+                    self.assertEqual(argv, [], "no Claude Code session may start")
+
+    def test_a_prompt_file_reaches_claude_as_the_prompt(self) -> None:
+        """Claude Code receives the file's text as its prompt, after ``--``: claudey's default prompt does not displace it."""
+        default_prompt = shipped_defaults("DEFAULT_PROMPT")["DEFAULT_PROMPT"]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            prompt_dir = Path(temp_dir) / "prompts"
+            prompt_dir.mkdir()
+            (prompt_dir / "handoff.md").write_text("---name: from the file\nsecond line\n", encoding="utf-8")
+            for extra_args in (["--file", "prompts/handoff.md"], ["--path", "prompts/handoff.md"], ["--path", "prompts", "--file", "handoff.md"]):
+                with self.subTest(extra_args=extra_args):
+                    result, argv = self._launch(temp_dir, extra_args)
+                    self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+                    self.assertEqual(argv[-2:], ["--", "---name: from the file\nsecond line"])
+                    self.assertNotIn(default_prompt, argv)
 
 
 if __name__ == "__main__":

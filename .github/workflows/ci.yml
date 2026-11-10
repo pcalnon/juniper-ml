@@ -91,7 +91,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
@@ -190,7 +190,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -225,6 +225,12 @@ jobs:
           # without it the suites cannot even be collected. Wheels exist for the
           # whole 3.12/3.13/3.14 matrix, so this never builds from source.
           pip install "h5py>=3.11"
+          # tests/test_subpackage_py_typed.py builds the six sub-package wheels
+          # in this interpreter (no build isolation), so the job installs what
+          # their [build-system] requires: "setuptools>=68" and "wheel" (a
+          # setuptools without its own bdist_wheel needs the latter). Python
+          # 3.12+ no longer bundles setuptools (ensurepip / venv).
+          pip install "setuptools>=68" wheel
 
       - name: Run Python regression tests
         run: |
@@ -374,6 +380,12 @@ jobs:
           # No network / gh / git / repo writes; dry-run is byte-identical. util/ is not
           # pre-commit-lint-gated, so this unittest is the gate.
           python3 -m unittest -v tests/test_release_train_ceremony.py
+          # tests/test_release_train_exact_caps.py: the archive base64 cap and the proposal
+          # PR-body cap at equality. An archive whose encoding equals the cap is planned;
+          # one byte over halts before a write. A body of exactly 65,536 UTF-8 bytes keeps
+          # its notes and still opens; one byte over drops the notes and is refused before
+          # any write. Far-from-the-cap cases live in the ceremony and propose suites.
+          python3 -m unittest -v tests/test_release_train_exact_caps.py
           # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
           # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
           # provenance envelope, and the test_status cold_cache/empty distinction. util/ is
@@ -475,8 +487,10 @@ jobs:
           python3 -m unittest -v tests/test_publish_subpackage_workflows.py
           # tests/test_subpackage_py_typed.py: asserts all six published sub-packages
           # ship a py.typed marker AND declare it as package data (APD-SVCCORE-008 /
-          # APD-OBS-002, fixed in ml#1237). Wired 2026-08-22; the gate for that fix had
-          # never run in CI, so a regression would have shipped silently.
+          # APD-OBS-002, fixed in ml#1237), and that the built wheel contains
+          # <import>/py.typed plus the Typing :: Typed classifier. Wired 2026-08-22;
+          # the source gate for that fix had never run in CI, and the wheel itself
+          # was unchecked -- juniper-config-tools 0.1.0's tree had no marker at all.
           python3 -m unittest -v tests/test_subpackage_py_typed.py
           # The flood-remediation sequence-safety screens (Proposal P2 gates G1/G2)
           # now ship as the PyPI package juniper-ci-tools (>=0.8.0); the per-PR
@@ -682,7 +696,11 @@ jobs:
           # assignment, the installer's never-blessed first install runs to the end
           # (I-36) and its drift gate refuses/allows as ruled (D-6), and the two P0
           # recovery helpers' --dry-run gates refuse a group-readable secret file or a
-          # non-0700 data folder. Runs no Duplicati binary (DUPLICATI_SERVER=/bin/true).
+          # non-0700 data folder. The Phase D trial drop-in is merged onto duplicati.service
+          # with systemd's empty-assignment reset: the trial wrapper, defaults and key replace
+          # the live ones, a blocked syscall becomes a kill in place of the unit's EPERM,
+          # Restart=no, and no confinement key is reassigned. Runs no Duplicati binary
+          # (DUPLICATI_SERVER=/bin/true).
           python3 -m unittest -v tests/test_duplicati_wrapper_contract.py
           # tests/test_duplicati_installer_real_path.py: the installer's REAL path
           # (no --dry-run) as non-root against a scratch prefix with PATH stubs --
@@ -694,6 +712,12 @@ jobs:
           # EXIT-trap state (round 3, R3C D-5), against PATH stubs and a fake server on a
           # scratch database; the real exit gate judges the copy. Touches no /etc, /run or unit.
           python3 -m unittest -v tests/test_backup_rekey_real_path.py
+          # tests/test_write_matched_settings_key.py: Procedure A's key write (Phase D step 9)
+          # writes the probe's matched form -- a quoted raw match keeps its quotes, a noquote
+          # match drops them, a newline or edge-whitespace match is refused -- never over an
+          # existing path, verified by the gate's read_key and bash's $(<file), accepted by the
+          # real wrapper; its labels equal the probe's own verdict on the same inputs.
+          python3 -m unittest -v tests/test_write_matched_settings_key.py
           # tests/test_a0_restore_scripts.py: Procedure A0's two scripts hand duplicati-cli
           # a COPY of the frozen job index with its -wal/-journal beside it under the copy's
           # name (round 5, R5A F22/F23); passphrase by environment only. duplicati-cli is a
@@ -977,6 +1001,11 @@ jobs:
           # Documented in AGENTS.md but never wired into this job until R-6 -- so the stall_seconds
           # passthrough the P4 suites now depend on was itself ungated.
           python3 -m unittest -v tests/test_run_suite.py
+          # tests/test_per_run_timeout_boundary.py: juniper-ml#2210's ceiling is strict.
+          # A per_run_timeout_seconds equal to a cell's worst-case budget is refused
+          # (`>` not `>=`), because at equality the subprocess kill still lands before
+          # manifest.json. Also a zero budget, and a tie for the largest sum.
+          python3 -m unittest -v tests/test_per_run_timeout_boundary.py
           # tests/test_list_runs.py: hermetic tests for util/experiments/list_runs.py, the Wave 7.2
           # safety-gated run lister/pruner -- state classification, --older-than, and the prune
           # safety gates, over synthetic RUN_ROOT fixtures. Also previously unwired.
@@ -1400,6 +1429,10 @@ jobs:
           # JUNIPER_GUARD_HOME: allowed calls print nothing (never "allow"); bad input exits 2.
           # Also drives util/install_claude_agent_guard.bash against a temp settings file.
           python3 -m unittest -v tests/test_claude_agent_guard.py
+          # tests/test_claude_agent_guard_brace_cap.py: brace expansion keeps a credential
+          # name in the 64th alternative and drops the 65th. A numeric range of 64 includes
+          # both ends; one past the cap drops the far end inside _brace_range.
+          python3 -m unittest -v tests/test_claude_agent_guard_brace_cap.py
           # tests/test_git_remote_alias_check.py: turing bring-up G2 / R-G2a/b/c (gate G-ALIAS).
           # util/git_remote_alias_check.py checks each checkout's PERSISTED origin and pushurl
           # (config --get; remote get-url would expand insteadOf), the alias's ssh -G view and the
@@ -1460,6 +1493,10 @@ jobs:
           # (R-G1, the X2 class) exits 2; G-MEM's verdicts equal util/macvm_ctl.bash status's; the real
           # probe feeds the check; the committed turing file agrees with macvm_ctl, hosttools and conda-envs.
           python3 -m unittest -v tests/test_host_state_check.py
+          # tests/test_host_state_gate_boundaries.py: G-TOOLS kubectl passes at exactly max_minor_skew
+          # (either direction, and with kubectl's trailing '+' on the minor) and fails one minor past it;
+          # a skew of 0 admits only the cluster minor. G-NET throughput equal to min_mbps passes.
+          python3 -m unittest -v tests/test_host_state_gate_boundaries.py
           # tests/test_mcp_setup.py: turing bring-up H4. util/mcp_setup.bash writes a checkout's .mcp.json Serena
           # entry: pinned to a full commit from conf/hosts/<host>/mcp.json (D10), bound with --project (audit
           # A2-F1), on a context whose excluded_tools hold the shell tool. Other servers are kept, a changed file
@@ -1476,6 +1513,18 @@ jobs:
           # gitignored tmp/ (a linked worktree resolves to its primary), creating it; a directory in no checkout exits 1 and
           # falls back to nothing. Sourced, it defines juniper_repo_primary / juniper_repo_tmp and changes no shell option.
           python3 -m unittest -v tests/test_juniper_repo_tmp.py
+          # tests/test_stats_summary_eval_blocks.py: juniper-ml#2064 -- a cascor run's eval scalars are cascor's FINAL evaluation (`eval_metrics.final`), labelled with its
+          # split, n and `held_out` (true only on test), in stats.json (`juniper-experiment-stats/2`), summary.md and eval_metrics.png;
+          # the in-loop values stay beside them as `eval_scalars_in_loop`, labelled. A run with no final evaluation (disabled, a
+          # null final, a service before juniper-cascor#614) says why and never borrows the in-loop numbers. Fixtures are real
+          # `/v1/metrics` bodies from the run corpus (`tests/cascor_eval_fixtures.py`).
+          python3 -m unittest -v tests/test_stats_summary_eval_blocks.py
+          # tests/test_host_api_filesystems_check.py: the yamaguchi securityfs incident (2026-10-27 unmount, 2026-11-07 report).
+          # util/host_api_filesystems_check.py judges /proc/self/mountinfo -- not systemctl's unit list, which cannot show PID 1's
+          # own API mounts once they are gone -- against systemd's API-filesystem table, and fails when AppArmor is enabled but its
+          # securityfs interface is missing. Fixtures are yamaguchi's real mount lines; the pid1 rows are pinned to the committed
+          # systemd v259.5 source excerpt under reports/. Stdlib only.
+          python3 -m unittest -v tests/test_host_api_filesystems_check.py
 
       - name: Run bash regression tests
         run: |
@@ -1536,7 +1585,7 @@ jobs:
 
       - name: Set up Python
         if: github.event_name == 'pull_request'
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -1611,7 +1660,7 @@ jobs:
           fetch-depth: 0 # need the base tip to apply the no-worsening rule
 
       - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -1705,7 +1754,7 @@ jobs:
           fetch-depth: 0 # need base + head for the three-dot merge-base screens
 
       - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -1782,7 +1831,7 @@ jobs:
 
       - name: Upload sequence-safety report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: sequence-safety-report
           path: |
@@ -1818,7 +1867,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -1897,7 +1946,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -1931,7 +1980,7 @@ jobs:
           "
 
       - name: Upload dist
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist
           path: dist/
@@ -1953,7 +2002,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -2065,7 +2114,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -2182,7 +2231,7 @@ jobs:
         # rules from 2026-08-13 until then and could not fail.
 
       - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -2289,7 +2338,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -2314,7 +2363,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
           cache: pip
@@ -2344,7 +2393,7 @@ jobs:
           juniper-generate-dep-docs
 
       - name: Upload Dependency Documentation
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: dependency-docs
@@ -2499,7 +2548,7 @@ jobs:
 
       - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
         if: steps.changes.outputs.relevant == 'true'
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 

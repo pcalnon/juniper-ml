@@ -1,0 +1,33 @@
+# juniper-deploy full pytest suite on yamaguchi, in the incident state (securityfs unmounted), 2026-11-08 ~02:20Z
+# command (each checkout): python3 -m pytest tests/ -q -p no:cacheprovider
+#
+# main   (juniper-deploy f85364e4, the primary checkout):  17 failed, 374 passed, 48 skipped, 7 subtests passed in 51.16s
+# branch (fix/apparmor-securityfs-preflight worktree):     17 failed, 392 passed, 48 skipped, 7 subtests passed in 47.71s
+#
+# Failure sets: IDENTICAL (diff of the sorted FAILED lines is empty).
+# The branch adds 18 passing tests (tests/test_apparmor_preflight.py) and changes no other result.
+#
+# Every one of the 17 failures is the SAME root cause as the incident: `helm` on yamaguchi is a snap (/snap/bin/helm),
+# and snap-confine dies before helm runs:
+#     stderr=aa_is_enabled() failed unexpectedly (No such file or directory): No such file or directory
+# (34 lines of main's log quote it: two per failing test.) They are expected to pass once the runbook's remount is done;
+# runbook step 6 re-runs this suite to show it.
+#
+# Failed tests (both runs):
+FAILED tests/test_helm_chart_probes.py::test_helm_renders_at_least_three_juniper_deployments
+FAILED tests/test_helm_chart_probes.py::test_liveness_probe_path_uses_health_live[juniper-canopy]
+FAILED tests/test_helm_chart_probes.py::test_liveness_probe_path_uses_health_live[juniper-cascor]
+FAILED tests/test_helm_chart_probes.py::test_liveness_probe_path_uses_health_live[juniper-data]
+FAILED tests/test_helm_chart_probes.py::test_readiness_probe_path_uses_health_ready[juniper-canopy]
+FAILED tests/test_helm_chart_probes.py::test_readiness_probe_path_uses_health_ready[juniper-cascor]
+FAILED tests/test_helm_chart_probes.py::test_readiness_probe_path_uses_health_ready[juniper-data]
+FAILED tests/test_helm_chart_probes.py::test_worker_health_env_vars_absent_when_flag_disabled
+FAILED tests/test_helm_chart_probes.py::test_worker_health_env_vars_set_when_flag_enabled
+FAILED tests/test_helm_chart_probes.py::test_worker_probes_use_exec_when_flag_disabled
+FAILED tests/test_helm_chart_probes.py::test_worker_probes_use_httpget_when_flag_enabled
+FAILED tests/test_helm_networkpolicy_data_egress.py::test_data_pod_effective_egress_is_exactly_dns_and_public_https
+FAILED tests/test_helm_networkpolicy_data_egress.py::test_data_pod_mounts_no_service_account_token
+FAILED tests/test_helm_networkpolicy_data_egress.py::test_no_other_network_policy_kinds_are_rendered
+FAILED tests/test_helm_networkpolicy_data_egress.py::test_other_juniper_pods_have_no_public_or_unscoped_egress
+FAILED tests/test_helm_networkpolicy_data_egress.py::test_policies_off_leaves_no_policy_selecting_a_juniper_pod
+FAILED tests/test_helm_networkpolicy_data_egress.py::test_render_has_no_unmodelled_constructs

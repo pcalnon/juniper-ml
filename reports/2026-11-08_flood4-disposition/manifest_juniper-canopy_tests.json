@@ -1,0 +1,95 @@
+{
+  "repo": "juniper-canopy",
+  "carrier": "tests",
+  "base_sha": "af650373518f9b9869799daa23551835f24a930d",
+  "base_recheck": "git -C <canopy primary> fetch -q origin at ~17:20 local: origin/main still af650373518f9b9869799daa23551835f24a930d",
+  "worktree": "/home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--test--flood4-consolidated-tests--20261107-1700--af650373",
+  "files": [
+    {"path": "CHANGELOG.md", "status": "modified"},
+    {"path": "src/tests/regression/test_bandit_sarif_upload.py", "status": "added"},
+    {"path": "src/tests/regression/test_codecov_token_upload.py", "status": "added"},
+    {"path": "src/tests/regression/test_lockfile_regen_empty_payload.py", "status": "added"},
+    {"path": "src/tests/unit/test_agents_md_date_check.py", "status": "added"}
+  ],
+  "validator_findings": {
+    "T-F1": "applied: every run relocates both of the step's write paths under tmp_path",
+    "T-F2": "applied: GIT_CONFIG_GLOBAL=os.devnull + GIT_CONFIG_NOSYSTEM=1 for the fixture's git and the step it runs",
+    "T-F3": "applied: 31 test files on main (35 was the carrier tree)",
+    "T-F4": "applied: wording 'coreutils base64 (GNU or uutils)'; constant renamed _BASE64_W0_STAND_IN",
+    "round2-F1": "applied: the PR body no longer says CI could not see #792's fault; its macOS leg failed in CI (check run 'Unit Tests + Coverage (Python 3.12 on macos-latest)' failure on 1006ccd8); only the /tmp write and #794's config leak were invisible",
+    "round2-F2": "applied: (a) CHANGELOG / PR body / commit body say macOS ran the coreutils FORM `base64 -w0 FILE`, which its BSD base64 refuses; (b) the test comment now states only what holds on every runner ('the coreutils form, which GNU and uutils coreutils both accept'), dropping the builder-host fact; (c) only the fixture's _git passes -c; the step _run executes gets the hermetic env only. Re-run: test_lockfile_regen_empty_payload.py 10 passed; pre-commit on CHANGELOG.md + that file exit 0 (tmp/flood4/canopy/tests/precommit_round2.log)"
+  },
+  "carried": [
+    {
+      "pr": 789,
+      "head_sha": "87b45f787386b3fdf9c77cd95cc5b814a2c85fa6",
+      "title": "test(security): pin the Bandit SARIF install and PR upload failure",
+      "taken": ["src/tests/regression/test_bandit_sarif_upload.py (head blob, verbatim, new file)"],
+      "fixes": [],
+      "dropped": ["its CHANGELOG.md hunk (a separate [Unreleased] Added bullet): folded into the carrier's single entry"],
+      "outcome": "carried",
+      "reason": "7 tests pass on main; mutant bare `pip install bandit` killed"
+    },
+    {
+      "pr": 792,
+      "head_sha": "1006ccd8aa52c7075bad48c2786d091bac1cd854",
+      "title": "test(ci): pin the lockfile regen's refusal of an empty payload",
+      "taken": ["src/tests/regression/test_lockfile_regen_empty_payload.py (head blob + fixes)"],
+      "fixes": [
+        "Portability (CI's required macOS leg failed 5 cases: BSD base64 refuses the FILE operand, 'base64: invalid argument requirements.lock'). Added _on_linux(), _base64_runs_the_steps_form(scratch) (runs the step's exact form `base64 -w0 requirements.lock` on a one-byte file and requires exit 0 AND output 'eA=='), and _BASE64_W0_STAND_IN (a python stand-in for exactly `base64 -w0 FILE`; any other argv exits non-zero). _run() installs the stand-in only when no base64 stub is given, the platform is not Linux, and the probe fails. Linux always runs the real base64; nothing is skipped. Precedent: flood-3 record sec 6 (juniper-data#498 / data-client#248).",
+        "Validator T-F1 (MAJOR, confirmed): _run() relocated the step's two absolute write paths (lockfile-update.yml:220 and :222, /tmp/lockfile-commit.json and /tmp/lockfile-commit-result.json) only for the cases expected to reach jq. A regressed guard therefore wrote /tmp/lockfile-commit.json on the host -- my guard mutant did, at 17:08:14 local; the orchestrator deleted it -- and `assert not result.body.exists()` checked a path the step never wrote. The relocate_writes parameter is gone: every run relocates both paths under tmp_path, so that assertion is live.",
+        "Validator T-F4 (confirmed): 'GNU base64' wording changed to 'coreutils base64 -w0 FILE (GNU or uutils)'. This host's base64 is uutils coreutils 0.10.0, and CI's ubuntu-latest is ubuntu-26.04. The stand-in constant is renamed _BASE64_W0_STAND_IN. No behaviour change."
+      ],
+      "dropped": ["its CHANGELOG.md hunk (extended main's #775 Fixed entry): folded into the carrier's single Added entry instead"],
+      "outcome": "carried-with-fix",
+      "reason": "10 tests pass; guard mutant killed with no host write; a simulated macOS leg reproduces CI's exact 5 failures without the stand-in and passes with it"
+    },
+    {
+      "pr": 794,
+      "head_sha": "572e252b6f75abdcfe68d2025f87452ba492d6f0",
+      "title": "test(ci): pin the AGENTS.md date check's verify step",
+      "taken": ["src/tests/unit/test_agents_md_date_check.py (head blob + fix)"],
+      "fixes": [
+        "Hermeticity (brief, widened by validator T-F2, confirmed): the fixture's git calls pass -c commit.gpgsign=false -c tag.gpgsign=false and run with GIT_CONFIG_GLOBAL=os.devnull and GIT_CONFIG_NOSYSTEM=1 (_hermetic_env()). The verify step that _run() executes gets the same env, since its own `git diff` read the global config too. The identity is set per repository in _init. Measured with the pre-T-F2 file: color.ui=always failed 2 tests and a refusing core.hooksPath hook failed 5. After the change, 18 passed under each of: /dev/null, a signing config that cannot sign (gpg.program=false), color.ui=always, and the refusing hooksPath."
+      ],
+      "dropped": [],
+      "outcome": "carried-with-fix",
+      "reason": "18 tests pass under four hostile global configs; future-date mutant killed; the draft's fixture fails 5 under a signing config"
+    },
+    {
+      "pr": 795,
+      "head_sha": "d512cce82707bc84ca323f0635394552432a9a18",
+      "title": "test(ci): pin the unit lane's Codecov token and the xml pytest writes",
+      "taken": ["src/tests/regression/test_codecov_token_upload.py (head blob, verbatim, new file)"],
+      "fixes": [],
+      "dropped": [],
+      "outcome": "carried",
+      "reason": "16 tests pass on main and 16 against the docs carrier's ci.yml (comment change); token-swap mutant killed. Body's 'PR #788 is the unmerged MNIST fix' is stale (#788 merged 2026-11-04); not carried into any text."
+    }
+  ],
+  "checks": [
+    {"what": "carried tests + import origin (CI-like git config), after the validator fixes", "command": "python3 util/ad-hoc/2026-11-07_flood4_canopy_run_pytest.py --src <tests wt>/src --git-global devnull -- tests/regression/test_bandit_sarif_upload.py tests/regression/test_codecov_token_upload.py tests/regression/test_lockfile_regen_empty_payload.py tests/unit/test_agents_md_date_check.py  (runs /opt/miniforge3/bin/conda run -n JuniperCanopy1 python -m pytest -p 2026-11-07_flood4_canopy_import_origin -p no:cacheprovider ..., cwd <tests wt>/src, GIT_CONFIG_GLOBAL=/dev/null)", "result": "pass", "detail": "51 passed (7+16+10+18), exit 0; modules-from-primary count=0 (JuniperCanopy1 has an editable juniper-canopy 0.6.0 install of the primary). First run, before the validator fixes: same 51 passed.", "log": "tmp/flood4/canopy/tests/pytest_carried_devnull_after_validation.log"},
+    {"what": "CI unit-lane selection on the carrier (no coverage flags), before the validator fixes", "command": "same runner -- -m \"not requires_cascor and not requires_server and not slow\" tests/unit/ tests/regression/ tests/contract/ tests/performance/ --timeout=60", "result": "fail", "detail": "2 failed, 8280 passed, 8 skipped, 4 deselected in 539.60s; modules-from-primary count=0. Both failures are tests/unit/test_client_version_floors.py::test_installed_juniper_dep_satisfies_floor[juniper-observability|juniper-service-core]: the HOST env has juniper-observability 0.4.0 and juniper-service-core 0.5.0, below canopy's floors (0.4.1 / 0.7.1). They reproduce on main's own code (next check). Not re-run after the validator fixes, which touched only the two carried files (re-run above).", "log": "tmp/flood4/canopy/tests/pytest_unit_lane.log"},
+    {"what": "classify the 2 unit-lane failures: same test on main's code (docs worktree, src identical to main)", "command": "same runner --src <docs wt>/src -- tests/unit/test_client_version_floors.py", "result": "fail", "detail": "2 failed, 4 passed: identical failures on main = host environment, not the carrier", "log": "tmp/flood4/canopy/tests/pytest_version_floors_on_main_code.log"},
+    {"what": "the lane's marker expression selects every carried test", "command": "same runner -- --collect-only -q -m \"not requires_cascor and not requires_server and not slow\" <the 4 files>", "result": "pass", "detail": "7 + 16 + 10 + 18 = 51 collected", "log": "tmp/flood4/canopy/tests/pytest_lane_selector_collect.log"},
+    {"what": "mutation check + #794 signing proof + #792 macOS simulation + host leak probe, after the validator fixes", "command": "python3 util/ad-hoc/2026-11-07_flood4_canopy_tests_mutation_check.py <tests wt> tmp/flood4/canopy/tests", "result": "pass", "detail": "exit 0, all_as_expected=true; every mutated workflow restored (sha256 before == after); the step's absolute write paths, read from lockfile-update.yml (/tmp/lockfile-commit.json, /tmp/lockfile-commit-result.json), absent before AND after all runs. The BSD-sim labels 'real GNU base64' denote this host's coreutils base64 (uutils 0.10.0).", "log": "tmp/flood4/canopy/tests/mutation_summary.json"},
+    {"what": "T-F2: #794's test under hostile global git configs, before and after the change", "command": "python3 util/ad-hoc/2026-11-07_flood4_canopy_gitcfg_matrix.py <tests wt> tmp/flood4/canopy/tests before_tf2|after_tf2", "result": "pass", "detail": "before: devnull 18 passed, signing 18 passed, color.ui=always 16 passed / 2 FAILED, refusing hooksPath 13 passed / 5 FAILED. After: all four 18 passed.", "log": "tmp/flood4/canopy/tests/gitcfg_after_tf2_summary.json"},
+    {"what": "pinned pre-commit on every changed file", "command": "cd <tests wt> && /opt/miniforge3/bin/pre-commit run --files <the 5 files> (first run); after the validator fixes --files src/tests/regression/test_lockfile_regen_empty_payload.py src/tests/unit/test_agents_md_date_check.py, and --files CHANGELOG.md", "result": "pass", "detail": "exit 0 every time (black, isort, flake8, AST, async-route audit, doc links, whitespace; no file modified)", "log": "tmp/flood4/canopy/tests/precommit_tests_after_validation.log"},
+    {"what": "CodeQL prescreen of the carried test files", "command": "python3 util/ad-hoc/2026-10-05_codeql_python_prescreen.py <the 4 files>; after the fixes, the 2 touched files", "result": "fail", "detail": "exit 1: one 'unused-global: module-level pytestmark' per file, nothing else (_UNSIGNED, _hermetic_env, _BASE64_W0_STAND_IN not flagged). ADJUDICATED FALSE POSITIVE: 31 test files on main declare module-level pytestmark (35 in the carrier tree, with these 4); the drafts' own CodeQL (+security-and-quality) runs on these same files left no review threads (gh api repos/pcalnon/juniper-canopy/pulls/{789,792,794,795}/comments -> []) and no open alert on refs/pull/794/merge.", "log": "tmp/flood4/canopy/tests/codeql_prescreen_tests.log"},
+    {"what": "portability grep (GNU-only forms)", "command": "grep -n -E 'base64 -w|date -d|sed -i|/usr/bin/|readlink -f|stat -c|mktemp --|grep -P|xargs -r|find ...-printf' <the 4 files>", "result": "pass", "detail": "hits only in test_lockfile_regen_empty_payload.py: docstrings/comments, the static pin of the workflow's own `LOCK_B64=$(base64 -w0 requirements.lock)`, and the stand-in's `#!/usr/bin/env python3` shebang (POSIX, the form juniper-data#498 proved on the macOS leg)", "log": "tmp/flood4/canopy/tests/portability_grep.log"},
+    {"what": "uncommitted-tree Sequence Safety screen (symbol loss)", "command": "python3 util/ad-hoc/2026-10-08_flood3_worktree_screens.py <tests wt> origin/main --scope 'src/**' -- <4 files> CHANGELOG.md", "result": "pass", "detail": "4 new files CLEAN, CHANGELOG CLEAN", "log": "tmp/flood4/canopy/tests/worktree_screens.log"},
+    {"what": "CHANGELOG placement", "command": "grep -n '^## \\[' CHANGELOG.md", "result": "pass", "detail": "entry is the first bullet of ### Added under ## [Unreleased] (line 10)"}
+  ],
+  "mutations": [
+    {"test_file": "src/tests/regression/test_bandit_sarif_upload.py", "mutant": ".github/workflows/ci.yml:555, `pip install \"bandit[sarif]\" pip-audit` -> `pip install bandit pip-audit`", "result": "killed", "detail": "1 failed, 6 passed", "log": "tmp/flood4/canopy/tests/mut_789_bare_bandit.log"},
+    {"test_file": "src/tests/regression/test_codecov_token_upload.py", "mutant": ".github/workflows/ci.yml:299, `token: ${{ secrets.CODECOV_TOKEN }}` -> `token: ${{ secrets.GITHUB_TOKEN }}`", "result": "killed", "detail": "1 failed, 15 passed", "log": "tmp/flood4/canopy/tests/mut_795_drop_codecov_token.log"},
+    {"test_file": "src/tests/regression/test_lockfile_regen_empty_payload.py", "mutant": ".github/workflows/lockfile-update.yml:203, `if [ -z \"${LOCK_B64}\" ]; then` -> `if false; then`", "result": "killed", "detail": "3 failed, 7 passed; after T-F1 the poisoned-jq cases write under tmp_path, and the host paths stayed absent", "log": "tmp/flood4/canopy/tests/mut_792_guard_never_fires.log"},
+    {"test_file": "src/tests/unit/test_agents_md_date_check.py", "mutant": ".github/workflows/agents-md-touch-up.yml:110, `if [[ \"$current\" > \"$today\" ]]; then` -> `if false; then`", "result": "killed", "detail": "1 failed, 17 passed", "log": "tmp/flood4/canopy/tests/mut_794_drop_future_date_check.log"},
+    {"test_file": "src/tests/unit/test_agents_md_date_check.py (the fix itself)", "mutant": "test file swapped to #794's head blob (no -c commit.gpgsign=false, no hermetic env), run under GIT_CONFIG_GLOBAL=signing_emulation_gitconfig.txt (commit.gpgsign=true, tag.gpgsign=true, gpg.program=false); restored, sha256 equal", "result": "killed", "detail": "draft: 5 failed, 13 passed (every test that commits); carried: 18 passed under the same config", "log": "tmp/flood4/canopy/tests/signing_draft.log"},
+    {"test_file": "src/tests/regression/test_lockfile_regen_empty_payload.py (the fix itself)", "mutant": "BSD-like base64 (refuses a FILE operand) first on PATH, _on_linux() forced False by -p 2026-11-07_flood4_canopy_force_not_linux; FLOOD4_SIM_MODE=no-stand-in disables the stand-in", "result": "killed", "detail": "without the stand-in: 5 failed, 5 passed, the same 5 test ids and message as CI's macOS job 126503186102; with it: 10 passed; real Linux path with the BSD-like base64: 5 failed (Linux is never silently emulated); forced non-Linux with the host's coreutils base64: 10 passed (probe passes, no stand-in); probe: host base64 True, BSD-like False", "log": "tmp/flood4/canopy/tests/bsd_sim_1.log"}
+  ],
+  "open_questions": [
+    "JuniperCanopy1 is stale against canopy's floors (juniper-observability 0.4.0 < 0.4.1, juniper-service-core 0.5.0 < 0.7.1), so test_client_version_floors.py fails 2 tests on this host even on main. Upgrading the env is the owner's call.",
+    "Both carriers' CHANGELOG entries open [Unreleased] ### Added, so the two carriers conflict with each other there at merge (expected)."
+  ]
+}

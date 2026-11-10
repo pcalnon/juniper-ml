@@ -78,6 +78,273 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     supersede (26390 -> 27404 of 28000 chars). The convention doc gains them in sections 1, 4.7, 4.8 (new), 6, 9, 10
     and 11 (new), and the Template Agent's standing rules gain `repo_tmp_rulings`.
 
+- **`HARCOT` joins the `notes/` repository tokens (2026-11-10).** juniper-harcot, the private
+  equities-analysis repository built on juniper-recurrence, names its notes
+  `JUNIPER_<date>_JUNIPER-HARCOT_<phrase>.md`. The token is added everywhere the list is stated:
+  `notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md` (§2, with an assignment
+  rule), `AGENTS.md`, `.claude/agents/{planner,auditor}.md`, and
+  `prompts/agent_templates/{audit,plan,code-review}.md`.
+  Documentation only; no script enforces the token list.
+
+- **The yamaguchi securityfs incident: root cause, remedy, and a host check that would have caught
+  it (2026-11-07).** juniper-deploy's `make up` failed on every container with *"Could not check if
+  docker-default AppArmor profile was loaded: open /sys/kernel/security/apparmor/profiles: no such
+  file or directory"*. The cause is a missing mount, not a missing profile. A root `umount -a`-like
+  event on 2026-10-27 at 17:55:25 CDT unmounted everything not in use. The same-day repair restored
+  what `systemctl` lists: the snaps and the six unit-file API mounts. PID 1's own securityfs, pstore
+  and bpf mounts have no unit file, so nothing listed them and nothing remounted them. dockerd caches
+  AppArmor support once, at start, so it kept checking the absent interface. snap-confine has been
+  failing every snap since: the legacy k8s snaps, `helm`, and every snapd refresh.
+  - `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md`
+    holds the causal chain, each link pinned to evidence and to upstream source lines at the host's
+    exact versions. It also has the timeline, the blast radius, the rejected hypotheses, the
+    unconfirmed actor, and the vetting against the kubeadm install.
+  - `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md` is the
+    owner's root procedure: no reboot, legacy snap k8s services disabled first (decision D-1), three
+    `mount` commands with systemd's options, then validation.
+  - `util/host_api_filesystems_check.py` (new) judges `/proc/self/mountinfo` against systemd's
+    API-filesystem table and AppArmor's interface. Tests: `tests/test_host_api_filesystems_check.py`,
+    25 tests, CI-wired. Its mutation check kills 11 of 11, including "judge only unit-file mounts",
+    the repair's own blind spot.
+  - `reports/2026-11-07_yamaguchi-securityfs-unmount/` holds the evidence: probe, systemd timelines,
+    source pins, the validator's negative control, the deploy suite's main-vs-branch comparison, and
+    both mutation logs. The investigation scripts are kept in `util/ad-hoc/2026-11-07_*`.
+  - Finding 17 of `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`
+    carries an erratum: "repaired without a reboot" was incomplete.
+
+- **Regression tests carried from 28 Cursor fleet drafts (the flood-4 consolidation, owner ruling 2026-11-06), each
+  mutation-checked against the code it pins.** In `juniper-service-core/tests/`: the failed-auth tracker drops the
+  oldest of its 10,000 source IPs (#2419); an exhausted rate-limit window admits again at its boundary (#2427); a
+  worker connection burst refills only up to its cap (#2430); a stuck worker's scores become a duplicate (#2436);
+  `/ws/control` refill and handshake edges (#2439); replay continuity at the buffer edge (#2441); an anomaly warning
+  still accepts the result (#2443); replay speed, range and paused terminal transitions (#2445); a measured zero
+  heartbeat overwrites and the exact timeout is stale (#2447); a request body, a WebSocket frame and a result's
+  attachments that exactly fill their caps are admitted (#2451, #2458, #2463); a task at the exact reassignment
+  timeout (#2461). In `juniper-ci-tools`: a list-item fence indented three spaces is not a heading (#2425). At the top
+  level: a zero score and a zero theta stay measured values (#2413); the `AGENTS.md` date check's three-dot diff,
+  whitespace and unset `BASE_SHA` (#2414); which capture decides G-SEC block-all (#2416); a non-object `stats.json`
+  (#2429); a failed snapshot save that does not re-fit (#2431); a schema-1 `eval_scalars` block (#2434); the Phase D
+  trial drop-in merged onto the live unit (#2421); and four new suites, wired into `ci.yml` and `docs/REFERENCE.md`:
+  `tests/test_claude_agent_guard_brace_cap.py` (#2466), `tests/test_per_run_timeout_boundary.py` (#2448),
+  `tests/test_host_state_gate_boundaries.py` (#2459) and `tests/test_release_train_exact_caps.py` (#2455).
+  - **Fixed before carrying.** #2455's six mypy errors (`list.append(...) or value` lambdas). #2410's wheel test keeps
+    its positive half and drops its negative control, whose premise is false: setuptools 81.0.0 and 84.2.1 package a
+    `py.typed` they find even undeclared; the same file's older text, which said an undeclared marker misses the
+    wheel, is corrected too. The regression job installs `setuptools` and `wheel` for it. #2403's and #2407's launcher
+    tests are rewritten against `main` after #2438 and #2468 (the `--` before the prompt, `-v` reporting Claude Code's
+    version, remote control on by default), and #2407's mypy error is fixed. #2403's effort test keeps only its
+    `--effort 1` half: its `--effort 0` half pinned `--effort auto`, which Claude Code rejects ("Unknown --effort
+    value"), so the script's default is left as an open question rather than locked in.
+  - **From two docs drafts**, the Test Suite Reference sentences this block owns: #2424's on the `--getglobalstate`
+    line in `tests/test_host_state_check.py`'s entry, and #2432's on when `aggregate` falls back from `stats.json`
+    in `tests/test_run_suite.py`'s, each without its link to a section only the docs carrier adds.
+
+- **Operator documentation consolidated from the Cursor flood-4 docs drafts** (ml#2409, #2412, #2417, #2418,
+  #2422, #2426, #2428, #2432, #2433, #2437, #2442, #2444, #2446, #2449, #2456, #2457, #2460, #2462, #2464 and
+  #2465), every claim re-derived from `main`, the sub-package code, PyPI and the Claude Code settings docs:
+  `docs/REFERENCE.md` 0.6.64, the developer cheatsheet, the documentation overview, the quick start, and the
+  `juniper-config-tools` and `juniper-service-core` READMEs. #2424 makes #2426's claim; only #2426's
+  wording is carried. Corrected where a draft had gone stale or was wrong: recurrence 0.8.1 has been on PyPI since
+  2026-11-06, so the crossval-500 page gives the fix instead of a wait; an undeclared `py.typed` still reaches a
+  wheel (setuptools adds it implicitly), and the 0.1.0 wheel is untyped because the file did not exist yet;
+  `juniper-config-tools` joined `[tools]` in juniper-ml 0.6.0, not 0.5.0; juniper-ml#2271 closed unmerged; a fit
+  that returns while paused is documented as the defect it is (after resume a start with data is a 409 until stop
+  or reset); seven sections that sat in the footer, split a paragraph or had swallowed existing text were moved.
+  Also corrected in `main`'s own pages: the first releases with the non-ASCII API-key and Sentry frame-locals
+  fixes (`juniper-service-core` 0.7.1 and `juniper-observability` 0.4.1; juniper-data 0.17.0, juniper-cascor
+  0.12.0 and juniper-canopy 0.9.0 for their own key compare); `accuracy` (juniper-cascor#731) first ships in
+  juniper-cascor 0.13.0; the CR-024 413 for an under-declared `Content-Length` holds only at the ASGI layer; and
+  juniper-data's HTTP body limit and the worker binary-frame cap are 10 MiB and 100 MiB.
+  From #2452 only the cheatsheet's `--fork-session` example is carried: its forwarded argv now shows the `--` that
+  `wake_the_claude.bash` puts before the prompt. Not carried: #2440, the same launcher claim; the rest of #2452's
+  launcher page predates #2468, whose own cheatsheet text is current.
+- **The Cursor flood-4 disposition record, with its render inputs and provenance scripts (round 1 complete).**
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` records how the 74-PR census was
+  disposed of: six carriers (juniper-data#518 and #519, juniper-canopy#797 and #802, juniper-ml#2517 and #2519)
+  merged, and all 68 census drafts assigned to them closed, 67 of them carried. It also records each carrier's 2 to
+  6 independent validation rounds, the defects found on `main`, the per-PR disposition (§5), the process traps, and
+  the owner's rulings 1–7 of 2026-11-08: round 2 takes 48 drafts; the launcher's effort default becomes `max`, and
+  an explicit `auto` will send no `--effort` flag; three of the four open defect rows in §4 get their own fixes
+  now; and juniper-ml#2271's one setting moved to user settings, with its branch deleted. Later rulings decide that
+  the agent guard's brace cap is to fail closed, that the gitleaks fix is to be ported to the seven other
+  repositories that run the action, and that four more defects found while the first fixes were built are to be
+  fixed, each in its own PR; none of these has landed yet. §5's six manifests and render config are archived under
+  `reports/2026-11-08_flood4-disposition/`, from which §5 re-rendered byte for byte (the renderer also reads each
+  PR's live state). The arc's 160 `util/ad-hoc/2026-11-07_flood4_*` and `2026-11-08_flood4_*` scripts, from the
+  nine of its worktrees that held them, are kept as provenance. Before upload they were made to pass gates G-TMP
+  and G-PATH and the secret scan, 21 of 28 predicted CodeQL alerts were fixed (the other 7 are pydantic fields the
+  prescreen misreads), and 29 probes gained provenance fields; nothing they compute changed. Round 1's closing
+  handoff and its successor are archived under `prompts/thread-handoff_automated-prompts/`.
+
+### Changed
+
+- **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
+  session turns on remote control (owner rulings, 2026-11-06).** In `scripts/wake_the_claude.bash` (now 1.1.0), `-v`
+  joins `-V`, `--version` and `--claude-version`, as `claude -v` does; it printed the script's own version, which
+  `--script-version` alone now prints. `claudey` (`scripts/claude_interactive.bash`, now 0.2.0) runs `wake_the_claude.bash
+  --version` for all four, so they print Claude Code's version too; `-v` and `--version` printed claudey's,
+  which `--script-version` now prints. `claudey` forwards a prompt file, `--file` / `-f` / `--file-name` and `--path` /
+  `-l` / `--file-path` (or `CLAUDE_PROMPT_FILE` / `CLAUDE_PROMPT_PATH`), and then sends no default prompt:
+  `wake_the_claude.bash` prefers `--prompt` to a prompt file, so the default would have discarded the file. A prompt
+  together with a prompt file exits 1 for the same reason. `scripts/default_interactive_session_claude_code.bash` sends
+  a bare `--remote-control`, as `claudey` does. `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` describes all three, and no
+  longer says `claude` is invoked with an unquoted parameter array: both the interactive and the `nohup` call quote it.
+  Found in review:
+  - `claudey` exits with `wake_the_claude.bash`'s status. It always exited 0, so a prompt file that
+    `wake_the_claude.bash` refused ended in "Closed …" and success.
+  - It refuses an empty `--file` / `--path` value and an empty word. An empty word ended its parsing, and the words
+    after it were dropped, so `-f "${UNSET}"` or `-w '' --file f` launched with the default prompt. `-w ''` is now a
+    bare `-w`.
+  - `wake_the_claude.bash` prints its errors on stderr as well as in the debug log: a version flag with no `claude`
+    on `PATH` or no version printed, a prompt file that never resolves, and any flag it refuses. With `WTC_DEBUG=1`
+    each was a bare exit 1 or the usage text alone.
+  - `claudey`'s usage text names its own script instead of `wake_the_claude.bash`, lists `-h`, and shows a prompt
+    and a prompt file as alternatives. An empty word is reported as "(an empty word)". `claudey -v` prints no debug
+    log unless `WTC_DEBUG` asks for one.
+
+### Fixed
+
+- **The pre-commit doc-link hook skips the repo's gitignored `tmp/`.** The hook runs
+  `juniper-check-doc-links` with `pass_filenames: false`, so the checker walks the whole checkout, `tmp/`
+  included, and scratch copies of notes kept there failed it. It reads `.txt` as well as markdown, so even
+  captured logs there can fail it. On 2026-11-08 the primary checkout failed with 2,424 broken-link lines,
+  every one under `tmp/`. With `--exclude tmp` it passes: 2,365 files scanned, every link valid. This
+  implements the 2026-10-26 owner ruling for the
+  hook only. The hunk is byte-identical to juniper-ml#2360's, so that PR still merges cleanly; it carries
+  the CI and documented invocations. `--exclude` matches a whole path component, so only directories named
+  exactly `tmp` are skipped; no tracked file lives in one.
+  `util/ad-hoc/2026-11-08_doc_links_tmp_exclusion_check.py` reads the hook's arguments from
+  `.pre-commit-config.yaml` and checks a fixture tree in four cases: a broken link under `tmp/` is skipped;
+  without the flag it fails; a broken link in `notes/` or in `tmp-archive/` still fails.
+
+- **`juniper-service-core`: a `resume_ok` on `/ws/training` now means the client missed nothing up to the moment
+  its socket goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix now" by the owner on
+  2026-11-08. A broadcast made with no socket active is now sequenced and buffered. One that lands while the
+  replay is being sent reaches the client before its socket goes live, through the new keyword-only
+  `promote_to_active(..., replayed_through=...)`. A resume that cannot stay continuous after `resume_ok` is closed
+  1011 `Resume replay incomplete` instead of being left with a hole.
+  - Unreleased. The new API makes the next juniper-service-core release a minor (0.8.0), and `[tools]` caps
+    `juniper-service-core<0.8.0`, so that cap has to rise when 0.8.0 ships. The current releases of
+    juniper-canopy, juniper-cascor, juniper-data (`[api]`) and juniper-recurrence cap it below 0.8.0 too, so
+    `[servers]`, `[recurrence]` and `[all]` stay on 0.7.x until they raise theirs.
+  - `docs/REFERENCE.md` (0.6.66) and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (1.0.66) describe the fixed
+    behaviour. `util/ad-hoc/2026-11-08_service_core_resume_continuity_mutation_check.py` is the mutation check
+    (25/25 arms).
+  - juniper-cascor's own copies of the manager and handler carry both defects and are not changed. Details are in
+    `juniper-service-core/CHANGELOG.md`.
+
+- **The yamaguchi securityfs incident: remediated, recorded, and two defects in its validator fixed.**
+  The owner ran the remount runbook on 2026-11-08, and the three filesystems have been mounted since
+  08:28:29Z. The validator passes, all seven juniper containers run confined by `docker-default`, and
+  juniper-deploy's suite has no failures (409 passed, where 17 had failed). The record is §14 of
+  `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md`.
+  - **The validator accepted an empty baseline.** Step 4 compared the host against an empty file and
+    listed 22 `UNEXPECTED` differences where nothing unexpected had changed.
+    `util/ad-hoc/2026-11-07_securityfs_remount_validate.bash` now refuses a baseline that is not a
+    fingerprint (exit 2, before any check runs), fails closed, and has a `check` mode. Its first
+    version passed the probe's report, because bash abandons a function on an empty
+    associative-array key; the key check now runs in `awk`.
+    `util/ad-hoc/2026-11-08_remount_validate_baseline_gate_check.py` runs 14 cases and 10 seeded
+    defects: all cases pass, and every defect is caught.
+  - **The analysis is corrected.** systemd never gives an API mount point a unit, mounted or not
+    (`src/core/mount.c`, `mount_setup_unit()`). The analysis had said the units are garbage-collected
+    once unmounted. `util/ad-hoc/2026-11-08_api_mount_units_check.bash` tests the correction live. The
+    conclusion stands.
+  - **Runbook step 1** sets `J`, stops when the scripts are missing, and runs the probe only after a
+    good capture. Step 4 names a fallback baseline.
+  - The evidence, from the owner's terminal output to the after-probe, is in
+    `reports/2026-11-07_yamaguchi-securityfs-unmount/`.
+
+- **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>` from a shallow
+  checkout, and refuses a history that a shallow checkout cannot show.**
+  - **The cause.** The scratch was `git clone --shared <checkout>`, which writes the alternate only for a local
+    clone, and git turns local mode off for a shallow source. juniper-ml's primary checkout has been shallow since
+    at least 2026-09-10 (a stray `.git/shallow` entry from 09-07). The clone was therefore a pack transfer that
+    carried only objects reachable from the checkout's local branches and tags. Every fleet PR's head failed
+    `update-ref` ("nonexistent object"): 44 of 45 open PRs came back `ERROR` on 2026-11-04, and 56 of 57 on
+    2026-11-06.
+  - **The fix.** The scratch is now `git init`, matched to the checkout's object format, plus an
+    `objects/info/alternates` entry naming the checkout's object store.
+  - **Four more defects, found by review of the fix, also fixed:**
+    - The scratch takes the source's `.git/shallow`. A merge or ancestor check that fails for any reason other than a
+      conflict is now an error, and so is a behind branch whose merge did not take `main`. A history cut above the
+      merge base had come back mergeable, unmerged.
+    - No filter driver runs in the scratch (`* -filter`), so `filter.lfs.required` configured without git-lfs
+      installed no longer breaks it.
+    - A binary file in a PR no longer raises `UnicodeDecodeError` mid-batch.
+    - An inherited `GIT_DIR` no longer re-initialises the source.
+  - **Docs.** `docs/REFERENCE.md` describes the new scratch. `.claude/agents/fleet-supervisor.md` drops three wrong
+    claims:
+    - the rulesets' strict up-to-date policy is off: it is on in juniper-ml, juniper-data and juniper-canopy;
+    - CI never runs on the merge result: a PR's CI runs on `refs/pull/N/merge`;
+    - a BEHIND branch is fixed by a rebase: GitHub's update-branch is the fix.
+
+- **`juniper-service-core`: a `fit` that returns while the run is paused settles `COMPLETED` instead
+  of wedging the lifecycle, and the training thread settles only a run it still owns** (the
+  "paused-fit wedge" in §4 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`;
+  owner ruling "Fix now", 2026-11-08). The training thread called `mark_completed()`, which refuses
+  `PAUSED`, and ignored the refusal. The machine stayed `PAUSED` with no thread behind it; after a
+  resume it read `STARTED`, and every start with data was a 409 until a stop or reset. The thread now
+  releases the pause before it records the completion, and the state machine is unchanged. Every
+  settle is also guarded by `self._thread is threading.current_thread()`, so a stopped run's `fit`
+  that outlives a following start no longer completes or fails the newer run when it ends. The overlap
+  itself remains: that `fit` still runs to its end, and its events still reach the shared sink. The
+  pause release on a paused completion or failure also wakes such a `fit` if it is waiting at the
+  shared pause gate, and a start is then accepted beside it. The owner has ruled that this race gets
+  its own fix, in its own PR (§8, ruling 11 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+  - Pinned by `juniper-service-core/tests/test_lifecycle_paused_fit_return.py` (11 tests).
+    `util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py` runs nine mutants of `manager.py`;
+    each is killed by that file and by no other test. `util/ad-hoc/2026-11-08_paused_fit_wedge_doc_stamps.py`
+    re-derives the four doc stamps below from `main`'s values, for a rebase.
+  - `docs/REFERENCE.md` 0.6.65, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` 1.0.65, `docs/QUICK_START.md`
+    0.3.45 and `docs/DOCUMENTATION_OVERVIEW.md` 0.2.57 describe the fixed behaviour and keep the old one
+    for juniper-service-core 0.7.2 and earlier, which still have it.
+  - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the juniper-service-core
+    release after 0.7.2.
+
+## [0.11.4] - 2026-11-06
+
+### Changed
+
+- **`[recurrence]` now floors `juniper-recurrence>=0.8.1`** (`<0.9.0`), the release that floors
+  `juniper-model-core[crossval]>=0.3.0,<0.4.0` (juniper-recurrence#229). The pin was
+  `juniper-recurrence>=0.8.0,<0.9.0`. The owner approved the raise on 2026-11-06, with a 0.11.4 cut to carry it.
+  - **Why.** recurrence 0.8.0's `_folds.build_folds` passes `groups=` to `walk_forward_folds` on every
+    `POST /v1/crossval`, and `groups=` first shipped in juniper-model-core 0.3.0. 0.8.0 declared
+    `juniper-model-core>=0.2.0`, so an environment holding model-core 0.2.0 passed `pip check` while every
+    crossval request answered 500 (W0.1's bench on 2026-11-04: 4 of 41 failed). 0.8.1 is 0.8.0 with that floor
+    fixed, on PyPI since 2026-11-06.
+  - **Who it reaches.** A fresh install already resolves 0.8.1, the newest release under `<0.9.0`. An environment
+    that already holds 0.8.0 keeps it under `pip install -U juniper-ml[recurrence]`, which upgrades a dependency
+    only when its requirement forces it; this floor forces it.
+  - **Pre-flighted against real PyPI** on 2026-11-06 with
+    `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`: `[recurrence]` resolves in 32 packages and
+    `[all]` in 95 on Python 3.12, 3.13 and 3.14, each to juniper-recurrence 0.8.1, juniper-recurrence-model 0.6.0,
+    juniper-recurrence-client 0.3.1 and juniper-model-core 0.3.2.
+  - The model pin `juniper-recurrence-model>=0.6.0,<0.7.0` and the client pin `juniper-recurrence-client>=0.3.0,<0.4.0`
+    stay: 0.8.1's `requires_dist` asks for the same model range, and no client contract changed. Applied by
+    `util/ad-hoc/2026-11-06_raise_recurrence_floor_0_8_1.py`, which asserts each site's exact text and requires
+    exactly one match apiece.
+
+- **`claudey` starts with a worktree and remote control by default, `--remote-control` never takes a value, and in
+  `scripts/wake_the_claude.bash` `--version` is Claude Code's version and `-u` fails (owner rulings, 2026-11-04).**
+  `claude_interactive.bash` sends a bare `--worktree`, so Claude Code names the worktree unless `-w <name>` names one,
+  and a bare `--remote-control`. `--no-worktree` and `--no-remote-control` turn them off, as `CLAUDE_WORKTREE=1` and
+  `CLAUDE_REMOTE_CONTROL=1` do. Both had been opt-in since juniper-ml#2396. `wake_the_claude.bash` now refuses a word
+  after `--remote-control` instead of forwarding it as the session's name, which juniper-ml#2405 had restored; `0` and
+  `1` still turn it on and off. `--version` matched both the Claude Code version pattern and the script's, and Claude
+  Code's, checked first, won. It is now Claude Code's alone, with `-V` and `--claude-version`; the script's version is
+  `-v` / `--script-version`. `-u` prints the usage text and exits 1, as its comment always said; after juniper-ml#2396
+  it exited 0. `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`'s launcher table now describes claudey's own defaults: it
+  described `default_interactive_session_claude_code.bash`'s.
+- **`agents-md-touch-up.yml` pins `actions/checkout` to a commit SHA (owner ruling 2026-11-03).** It checked out with
+  the `v7.0.1` tag, the only tag-only `actions/checkout` in `.github/workflows/`. It now uses
+  `3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1`, the commit that tag resolves to and the pin every other
+  workflow here uses, so behaviour is unchanged. A census of the nine Juniper repositories' `main` on 2026-11-01 found
+  249 `actions/checkout` uses, 242 pinned to that SHA; the seven tag-only ones were this workflow's copies, one per
+  repository. juniper-data#503 pinned juniper-data's, and this change is one of the seven that pin the rest.
 - **The release-train ceremony's archive cap rises from 125,000 B to 1,000,000 B** (owner ruling 2026-10-26, on the
   runner-side measurement that the 2026-10-18 ruling called for; a follow-up to juniper-ml#2227).
   `util/release_train/ceremony.py`'s `ARCHIVE_B64_MAX_DEFAULT` bounds a release-notes archive's base64, because the
@@ -148,6 +415,92 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `tests/test_run_suite_acceptance.py` (`CascorBandMetricsTest`, `NonFiniteBandValueTest`,
     `CascorSuiteLoopAcceptanceTest`); `util/ad-hoc/2026-10-26_apd_ml_002_mutation_check.py` kills 25 of 25 mutants,
     each by its own pin test.
+- **`scripts/wake_the_claude.bash`: `-v`, `--remote-control <name>` and two fatal errors, after the juniper-ml#2396
+  parser rewrite.** `-v` read a `SCRIPT_VERSION` the script never set, so it exited 1, except where the environment
+  carried the `SCRIPT_VERSION` that `claude_interactive.bash` exports as claudey's version (in any session claudey
+  started, for one): there it printed claudey's version. The script now sets its own, `1.0.0` as its header states. `--remote-control` forwards an optional session name again, as Claude Code's
+  `--remote-control [name]` and the usage text describe, and takes `0` / `1` as `--worktree` does. The nohup-log
+  error, which juniper-ml#2396 moved to `debug_log`, and the "claude command not found" error, which had always used
+  it, said nothing with debug output off (`WTC_DEBUG=1`); both print to stderr again. `PROMPT_FILE_DEFAULT` and
+  `PROMPT_PATH_DEFAULT` are gone: nothing read them, and they were built from names nothing assigns, so they expanded
+  to `./` and `/`.
+  - 6 new tests in `tests/test_wake_the_claude.py`, among them `LauncherScriptVariableTests`, which checks that every
+    name the four launcher scripts expand is assigned or expanded with a default. Shellcheck's SC2154 skips
+    all-uppercase names, so it reported neither unassigned name. Against `main`, 5 of the 6 fail; the sixth is the
+    scan's positive control.
+- **`scripts/wake_the_claude.bash` sends the prompt last, after `--`, so no flag can take it as its value, and
+  `claudey` no longer hangs on a flag missing its value.** Claude Code parses its command line with commander, where an
+  option with an optional value takes the next word as that value: `--worktree [name]`, `--remote-control [name]` and
+  `--resume [value]`. The script puts the prompt last, so `--worktree --prompt hello` became `claude --worktree
+  hello`: a worktree named `hello`, and no prompt. A bare `--remote-control`, or `--resume 0` without an `--id`, did the
+  same. A prompt starting with `-` failed outright. Measured on Claude Code 2.1.318, `claude '---name: x' --bogus-zzz`
+  says `error: unknown option '---name: x'`, and a prompt file's YAML front matter starts `---`. The `--` ends Claude
+  Code's options. The printed command line now quotes each argument, so the prompt shows as the one argument it is.
+  - `-V` and `--claude-version` exited 1: the parser compared them with `--version` alone.
+  - A `--prompt` value starting with `--` never reached the `--`. The parser left it in the input to be read as a flag,
+    and sent the default prompt: `--prompt --dangerously-skip-permissions` skipped permissions, and `--prompt --print`
+    launched headless. The word after a prompt flag is now the prompt, whatever it starts with. `0` or nothing after
+    the flag still sends the default prompt and `1` none, and an empty value no longer ends parsing (found in
+    juniper-ml#2438's review).
+  - A `--file` / `--path` prompt file that was empty or unreadable launched Claude Code without a prompt. It now stops
+    the launch with an error on stderr.
+  - In `claude_interactive.bash`, `-m`, `-e`, `--id` or `--prompt` with nothing after it looped forever: `shift 2`
+    on one remaining argument fails without shifting. It now exits 1 with the usage text. `-w --prompt hi` named the
+    worktree `--prompt`; `-w`'s name is optional now.
+  - 16 new tests and one rewritten, in `tests/test_wake_the_claude.py` and `tests/test_claude_interactive.py`, and 26
+    expected argv lists in the former gain the `--`. `ClaudeInteractiveEndToEndTests` runs claudey and the real
+    `wake_the_claude.bash` against a stub `claude`, where the other claudey tests stop at the argv a stub
+    `wake_the_claude.bash` recorded. Against the scripts as juniper-ml#2405 left them, 45 of the 107 tests fail, all 17
+    new or rewritten ones among them; the hangs end in the tests' 60-second timeout.
+- **A cascor run's eval scalars are cascor's final evaluation, labelled with its split and n, and `aggregate.csv` /
+  `REPORT.md` gain the held-out `test_*` columns from it** (juniper-ml#2064; it follows juniper-ml#2369 and is
+  `APD-ML-002` ruling 1's "test later"). `stats.json`'s `cascor.eval_scalars`, `summary.md`'s "Eval scalars" and
+  `eval_metrics.png` reported the `/v1/metrics` body's top-level `f1` / `precision` / `recall` / `roc_auc`. Those are
+  the IN-LOOP values, on the split early stopping reads, and nothing labelled them. The held-out
+  `eval_metrics.final` (juniper-cascor#614) was never surfaced. On run `20260916T002848Z-3959` the summary said f1
+  0.9187 / roc_auc 0.9808 on 160 validation rows; the final evaluation of 120 test rows says 0.8997 / 0.9605.
+  - `util/experiments/stats_summary.py`: new `cascor_eval_blocks` is the one derivation for `stats.json`,
+    `summary.md`, `eval_metrics.png` and `run_suite`. `cascor.eval_scalars` is the final block, with its `split`,
+    `n_samples` and `held_out` (true only on `test`: with no test split loaded cascor scores `validation`, the
+    in-loop split), `accuracy` (juniper-cascor#731) and cascor's `undefined` reasons. The in-loop values move,
+    labelled, to `cascor.eval_scalars_in_loop`. A run with no final evaluation (eval metrics disabled, a null final,
+    a service before the switch, a failed collect) leaves every value `null` and says why in `absent`; it never falls
+    back to the in-loop values. `summary.md` heads each block with its split, n and held-out status, or prints the
+    reason and no number. `eval_scalars` changed meaning, so the schema is `juniper-experiment-stats/2`; `/1` files
+    are not rewritten.
+  - `util/experiments/plots_cascor.py`: `render_eval_metrics` takes the labelled blocks and draws the final
+    evaluation's bars beside the hatched in-loop ones, each labelled, under a subtitle that names the eval scalars or
+    says why there are none. `util/experiments/run_experiment.py` hands it `cascor_eval_blocks(metrics_final)`.
+  - `util/experiments/run_suite.py`: `CASCOR_TEST_COLUMNS` adds `test_accuracy`, `test_f1`, `test_precision`,
+    `test_recall` and `test_roc_auc`, read from that block only when its `split` is `test`. A `validation` block,
+    the in-loop values and a run without a final evaluation fill none. A `/1` stats.json re-derives the block from
+    the run's `metrics_final.json` with the same function, so `run_suite.py --reaggregate` backfills an older suite
+    and rewrites no run file: on the run corpus, 84 cells in 16 of 116 cascor suites gain the columns. `test_accuracy`
+    leaves `PENDING_ACCEPTANCE_METRICS`, now empty, so its pre-launch warning is gone. It needs a cascor service that
+    carries juniper-cascor#731, which is in no release on 2026-10-27 (PyPI's latest is 0.12.0).
+  - Tests: new `tests/test_stats_summary_eval_blocks.py` (23) over real `/v1/metrics` bodies from the run corpus
+    (`tests/cascor_eval_fixtures.py`); `CascorHeldOutColumnsTest` (10) in `tests/test_run_suite.py`;
+    `EvalScalarsEndToEndTest` (4) in `tests/test_run_experiment.py`; in `tests/test_run_suite_acceptance.py`, two new
+    tests and three that pinned `test_accuracy` as pending, rewritten for its column. The pending-metric facility
+    keeps its coverage through a stand-in name. `util/ad-hoc/2026-10-27_issue_2064_eval_blocks_mutation_check.py`
+    kills 36 of 36 mutants, each by its own pin test; `util/ad-hoc/2026-10-27_issue_2064_corpus_eval_blocks_survey.py`
+    measures the corpus figures, read-only.
+- **G-TOOLS kubectl's fix names task D3, and G-MEM's memory message names the speculative pages its figure counts**
+  (turing bring-up; erratum E-H3 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`,
+  from task H3's `macos-host-sme` report). Neither changes a verdict.
+  - `util/host_state_check.py`'s kubectl fix said only "task D4". Docker Desktop installs its own
+    `/usr/local/bin/kubectl` (decision D7), and turing's v1.22.4 client is that link, so the fix now puts the
+    owner's Docker Desktop upgrade (task D3) first, then D4, which still needs re-planning under the D6 ruling
+    (erratum E-D6).
+  - The memory message said "free + inactive", but the figure also adds vm_stat's speculative pages, as
+    `util/macvm_ctl.bash` does (88 MiB of turing's 6161 MiB on 2026-10-27). It now reads "free + speculative +
+    inactive". `util/macvm_ctl.bash` keeps its label: its status block shows "free" as Pages free + Pages
+    speculative.
+  - `tests/test_host_state_check.py`: `FailureTest` gains 2 tests, which pin the kubectl fix exactly and the
+    memory figure's label on a pass and on a failure, and the failure table's memory case reads the new label (63
+    tests across the two G1 suites). `util/ad-hoc/2026-10-30_turing_check_wording_mutation_check.py` (new)
+    kills 4 of 4 mutants through the G1 engine, and `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py`
+    still kills 57 of 57.
 
 ## [0.11.3] - 2026-10-26
 

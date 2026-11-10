@@ -1,0 +1,84 @@
+{
+  "carriers": [
+    {
+      "repo": "juniper-data",
+      "kind": "tests",
+      "pr": 518,
+      "manifest": "reports/2026-11-08_flood4-disposition/manifest_juniper-data_tests.json"
+    },
+    {
+      "repo": "juniper-data",
+      "kind": "docs",
+      "pr": 519,
+      "manifest": "reports/2026-11-08_flood4-disposition/manifest_juniper-data_docs.json"
+    },
+    {
+      "repo": "juniper-canopy",
+      "kind": "tests",
+      "pr": 797,
+      "manifest": "reports/2026-11-08_flood4-disposition/manifest_juniper-canopy_tests.json"
+    },
+    {
+      "repo": "juniper-canopy",
+      "kind": "docs",
+      "pr": 802,
+      "manifest": "reports/2026-11-08_flood4-disposition/manifest_juniper-canopy_docs.json"
+    },
+    {
+      "repo": "juniper-ml",
+      "kind": "tests",
+      "pr": 2517,
+      "manifest": "reports/2026-11-08_flood4-disposition/manifest_juniper-ml_tests.json"
+    },
+    {
+      "repo": "juniper-ml",
+      "kind": "docs",
+      "pr": 2519,
+      "manifest": "reports/2026-11-08_flood4-disposition/manifest_juniper-ml_docs.json"
+    }
+  ],
+  "extra": [
+    {
+      "repo": "juniper-ml",
+      "pr": 2420,
+      "kind": "fix",
+      "outcome": "closed on the owner's ruling (2026-11-06)",
+      "reason": "Duplicates #2435, and would revert #2415's fail-closed fix."
+    },
+    {
+      "repo": "juniper-ml",
+      "pr": 2435,
+      "kind": "fix",
+      "outcome": "closed on the owner's ruling (2026-11-06)",
+      "reason": "Moot: the P12 worktree cleanup it guarded is finished."
+    },
+    {
+      "repo": "juniper-ml",
+      "pr": 2271,
+      "kind": "owner",
+      "outcome": "closed on the owner's ruling (2026-11-06)",
+      "reason": "The owner's own PR. Its commit 85c66d62 is unsigned, so under required_signatures it can never merge. Its only change, \"idleCompaction\": false in the repo-root settings.local.json (a file Claude Code does not read), now lives in the owner's ~/.claude/settings.json, and its branch was deleted on 2026-11-08 (owner ruling, sec 8)."
+    },
+    {
+      "repo": "juniper-ml",
+      "pr": 2360,
+      "kind": "owner",
+      "outcome": "not this arc's",
+      "reason": "Armed and DIRTY on purpose; it merges last (another arc)."
+    },
+    {
+      "repo": "juniper-ml",
+      "pr": 2404,
+      "kind": "docs",
+      "outcome": "round 3 (owner, 2026-11-07)",
+      "reason": "Launcher docs whose claims main contradicts since #2438/#2468; to be considered individually."
+    },
+    {
+      "repo": "juniper-ml",
+      "pr": 2406,
+      "kind": "docs",
+      "outcome": "round 3 (owner, 2026-11-07)",
+      "reason": "Launcher docs whose remote-control-name claim main contradicts since #2438; to be considered individually."
+    }
+  ]
+}
