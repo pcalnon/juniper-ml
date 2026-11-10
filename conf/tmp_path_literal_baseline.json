@@ -8,7 +8,6 @@
     "tests/test_claude_agent_guard.py": 23,
     "tests/test_configure_commit_signing.py": 3,
     "tests/test_duplicati_restore_integrity.py": 8,
-    "tests/test_duplicati_wrapper_contract.py": 1,
     "tests/test_experiment_stack_shared_equities_cache.py": 4,
     "tests/test_host_state_check.py": 1,
     "tests/test_isolated_stack_script.py": 1,

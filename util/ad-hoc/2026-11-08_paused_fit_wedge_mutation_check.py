@@ -40,7 +40,7 @@ not the module imported, pytest exiting with anything but 0 or 1).
 
 Usage (from the juniper-ml worktree root):
     python3 util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py --python <interpreter> \\
-        --scratch <repo>/tmp/<dir> --main-manager <main's lifecycle/manager.py> \\
+        --scratch <repo's tmp directory>/<dir> --main-manager <main's lifecycle/manager.py> \\
         [--suites new,old] [--json-out <file>]
 """
 

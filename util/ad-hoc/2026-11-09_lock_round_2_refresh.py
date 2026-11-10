@@ -30,7 +30,7 @@ read from each repo's ``main`` on 2026-11-09 (data ``4f04fc8d``, cascor ``f3dfee
 ``refresh`` runs ``2026-10-10_targeted_lock_refresh.py refresh`` with ``--upgrade-package`` for
 the two packages (it compiles onto a copy of the lock, refuses any collateral move and restores
 the hand-written header); ``check`` runs its ``check`` (CI's constraint-mode replay). The CPU
-torch override file is written to ``<tree>/tmp/torch-cpu-override``, the path the header names.
+torch override file is written under the tree's tmp directory as ``torch-cpu-override``, the path the header names.
 
 Usage:
     python3 util/ad-hoc/2026-11-09_lock_round_2_refresh.py {refresh,check} --src-root tmp/lr2/src \
