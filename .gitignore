@@ -163,6 +163,8 @@ scripts/sessions/nohup.out
 **/.claude/worktrees/*
 
 # Claude Code local settings (contains permissions, not portable)
+settings.local.json
+**/settings.local.json
 .claude/settings.local.json
 **/.claude/settings.local.json
 
