@@ -281,6 +281,8 @@
     "util/ad-hoc/2026-10-26_guard_live_e2e_servers.py": 1,
     "util/ad-hoc/2026-10-26_session_tmpdir_hook_probe.py": 2,
     "util/ad-hoc/2026-10-26_tmp_literal_sweep.py": 3,
+    "util/ad-hoc/2026-11-09_flood4r2_land_m4m7_rebuild.py": 1,
+    "util/ad-hoc/2026-11-09_flood4r2_r17-canopy-lockfile_manifest.py": 1,
     "util/ad-hoc/apd_data_021_openapi_probe.py": 1,
     "util/ad-hoc/cascor_freeze_tell.py": 1,
     "util/ad-hoc/duplicati_decrypt_validate_all.bash": 5,

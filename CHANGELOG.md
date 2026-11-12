@@ -15,13 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pid files and venv three times in a week, leaving seven live servers killable by the orphan reaper.
   - `util/tmp_path_literal_check.py` (new), gate G-TMP: a tracked script, test or config under `util/`, `scripts/`,
     `tests/`, `conf/`, `.claude/` or a sub-package may hold no more system temp-dir literal lines than
-    `conf/tmp_path_literal_baseline.json` (new; 314 files, 452 lines) allows it. It mirrors G-PATH's CLI, exit codes
+    `conf/tmp_path_literal_baseline.json` (new; 315 files, 453 lines) allows it. It mirrors G-PATH's CLI, exit codes
     and baseline schema; `# tmp-path-literal: allow` exempts a line; `.github/` is out of scope. It runs as the
     `tmp-path-literal` pre-commit hook and as a whole-scope step in ci.yml's Pre-commit job.
   - `util/juniper_repo_tmp.bash` (new) prints the PRIMARY checkout's gitignored `tmp/` for a directory, creating it,
     and exits 1 outside any checkout; sourced, it defines `juniper_repo_primary` and `juniper_repo_tmp`.
   - `tests/test_tmp_path_literal_check.py` and `tests/test_juniper_repo_tmp.py` (new), wired into ci.yml and
-    `docs/REFERENCE.md` (227 suites).
+    `docs/REFERENCE.md` (234 suites).
   - `.gitignore` ignores the root-anchored `/tmp/`.
   - Records: `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` (the inventory), `util/ad-hoc/2026-10-26_guard_live_e2e_servers.py`
     (wrote the seven reaper guards) and `util/ad-hoc/2026-10-26_session_tmpdir_hook_probe.py` (the SessionStart hook,

@@ -156,8 +156,8 @@ hold no more literal lines than `conf/tmp_path_literal_baseline.json` allows it,
 It matches an absolute path to the temp directory, in its Linux, `var/tmp` and macOS `private/tmp` forms, however
 the path starts (a quote, a space, `=`, `:-`). It does not match a repo's own `$REPO/tmp`, `${ROOT}/tmp`, `./tmp`
 or `~/tmp`, a URL path, or a longer name such as `tmpfs`, `tmp_dir` or `tmp-foo`. It runs as the `tmp-path-literal`
-pre-commit hook and as a whole-scope step in ci.yml's Pre-commit job. When it landed the baseline held 314 files and
-452 lines; 289 of the files are under `util/ad-hoc/`, 260 of them dated records. Tests: `tests/test_tmp_path_literal_check.py`.
+pre-commit hook and as a whole-scope step in ci.yml's Pre-commit job. When it landed the baseline held 315 files and
+453 lines; 291 of the files are under `util/ad-hoc/`, 262 of them dated records. Tests: `tests/test_tmp_path_literal_check.py`.
 
 ### 4.7 Side effects of a `TMPDIR` inside a checkout
 
