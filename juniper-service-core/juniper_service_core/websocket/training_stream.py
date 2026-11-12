@@ -22,6 +22,11 @@ deliberately not 1006: RFC 6455 Section 7.4.1 reserves that value and forbids an
 setting it as a Close-frame status, and the ``websockets`` server raises rather than serialize
 it -- so a 1006 close sends no frame at all and leaves the peer on a silent half-open socket.
 
+A live socket whose broadcast send fails or times out is closed **1011** ``"Broadcast send failed
+or timed out"`` by the manager, so the client reconnects (and can resume) rather than keep answering
+heartbeats on a stream nothing is sent to. After any close by the server, the receive loop drains
+until the ASGI server reports the disconnect, so the close frame is not dropped on the way out.
+
 De-cascored from cascor: reads the live state through the generic
 :class:`~juniper_service_core.lifecycle.manager.ServiceLifecycleManager` query surface
 (``get_status`` / ``monitor.get_state`` / ``get_metrics_history``), drops cascor's
@@ -39,6 +44,7 @@ import time
 from typing import NoReturn
 
 from fastapi import WebSocket, WebSocketDisconnect
+from fastapi.websockets import WebSocketState
 
 from juniper_service_core.websocket.manager import ReplayOutOfRange, ws_authenticate
 from juniper_service_core.websocket.messages import create_initial_metrics_message, create_state_message
@@ -145,9 +151,22 @@ async def _recv_pong_loop(websocket: WebSocket, pong_received: asyncio.Event, ws
 
     Forwards ``pong`` frames to the heartbeat event and handles ``subscribe_metrics`` requests
     by replying with an ``initial_metrics`` envelope. All other frame types are ignored.
+
+    Once the server has closed the socket -- the manager closes one whose broadcast send failed or
+    timed out, and the heartbeat closes a silent one -- the loop starts no further
+    ``receive_text()`` and drains instead (:func:`_drain_until_disconnect`). A ``receive_text()``
+    already in progress when the server closed still completes, and the frame that completes it is
+    dispatched as usual: a ``subscribe_metrics`` there reads the history, and its reply fails on
+    the closed socket. Every later frame is discarded. The loop cannot call ``receive_text()``
+    again: after the app's own close, Starlette refuses that with ``RuntimeError``, not
+    ``WebSocketDisconnect``, so a frame the peer already had in flight would end the handler with
+    an unhandled exception.
     """
     try:
         while True:
+            if getattr(websocket, "application_state", None) is WebSocketState.DISCONNECTED:
+                await _drain_until_disconnect(websocket)
+                return
             raw = await websocket.receive_text()
             try:
                 msg = json.loads(raw)
@@ -161,6 +180,26 @@ async def _recv_pong_loop(websocket: WebSocket, pong_received: asyncio.Event, ws
     except WebSocketDisconnect:
         logger.debug("Training WS: receive loop ended due to client disconnect")
         return
+
+
+async def _drain_until_disconnect(websocket: WebSocket) -> None:
+    """After the server's own close, discard what arrives until the ASGI server reports the disconnect.
+
+    ``receive()`` checks only the peer's side of the socket, so unlike ``receive_text()`` it still
+    works after the app's close. The handler must not return before the disconnect: uvicorn's
+    sans-I/O protocol holds a close frame while its write buffer is full and drops the transport if
+    the app returns first, which turns a clean close into an abnormal 1006 on the peer's side. The
+    ASGI server reports the disconnect once the close frame is written or the connection is lost.
+    What arrives meanwhile is not dispatched: the stream is over.
+
+    Known limit: the drain has no time bound of its own. With a peer that has stopped reading it
+    lasts for as long as the ASGI server takes to give up on the connection, and the handler,
+    which ``endpoint_counts()`` still counts, lasts with it.
+    """
+    while True:
+        message = await websocket.receive()
+        if message.get("type") == "websocket.disconnect":
+            return
 
 
 async def _handle_subscribe_metrics(websocket: WebSocket, ws_manager, lifecycle, msg: dict, default_count: int) -> None:
