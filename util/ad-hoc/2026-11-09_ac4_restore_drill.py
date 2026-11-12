@@ -214,13 +214,13 @@ def judge(c, found, epoch):
         return f"LENGTH_MISMATCH {os.path.getsize(found)} != {c['size']}", None
     if c["size"] and sha256_b64(found) != c["hash"]:
         return "HASH_MISMATCH", None
-    live = None
     try:
         st = os.lstat(c["path"])
-        if st.st_mtime < epoch and os.path.isfile(c["path"]):
-            live = "match" if (st.st_size == c["size"] and (not c["size"] or sha256_b64(c["path"]) == c["hash"])) else "contradiction"
     except OSError:
-        pass
+        return "VERIFIED", None  # the live file is gone: the live oracle cannot engage
+    live = None
+    if st.st_mtime < epoch and os.path.isfile(c["path"]):
+        live = "match" if (st.st_size == c["size"] and (not c["size"] or sha256_b64(c["path"]) == c["hash"])) else "contradiction"
     return "VERIFIED", live
 
 
