@@ -3455,6 +3455,7 @@ python3 -m unittest -v tests/test_install_agents.py
 python3 -m unittest -v tests/test_agent_suite_doctor.py
 python3 -m unittest -v tests/test_agent_suite_summary.py
 python3 -m unittest -v tests/test_predict_merge.py
+python3 -m unittest -v tests/test_predict_merge_guard_edges.py
 python3 -m unittest -v tests/test_fleet_supervisor_contract.py
 python3 -m unittest -v tests/test_macos_host_sme_contract.py
 python3 -m unittest -v tests/test_signing_auth_sme_contract.py
