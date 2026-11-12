@@ -231,6 +231,12 @@ jobs:
           # setuptools without its own bdist_wheel needs the latter). Python
           # 3.12+ no longer bundles setuptools (ensurepip / venv).
           pip install "setuptools>=68" wheel
+          # cryptography is required by tests/test_ac4_restore_drill.py: the AC-4
+          # restore driver decrypts AES Crypt volumes in-process, so that the archive
+          # passphrase is never on an argv, and imports cryptography at module scope.
+          # abi3 wheels cover the whole 3.12/3.13/3.14 matrix, so this never builds
+          # from source.
+          pip install "cryptography>=44.0.1"
 
       - name: Run Python regression tests
         run: |
@@ -1525,6 +1531,27 @@ jobs:
           # securityfs interface is missing. Fixtures are yamaguchi's real mount lines; the pid1 rows are pinned to the committed
           # systemd v259.5 source excerpt under reports/. Stdlib only.
           python3 -m unittest -v tests/test_host_api_filesystems_check.py
+          # tests/test_yamaguchi_acceptance_probe.py: the backup design's acceptance criteria (section 9) as fixed predicates --
+          # util/ad-hoc/yamaguchi_acceptance_probe.py prints one verdict line per criterion (AC-1, AC-2, AC-5, AC-6a, AC-7, AC-12,
+          # AC-13, the newest run, the destination census). Four rules, each from a hand-written check that was wrong at the Phase D
+          # sitting: a marker is pinned against the code that writes it (the watchdog's record(), the snapshot script's f-string);
+          # a time window is inclusive and tested AT its edge; a warning is classed by its [Warning-<tag>] tag, never its text; an
+          # empty or unparseable input is ERROR, never PASS. Also: no warning text, URL, credential or unlisted option value is
+          # printed or stored, and the timer's deploy script is run against PATH stubs. No server is contacted.
+          python3 -m unittest -v tests/test_yamaguchi_acceptance_probe.py
+          # tests/test_phase_d_finish.py: recovery plan section 6.4 step 14's root steps as verbs --
+          # util/ad-hoc/2026-11-11_phase_d_finish.{py,bash}. A drill's verdict is recomputed from its numbers with AC-4's floors and
+          # must agree with the driver's RESULT line and exit code; each pattern the tool reads is matched against the driver's
+          # own f-strings; an existing output is adopted, never re-run; the retention aside copy refuses until drill 1 has
+          # passed, never overwrites, and lists what the first retention pass deletes from the REAL dlist list. Needs no root
+          # and no Duplicati binary: the driver is replaced by a function that writes a canned output.
+          python3 -m unittest -v tests/test_phase_d_finish.py
+          # tests/test_ac4_restore_drill.py: util/ad-hoc/2026-11-09_ac4_restore_drill.py -- AES Crypt v2/v3 round trips against an
+          # encoder written from the format's specification, both HMACs checked before any padding is trusted; the streaming
+          # file-list parser with a UTF-8 BOM and a multibyte character split across reads (the 2026-11-09 "0 entries" fault);
+          # the sample filter that keeps secret-bearing paths out of a drill; the SHA-256 and length oracle. Absorbs the
+          # self-test that lived in a gitignored tmp/. Needs cryptography (installed above).
+          python3 -m unittest -v tests/test_ac4_restore_drill.py
 
       - name: Run bash regression tests
         run: |
