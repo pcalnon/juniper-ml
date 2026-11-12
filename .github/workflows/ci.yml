@@ -238,6 +238,10 @@ jobs:
           echo "║       juniper-ml - Python Regression Tests                 ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           python3 -m unittest -v tests/test_wake_the_claude.py
+          # The caller's `--` is a spacer: flags after it still apply, including
+          # --dangerously-skip-permissions, and the spacer is not forwarded.
+          # A bare word after it must not launch claude.
+          python3 -m unittest -v tests/test_wake_spacer_flags.py
           # claude_interactive.bash (`claudey`): DEBUG-forced
           # --dangerously-skip-permissions + inverted TRUE/FALSE opt-in
           # convention vs the older default_interactive launcher.
