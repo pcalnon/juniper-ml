@@ -304,6 +304,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the juniper-service-core
     release after 0.7.2.
 
+- **`juniper-service-core`: a `/ws/training` socket whose broadcast send fails or times out is closed 1011
+  instead of being left open on a stream nothing is sent to** (owner ruling 11 in §8 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`). `broadcast` dropped such a socket
+  from the fan-out without closing it, so the client kept answering heartbeats, was never told it was missing
+  frames, and held a socket that its released per-IP slot no longer counted. It is now closed **1011**
+  `Broadcast send failed or timed out`, as juniper-cascor's copy closes it (F-CASCOR-004), and after any
+  server-side close the receive loop drains until the disconnect instead of raising Starlette's `RuntimeError`
+  on a late frame.
+  - Known limit, not changed here. The drop still releases the socket's connection and per-IP slots at once,
+    before the socket is gone, and `endpoint_counts()` counts the socket until its handler returns. So while
+    the close is in progress, a new socket from the same address can be admitted past
+    `max_connections_per_ip`. Under real uvicorn, for a client that had stopped reading, that lasted 29.5 to
+    29.9 s with the default `websockets` implementation and more than the 45 s observed with `wsproto`.
+  - It is also a change for a service's own handler on a socket it registered with `connect()`: the manager
+    now closes that socket, and the handler must then drain with `receive()`.
+  - Unreleased; first in the next juniper-service-core release, 0.8.0.
+  - `docs/REFERENCE.md` (0.6.67) and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (1.0.67) describe the fixed
+    behaviour and its limits. `util/ad-hoc/2026-11-11_flood4r2_n4-r2_mutation_check.py` is the mutation check
+    (38 of 41 arms killed; it records the three survivors and why),
+    `util/ad-hoc/2026-11-09_flood4r2_n4_probe_broadcast_drop.py` re-derives the defect on a given tree, and
+    `util/ad-hoc/2026-11-11_flood4r2_n4-r2_uvicorn_probe.py` measures it under real uvicorn.
+  - Details, and the other known limits, are in `juniper-service-core/CHANGELOG.md` (Changed and Fixed).
+
 ## [0.11.4] - 2026-11-06
 
 ### Changed
