@@ -239,7 +239,7 @@ def _run_one(mods, scenario: dict, schedule, inner: bool) -> dict:
             SCHED.register(_tid)
             try:
                 answers[_tid] = _answer(requests[_tid])
-            except BaseException as exc:  # recorded so a dead request thread can never pass as a clean schedule
+            except (Exception, SystemExit, KeyboardInterrupt, GeneratorExit) as exc:  # recorded so a dead request thread can never pass as a clean schedule
                 answers[_tid] = f"CRASHED: {type(exc).__name__}: {exc}"
             finally:
                 SCHED.done(_tid)

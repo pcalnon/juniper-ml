@@ -91,8 +91,8 @@ STATES = {"fresh": (64, 0), "buffered5": (64, 5), "evicted": (3, 5)}
 
 
 class FakeWS:
-    def __init__(self, app, first_frame: str) -> None:
-        self.client = ("1.2.3.4", 5000)
+    def __init__(self, app, first_frame: str, client: tuple = ("1.2.3.4", 5000)) -> None:
+        self.client = client
         self.headers: dict = {}
         self.app = app
         self.sent: list = []
@@ -125,8 +125,7 @@ class FakeWS:
 
 class _Observer(FakeWS):
     def __init__(self) -> None:
-        super().__init__(None, "")
-        self.client = ("9.9.9.9", 1)
+        super().__init__(None, "", client=("9.9.9.9", 1))
 
 
 class _Lifecycle:

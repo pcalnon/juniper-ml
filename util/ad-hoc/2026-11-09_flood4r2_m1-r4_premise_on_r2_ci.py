@@ -55,7 +55,6 @@ def main() -> int:
     ci = args.worktree / ".github" / "workflows" / "ci.yml"
     before = sha256(ci)
     saved = ci.read_bytes()
-    runner_exit = -1
     try:
         shutil.copyfile(args.r2_ci, ci)
         print(f"swapped in round 2's ci.yml ({sha256(ci)}), carrier's was {before}")
