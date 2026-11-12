@@ -1094,7 +1094,7 @@ class MainTest(_Stubbed):
         self.assertEqual(history[0]["newest_backup"]["examined"], 2_050_000)
         self.assertEqual(os.stat(self.state_dir / "acceptance.json").st_mode & 0o777, 0o600)
         never_leaks(self, out, (self.state_dir / "acceptance.json").read_text(), (self.state_dir / "acceptance-history.jsonl").read_text())
-        code, out, _err = self.run_probe("--backup-id", JOB, "--base", STUB_BASE, "--state-dir", str(self.state_dir), "--dest", "/mnt/dest")
+        _code, _out, _err = self.run_probe("--backup-id", JOB, "--base", STUB_BASE, "--state-dir", str(self.state_dir), "--dest", "/mnt/dest")
         self.assertEqual(len((self.state_dir / "acceptance-history.jsonl").read_text().splitlines()), 2, "one history line per run")
 
     def test_when_every_criterion_it_judges_passes_the_result_is_pass(self) -> None:
