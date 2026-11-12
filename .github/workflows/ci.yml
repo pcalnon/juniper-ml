@@ -238,6 +238,9 @@ jobs:
           echo "║       juniper-ml - Python Regression Tests                 ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           python3 -m unittest -v tests/test_wake_the_claude.py
+          # A prompt file of the script's own 0/1 booleans is still that prompt;
+          # carriage return, vertical tab, and form feed alone are not a prompt.
+          python3 -m unittest -v tests/test_prompt_file_boolean_tokens.py
           # claude_interactive.bash (`claudey`): DEBUG-forced
           # --dangerously-skip-permissions + inverted TRUE/FALSE opt-in
           # convention vs the older default_interactive launcher.
