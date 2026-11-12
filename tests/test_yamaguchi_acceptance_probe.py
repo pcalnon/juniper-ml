@@ -683,7 +683,7 @@ class WarningTest(unittest.TestCase):
         self.assertEqual(probe.warning_key("[Warning-Single-Id]: x"), "Single-Id")
         for untagged in ("Failed to process path: /x", "[Warning-NoDash]: x", "[Error-A.B-Id]: x", None, 5, ""):
             self.assertIsNone(probe.warning_key(untagged))
-        self.assertTrue(probe.ALLOWED_WARNING_TAGS <= {probe.warning_key(w) for w in FIREFOX_WARNINGS})
+        self.assertLessEqual(probe.ALLOWED_WARNING_TAGS, {probe.warning_key(w) for w in FIREFOX_WARNINGS})
 
     def test_the_three_firefox_warnings_of_the_ruling_are_allowed(self) -> None:
         got = probe.classify_warnings(FIREFOX_WARNINGS, 3, SCOPE)
