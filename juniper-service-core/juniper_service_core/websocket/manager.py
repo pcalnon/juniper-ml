@@ -11,7 +11,9 @@ thread-safe manager that handles:
   (``promote_to_active(..., replayed_through=...)``) that delivers whatever was broadcast while
   the replay was being sent before the socket joins the live stream.
 - A thread-safe bridge for broadcasting from training threads (``broadcast_from_thread``).
-- A configurable send timeout to prevent a slow client from blocking broadcast fan-out.
+- A configurable send timeout to prevent a slow client from blocking broadcast fan-out. A socket
+  whose broadcast send fails or times out is dropped from the fan-out and closed **1011**, so its
+  client reconnects (and can resume) instead of holding a stream nothing is sent to.
 - Oversized-message chunking so a single frame never exceeds the WebSocket intermediary limit.
 
 cascor's copy also pushed a dozen Prometheus gauges/counters via ``api.observability`` on every
@@ -28,6 +30,7 @@ from __future__ import annotations
 import asyncio
 import bisect
 import contextlib
+import functools
 import itertools
 import json
 import logging
@@ -39,10 +42,30 @@ from concurrent.futures import CancelledError
 from typing import Any
 
 from fastapi import WebSocket
+from fastapi.websockets import WebSocketState
 
 __all__ = ["WebSocketManager", "ws_authenticate", "ReplayOutOfRange", "DEFAULT_WS_ENDPOINTS"]
 
 logger = logging.getLogger("juniper_service_core.websocket")
+
+#: The close a broadcast sends to a socket it drops because a send to it failed or timed out. 1011,
+#: as for this package's other server-side ends of a ``/ws/training`` socket (a heartbeat timeout,
+#: an incomplete resume), and as juniper-cascor closes its copy's dropped subscribers (its
+#: F-CASCOR-004, same code and reason). The reason names the cause, well under RFC 6455's 123 bytes.
+_BROADCAST_DROP_CLOSE_CODE = 1011
+_BROADCAST_DROP_CLOSE_REASON = "Broadcast send failed or timed out"
+
+
+def _is_closed(websocket: WebSocket) -> bool:
+    """Whether Starlette has marked either side of ``websocket`` closed.
+
+    ``application_state`` turns ``DISCONNECTED`` once the app has sent its close (a heartbeat
+    timeout, :meth:`WebSocketManager.close_all`, an aborted resume) or a send has met a dead
+    transport; ``client_state`` once the peer's disconnect has been received. A socket without
+    either attribute (a test double) reads as open.
+    """
+    return WebSocketState.DISCONNECTED in (getattr(websocket, "application_state", None), getattr(websocket, "client_state", None))
+
 
 #: The per-endpoint connection buckets the generic base tracks: the two client-facing channels
 #: (``training`` / ``control``) plus the machine-to-machine ``worker`` channel (step-3b
@@ -134,6 +157,13 @@ class WebSocketManager:
 
         # Send timeout
         self._send_timeout_seconds = send_timeout_seconds
+        # Closes of sockets a broadcast dropped (see _drop), one per socket, each held until it
+        # finishes -- including one that outlives the broadcast's bounded wait -- because the event
+        # loop keeps only a weak reference to a task. Known limit: a close that never finishes (the
+        # transport never takes the frame) is held here, with its socket, until the socket is
+        # disconnected after its peer has gone (disconnect() then cancels it); close_all() neither
+        # awaits nor cancels it.
+        self._closing: dict[WebSocket, asyncio.Task] = {}
 
         # Bandwidth counters. Updated under ``_seq_lock`` because the send path is invoked from
         # both the asyncio event loop and the broadcast-from-thread shim. Cumulative since
@@ -272,6 +302,13 @@ class WebSocketManager:
     async def connect(self, websocket: WebSocket) -> bool:
         """Accept and register a WebSocket connection as immediately active.
 
+        The socket joins the broadcast fan-out, so :meth:`broadcast` closes it 1011 when a send to
+        it fails or times out. A handler of the service's own that serves a socket it registered
+        here must expect that close: once the app has closed, Starlette refuses a new
+        ``receive_text()`` with ``RuntimeError``, not ``WebSocketDisconnect``. Such a handler reads
+        with ``receive()`` until ``websocket.disconnect`` instead, as ``/ws/training``'s receive
+        loop does.
+
         Returns:
             ``True`` if connected, ``False`` if a connection limit was reached.
         """
@@ -345,7 +382,8 @@ class WebSocketManager:
 
         From then on the socket is one of the active set, with no stronger ordering than any
         other: two broadcasts that overlap (each ``broadcast_from_thread`` call is its own task)
-        can interleave their sends, and a live send that fails drops the socket from the fan-out.
+        can interleave their sends, and a live send that fails drops the socket from the fan-out
+        and closes it 1011 (:meth:`broadcast`).
         The activation waits for as long as new broadcasts keep landing during each pass's sends;
         nothing is lost meanwhile, and a socket that falls more than the buffer behind is refused
         rather than promoted over the gap. The guarantee assumes every :meth:`broadcast` runs on
@@ -420,7 +458,16 @@ class WebSocketManager:
                 cursor = frame["seq"]
 
     async def disconnect(self, websocket: WebSocket) -> None:
-        """Remove a WebSocket connection (from active or pending)."""
+        """Remove a WebSocket connection (from active or pending).
+
+        Once the peer's disconnect has been received, a close that a broadcast's drop started on
+        this socket and that is still pending is cancelled: the connection is gone, so the frame
+        has nowhere to go. A transport that never takes it would otherwise keep that close, and
+        the socket, after the connection itself has gone: under uvicorn's ``wsproto`` protocol,
+        whose ``send`` waits for a writable flag that a full write buffer clears and
+        ``connection_lost`` does not set, the close of a client that had stopped reading was still
+        pending after that client had left. While the peer is still there, the close is left alone.
+        """
         async with self._lock:
             self._active_connections.discard(websocket)
             self._pending_connections.discard(websocket)
@@ -430,6 +477,9 @@ class WebSocketManager:
             if meta is not None:
                 self._release_per_ip_slot(meta.get("source_ip"))
             logger.info("WebSocket disconnected (%d active, %d pending)", self.connection_count, len(self._pending_connections))
+        closing = self._closing.get(websocket)
+        if closing is not None and getattr(websocket, "client_state", None) is WebSocketState.DISCONNECTED:
+            closing.cancel()
 
     # ------------------------------------------------------------------
     # Sequencing and replay
@@ -549,6 +599,11 @@ class WebSocketManager:
         Oversized messages are split into ``chunked_message`` envelopes before seq assignment so
         each chunk gets its own seq and replay slot.
 
+        A socket that a send raised on or timed out for is dropped from the fan-out and closed
+        1011 ``Broadcast send failed or timed out`` (:meth:`_drop`); the other sockets are
+        unaffected. Its client reconnects, and a resume from its last seq replays the frame it
+        missed while that is still buffered.
+
         Must run on the manager's event loop (the one the stream handlers serve on, which
         :meth:`set_event_loop` records); from another thread use :meth:`broadcast_from_thread`.
         A resume's continuity (:meth:`promote_to_active`) rests on a broadcast assigning its seq
@@ -565,8 +620,65 @@ class WebSocketManager:
             for ws in self._active_connections.copy():
                 if not await self._send_json(ws, enriched):
                     disconnected.append(ws)
-            for ws in disconnected:
-                await self.disconnect(ws)
+            if disconnected:
+                await self._drop(disconnected, enriched["seq"])
+
+    async def _drop(self, sockets: list[WebSocket], seq: int) -> None:
+        """Drop the sockets a broadcast could not send ``seq`` to, and close each one 1011.
+
+        :meth:`disconnect` alone only forgets a socket. Left open, the socket kept its handler's
+        receive loop and heartbeat running, so the client went on answering pings on a stream that
+        nothing was broadcast to, never told it was missing frames, for as long as it stayed.
+        Closed, the client reconnects, and a resume from its last seq replays what it missed while
+        that is still buffered.
+
+        Known limit: the drop still releases the socket's connection and per-IP slots here, before
+        the socket is gone, and ``endpoint_counts()`` counts the socket until its handler returns.
+        While the close is in progress, a new socket from the same address can therefore be
+        admitted past ``max_connections_per_ip``: for an instant with a peer that answers the
+        close, and for as long as the ASGI server takes to give up on one that has stopped reading.
+        The close bounds that excess by its own length; without it the excess lasted for as long
+        as the client kept the socket open.
+
+        Every socket is forgotten before any close starts, so an overlapping broadcast stops
+        targeting them. A socket that something has already closed -- the server or the peer
+        (:func:`_is_closed`) -- or that an overlapping broadcast is closing already, is not closed
+        again. The closes run concurrently, and the broadcast waits for them at most one send
+        timeout in all, because a peer too slow to take a frame may be as slow to take the close.
+        The bound limits the wait, not the close: ``asyncio.wait`` neither cancels nor shields it,
+        and a close still in flight finishes in the background (:meth:`_close_done`). The one
+        thing that cancels it is :meth:`disconnect` of the same socket after its peer has gone.
+        """
+        for ws in sockets:
+            await self.disconnect(ws)
+        closes = []
+        for ws in sockets:
+            if ws in self._closing or _is_closed(ws):
+                continue
+            closing = asyncio.create_task(self._close_dropped(ws))
+            self._closing[ws] = closing
+            closing.add_done_callback(functools.partial(self._close_done, ws))
+            closes.append(closing)
+        # INFO, as a failed send is logged elsewhere: most often the client went away, and
+        # _send_json has already logged a send that timed out at WARNING.
+        logger.info("Broadcast of seq %s failed for %d socket(s): dropped them, and closing %d with %d", seq, len(sockets), len(closes), _BROADCAST_DROP_CLOSE_CODE)
+        if closes:
+            await asyncio.wait(closes, timeout=self._send_timeout_seconds)
+
+    @staticmethod
+    async def _close_dropped(websocket: WebSocket) -> None:
+        """Close a socket a broadcast dropped (a coroutine, so any failure lands in its task)."""
+        await websocket.close(code=_BROADCAST_DROP_CLOSE_CODE, reason=_BROADCAST_DROP_CLOSE_REASON)
+
+    def _close_done(self, websocket: WebSocket, closing: asyncio.Task) -> None:
+        """Release a finished close, and retrieve its outcome so a failure is not reported unretrieved.
+
+        A close can fail without anything being wrong -- the transport may already be gone -- so it
+        is logged at DEBUG.
+        """
+        self._closing.pop(websocket, None)
+        if not closing.cancelled() and closing.exception() is not None:
+            logger.debug("Closing a dropped WebSocket failed: %r", closing.exception())
 
     def broadcast_from_thread(self, message: dict) -> None:
         """Thread-safe broadcast using ``asyncio.run_coroutine_threadsafe``.
@@ -608,7 +720,10 @@ class WebSocketManager:
         broadcasts are. Personal messages don't carry seq, so on reconnect a partially-delivered
         chunk group is dropped by the client (no resume), but no socket teardown.
 
-        Returns ``True`` only if every chunk was delivered successfully.
+        Returns ``True`` only if every chunk was delivered successfully. A failed send neither drops
+        nor closes the socket: the caller decides (``/ws/training`` ends a resume that cannot be
+        kept with its own 1011 close), and an active socket is dropped and closed by the first
+        broadcast whose send to it fails.
         """
         for sub_message in self._maybe_chunk_message(message):
             if not await self._send_json(websocket, sub_message):
@@ -687,6 +802,9 @@ class WebSocketManager:
         ``disconnect()`` cannot race with shutdown and corrupt the connection set. The actual
         ``ws.close()`` calls are issued against a snapshot taken under the lock, avoiding
         deadlock risk from re-entering the lock via ``disconnect()`` on exception paths.
+
+        A socket a broadcast has already dropped is in neither set, so it is not closed here, and
+        its 1011 close, if still in flight, is neither awaited nor cancelled (:meth:`_drop`).
         """
         async with self._lock:
             snapshot = list(self._active_connections) + list(self._pending_connections)

@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.66
-**Date**: 2026-11-09
+**Version**: 1.0.67
+**Date**: 2026-11-12
 **Project**: juniper-ml
 
 ---
@@ -853,7 +853,7 @@ Tip: `juniper_config_tools.env_with_legacy_alias` treats `""` as set, hides its 
 Tip: `FailedAuthThrottle` keeps 10,000 source IPs and drops the oldest window starts. Prune runs from `record_failure` every 100 failures, before that row is stored, so the table can sit at 10,001 and climb to 10,100. An evicted IP is not blocked, and `check()` does not put it back — the next 401 starts a fresh budget. The expiry test (`window_seconds=0`) does not pin this; `test_failed_auth_throttle_caps_live_entries_by_dropping_the_oldest` does.
 Full contract: [REFERENCE — The failed-auth table drops the oldest source IPs](REFERENCE.md#the-failed-auth-table-drops-the-oldest-source-ips).
 
-Tip: `/ws/training` resume is continuous through the seq just before the buffer (`last_seq == oldest - 1`). One older is `resume_failed` `out_of_range` and the socket stays up with a fresh snapshot — discard the local tail. A `resume_ok` misses nothing up to the moment the socket goes live (unreleased; first in the next juniper-service-core release, 0.8.0): a broadcast is sequenced and buffered even with no socket active, one that lands during the replay reaches the client before its socket goes live, every seq up to then arrives once and in order before the first live frame, and a resume that cannot stay continuous is closed **1011** `Resume replay incomplete` (best effort). Live frames keep the ordering any active socket has: two overlapping broadcasts can interleave. Through 0.7.2 it could miss either. Pending handshakes count toward the **1013** cap. Sockets with no client address share `"unknown"`. A broadcast whose `json.dumps` length equals 60000 is still one frame. See [REFERENCE — Training-stream resume](REFERENCE.md#training-stream-resume-and-the-connection-cap).
+Tip: `/ws/training` resume is continuous through the seq just before the buffer (`last_seq == oldest - 1`). One older is `resume_failed` `out_of_range` and the socket stays up with a fresh snapshot — discard the local tail. A `resume_ok` misses nothing up to the moment the socket goes live (unreleased; first in the next juniper-service-core release, 0.8.0): a broadcast is sequenced and buffered even with no socket active, one that lands during the replay reaches the client before its socket goes live, every seq up to then arrives once and in order before the first live frame, and a resume that cannot stay continuous is closed **1011** `Resume replay incomplete` (best effort). Live frames keep the ordering any active socket has: two overlapping broadcasts can interleave. Through 0.7.2 it could miss either. A live socket whose broadcast send fails or times out is closed **1011** `Broadcast send failed or timed out` (unreleased, 0.8.0): reconnect and resume, and the missed frame is replayed while it is still buffered; through 0.7.2 it was dropped and left open. The drop still releases the socket's connection and per-IP slots at once, before the socket is gone, and `endpoint_counts()` counts the socket until its handler returns. So while the close is in progress, a new socket from the same address can be admitted past `max_connections_per_ip`. A handler of your own on a `connect()` socket must drain with `receive()` after that close: a new `receive_text()` raises `RuntimeError`. Pending handshakes count toward the **1013** cap. Sockets with no client address share `"unknown"`. A broadcast whose `json.dumps` length equals 60000 is still one frame. See [REFERENCE — Training-stream resume](REFERENCE.md#training-stream-resume-and-the-connection-cap).
 
 Tip: a `/ws/control` or `/ws/workers` text frame of exactly **65536** characters is delivered (`len` of the decoded string). One more character closes control **1009** `Message too large` (next frame unread, rate limiter uncharged) or worker registration **4005**; the worker message loop reports the error and stays open.
 
@@ -1132,6 +1132,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Non-ASCII `X-API-Key` is a 500 | Before `juniper-service-core` 0.7.1, `hmac.compare_digest` raises on a non-ASCII `str`, which is not an `HTTPException`. The byte compare (`surrogatepass`) is first released in service-core 0.7.1; juniper-data, juniper-cascor and juniper-canopy carry their own copies, first comparing bytes in 0.17.0, 0.12.0 and 0.9.0. Do not catch the `TypeError`; do not re-enable Sentry locals. |
 | Training WS `resume_failed` `out_of_range`, then `initial_status` | The seq is older than the buffer's `oldest - 1`, the buffer is empty and `last_seq > 0`, or replay is disabled. The socket stayed up. Discard the local tail. [REFERENCE](REFERENCE.md#training-stream-resume-and-the-connection-cap). |
 | Training WS closed 1011 `Resume replay incomplete` after `resume_ok` | A replay or catch-up send failed, a burst during the replay evicted a seq the client still needed, or the manager raised (an override of `promote_to_active` without `replayed_through` does, on every resume) or returned a false value such as `None` (an override that drops `super()`'s return does; only INFO is logged). A failed send, most often a client that hung up, is logged at INFO. What arrived is gap-free; reconnect and resume. Unreleased; first in the next juniper-service-core release (0.8.0). [REFERENCE](REFERENCE.md#training-stream-resume-and-the-connection-cap). |
+| Training WS closed **1011** `Broadcast send failed or timed out` | A live broadcast's send to it raised or timed out (`send_timeout_seconds`, default 0.5 s): a slow client, or a frame the transport refused. INFO `Broadcast of seq N failed for K socket(s)`; a timeout adds the WARNING `WebSocket send timed out`. Reconnect and resume from the last seq held. If every socket closed on the same seq, connect without resuming: that frame may be one `send_json` cannot serialise, and a resume across it is closed **1011** `Resume replay incomplete` until it leaves the buffer. Unreleased (0.8.0); through 0.7.2 the socket was left open on a stream nothing was sent to. [REFERENCE](REFERENCE.md#training-stream-resume-and-the-connection-cap). |
 | Training WS handshake refused (HTTP 403 on uvicorn; ASGI close 1013) while few training sockets show | Pending resume handshakes count toward `max_connections` (default 50). Address-less clients share the `"unknown"` per-IP bucket (default 5). |
 | A throttled source IP is allowed again inside its window | The 10,000-IP cap dropped that row (oldest window start). The next 401 starts a fresh budget. `check()` does not restore the row. |
 | `--batch` row `verdict=ERROR` | Soft-fail for that tip only; the other PRs in the report remain valid. `--pr` would have exited `2` instead. |
@@ -1268,6 +1269,6 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 
 ---
 
-**Last Updated:** 2026-11-09
-**Version:** 1.0.66
+**Last Updated:** 2026-11-12
+**Version:** 1.0.67
 **Maintainer:** Paul Calnon
