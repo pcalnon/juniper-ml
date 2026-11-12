@@ -237,10 +237,13 @@ gpg --card-status | grep -E 'Key attributes|Signature key|Encryption key|Authent
 
 gpg -K "$KEYFP"          # all three subkeys now show 'ssb>' (card-backed) + card-no
 
-echo test > /tmp/t.txt
-gpg -u "$KEYFP" --armor --detach-sign -o /tmp/t.sig /tmp/t.txt    # prompts card PIN (123456 until §5)
-gpg --verify /tmp/t.sig /tmp/t.txt                                 # 'Good signature'
-gpg -r "$KEYFP" -e -o /tmp/t.gpg /tmp/t.txt && gpg -d /tmp/t.gpg   # decrypt via card
+# Scratch under juniper-ml's gitignored tmp/, never the system temp dir (2026-10-26 rule)
+T=~/Development/python/Juniper/juniper-ml/tmp/keytocard-test && mkdir -p "$T"
+echo test > "$T/t.txt"
+gpg -u "$KEYFP" --armor --detach-sign -o "$T/t.sig" "$T/t.txt"    # prompts card PIN (123456 until §5)
+gpg --verify "$T/t.sig" "$T/t.txt"                                 # 'Good signature'
+gpg -r "$KEYFP" -e -o "$T/t.gpg" "$T/t.txt" && gpg -d "$T/t.gpg"   # decrypt via card
+rm -rf "$T"
 gpg --card-status | grep 'Signature counter'                        # incremented
 ```
 

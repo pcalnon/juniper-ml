@@ -53,8 +53,11 @@ done
 
 # Single probe. Prints "<STATUS>: <detail>" and returns 0/10/20.
 probe_once() {
-  local workdir out err ec
-  workdir="$(mktemp -d "${TMPDIR:-/tmp}/fableprobe.XXXXXX")" || { echo "INCONCLUSIVE: mktemp failed"; return 20; }
+  local workdir out err ec scratch
+  # Under TMPDIR, else this checkout's gitignored tmp/ -- never the system temp dir (2026-10-26 rule).
+  scratch="${TMPDIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/tmp}"
+  mkdir -p "$scratch" || { echo "INCONCLUSIVE: cannot create $scratch"; return 20; }
+  workdir="$(mktemp -d "${scratch%/}/fableprobe.XXXXXX")" || { echo "INCONCLUSIVE: mktemp failed"; return 20; }
   # shellcheck disable=SC2064
   trap "rm -rf '$workdir'" RETURN
   printf '{"mcpServers":{}}' > "$workdir/empty_mcp.json"

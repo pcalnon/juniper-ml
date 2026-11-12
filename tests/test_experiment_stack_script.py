@@ -377,7 +377,10 @@ class TestRunDirContract(unittest.TestCase):
         self.assertIn('RUN_ROOT="${JUNIPER_EXP_RUN_ROOT:-${HOME}/.local/state/juniper-experiments}"', SCRIPT_TEXT)
 
     def test_lock_root_is_ephemeral_runtime_state(self) -> None:
-        self.assertIn('LOCK_ROOT="${JUNIPER_EXP_LOCK_ROOT:-${XDG_RUNTIME_DIR:-/tmp}/juniper-experiments}"', SCRIPT_TEXT)
+        # The 2026-10-26 repo tmp/ rule: without a runtime dir the fallback is this checkout's tmp/,
+        # never the system temp dir (TestLockRootFallback pins it behaviourally).
+        self.assertIn('LOCK_ROOT="${JUNIPER_EXP_LOCK_ROOT:-${XDG_RUNTIME_DIR:-$(juniper_repo_tmp "${SCRIPT_DIR}")}/juniper-experiments}"', SCRIPT_TEXT)
+        self.assertIn('source "${SCRIPT_DIR}/juniper_repo_tmp.bash"', SCRIPT_TEXT)
 
     def test_run_id_is_utc_timestamp_plus_four_hex(self) -> None:
         new_run_id = _extract_experiment_fn("new_run_id")
@@ -989,6 +992,40 @@ class _DryRunHarness(unittest.TestCase):
         stub_bin = _stage_stub_bin(root, busy_ports=busy_ports)
         conda_dir = _stage_conda_fixture(root)
         return _run("--dry-run", "--up", *args, env_extra=self._env(root, stub_bin, conda_dir))
+
+
+class TestLockRootFallback(_DryRunHarness):
+    """The 2026-10-26 repo tmp/ rule: without XDG_RUNTIME_DIR the lock root is the checkout's tmp/.
+
+    The fallback was the system temp dir, which systemd-tmpfiles ages. It is now the juniper-ml
+    primary checkout's tmp/ -- shared by every worktree, so the lockdirs still serialise launchers
+    across sessions -- and an explicit runtime dir or JUNIPER_EXP_LOCK_ROOT still wins.
+    """
+
+    def _dry_up_lock_root(self, root: Path, **changes: "str | None") -> str:
+        env = RedactedEnv(os.environ)
+        env.update(self._env(root, _stage_stub_bin(root), _stage_conda_fixture(root)))
+        for key, value in changes.items():
+            if value is None:
+                env.pop(key, None)
+            else:
+                env[key] = value
+        result = subprocess.run(["/bin/bash", str(SCRIPT_PATH), "--dry-run", "--up", "--cascor"], capture_output=True, text=True, env=env, timeout=SCRIPT_TIMEOUT_SECONDS)
+        self.assertEqual(result.returncode, 0, msg=result.stderr + result.stdout)
+        lines = [line for line in result.stdout.splitlines() if "lock root:" in line]
+        self.assertEqual(len(lines), 1, msg=result.stdout)
+        return lines[0].split("lock root:", 1)[1].strip()
+
+    def test_without_a_runtime_dir_the_lock_root_is_the_primary_checkouts_tmp(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            primary_tmp = subprocess.run(["bash", str(SCRIPT_PATH.parent / "juniper_repo_tmp.bash"), str(SCRIPT_PATH.parent)], capture_output=True, text=True, check=True, timeout=SCRIPT_TIMEOUT_SECONDS).stdout.strip()
+            self.assertEqual(self._dry_up_lock_root(Path(tmp), JUNIPER_EXP_LOCK_ROOT=None, XDG_RUNTIME_DIR=None), f"{primary_tmp}/juniper-experiments")
+
+    def test_a_runtime_dir_still_wins(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertEqual(self._dry_up_lock_root(root, JUNIPER_EXP_LOCK_ROOT=None, XDG_RUNTIME_DIR=str(root / "xdg")), f"{root / 'xdg'}/juniper-experiments")
+            self.assertFalse((root / "xdg").exists(), "a dry run must not create the lock root")
 
 
 class TestDryRunUp(_DryRunHarness):

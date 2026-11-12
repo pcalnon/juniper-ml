@@ -57,7 +57,9 @@
 #
 # Environment overrides:
 #   JUNIPER_EXP_RUN_ROOT        — run root (default: ${HOME}/.local/state/juniper-experiments)
-#   JUNIPER_EXP_LOCK_ROOT       — port lockdir root (default: ${XDG_RUNTIME_DIR:-/tmp}/juniper-experiments)
+#   JUNIPER_EXP_LOCK_ROOT       — port lockdir root (default: ${XDG_RUNTIME_DIR}/juniper-experiments; without
+#                                 XDG_RUNTIME_DIR, tmp/juniper-experiments of the juniper-ml primary checkout,
+#                                 named by util/juniper_repo_tmp.bash -- never the system temp dir)
 #   JUNIPER_EXP_PROJECT_DIR     — ecosystem root (default: derived from this script's
 #                                 location, i.e. /home/pcalnon/Development/python/Juniper
 #                                 for the canonical checkout; SET THIS when running the
@@ -152,6 +154,10 @@ set -euo pipefail
 SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
 SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 
+# juniper_repo_tmp: the PRIMARY checkout's gitignored tmp/, this repo's temp root (2026-10-26 rule).
+# shellcheck source=juniper_repo_tmp.bash
+source "${SCRIPT_DIR}/juniper_repo_tmp.bash"
+
 # util/ -> juniper-ml -> Juniper (ecosystem root); override with JUNIPER_EXP_PROJECT_DIR.
 JUNIPER_ML_DIR="$(dirname "${SCRIPT_DIR}")"
 PROJECT_DIR="${JUNIPER_EXP_PROJECT_DIR:-$(dirname "${JUNIPER_ML_DIR}")}"
@@ -191,8 +197,14 @@ RECURRENCE_PORT_MAX=8289
 ###########################################################################################################################################################################################################
 RUN_ROOT="${JUNIPER_EXP_RUN_ROOT:-${HOME}/.local/state/juniper-experiments}"
 # A lock is ephemeral state, so it belongs in the runtime dir — NOT in RUN_ROOT, which is
-# deliberately durable (H-15: results must survive a reaped sandbox).
-LOCK_ROOT="${JUNIPER_EXP_LOCK_ROOT:-${XDG_RUNTIME_DIR:-/tmp}/juniper-experiments}"
+# deliberately durable (H-15: results must survive a reaped sandbox). Without a runtime dir the
+# fallback is this checkout's gitignored tmp/ (the primary's, shared by every worktree, so locks
+# still serialise across sessions), never the system temp dir (2026-10-26 rule). It is resolved
+# only when both overrides are unset.
+LOCK_ROOT="${JUNIPER_EXP_LOCK_ROOT:-${XDG_RUNTIME_DIR:-$(juniper_repo_tmp "${SCRIPT_DIR}")}/juniper-experiments}" || {
+    echo "[${SCRIPT_NAME}] ERROR: XDG_RUNTIME_DIR is unset and this checkout's tmp/ cannot be created; set JUNIPER_EXP_LOCK_ROOT" >&2
+    exit 1
+}
 
 CONDA_DIR="${JUNIPER_EXP_CONDA_DIR:-/opt/miniforge3}"
 CONDA_SH="${CONDA_DIR}/etc/profile.d/conda.sh"

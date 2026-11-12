@@ -77,7 +77,7 @@
 #                      USAGEREPORTER_Duplicati_LEVEL=none AUTOUPDATER_Duplicati_SKIP_UPDATE=1 TMPDIR=<data folder>`.
 #                      `sudo -u` dropped the unit's three Environment= lines, and the usage reporter starts
 #                      before the 102 return with no IPAddressDeny= behind it; without TMPDIR the .NET runtime's
-#                      diagnostic socket went to /tmp (the 2026-10-26 directive).
+#                      diagnostic socket went to /tmp (the 2026-10-26 directive). # tmp-path-literal: allow
 set -euo pipefail
 
 DATA_FOLDER=""
@@ -199,7 +199,7 @@ AS_USER=(sudo -u "${RUN_AS}" --)
 # The unit's three Environment= lines, which `sudo -u` drops, and which nothing here backs with IPAddressDeny=:
 # the server starts its usage reporter BEFORE the 102 return (Program.cs 284, then AdjustApplicationSettings at
 # 286), and a release build reports unless one of these says not to. TMPDIR: the .NET runtime puts its
-# diagnostic socket there, and otherwise in /tmp (the 2026-10-26 directive); the data folder is the one directory
+# diagnostic socket there, and otherwise in /tmp (the 2026-10-26 directive); the data folder is the one directory # tmp-path-literal: allow
 # this script has already proved is the service user's own, mode 0700.
 RUN_ENV=(env DO_NOT_TRACK=1 USAGEREPORTER_Duplicati_LEVEL=none AUTOUPDATER_Duplicati_SKIP_UPDATE=1 "TMPDIR=${DATA_FOLDER}")
 set +e

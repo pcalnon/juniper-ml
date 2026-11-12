@@ -226,13 +226,15 @@ disk. If that happens, treat it as exposed (§8: delete it at Docker Hub first) 
    one, run the test on a machine without it.
 
    ```bash
-   JDH_TEST="$(mktemp -d -t juniper-dh-test.XXXXXX)"
+   JDH_TEST="$(mktemp -d "${TMPDIR:?export TMPDIR=<this repo>/tmp first}/juniper-dh-test.XXXXXX")"
    docker --config "${JDH_TEST:?}" login --username '<Docker ID>'
    docker --config "${JDH_TEST:?}" logout
    case "$JDH_TEST" in */juniper-dh-test.*) rm -rf "$JDH_TEST" ;; esac; unset JDH_TEST
    ```
 
-   - **Line 1** makes the throwaway directory.
+   - **Line 1** makes the throwaway directory under `TMPDIR`, which must name the repo's gitignored
+     `tmp/`: never the system temp dir (`notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`).
+     With `TMPDIR` unset the line refuses, `JDH_TEST` stays unset, and lines 2 to 4 refuse too.
    - **Line 2** logs in to it. Type nothing until `Password:` appears, then paste the token. If the
      line fails at once, a paste would land at the shell prompt and in its history (§8).
    - **Line 3** is a **bare** logout, with no registry name (note below).
@@ -250,7 +252,8 @@ disk. If that happens, treat it as exposed (§8: delete it at Docker Hub first) 
      it fails the same way again, run line 4, delete the token at Docker Hub and start §4 again.
    - **If the shell is lost before line 4**, for example a closed terminal, a successful login's
      token is still in the throwaway directory's `config.json`. Remove every such directory with
-     `rm -rf "${TMPDIR:-/tmp}"/juniper-dh-test.*`.
+     `rm -rf "${TMPDIR:?}"/juniper-dh-test.*` (before 2026-10-26 the block could fall back to the
+     system temp dir, so check there too for a directory an older run left).
    - **Any other error** (network, a Docker Hub outage) says nothing about the token. Run line 4,
      and retry the whole block later.
    - **Then clear the clipboard.** §5.2B step 3a types the usernames, so nothing should be on it.

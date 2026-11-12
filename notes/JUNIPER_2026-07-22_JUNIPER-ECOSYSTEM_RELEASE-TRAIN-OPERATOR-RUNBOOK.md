@@ -693,8 +693,8 @@ and will treat the quotation as a real waiver.
 Local smoke for a correction PR:
 
 ```bash
-git log --format=%B origin/main..HEAD > /tmp/trailers.txt
-python util/release_train/archive_guard.py --base origin/main --head HEAD --trailers-file /tmp/trailers.txt --json
+git log --format=%B origin/main..HEAD > tmp/trailers.txt
+python util/release_train/archive_guard.py --base origin/main --head HEAD --trailers-file tmp/trailers.txt --json
 ```
 
 - The monitor polls a bounded ~15-minute wall clock (`--monitor-timeout 900`,

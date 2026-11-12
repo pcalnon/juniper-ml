@@ -524,13 +524,13 @@ Unknown apply flags exit `2`. Pair with `tests/test_worktree_sweep_scripts.py` f
 Recommended operator flow:
 
 ```bash
-bash util/ad-hoc/worktree_sweep_survey.bash > /tmp/juniper-worktree-sweep.tsv
+bash util/ad-hoc/worktree_sweep_survey.bash > tmp/juniper-worktree-sweep.tsv
 # Review SAFE rows; expect aged worktrees with only caches/logs to be SAFE, not DIRTY.
-bash util/ad-hoc/worktree_sweep_apply.bash --dry-run < /tmp/juniper-worktree-sweep.tsv
+bash util/ad-hoc/worktree_sweep_apply.bash --dry-run < tmp/juniper-worktree-sweep.tsv
 # Default: skips ignored-only SAFE rows (protective).
-bash util/ad-hoc/worktree_sweep_apply.bash < /tmp/juniper-worktree-sweep.tsv
+bash util/ad-hoc/worktree_sweep_apply.bash < tmp/juniper-worktree-sweep.tsv
 # After confirming no precious ignored content remains in those trees:
-bash util/ad-hoc/worktree_sweep_apply.bash --include-ignored < /tmp/juniper-worktree-sweep.tsv
+bash util/ad-hoc/worktree_sweep_apply.bash --include-ignored < tmp/juniper-worktree-sweep.tsv
 ```
 
 Status meanings:
