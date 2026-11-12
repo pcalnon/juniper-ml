@@ -951,6 +951,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The orphan reaper protected the isolated stack only when its own `TMPDIR` matched the stack's.**
+  `util/reap_pytest_orphans.bash` derived the stack's protected run dir from `${TMPDIR:-/tmp}`, so a stack launched under
+  one `TMPDIR` and reaped under another had no pid-file protection, and every session sets `TMPDIR` now. It protects the
+  FIXED default (`util/juniper_repo_tmp.bash`), resolved after the arguments are parsed, plus, read-only, the legacy
+  `/tmp/juniper-e2e` and `${TMPDIR}/juniper-e2e` that older checkouts' stacks may still use. It exits 1, reaping nothing,
+  when it cannot resolve the default. `tests/test_reap_pytest_orphans.py` gains 8 tests and redirects the legacy roots.
+
 - **Cascor suites carry headline columns: `aggregate.csv` and `REPORT.md` gain `train_accuracy` and `val_accuracy`, a
   finished suite gains them without re-running, and a NaN or infinite value fails every acceptance band** (register row
   `APD-ML-002`; the Overtoad's four rulings of 2026-10-26; juniper-ml#2369). `util/experiments/run_suite.py`'s
