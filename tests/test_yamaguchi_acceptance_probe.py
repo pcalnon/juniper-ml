@@ -1003,8 +1003,10 @@ class ServerTest(_Stubbed):
         self.assertIn(f"GET backup {JOB} -> 404", probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"])
         with mock.patch("urllib.request.urlopen", side_effect=urllib.error.URLError("connection refused")):
             self.assertIn("cannot reach", probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"])
-        os.chmod(self.cred, 0o644)
-        unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
+        real_stat = os.stat(self.cred)
+        insecure_stat = os.stat_result((real_stat.st_mode & ~0o777) | 0o644, *real_stat[1:])
+        with mock.patch("os.stat", return_value=insecure_stat):
+            unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
         self.assertIn("credential refused: FATAL: web credential file", unsafe)
         self.assertIn("mode 0644", unsafe, "the client's own sentence -- a path, a mode, an owner -- is kept")
         never_leaks(self, unsafe)
