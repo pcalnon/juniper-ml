@@ -250,8 +250,8 @@ def main():
     epoch = calendar.timegm(time.strptime(m.group(1), "%Y%m%dT%H%M%S"))
     version = len(dlists) - 1 - dlists.index(args.dlist)
     run_root = os.path.realpath(args.run_root)
-    if run_root.startswith(("/home/", "/tmp", "/var/tmp", dest)):
-        fail(f"run root {run_root} must be outside /home, /tmp and the destination")
+    if run_root.startswith(("/home/", "/tmp", "/var/tmp", dest)):  # tmp-path-literal: allow
+        fail(f"run root {run_root} must be outside /home, /tmp and the destination")  # tmp-path-literal: allow
     os.makedirs(run_root, mode=0o700, exist_ok=True)
     mp = run_root
     while not os.path.ismount(mp):

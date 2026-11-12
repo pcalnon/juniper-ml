@@ -17,7 +17,7 @@ files, not by the mount table) -- and the suite is run against the mutant throug
 HOST_API_FS_CHECK_SCRIPT. A mutant the suite does not kill is reported as SURVIVED and the script
 exits 1.
 
-Each mutant is written to a fresh file under the repo's tmp/ (never /tmp), run with
+Each mutant is written to a fresh file under the repo's tmp/ (never the system temp directory), run with
 PYTHONDONTWRITEBYTECODE=1 so no stale .pyc can stand in for it, and the suite's exit status is
 read directly (no pipe).
 

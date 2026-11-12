@@ -78,7 +78,10 @@ class RepoContextProbeTest(unittest.TestCase):
 
     def test_non_git_dir_is_unavailable(self):
         with tempfile.TemporaryDirectory() as d:
-            ctx = repo_context.probe(d)
+            # The ceiling (d's parent: git ignores a ceiling equal to its starting dir) keeps git from finding the
+            # checkout that encloses TMPDIR, a repo's tmp/ since 2026-10-26.
+            with patch.dict(os.environ, {"GIT_CEILING_DIRECTORIES": os.path.dirname(d)}):
+                ctx = repo_context.probe(d)
             self.assertEqual(ctx["status"], "unavailable")
             self.assertIsNone(ctx["head_sha"])
 
@@ -343,7 +346,9 @@ class CliBundleTest(unittest.TestCase):
 
     def test_hard_stop_on_non_git_root(self):
         with tempfile.TemporaryDirectory() as d:
-            proc = self._run_cli("--repo-root", d)
+            # As in test_non_git_dir_is_unavailable: the ceiling keeps git from finding the checkout enclosing TMPDIR.
+            with patch.dict(os.environ, {"GIT_CEILING_DIRECTORIES": os.path.dirname(d)}):
+                proc = self._run_cli("--repo-root", d)
             self.assertEqual(proc.returncode, 2, "discovery failure must be a hard stop (exit 2)")
             envelope = json.loads(proc.stdout)
             self.assertEqual(envelope["status"], "discovery_failed")

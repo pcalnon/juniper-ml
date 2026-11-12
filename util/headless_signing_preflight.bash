@@ -169,7 +169,15 @@ if ! AGENT_SOCKET="$("$GPGCONF" --list-dirs agent-socket 2>/dev/null)" || [[ -z 
 fi
 AGENT_CONF="${HOMEDIR}/gpg-agent.conf"
 
-TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/headless-signing-preflight.XXXXXX")" || die_env "mktemp failed"
+# Scratch for this run, removed on exit: under TMPDIR, else this checkout's gitignored tmp/ -- never
+# the system temp dir (2026-10-26 rule). Derived from the script's own path, not from git.
+if [[ -n "${TMPDIR:-}" ]]; then
+    SCRATCH_ROOT="${TMPDIR%/}"
+else
+    SCRATCH_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/tmp"
+    mkdir -p "$SCRATCH_ROOT" || die_env "cannot create ${SCRATCH_ROOT}"
+fi
+TMP_DIR="$(mktemp -d "${SCRATCH_ROOT}/headless-signing-preflight.XXXXXX")" || die_env "mktemp failed"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 CHECKS=0

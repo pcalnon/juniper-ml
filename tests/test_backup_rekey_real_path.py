@@ -666,7 +666,7 @@ class DryRunHermetic(unittest.TestCase):
 
 class VacuumTempStore(unittest.TestCase):
     """1.4.0: step 9's `sudo -u duplicati` carries no TMPDIR, so the VACUUM's temporary copy of the database
-    must stay in memory -- set BEFORE the VACUUM in the same heredoc -- rather than land in /var/tmp once it
+    must stay in memory -- set BEFORE the VACUUM in the same heredoc -- rather than land in the system temp directory once it
     outgrows the ~2 MB page cache. Static: SQLite unlinks that file at once, so only strace or inotify sees it,
     and only for a database larger than the cache (Phase D's lane B measured both)."""
 

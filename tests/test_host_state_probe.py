@@ -570,6 +570,27 @@ class TextModeTest(ProbeTestCase):
         self.assertNotIn('"schema"', proc.stdout)
 
 
+class ScratchDirTest(ProbeTestCase):
+    """The 2026-10-26 repo tmp/ rule: without TMPDIR the run's scratch dir is this checkout's tmp/, removed on exit."""
+
+    def test_without_tmpdir_the_scratch_dir_is_the_checkouts_tmp_and_is_removed(self) -> None:
+        log = self.h.tmp / "mktemp.log"
+        wrap = self.h.tmp / "wrap"
+        wrap.mkdir()
+        real = shutil.which("mktemp")
+        self.assertIsNotNone(real)
+        (wrap / "mktemp").write_text(f'#!/bin/sh\nd=$("{real}" "$@") || exit $?\nprintf \'%s\\n\' "$d" >> "{log}"\nprintf \'%s\\n\' "$d"\n', encoding="utf-8")
+        (wrap / "mktemp").chmod(0o755)
+        env = self.h.env(TMPDIR="")
+        env["PATH"] = f"{wrap}:{env['PATH']}"
+        proc = self.h.run("--json", env=env)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        made = log.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(len(made), 1, made)
+        self.assertEqual(Path(made[0]).parent.resolve(), (REPO_ROOT / "tmp").resolve())
+        self.assertFalse(Path(made[0]).exists(), "the scratch dir must be removed on exit")
+
+
 @unittest.skipUnless(sys.platform == "darwin", "the real macOS tools exist only on macOS")
 class RealHostTest(unittest.TestCase):
     def test_the_hardware_section_on_this_mac(self) -> None:

@@ -71,6 +71,8 @@ logs/nohup.out
 *.tmp
 *.temp
 .~lock.*
+# The repo's temp root, written instead of the system temp dir (2026-10-26 rule); root-anchored so a nested tmp/ stays tracked
+/tmp/
 
 # PID files
 *.pid

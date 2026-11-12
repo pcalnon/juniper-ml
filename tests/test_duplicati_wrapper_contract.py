@@ -647,7 +647,7 @@ class InstallerDriftGate(_Scratch):
             # R3C N-6: five lines the 1.2.0 installer passed and the wrapper refused at the next start.
             "reset-jwt-config": "--webservice-reset-jwt-config=true\n",
             "interface": "--webservice-interface=any\n",
-            "server-datafolder": "--server-datafolder=/tmp/x\n",
+            "server-datafolder": "--server-datafolder=/tmp/x\n",  # tmp-path-literal: allow
             "allowed-hostnames": "--webservice-allowed-hostnames=*\n",
             "DUPLICATI__ export": "DUPLICATI__DISABLE_DB_ENCRYPTION=true\n",
             # 1.3.0: the wrapper's allow-list -- an option that is not a tunable never passes.
@@ -751,7 +751,7 @@ class RecoveryHelperGates(_Scratch):
 
     def test_password_init_runs_the_server_with_the_units_environment_and_its_own_tmpdir(self):
         """1.4.0 (Phase D lane A, A-8): `sudo -u` drops the unit's DO_NOT_TRACK / USAGEREPORTER / AUTOUPDATER lines,
-        and the server starts its usage reporter before the 102 return; TMPDIR keeps .NET's socket out of /tmp. The
+        and the server starts its usage reporter before the 102 return; TMPDIR keeps .NET's socket out of the system temp directory. The
         three are removed from the test's own environment first, so an inherited value cannot pass for the script's."""
         stub = self.tmp / "server-env"
         report = self.tmp / "seen-env"

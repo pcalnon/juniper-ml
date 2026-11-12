@@ -71,7 +71,7 @@
 #   9. `PRAGMA wal_checkpoint(TRUNCATE); VACUUM;` on the live database with the server STOPPED, so no
 #      cleartext page survives in free pages or the WAL (D section 7.3.5) -- under `temp_store=MEMORY`,
 #      because `sudo -u duplicati` drops TMPDIR and VACUUM's temporary copy, once it outgrows the page cache,
-#      would otherwise land in /var/tmp;
+#      would otherwise land in /var/tmp; # tmp-path-literal: allow
 #  10. start the unit; API `resume`; `serverstate` must read Running.
 #
 # IF IT DIES. An EXIT trap reports what is ON DISK, not what the script believed (round 3: R3A D-4,
@@ -120,7 +120,7 @@
 #                      (through the gate, R4C DEFECT-2); REKEY_CREDSTORE_DIR (dry run only, R4C NIT-8).
 #   1.4.0  2026-10-29  step 9's VACUUM runs under `PRAGMA temp_store=MEMORY`: its `sudo -u duplicati`
 #                      carries no TMPDIR, so SQLite's temporary copy of a database above the ~2 MB page
-#                      cache would go to /var/tmp (the 2026-10-26 no-/tmp directive; Phase D's design,
+#                      cache would go to /var/tmp (the 2026-10-26 no-/tmp directive; Phase D's design, # tmp-path-literal: allow
 #                      before step 0; at 240 KiB today the copy stays in the cache, so this is a guard).
 set -euo pipefail
 
@@ -465,7 +465,7 @@ import sqlite3, sys
 con = sqlite3.connect(sys.argv[1])
 # VACUUM rebuilds the database in a transient temporary database. `sudo -u` resets the environment, so with no
 # TMPDIR, once that copy outgrows SQLite's page cache (about 2 MB; the server database was 240 KiB on 09-21), it
-# is created under /var/tmp (the 2026-10-26 directive: no file under /tmp or /var/tmp). MEMORY keeps it in this
+# is created under /var/tmp (the 2026-10-26 directive: no file under /tmp or /var/tmp). MEMORY keeps it in this # tmp-path-literal: allow
 # process whatever the size: this host's SQLite, 3.46.1, is built with TEMP_STORE=1, so the pragma is honoured
 # (measured 2026-10-29 with `pragma compile_options` from /usr/bin/python3, and by Phase D's lane B under strace).
 con.execute("PRAGMA temp_store=MEMORY")

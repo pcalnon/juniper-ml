@@ -303,7 +303,7 @@ _NOTE_NEW = (
     "  - The forks' `RateLimiter` still truncates with no floor (data `juniper_data/api/security.py:250` and `:254`, cascor `src/api/security.py:229` and `:233`, canopy `src/security.py:270` and `:274`), "
     "so APD-SVCCORE-004's `Retry-After: 0` is live in all three, with no register row. Data `:427` and cascor `:386` keep `FailedAuthThrottle`'s `max(1, int(...))`, the round-down 0.7.2 fixed only in service-core.\n"
     "  - cascor and canopy pass no `telemetry=` to `FastAPI()`, so they run FastAPI 0.162.0's default telemetry. It is inert while their locks hold `opentelemetry-api` and no SDK, but data#454's opt-out is missing in both.\n"
-    "  - Separately, canopy legs `:8052` and `:8053` still write their logs to `/tmp/juniper-e2e/` (about 40 MB each on 2026-11-09), against the directive of 2026-10-26; not this arc's.\n"
+    "  - Separately, canopy legs `:8052` and `:8053` still write their logs to `/tmp/juniper-e2e/` (about 40 MB each on 2026-11-09), against the directive of 2026-10-26; not this arc's.\n"  # tmp-path-literal: allow
     "\n**R-DC-PATCH's branch.** "
 )
 

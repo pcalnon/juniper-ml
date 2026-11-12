@@ -733,6 +733,12 @@ class ClaudeInteractiveEndToEndTests(unittest.TestCase):
             target = scripts_dir / name
             target.write_text((REPO_ROOT / "scripts" / name).read_text(encoding="utf-8"), encoding="utf-8")
             target.chmod(0o755)
+        # wake_the_claude.bash names its temp root from the checkout that holds it (the 2026-10-26 repo tmp/ rule): it
+        # sources ../util/juniper_repo_tmp.bash and refuses to launch from no checkout. So the fixture carries the helper
+        # and, below, is a git checkout of its own, whose tmp/ the launcher creates.
+        util_dir = Path(temp_dir) / "util"
+        util_dir.mkdir(exist_ok=True)
+        (util_dir / "juniper_repo_tmp.bash").write_text((REPO_ROOT / "util" / "juniper_repo_tmp.bash").read_text(encoding="utf-8"), encoding="utf-8")
         bin_dir = Path(temp_dir) / "bin"
         bin_dir.mkdir(exist_ok=True)
         argv_log = Path(temp_dir) / "claude_argv.nul"
@@ -744,13 +750,19 @@ class ClaudeInteractiveEndToEndTests(unittest.TestCase):
         )
         fake_claude.chmod(0o755)
 
-        env = RedactedEnv(os.environ)
+        # No inherited GIT_* (a GIT_DIR would send `git init`, and the helper's discovery, to another repository) and no
+        # user or system git configuration; the ceiling, a proper ancestor of where git starts, keeps discovery in the fixture.
+        env = RedactedEnv({k: v for k, v in os.environ.items() if not k.startswith("GIT_")})
         for var in ("CLAUDE_SKIP_PERMISSIONS", "CLAUDE_REMOTE_CONTROL", "CLAUDE_MODEL", "CLAUDE_EFFORT", "CLAUDE_ID", "CLAUDE_WORKTREE", "CLAUDE_PROMPT", "CLAUDE_PROMPT_FILE", "CLAUDE_PROMPT_PATH", "WTC_DEBUG", "BASH_ENV", "ENV"):
             env.pop(var, None)
         env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
         env["CLAUDE_ARGV_NUL_LOG"] = str(argv_log)
         env["WTC_SESSIONS_DIR"] = str(Path(temp_dir) / "sessions")
         env["WTC_LOGS_DIR"] = str(Path(temp_dir) / "logs")
+        env["GIT_CONFIG_NOSYSTEM"] = "1"
+        env["GIT_CONFIG_GLOBAL"] = os.devnull
+        env["GIT_CEILING_DIRECTORIES"] = str(Path(temp_dir).resolve().parent)
+        subprocess.run(["git", "init", "-q", temp_dir], env=env, check=True, capture_output=True)
         env.update(env_extra or {})
         result = subprocess.run(
             ["bash", str(scripts_dir / "claude_interactive.bash"), *extra_args],

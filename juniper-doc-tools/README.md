@@ -26,10 +26,11 @@ pip install "juniper-ml[doc-tools]"    # via the meta-package
 
 ## Quick start
 
-CLI — the pattern every Juniper repo's docs lane uses:
+CLI — the pattern every Juniper repo's docs lane uses (`tmp/` is each repo's gitignored scratch directory; an
+excluded name matches at any depth, so a nested `tmp/` is skipped too):
 
 ```bash
-juniper-check-doc-links --exclude templates --exclude history --exclude legacy --cross-repo skip
+juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude tmp --cross-repo skip
 ```
 
 Library:
@@ -38,7 +39,7 @@ Library:
 from pathlib import Path
 from juniper_doc_tools import validate_directory
 
-result = validate_directory(Path("."), exclude_dirs={"templates", "history"}, cross_repo_mode="skip")
+result = validate_directory(Path("."), exclude_dirs={"templates", "history", "tmp"}, cross_repo_mode="skip")
 if not result.ok:
     for error in result.errors:
         print(error)

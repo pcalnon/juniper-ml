@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import signal
 import subprocess
 import tempfile
@@ -1359,7 +1360,7 @@ class TestDataUpLive(unittest.TestCase):
                     force_kill(child_pid)
 
     def test_rebuilds_venv_when_only_an_aged_out_skeleton_remains(self) -> None:
-        # systemd-tmpfiles ages /tmp by FILE (``Q /tmp ... 10d``): a ten-day-old venv
+        # systemd-tmpfiles ages the system temp dir by FILE (tmp.conf: ``q /tmp 1777 root root 10d``; # tmp-path-literal: allow): a ten-day-old venv
         # loses every file and keeps its directories. That skeleton passed the old
         # ``[[ -d ]]`` test, the create was skipped, and ``source bin/activate`` failed
         # (found 2026-09-22). The skeleton must be rebuilt, not trusted.
@@ -1823,6 +1824,90 @@ class TestLiveDown(unittest.TestCase):
                 (project_dir / "juniper-cascor/src/snapshots/other.bin").exists(),
                 "non-.h5 artifacts must be preserved",
             )
+
+
+class TestRunDirDefault(unittest.TestCase):
+    """The 2026-10-26 repo tmp/ rule: the default run dir is FIXED, never derived from TMPDIR.
+
+    It holds the pid files ``util/reap_pytest_orphans.bash`` protects, so it must not move with the
+    caller's ``TMPDIR`` -- every session sets one now, and a reaper under a different ``TMPDIR`` would
+    look elsewhere. The default is ``tmp/juniper-e2e`` of the juniper-ml PRIMARY checkout, named by
+    ``util/juniper_repo_tmp.bash``; a script in no checkout refuses to guess.
+    """
+
+    @staticmethod
+    def _env(root: Path, **extra: str) -> "dict[str, str]":
+        env = {k: v for k, v in RedactedEnv(os.environ).items() if not k.startswith("GIT_") and k != "JUNIPER_E2E_RUN_DIR"}
+        env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_CEILING_DIRECTORIES=str(root), JUNIPER_E2E_PROJECT_DIR="/opt/juniper-e2e-fixture", TMPDIR=str(root / "session-tmpdir"))
+        env.update(extra)
+        (root / "session-tmpdir").mkdir(exist_ok=True)
+        return env
+
+    @staticmethod
+    def _copy(root: Path, *, git_init: bool, env: "dict[str, str]") -> Path:
+        checkout = root / ("checkout" if git_init else "plain")
+        (checkout / "util").mkdir(parents=True)
+        for name in ("isolated_stack.bash", "juniper_repo_tmp.bash"):
+            shutil.copy2(SCRIPT_PATH.parent / name, checkout / "util" / name)
+        if git_init:
+            subprocess.run(["git", "init", "-q", str(checkout)], env=env, check=True, capture_output=True, timeout=SCRIPT_TIMEOUT_SECONDS)
+        return checkout
+
+    def test_this_checkouts_default_is_its_primary_tmp_whatever_tmpdir_says(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            env = self._env(root)
+            primary_tmp = subprocess.run(["bash", str(SCRIPT_PATH.parent / "juniper_repo_tmp.bash"), str(SCRIPT_PATH.parent)], env=env, capture_output=True, text=True, check=True, timeout=SCRIPT_TIMEOUT_SECONDS).stdout.strip()
+            result = subprocess.run(["/bin/bash", str(SCRIPT_PATH), "--dry-run", "--up"], env=env, capture_output=True, text=True, timeout=SCRIPT_TIMEOUT_SECONDS)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn(f"mkdir -p {primary_tmp}/juniper-e2e && cd {primary_tmp}/juniper-e2e", result.stdout)
+            self.assertNotIn(str(root / "session-tmpdir"), result.stdout)
+
+    def test_a_copied_checkouts_default_is_its_own_tmp(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            env = self._env(root)
+            checkout = self._copy(root, git_init=True, env=env)
+            result = subprocess.run(["/bin/bash", str(checkout / "util" / "isolated_stack.bash"), "--dry-run", "--up"], env=env, capture_output=True, text=True, timeout=SCRIPT_TIMEOUT_SECONDS)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn(f"mkdir -p {checkout}/tmp/juniper-e2e && cd {checkout}/tmp/juniper-e2e", result.stdout)
+            self.assertFalse((checkout / "tmp" / "juniper-e2e").exists(), "a dry run must not create the run dir")
+
+    def test_down_removes_only_its_own_run_dirs_pid_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            stub_bin = root / "bin"
+            stub_bin.mkdir()
+            (stub_bin / "ss").write_text("#!/usr/bin/env bash\nexit 0\n")
+            (stub_bin / "ss").chmod(0o755)
+            project_dir = root / "Juniper"
+            for sub in ("juniper-data", "juniper-cascor/src/snapshots", "juniper-canopy/src/snapshots"):
+                (project_dir / sub).mkdir(parents=True)
+            env = self._env(root, JUNIPER_E2E_PROJECT_DIR=str(project_dir), JUNIPER_E2E_DATA_PORT="65211", JUNIPER_E2E_CASCOR_PORT="65212", JUNIPER_E2E_CANOPY_PORT="65213", PATH=str(stub_bin) + os.pathsep + "/usr/bin:/bin")
+            checkout = self._copy(root, git_init=True, env=env)
+            own = checkout / "tmp" / "juniper-e2e"
+            legacy = root / "session-tmpdir" / "juniper-e2e"
+            for directory in (own, legacy):
+                directory.mkdir(parents=True)
+                (directory / "juniper-data.pid").write_text("1\n")
+            result = subprocess.run(["/bin/bash", str(checkout / "util" / "isolated_stack.bash"), "--down"], env=env, capture_output=True, text=True, timeout=SCRIPT_TIMEOUT_SECONDS)
+            self.assertEqual(result.returncode, 0, msg=result.stderr + result.stdout)
+            self.assertFalse((own / "juniper-data.pid").exists(), "--down must clean its own run dir")
+            self.assertTrue((legacy / "juniper-data.pid").exists(), "--down must never touch a TMPDIR-derived run dir")
+
+    def test_no_checkout_refuses_the_default_and_an_explicit_run_dir_still_works(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            env = self._env(root)
+            plain = self._copy(root, git_init=False, env=env)
+            script = str(plain / "util" / "isolated_stack.bash")
+            result = subprocess.run(["/bin/bash", script, "--dry-run", "--up"], env=env, capture_output=True, text=True, timeout=SCRIPT_TIMEOUT_SECONDS)
+            self.assertEqual(result.returncode, 1, msg=result.stdout)
+            self.assertIn("set JUNIPER_E2E_RUN_DIR", result.stderr)
+            self.assertEqual(sorted(p.name for p in plain.iterdir()), ["util"])
+            explicit = subprocess.run(["/bin/bash", script, "--dry-run", "--up"], env={**env, "JUNIPER_E2E_RUN_DIR": str(root / "run")}, capture_output=True, text=True, timeout=SCRIPT_TIMEOUT_SECONDS)
+            self.assertEqual(explicit.returncode, 0, msg=explicit.stderr)
+            self.assertIn(f"mkdir -p {root / 'run'}", explicit.stdout)
 
 
 class TestDryRunStatus(unittest.TestCase):

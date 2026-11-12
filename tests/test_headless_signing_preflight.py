@@ -21,8 +21,8 @@ Fixtures:
 - stub pinentries that answer the Assuan ``GETINFO flavor`` probe and record every line sent;
 - a real git repository with an isolated global config, whose ``gpg.program`` is a stub that only
   verifies (a signed HEAD is a hand-built commit object, so nothing is ever signed);
-- a real Unix socket (AF_UNIX bind) under a short ``/tmp`` path, since macOS caps ``sun_path`` at
-  104 bytes.
+- a real Unix socket (AF_UNIX bind) under a short path -- ``TMPDIR``, else this checkout's ``tmp/``,
+  never the system temp dir -- since macOS caps ``sun_path`` at 104 bytes.
 
 Tripwire ``gpg``, ``gpg2``, ``gpgconf``, ``pinentry``, ``ssh-add``, ``ykman`` and friends lead
 ``PATH``; ``tearDown`` fails any case in which one ran.
@@ -221,11 +221,18 @@ class _Fixture(unittest.TestCase):
     # -- fixture builders -------------------------------------------------------------------------
 
     def _make_socket(self) -> Path:
-        # TMPDIR on macOS is already about 50 bytes long, so the socket gets a short directory of its own.
-        sock_dir = tempfile.mkdtemp(prefix="hsp-", dir="/tmp" if os.path.isdir("/tmp") else None)
-        self.addCleanup(shutil.rmtree, sock_dir, True)
-        path = Path(sock_dir) / "S.gpg-agent"
-        if len(os.fsencode(path)) >= 100:
+        # sun_path holds about 100 bytes, so the socket gets a short directory of its own: under TMPDIR (a
+        # session's is the primary checkout's tmp/; macOS's own is about 50 bytes), else this checkout's tmp/.
+        # Never the system temp dir (the 2026-10-26 repo tmp/ rule).
+        for parent in (None, REPO_ROOT / "tmp"):
+            if parent is not None:
+                parent.mkdir(exist_ok=True)
+            sock_dir = tempfile.mkdtemp(prefix="hsp-", dir=parent)
+            self.addCleanup(shutil.rmtree, sock_dir, True)
+            path = Path(sock_dir) / "S.gpg-agent"
+            if len(os.fsencode(path)) < 100:
+                break
+        else:
             self.skipTest(f"no directory short enough for a Unix socket: {path}")
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
             sock.bind(str(path))
@@ -354,6 +361,23 @@ class _Fixture(unittest.TestCase):
         self.assertTrue(set(CHECK_IDS) <= set(failed + passed), proc.stdout)
         self.assertEqual(self.listed_failures(proc), list(expected), proc.stderr)
         self.assertIn(f"RESULT: FAILED -- {len(failed)} of {len(failed) + len(passed)} checks failed:", proc.stderr)
+
+
+class ScratchDirTest(_Fixture):
+    """The 2026-10-26 repo tmp/ rule: without TMPDIR the run's scratch dir is this checkout's tmp/, removed on exit."""
+
+    def test_without_tmpdir_the_scratch_dir_is_the_checkouts_tmp_and_is_removed(self) -> None:
+        log = self.base / "mktemp.log"
+        wrap = self.base / "wrap"
+        wrap.mkdir()
+        real = shutil.which("mktemp")
+        self.assertIsNotNone(real)
+        _write_exe(wrap / "mktemp", f'#!/bin/sh\nd=$("{real}" "$@") || exit $?\nprintf \'%s\\n\' "$d" >> "{log}"\nprintf \'%s\\n\' "$d"\n')
+        self.run_script(unset=("TMPDIR",), PATH=f"{wrap}{os.pathsep}{self.env['PATH']}")
+        made = log.read_text(encoding="utf-8").splitlines() if log.exists() else []
+        self.assertEqual(len(made), 1, made)
+        self.assertEqual(Path(made[0]).parent.resolve(), (REPO_ROOT / "tmp").resolve())
+        self.assertFalse(Path(made[0]).exists(), "the scratch dir must be removed on exit")
 
 
 class HappyPathTest(_Fixture):

@@ -151,8 +151,9 @@ Store the full contents of `~/.config/sops/age/keys.txt` as a GitHub repository 
 ### Rotation Procedure
 
 ```bash
-# 1. Generate a new age key
-age-keygen -o /tmp/new-age-key.txt
+# 1. Generate a new age key -- beside the key it replaces: never in the system temp dir
+#    (2026-10-26 rule), and never inside a repo checkout, because it is a private key
+age-keygen -o ~/.config/sops/age/new-age-key.txt
 
 # 2. Note the new public key from the output
 
@@ -165,7 +166,7 @@ sops -d --input-type dotenv --output-type dotenv .env.enc > .env
 sops -e --input-type dotenv --output-type dotenv .env > .env.enc
 
 # 5. Replace the old key file
-mv /tmp/new-age-key.txt ~/.config/sops/age/keys.txt
+mv ~/.config/sops/age/new-age-key.txt ~/.config/sops/age/keys.txt
 chmod 600 ~/.config/sops/age/keys.txt
 
 # 6. Update SOPS_AGE_KEY GitHub Secret with new private key
