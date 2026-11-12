@@ -3422,6 +3422,7 @@ ci.yml is the authoritative list. `tests/test_ci_test_wiring_drift.py` gates tha
 
 ```bash
 python3 -m unittest -v tests/test_wake_the_claude.py
+python3 -m unittest -v tests/test_prompt_file_kind.py
 python3 -m unittest -v tests/test_claude_interactive.py
 python3 -m unittest -v tests/test_env_repr_safety.py
 python3 -m unittest -v tests/test_worktree_cleanup.py
@@ -3670,6 +3671,7 @@ Two unittest entry points exist for every `tests/test_*.py` file, and they can d
 Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/1612): `ObservedContextAppsTest` was appended after the existing `__main__` block. Direct execution reported 8 tests; `-m unittest` reported 12. The two negative controls (exact-name near-miss; Bandit app `57789` must not publish `Memory Budget`) were the ones going missing — a green result from a runner that never loaded the cases. Keep `__main__` at EOF so both entry points agree.
 
 - `tests/test_wake_the_claude.py` -- Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
+- `tests/test_prompt_file_kind.py` -- A directory or a symlink to a directory is not a prompt file (`no prompt file found`, no launch, one trailing slash on `--path` stripped). A symlink to a regular file is followed and its text is the prompt.
 - `tests/test_env_repr_safety.py` -- Lint + behavior gate for the env-repr secret-leak class: forbids raw `os.environ`-derived subprocess `env=` mappings in `tests/` (they leak secrets through pytest `--showlocals`-style frame-local reprs) and proves `tests/redacted_env.py`'s `RedactedEnv` masks its repr while behaving as a normal subprocess env mapping. Includes a synthetic-violation self-test; `patch.dict(os.environ, ...)` is deliberately exempt.
 - Doc-link validator regression tests live in [`juniper-doc-tools/tests/`](juniper-doc-tools/tests/) (Wave 4 of the doc-link migration; exercised by the dedicated `CI -- juniper-doc-tools` workflow).
 - `tests/test_worktree_cleanup.py` -- Tests for `util/worktree_cleanup.bash` argument parsing, dry-run, and error handling; Phase 1 dirty porcelain exit-1 gate (juniper-ml#747) and clean push / Phase 2 path-collision arms (open #753) drive fixture repos via sourced `phase_1_save_and_push` / `phase_2_create_new_worktree`
