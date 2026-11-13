@@ -1009,9 +1009,12 @@ class ServerTest(_Stubbed):
         # real_stat_mode = (real_stat.st_mode & ~0o777) | 0o644
         # insecure_stat = os.stat_result(real_stat_mode)
 
-        real_stat = os.stat(self.cred)
-        real_mode = (real_stat.st_mode & ~0o777) | 0o644
-        insecure_stat = os.stat_result(real_mode, *real_stat[1:])
+        os.chmod(self.cred, 0o644)
+        unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
+
+        # real_stat = os.stat(self.cred)
+        # real_mode = (real_stat.st_mode & ~0o777) | 0o644
+        # insecure_stat = os.stat_result(real_mode, *real_stat[1:])
         # insecure_stat = os.stat_result(((real_stat.st_mode & ~0o777) | 0o644), *real_stat[1:])
         # real_stat_mode = (real_stat.st_mode & ~0o777) | 0o644
         #
@@ -1022,8 +1025,9 @@ class ServerTest(_Stubbed):
         #
         # statinfo.st_size
         #
-        with mock.patch("os.stat", return_value=insecure_stat):
-            unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
+        # with mock.patch("os.stat", return_value=insecure_stat):
+        #     unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
+
         self.assertIn("credential refused: FATAL: web credential file", unsafe)
         self.assertIn("mode 0644", unsafe, "the client's own sentence -- a path, a mode, an owner -- is kept")
         never_leaks(self, unsafe)
