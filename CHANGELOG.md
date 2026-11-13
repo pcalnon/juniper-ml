@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.5] - 2026-11-13
+
 ### Security
 
 - **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (owner ruling
@@ -22,13 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the floors, as do `docs/REFERENCE.md`'s two **Current Version** cells (which still read 0.4.1 and 0.7.1), its
     observability `sentry` extra row (0.4.2 requires `sentry-sdk[fastapi]>=2.35.0`, and the row said `>=2.0.0`), its
     service-core **Meta pin** row and `juniper-service-core/README.md`'s pin advice. The compatibility matrix's
-    `0.11.x` row moves its `juniper-observability` cell with them, and the paragraph above it says that the published
-    0.11.4 declares `>=0.4.1`; the sentence naming the release moves at the 0.11.5 cut.
+    `0.11.x` row moves its `juniper-observability` cell with them, and the paragraph above it names 0.11.5 as the
+    release that raises both floors.
     `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`'s "Current truth" for the service-core pin moves too: it still read
     `>=0.2.0,<0.8.0`, the floor before 0.11.1's.
   - The floors reach `pip` users with juniper-ml 0.11.5. The consumers' own floors (juniper-data, juniper-cascor,
-    juniper-canopy and juniper-recurrence) move in each one's next release PR, by the same day's ruling; their locks
-    already pin both releases.
+    juniper-canopy and juniper-recurrence) move in each one's next release PR, by the same day's ruling; their
+    `requirements.lock` files already pin both releases.
 
 ### Added
 
@@ -973,13 +975,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - turing's firewall condition passes. G-SEC still fails, on SIP (task C1) and the key exports (task C3).
 
 ### Fixed
-
-- **The orphan reaper protected the isolated stack only when its own `TMPDIR` matched the stack's.**
-  `util/reap_pytest_orphans.bash` derived the stack's protected run dir from `${TMPDIR:-/tmp}`, so a stack launched under
-  one `TMPDIR` and reaped under another had no pid-file protection, and every session sets `TMPDIR` now. It protects the
-  FIXED default (`util/juniper_repo_tmp.bash`), resolved after the arguments are parsed, plus, read-only, the legacy
-  `/tmp/juniper-e2e` and `${TMPDIR}/juniper-e2e` that older checkouts' stacks may still use. It exits 1, reaping nothing,
-  when it cannot resolve the default. `tests/test_reap_pytest_orphans.py` gains 8 tests and redirects the legacy roots.
 
 - **Cascor suites carry headline columns: `aggregate.csv` and `REPORT.md` gain `train_accuracy` and `val_accuracy`, a
   finished suite gains them without re-running, and a NaN or infinite value fails every acceptance band** (register row
