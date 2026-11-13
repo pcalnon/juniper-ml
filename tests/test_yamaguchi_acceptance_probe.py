@@ -1003,8 +1003,25 @@ class ServerTest(_Stubbed):
         self.assertIn(f"GET backup {JOB} -> 404", probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"])
         with mock.patch("urllib.request.urlopen", side_effect=urllib.error.URLError("connection refused")):
             self.assertIn("cannot reach", probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"])
+
+        # The os.stat_result object may be accessed either as a tuple of (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) or via the attributes st_mode, st_ino, st_dev, st_nlink, st_uid, and so on.
+        # insecure_stat = os.stat_result(((real_stat.st_mode & ~0o777) | 0o644), *real_stat[1:])
+        # real_stat_mode = (real_stat.st_mode & ~0o777) | 0o644
+        # insecure_stat = os.stat_result(real_stat_mode)
+
         real_stat = os.stat(self.cred)
-        insecure_stat = os.stat_result((real_stat.st_mode & ~0o777) | 0o644, *real_stat[1:])
+        real_mode = (real_stat.st_mode & ~0o777) | 0o644
+        insecure_stat = os.stat_result(real_mode, *real_stat[1:])
+        # insecure_stat = os.stat_result(((real_stat.st_mode & ~0o777) | 0o644), *real_stat[1:])
+        # real_stat_mode = (real_stat.st_mode & ~0o777) | 0o644
+        #
+        # import os
+        # statinfo = os.stat('somefile.txt')
+        # statinfo
+        #     os.stat_result(st_mode=33188, st_ino=7876932, st_dev=234881026, st_nlink=1, st_uid=501, st_gid=501, st_size=264, st_atime=1297230295, st_mtime=1297230027, st_ctime=1297230027)
+        #
+        # statinfo.st_size
+        #
         with mock.patch("os.stat", return_value=insecure_stat):
             unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
         self.assertIn("credential refused: FATAL: web credential file", unsafe)
