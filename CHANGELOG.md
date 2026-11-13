@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.5] - 2026-11-13
+
 ### Security
 
 - **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (owner ruling
