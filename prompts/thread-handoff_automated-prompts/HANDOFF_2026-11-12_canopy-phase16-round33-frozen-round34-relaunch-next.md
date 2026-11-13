@@ -1,5 +1,37 @@
 # HANDOFF 2026-11-12 — P2 canopy Lane A (the Linux host): Phase 16's round 33 frozen as `4963cb52` (O13's list scope by the owner's ruling, "Date rule, stated"); round 34's two lanes, launched on it 2026-11-09 15:46Z, stopped at the account's weekly rate limit about 16:14Z without reporting; relaunch round 34, then its pass and more rounds while one changes a number, disposition or owed action, then land Phase 16, then #2360 — which moved to `684c9751` and may now merge first
 
+> **SUPERSEDED** by `HANDOFF_2026-10-25_canopy-phase16-linux-host-checks-recorded-items-35-37-next.md` (h1025), which
+> is not on `main`: it lands with Phase 16's PR, from the Linux host's local branch `docs/canopy-e2e-phase16`, and
+> supersedes this file once that PR merges; h1025's Supersedes line names this file. Unlike the thirty-three round
+> handoffs before it, this one is on `main` and not in that branch: juniper-ml#2543 landed it on 2026-11-12 at
+> 00:39:19Z (`fd6102c3`), fourteen minutes after its "about 00:25Z", so its "untracked" was overtaken at once, and
+> the branch leaves it out so that `main` and the branch share no path; this banner was put on `main` by a PR of its
+> own on 2026-11-13. Session `07e7105d-dd51-48d8-b29f-17aee98863a8` took its task from this file on 2026-11-12 at
+> 00:28:34Z and, on the owner's instruction of 08:00:11Z to update the text a round reviews before the round, writes
+> a pass before it relaunches round 34 (round 34's pre-launch pass,
+> `util/ad-hoc/2026-11-13_phase16_ledger_round34_prelaunch_corrections.py`, and its record in Phase 16's Consensus
+> record of `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, both on that branch), so this
+> file's order, relaunch first, was not followed, nor its "then land Phase 16, then #2360". Its line numbers are
+> `4963cb52`'s. It was wrong when written in two matters. Its "its CI queued at 2026-11-12 00:20Z, so it may merge
+> before Phase 16" and "Its workflows were queued at 00:20Z" give the time of a reading as if of the queueing:
+> #2360's five workflow runs on `684c9751` had been created on 2026-11-11 at 20:26:14Z and had sat queued with no job
+> since, and that head could not merge on its own, three end-to-end tests of the launcher failing on it
+> (`tests/test_claude_interactive.py`), the CI/CD Pipeline having failed in Regression Tests on the head before it,
+> `3aa722c0`, on 2026-11-10 at 20:16Z, none of which it says. And its list of the primaries' pulls leaves out
+> juniper-harcot's five pulls of its `main` alone of 2026-11-10 (12:01:07Z, 19:38:13Z, 21:28:48Z, 22:47:54Z and
+> 22:58:14Z), though it says that by the date rule every pull of `main` on 2026-11-09 and 2026-11-10 is O13's. Since
+> then: its session ended on 2026-11-12 at 00:41:31Z; the owner answered both of its questions at 01:44:24Z, #2360
+> first ("First; I fix it") and O13's list extended, then closed ("Extend, then close"), with round 34 to run on
+> Fable 5.2; #2360 merged at 02:18:03Z as `187e3258`, after session `07e7105d`'s `update-branch` and its one signed
+> commit, `60f59c29`, which gave those tests' fixture what it lacked and regenerated the baseline, so h1025's G-TMP
+> step owes #2360 nothing and Phase 16's PR meets gate G-TMP on `main`, where the owner ruled at 22:59:33Z that its
+> files are listed in the baseline; the pulls it lists were probed for their actors, no session's transcript on that
+> host recording a tool call that made one, and three more batches of pulls of `main` followed on 2026-11-12, from
+> 02:00:21Z, 08:06:11Z and 11:28:40Z; `main` moved from `68f9ebcd` to `15b5d9bb` by 08:59:57Z (juniper-ml#2543 to
+> #2547 and #2360) and twice more by 23:49:27Z, to `8e077b9f` (juniper-ml#2549 and #2551); the first launch's lane
+> scratch was moved to `tmp/phase16-round34/launch1_ratelimited/` at 08:05:22Z; and its 41 open PRs were 40 at
+> 08:06:56Z and 42 at 23:05:32Z.
+
 **Written**: 2026-11-12 about 00:25Z (2026-11-11 in America/Chicago) by session
 `4d06bd18-73ce-4aff-8a7b-01d7ba62b3a8`, in juniper-ml worktree `.claude/worktrees/distributed-giggling-clarke` on the
 Linux host (entered by `EnterWorktree` from `transient-pondering-lynx` at 2026-11-09 14:04:46Z). The session took its
