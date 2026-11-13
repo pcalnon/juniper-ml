@@ -111,11 +111,12 @@ The failure map is also trimmed to 10,000 source IPs at each prune (every 100 re
 ## Status
 
 **Live** on PyPI (Beta). The current version is shown by the badge above; see
-[`CHANGELOG.md`](./CHANGELOG.md) for history. Pin with `juniper-service-core>=0.7.1,<0.8.0` —
-the range the `juniper-ml` meta-package uses for its `tools` / `all` extras. 0.7.1 is the security
-patch: a non-ASCII `X-API-Key` is a 401, not a 500, and `FailedAuthThrottle.check()` is bounded
-(it does not insert). The 10,000-entry cap, which drops the oldest live source IPs, is a separate
-bound: [REFERENCE](../docs/REFERENCE.md#the-failed-auth-table-drops-the-oldest-source-ips).
+[`CHANGELOG.md`](./CHANGELOG.md) for history. Pin with `juniper-service-core>=0.7.2,<0.8.0` —
+the range the `juniper-ml` meta-package uses for its `tools` / `all` extras. 0.7.2 rounds
+`FailedAuthThrottle`'s `Retry-After` up instead of truncating it. 0.7.1 is the security patch: a
+non-ASCII `X-API-Key` is a 401, not a 500, and `FailedAuthThrottle.check()` is bounded (it does
+not insert). The 10,000-entry cap, which drops the oldest live source IPs, is a separate bound:
+[REFERENCE](../docs/REFERENCE.md#the-failed-auth-table-drops-the-oldest-source-ips).
 
 ### Compatibility policy — pinning, not deprecation cycles
 
