@@ -38,6 +38,7 @@ import io
 import json
 import os
 import pwd
+import stat
 import subprocess
 import tempfile
 import unittest
@@ -1003,31 +1004,8 @@ class ServerTest(_Stubbed):
         self.assertIn(f"GET backup {JOB} -> 404", probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"])
         with mock.patch("urllib.request.urlopen", side_effect=urllib.error.URLError("connection refused")):
             self.assertIn("cannot reach", probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"])
-
-        # The os.stat_result object may be accessed either as a tuple of (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) or via the attributes st_mode, st_ino, st_dev, st_nlink, st_uid, and so on.
-        # insecure_stat = os.stat_result(((real_stat.st_mode & ~0o777) | 0o644), *real_stat[1:])
-        # real_stat_mode = (real_stat.st_mode & ~0o777) | 0o644
-        # insecure_stat = os.stat_result(real_stat_mode)
-
-        os.chmod(self.cred, 0o644)
+        os.chmod(self.cred, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)  # 0644: the mode the API client must refuse
         unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
-
-        # real_stat = os.stat(self.cred)
-        # real_mode = (real_stat.st_mode & ~0o777) | 0o644
-        # insecure_stat = os.stat_result(real_mode, *real_stat[1:])
-        # insecure_stat = os.stat_result(((real_stat.st_mode & ~0o777) | 0o644), *real_stat[1:])
-        # real_stat_mode = (real_stat.st_mode & ~0o777) | 0o644
-        #
-        # import os
-        # statinfo = os.stat('somefile.txt')
-        # statinfo
-        #     os.stat_result(st_mode=33188, st_ino=7876932, st_dev=234881026, st_nlink=1, st_uid=501, st_gid=501, st_size=264, st_atime=1297230295, st_mtime=1297230027, st_ctime=1297230027)
-        #
-        # statinfo.st_size
-        #
-        # with mock.patch("os.stat", return_value=insecure_stat):
-        #     unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
-
         self.assertIn("credential refused: FATAL: web credential file", unsafe)
         self.assertIn("mode 0644", unsafe, "the client's own sentence -- a path, a mode, an owner -- is kept")
         never_leaks(self, unsafe)
@@ -1117,7 +1095,7 @@ class MainTest(_Stubbed):
         self.assertEqual(history[0]["newest_backup"]["examined"], 2_050_000)
         self.assertEqual(os.stat(self.state_dir / "acceptance.json").st_mode & 0o777, 0o600)
         never_leaks(self, out, (self.state_dir / "acceptance.json").read_text(), (self.state_dir / "acceptance-history.jsonl").read_text())
-        _code, _out, _err = self.run_probe("--backup-id", JOB, "--base", STUB_BASE, "--state-dir", str(self.state_dir), "--dest", "/mnt/dest")
+        self.run_probe("--backup-id", JOB, "--base", STUB_BASE, "--state-dir", str(self.state_dir), "--dest", "/mnt/dest")
         self.assertEqual(len((self.state_dir / "acceptance-history.jsonl").read_text().splitlines()), 2, "one history line per run")
 
     def test_when_every_criterion_it_judges_passes_the_result_is_pass(self) -> None:

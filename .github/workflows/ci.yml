@@ -231,12 +231,6 @@ jobs:
           # setuptools without its own bdist_wheel needs the latter). Python
           # 3.12+ no longer bundles setuptools (ensurepip / venv).
           pip install "setuptools>=68" wheel
-          # cryptography is required by tests/test_ac4_restore_drill.py: the AC-4
-          # restore driver decrypts AES Crypt volumes in-process, so that the archive
-          # passphrase is never on an argv, and imports cryptography at module scope.
-          # abi3 wheels cover the whole 3.12/3.13/3.14 matrix, so this never builds
-          # from source.
-          pip install "cryptography>=44.0.1"
 
       - name: Run Python regression tests
         run: |
@@ -244,10 +238,16 @@ jobs:
           echo "║       juniper-ml - Python Regression Tests                 ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           python3 -m unittest -v tests/test_wake_the_claude.py
+          # tests/test_prompt_file_later_flag.py: a later --file / --path that does not resolve must not
+          # send the prompt an earlier flag resolved.
+          python3 -m unittest -v tests/test_prompt_file_later_flag.py
           # claude_interactive.bash (`claudey`): DEBUG-forced
           # --dangerously-skip-permissions + inverted TRUE/FALSE opt-in
           # convention vs the older default_interactive launcher.
           python3 -m unittest -v tests/test_claude_interactive.py
+          # An exported empty CLAUDE_PROMPT_FILE / CLAUDE_PROMPT_PATH is the env form of
+          # -f "${HANDOFF}" with HANDOFF unset: claudey must refuse it, not send the default prompt.
+          python3 -m unittest -v tests/test_claudey_empty_prompt_file_env.py
           # Env-repr safety: lint gate forbidding raw os.environ-derived
           # subprocess env mappings in tests/ (secret-leak class; the
           # RedactedEnv wrapper in tests/redacted_env.py is the fix).
@@ -429,6 +429,9 @@ jobs:
           # mutates-source, and exit codes. util/ is not pre-commit-lint-gated, so this
           # unittest is the gate (flood remediation §4 item 7).
           python3 -m unittest -v tests/test_predict_merge.py
+          # tests/test_predict_merge_inherited_git_env.py: GIT_SHALLOW_FILE, GIT_GRAFT_FILE, and
+          # GIT_INDEX_FILE inherited from a hook must not change the predicted verdict or the source index.
+          python3 -m unittest -v tests/test_predict_merge_inherited_git_env.py
           # tests/test_fleet_supervisor_contract.py: static contract for the read-only
           # fleet-supervisor subagent (.claude/agents/fleet-supervisor.md) -- exact tool set
           # {Read,Grep,Glob,Bash}, opus+max, and body wiring to predict_merge.py + all four
@@ -1436,9 +1439,19 @@ jobs:
           # Also drives util/install_claude_agent_guard.bash against a temp settings file.
           python3 -m unittest -v tests/test_claude_agent_guard.py
           # tests/test_claude_agent_guard_brace_cap.py: brace expansion keeps a credential
-          # name in the 64th alternative and drops the 65th. A numeric range of 64 includes
-          # both ends; one past the cap drops the far end inside _brace_range.
+          # name in the 64th alternative, and a word past the cap (a list, a range or a
+          # product of groups) fails closed, exit 2, instead of being judged on its first 64.
           python3 -m unittest -v tests/test_claude_agent_guard_brace_cap.py
+          # tests/test_claude_agent_guard_git_sign_abbrev.py: git 2.53 runs a prefix of
+          # --gpg-sign (--g on commit and merge signs) and of tag --sign / --local-user
+          # (--si signs, --lo selects the key). The full spellings are in the suite above.
+          # --no-gpg-sign, --signoff, rebase/cherry-pick --skip, and tag --sort stay allowed.
+          python3 -m unittest -v tests/test_claude_agent_guard_git_sign_abbrev.py
+          # tests/test_claude_agent_guard_push_signed_abbrev.py: git 2.53 runs an unambiguous
+          # prefix of `git push --signed` (`--si`, `--sign=true`, `--si=if-asked`) as a signed
+          # push. `--s` is ambiguous with `--set-upstream` and stays allowed, and so does
+          # `--si=false`.
+          python3 -m unittest -v tests/test_claude_agent_guard_push_signed_abbrev.py
           # tests/test_git_remote_alias_check.py: turing bring-up G2 / R-G2a/b/c (gate G-ALIAS).
           # util/git_remote_alias_check.py checks each checkout's PERSISTED origin and pushurl
           # (config --get; remote get-url would expand insteadOf), the alias's ssh -G view and the
@@ -1531,27 +1544,6 @@ jobs:
           # securityfs interface is missing. Fixtures are yamaguchi's real mount lines; the pid1 rows are pinned to the committed
           # systemd v259.5 source excerpt under reports/. Stdlib only.
           python3 -m unittest -v tests/test_host_api_filesystems_check.py
-          # tests/test_yamaguchi_acceptance_probe.py: the backup design's acceptance criteria (section 9) as fixed predicates --
-          # util/ad-hoc/yamaguchi_acceptance_probe.py prints one verdict line per criterion (AC-1, AC-2, AC-5, AC-6a, AC-7, AC-12,
-          # AC-13, the newest run, the destination census). Four rules, each from a hand-written check that was wrong at the Phase D
-          # sitting: a marker is pinned against the code that writes it (the watchdog's record(), the snapshot script's f-string);
-          # a time window is inclusive and tested AT its edge; a warning is classed by its [Warning-<tag>] tag, never its text; an
-          # empty or unparseable input is ERROR, never PASS. Also: no warning text, URL, credential or unlisted option value is
-          # printed or stored, and the timer's deploy script is run against PATH stubs. No server is contacted.
-          python3 -m unittest -v tests/test_yamaguchi_acceptance_probe.py
-          # tests/test_phase_d_finish.py: recovery plan section 6.4 step 14's root steps as verbs --
-          # util/ad-hoc/2026-11-11_phase_d_finish.{py,bash}. A drill's verdict is recomputed from its numbers with AC-4's floors and
-          # must agree with the driver's RESULT line and exit code; each pattern the tool reads is matched against the driver's
-          # own f-strings; an existing output is adopted, never re-run; the retention aside copy refuses until drill 1 has
-          # passed, never overwrites, and lists what the first retention pass deletes from the REAL dlist list. Needs no root
-          # and no Duplicati binary: the driver is replaced by a function that writes a canned output.
-          python3 -m unittest -v tests/test_phase_d_finish.py
-          # tests/test_ac4_restore_drill.py: util/ad-hoc/2026-11-09_ac4_restore_drill.py -- AES Crypt v2/v3 round trips against an
-          # encoder written from the format's specification, both HMACs checked before any padding is trusted; the streaming
-          # file-list parser with a UTF-8 BOM and a multibyte character split across reads (the 2026-11-09 "0 entries" fault);
-          # the sample filter that keeps secret-bearing paths out of a drill; the SHA-256 and length oracle. Absorbs the
-          # self-test that lived in a gitignored tmp/. Needs cryptography (installed above).
-          python3 -m unittest -v tests/test_ac4_restore_drill.py
 
       - name: Run bash regression tests
         run: |

@@ -43,6 +43,7 @@ import io
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -53,6 +54,7 @@ from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from pathlib import Path
 
 from tests.duplicati_api_stub import load_ad_hoc
+from tests.redacted_env import RedactedEnv
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 AD_HOC = REPO_ROOT / "util" / "ad-hoc"
@@ -77,6 +79,13 @@ retention = finish.load_module(finish.RETENTION_TABLE, "phase_d_retention_table_
 DRILL1 = finish.DRILLS["1"]
 FIXTURE_DEST = "/mnt/dest"
 FINGERPRINT = "0123456789abcdef"
+# Modes this suite sets ON PURPOSE, to show that the tool refuses them or that a copy keeps them. They are spelled
+# with the stat module's names, which say what each one grants.
+GROUP_CAN_READ = stat.S_IRWXU | stat.S_IRGRP  # 0740
+OTHERS_CAN_READ = stat.S_IRWXU | stat.S_IROTH  # 0704
+EVERYONE_CAN_READ = stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH  # 0744
+GROUP_READABLE_FILE = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP  # 0640: what the service's UMask=0027 leaves a volume
+PRIVATE_FILE = stat.S_IRUSR | stat.S_IWUSR  # 0600
 # The destination's sixteen dlists as they stood on 2026-11-11 (names only; the sitting's running record).
 DLISTS_2026_11_11 = [
     "duplicati-20260825T102739Z.dlist.zip.aes",
@@ -562,7 +571,7 @@ class ShredVerbTest(unittest.TestCase):
         other.mkdir()
         with self.assertRaises(finish.Refused):
             self.shred(other)
-        os.chmod(self.root, 0o740)
+        os.chmod(self.root, GROUP_CAN_READ)
         try:
             with self.assertRaises(finish.Refused) as caught:
                 self.shred(self.run_dir)
@@ -797,7 +806,7 @@ class DrillVerbTest(unittest.TestCase):
 
     def test_a_run_root_that_others_can_reach_is_refused(self) -> None:
         self.out.write_text(self.output())
-        os.chmod(self.root, 0o740)  # group-readable is already too much
+        os.chmod(self.root, GROUP_CAN_READ)  # group-readable is already too much
         try:
             with self.assertRaises(finish.Refused) as caught:
                 self.drill(self.args())
@@ -994,7 +1003,7 @@ class AsideTest(unittest.TestCase):
         (self.home / ".dropbox" / "info.json").write_text(json.dumps({"personal": {"path": str(self.dropbox), "host": 1, "is_team": False}}))
         for i, name in enumerate(DLISTS_2026_11_11):
             (self.dest / name).write_bytes(hashlib.sha256(name.encode()).digest() * (40 + i))
-            os.chmod(self.dest / name, 0o640 if i % 2 else 0o600)
+            os.chmod(self.dest / name, GROUP_READABLE_FILE if i % 2 else PRIVATE_FILE)
             os.utime(self.dest / name, ns=(1_794_000_000_123_456_789 + i, 1_794_000_000_987_654_321 + i))
         self.uid = os.geteuid()
         # On a busy disk an fsync takes a third of a second and these tests make hundreds. They record the calls
@@ -1272,7 +1281,7 @@ class AsideTest(unittest.TestCase):
 
     def test_a_run_root_that_others_can_reach_is_refused(self) -> None:
         self.passed()
-        os.chmod(self.root, 0o704)  # readable by others: a planted PASS record could not be told from root's
+        os.chmod(self.root, OTHERS_CAN_READ)  # readable by others: a planted PASS record could not be told from root's
         try:
             with self.assertRaises(finish.Refused) as caught:
                 self.run_aside()
@@ -1584,7 +1593,7 @@ class Ac6VerbTest(unittest.TestCase):
         self.assertEqual(self.left_on_disk(), [], "a refusal makes no run directory and no record")
 
     def test_a_run_root_that_others_can_reach_is_refused(self) -> None:
-        os.chmod(self.root, 0o740)
+        os.chmod(self.root, GROUP_CAN_READ)
         try:
             with self.assertRaises(finish.Refused):
                 self.ac6(StubDriver([self.entry()]))
@@ -1689,7 +1698,7 @@ class SourceUserHopTest(unittest.TestCase):
             (aside / finish.MANIFEST).unlink()
             _code, text, _run = self.status(root, aside, dest)
             self.assertIn("aside       : no manifest at", text)
-            os.chmod(root, 0o744)
+            os.chmod(root, EVERYONE_CAN_READ)
             with self.assertRaises(finish.Refused):
                 self.status(root, aside, dest)
             os.chmod(root, 0o700)
@@ -1797,7 +1806,7 @@ class WrapperTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             for name in DLISTS_2026_11_11:
                 (Path(tmp) / name).write_bytes(b"x")
-            env = dict(os.environ, PYTHONPATH="/nonexistent/should-be-ignored", PATH="/nonexistent:" + os.environ.get("PATH", ""))
+            env = RedactedEnv(os.environ, PYTHONPATH="/nonexistent/should-be-ignored", PATH="/nonexistent:" + os.environ.get("PATH", ""))
             proc = subprocess.run(["/bin/bash", str(WRAPPER), "--dest", tmp, "plan", "--at", "2026-11-12T01:00:00Z"], capture_output=True, text=True, env=env, check=False)
             self.assertEqual(proc.returncode, 0, proc.stderr)
             self.assertIn("predicted   : 8 of 16 deleted", proc.stdout)
@@ -1810,7 +1819,7 @@ class WrapperTest(unittest.TestCase):
     def test_a_variable_outside_the_allow_list_does_not_reach_the_tool(self) -> None:
         # COLUMNS is the canary: argparse wraps its help to it. Given straight to the tool it narrows the help;
         # given to the wrapper it must change nothing.
-        env = dict(os.environ, COLUMNS="30")
+        env = RedactedEnv(os.environ, COLUMNS="30")
         direct = subprocess.run(["/usr/bin/python3", "-I", str(TOOL), "--help"], capture_output=True, text=True, env=env, check=False)
         self.assertEqual(direct.returncode, 0, direct.stderr)
         self.assertLess(max(len(line) for line in direct.stdout.splitlines()), 50, "the canary must work, or the next assertion proves nothing")
