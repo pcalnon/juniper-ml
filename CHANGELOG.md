@@ -438,6 +438,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `util/ad-hoc/2026-11-11_flood4r2_n4-r2_uvicorn_probe.py` measures it under real uvicorn.
   - Details, and the other known limits, are in `juniper-service-core/CHANGELOG.md` (Changed and Fixed).
 
+- **`juniper-service-core`: a start sent while a stopped run's `fit` is still running is refused, so that
+  `fit` sees its stop** (the stop-then-start race; §8, ruling 11 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, "Fix all four now", which names
+  the defect and no mechanism). The owner's ruling of 2026-11-12 accepts the refusal (that record's next
+  update adds it to its §8). A stop is seen at `fit`'s next event, and `start_training` cleared it, so a
+  start sent before then cancelled the stop: the stopped run's `fit` ran on beside the new run, on the same
+  model, its events landed in the new run's monitor, and the pause releases juniper-ml#2531 added woke it if
+  it was waiting at the shared pause gate, after which a start was accepted beside it. juniper-ml#2531 fenced
+  only the settle. `start_training` now refuses (HTTP 409,
+  `Training cannot be started: The stopped run's fit is still running (a stop takes effect at its next event)`)
+  while the previous training thread is alive with the stop pending, before it touches anything (over HTTP the
+  route has already merged the request's `params` and `epochs` into the parameter store); the stop stays set,
+  that `fit` unwinds at its next event, and the start is accepted once its thread has ended. Every release that
+  ships the manager, 0.2.0 through 0.7.2, accepts that start.
+  - The cost: a `fit` that does not end at its next event (it emits none, it hangs, or its model catches the
+    interrupt and carries on) holds every start back until it returns or raises; a reset does not unblock it,
+    and the status reads `STOPPED` meanwhile. Not covered: a `fit` driven by a direct `run()`, and a run that
+    a leftover replay session's `stop` reset. Known and not fixed: after a stop, a snapshot load is still
+    accepted while the stopped `fit` runs, and that `fit`'s thread then settles over the loaded state.
+  - Pinned by `juniper-service-core/tests/test_lifecycle_stop_then_start.py` (13 tests; 11 fail without the
+    refusal, 2 are controls). Five tests of `test_lifecycle_paused_fit_return.py` now clear the stop before
+    their start, rebuilding the interleaving the refusal prevents, and still pin the ownership guard.
+    `util/ad-hoc/2026-11-09_flood4r2_n2_mutation_check.py` runs twelve mutants of `manager.py`, each killed;
+    `util/ad-hoc/2026-11-09_flood4r2_n2_race_probe.py` reproduces the race on a tree without the fix,
+    `util/ad-hoc/2026-11-09_flood4r2_n2_release_census.py` reads every release tag's `start_training`, and
+    `util/ad-hoc/2026-11-11_flood4r2_n2-r2_inactive_while_fit_runs_probe.py` shows the cost and what the
+    check does not cover.
+  - `docs/REFERENCE.md` (0.6.69) and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (1.0.68) describe the refusal
+    and its cost, and keep the overlap for juniper-service-core 0.7.2 and earlier, which still have it.
+  - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the next juniper-service-core
+    release, 0.8.0.
+
 ## [0.11.4] - 2026-11-06
 
 ### Changed
