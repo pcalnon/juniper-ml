@@ -1,6 +1,6 @@
 # Handoff: backup Phase D -- step 14's tools in an open PR, no sitting step run yet, and a false "Backup FAILED" alert traced to a test
 
-**Date**: 2026-11-12 local (written 2026-11-13 02:20Z to 03:00Z)
+**Date**: 2026-11-12 local (written 2026-11-13 02:20Z to 02:55Z)
 **Session**: continued from `HANDOFF_2026-11-11_backup-phase-d-sitting-steps-11-13-done-ac4-drill-next.md`, host yamaguchi,
 worktree `juniper-ml/.claude/worktrees/swift-stargazing-spindle`
 **Predecessor**: `HANDOFF_2026-11-11_backup-phase-d-sitting-steps-11-13-done-ac4-drill-next.md` (this directory), and
@@ -22,8 +22,8 @@ Three threads. Take them in this order.
 1. **Land juniper-ml#2548** (the tools for step 14). It is open, has no conflict, and is **red on purpose**: it
    stepped aside for the 0.11.5 release cut. One more signed commit is owed after the release proposal merges.
 2. **The owner's new issue (2026-11-12): desktop alerts say a Duplicati backup failed, and no such backup exists.**
-   One source is found and proven: a test sends a real notification. Its fix is juniper-ml#2559 (open at handoff,
-   `util/safe_merge.py` waiting on its checks). A sweep for other tests of the same kind was running at handoff. A
+   One source is found and proven: a test sends a real notification. Its fix, juniper-ml#2559, merged on
+   2026-11-13 at 02:49Z (`ae801a70`). A sweep for other tests of the same kind was running at handoff. A
    second, real source is the watchdog. The job's off-schedule runs are a separate, open question.
 3. **Continue the Phase D sitting (Procedure A0) at step 14 of `…RECOVERY-PLAN.md` §6.4.** No step ran in this
    segment and no host was changed. Each remaining step is one owner command and one pasted verdict block.
@@ -54,7 +54,7 @@ new session.
   (2026-11-12 23:07Z), applied three CodeQL autofix commits, merged `main`, and pushed two commits to
   `tests/test_yamaguchi_acceptance_probe.py`. `main` moved again and the PR conflicted in `AGENTS.md` and
   `docs/REFERENCE.md`.
-- **2026-11-13 02:30Z, the PR stepped aside for the 0.11.5 cut:**
+- **2026-11-13 02:16Z, the PR stepped aside for the 0.11.5 cut:**
   - commit `bf53a1d6` repairs the two test files and sets `AGENTS.md`, `CHANGELOG.md`, `docs/REFERENCE.md` and
     `.github/workflows/ci.yml` to `main`'s copy (`f9582a74`), byte for byte;
   - the server-side update-branch `5099d14c` followed. Its tree is `main` plus the PR's eleven files.
@@ -92,12 +92,13 @@ new session.
 **B. The false alerts.**
 
 1. Read the sweep: `python3 tmp/phase-d-finish/alerts/hermeticity_sweep.py report tmp/phase-d-finish/alerts/sweep-full`.
-   Part 1 (commands 1-120) was running at handoff; run part 2 with `… hermeticity_sweep.py range 121 238 sweep-full`.
+   Part 1 (commands 1-120) started at 02:27Z and was running at handoff; run part 2 with `… hermeticity_sweep.py range 121 238 sweep-full`.
 2. **juniper-ml#2559** fixes `tests/test_duplicati_scheduled_backup.py`: a recording `notify-send` stub in every
    fixture, the session bus address handed to children pointed at a path that does not exist, assertions that the
-   notification reached the stub, and three tests that pin all of it. Read its `MERGED` line
-   (`tmp/phase-d-finish/alerts/safe-merge-2559.log`). It carries no CHANGELOG entry on purpose; add one under the new
-   `[Unreleased]` (`### Fixed`) after the 0.11.5 proposal merges.
+   notification reached the stub, and three tests that pin all of it. It **merged** on 2026-11-13 at 02:49Z
+   (`ae801a70`). It carries no CHANGELOG entry on purpose; add one under the new `[Unreleased]` (`### Fixed`) after
+   the 0.11.5 proposal merges. Sessions whose checkout is older than that merge still send the alert when they run
+   the suite.
 3. If the sweep names another suite that runs a real alerting tool, fix it the same way in a second PR. Its first 40
    commands named none. They did show `tests/test_prompt_discovery.py` running the real `gh pr list` and `ssh -G`:
    no alert, but a network call from a unit test; record it as a finding.
@@ -345,9 +346,9 @@ tail -n 40 "$W/tmp/phase-d-sitting/segment-2026-11-11.md"
 ## Git status at handoff
 
 - **juniper-ml#2548** is open at `5099d14c` (nine commits, auto-merge armed by the owner, red on purpose).
-- **juniper-ml#2559** (the alert fix, one signed commit `64c09f93` on `fix/tests-scheduled-backup-real-notify-send`)
-  was open, with `util/safe_merge.py` waiting on its checks. This worktree's copy of
-  `tests/test_duplicati_scheduled_backup.py` holds the same fix, as an unstaged change.
+- **juniper-ml#2559** (the alert fix) merged as `ae801a70`. This worktree's copy of
+  `tests/test_duplicati_scheduled_backup.py` holds the same fix as an unstaged change, because the worktree's HEAD
+  is older than the merge.
 - **Worktree `swift-stargazing-spindle`** (branch `worktree-swift-stargazing-spindle`, HEAD `15b5d9bb`, which is
   stale):
   - staged: `AGENTS.md`, `CHANGELOG.md`, `docs/REFERENCE.md`, `.github/workflows/ci.yml` (this PR's additions on the
