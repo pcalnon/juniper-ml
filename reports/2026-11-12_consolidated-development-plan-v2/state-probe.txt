@@ -1,0 +1,99 @@
+probe run at 2026-11-12T02:09:09Z; window starts 2026-10-10T21:30:00Z; sections: prs, merges, releases, pypi, gitleaks, wiring, settings
+== open PRs (author / draft counts; every non-bot PR listed)
+juniper-ml: 41 open; cursor[bot]/draft=40, pcalnon=1; base not main: [2484]; auto-merge armed: [2360]
+     #2360 fix(tmp): repo tmp/ instead of /tmp -- fixed E2E run dir + reaper roots, launcher TMPDIR +
+juniper-data: 0 open; -; base not main: []; auto-merge armed: []
+juniper-data-client: 0 open; -; base not main: []; auto-merge armed: []
+juniper-cascor: 0 open; -; base not main: []; auto-merge armed: []
+juniper-cascor-client: 0 open; -; base not main: []; auto-merge armed: []
+juniper-cascor-worker: 0 open; -; base not main: []; auto-merge armed: []
+juniper-canopy: 0 open; -; base not main: []; auto-merge armed: []
+juniper-deploy: 0 open; -; base not main: []; auto-merge armed: []
+juniper-recurrence: 0 open; -; base not main: []; auto-merge armed: []
+== commits on main since 2026-10-10T21:30:00Z (every page)
+juniper-ml: 221 commits (21 by a bot account, 200 other); newest 2026-11-12T01:36:12Z
+juniper-data: 42 commits (26 by a bot account, 16 other); newest 2026-11-12T02:02:55Z
+juniper-data-client: 27 commits (23 by a bot account, 4 other); newest 2026-11-11T02:21:31Z
+juniper-cascor: 39 commits (24 by a bot account, 15 other); newest 2026-11-11T23:59:13Z
+juniper-cascor-client: 16 commits (12 by a bot account, 4 other); newest 2026-11-09T20:02:12Z
+juniper-cascor-worker: 20 commits (15 by a bot account, 5 other); newest 2026-11-10T12:13:01Z
+juniper-canopy: 63 commits (37 by a bot account, 26 other); newest 2026-11-12T02:06:57Z
+juniper-deploy: 27 commits (15 by a bot account, 12 other); newest 2026-11-10T11:27:19Z
+juniper-recurrence: 32 commits (10 by a bot account, 22 other); newest 2026-11-09T19:22:42Z
+all nine: 487 commits
+== GitHub Releases published since 2026-10-10T21:30:00Z, and how far main is past the newest Release
+juniper-ml: 8 in the window; newest juniper-observability-v0.4.2 2026-11-08T16:35:52Z; main is 18 commits past it
+     2026-11-08T16:35:52Z juniper-observability-v0.4.2
+     2026-11-08T16:21:19Z juniper-service-core-v0.7.2
+     2026-11-06T14:03:58Z v0.11.4
+     2026-11-04T11:22:41Z juniper-config-tools-v0.1.1
+     2026-10-26T10:20:47Z v0.11.3
+     2026-10-26T00:07:09Z v0.11.2
+     2026-10-25T08:57:41Z v0.11.1
+     2026-10-21T09:27:36Z v0.11.0
+juniper-data: 0 in the window; newest v0.17.1 2026-10-10T20:37:25Z; main is 42 commits past it
+juniper-data-client: 0 in the window; newest v0.6.0 2026-10-10T19:32:08Z; main is 27 commits past it
+juniper-cascor: 1 in the window; newest v0.13.0 2026-10-28T00:25:28Z; main is 23 commits past it
+     2026-10-28T00:25:28Z v0.13.0
+juniper-cascor-client: 0 in the window; newest v0.8.0 2026-09-05T18:15:03Z; main is 38 commits past it
+juniper-cascor-worker: 0 in the window; newest v0.6.1 2026-09-22T23:03:30Z; main is 32 commits past it
+juniper-canopy: 1 in the window; newest v0.9.0 2026-10-17T19:45:37Z; main is 55 commits past it
+     2026-10-17T19:45:37Z v0.9.0
+juniper-deploy: 0 in the window; newest v0.3.0 2026-09-17T00:11:28Z; main is 52 commits past it
+juniper-recurrence: 8 in the window; newest juniper-recurrence-v0.8.1 2026-11-04T23:38:03Z; main is 4 commits past it
+     2026-11-04T23:38:03Z juniper-recurrence-v0.8.1
+     2026-10-26T23:10:24Z juniper-recurrence-client-v0.3.1
+     2026-10-20T10:53:16Z juniper-recurrence-v0.8.0
+     2026-10-19T04:04:49Z juniper-recurrence-model-v0.6.0
+     2026-10-19T03:27:21Z juniper-recurrence-v0.7.0
+     2026-10-19T02:12:45Z juniper-recurrence-model-v0.5.0
+     2026-10-18T18:06:41Z juniper-recurrence-v0.6.1
+     2026-10-17T19:22:57Z juniper-recurrence-v0.6.0
+== PyPI: newest version, and every version uploaded since 2026-10-10T21:30:00Z
+juniper-ml: newest 0.11.4 (2026-11-07T22:59Z); in the window: 0.11.0 (2026-10-21T21:08Z), 0.11.1 (2026-10-25T18:03Z), 0.11.2 (2026-10-26T08:38Z), 0.11.3 (2026-10-26T17:48Z), 0.11.4 (2026-11-07T22:59Z)
+juniper-data: newest 0.17.1 (2026-10-23T23:49Z); in the window: 0.17.1 (2026-10-23T23:49Z)
+juniper-data-client: newest 0.6.0 (2026-10-17T05:16Z); in the window: 0.6.0 (2026-10-17T05:16Z)
+juniper-cascor: newest 0.13.0 (2026-10-28T11:43Z); in the window: 0.12.0 (2026-10-25T18:13Z), 0.13.0 (2026-10-28T11:43Z)
+juniper-cascor-client: newest 0.8.0 (2026-09-05T19:33Z); in the window: none
+juniper-cascor-worker: newest 0.6.1 (2026-09-23T00:37Z); in the window: none
+juniper-cascor-model: newest 0.1.0 (2026-06-14T08:42Z); in the window: none
+juniper-canopy: newest 0.9.0 (2026-10-17T22:08Z); in the window: 0.9.0 (2026-10-17T22:08Z)
+juniper-recurrence: newest 0.8.1 (2026-11-06T09:35Z); in the window: 0.6.0 (2026-10-17T22:08Z), 0.6.1 (2026-10-18T19:02Z), 0.7.0 (2026-10-19T03:33Z), 0.8.0 (2026-10-20T17:51Z), 0.8.1 (2026-11-06T09:35Z)
+juniper-recurrence-model: newest 0.6.0 (2026-10-20T10:43Z); in the window: 0.4.0 (2026-10-13T21:57Z), 0.5.0 (2026-10-19T03:13Z), 0.6.0 (2026-10-20T10:43Z)
+juniper-recurrence-client: newest 0.3.1 (2026-10-27T10:20Z); in the window: 0.3.1 (2026-10-27T10:20Z)
+juniper-observability: newest 0.4.2 (2026-11-09T09:51Z); in the window: 0.4.2 (2026-11-09T09:51Z)
+juniper-service-core: newest 0.7.2 (2026-11-09T09:52Z); in the window: 0.7.2 (2026-11-09T09:52Z)
+juniper-ci-tools: newest 0.9.1 (2026-10-21T21:53Z); in the window: 0.9.1 (2026-10-21T21:53Z)
+juniper-config-tools: newest 0.1.1 (2026-11-04T11:47Z); in the window: 0.1.1 (2026-11-04T11:47Z)
+juniper-doc-tools: newest 0.1.2 (2026-08-30T06:27Z); in the window: none
+juniper-model-core: newest 0.3.2 (2026-09-11T22:54Z); in the window: none
+== gitleaks config on main (0 rules and no useDefault finds nothing)
+juniper-ml: .gitleaks.toml: [[rules]]=1 [extend]=1 useDefault=True -> finds
+juniper-data: .gitleaks.toml: [[rules]]=1 [extend]=1 useDefault=True -> finds
+juniper-data-client: no gitleaks config at .gitleaks.toml or .github/.gitleaks.toml (the tool's defaults apply where it runs)
+juniper-cascor: .gitleaks.toml: [[rules]]=0 [extend]=1 useDefault=True -> finds
+juniper-cascor-client: .gitleaks.toml: [[rules]]=0 [extend]=1 useDefault=True -> finds
+juniper-cascor-worker: no gitleaks config at .gitleaks.toml or .github/.gitleaks.toml (the tool's defaults apply where it runs)
+juniper-canopy: .gitleaks.toml: [[rules]]=1 [extend]=1 useDefault=True -> finds
+juniper-deploy: .gitleaks.toml: [[rules]]=0 [extend]=1 useDefault=True -> finds
+juniper-recurrence: no gitleaks config at .gitleaks.toml or .github/.gitleaks.toml (the tool's defaults apply where it runs)
+== where gitleaks runs: workflows and the pre-commit config on main that name it (comment lines ignored)
+juniper-ml: 24 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: yes
+juniper-data: 14 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-data-client: 12 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-cascor: 19 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-cascor-client: 12 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-cascor-worker: 13 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-canopy: 14 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-deploy: 10 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-recurrence: 17 workflows; naming gitleaks: none; pre-commit names it: no
+== GitHub secret scanning settings (security_and_analysis; absent keys print as '-')
+juniper-ml: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=enabled
+juniper-data: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-data-client: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-cascor: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-cascor-client: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-cascor-worker: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-canopy: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=enabled
+juniper-deploy: visibility=public; secret_scanning=disabled, secret_scanning_push_protection=disabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-recurrence: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
