@@ -238,10 +238,16 @@ jobs:
           echo "║       juniper-ml - Python Regression Tests                 ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           python3 -m unittest -v tests/test_wake_the_claude.py
+          # tests/test_prompt_file_later_flag.py: a later --file / --path that does not resolve must not
+          # send the prompt an earlier flag resolved.
+          python3 -m unittest -v tests/test_prompt_file_later_flag.py
           # claude_interactive.bash (`claudey`): DEBUG-forced
           # --dangerously-skip-permissions + inverted TRUE/FALSE opt-in
           # convention vs the older default_interactive launcher.
           python3 -m unittest -v tests/test_claude_interactive.py
+          # An exported empty CLAUDE_PROMPT_FILE / CLAUDE_PROMPT_PATH is the env form of
+          # -f "${HANDOFF}" with HANDOFF unset: claudey must refuse it, not send the default prompt.
+          python3 -m unittest -v tests/test_claudey_empty_prompt_file_env.py
           # Env-repr safety: lint gate forbidding raw os.environ-derived
           # subprocess env mappings in tests/ (secret-leak class; the
           # RedactedEnv wrapper in tests/redacted_env.py is the fix).
@@ -423,6 +429,9 @@ jobs:
           # mutates-source, and exit codes. util/ is not pre-commit-lint-gated, so this
           # unittest is the gate (flood remediation §4 item 7).
           python3 -m unittest -v tests/test_predict_merge.py
+          # tests/test_predict_merge_inherited_git_env.py: GIT_SHALLOW_FILE, GIT_GRAFT_FILE, and
+          # GIT_INDEX_FILE inherited from a hook must not change the predicted verdict or the source index.
+          python3 -m unittest -v tests/test_predict_merge_inherited_git_env.py
           # tests/test_fleet_supervisor_contract.py: static contract for the read-only
           # fleet-supervisor subagent (.claude/agents/fleet-supervisor.md) -- exact tool set
           # {Read,Grep,Glob,Bash}, opus+max, and body wiring to predict_merge.py + all four
@@ -1430,9 +1439,19 @@ jobs:
           # Also drives util/install_claude_agent_guard.bash against a temp settings file.
           python3 -m unittest -v tests/test_claude_agent_guard.py
           # tests/test_claude_agent_guard_brace_cap.py: brace expansion keeps a credential
-          # name in the 64th alternative and drops the 65th. A numeric range of 64 includes
-          # both ends; one past the cap drops the far end inside _brace_range.
+          # name in the 64th alternative, and a word past the cap (a list, a range or a
+          # product of groups) fails closed, exit 2, instead of being judged on its first 64.
           python3 -m unittest -v tests/test_claude_agent_guard_brace_cap.py
+          # tests/test_claude_agent_guard_git_sign_abbrev.py: git 2.53 runs a prefix of
+          # --gpg-sign (--g on commit and merge signs) and of tag --sign / --local-user
+          # (--si signs, --lo selects the key). The full spellings are in the suite above.
+          # --no-gpg-sign, --signoff, rebase/cherry-pick --skip, and tag --sort stay allowed.
+          python3 -m unittest -v tests/test_claude_agent_guard_git_sign_abbrev.py
+          # tests/test_claude_agent_guard_push_signed_abbrev.py: git 2.53 runs an unambiguous
+          # prefix of `git push --signed` (`--si`, `--sign=true`, `--si=if-asked`) as a signed
+          # push. `--s` is ambiguous with `--set-upstream` and stays allowed, and so does
+          # `--si=false`.
+          python3 -m unittest -v tests/test_claude_agent_guard_push_signed_abbrev.py
           # tests/test_git_remote_alias_check.py: turing bring-up G2 / R-G2a/b/c (gate G-ALIAS).
           # util/git_remote_alias_check.py checks each checkout's PERSISTED origin and pushurl
           # (config --get; remote get-url would expand insteadOf), the alias's ssh -G view and the

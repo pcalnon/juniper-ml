@@ -144,6 +144,12 @@ A command-text hook sees only the text of the call. Known gaps:
     checkout that tracks ``.claude/settings.json`` or ``.mcp.json``, only its ``repl`` is checked there.
 11. Other clients' MCP configuration: VS Code's ``mcp.json``, Claude Desktop's config and ``~/.cursor/mcp.json``
     (task H6 reviews VS Code's servers).
+12. Words bash makes that the guard's reading of the word does not (``brace_expand`` has the brace rules). Three
+    spellings are known to reach a credential directory and pass, all open: an escaped ``}`` inside a brace list
+    (``cat ~/.ss{h,b\\}c}/config``; bash keeps the list open and makes ``~/.ssh/config``); and, behind an ``X/..``
+    hop (``~/X/../``, so the name is not the first component under home), an unbalanced ``{`` inside ``$(...)`` or
+    backticks in a brace list (``.ss{h,$(:{)}``), and an empty ``$(:)``, backtick pair or ``${x}`` spliced into
+    the name (``.ss$(:)h``). Without the hop the last two are denied, because a computed first component is.
 
 Home directory
 --------------
@@ -168,18 +174,21 @@ Usage: juniper_agent_guard.py [--self-test | --list-rules | --settings-matcher |
 from __future__ import annotations
 
 import fnmatch
+import itertools
 import json
 import os
 import re
 import sys
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 GUARD_NAME = "juniper-agent-guard"
 PLAN_DOC = "notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md"
 HOME_OVERRIDE_ENV = "JUNIPER_GUARD_HOME"
 PROJECT_DIR_ENV = "CLAUDE_PROJECT_DIR"
 MAX_DEPTH = 12
 MAX_BRACE_ALTERNATIVES = 64
+BRACE_SEQ_OPERAND_LIMIT = 2**61  # a brace sequence with a larger number is refused, not modelled (_brace_sequence)
+BRACE_SCAN_BUDGET = 2000000  # characters one brace_expand call may scan; a word that needs more is refused (_brace_spend)
 EVIDENCE_LIMIT = 120
 
 
@@ -203,7 +212,14 @@ RULES = (
     Rule("PRIV-ESCALATION", "Bash", "privilege escalation: sudo, su, doas, pkexec, or osascript with administrator privileges", "Anything needing the admin password is owner-run"),
     Rule("MACOS-DEFAULTS-WRITE", "Bash", "a macOS settings change: defaults write, delete, rename or import", "Agents measure host settings; they do not change them"),
     Rule("GPG-SECRET", "Bash", "a GnuPG secret-key or smart-card operation: gpg --card-status, --card-edit, -K, --list-secret-keys, --export-secret-keys or --export-secret-subkeys; ykman; gpg-card; gpg-connect-agent learn or scd", "Agents never touch the YubiKey or enumerate secret keys"),
-    Rule("GPG-SIGN", "Bash", "a signing or secret-key use that can prompt for the YubiKey PIN or touch: gpg --sign / --clearsign / --detach-sign / --decrypt; git commit|merge|rebase|cherry-pick|revert|am|pull|commit-tree -S; git tag -s / -u; git push --signed; git -c *.gpgsign=true", "Agent commits are unsigned by construction (D11 item 1); they land signed through util/open_signed_pr.py"),
+    Rule(
+        "GPG-SIGN",
+        "Bash",
+        "a signing or secret-key use that can prompt for the YubiKey PIN or touch: gpg --sign / --clearsign / --detach-sign / --decrypt, or a prefix of two letters or more (--cl, --ls); "
+        "git commit|merge|rebase|cherry-pick|revert|am|pull|commit-tree -S or a prefix of --gpg-sign (--g); git tag -s / -u or a prefix of --sign / --local-user (--si, --lo); "
+        "git push --signed or an unambiguous prefix of it (--si, --sign=true); git -c *.gpgsign=true",
+        "Agent commits are unsigned by construction (D11 item 1); they land signed through util/open_signed_pr.py",
+    ),
     Rule("GH-PR-WRITE", "Bash", "gh pr create, gh pr new or gh pr merge", "Agents land changes only through util/open_signed_pr.py, and merges are the owner's"),
     Rule("GH-KEY-ADMIN", "Bash", "GitHub key administration: gh repo deploy-key, gh ssh-key add|delete, gh gpg-key add|delete", "Deploy-key and key administration stays in the owner's own session (D11 item 5)"),
     Rule("GH-AUTH", "Bash", "gh auth (status, token, refresh, login, logout, setup-git, switch ...)", "gh auth subcommands are credential probes or credential changes"),
@@ -269,7 +285,9 @@ GPG_SIGN_LONG = ("sign", "clearsign", "clear-sign", "detach-sign", "decrypt", "d
 GPG_SIGN_SHORT = "sbd"
 GPG_SHORT_WITH_ARG = "oruRzNfF"
 GPG_EXACT_ALLOWED = ("export",)
-GPG_MIN_ABBREV = 4
+# Shortest prefix GnuPG 2.4 will actually run for a denied option. ``--cl`` is clear-sign and ``--ls`` is lsign-key;
+# one character is ambiguous for every denied option.
+GPG_MIN_ABBREV = 2
 GPG_AGENT_COMMANDS = ("gpg-connect-agent",)
 GPG_AGENT_DENIED = ("learn", "scd")
 GIT_SIGN_SUBCOMMANDS = ("commit", "merge", "rebase", "cherry-pick", "revert", "am", "pull", "commit-tree")
@@ -373,6 +391,11 @@ WRAPPERS = {
 }
 STDIN_ARG_WRAPPERS = ("xargs", "parallel")
 GLOB_CHARS = "*?["
+# bash's sequence expression: x..y or x..y..incr, x and y both integers or both single letters (expand_seqterm).
+_BRACE_SEQ_RE = re.compile(r"(?:([+-]?[0-9]+)\.\.([+-]?[0-9]+)|([A-Za-z])\.\.([A-Za-z]))(?:\.\.([+-]?[0-9]+))?")
+_INTMAX = 2**63 - 1  # bash's intmax_t: a sequence number past it is no sequence at all
+_BRACE_SCAN_RE = re.compile(r"[{},.]")  # the characters bash's brace_gobbler acts on (_brace_closes)
+_BRACE_LIST_RE = re.compile(r"[{},]")  # and the ones that split a list (_brace_list)
 
 _ASSIGN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\[[^\]]*\])?\+?=")
 _NAME_START = frozenset("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_")
@@ -430,58 +453,217 @@ def _has_glob(text: str) -> bool:
 
 
 def brace_expand(text: str, limit: int = MAX_BRACE_ALTERNATIVES) -> list:
-    """Expand bash brace lists and small ranges ({a,b}, {1..3}); ``${...}`` is left alone. Capped."""
-    done = []
-    pending = [text]
-    while pending and len(done) + len(pending) <= limit:
-        cur = pending.pop(0)
-        span = _first_brace_group(cur)
-        if span is None:
-            done.append(cur)
-            continue
-        start, end, alternatives = span
-        pending.extend(cur[:start] + alt + cur[end + 1 :] for alt in alternatives)
-    return _unique([text] + done + pending)[: limit + 1]
+    """Expand bash brace lists and sequences ({a,b}, {1..3}, {a..e..2}, {01..10}) the way bash 5.3 does.
+
+    The source word comes first, then the words bash makes of it. bash expands the first brace expression, then each
+    of its alternatives and the rest of the word on their own, and joins the results without rescanning them:
+    ``{x{.,a}.y}`` gives ``{x..y}`` and ``{xa.y}``, and the ``{x..y}`` it made stays as written. A word that expands
+    to more than ``limit`` alternatives raises ``MalformedInput``: the guard fails closed (owner ruling, 2026-11-08)
+    rather than judge a prefix of the list and pass the rest unseen, where a ``.ssh`` could sit in alternative 65.
+    Each count is checked before the words are built, and a sequence is sized arithmetically in ``_brace_range``,
+    so a long list or a huge range is refused without being expanded. ``_first_brace_group`` and
+    ``_brace_sequence`` name the sequences that are refused rather than modelled.
+
+    The scan takes time in proportion to the word's length (``_brace_closes``), and each list part is scanned
+    again when it is expanded. ``BRACE_SCAN_BUDGET`` bounds the sum: a word whose expansion would scan more
+    characters than that is refused too (``_brace_spend``), so nesting cannot multiply the work without limit.
+
+    The text is the word after quote removal, and the result differs from bash's in both directions.
+
+    * Words bash does not make are judged, the safe side: a brace that bash leaves alone because it was quoted or
+      escaped is expanded here, and the braces inside ``${...}`` are searched (a ``{`` right after ``$`` opens no
+      group).
+    * Words bash does make can go unjudged. Quote removal is not always the safe side: an escaped ``}`` can end a
+      group here that bash keeps open (``.ss{h,b\\}c}`` is ``.ssh`` and ``.ssb}c`` to bash, ``.sshc}`` and
+      ``.ssbc}`` here), and a quoted ``$`` can hide a group that bash expands (``'$'{a,b}``). bash's ``{}`` rule is
+      not modelled (``_first_brace_group``): ``{}{},01,,-}`` is ``{}}``, ``{}01``, ``{}`` and ``{}-`` to bash and
+      ``}{}``, ``01``, an empty word and ``-`` here. And bash steps over the body of a ``$(...)`` and of
+      backticks, which this scan reads as text, so an unbalanced ``{`` inside one keeps a group open here that
+      bash closes (``.ss{h,$(:{)}``). Gap 12 of the module docstring lists the ones known to pass a credential
+      path.
+    """
+    return _unique([text] + _brace_words(text, limit, text, 0, [BRACE_SCAN_BUDGET]))
 
 
-def _first_brace_group(text: str):
-    n = len(text)
-    for i in range(n):
-        if text[i] != "{" or (i > 0 and text[i - 1] == "$"):
+def _brace_words(text: str, limit: int, source: str, depth: int, budget: list) -> list:
+    if depth > limit:  # every nested list adds an alternative, so a word nested this deep is past the cap anyway
+        raise MalformedInput(_brace_cap_message(source, limit))
+    if "{" not in text:
+        return [text]
+    _brace_spend(budget, len(text), source)
+    closes = _brace_closes(text)
+    pieces = []  # the word in order: each stretch of plain text as a one-item list, each group as its alternatives
+    count = 1  # the words made so far: the product of the groups' sizes
+    pos = 0
+    found = _first_brace_group(text, pos, closes)
+    while found is not None:
+        start, end, parts, final = found
+        tack = []
+        for part in parts:  # counted part by part, so at most one part past the cap is ever taken in
+            tack.extend([part] if final else _brace_words(part, limit, source, depth + 1, budget))
+            if count * len(tack) > limit:
+                raise MalformedInput(_brace_cap_message(source, limit))
+        pieces.append([text[pos:start]])
+        pieces.append(tack)
+        count *= len(tack)
+        pos = end + 1
+        found = _first_brace_group(text, pos, closes)
+    pieces.append([text[pos:]])
+    return ["".join(word) for word in itertools.product(*pieces)]  # built once, after every count has passed
+
+
+def _brace_cap_message(text: str, limit: int) -> str:
+    return "a brace expansion of more than %d alternatives (MAX_BRACE_ALTERNATIVES) cannot be analysed: %s" % (limit, _evidence(text))
+
+
+def _brace_spend(budget: list, amount: int, source: str) -> None:
+    """Take ``amount`` scanned characters from one ``brace_expand`` call's ``budget``. Past it the word is refused
+    (``MalformedInput``, exit 2), never passed unexamined. The words built are bounded with it: a call makes at most
+    ``limit`` words, none longer than the text it was given."""
+    budget[0] -= amount
+    if budget[0] < 0:
+        raise MalformedInput("a brace expansion that scans more than %d characters (BRACE_SCAN_BUDGET) cannot be analysed: %s" % (BRACE_SCAN_BUDGET, _evidence(source)))
+
+
+def _first_brace_group(text: str, pos: int, closes: dict):
+    """bash 5.3's first brace expression in ``text`` at or after ``pos``: (start, end, parts, final), or None.
+
+    ``closes`` is ``_brace_closes(text)``. A ``{`` opens a group only when a top-level separator comes before the
+    ``}`` that closes it; otherwise the next ``{`` is tried, inside the rejected one too. A comma makes a list,
+    whose ``parts`` are each expanded in turn (``final`` False). A ``..`` makes a sequence, whose terms are finished
+    words (``final`` True); one that bash does not accept stays as written, braces and all, and nothing inside it is
+    expanded. A sequence group with a ``{`` inside it is refused: bash 5.3 skips such a group unless
+    ``valid_seqterm`` passes it, bash 5.2 drops its braces when it holds a comma, and the two make different words.
+    One bash rule is left out on purpose: bash ignores a ``{`` that starts the word, a list part or the text after
+    a group when a ``}`` follows it at once, but ``{\\},a}`` is a list to bash, and the text here has lost that
+    backslash. So the guard can open a group where bash keeps the braces as text, and it then judges other words
+    than the ones bash makes (``brace_expand`` has the example).
+    """
+    i = text.find("{", pos)
+    while i != -1:
+        found = None if i > pos and text[i - 1] == "$" else closes[i]
+        if found is None:
+            i = text.find("{", i + 1)
             continue
-        depth = 0
-        parts = []
-        last = i + 1
-        for j in range(i, n):
-            ch = text[j]
-            if ch == "{":
-                depth += 1
-            elif ch == "}":
-                depth -= 1
-                if depth == 0:
-                    parts.append(text[last:j])
-                    if len(parts) > 1:
-                        return i, j, parts
-                    rng = re.match(r"^(-?\d+|[A-Za-z])\.\.(-?\d+|[A-Za-z])$", parts[0])
-                    if rng:
-                        return i, j, _brace_range(rng.group(1), rng.group(2))
-                    break
-            elif ch == "," and depth == 1:
-                parts.append(text[last:j])
-                last = j + 1
+        end, kind = found
+        amble = text[i + 1 : end]
+        if kind == ",":
+            return i, end, _brace_list(amble), False
+        if "{" in amble.replace("${", ""):
+            raise MalformedInput("a brace sequence with a brace inside it cannot be analysed (bash 5.2 and 5.3 expand it differently): %s" % _evidence(text[pos:]))
+        terms = _brace_sequence(amble)
+        if terms is not None:
+            return i, end, terms, True
+        i = text.find("{", end + 1)  # not a sequence bash accepts: kept as written
     return None
 
 
-def _brace_range(lo: str, hi: str) -> list:
-    if lo.lstrip("-").isdigit() and hi.lstrip("-").isdigit():
-        a, b = int(lo), int(hi)
-        step = 1 if b >= a else -1
-        return [str(v) for v in range(a, b + step, step)[:MAX_BRACE_ALTERNATIVES]]  # range slices lazily
-    if len(lo) == 1 and len(hi) == 1 and lo.isalpha() and hi.isalpha():
-        a, b = ord(lo), ord(hi)
-        step = 1 if b >= a else -1
-        return [chr(v) for v in range(a, b + step, step)[:MAX_BRACE_ALTERNATIVES]]
-    return ["%s..%s" % (lo, hi)]
+def _brace_closes(text: str) -> dict:
+    """bash's brace_gobbler for every ``{`` of ``text`` at once: ``closes[i]`` answers for the ``{`` at index ``i``,
+    as (index of the ``}`` that closes its group, ``","`` or ``".."``), or None when nothing closes it.
+
+    Only a top-level separator lets a ``}`` close the group: a comma, which wins, or a ``..`` that is not directly
+    before a ``}``. A top-level ``}`` met before either stays in the group as text, as bash keeps it: ``{a}b,c}``
+    is a list of ``a}b`` and ``c``. A nested ``{...}`` is stepped over whole, a ``${`` counts as a ``{`` here, and
+    after a ``{`` that nothing closes there is no top level left.
+
+    One pass from the right over the four characters that matter keeps what a scan starting at the current index
+    would find: ``shut``, the first top-level ``}`` (-1: none); ``comma``, whether a top-level ``,`` comes before
+    it; and ``found``, the group's close and kind while no separator has been seen. Each ``{`` takes the answer
+    that stands just after it, so a whole word is answered in time proportional to its length. Scanning to the end
+    of the word from each ``{`` that does not close, as bash does, costs the square of that: 7.7 s for the hook
+    on a 25.8 KB ``python3 -c`` word, against its timeout of 10 s.
+    """
+    marks = [(m.start(), m.group()) for m in _BRACE_SCAN_RE.finditer(text)]
+    match = {}  # each "{" that closes: the "}" that brings the depth back to where it opened
+    opened = []
+    for j, ch in marks:
+        if ch == "{":
+            opened.append(j)
+        elif ch == "}" and opened:
+            match[opened.pop()] = j
+    closes = {}
+    resume = {}  # what stands just after each "}": a scan that stepped over its "{...}" goes on from there
+    shut, comma, found = -1, False, None
+    for j, ch in reversed(marks):
+        if ch == "{":
+            closes[j] = found
+            shut, comma, found = resume[match[j]] if j in match else (-1, False, None)
+        elif ch == "}":
+            resume[j] = (shut, comma, found)
+            shut, comma = j, False  # found stands: with no separator yet, this "}" is text
+        elif ch == ",":
+            comma = True
+            found = (shut, ",") if shut != -1 else None
+        elif ch == "." and text[j + 1 : j + 2] == "." and text[j + 2 : j + 3] != "}":
+            found = (shut, "," if comma else "..") if shut != -1 else None
+    return closes
+
+
+def _brace_list(amble: str) -> list:
+    """The parts of a brace list: ``amble`` split at its top-level commas."""
+    parts = []
+    depth = 0
+    last = 0
+    for mark in _BRACE_LIST_RE.finditer(amble):
+        ch = mark.group()
+        if ch == "{":
+            depth += 1
+        elif ch == "}" and depth:
+            depth -= 1
+        elif ch == "," and depth == 0:
+            parts.append(amble[last : mark.start()])
+            last = mark.end()
+    parts.append(amble[last:])
+    return parts
+
+
+def _brace_sequence(amble: str):
+    """The terms of a bash sequence expression ``x..y`` or ``x..y..incr``, or None when bash keeps it as written.
+
+    x and y are both integers (an optional sign, then ASCII digits) or both single ASCII letters, and incr is an
+    integer, as bash's expand_seqterm reads them; a number outside intmax_t makes it no sequence at all. Refused
+    instead of modelled (``MalformedInput``): an operand beyond ``BRACE_SEQ_OPERAND_LIMIT``, where bash's own
+    overflow checks take over, and a letter sequence that runs from ``Z`` to ``a`` and makes a backslash or a
+    backtick. bash 5.3 leaves both unquoted: the backslash escapes the next character of the word
+    (``.ss{Y..a..3}h`` makes ``.ssh``), and the backtick opens a command substitution (bash rejects
+    ``{Z..a..3}pwd{Z..a..3}`` with "bad substitution"), which the guard would read as text.
+    """
+    m = _BRACE_SEQ_RE.fullmatch(amble)
+    if m is None:
+        return None
+    lo, hi, first, last, step = m.groups()
+    numbers = [int(v) for v in (lo, hi, step) if v is not None]
+    if any(v < -_INTMAX - 1 or v > _INTMAX for v in numbers):
+        return None
+    if any(abs(v) > BRACE_SEQ_OPERAND_LIMIT for v in numbers):
+        raise MalformedInput("a brace sequence with an operand beyond 2**61 cannot be analysed: {%s}" % _evidence(amble))
+    terms = _brace_range(first or lo, last or hi, step)
+    if "\\" in terms or "`" in terms:
+        raise MalformedInput("a letter sequence that makes a backslash or a backtick cannot be analysed (bash reads them as an escape and a command substitution): {%s}" % _evidence(amble))
+    return terms
+
+
+def _brace_range(lo: str, hi: str, step: str = None) -> list:
+    """The terms of ``{lo..hi}`` or ``{lo..hi..step}`` in bash's order, refused (``MalformedInput``) past
+    ``MAX_BRACE_ALTERNATIVES`` whatever ``brace_expand``'s limit. ``lo`` and ``hi`` are both integers or both single
+    letters (``_brace_sequence`` checks). The direction comes from ``lo`` and ``hi``; the step's sign is ignored and
+    a step of 0 counts as 1. An integer side written with a leading zero, after an optional ``-``, pads every term
+    to the longer side's length (``{1..010}`` is ``001`` to ``010``)."""
+    numeric = not lo.isalpha()
+    a, b = (int(lo), int(hi)) if numeric else (ord(lo), ord(hi))
+    size = abs(int(step)) if step else 1
+    size = size or 1
+    count = abs(b - a) // size + 1
+    if count > MAX_BRACE_ALTERNATIVES:  # sized before anything is built: {1..1000000} is refused, not listed
+        raise MalformedInput(_brace_cap_message("{%s..%s%s}" % (lo, hi, ".." + step if step else ""), MAX_BRACE_ALTERNATIVES))
+    direction = 1 if b >= a else -1
+    values = [a + direction * size * k for k in range(count)]
+    if not numeric:
+        return [chr(v) for v in values]
+    padded = any((len(side) > 1 and side[0] == "0") or (len(side) > 2 and side[:2] == "-0") for side in (lo, hi))
+    width = max(len(lo), len(hi)) if padded else 0
+    return ["%0*d" % (width, v) for v in values]
 
 
 def component_matches(pattern: str, literal: str) -> bool:
@@ -1020,7 +1202,7 @@ def _gh_action(words: list, opts_with_arg: tuple):
 
 
 def _gpg_option(name: str, table: tuple) -> bool:
-    """GnuPG accepts unambiguous abbreviations of long options, so a long-enough prefix counts."""
+    """GnuPG accepts unambiguous abbreviations of long options, so a prefix of at least ``GPG_MIN_ABBREV`` counts."""
     return any(opt == name or (len(name) >= GPG_MIN_ABBREV and opt.startswith(name)) for opt in table)
 
 
@@ -1280,12 +1462,14 @@ class BashAnalyzer(object):
                 continue
             short = text[1:] if text.startswith("-") and not text.startswith("--") else ""
             if sub in GIT_SIGN_SUBCOMMANDS:
-                if text.startswith("--gpg-sign") or _cluster_has(short, "S", "mFCcXxp"):
+                # ``--g`` is already ``--gpg-sign`` on commit and merge (git 2.53).
+                if _git_long_abbrev(text, "gpg-sign", 1) or _cluster_has(short, "S", "mFCcXxp"):
                     self.hit("GPG-SIGN", "git %s %s" % (sub, text))
             elif sub == "tag":
-                if text in ("--sign", "--local-user") or text.startswith(("--sign=", "--local-user=")) or _cluster_has(short, "su", "mFn"):
+                # ``--si`` signs; ``--lo`` selects the signing key. ``--s`` / ``--l`` do not run.
+                if _git_long_abbrev(text, "sign", 2) or _git_long_abbrev(text, "local-user", 2) or _cluster_has(short, "su", "mFn"):
                     self.hit("GPG-SIGN", "git tag " + text)
-            elif sub == "push" and (text == "--signed" or (text.startswith("--signed=") and text.split("=", 1)[1].casefold() not in ("false", "no", "off", "0"))):
+            elif sub == "push" and _git_push_requests_signature(text):
                 self.hit("GPG-SIGN", "git push " + text)
 
     def _check_git_config(self, rest: list) -> None:
@@ -1581,6 +1765,49 @@ class BashAnalyzer(object):
             current = prev
             k -= 1
         return out
+
+
+def _git_long_abbrev(text: str, name: str, minimum: int) -> bool:
+    """True when ``text`` is a long option git will run as ``name``.
+
+    Git accepts an unambiguous prefix. On git 2.53, ``git commit --g`` and
+    ``git merge --g`` are ``--gpg-sign`` and the commit is signed; ``git tag --si``
+    is ``--sign`` and ``git tag --lo`` is ``--local-user``. A longer different
+    option is not a prefix (``--signoff``, ``--skip``). ``--no-gpg-sign`` is a
+    different option, so it does not match ``gpg-sign``. ``minimum`` keeps a
+    prefix git itself rejects: ``git tag --s`` is ambiguous with ``--sort``,
+    and ``git tag --l`` is ambiguous with ``--list``. Git compares option names
+    case-sensitively (``git push --SIGNED`` is an unknown option), so this does too.
+    """
+    if not text.startswith("--"):
+        return False
+    body = text[2:].split("=", 1)[0]
+    if len(body) < minimum or len(body) > len(name):
+        return False
+    return name.startswith(body)
+
+
+_PUSH_SIGNED_OFF = ("false", "no", "off", "0")
+
+
+def _git_push_requests_signature(text: str) -> bool:
+    """True when ``text`` is a ``git push`` option the guard treats as a signed-push request.
+
+    Git 2.53 accepts an unambiguous prefix of ``--signed``: ``--si``, ``--sig``,
+    ``--sign``, ``--sign=true``, ``--signed=1`` and ``--si=if-asked`` all request
+    one (against a remote that does not advertise push certificates, git dies with
+    "the receiving end does not support --signed push", or warns for
+    ``if-asked``). ``--s`` is ambiguous with ``--set-upstream`` and does not run,
+    and ``--se`` is ``--set-upstream``. ``--no-signed`` and ``--no-si`` are the
+    off switch. A value of ``false``, ``no``, ``off`` or ``0`` (any case),
+    including on a prefix (``--si=false``), is off too. Any other value is judged
+    a request, as the full spelling already was: git also reads an empty value and
+    ``00`` as off and refuses ``--signed=falsehood``, so denying those costs nothing.
+    """
+    if not _git_long_abbrev(text, "signed", 2):
+        return False
+    # A bare flag has the value "", which no off value equals, so it is a request too.
+    return text.partition("=")[2].casefold() not in _PUSH_SIGNED_OFF
 
 
 def _cluster_has(cluster: str, wanted: str, value_letters: str) -> bool:
@@ -2013,6 +2240,7 @@ def self_test() -> int:
         os.symlink(os.path.join(home, ".ssh"), link)
         cases = [
             ("Bash", {"command": "cat ~/.ssh/config"}, "CRED-PATH-BASH"),
+            ("Bash", {"command": "cat ~/.{r..t..1}sh/config"}, "CRED-PATH-BASH"),
             ("Bash", {"command": "gh api -X POST repos/o/r/issues"}, "GH-API-WRITE"),
             ("Bash", {"command": "gh api repos/o/r/issues -XPOST"}, "GH-API-WRITE"),
             ("Bash", {"command": "GH_TOKEN=x /usr/local/bin/gh api --method=PATCH repos/o/r"}, "GH-API-WRITE"),
@@ -2022,6 +2250,10 @@ def self_test() -> int:
             ("Bash", {"command": "gh pr merge 12 --squash"}, "GH-PR-WRITE"),
             ("Bash", {"command": "gh auth token"}, "GH-AUTH"),
             ("Bash", {"command": "git commit -S -m x"}, "GPG-SIGN"),
+            ("Bash", {"command": "git commit --g -m x"}, "GPG-SIGN"),
+            ("Bash", {"command": "git push --si origin"}, "GPG-SIGN"),
+            ("Bash", {"command": "git push --si=false origin"}, None),
+            ("Bash", {"command": "gpg --cl"}, "GPG-SIGN"),
             ("Bash", {"command": "security find-generic-password -s x"}, "KEYCHAIN-DUMP"),
             ("Bash", {"command": "defaults write com.example k v"}, "MACOS-DEFAULTS-WRITE"),
             ("Bash", {"command": 'cp x "$HOME"/.claude/settings.json'}, "SELF-PROTECT-BASH"),
@@ -2063,14 +2295,18 @@ def self_test() -> int:
             got = json.loads(out)["hookSpecificOutput"]["permissionDecisionReason"].split("Rule ", 1)[1].split(":", 1)[0] if out else None
             if code != 0 or got != expected:
                 failures.append("%s %s: expected %s, got %s (exit %d)" % (tool, json.dumps(tool_input), expected, got, code))
-        for bad in (b"not json", b"[]", b'{"tool_input": {}}', b'{"tool_name": "Bash"}', b'{"tool_name": "Read", "tool_input": {"file_path": 7}}'):
+        # The last two are well-formed but cannot be analysed (fail closed): 65 alternatives, the last spelling .ssh,
+        # and a sequence with a brace inside it, which bash 5.2 and 5.3 expand differently.
+        past_cap = json.dumps({"tool_name": "Bash", "tool_input": {"command": "cat ~/{%s,.ss}h/config" % ",".join("n%d" % i for i in range(MAX_BRACE_ALTERNATIVES))}}).encode("utf-8")
+        nested_sequence = json.dumps({"tool_name": "Bash", "tool_input": {"command": "cat ~/.{r..{s,t}}sh/config"}}).encode("utf-8")
+        for bad in (b"not json", b"[]", b'{"tool_input": {}}', b'{"tool_name": "Bash"}', b'{"tool_name": "Read", "tool_input": {"file_path": 7}}', past_cap, nested_sequence):
             code, out, err = run_hook(bad, homes=[home], project_dir=repo)
             if code != 2 or out or not err:
-                failures.append("malformed %r: expected exit 2 with empty stdout, got exit %d" % (bad, code))
+                failures.append("malformed %r: expected exit 2 with empty stdout, got exit %d" % (bad[:80], code))
         spec = deny_output([Hit("GH-API-WRITE", "-X")], "Bash")["hookSpecificOutput"]
         if spec.get("hookEventName") != "PreToolUse" or spec.get("permissionDecision") != "deny" or "GH-API-WRITE" not in spec.get("permissionDecisionReason", ""):
             failures.append("the deny output has the wrong shape")
-        total = len(cases) + 6
+        total = len(cases) + 8
         for line in failures:
             print("FAIL " + line)
         print("%s %s self-test: %d of %d checks passed" % (GUARD_NAME, __version__, total - len(failures), total))
