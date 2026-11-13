@@ -23,7 +23,7 @@ Three threads. Take them in this order.
    stepped aside for the 0.11.5 release cut. One more signed commit is owed after the release proposal merges.
 2. **The owner's new issue (2026-11-12): desktop alerts say a Duplicati backup failed, and no such backup exists.**
    One source is found and proven: a test sends a real notification. Its fix, juniper-ml#2559, merged on
-   2026-11-13 at 02:49Z (`ae801a70`). A sweep for other tests of the same kind was running at handoff. A
+   2026-11-13 at 02:49Z (`ae801a70`). A trace of all 238 regression commands found no other test of that kind. A
    second, real source is the watchdog. The job's off-schedule runs are a separate, open question.
 3. **Continue the Phase D sitting (Procedure A0) at step 14 of `…RECOVERY-PLAN.md` §6.4.** No step ran in this
    segment and no host was changed. Each remaining step is one owner command and one pasted verdict block.
@@ -79,29 +79,45 @@ new session.
    - The text of all four additions is in this worktree: `git diff 15b5d9bb -- <file>`, and
      `tmp/phase-d-finish/my-tracked-changes-3.patch`. The worktree's base is `15b5d9bb`, which is stale: build the files
      from `origin/main`'s blobs, or unstage and use `util/ad-hoc/2026-11-12_rehome_worktree_edits_on_new_main.py`.
-   - Prove the candidate first: `tmp/phase-d-finish/build_step_aside.py` shows the method (a temporary index,
-     `git merge-tree`, the merged tree unpacked and its suites run). Then `util/push_signed_commit.py`, with
-     `--expected-head` pinned to the update-branch head.
+   - **`python3 tmp/phase-d-finish/build_readd.py <update-branch head> --fixed-2559` builds all four files** from
+     `main`'s blobs plus this worktree's additions. It computes the count and the date, puts the entry under
+     `[Unreleased]`, adds the `### Fixed` entry owed for juniper-ml#2559, proves that every line of `main`'s copies
+     survives, and unpacks the candidate tree. `tmp/phase-d-finish/show_readd_placement.py` shows where each line
+     went. Tried on 2026-11-13 against `main` `ae801a70`: 239 suites become 242.
+   - Then `util/push_signed_commit.py` with the four files of `tmp/phase-d-finish/readd/uploads.txt`, `--expected-head`
+     pinned to the update-branch head. Update the counts in the PR's body as well (`gh api -X PATCH`).
 4. Run every command of the regression step past failures: `tmp/phase-d-finish/run_regression_list.py`. On this host
    four suites fail only because `TMPDIR` is inside a checkout: `test_workflow_script_paths`,
    `test_a0_restore_scripts`, `test_e2e_f037_render_census`, `test_replay_redrive_stack_refusal`.
 5. `util/safe_merge.py --pr 2548 --repo juniper-ml --execute` in the background; read its `MERGED` line. The stored
    auto-merge text is this session's first commit message, armed 2026-11-12 23:07Z; check what the squash will say.
-6. Then land this handoff as its own PR (`tmp/phase-d-finish/open_handoff_pr.py`; its body file is not written yet).
+6. This handoff is juniper-ml#2560. Its auto-merge was **disarmed on purpose**, so that it does not move `main`
+   under the release proposal (juniper-ml#2558, opened 2026-11-13 02:32Z). Merge it after the proposal has merged:
+   `util/safe_merge.py --pr 2560 --repo juniper-ml --execute`.
 
 **B. The false alerts.**
 
-1. Read the sweep: `python3 tmp/phase-d-finish/alerts/hermeticity_sweep.py report tmp/phase-d-finish/alerts/sweep-full`.
-   Part 1 (commands 1-120) started at 02:27Z and was running at handoff; run part 2 with `… hermeticity_sweep.py range 121 238 sweep-full`.
+1. **The sweep is complete** (all 238 commands of the regression step, traced on 2026-11-13 02:27Z to 03:10Z;
+   `python3 tmp/phase-d-finish/alerts/hermeticity_sweep.py report tmp/phase-d-finish/alerts/sweep-full` prints it):
+   - the one real `notify-send` call is the fixed suite's;
+   - no suite connects to the Duplicati port, to another local Juniper port, or to a bus socket (two tried the
+     session bus, which the sweep had made unreachable);
+   - no suite runs a real `systemctl`, `loginctl`, `journalctl`, `sudo`, `pkexec`, `curl`, `wget`, `dropbox`, mail or
+     Duplicati binary. The full list of system binaries executed is otherwise coreutils, `git`, shells and Python.
 2. **juniper-ml#2559** fixes `tests/test_duplicati_scheduled_backup.py`: a recording `notify-send` stub in every
    fixture, the session bus address handed to children pointed at a path that does not exist, assertions that the
    notification reached the stub, and three tests that pin all of it. It **merged** on 2026-11-13 at 02:49Z
    (`ae801a70`). It carries no CHANGELOG entry on purpose; add one under the new `[Unreleased]` (`### Fixed`) after
    the 0.11.5 proposal merges. Sessions whose checkout is older than that merge still send the alert when they run
    the suite.
-3. If the sweep names another suite that runs a real alerting tool, fix it the same way in a second PR. Its first 40
-   commands named none. They did show `tests/test_prompt_discovery.py` running the real `gh pr list` and `ssh -G`:
-   no alert, but a network call from a unit test; record it as a finding.
+3. The sweep named no other suite that runs a real alerting tool. It did show smaller things; record them as
+   findings:
+   - `tests/test_prompt_discovery.py` runs the real `gh pr list` (5 calls) and `ssh -G`: a network call from a unit
+     test, and a read of the keyring through the session bus;
+   - `tests/test_agents_md_touch_up.py` starts a login shell, whose profile writes a line to the journal through
+     `systemd-cat`;
+   - `tests/test_juniper_repo_ssh_setup.py` runs the real `ssh -G` against a temporary config (it parses, it does not
+     connect).
 4. The watchdog and the off-schedule runs need the server, so they need the owner: see questions Q2 and Q6.
 
 **C. The sitting.** `D` below is a checkout that holds the tools. On 2026-11-13 the **primary** checkout
@@ -164,6 +180,10 @@ tool can carry it. A new check goes into a tool with a test first.
     row whose time changed and queues the job at once when that time is not in the future
     (`if (start <= DateTime.UtcNow)`). A job save rewrites that row. The sitting already saw one UI save move the
     schedule's date back a day. Ask the owner whether the job's edit page was saved near each start.
+  - **A way to tell at the next off-schedule start:** read the schedule's `LastRun` in `export 2` before the next
+    14:00Z run. The scheduler sets it only for runs it queued itself. If it equals the off-schedule start, a rewritten
+    schedule row (a save) started the run; if it still shows the last 14:00Z start, a run request did (the UI's run
+    button, or an API call).
   - **It matters for step C.4**, which is a job save: a backup may start at the save, and the first retention pass then
     runs at the end of that backup, not at the next 14:00Z. Finish `aside` first, and do not save during a backup.
 - **Q3. AC-7 against D-14.** The two do not hold together as observed.
@@ -341,7 +361,7 @@ tail -n 40 "$W/tmp/phase-d-sitting/segment-2026-11-11.md"
   day holds an alert for the job, or the newest record is over 36 h old); AC-7 `FAIL` until Q3 is settled; the server
   criteria `SKIP`;
 - the watchdog's raw lines, `ALERT` lines included;
-- the sweep's traces (two files per command: 476 when both parts have run).
+- the sweep's traces: 476 files, two per command.
 
 ## Git status at handoff
 
