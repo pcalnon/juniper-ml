@@ -1,0 +1,586 @@
+probe run at 2026-11-12T02:06:43Z; window starts 2026-10-10T21:30:00Z; sections: prs, merges, releases, pypi, gitleaks, wiring, settings
+== open PRs (author / draft counts; every non-bot PR listed)
+juniper-ml: 41 open; cursor[bot]/draft=40, pcalnon=1; base not main: [2484]; auto-merge armed: [2360]
+     #2360 fix(tmp): repo tmp/ instead of /tmp -- fixed E2E run dir + reaper roots, launcher TMPDIR +
+juniper-data: 0 open; -; base not main: []; auto-merge armed: []
+juniper-data-client: 0 open; -; base not main: []; auto-merge armed: []
+juniper-cascor: 0 open; -; base not main: []; auto-merge armed: []
+juniper-cascor-client: 0 open; -; base not main: []; auto-merge armed: []
+juniper-cascor-worker: 0 open; -; base not main: []; auto-merge armed: []
+juniper-canopy: 1 open; pcalnon=1; base not main: []; auto-merge armed: [814]
+     #814 fix(ci): make the lockfile regen print its own diagnostic when gh api graphql fails
+juniper-deploy: 0 open; -; base not main: []; auto-merge armed: []
+juniper-recurrence: 0 open; -; base not main: []; auto-merge armed: []
+== commits on main since 2026-10-10T21:30:00Z (every page)
+juniper-ml: 221 commits (21 by a bot account, 200 other); newest 2026-11-12T01:36:12Z
+     348777f4 2026-11-12T01:36:12Z docs(handoff): R-OBS-SC-2 follow-ups -- four owner rulings to carry out, four questions open (#2546)
+     9063ebf3 2026-11-12T01:19:17Z docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545)
+     49c26023 2026-11-12T01:04:23Z docs(backup): Phase D sitting handoff -- steps 9-13 done, AC-4 drill next; escrow scripts and AC-4 driver (#25
+     fd6102c3 2026-11-12T00:39:18Z docs(handoff): canopy Phase 16 -- round 33 frozen (4963cb52); round 34 relaunch next; #2360 may merge first (#
+     68f9ebcd 2026-11-10T21:34:49Z chore(images): remove unused image files (#2542)
+     068c2859 2026-11-10T10:45:42Z docs: add HARCOT to the notes/ repository tokens (#2538)
+     b47b07d1 2026-11-09T19:43:29Z ci: bump anthropics/claude-code-action from 1.0.266 to 1.0.269 (#2537)
+     8423e19d 2026-11-09T19:27:12Z ci: bump the codeql-action group with 3 updates (#2535)
+     872b2eb0 2026-11-09T19:26:24Z ci: bump peter-evans/create-pull-request from 8.1.1 to 8.1.2 (#2536)
+     f85fbc8b 2026-11-09T15:13:37Z fix(service-core): a /ws/training resume_ok now misses nothing before the socket goes live (new promote_to_act
+     1710ea90 2026-11-09T14:58:53Z chore(deps): refresh CI lockfiles (#2529)
+     80dfcf40 2026-11-09T14:45:36Z deps: bump pip from 26.2.2 to 26.3 in the python-minor group (#2533)
+     a03680c8 2026-11-09T11:49:48Z docs(plans): consolidated v1.15.15 -- R-OBS-SC-2 recorded from P3-07 to the second lock round, and what it lea
+     7b3b91b7 2026-11-09T11:22:24Z fix(service-core): a fit that returns while paused settles COMPLETED instead of wedging the lifecycle (the pau
+     734aab58 2026-11-09T10:31:40Z docs(notes): Cursor flood-4 disposition record -- round 1 complete, rulings 1-14, render inputs and provenance
+     4bae7520 2026-11-09T00:27:31Z fix(pre-commit): the doc-link hook skips the repo's gitignored tmp/ (#2522)
+     cef03a06 2026-11-08T16:49:17Z release-notes: juniper-observability v0.4.2 (#2528)
+     4e25fa5c 2026-11-08T16:33:54Z release-notes: juniper-service-core v0.7.2 (#2527)
+     a93de292 2026-11-08T16:20:04Z release: juniper-observability v0.4.2 (proposal) (#2525)
+     94208d86 2026-11-08T16:07:10Z chore(release): juniper-service-core v0.7.2 -- version bump + CHANGELOG move (#2526)
+     93fa1f66 2026-11-08T15:53:32Z fix(service-core): round a failed-auth Retry-After up (carries #2514) (#2524)
+     a67061bd 2026-11-08T15:38:45Z fix(observability): P3-07 -- scrub Sentry transactions, parsed cookies and four more headers; pin service-core
+     05f534b4 2026-11-08T14:39:08Z docs: add custom harness article and detailed backup restoration steps (#2520)
+     f1b5ddd2 2026-11-08T11:34:18Z fix(yamaguchi-securityfs): record the remediation; the validator refuses a non-fingerprint baseline; correct t
+     8d73d441 2026-11-08T03:35:58Z docs(reference): carry 21 Cursor flood-4 docs drafts, each claim re-derived from the code (#2519)
+     7bc9d3e2 2026-11-08T01:49:40Z test: carry and fix the tests from 28 Cursor fleet drafts (flood-4) (#2517)
+     a1ab41af 2026-11-08T01:30:37Z docs(incident): AGENTS.md Last Updated after #2516; RCA L4 labelled an inference (#2518)
+     147263ec 2026-11-08T01:16:30Z docs(incident): yamaguchi securityfs unmount -- RCA, remount runbook, evidence, host API-filesystem check (#25
+     58397dbb 2026-11-08T00:26:53Z docs(plans): consolidated v1.15.14 -- juniper-ml 0.11.4 published ([recurrence] floor shipped), parent AGENTS.
+     4be0b0fb 2026-11-08T00:14:12Z docs(quick-start): the sample pip list shows what juniper-ml 0.11.4 resolves (cascor 0.13.x) (#2510)
+     303ccc0b 2026-11-06T15:01:03Z docs(handoff): open-PR sweep triaged, owner rulings recorded, consolidation next (#2506)
+     d5152008 2026-11-06T14:47:43Z release-notes: juniper-ml v0.11.4 (#2497)
+     2fa15d25 2026-11-06T14:34:18Z docs(plans): consolidated v1.15.13 -- [recurrence] floor, recurrence#230, juniper-ml 0.11.4 at the pypi gate, 
+     827199b6 2026-11-06T14:17:11Z fix(fleet-triage): predict_merge borrows the checkout's objects instead of cloning, so a shallow checkout's or
+     fc533642 2026-11-06T14:02:55Z feat(launchers): -v follows claude -v, claudey takes a prompt file, the default session adds remote control (#
+     957f0e94 2026-11-06T13:41:24Z release: juniper-ml v0.11.4 (proposal) (#2482)
+     84569b4a 2026-11-06T13:25:33Z deps: [recurrence] floors juniper-recurrence>=0.8.1,<0.9.0 (#2473)
+     87181fed 2026-11-06T12:54:34Z docs(plans): consolidated v1.15.12 and provenance spec v0.2.2 -- the owner's 2026-11-06 rulings, recurrence 0.
+     8d553b41 2026-11-05T00:02:50Z docs(releases): archive juniper-recurrence 0.8.1 release notes (#2454)
+     a5eac4e5 2026-11-04T23:46:33Z docs(fleet): flood-3 record thirteenth update -- a Dependabot run authenticates Codecov (re-run), the predeces
+     8a6e2213 2026-11-04T22:08:11Z docs(handoff): launcher arc -- prompt after --, claudey defaults merged (#2405, #2438); open-PR sweep next (#2
+     1c18106d 2026-11-04T21:31:16Z fix(launchers): prompt after --, bare remote control, claudey defaults, -u and --version (#2438)
+     0368c3a2 2026-11-04T14:24:10Z docs(plans): consolidated v1.15.11 + partition spec v0.2.1 -- the owner's P12 rulings of 2026-11-03 (#2415)
+     834e79aa 2026-11-04T12:31:02Z docs(fleet): flood-3 record twelfth update -- every actions/checkout SHA-pinned, post-ruling worktrees removed
+     db131f7b 2026-11-04T12:03:37Z fix(launchers): wake_the_claude -v, --remote-control name and errors with debug off (#2405)
+     2c4a24f0 2026-11-04T11:22:00Z docs(releases): archive juniper-config-tools 0.1.1 release notes (#2411)
+     733929fb 2026-11-04T11:09:00Z release(config-tools): 0.1.1 -- the wheel ships py.typed (#2408)
+     b22126a4 2026-11-04T02:00:22Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#2401)
+     b8a1de04 2026-11-04T01:32:21Z ci: bump anthropics/claude-code-action from 1.0.255 to 1.0.266 (#2400)
+     e4f13205 2026-11-04T00:23:34Z chore(deps): refresh CI lockfiles (#2399)
+     6201f94b 2026-11-03T15:13:37Z Feat/enhancements to claude scripts (#2396)
+     ab5eda6d 2026-11-03T14:42:01Z ci(agents-md): pin actions/checkout to its v7.0.1 SHA in agents-md-touch-up.yml (#2402)
+     50d2b229 2026-11-01T19:50:43Z docs(fleet): flood-3 record eleventh update -- the pytest cap dropped, every low row fixed, the ruled cleanup 
+     117d20d5 2026-11-01T18:17:52Z docs(register): close APD-ML-002 -- test_accuracy filled; consolidated plan v1.15.10; handoff (#2397)
+     7b3e622e 2026-10-30T20:20:23Z docs(fleet): flood-3 record tenth update -- the SARIF rule in all six repos, the low rows fixed, the cleanup d
+     af17c984 2026-10-30T20:02:50Z docs(plans): consolidated v1.15.9 and recurrence v1.7.24 -- deploy pins cascor 0.13.0, test_accuracy filled, t
+     2e5d90aa 2026-10-30T19:42:19Z docs(turing): plan v1.4.11 -- the host check's wording fixed (juniper-ml#2392): G-TOOLS kubectl's fix names ta
+     f1f5938a 2026-10-30T19:24:35Z fix(turing): the host check's wording -- G-TOOLS kubectl's fix names task D3 (decision D7), G-MEM's memory mes
+     2e2a65cc 2026-10-30T10:28:15Z feat(backup): Phase D's step 0(b) trial drop-in and Procedure A's verified key write; runbook and handoff to t
+     4a513dcf 2026-10-30T08:57:08Z docs(handoff): recurrence x equities -- trio stopped, notify matrix + cascor 0.13.0 pin merged, test_accuracy 
+     d6b29bb5 2026-10-30T03:34:18Z docs(fleet): flood-3 record ninth update -- every 2026-10-27 row fixed or resolved; a live duplicate continuat
+     56697c4d 2026-10-29T23:19:24Z docs(backup): handoff to Phase D, validated in four rounds; the plan's transcript-count bounds and no-reboot w
+     110d5e40 2026-10-29T22:07:02Z docs(plans): consolidated v1.15.8 -- the cascor primary carries cascor#731; mnist schema probe (canopy#778); h
+     86e6d6d1 2026-10-29T21:07:41Z docs(backup): AC-11 passed and the transcript count read 0; finding 9 closed by measurement (#2385)
+     c5350c98 2026-10-28T22:19:25Z docs(plans): consolidated v1.15.7 -- juniper-cascor 0.13.0 published, cascor#731 on PyPI, neither default runs
+     9b1f4db7 2026-10-28T20:48:14Z ci: bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 (#2357)
+     bb09ab81 2026-10-28T12:27:43Z ci: bump the codeql-action group with 3 updates (#2355)
+     1f2ec7c4 2026-10-28T11:43:10Z ci: bump actions/upload-artifact from 7.0.1 to 7.0.2 (#2356)
+     a9a2db52 2026-10-28T10:49:19Z docs(plans): consolidated v1.15.6 -- P5-11 closed (ml#2381), juniper-cascor 0.13.0 with cascor#731 at its pypi
+     ccca5e98 2026-10-28T10:31:49Z docs(backup): decision record -- Tiers 2 and 3 back and read back from the media, rulings to 10-28; transcript
+     c77b7be5 2026-10-28T03:23:14Z fix(experiments): a cascor run's eval scalars are its labelled final evaluation, with held-out test_* suite co
+     db3a9087 2026-10-28T02:08:34Z docs(reference): flood-3 §4 -- the topology driver's stale #1672 claims and the equities lost-symbol line (#23
+     3720f651 2026-10-28T01:56:27Z release-notes: juniper-cascor v0.13.0 (#2379)
+     7231c114 2026-10-28T01:44:11Z docs(fleet): flood-3 record eighth update -- juniper-cascor 0.13.0 at its pypi gate; the 2026-10-26 rows close
+     30e1edf9 2026-10-28T01:32:27Z docs(plans): recurrence v1.7.23 + consolidated v1.15.5 -- juniper-recurrence-client 0.3.1 published; P12 follo
+     efab1e08 2026-10-28T01:21:05Z test(backup): stage the lane fixture on a disk-backed root -- runners' tmpfs temp dir tripped Guard 3b (#2376)
+     ff6cc37d 2026-10-27T19:16:10Z deps: bump the python-minor group across 1 directory with 2 updates (#2354)
+     e00b3d4c 2026-10-27T10:42:29Z chore(deps): refresh CI lockfiles (#2343)
+     05b716b5 2026-10-27T02:29:45Z docs(turing): plan v1.4.10 -- H3 passed (3/3 agree, 3/3 denials) once the owner installed C8; erratum E-H3; ha
+     0584d43f 2026-10-27T02:16:56Z docs(turing): H3 live validation -- 3/3 SME agents agree with independent probes (0 contradictions), 3/3 negat
+     98d4bc2f 2026-10-27T02:05:00Z docs(handoff): recurrence x equities -- follow-ups closed; juniper-recurrence-client 0.3.1 at the pypi gate; a
+     2b070fbe 2026-10-27T01:50:58Z docs(fleet): flood-3 record seventh update -- the owner's three open items closed (0.11.2 erratum, cleanup, §4
+     a4edf170 2026-10-27T01:39:04Z docs(handoff): backup arc -- Phase C lines 3-8 done, escrow spool copies purged; tier 2/3 runs and Phase D nex
+     8467225b 2026-10-27T01:26:38Z fix(experiments): cascor headline columns, run_suite --reaggregate, NaN/inf fail every band (APD-ML-002) (#236
+     dd6fdb85 2026-10-27T01:11:55Z docs(turing): E-H6-APPLY's evidence as a repository script -- util/ad-hoc/2026-10-26_turing_h6_apply_evidence.
+     fb5598b2 2026-10-27T00:54:26Z docs(turing): plan v1.4.9 -- H6 applied on turing: VS Code's Serena and markitdown removed, Hugging Face token
+     22e4a4b9 2026-10-27T00:37:38Z fix(flood3): the juniper-ml backlog rows -- lane A3 exits 0 on constant columns, outage wait survives a malfor
+     4db48592 2026-10-27T00:08:34Z test(drift): scoped guard that FailedAuthThrottle.check() never inserts; file APD-ECO-015 already fixed (#2365
+     edcbb024 2026-10-26T23:40:40Z release-notes: juniper-recurrence-client v0.3.1 (#2367)
+     ecc05079 2026-10-26T23:02:32Z fix(release-train): the archive cap rises to 1,000,000 B, from a runner-side measurement of GitHub's GraphQL b
+     40815bb4 2026-10-26T22:38:59Z docs(changelog): 0.11.2 security-notes correction and 0.11.3 clarification, with the PyPI probe and the apply 
+     682e72fb 2026-10-26T22:25:27Z release-notes: v0.11.2 erratum (the Priority line under-warned [all] and [servers]+[tools]) and a v0.11.3 clar
+     a829804b 2026-10-26T20:00:06Z docs(plans): recurrence v1.7.22 + consolidated v1.15.4 -- juniper-ml 0.11.3 published (run 40306687867); hando
+     144412d1 2026-10-26T19:24:50Z docs(fleet): flood-3 record -- juniper-ml 0.11.3 on PyPI (sixth update) (#2358)
+     31b34c39 2026-10-26T12:00:50Z docs(plans): recurrence v1.7.21 + consolidated v1.15.3 -- [servers] has carried the shared security patches si
+     87892acc 2026-10-26T11:34:05Z docs(handoff): flood-3 follow-ups closed -- #2062 fixed (ml#2333), juniper-ml 0.11.3 at the pypi gate; record 
+     92f16cf7 2026-10-26T10:44:18Z docs(turing): plan v1.4.8 -- the owner applied C2 (block all, stealth on); the gate reads the getter's sentenc
+     8b2221d3 2026-10-26T10:31:47Z release-notes: juniper-ml v0.11.3 (#2350)
+     89f5af48 2026-10-26T10:20:17Z fix(turing): G-SEC's firewall condition reads the block-all sentence turing printed -- the owner applied C2 (2
+     a771a5b8 2026-10-26T10:07:18Z release: juniper-ml v0.11.3 (proposal) (#2349)
+     4e0896cc 2026-10-26T09:53:58Z docs(plans): recurrence v1.7.20 + consolidated v1.15.2 -- juniper-ml 0.11.2 published (R-ML-SERVERS shipped); 
+     278c6139 2026-10-26T09:40:32Z fix(experiments): p4/e-c pins execution.max_wall_seconds 5400 above the driver's 3600 s default, with a CI pin
+     b5da7e9e 2026-10-26T09:25:48Z docs(agents): trim derivable and duplicated AGENTS.md content; memory-budget ceiling 38000 -> 28000 (#2348)
+     da5e8de3 2026-10-26T09:10:05Z fix(servers): [servers] installs the clients and web runtime each server needs (#2062) (#2333)
+     0bacc4c1 2026-10-26T08:57:07Z docs(handoff): backup arc -- Phase C lines 0-2 done; lines 3-8, the tier 2/3 runs and Phase D next; the S-7 re
+     2dceceec 2026-10-26T00:44:32Z docs(turing): plan v1.4.7 -- the owner's 2026-10-25 rulings: H4's usage report off (#2335), C2's block-all gat
+     b793e985 2026-10-26T00:32:44Z docs(recurrence): plan v1.7.19 -- juniper-ml 0.11.2 cut (#2339), Release v0.11.2 and archive (#2341); parked a
+     ce52bc6a 2026-10-26T00:20:05Z release-notes: juniper-ml v0.11.2 (#2341)
+     9ca12297 2026-10-26T00:05:18Z docs(handoff): recurrence x equities -- [servers] floors landed (#2326), 0.8.0 smokes pass, plan v1.7.17 (#232
+     e8d38732 2026-10-25T23:53:02Z release: juniper-ml v0.11.2 (proposal) (#2339)
+     95634772 2026-10-25T23:41:48Z feat(turing): G-SEC's firewall condition follows C2's block-all form -- the probe captures socketfilterfw --ge
+     7800bb08 2026-10-25T23:29:48Z docs(recurrence): plan v1.7.18 -- the #2316 and #2320 re-checks passed, juniper-ml#2330 (p4/e-c wall budget) f
+     900eb93a 2026-10-25T23:15:02Z feat(backup): tier 3 becomes a scheduled lane -- the monthly full set to the offline drive under its own state
+     1e4db700 2026-10-25T23:03:13Z fix(turing): H4's Serena entry turns the usage report off -- SERENA_USAGE_REPORTING=false (SER-E1, E-H6; owner
+     1257f181 2026-10-25T22:46:10Z docs(handoff): recurrence x equities -- #2210 landed (#2320), consolidated plan v1.15.1, juniper-ml#2330 with 
+     043c503b 2026-10-25T22:33:05Z docs(plan): consolidated development plan v1.15.1 -- ml#2320 merged and re-checked, ml#2330 to the owner, the 
+     2f96a051 2026-10-25T22:20:00Z fix(security): juniper-secret-assignment fires on a quoted value that contains spaces (B9 follow-up) (#2329)
+     c86a5e5e 2026-10-25T22:06:22Z docs(recurrence): plan v1.7.17 -- juniper-ml 0.11.1 published, #2210 closed, the 0.8.0 smokes pass, [servers] 
+     fc65c2d7 2026-10-25T21:52:31Z chore(security): gitleaks fleet instruments -- the nine-repo survey and a probe driver for sibling checkouts (
+     f823b0b7 2026-10-25T21:18:16Z deps(servers): floor juniper-cascor>=0.12.0 and juniper-data>=0.17.1 (R-ML-SERVERS) (#2326)
+     3ebf0689 2026-10-25T20:11:55Z docs(plan): consolidated development plan v1.15.0 -- the recurrence x equities arc (P12) to 2026-10-25; junipe
+     f7a1442d 2026-10-25T18:12:15Z fix(experiments): run_suite refuses a per_run_timeout_seconds the driver's worst-case budget can outrun; the n
+     e06ac398 2026-10-25T18:01:19Z docs: refine backup system state assessment table for clarity and formatting (#2324)
+     b8338d23 2026-10-25T10:43:09Z docs(turing): plan v1.4.6 -- C9 landed (#2322); H6 audited: VS Code's four MCP servers (19 findings, 2 blocker
+     3f38956f 2026-10-25T10:16:17Z feat(guard): turing C9 -- the agent guard covers Serena's edit tools and MCP registration (MCP-EDIT-PATH, MCP-
+     d64ffcec 2026-10-25T09:08:38Z release-notes: juniper-ml v0.11.1 (#2321)
+     d7a1908d 2026-10-25T08:44:58Z release: juniper-ml v0.11.1 (proposal) (#2319)
+     899796d2 2026-10-24T21:23:33Z docs(plan): consolidated development plan v1.14.0 -- round 13 reconciled and round 14 corrected; validation en
+     286491ff 2026-10-24T05:06:51Z docs(recurrence): plan v1.7.16 -- save_model saves the scored model (juniper-ml#2211, #2316); #2313's re-check
+     b585cdaf 2026-10-24T04:54:47Z fix(experiments): save_model saves the recurrence model the run scored (POST /v1/model/snapshots with expect_o
+     f694a450 2026-10-23T23:29:45Z docs(fleet): flood-3 record -- ci-tools 0.9.1 on PyPI, item 3 delivered into every pinned image, two gates sti
+     65ce3239 2026-10-23T23:18:19Z deps(security): [tools] floors juniper-observability>=0.4.1 and juniper-service-core>=0.7.1 (#2314)
+     821003a5 2026-10-23T09:52:20Z ci: bump anthropics/claude-code-action from 1.0.248 to 1.0.253 (#2267)
+     f201af42 2026-10-23T09:35:57Z ci: bump actions/create-github-app-token from 3.2.0 to 3.3.0 (#2266)
+     c8819bc3 2026-10-23T09:20:00Z ci: bump the codeql-action group across 1 directory with 3 updates (#2265)
+     feba4d51 2026-10-23T08:47:14Z chore(deps): refresh CI lockfiles (#2261)
+     ce049915 2026-10-21T21:58:09Z docs(recurrence): plan v1.7.15 -- juniper-ml 0.11.0 on PyPI (run 39577119562; archive #2307 merged); the propo
+     8357ca50 2026-10-21T21:40:38Z fix(release-train): propose.py moves README's Ecosystem Compatibility lead-in and rows -- generated juniper-ml
+     1149cb8a 2026-10-21T21:26:24Z docs(turing): plan v1.4.5 -- H5 decided: option B, the trees kept and hardened (B.1-B.3 applied; B.4, B.5 owne
+     0c9a0baf 2026-10-21T10:26:01Z docs(turing): H5 -- the MCP-server trees restored to their audited state; a validated risk analysis of the res
+     8a459ea8 2026-10-21T10:04:21Z docs(recurrence): plan v1.7.14 -- juniper-ml 0.11.0 cut (#2306; Release v0.11.0, archive #2307), parked at the
+     783539d8 2026-10-21T09:52:58Z docs(canopy-e2e): items 34 and 20 done in canopy (canopy#762; canopy#763, F-CANOPY-065 verified live); the o3 
+     3a0bea06 2026-10-21T09:38:21Z release-notes: juniper-ml v0.11.0 (#2307)
+     0b714d90 2026-10-21T09:14:12Z release: juniper-ml v0.11.0 (proposal) (#2306)
+     96bf426f 2026-10-21T08:53:33Z docs(handoff): turing 2026-10-21 final -- H2, H4, H5 landed (plan v1.4.4), R-S9 flake fixed; C9 next, owner de
+     fcaf5e0c 2026-10-21T07:47:47Z fix(tests): R-S9's audit no longer charges the interpreter's bytecode-cache writes to the script (-B); main ve
+     398c5f5d 2026-10-21T07:30:01Z docs(canopy-e2e): ledger Phase 15 -- items 32 and 31 done: F-CANOPY-069 FIXED (canopy#760, dash floor 4.0.0) a
+     cf70e259 2026-10-21T07:10:56Z docs(turing): plan v1.4.4 -- H5 landed (#2300; the owner's REMOVE decision pending); erratum E-H5; handoff (#2
+     be0ab745 2026-10-21T06:57:47Z docs(handoff): turing 2026-10-21 -- the v1.4.2 record script's Version-line MISSING is expected after v1.4.3 (
+     2f831b60 2026-10-21T06:46:50Z docs(turing): H5 -- audit of the two unvetted MCP servers in ~/.claude/mcp-servers/ (25 findings, 3 blocker; r
+     036e53e2 2026-10-21T06:30:41Z docs(recurrence): plan v1.7.13 -- the release train sees the juniper-ml pins again (#2296, #2298); the recurre
+     f7af5e3d 2026-10-21T06:16:49Z fix(release-train): propose.py keeps the proposal PR body under GitHub's 65,536-character limit -- juniper-ml 
+     ed1dc061 2026-10-21T06:02:23Z fix(release-train): detect.py resolves a pyproject hunk's table from the HEAD file -- juniper-ml reads UNRELEA
+     d9b29f38 2026-10-21T05:48:57Z docs(turing): plan v1.4.3 -- H2 and H4 landed (H4's live check blocked: E-H4-WHEEL); owner rulings; new task C
+     a005063e 2026-10-21T05:36:58Z feat(host): turing H4 -- util/mcp_setup.bash writes each checkout's Serena entry, pinned (v1.7.0, full commit)
+     b16121ac 2026-10-21T05:05:52Z feat(agents): turing H2 -- the three SME agents (macos-host-sme, signing-auth-sme, k8s-node-sme), each pinned 
+     eaa70fab 2026-10-20T18:28:08Z docs(recurrence): plan v1.7.12 -- recurrence 0.8.0 published; the [recurrence] extras (#2292) and the Compose 
+     95c8aff2 2026-10-20T18:13:27Z deps: [recurrence] floors juniper-recurrence>=0.8.0,<0.9.0 and juniper-recurrence-model>=0.6.0,<0.7.0 (#2292)
+     907b6b3e 2026-10-20T13:59:33Z docs(canopy-e2e): ledger Phase 14 -- item 30 re-driven on turing: F-CANOPY-001/-012/-013/-018/-032 FIXED, F-CA
+     3989fa83 2026-10-20T12:51:44Z docs(turing): plan v1.4.2 -- G1 landed (I-G1 first reading 0 of 7), G4 promoted; errata E-G1, E-DUP; handoff (
+     5a383ae1 2026-10-20T12:38:26Z ci: turing G4 promotion -- host-tooling-macos joins the Quality Gate needs (12 consecutive green push runs) (#
+     e3ba1936 2026-10-20T11:58:31Z feat(host): turing G1 -- util/host_state_probe.bash and util/host_state_check.py, the host gates; conf/hosts/t
+     12024d1c 2026-10-20T11:25:00Z docs(recurrence): plan v1.7.11 -- model 0.6.0 published, recurrence 0.8.0 cut to its gate, #219 landed; handof
+     c5b04f16 2026-10-20T11:08:52Z release-notes: juniper-recurrence v0.8.0 (#2285)
+     21a5c567 2026-10-20T10:53:18Z docs(handoff): recurrence x equities -- model 0.6.0 gate still parked; docs tidy landed (#2283); #215 refreshe
+     5e8e8747 2026-10-20T10:42:36Z docs: merge [Unreleased]'s two ### Changed headings; refresh QUICK_START's pip-list block to what juniper-ml 0
+     b9f9d38d 2026-10-20T04:34:38Z docs(turing): E2 validated -- all three conda envs pass their repos' CI lanes; JuniperCanopy1 moves to MKL (E-
+     188e842e 2026-10-20T04:04:41Z feat(guard): K12 -- the agent guard protects the owner's signing configuration (GIT-SIGNING-CONFIG, GIT-SIGNIN
+     fd48ca5c 2026-10-20T03:46:45Z feat(signing): owner commit signing for the terminal and the IDEs -- util/configure_commit_signing.py, plan v1
+     62263137 2026-10-20T02:22:44Z docs(canopy-e2e): ledger Phase 13 -- item 26's first step: every open finding checked against canopy's manual;
+     6bcefa8b 2026-10-20T01:59:06Z docs(recurrence): plan v1.7.10 -- W5.5 / W5.6 landed (juniper-ml#2273); handoff; the plan and re-apply scripts
+     3aac025f 2026-10-20T01:46:30Z docs(turing): Session 3 record -- plan v1.3.0 §18 (G5, G6, G4 landed; E2 two envs created, PyPI blocked), E-SS
+     3968ca04 2026-10-20T01:35:02Z ci: turing G4 -- the advisory host-tooling-macos job (host-tooling suites under BSD userland and /bin/bash 3.2
+     223d09a7 2026-10-20T01:18:50Z feat(pre-commit): turing G6 -- the git-remote-alias pre-push hook, with default_stages so a push runs only it 
+     bec52968 2026-10-20T01:07:33Z feat(experiments): W5.5 + W5.6 -- regression target summary per split; --shared-equities-cache opt-in (#2273)
+     a5311979 2026-10-20T00:44:13Z feat(util): turing G5 -- home_path_literal_check.py, the G-PATH gate (no new /home/pcalnon literal in scripts 
+     ad6013f4 2026-10-19T21:42:09Z docs(recurrence): plan v1.7.9 -- W5.7 built and merged (juniper-data#486); handoff; the W5.7 apply script (#22
+     1b157e96 2026-10-19T21:27:20Z docs(turing): Session 2 record -- plan v1.2.0 §17 (D5 demoted, D6 + H1 done, E2 specs derived but blocked on L
+     63358646 2026-10-19T20:26:39Z docs(turing): re-apply E6 erratum X10 -- #2262 reverted the ~/ worktree paths in AGENTS.md and REFERENCE.md (#
+     79c19595 2026-10-19T09:26:56Z docs(recurrence): plan v1.7.8 -- W5.4 landed (acceptance bands + the R5 band), the 0.7.0 pins followed, the be
+     d91d3e9a 2026-10-19T09:15:08Z feat(experiments): W5.4 -- suite acceptance bands (gate / report) and the R5 band on the E-H equities row (#22
+     4f8a121c 2026-10-19T08:49:19Z docs(canopy-e2e): ledger Phase 12 -- canopy#731's pacer (shipped in canopy 0.9.0) closes F-CANOPY-055, -058 an
+     c92ed76d 2026-10-19T08:22:22Z docs(turing): E6 errata X6 + X10 -- turing was never down or a Pi candidate; worktree paths say ~/; E-CQ; plan
+     19c8999e 2026-10-19T08:10:02Z deps: [recurrence] floors juniper-recurrence>=0.7.0,<0.8.0 and juniper-recurrence-model>=0.5.0,<0.6.0 (#2260)
+     747618b7 2026-10-19T07:57:49Z release-notes: juniper-recurrence-model v0.6.0 (#2257)
+     0e144c3c 2026-10-19T04:23:11Z docs(recurrence): plan v1.7.7 -- W5.2 landed (model 0.6.0 cut, service PR open, driver merged), R5 re-measured
+     8dd4fab3 2026-10-19T04:11:59Z feat(experiments): W5.2 -- run_experiment omits embargo when the config omits it (the service default applies)
+     443e668d 2026-10-19T03:47:05Z docs(recurrence): plan v1.7.6 -- the service half merged, recurrence 0.7.0 published, P5 done; handoff revised
+     907fb944 2026-10-19T03:36:38Z release-notes: juniper-recurrence v0.7.0 (#2254)
+     59c3c42b 2026-10-19T02:40:20Z docs(recurrence): plan v1.7.5 -- W5.9 + the W5.8 (B) model half landed (juniper-recurrence#209), model 0.5.0 c
+     0a6ee38f 2026-10-19T02:21:58Z release-notes: juniper-recurrence-model v0.5.0 (#2252)
+     d510f94b 2026-10-19T01:55:57Z docs(turing): Session 1 host record -- plan v1.1.0 §16, host-tools env spec, F3 dev baseline, network probe ou
+     c263d346 2026-10-19T01:39:39Z feat(util): turing A5 -- juniper_repo_ssh_setup.bash provisions one repo's deploy key and ssh alias, idempoten
+     0ca9d165 2026-10-19T01:25:50Z chore(util): turing B8 -- delete test_gpg_signing.bash (superseded ed448 key), pin R-B8, mark the 2026-07-16 k
+     7c89c2ee 2026-10-19T01:15:12Z docs(recurrence): plan v1.7.4 -- W5.10 landed (juniper-recurrence#208); handoff (#2248)
+     6b3c53dc 2026-10-19T01:03:20Z feat(util): turing B7 -- headless_signing_preflight.bash, non-credential signing readiness checks (#2247)
+     8d027bbf 2026-10-19T00:52:44Z docs(recurrence): plan v1.7.3 -- the Compose pin followed to 0.6.1 (juniper-deploy#251); every M1 landing on m
+     8412ce3e 2026-10-19T00:40:10Z feat(util): turing G2 -- git_remote_alias_check.py, the G-ALIAS gate for the 10 Juniper checkouts (#2245)
+     b91ec103 2026-10-19T00:27:20Z docs(recurrence): plan v1.7.2 -- the [recurrence] floor is >=0.6.1 (#2243); handoff (#2244)
+     4d9c5c44 2026-10-19T00:17:01Z feat(util): turing C8 -- the D11 item 4 agent guard, a deny-only PreToolUse hook and its owner-run installer (
+     a442ade3 2026-10-19T00:05:22Z fix(recurrence): [recurrence] floors juniper-recurrence>=0.6.1, the release carrying the model / data-client f
+     15ce1fc7 2026-10-18T23:53:50Z docs(handoff): recurrence equities -- plan v1.6.2 landed; the arc's record of state is the 0.6.1 session's han
+     0364e05f 2026-10-18T23:41:22Z feat(util): turing F5a -- macvm_ctl.bash gates the k8s worker VM's start on G-MEM (#2237)
+     95cb8a45 2026-10-18T23:30:57Z docs(recurrence): plan v1.7.1 -- recurrence 0.6.1 published to PyPI; handoff (#2240)
+     a81c93bf 2026-10-18T18:49:17Z fix(release-train)+docs(recurrence): archive-too-large HALT and contents-by-file (#2227); plan v1.7.0 owner ru
+     8580153c 2026-10-18T18:25:50Z docs(recurrence): plan v1.6.2 -- #249 and the extras (#2232) merged; 2026-10-18 extras rulings recorded (#2236
+     20a1c802 2026-10-18T18:15:10Z release-notes: juniper-recurrence v0.6.1 (#2238)
+     500c9c01 2026-10-18T18:06:04Z release-notes: juniper-canopy v0.9.0 -- the full Fixed section replaces the condensed archive (#2234)
+     2719f7f3 2026-10-18T17:40:19Z fix(recurrence): [recurrence] admits juniper-recurrence 0.6.0 / model 0.4.0; floor canopy 0.9.0 and recurrence
+     5b0915b3 2026-10-18T04:14:46Z docs(recurrence): plan v1.6.1 -- deploy smokes passed; recurrence 0.6.0 floors gap fixed on main (#206), 0.6.1
+     909da222 2026-10-17T23:10:30Z docs(recurrence): plan v1.6.0 -- W1.14 done, all four W1.13 publications on PyPI; handoff archived (#2230)
+     b87e3008 2026-10-17T20:46:22Z docs(handoff): turing -- open PRs landed, Session 1 partial; owner C8, A1 and D6 next (#2229)
+     fc90ae89 2026-10-17T20:10:43Z fix(util): re-land #2222 signed -- the clone helper keeps the ssh alias and the encryption finder loses its ev
+     675261c1 2026-10-17T19:55:42Z util(ad-hoc): data-client 0.6.0 wheel probe and the release-notes section condenser (W1.13) (#2226)
+     89bef0b6 2026-10-17T19:44:53Z release-notes: juniper-canopy v0.9.0 (#2225)
+     7c9f7f21 2026-10-17T19:22:20Z release-notes: juniper-recurrence v0.6.0 (#2223)
+     0895887f 2026-10-16T09:01:26Z docs(plan): turing host bring-up development plan v1.0.0 (#2221)
+     55eddc0d 2026-10-16T07:48:55Z ci: bump the codeql-action group with 3 updates (#2218)
+     e18a3d06 2026-10-16T07:11:35Z ci: bump anthropics/claude-code-action from 1.0.240 to 1.0.248 (#2219)
+     d8b8f365 2026-10-16T06:33:01Z ci: bump actions/download-artifact from 8.0.1 to 8.0.2 (#2220)
+     6ab6653b 2026-10-16T06:32:40Z chore(deps): refresh CI lockfiles (#2217)
+juniper-data: 42 commits (26 by a bot account, 16 other); newest 2026-11-12T02:02:55Z
+     c68e6b4c 2026-11-12T02:02:55Z docs: carry fleet docs PR #521 (failed-auth retention, publish manifest gates, TestPyPI check) (#535)
+     afeb4403 2026-11-12T01:52:20Z test: consolidate four fleet test PRs (#520, #522, #523, #524) (#534)
+     399eeffb 2026-11-11T23:39:59Z ci: bump the codeql-action group with 4 updates (#531)
+     95ff1c5c 2026-11-11T23:22:11Z ci: bump docker/login-action from 4.7.0 to 4.8.0 (#532)
+     739e5c3e 2026-11-11T02:24:47Z deps: bump pytest-asyncio from 1.4.1 to 1.4.1.post1 (#528)
+     8bd10951 2026-11-10T20:41:13Z ci: bump anthropics/claude-code-action from 1.0.265 to 1.0.269 (#533)
+     f6700bce 2026-11-10T12:03:55Z deps: bump python-dateutil from 3.0.0 to 4.0.0 (#527)
+     8993856a 2026-11-10T11:18:10Z deps: bump the python-minor group with 18 updates (#526)
+     05c1f446 2026-11-09T16:03:44Z fix(ci): Gitleaks scans a pull request's whole base..head, merge commits included, not the action's first-pare
+     97138bd6 2026-11-09T15:43:00Z fix(tests): mark test_security.py unit, so CI runs the 44 tests its unit lane deselected (#529)
+     272ff615 2026-11-09T10:07:33Z deps(security): lock juniper-observability 0.4.2 and juniper-service-core 0.7.2 (two pins only) (#525)
+     4f04fc8d 2026-11-08T00:46:32Z test: consolidate five fleet test PRs (#512, #513, #514, #516, #517) (#518)
+     4d8380dd 2026-11-08T00:37:59Z docs: consolidate four fleet docs PRs (#509, #510, #511, #515) (#519)
+     28078558 2026-11-04T09:59:26Z ci: bump anthropics/claude-code-action from 1.0.255 to 1.0.265 (#508)
+     c5f3bde4 2026-11-04T09:50:23Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#507)
+     99ac4f56 2026-11-04T09:41:44Z deps: bump importlib-metadata from 9.1.0 to 10.1.0 (#506)
+     c7c5685f 2026-11-04T09:15:13Z deps: bump types-requests from 2.33.0.20261006 to 2.33.0.20261030 (#505)
+     f51ae5b2 2026-11-04T09:08:14Z deps: bump the python-minor group with 20 updates (#504)
+     d83ca589 2026-11-01T19:36:47Z fix(coverage,ci): make coverage runs CI's per-file gate; agents-md-touch-up.yml pins actions/checkout to a SHA
+     8e710d20 2026-10-30T19:27:16Z fix(ci): a failed or missing Bandit SARIF fails Security Scans on a PR; juniper-data#500's leftovers (#502)
+     95163c47 2026-10-30T08:37:13Z ci(notify): dispatch juniper-data-published to juniper-canopy too (#501)
+     4c3b044c 2026-10-29T23:19:22Z fix(ci): flood-3 backlog 3 -- the required Slow Tests job can fail; CI coverage, pin, environment and Codecov 
+     95ce8190 2026-10-28T21:00:55Z ci: bump the codeql-action group across 1 directory with 4 updates (#495)
+     4ec8c5c6 2026-10-28T12:19:47Z deps: bump python-dateutil from 2.9.0.post0 to 3.0.0 (#493)
+     cce37667 2026-10-28T00:03:59Z docs(ci): the workflow table lists all 14 workflows and their required contexts; the Codecov upload is documen
+     35658ff3 2026-10-27T22:46:55Z fix(tmp): nothing is written under /tmp -- tmp_path for the one test that did; /tmp/ ignored; the rule residen
+     8499cab0 2026-10-27T21:01:03Z deps: bump the python-minor group with 20 updates (#492)
+     36f4b76e 2026-10-27T19:57:34Z deps: bump pillow from 12.3.0 to 13.0.0 (#491)
+     118a4516 2026-10-27T10:06:19Z ci: bump docker/login-action from 4.6.0 to 4.7.0 (#496)
+     7d52cd24 2026-10-27T09:53:51Z ci: bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 (#497)
+     32bd375e 2026-10-26T23:18:17Z fix(ci): flood-3 backlog -- the Quality Gate fails a cancelled lane, the lockfile regen refuses an empty paylo
+     97c5aeb8 2026-10-25T22:35:36Z fix(security): gitleaks loaded zero rules; extend the default ruleset, classify history, pin the engine (#490)
+     d4358fc1 2026-10-23T09:53:23Z ci: bump actions/upload-artifact from 7.0.1 to 7.0.2 (#488)
+     4f25dd21 2026-10-23T09:44:36Z ci: bump anthropics/claude-code-action from 1.0.248 to 1.0.252 (#489)
+     0f75616f 2026-10-23T09:28:55Z ci: bump the codeql-action group with 4 updates (#487)
+     18600cdd 2026-10-23T08:58:55Z deps: bump the python-minor group with 18 updates (#485)
+     58c013e3 2026-10-19T21:19:56Z feat(equities): W5.7 -- record lost symbols, refuse a lost requested one, guard the return targets, flag absen
+     7465d5a4 2026-10-16T09:07:54Z ci: bump actions/download-artifact from 8.0.1 to 8.0.2 (#484)
+     89019bfd 2026-10-16T07:29:38Z ci: bump anthropics/claude-code-action from 1.0.240 to 1.0.248 (#483)
+     9fde2153 2026-10-16T06:40:08Z deps: bump types-requests from 2.33.0.20260906 to 2.33.0.20261006 (#481)
+     30e2b85a 2026-10-16T06:35:18Z ci: bump the codeql-action group with 4 updates (#482)
+     fc2b2ba3 2026-10-16T06:35:07Z deps: bump the python-minor group with 22 updates (#480)
+juniper-data-client: 27 commits (23 by a bot account, 4 other); newest 2026-11-11T02:21:31Z
+     3cd855d1 2026-11-11T02:21:31Z ci: bump anthropics/claude-code-action from 1.0.266 to 1.0.269 (#259)
+     cae5def1 2026-11-10T20:39:40Z ci: bump the codeql-action group with 4 updates (#258)
+     21466133 2026-11-10T12:03:04Z deps: bump pytest-asyncio from 1.4.1 to 1.4.1.post1 (#257)
+     c9fb32bd 2026-11-10T11:19:16Z deps: bump python-dateutil from 3.0.0 to 4.0.0 (#256)
+     6b8b75f5 2026-11-10T11:05:31Z deps: bump the python-minor group with 16 updates (#255)
+     6209861f 2026-11-04T00:27:36Z deps: bump importlib-metadata from 9.1.0 to 10.1.0 (#252)
+     ca30235d 2026-11-04T00:10:44Z deps: bump types-requests from 2.33.0.20261006 to 2.33.0.20261030 (#251)
+     e97692a3 2026-11-03T23:57:29Z deps: bump the python-minor group with 18 updates (#250)
+     5a5ce54c 2026-11-03T23:49:37Z ci: bump anthropics/claude-code-action from 1.0.255 to 1.0.266 (#253)
+     1bb8c67f 2026-11-03T14:32:51Z ci(agents-md): pin actions/checkout to its v7.0.1 SHA in agents-md-touch-up.yml (#254)
+     e1a9530d 2026-10-30T19:25:03Z ci(security): a failed or missing Bandit SARIF fails Security Scans on a PR (#249)
+     e23540d9 2026-10-28T12:17:00Z deps: bump the python-minor group with 17 updates (#241)
+     1bb76f54 2026-10-27T22:44:35Z fix(tmp): nothing is written under /tmp -- the lockfile step test relocates its runner /tmp; /tmp/ ignored; th
+     9186641d 2026-10-27T20:53:00Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#247)
+     f6ab612b 2026-10-27T20:03:23Z ci: bump the codeql-action group across 1 directory with 4 updates (#245)
+     d69e4a68 2026-10-27T09:52:26Z deps: bump python-dateutil from 2.9.0.post0 to 3.0.0 (#242)
+     a4271f00 2026-10-27T09:45:43Z deps: bump pillow from 12.3.0 to 13.0.0 (#243)
+     606a1921 2026-10-27T09:39:51Z ci: bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 (#246)
+     090f292e 2026-10-26T23:22:08Z fix(ci): refuse an empty lockfile payload; correct four workflow comments (flood-3 backlog) (#248)
+     66206a3c 2026-10-23T09:13:26Z ci: bump anthropics/claude-code-action from 1.0.248 to 1.0.255 (#240)
+     b18eb5d0 2026-10-23T08:58:00Z ci: bump the codeql-action group with 4 updates (#239)
+     f4256cac 2026-10-23T08:46:26Z deps: bump the python-minor group with 15 updates (#238)
+     d74ebf41 2026-10-16T09:05:45Z ci: bump actions/upload-artifact from 7.0.1 to 7.0.2 (#236)
+     5188867f 2026-10-16T07:28:33Z deps: bump types-requests from 2.33.0.20260906 to 2.33.0.20261006 (#234)
+     bba1f3c7 2026-10-16T06:39:08Z ci: bump the codeql-action group with 4 updates (#235)
+     cad392d9 2026-10-16T06:36:00Z ci: bump anthropics/claude-code-action from 1.0.240 to 1.0.248 (#237)
+     8b5e8949 2026-10-16T06:35:35Z deps: bump the python-minor group with 18 updates (#233)
+juniper-cascor: 39 commits (24 by a bot account, 15 other); newest 2026-11-11T23:59:13Z
+     9f632eac 2026-11-11T23:59:13Z deps: bump the python-minor group with 29 updates (#749)
+     18b46787 2026-11-11T23:25:49Z deps: bump python-dateutil from 3.0.0 to 4.0.0 (#752)
+     db046901 2026-11-11T02:21:25Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#747)
+     16a55581 2026-11-10T20:40:04Z deps: bump pytest-asyncio from 1.4.1 to 1.4.1.post1 (#750)
+     02af71c2 2026-11-10T12:05:08Z deps: bump importlib-metadata from 9.0.1 to 10.1.0 (#751)
+     ea735e75 2026-11-10T11:15:31Z ci: bump docker/login-action from 4.7.0 to 4.8.0 (#746)
+     3ff04dca 2026-11-09T20:01:41Z ci: bump the codeql-action group with 4 updates (#745)
+     96cf891b 2026-11-09T15:43:22Z fix(lifecycle): a fit that returns while paused settles COMPLETED in one FSM transition, and only the run that
+     7640d420 2026-11-09T10:14:22Z deps(security): lock juniper-observability 0.4.2 and juniper-service-core 0.7.2 in both locks (two pins only) 
+     f3dfee8c 2026-11-04T01:26:13Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#723)
+     c9b9ed10 2026-11-04T00:36:34Z deps: bump the python-minor group across 1 directory with 35 updates (#744)
+     78ebeb07 2026-11-04T00:14:12Z ci: bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 (#741)
+     ba54f0c0 2026-11-03T23:55:25Z ci: bump anthropics/claude-code-action from 1.0.252 to 1.0.266 (#740)
+     e45ed30b 2026-11-03T23:14:15Z deps: bump pillow from 12.3.0 to 13.0.0 (#727)
+     463a3d7c 2026-11-03T14:40:36Z ci(agents-md): pin actions/checkout to its v7.0.1 SHA in agents-md-touch-up.yml (#743)
+     9fb75198 2026-11-01T19:26:34Z fix(bench,ci): the HDF5 load benchmark times real loads and a failed harness fails the job; the SARIF upload c
+     88cccf5e 2026-11-01T19:00:36Z ci(scheduled): drop the performance smoke's pytest<9.2 cap -- pytest-benchmark 5.3.1 supports pytest 9.2 (#738
+     012d4737 2026-10-30T19:34:30Z docs: five documents no longer name the nonexistent src/tests/pytest.ini (#737)
+     d042de23 2026-10-30T02:01:50Z fix(tests): the conftest's forced exit keeps pytest's exit status -- a failing session with a surviving thread
+     453ff286 2026-10-30T01:44:11Z fix(ci): flood-3 backlog 3 -- the long lane runs its test and an empty lane fails; an untimed performance smok
+     e8e8bf4d 2026-10-28T21:02:06Z deps: bump munkres from 2.0.0 to 3.0.0 (#725)
+     a6122753 2026-10-28T12:09:24Z ci: bump docker/login-action from 4.6.0 to 4.7.0 (#722)
+     68eb4ebf 2026-10-28T00:25:32Z fix(tests): flood-3 backlog 2 -- the memory-budget gate's 40 tests run in the required unit legs; the Bandit S
+     61a67c53 2026-10-28T00:13:40Z release: juniper-cascor v0.13.0 (proposal) (#733)
+     54e02310 2026-10-27T23:44:52Z fix(tests): the pytest-benchmark guard reads public API -- pytest 9.2.0 replaced FixtureManager._arg2fixturede
+     996134e5 2026-10-27T21:06:58Z deps: bump python-dateutil from 2.9.0.post0 to 3.0.0 (#726)
+     18e0ea58 2026-10-27T19:57:53Z ci: bump the codeql-action group across 1 directory with 4 updates (#721)
+     4184afd8 2026-10-27T10:30:31Z fix(tmp): nothing is written under /tmp -- lock-regen recipes use tmp/, the git_sha test survives an in-repo T
+     752a797f 2026-10-27T00:11:38Z feat(lifecycle): the final evaluation computes accuracy (juniper-ml APD-ML-002) (#731)
+     2dda53e1 2026-10-26T22:56:01Z fix(ci,docs): flood-3 backlog -- lockfile regen refuses an empty base64 payload; branch protection matches the
+     5b7d10dc 2026-10-26T22:23:37Z docs(lifecycle): flat equities declares neither n_samples nor noise (juniper-canopy#736) (#729)
+     2ec3bf31 2026-10-23T09:27:28Z deps: bump the python-minor group with 15 updates (#720)
+     078054b5 2026-10-23T08:57:42Z ci: bump anthropics/claude-code-action from 1.0.240 to 1.0.252 (#719)
+     449adddb 2026-10-23T08:39:30Z ci: bump the codeql-action group with 4 updates (#718)
+     4c26919f 2026-10-16T09:33:36Z deps: bump the python-minor group with 23 updates (#716)
+     fdd6a639 2026-10-16T09:20:31Z ci: bump actions/download-artifact from 8.0.1 to 8.0.2 (#715)
+     cd7117dc 2026-10-16T09:06:58Z ci: bump actions/upload-artifact from 7.0.1 to 7.0.2 (#714)
+     ecde42fc 2026-10-16T07:32:15Z deps: bump munkres from 1.1.4 to 2.0.0 (#717)
+     639a7d45 2026-10-16T06:33:59Z ci: bump the codeql-action group with 4 updates (#713)
+juniper-cascor-client: 16 commits (12 by a bot account, 4 other); newest 2026-11-09T20:02:12Z
+     f429803e 2026-11-09T20:02:12Z ci: bump the codeql-action group with 4 updates (#193)
+     7b00a1af 2026-11-09T19:41:25Z ci: bump anthropics/claude-code-action from 1.0.266 to 1.0.269 (#194)
+     c4245a33 2026-11-03T23:45:17Z ci: bump anthropics/claude-code-action from 1.0.261 to 1.0.266 (#191)
+     036216a6 2026-11-03T23:15:02Z ci: bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 (#190)
+     2b268e16 2026-11-03T14:33:24Z ci(agents-md): pin actions/checkout to its v7.0.1 SHA in agents-md-touch-up.yml (#192)
+     6393d948 2026-10-30T19:24:24Z ci(security): a failed Bandit SARIF upload fails Security Scans on a PR (#189)
+     741c8fb9 2026-10-27T20:49:13Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#185)
+     90173ca9 2026-10-27T19:57:30Z chore(tmp): nothing is written under /tmp -- /tmp/ ignored; the rule resident in AGENTS.md (#187)
+     c8001fab 2026-10-27T10:21:12Z ci: bump anthropics/claude-code-action from 1.0.252 to 1.0.261 (#186)
+     5878c8fc 2026-10-27T10:01:48Z ci: bump the codeql-action group across 1 directory with 4 updates (#184)
+     6d0b0aa2 2026-10-26T23:22:21Z fix(ci): refuse an empty lockfile payload; correct the catch-up base and secret comments (flood-3 backlog) (#1
+     c69e1bba 2026-10-23T08:54:18Z ci: bump anthropics/claude-code-action from 1.0.248 to 1.0.252 (#183)
+     9f1e1390 2026-10-23T08:41:00Z ci: bump the codeql-action group with 4 updates (#182)
+     cf0151ce 2026-10-16T07:27:00Z ci: bump actions/upload-artifact from 7.0.1 to 7.0.2 (#181)
+     a1023cd9 2026-10-16T06:34:40Z ci: bump anthropics/claude-code-action from 1.0.240 to 1.0.248 (#180)
+     437b4b88 2026-10-16T06:34:37Z ci: bump the codeql-action group with 4 updates (#179)
+juniper-cascor-worker: 20 commits (15 by a bot account, 5 other); newest 2026-11-10T12:13:01Z
+     5fbaaf50 2026-11-10T12:13:01Z ci: bump docker/login-action from 4.7.0 to 4.8.0 (#226)
+     4463f885 2026-11-10T12:04:15Z ci: bump anthropics/claude-code-action from 1.0.266 to 1.0.269 (#227)
+     6f9106c5 2026-11-10T11:34:43Z ci: bump the codeql-action group with 4 updates (#225)
+     89771967 2026-11-04T00:13:01Z ci: bump anthropics/claude-code-action from 1.0.261 to 1.0.266 (#223)
+     de1963b0 2026-11-03T23:56:35Z ci: bump docker/login-action from 4.6.0 to 4.7.0 (#222)
+     a8c456c2 2026-11-03T23:46:39Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#221)
+     31b764ac 2026-11-03T14:34:19Z ci(agents-md): pin actions/checkout to its v7.0.1 SHA in agents-md-touch-up.yml (#224)
+     cadb168b 2026-10-30T19:26:49Z ci(security): a failed Bandit SARIF upload fails Security Scans on a PR (#220)
+     ef250661 2026-10-28T01:31:59Z chore(tmp): nothing is written under /tmp -- /tmp/ ignored, the CPU-lock recipe uses tmp/, the rule resident i
+     a3fdc71b 2026-10-28T01:27:54Z test(pytest): set asyncio_default_fixture_loop_scope -- pytest 9.2.0 (2026-10-27) makes the unset warning an I
+     45c58989 2026-10-27T21:09:24Z ci: bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 (#216)
+     91808827 2026-10-27T20:38:10Z ci: bump anthropics/claude-code-action from 1.0.255 to 1.0.261 (#215)
+     6770daf4 2026-10-27T20:37:55Z ci: bump the codeql-action group across 1 directory with 4 updates (#214)
+     2926653a 2026-10-26T23:21:37Z fix(ci): refuse an empty lockfile-pair payload; correct the catch-up base and secret comments (flood-3 backlog
+     fd1f95b4 2026-10-23T09:12:45Z ci: bump anthropics/claude-code-action from 1.0.248 to 1.0.255 (#213)
+     6d337e93 2026-10-23T08:57:27Z ci: bump actions/download-artifact from 8.0.1 to 8.0.2 (#212)
+     c877ec01 2026-10-23T08:42:55Z ci: bump the codeql-action group with 4 updates (#211)
+     1fade4c6 2026-10-16T07:30:37Z ci: bump actions/upload-artifact from 7.0.1 to 7.0.2 (#210)
+     875bd704 2026-10-16T06:35:00Z ci: bump anthropics/claude-code-action from 1.0.240 to 1.0.248 (#209)
+     6e44e7f7 2026-10-16T06:34:50Z ci: bump the codeql-action group with 4 updates (#208)
+juniper-canopy: 62 commits (37 by a bot account, 25 other); newest 2026-11-11T23:54:20Z
+     0d7c393f 2026-11-11T23:54:20Z deps: Update dnspython requirement from >=2.9.0 to >=2.9.2 (#812)
+     6f8bf543 2026-11-11T23:28:20Z deps: Update fonttools requirement from >=4.66.0 to >=4.68.0 (#813)
+     8bce9d61 2026-11-11T02:21:28Z deps: Update platformdirs requirement from >=4.13.5 to >=4.14.5 (#811)
+     3f4b3f22 2026-11-10T20:41:12Z ci: Bump the codeql-action group with 4 updates (#803)
+     0b657c6b 2026-11-10T11:47:09Z deps: Update filelock requirement from >=4.1.1 to >=4.2.9 (#809)
+     95436541 2026-11-10T10:56:28Z deps: Update fsspec requirement from >=2026.7.0 to >=2026.9.0 (#810)
+     7e777a13 2026-11-09T20:07:59Z ci: Bump anthropics/claude-code-action from 1.0.266 to 1.0.269 (#804)
+     49956499 2026-11-09T19:31:37Z ci: Bump docker/login-action from 4.6.0 to 4.8.0 (#805)
+     609a26a3 2026-11-09T15:28:59Z docs(ci): carry the flood-4 round-2 lockfile empty-payload documentation and the security install fix (#808)
+     d2cc7cd1 2026-11-09T14:59:17Z test: carry the flood-4 round-2 tests (flat REST apply partition, JSON equality inside arrays) (#807)
+     b4b01904 2026-11-09T10:21:35Z deps(security): lock juniper-observability 0.4.2 and juniper-service-core 0.7.2 (two pins only) (#806)
+     63a2f3d7 2026-11-08T01:21:24Z docs: carry the flood-4 CI/CD and mnist staging documentation (Gitleaks, Codecov, AGENTS.md date check, declar
+     733b6a3e 2026-11-08T00:58:45Z test(ci): carry the flood-4 workflow regression tests (Bandit SARIF, lockfile regen, AGENTS.md date check, Cod
+     af650373 2026-11-04T10:48:27Z fix(staging): mnist gets a declared-param entry, so its Noise is no longer re-staged and silently dropped (#77
+     5c8387c4 2026-11-04T10:07:49Z deps: Update pillow requirement from >=12.3.0 to >=13.0.0 (#786)
+     143afc46 2026-11-04T09:36:01Z deps: update pre-commit requirement from >=4.6.2 to >=4.7.0 (#773)
+     513b1bda 2026-11-04T01:53:04Z deps: Update werkzeug requirement from >=3.0 to >=3.1.9 (#785)
+     98f1ab6f 2026-11-04T01:33:00Z deps: Update markupsafe requirement from >=3.0 to >=3.0.4 (#784)
+     29fbdd29 2026-11-04T00:49:56Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#783)
+     77e8578a 2026-11-04T00:27:18Z ci: bump anthropics/claude-code-action from 1.0.261 to 1.0.266 (#782)
+     25a65a00 2026-11-03T23:58:41Z ci: bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 (#768)
+     90a2035b 2026-11-03T23:22:43Z deps: update distlib requirement from >=0.4.3 to >=0.4.4 (#772)
+     3729b0d6 2026-11-03T14:48:09Z ci(agents-md): pin actions/checkout to its v7.0.1 SHA in agents-md-touch-up.yml (#787)
+     63fe4b6d 2026-10-30T19:36:03Z ci(security): a failed Bandit SARIF upload fails Security Scans on a PR (#781)
+     18a49c85 2026-10-29T23:41:18Z fix(ci): install bandit[sarif] -- the Security Scans job wrote and uploaded no Bandit SARIF (#780)
+     d5b73321 2026-10-29T23:19:11Z fix(ci): the memory-budget gate's 40 tests run in the required unit legs; the Codecov upload sends CODECOV_TOK
+     7fb3a159 2026-10-29T19:41:23Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#766)
+     86e831f8 2026-10-28T20:56:50Z deps: update platformdirs requirement from >=4.11.10 to >=4.13.5 (#770)
+     987ce3c1 2026-10-28T12:42:02Z ci: bump the codeql-action group across 1 directory with 4 updates (#765)
+     14d33ca1 2026-10-28T12:06:41Z ci: bump anthropics/claude-code-action from 1.0.255 to 1.0.261 (#767)
+     3f0fb949 2026-10-27T22:58:55Z fix: write temp files to the repo's tmp/, never /tmp (find_stalling_tests, docs, AGENTS.md) (#774)
+     4cddb1fc 2026-10-27T21:25:32Z deps: update dnspython requirement from >=2.0 to >=2.9.0 (#769)
+     f011631c 2026-10-27T20:33:02Z deps: update cycler requirement from >=0.12 to >=0.12.1 (#771)
+     33619d6d 2026-10-27T01:08:21Z ci(drift): notice juniper-data generator-schema drift against canopy's committed snapshot (#777)
+     c7846b4e 2026-10-27T00:44:29Z fix(staging): flat equities gets the declared-param filter on the cascor path; the restart modal re-stages wha
+     42fe6eed 2026-10-27T00:09:10Z fix(ci): fail the lockfile regen on an empty base64 payload; ANTHROPIC_API_KEY is a repository secret (#775)
+     da08414f 2026-10-25T22:35:47Z fix(security): gitleaks loaded zero rules; extend the default ruleset, classify history, pin the engine (#764)
+     afed03f0 2026-10-23T22:35:33Z deps: update pytest-html requirement from >=4.0 to >=4.2.0 (#758)
+     472cbc99 2026-10-23T21:16:44Z deps: update pluggy requirement from >=1.6.0 to >=1.7.0 (#757)
+     7338c76f 2026-10-23T20:55:41Z deps: update mpmath requirement from >=1.3 to >=1.4.1 (#756)
+     fc202738 2026-10-23T20:34:40Z deps: update flake8 requirement from >=7.0 to >=7.4.1 (#754)
+     41583878 2026-10-23T20:15:09Z deps: update pyparsing requirement from >=3.1 to >=3.3.3 (#755)
+     790d6389 2026-10-23T09:26:21Z ci: bump anthropics/claude-code-action from 1.0.240 to 1.0.252 (#753)
+     aa795624 2026-10-23T08:57:53Z ci: bump the codeql-action group with 4 updates (#752)
+     e30010c9 2026-10-21T09:28:15Z fix(apply): F-CANOPY-065 -- the WS leg's applied/skipped partition reaches the apply toast; each leg's partiti
+     11e8de90 2026-10-21T09:08:36Z fix(network-editor): the 1-D Patch Weights targets split values on whitespace, as the manual and the parser's 
+     aeeaf29b 2026-10-20T19:34:01Z fix(parameters): F-CANOPY-028 -- the pin-store writer persists a user's toggle only; a rebuilt table writes no
+     fbf01dff 2026-10-20T18:58:36Z fix(dashboard): F-CANOPY-069 -- under every dash 3.x the dashboard was inert: the progress alerts are running=
+     571743db 2026-10-17T23:01:09Z Merge remote-tracking branch 'refs/remotes/origin/main'
+     bd001153 2026-10-17T19:25:21Z deps(lock): juniper-data-client 0.5.0 -> 0.6.0 for the 0.9.0 image (W1.13) (#750)
+     4144987d 2026-10-16T23:35:04Z Merge remote-tracking branch 'refs/remotes/origin/main'
+     b7e29e81 2026-10-16T23:24:36Z ci: bump actions/upload-artifact from 7.0.1 to 7.0.2 (#743)
+     bc9c1ccb 2026-10-16T23:18:27Z Merge remote-tracking branch 'refs/remotes/origin/main'
+     6e03898d 2026-10-16T22:17:51Z deps: update pluggy requirement from >=1.0 to >=1.6.0 (#746)
+     0023d004 2026-10-16T21:59:09Z deps: update iniconfig requirement from >=2.3.0 to >=2.3.1 (#748)
+     f1997988 2026-10-16T21:40:45Z deps: update filelock requirement from >=4.0.1 to >=4.1.1 (#747)
+     a9b45ac0 2026-10-16T21:22:09Z deps: update contourpy requirement from >=1.3 to >=1.3.3 (#745)
+     150ce18d 2026-10-16T09:34:48Z ci: bump actions/download-artifact from 8.0.1 to 8.0.2 (#742)
+     1e5caddb 2026-10-16T09:14:18Z ci: bump the codeql-action group with 4 updates (#741)
+     2f60f52e 2026-10-16T07:35:54Z deps: update email-validator requirement from >=2.0 to >=2.3.0 (#744)
+     a473753c 2026-10-16T06:33:06Z release: juniper-canopy v0.9.0 (proposal) (#740)
+     8fd2f310 2026-10-13T20:34:36Z Merge remote-tracking branch 'refs/remotes/origin/main'
+juniper-deploy: 27 commits (15 by a bot account, 12 other); newest 2026-11-10T11:27:19Z
+     1cf20d84 2026-11-10T11:27:19Z ci: bump anthropics/claude-code-action from 1.0.266 to 1.0.269 (#273)
+     de03262c 2026-11-10T11:15:06Z ci: bump docker/login-action from 4.7.0 to 4.8.0 (#272)
+     dc3dc89d 2026-11-10T11:02:30Z ci: bump the codeql-action group with 4 updates (#271)
+     53b948d8 2026-11-08T01:01:49Z fix(preflight): name the missing securityfs mount before docker compose up (AppArmor-interface preflight) (#27
+     f85364e4 2026-11-03T23:56:41Z deps: update pytest requirement from >=9.1.1 to >=9.2.0 (#268)
+     b830fe7f 2026-11-03T23:52:08Z ci: bump anthropics/claude-code-action from 1.0.252 to 1.0.266 (#267)
+     0c8cb4a7 2026-11-03T14:29:11Z ci(agents-md): pin actions/checkout to its v7.0.1 SHA in agents-md-touch-up.yml (#269)
+     3070bd7e 2026-10-30T08:41:06Z chore(pin): juniper-cascor 0.12.0 -> 0.13.0 (cascor#731: the final evaluation reports accuracy) (#266)
+     3eee931b 2026-10-27T09:37:42Z ci: bump docker/login-action from 4.6.0 to 4.7.0 (#262)
+     c936b596 2026-10-27T09:34:57Z fix: scripts fall back to the repo's tmp/, never /tmp; tmp/ rule in AGENTS.md (#263)
+     26bf0339 2026-10-27T09:33:17Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#261)
+     c1ddb10e 2026-10-27T09:31:36Z ci: bump the codeql-action group across 1 directory with 4 updates (#260)
+     fd8614cc 2026-10-26T22:56:05Z docs(ci): main-verify's catch-up base is the screened tip; ANTHROPIC_API_KEY is a repository secret (#265)
+     0d9c71f6 2026-10-26T22:03:28Z fix(smoke): the recurrence snapshot smoke pulls a missing image instead of building it from a sibling checkout
+     7b4454b0 2026-10-25T21:52:20Z fix(security): gitleaks loaded zero rules; extend the default ruleset, classify history, pin the engine (#259)
+     11aae789 2026-10-23T22:50:52Z chore(pin): juniper-data 0.17.0 -> 0.17.1, juniper-cascor 0.11.0 -> 0.12.0 (shared security patches) (#258)
+     11d7017b 2026-10-23T09:25:46Z ci: bump anthropics/claude-code-action from 1.0.248 to 1.0.252 (#254)
+     4a295052 2026-10-23T08:54:15Z ci: bump actions/download-artifact from 8.0.1 to 8.0.2 (#253)
+     7a148e0c 2026-10-20T18:05:11Z chore(compose): pin juniper-recurrence 0.8.0, the W5.2 release (crossval over trainval, per-entity folds, mode
+     5d987d83 2026-10-20T01:20:32Z ci: bump the codeql-action group with 4 updates (#252)
+     1e5319aa 2026-10-20T01:16:00Z deps: update numpy requirement from >=2.5.3 to >=2.5.4 (#256)
+     cade28d3 2026-10-19T08:02:30Z chore(compose): pin juniper-recurrence 0.7.0, the P5 release (gcv default ridge on model 0.5.0, fit diagnostic
+     b645acfd 2026-10-19T00:41:07Z chore(compose): pin juniper-recurrence 0.6.1, the release carrying the model / data-client floors (M1) (#251)
+     aa2a6fb0 2026-10-18T09:40:16Z chore(pin): juniper-recurrence 0.5.0 -> 0.6.0, juniper-canopy 0.8.1 -> 0.9.0 (W1.13) (#249)
+     541e65e7 2026-10-16T07:27:23Z ci: bump anthropics/claude-code-action from 1.0.240 to 1.0.248 (#248)
+     cd6b9a31 2026-10-16T06:54:57Z ci: bump actions/upload-artifact from 7.0.1 to 7.0.2 (#247)
+     04289e91 2026-10-16T06:36:06Z ci: bump the codeql-action group with 4 updates (#246)
+juniper-recurrence: 32 commits (10 by a bot account, 22 other); newest 2026-11-09T19:22:42Z
+     0e0c93a6 2026-11-09T19:22:42Z ci: bump the codeql-action group with 3 updates (#231)
+     b1aa9faf 2026-11-09T19:20:14Z ci: bump docker/login-action from 4.7.0 to 4.8.0 (#232)
+     857efbc5 2026-11-09T10:01:53Z deps(security): lock juniper-observability 0.4.2 and juniper-service-core 0.7.2 (image lock, two pins only) (#
+     3529dfd9 2026-11-06T13:17:49Z ci(model-publish): import-smoke against the package's own model-core range (#230)
+     2a467adb 2026-11-04T23:37:28Z fix(app): raise juniper-model-core floor to >=0.3.0; v0.8.1 (#229)
+     e9d0026e 2026-11-03T23:12:48Z ci: bump actions/setup-python from 7.0.0 to 7.1.0 (#228)
+     1c514f0f 2026-10-27T19:56:16Z chore: temp files go in the repo's tmp/, never /tmp (AGENTS.md, examples, ignore line) (#225)
+     f9b5d7a6 2026-10-27T19:26:00Z ci: bump docker/login-action from 4.6.0 to 4.7.0 (#224)
+     57242b2f 2026-10-27T19:23:51Z ci: bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 (#223)
+     c91daf1a 2026-10-27T10:18:55Z ci: bump the codeql-action group across 1 directory with 3 updates (#222)
+     f3e13d43 2026-10-26T23:03:47Z docs(ci): Memory Budget is a required context; main-verify's catch-up base is the screened tip (#226)
+     717f2a80 2026-10-26T22:50:33Z chore(release): juniper-recurrence-client v0.3.1 -- version bump + CHANGELOG move (#227)
+     23a8691f 2026-10-23T08:39:30Z ci: bump the codeql-action group with 3 updates (#218)
+     cc2a6467 2026-10-21T05:43:17Z fix(client): crossval omits embargo unless given, so the service's look-back default applies; train/crossval d
+     87a28761 2026-10-20T10:59:39Z feat(bench): W5.2 -- the equities rows pool trainval and cut a panel's folds on the global date per entity; an
+     6a98515e 2026-10-20T10:50:31Z chore(release): juniper-recurrence v0.8.0 -- version bump + CHANGELOG move (#220)
+     5e0e2b2e 2026-10-20T10:47:24Z feat(app): W5.2 -- entity-grouped chronological CV over the trainval pool (recurrence 0.8.0) (#215)
+     2c5a419c 2026-10-19T04:01:40Z chore(release): juniper-recurrence-model v0.6.0 -- version bump + CHANGELOG move (#216)
+     b8728df7 2026-10-19T03:53:07Z feat(model): W5.2 -- SequenceData carries ticker_code / window_end_date; a composed trainval view for the CV p
+     5c576da4 2026-10-19T03:24:46Z chore(release): juniper-recurrence v0.7.0 -- version bump + CHANGELOG move (#213)
+     5fb7dbff 2026-10-19T03:22:00Z feat(app): W5.8 (B) -- default_ridge is "gcv"; floor juniper-recurrence-model>=0.5.0 (recurrence 0.7.0) (#212)
+     99ae4a7b 2026-10-19T02:08:59Z chore(release): juniper-recurrence-model v0.5.0 -- version bump + CHANGELOG move (#210)
+     d6a81eb4 2026-10-19T02:05:45Z feat(model): W5.9 GCV edge / null-model flags; W5.8 (B) train-fold standardisation on the linear rung for any 
+     ac329d57 2026-10-19T00:50:31Z feat(api): the train and crossval responses carry the resolved readout hyperparameters per fit (W5.10, F-S7) (
+     cad03ed5 2026-10-18T17:56:42Z release: juniper-recurrence v0.6.1 (proposal) -- the floors 0.6.0 shipped without (#206) (#207)
+     509ea25f 2026-10-18T04:04:41Z deps: floor juniper-recurrence-model>=0.4.0 and juniper-data-client>=0.6.0, which 0.6.0 shipped without (W1.13
+     535d1e78 2026-10-17T08:58:59Z docs(changelog): record the 0.6.0 image's data-client 0.6.0 / model 0.4.0 move (W1.13) (#205)
+     7043bc7f 2026-10-17T08:53:14Z release: juniper-recurrence v0.6.0 (proposal) (#204)
+     aeccd35f 2026-10-17T06:07:09Z fix(security): a 5xx no longer relays the data client's text, and a padded juniper-data key is refused at load
+     f1fbe504 2026-10-16T06:47:32Z ci: bump actions/upload-artifact from 7.0.1 to 7.0.2 (#201)
+     7cadf885 2026-10-16T06:33:44Z ci: bump actions/download-artifact from 8.0.1 to 8.0.2 (#202)
+     24f391f6 2026-10-16T06:33:35Z ci: bump the codeql-action group with 3 updates (#200)
+all nine: 486 commits
+== GitHub Releases published since 2026-10-10T21:30:00Z, and how far main is past the newest Release
+juniper-ml: 8 in the window; newest juniper-observability-v0.4.2 2026-11-08T16:35:52Z; main is 18 commits past it
+     2026-11-08T16:35:52Z juniper-observability-v0.4.2
+     2026-11-08T16:21:19Z juniper-service-core-v0.7.2
+     2026-11-06T14:03:58Z v0.11.4
+     2026-11-04T11:22:41Z juniper-config-tools-v0.1.1
+     2026-10-26T10:20:47Z v0.11.3
+     2026-10-26T00:07:09Z v0.11.2
+     2026-10-25T08:57:41Z v0.11.1
+     2026-10-21T09:27:36Z v0.11.0
+juniper-data: 0 in the window; newest v0.17.1 2026-10-10T20:37:25Z; main is 42 commits past it
+juniper-data-client: 0 in the window; newest v0.6.0 2026-10-10T19:32:08Z; main is 27 commits past it
+juniper-cascor: 1 in the window; newest v0.13.0 2026-10-28T00:25:28Z; main is 23 commits past it
+     2026-10-28T00:25:28Z v0.13.0
+juniper-cascor-client: 0 in the window; newest v0.8.0 2026-09-05T18:15:03Z; main is 38 commits past it
+juniper-cascor-worker: 0 in the window; newest v0.6.1 2026-09-22T23:03:30Z; main is 32 commits past it
+juniper-canopy: 1 in the window; newest v0.9.0 2026-10-17T19:45:37Z; main is 55 commits past it
+     2026-10-17T19:45:37Z v0.9.0
+juniper-deploy: 0 in the window; newest v0.3.0 2026-09-17T00:11:28Z; main is 52 commits past it
+juniper-recurrence: 8 in the window; newest juniper-recurrence-v0.8.1 2026-11-04T23:38:03Z; main is 4 commits past it
+     2026-11-04T23:38:03Z juniper-recurrence-v0.8.1
+     2026-10-26T23:10:24Z juniper-recurrence-client-v0.3.1
+     2026-10-20T10:53:16Z juniper-recurrence-v0.8.0
+     2026-10-19T04:04:49Z juniper-recurrence-model-v0.6.0
+     2026-10-19T03:27:21Z juniper-recurrence-v0.7.0
+     2026-10-19T02:12:45Z juniper-recurrence-model-v0.5.0
+     2026-10-18T18:06:41Z juniper-recurrence-v0.6.1
+     2026-10-17T19:22:57Z juniper-recurrence-v0.6.0
+== PyPI: newest version, and every version uploaded since 2026-10-10T21:30:00Z
+juniper-ml: newest 0.11.4 (2026-11-07T22:59Z); in the window: 0.11.0 (2026-10-21T21:08Z), 0.11.1 (2026-10-25T18:03Z), 0.11.2 (2026-10-26T08:38Z), 0.11.3 (2026-10-26T17:48Z), 0.11.4 (2026-11-07T22:59Z)
+juniper-data: newest 0.17.1 (2026-10-23T23:49Z); in the window: 0.17.1 (2026-10-23T23:49Z)
+juniper-data-client: newest 0.6.0 (2026-10-17T05:16Z); in the window: 0.6.0 (2026-10-17T05:16Z)
+juniper-cascor: newest 0.13.0 (2026-10-28T11:43Z); in the window: 0.12.0 (2026-10-25T18:13Z), 0.13.0 (2026-10-28T11:43Z)
+juniper-cascor-client: newest 0.8.0 (2026-09-05T19:33Z); in the window: none
+juniper-cascor-worker: newest 0.6.1 (2026-09-23T00:37Z); in the window: none
+juniper-cascor-model: newest 0.1.0 (2026-06-14T08:42Z); in the window: none
+juniper-canopy: newest 0.9.0 (2026-10-17T22:08Z); in the window: 0.9.0 (2026-10-17T22:08Z)
+juniper-recurrence: newest 0.8.1 (2026-11-06T09:35Z); in the window: 0.6.0 (2026-10-17T22:08Z), 0.6.1 (2026-10-18T19:02Z), 0.7.0 (2026-10-19T03:33Z), 0.8.0 (2026-10-20T17:51Z), 0.8.1 (2026-11-06T09:35Z)
+juniper-recurrence-model: newest 0.6.0 (2026-10-20T10:43Z); in the window: 0.4.0 (2026-10-13T21:57Z), 0.5.0 (2026-10-19T03:13Z), 0.6.0 (2026-10-20T10:43Z)
+juniper-recurrence-client: newest 0.3.1 (2026-10-27T10:20Z); in the window: 0.3.1 (2026-10-27T10:20Z)
+juniper-observability: newest 0.4.2 (2026-11-09T09:51Z); in the window: 0.4.2 (2026-11-09T09:51Z)
+juniper-service-core: newest 0.7.2 (2026-11-09T09:52Z); in the window: 0.7.2 (2026-11-09T09:52Z)
+juniper-ci-tools: newest 0.9.1 (2026-10-21T21:53Z); in the window: 0.9.1 (2026-10-21T21:53Z)
+juniper-config-tools: newest 0.1.1 (2026-11-04T11:47Z); in the window: 0.1.1 (2026-11-04T11:47Z)
+juniper-doc-tools: newest 0.1.2 (2026-08-30T06:27Z); in the window: none
+juniper-model-core: newest 0.3.2 (2026-09-11T22:54Z); in the window: none
+== gitleaks config on main (0 rules and no useDefault finds nothing)
+juniper-ml: .gitleaks.toml: [[rules]]=1 [extend]=1 useDefault=True -> finds
+juniper-data: .gitleaks.toml: [[rules]]=1 [extend]=1 useDefault=True -> finds
+juniper-data-client: no gitleaks config at .gitleaks.toml or .github/.gitleaks.toml (the tool's defaults apply where it runs)
+juniper-cascor: .gitleaks.toml: [[rules]]=0 [extend]=1 useDefault=True -> finds
+juniper-cascor-client: .gitleaks.toml: [[rules]]=0 [extend]=1 useDefault=True -> finds
+juniper-cascor-worker: no gitleaks config at .gitleaks.toml or .github/.gitleaks.toml (the tool's defaults apply where it runs)
+juniper-canopy: .gitleaks.toml: [[rules]]=1 [extend]=1 useDefault=True -> finds
+juniper-deploy: .gitleaks.toml: [[rules]]=0 [extend]=1 useDefault=True -> finds
+juniper-recurrence: no gitleaks config at .gitleaks.toml or .github/.gitleaks.toml (the tool's defaults apply where it runs)
+== where gitleaks runs: workflows and the pre-commit config on main that name it (comment lines ignored)
+juniper-ml: 24 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: yes
+juniper-data: 14 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-data-client: 12 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-cascor: 19 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-cascor-client: 12 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-cascor-worker: 13 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-canopy: 14 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-deploy: 10 workflows; naming gitleaks: ['ci.yml']; pre-commit names it: no
+juniper-recurrence: 17 workflows; naming gitleaks: none; pre-commit names it: no
+== GitHub secret scanning settings (security_and_analysis; absent keys print as '-')
+juniper-ml: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=enabled
+juniper-data: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-data-client: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-cascor: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-cascor-client: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-cascor-worker: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-canopy: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=enabled
+juniper-deploy: visibility=public; secret_scanning=disabled, secret_scanning_push_protection=disabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
+juniper-recurrence: visibility=public; secret_scanning=enabled, secret_scanning_push_protection=enabled, secret_scanning_non_provider_patterns=disabled, secret_scanning_validity_checks=disabled, dependabot_security_updates=disabled
