@@ -100,6 +100,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py`: the fix reverted, each new step or
   guard removed or replaced, the result recorded outside the guard, and the existing stop guard
   removed) are each killed by this file and by no other test.
+- **A start sent while a stopped run's `fit` is still running is refused, so that `fit` sees its
+  stop** (the stop-then-start race; §8, ruling 11 of
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, "Fix all four now").
+  The ruling names the defect, not a mechanism; the refusal is this change's choice, and the
+  owner's ruling of 2026-11-12 accepts it (that record's next update adds it to its §8). A stop is
+  seen at `fit`'s next event, and a `fit` that emits no events runs until it returns.
+  `start_training` cleared the stop, so a start sent before then cancelled it: the stopped run's
+  `fit` ran on beside the new run, on the same model, and its events went through the shared sink
+  into the new run (a `phase_change` set its phase, an `epoch_end` landed in its history, a
+  `training_end` set `monitor.status` `ended`). The ownership guard of juniper-ml#2531 fenced only
+  the settle, and that change's paused-completion and failure releases woke such a `fit` if it was
+  waiting at the shared pause gate, after which a start was accepted beside it. Every release that
+  ships the manager accepts that start, 0.2.0 through 0.7.2.
+
+  `start_training` now raises `RuntimeError("The stopped run's fit is still running (a stop takes
+  effect at its next event)")` while the previous training thread is alive with the stop pending,
+  before it touches the dataset, the stop, the pause gate or the monitor. Over HTTP that is a 409,
+  `Training cannot be started: The stopped run's fit is still running (a stop takes effect at its
+  next event)`; the route has merged the request's `params` and `epochs` into the parameter store
+  by then, as it does before every start. The stop stays set, so that `fit` unwinds at its next
+  event and none of its later events lands; once its thread has ended, the start is accepted and
+  runs alone. A reset holds a start back as a stop does, and so does the state a snapshot load
+  leaves after a stop (`RESUME_READY`, `INVESTIGATING` or `REPLAYING`). A run that settled itself
+  (`COMPLETED` or `FAILED`) holds no start back while its thread exits, and a thread that ended
+  without settling holds none back either. `LifecycleStateMachine` and the routes are unchanged,
+  and the ownership guard of juniper-ml#2531 stays, as a second line of defence.
+
+  **What it costs.** The refusal lasts as long as the stopped `fit` does. A `fit` that does not
+  end at its next event (it emits none, it hangs, or the model catches the interrupt and carries
+  on) holds every start back until it returns or raises. `reset` and `attach_model` do not unblock
+  it, `get_status()` reads `STOPPED` with `training_active` false and has no field for it, and
+  short of that `fit` ending only a restart of the process clears it. On 0.7.2 the same start was
+  accepted and ran beside that `fit`. A wait could not have replaced the refusal: the stopped
+  thread needs the manager lock to settle, so a wait has to release the lock and check again, and
+  a `fit` with no events outlasts any bound.
+
+  **Not covered, and not fixed.** The check reads the thread `start_training` launched and a stop
+  that is still pending. A `fit` driven by a direct `run()` on another thread is outside it, as it
+  is outside `is_active()`, and so is a run that a leftover replay session's `stop` reset without
+  setting the stop: a start beside either is still accepted. After a stop, `load_snapshot`,
+  `resume_from_snapshot`, `start_replay` and `restore_for_retrain` are also still accepted while
+  the stopped `fit` runs, since they require only an inactive machine. No second `fit` starts, but
+  that `fit`'s thread then settles over the loaded state: `monitor.status` `stopped` over
+  `investigating`, `resume_ready` or `replaying`, an `error` and `failed` if it raises, and an
+  event already inside the sink folded into the restored history. That stop-then-load race is a
+  known defect, reported and not fixed here.
+- **Tests**: `tests/test_lifecycle_stop_then_start.py` (13 tests) pins it. With `manager.py`
+  without the refusal, 11 of them fail at the start that should be refused; the other 2 are
+  controls. Five tests of `tests/test_lifecycle_paused_fit_return.py` (the four
+  `test_a_stopped_runs_*` tests and `test_only_the_run_that_completes_records_its_result`) started
+  a newer run beside a stopped `fit`, which is now refused. They clear the stop first
+  (`_start_beside_the_stopped_fit`), rebuilding that interleaving, and still pin the ownership
+  guard. Twelve mutants of `manager.py` (juniper-ml's
+  `util/ad-hoc/2026-11-09_flood4r2_n2_mutation_check.py`: the fix reverted, the refusal removed,
+  each half of its condition dropped, the refusal limited to a `STOPPED` machine, the check moved
+  before the lock is taken, after the dataset write or after the stop is cleared, and four mutants
+  of the ownership guard and result recording of juniper-ml#2531) are each killed by the suite.
 
 - **A `resume_ok` on `/ws/training` now means the client missed nothing up to the moment its socket
   goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
