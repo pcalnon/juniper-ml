@@ -303,6 +303,94 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - CI never runs on the merge result: a PR's CI runs on `refs/pull/N/merge`;
     - a BEHIND branch is fixed by a rebase: GitHub's update-branch is the fix.
 
+- **The agent guard expands brace sequences as bash does, fails closed on a brace expansion past its cap, and denies
+  the git and GnuPG prefixes that sign (`util/claude_agent_guard.py` 1.3.0).**
+  - **Brace cap: "Fail closed"** (owner ruling, 2026-11-08). The guard expands at most `MAX_BRACE_ALTERNATIVES` (64)
+    alternatives. A word that needed more was judged on its first 64, so a `.ssh` or `.gnupg` spelled in alternative
+    65 passed the credential check. Such a word now raises `MalformedInput` and the hook exits 2, for a Bash word, a
+    range, a product of groups, a Glob or Grep pattern and a Serena include glob alike. A list is counted part by
+    part, so at most one part past the cap is taken in (a nested part adds at most 64 words), and a range is sized
+    arithmetically, so `{1..1000000}` is refused without being expanded. `for i in {1..100}` is refused too;
+    `$(seq 1 100)` is not.
+  - **Brace sequences** (owner ruling "Carry in ml-code", 2026-11-09). bash 4 and later expand `{x..y..incr}`, which
+    the guard left as written, so `cat ~/.{r..t..1}sh/config` read `~/.ssh/config` and passed the credential check;
+    `{s..s..1}udo` and `gpg{2..2..1}` hid `sudo` and `gpg2` the same way. The guard now follows bash 5.3's brace code
+    for sequences and the lists around them: a step of either sign, a step of 0, a step past the range, `+` signs, zero
+    padding (`{01..03}`, which it had expanded as `1 2 3`), a `}` met before the first separator kept as text, and no
+    rescan of the words one expansion made. It refuses (exit 2) what it does not model: a sequence group with a brace
+    inside it, which bash 5.2 and 5.3 expand differently; a letter sequence that makes a backslash or a backtick, which
+    bash 5.3 reads as an escape (it makes `.ssYh .ssh .ss_h` of `.ss{Y..a..3}h`) or a command substitution; and an
+    operand past 2**61. Checked word by word against bash 5.3.9 (173 fixed words, 2,000 generated ones):
+    `util/ad-hoc/2026-11-08_flood4r2_ml_code_brace_sequence_probe.py`.
+  - **The brace scan is one pass, with a budget.** bash finds the `}` of each `{` by scanning to the end of the
+    word, which costs the square of the word's length when most groups never close. Ported as written, that took
+    the hook 7.7 s on a 25.8 KB `python3 -c` word of `{name}` placeholders (0.12 s on `main`, same run), and the
+    hook's timeout is 10 s. `_brace_closes` now answers every `{` of a word in one pass from the right, and the same
+    word takes 0.08 s. A list part is scanned again when it is expanded, so `BRACE_SCAN_BUDGET` (2,000,000
+    characters per expansion) bounds the sum: a word that needs more is refused (exit 2), never passed unexamined.
+    Of the 40,942 Bash commands in the newest 200 session transcripts, the longest is 35,859 characters, and no
+    expansion among them scans more than 24,126, 1.2% of the budget.
+    `util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_equivalence.py` compares the new scan with the ported one on 3.8
+    million words: the same words in the same order, or the same refusal, on every one.
+  - **What the brace expansion still does not see.** It reads each word after quote removal, so it cannot tell a
+    quoted or escaped brace from a bare one. That judges words bash does not make, and it can also leave a word
+    that bash does make unjudged, in three ways:
+    - an escaped `}` ends a brace list here that bash keeps open, and a quoted `$` hides a group that bash expands;
+    - bash's `{}` rule is not modelled (a `{` followed at once by `}` at the start of a word, of a list part or of
+      the text after a group opens nothing);
+    - bash steps over the body of a `$(...)` and of backticks, which the scan reads as text.
+  - **Known open bypasses.** Three spellings are known to reach `~/.ssh` or `~/.gnupg` and pass, on `main` as
+    well, and they stay open: `cat ~/.ss{h,b\}c}/config` (the escape gap: the owner has ruled that a quote- and
+    escape-aware expansion follows in its own PR); and, behind an `X/..` hop, an unbalanced `{` inside a command
+    substitution in a brace list (`~/X/../.ss{h,$(:{)}/config`) and an empty substitution or parameter spliced into
+    the name (`~/X/../.ss$(:)h/config`). The owner has ruled that the same PR fixes those two. The guard's docstring lists all
+    three (gap 12), and `util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_pins_vs_bash.py` shows that each still passes.
+  - **GnuPG** (juniper-ml#2493): a long option counts from two letters, not four. GnuPG 2.4.8 runs `--cl` as
+    clear-sign, `--ls` as lsign-key and `--det` as detach-sign, and rejects every one-letter prefix of a denied
+    option as ambiguous, so one letter stays allowed. juniper-ml#2485's floor pins are rewritten into
+    `tests/test_claude_agent_guard.py`: as submitted they asserted that `gpg --cle` is allowed.
+  - **git** (juniper-ml#2502, juniper-ml#2508): a prefix git runs as a signing option is denied. `--g` is
+    `--gpg-sign` on `commit`, `merge`, `rebase`, `am`, `pull` and `commit-tree`; `git tag --si` and `--lo` are
+    `--sign` and `--local-user`; `git push --si`, `--sign=true` and `--si=if-asked` request a signed push.
+    `--no-gpg-sign`, `--signoff` and the ambiguous `git tag --s`, `git tag --l` and `git push --s` stay allowed.
+    One matcher, `_git_long_abbrev`, serves all three subcommand families.
+  - Every git and GnuPG claim was re-derived on this host's git 2.53.0 and GnuPG 2.4.8, with a recording
+    `gpg.program` stub for git and an empty GnuPG homedir with no agent for gpg, so no keyring, agent or smartcard
+    was reachable: `util/ad-hoc/2026-11-08_flood4r2_ml_code_git_gpg_probe.py`.
+  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` to install it.
+
+- **The launchers: `max` is the effort default again, `auto` sends no `--effort`, and two prompt-file holes are
+  closed.**
+  - **Effort** (owner ruling, 2026-11-08). juniper-ml#2396 had made `scripts/wake_the_claude.bash`'s
+    `EFFORT_DEFAULT` `auto`, which Claude Code answers with "Unknown --effort value 'auto'" and ignores.
+    `--effort 0` now sends `--effort max`, and `--effort auto` (any alias, any case) sends no `--effort` flag, so
+    Claude Code uses its own default. `scripts/claude_interactive.bash` already defaulted to `max` and forwards
+    `-e auto` unchanged, so its effort handling needed no change.
+  - **A later unresolved prompt file does not send the earlier one** (juniper-ml#2505). `--file good.md --file
+    missing.md` and `--path good.md --path emptydir` exited 0 and sent `good.md`; they now exit 1 without launching.
+  - **An exported empty `CLAUDE_PROMPT_FILE` or `CLAUDE_PROMPT_PATH` is refused** (juniper-ml#2504), as `--file ''`
+    already was. It launched with the default prompt.
+
+- **`util/fleet_triage/predict_merge.py` drops an inherited `GIT_SHALLOW_FILE` and `GIT_GRAFT_FILE`**
+  (juniper-ml#2513). A shallow file naming the branch tip turned a merely-behind branch into an error ("refusing to
+  merge unrelated histories"), and a graft reparenting the tip onto `main` reported `MERGE-CLEAN`. Its docstring now
+  describes the scratch repository and its error rules (juniper-ml#2494's docstring hunk).
+
+- **Tests.** Five new suites, 239 in CI's regression list: `tests/test_claude_agent_guard_git_sign_abbrev.py`,
+  `tests/test_claude_agent_guard_push_signed_abbrev.py`, `tests/test_prompt_file_later_flag.py`,
+  `tests/test_claudey_empty_prompt_file_env.py` and `tests/test_predict_merge_inherited_git_env.py`.
+  `tests/test_claude_agent_guard_brace_cap.py` is inverted under the ruling and extended to `.gnupg`, 10,000 and
+  100,000 alternatives, products, ranges and the hook's exit 2. Its `BraceSequenceTest` pins the words bash 5.3.9
+  makes of 35 sequence words, the stepped-sequence denies and the refusals. Its `BraceScanTest` checks the one-pass
+  scan against a scan from each brace on every word of up to 7 characters over `{ } , . a`, and pins the budget:
+  the exact character at which a word is refused, a list part charged again, a word with no brace never charged,
+  and the hook's exit 2. `tests/test_claude_agent_guard.py` gains stepped-sequence rows in its credential,
+  privilege and GnuPG tables, and the self-test seven checks (50 to 57). `tests/test_wake_the_claude.py` pins both
+  effort behaviours. `util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_mutants.py` runs the carrier's tests against
+  `main`'s four code files, where they fail, and applies 72 one-line mutants to a copy of the tree: 70 are killed,
+  and the two that survive are equivalent (the list is round 2's 36, a validator's 22 and 14 on the scan and its
+  budget).
+
 - **`juniper-service-core`: a `fit` that returns while the run is paused settles `COMPLETED` instead
   of wedging the lifecycle, and the training thread settles only a run it still owns** (the
   "paused-fit wedge" in §4 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`;

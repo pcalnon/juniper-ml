@@ -255,8 +255,10 @@ EFFORT_XHIGH="xhigh"
 EFFORT_MAX="max"
 EFFORT_AUTO="auto"
 
-# EFFORT_DEFAULT="${EFFORT_MAX}"
-EFFORT_DEFAULT="${EFFORT_AUTO}"
+# max is the default again (owner ruling, 2026-11-08). Claude Code has no "auto" effort: it answers --effort auto with
+# "Unknown --effort value 'auto'" and ignores it, so an auto value sends no --effort flag at all (see CLAUDE_CODE_PARAMS).
+# EFFORT_DEFAULT="${EFFORT_AUTO}"
+EFFORT_DEFAULT="${EFFORT_MAX}"
 export EFFORT_DEFAULT
 
 
@@ -1282,6 +1284,11 @@ function parse_prompt_path_flags() {
                 PROMPT_FILE="${PATH_NAME}/${FILE_NAME}"
             elif [[ "${FILE_NAME}" == "" ]]; then
                 debug_log "Filename has not yet been parsed"
+                # A directory with no file name is not a prompt. Drop any prompt an earlier --path resolved:
+                # --path good.md --path emptydir otherwise sent good.md and exited 0.
+                PROMPT_FILE=""
+                VALID_FILE_PARAM="${FALSE}"
+                VALID_PATH_PARAM="${FALSE}"
             else
                 debug_log "Error: Prompt file is invalid when Pathname is combined with Filename. Exiting..."
                 result_value="${FALSE}"
@@ -1340,6 +1347,11 @@ function parse_prompt_file_flags() {
         # The path flag may follow: resolution waits for it (and fails after parsing if it never arrives)
         elif [[ "${PATH_NAME}" == "" ]]; then
             debug_log "Filename not yet valid, Pathname has not yet been parsed"
+            # This name did not resolve, and no directory is waiting to join it. Drop any prompt an earlier
+            # --file or --path resolved: --file good.md --file missing.md otherwise sent good.md and exited 0.
+            PROMPT_FILE=""
+            VALID_FILE_PARAM="${FALSE}"
+            VALID_PATH_PARAM="${FALSE}"
         else
             debug_log "Error: received an invalid Prompt File. Exiting..."
             result_value="${FALSE}"
@@ -1626,6 +1638,7 @@ function usage() {
     echo -ne "\t ${EFFORT_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the effort used by the Claude Code model to be specified.\n"
     echo -ne "\t\tNOTE: Effort value must be one of the following: ${EFFORT_LOW}, ${EFFORT_MED}, ${EFFORT_HIGH}, ${EFFORT_XHIGH}, ${EFFORT_MAX}, or ${EFFORT_AUTO}.\n"
+    echo -ne "\t\tNOTE: ${EFFORT_AUTO} sends no effort flag, so Claude Code uses its own default; a true boolean (0) sends ${EFFORT_DEFAULT}.\n"
     echo -ne "\t ${WORKTREE_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the worktree to be specified for use by the Claude Code model.\n"
     echo -ne "\t\tNOTE: Worktree value must be a valid worktree name.  If no worktree name is provided, Claude Code will assign a new worktree name.\n"
@@ -1766,6 +1779,11 @@ CLAUDE_CODE_PARAMS+=("${CLAUDE_RESUME_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_WORKTREE_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_REMOTE_CONTROL_VALUE[@]}")
+# auto, in any case, sends no --effort flag (owner ruling, 2026-11-08): Claude Code has no such value and would ignore it with a warning
+if [[ ( "${CLAUDE_EFFORT_VALUE[1]:-}" != "" ) && ( "${CLAUDE_EFFORT_VALUE[1],,}" == "${EFFORT_AUTO}" ) ]]; then
+    debug_log "Effort ${CLAUDE_EFFORT_VALUE[1]}: sending no effort flag, so Claude Code uses its own default"
+    CLAUDE_EFFORT_VALUE=()
+fi
 CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_HEADLESS_VALUE[@]}")
