@@ -53,7 +53,8 @@ Ask the owner for merge approval again in a new session.
     243) and three times alone afterwards, and this PR does not touch it.
 - **The primary checkout is on `main` again and does not hold the tools.** `HANDOFF_2026-11-12_…md` says it does.
   Until juniper-ml#2548 merges, the owner's commands use `W`'s copies: `D` is `W`.
-- The running record is 661 lines, in `W/tmp/phase-d-sitting/` and in the primary's `tmp/phase-d-sitting/`.
+- The running record is 708 lines, in `W/tmp/phase-d-sitting/` and in the primary's `tmp/phase-d-sitting/`. Its last
+  section covers 2026-11-13 09:54Z to 11:30Z.
 
 ### Remaining work, in order
 
