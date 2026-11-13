@@ -12,6 +12,17 @@ loginctl / systemctl. Destination, state dir, and local-DB path live in a
 TemporaryDirectory on a disk-backed filesystem (``_lane_tmpdir``), because the
 runner refuses to stage volumes in a RAM-backed one (Guard 3b). /proc is walked
 only to prove the db-holder skip leaves our unique path alone.
+
+No child of the fixture may reach the desktop (2026-11-13). The fixture's PATH is
+``<stubs>:/usr/bin:/bin``, so a stub that is not written is not "absent": the
+script under test finds the REAL tool. Until this date the ``notify-send`` stub
+was written by one test only, and ``TestFailureReporter``'s other test ran the
+reporter without it. Every run of this suite on a desktop host therefore sent a
+real critical notification, "Backup FAILED: duplicati-backup.service", naming a
+``failures.log`` in a temporary directory that was gone a moment later: an alert
+for a backup that never ran. Now every fixture writes a recording stub, the
+session bus address handed to children names a socket that does not exist, and
+``TestFixtureReachesNoDesktop`` pins both.
 """
 
 from __future__ import annotations
@@ -19,6 +30,7 @@ from __future__ import annotations
 import fcntl
 import os
 import re
+import shutil
 import stat
 import subprocess
 import tempfile
@@ -133,6 +145,7 @@ class _LaneFixture:
         self.stub_bin = self.root / "stubs"
         self.cli_log = self.root / "duplicati-cli.log"
         self.systemctl_log = self.root / "systemctl.log"
+        self.notify_log = self.root / "notify-send.log"
         self.dest_mount.mkdir()
         self.dest_path.mkdir()
         self.temp_dir.mkdir()
@@ -143,6 +156,7 @@ class _LaneFixture:
         self._write_stub_mountpoint(rc=0)
         self._write_stub_duplicati_cli(rc=0)
         self._write_stub_journalctl()
+        self._write_stub_notify_send(rc=0)  # in EVERY fixture: with /usr/bin on PATH, a missing stub is the real tool
         self._write_stub_loginctl(linger="yes")
         self._write_stub_systemctl()
 
@@ -195,6 +209,10 @@ class _LaneFixture:
             self.stub_bin / "notify-send",
             f"""\
             #!/usr/bin/env bash
+            log="${{NOTIFY_LOG:-/dev/null}}"
+            for arg in "$@"; do
+              printf '%s\\n' "$arg" >> "$log"
+            done
             exit {rc}
             """,
         )
@@ -235,6 +253,10 @@ class _LaneFixture:
         env["DUPLICATI_TEMP_DIR"] = str(self.temp_dir)
         env["DUPLICATI_CLI_LOG"] = str(self.cli_log)
         env["SYSTEMCTL_LOG"] = str(self.systemctl_log)
+        env["NOTIFY_LOG"] = str(self.notify_log)
+        # The second line of defence behind the notify-send stub. An address that is SET wins over the default
+        # ($XDG_RUNTIME_DIR/bus), so a real notify-send -- reached because a stub went missing -- finds no bus.
+        env["DBUS_SESSION_BUS_ADDRESS"] = f"unix:path={self.root / 'no-session-bus'}"
         env.update(overrides)
         return env
 
@@ -532,6 +554,11 @@ class TestFailureReporter(unittest.TestCase):
             self.assertIn("FAILURE", log)
             self.assertIn("no last-run.status present", log)
             self.assertIn("journal-stub-line", log)
+            # The notification is part of what this run did, and it went to the stub: this very test sent a real one
+            # on every run until 2026-11-13.
+            sent = fx.notify_log.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(sent[:2], ["--urgency=critical", "Backup FAILED: duplicati-backup.service"])
+            self.assertIn(f"See {fx.failure_log}", sent)
 
     def test_notify_send_failure_does_not_change_exit_or_drop_the_record(self) -> None:
         with _lane_tmpdir() as tmp:
@@ -544,6 +571,45 @@ class TestFailureReporter(unittest.TestCase):
             self.assertIn("result=FAILED", log)
             self.assertIn("reason=boom", log)
             self.assertIn("unit=duplicati-backup.service", log)
+            self.assertIn("Backup FAILED: duplicati-backup.service", fx.notify_log.read_text(encoding="utf-8").splitlines(), "the failing notify-send is the stub")
+
+
+class TestFixtureReachesNoDesktop(unittest.TestCase):
+    """A child of ``_LaneFixture`` finds the notify-send STUB, and no session bus behind it (see the module docstring)."""
+
+    def test_every_fixture_resolves_notify_send_to_its_own_stub(self) -> None:
+        with _lane_tmpdir() as tmp:
+            fx = _LaneFixture(tmp)
+            self.assertEqual(shutil.which("notify-send", path=fx.env()["PATH"]), str(fx.stub_bin / "notify-send"))
+            # Writing the stub again with another exit code replaces it; it does not remove it.
+            fx._write_stub_notify_send(rc=1)
+            self.assertEqual(shutil.which("notify-send", path=fx.env()["PATH"]), str(fx.stub_bin / "notify-send"))
+
+    # Tools that act outside the process: an alert, a unit, a privilege change, a network call, another process.
+    _OUTWARD_TOOLS = ("notify-send", "systemctl", "loginctl", "duplicati-cli", "journalctl", "mountpoint", "wall", "mail", "mailx", "sendmail", "logger", "pkexec", "sudo", "zenity", "gdbus", "dbus-send", "systemd-cat", "systemd-run", "shutdown", "reboot", "curl", "wget", "ssh", "pkill", "killall", "crontab", "mount", "umount")
+
+    def test_every_outward_tool_the_three_scripts_call_is_stubbed(self) -> None:
+        """Read from the scripts' own text, comments left out: a tool added to a script with no stub fails here, not on a desktop."""
+        called: set[str] = set()
+        for text in (RUNNER_TEXT, REPORTER_TEXT, INSTALLER_TEXT):
+            code = "\n".join(line for line in text.splitlines() if not line.lstrip().startswith("#"))
+            called |= {tool for tool in self._OUTWARD_TOOLS if re.search(rf"(?<![\w./-]){re.escape(tool)}(?![\w-])", code)}
+        self.assertEqual(called, {"duplicati-cli", "mountpoint", "journalctl", "notify-send", "loginctl", "systemctl"}, "the scripts' outward tools changed: give _LaneFixture a stub for the new one, then update this set")
+        with _lane_tmpdir() as tmp:
+            fx = _LaneFixture(tmp)
+            path = fx.env()["PATH"]
+            for tool in sorted(called):
+                with self.subTest(tool=tool):
+                    self.assertEqual(shutil.which(tool, path=path), str(fx.stub_bin / tool), f"{tool} would resolve to the real binary")
+
+    def test_the_session_bus_address_given_to_children_names_no_socket(self) -> None:
+        with _lane_tmpdir() as tmp:
+            fx = _LaneFixture(tmp)
+            address = fx.env()["DBUS_SESSION_BUS_ADDRESS"]
+            self.assertTrue(address.startswith(f"unix:path={fx.root}{os.sep}"), address)
+            self.assertFalse(os.path.lexists(address.removeprefix("unix:path=")), "the address must name a path that does not exist")
+            # A caller's override must not be able to put the real bus back by accident: env(**overrides) is explicit.
+            self.assertNotEqual(address, os.environ.get("DBUS_SESSION_BUS_ADDRESS"))
 
 
 class TestInstallerBehavioral(unittest.TestCase):
