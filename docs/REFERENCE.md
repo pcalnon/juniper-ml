@@ -3583,6 +3583,7 @@ python3 -m unittest -v tests/test_run_suite_gate_metrics.py
 python3 -m unittest -v tests/test_list_runs_classify_guards.py
 python3 -m unittest -v tests/test_register_close_protocol.py
 python3 -m unittest -v tests/test_stats_summary_render.py
+python3 -m unittest -v tests/test_theta_zero_is_set.py
 python3 -m unittest -v tests/test_stats_summary_git_and_confirmed.py
 python3 -m unittest -v tests/test_stats_summary_target_summary.py
 python3 -m unittest -v tests/test_canopy_poller_inventory.py
@@ -3908,6 +3909,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_list_runs_classify_guards.py` -- The `list_runs` classification guards the happy-path suite never reaches -- the arms that REFUSE to classify, which a well-formed run never enters.
 - `tests/test_register_close_protocol.py` -- The defect-register operator pair that #1648/#1717 cannot see: the close protocol itself, distinct from the open-set reader and the status crosscheck.
 - `tests/test_stats_summary_render.py` -- `summary.md` scrape-honesty line collection: which lines the renderer must emit, the conditional class-distribution line, the reason sub-bullet, and `present`/`written` key precedence.
+- `tests/test_theta_zero_is_set.py` -- A recurrence theta of 0 or 0.0 is explicit and outranks `service.default_theta`; a service default of 0 or 0.0 is that default, not data-driven. `summary.md` prints the zero. The precedence tests use 0.5 and 91.0, so they stay green if the `is not None` checks become truthiness checks.
 - `tests/test_stats_summary_git_and_confirmed.py` -- The `summary.md` scrape tri-state and git provenance the producer suite cannot see -- `confirmed` None-is-not-False, the N/A fallback, unavailable git, clean-head, and a decreasing count that must not mint a poll sample. Independent sibling of `test_stats_summary_render.py`; see its header for why both were kept.
 - `tests/test_stats_summary_target_summary.py` -- W5.5 (F-D8): the per-split regression target summary. The stdlib `regression_target_summary` (mean / population std / min / max / finite fraction; NaN and ±Inf count toward `n` and against `finite_fraction`; an empty split is `None`, not 0/0; train / val / test order); `build_stats` carries it as `dataset.target_summary` and turns an error into a degraded-mode note; `summary.md` prints one line per split; the driver's `_regression_target_summary` on the committed audited artifact (1346 / 176 / 176 windows, all finite, the numpy reference moments) and its silent / reasoned `None` branches (no `dataset_id`, no `y_reg_*`, fetch failure, unreadable body, numpy absent) -- none raises. Hermetic (`_http_bytes` replaced in-process).
 - `tests/test_canopy_poller_inventory.py` -- The canopy poller census that can certify a PARTIAL inventory -- a census counting the pollers it found, not the pollers that exist, reports completeness it cannot know.

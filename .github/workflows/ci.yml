@@ -1168,6 +1168,8 @@ jobs:
           python3 -m unittest -v tests/test_register_close_protocol.py
           # tests/test_stats_summary_render.py: `summary.md` scrape-honesty line collection: which lines the renderer must emit, the conditional class-distribution line, the reason sub-bullet, and `present`/`written` key precedence.
           python3 -m unittest -v tests/test_stats_summary_render.py
+          # tests/test_theta_zero_is_set.py: a recurrence theta of 0 or 0.0 is explicit, and a service.default_theta of 0 or 0.0 is the service default. The precedence tests use 0.5 and 91.0, so a truthiness check would still pass and would call a zero theta data-driven.
+          python3 -m unittest -v tests/test_theta_zero_is_set.py
           # tests/test_stats_summary_git_and_confirmed.py: The `summary.md` scrape tri-state and git provenance the producer suite cannot see -- `confirmed` None-is-not-False, the N/A fallback, unavailable git, clean-head, and a decreasing count that must not mint a poll sample. Independent sibling of `test_stats_summary_render.py`; see its header for why both were kept.
           python3 -m unittest -v tests/test_stats_summary_git_and_confirmed.py
           # tests/test_stats_summary_target_summary.py: W5.5 (F-D8) -- the per-split regression target summary. The stdlib
