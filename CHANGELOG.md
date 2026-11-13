@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.5] - 2026-11-13
+
 ### Security
 
 - **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (owner ruling
@@ -22,13 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the floors, as do `docs/REFERENCE.md`'s two **Current Version** cells (which still read 0.4.1 and 0.7.1), its
     observability `sentry` extra row (0.4.2 requires `sentry-sdk[fastapi]>=2.35.0`, and the row said `>=2.0.0`), its
     service-core **Meta pin** row and `juniper-service-core/README.md`'s pin advice. The compatibility matrix's
-    `0.11.x` row moves its `juniper-observability` cell with them, and the paragraph above it says that the published
-    0.11.4 declares `>=0.4.1`; the sentence naming the release moves at the 0.11.5 cut.
+    `0.11.x` row moves its `juniper-observability` cell with them, and the paragraph above it names 0.11.5 as the
+    release that raises both floors.
     `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`'s "Current truth" for the service-core pin moves too: it still read
     `>=0.2.0,<0.8.0`, the floor before 0.11.1's.
   - The floors reach `pip` users with juniper-ml 0.11.5. The consumers' own floors (juniper-data, juniper-cascor,
-    juniper-canopy and juniper-recurrence) move in each one's next release PR, by the same day's ruling; their locks
-    already pin both releases.
+    juniper-canopy and juniper-recurrence) move in each one's next release PR, by the same day's ruling; their
+    `requirements.lock` files already pin both releases.
 
 ### Added
 
@@ -49,57 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Records: `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` (the inventory), `util/ad-hoc/2026-10-26_guard_live_e2e_servers.py`
     (wrote the seven reaper guards) and `util/ad-hoc/2026-10-26_session_tmpdir_hook_probe.py` (the SessionStart hook,
     its known answers and its installer).
-
-### Changed
-
-- **Fixed temp paths instead of the system temp dir** (the 2026-10-26 repo `tmp/` rule).
-  - `scripts/wake_the_claude.bash` exports `TMPDIR` / `TMP` / `TEMP` (the starting Juniper repo's primary `tmp/`, else
-    juniper-ml's) and `CLAUDE_CODE_TMPDIR` (juniper-ml's, as `~/.claude/settings.json` sets it), and refuses to launch
-    when no `tmp/` can be made. It also exports `GIT_CEILING_DIRECTORIES` at the `tmp/` dirs, so git run under a
-    `TMPDIR` inside a checkout does not find the enclosing checkout; the SessionStart hook in
-    `util/ad-hoc/2026-10-26_session_tmpdir_hook_probe.py` writes the same list (6 of 6 known answers pass).
-  - Five tests that build a "not a git repository" fixture set `GIT_CEILING_DIRECTORIES` in their subprocess env
-    (`tests/test_configure_commit_signing.py`, `tests/test_predict_merge.py`, `tests/test_prompt_discovery.py`); no
-    assertion changed.
-  - `juniper-check-doc-links` gets `--exclude tmp` in the pre-commit hook, `ci.yml`, `docs-full-check.yml` (both
-    invocations), `AGENTS.md` and the cheatsheet: it walks the tree, so scratch markdown under `tmp/` failed it locally.
-  - `util/isolated_stack.bash` defaults its run dir to the FIXED `tmp/juniper-e2e` of the juniper-ml primary checkout,
-    never derived from `TMPDIR`; `util/ad-hoc/2026-09-04_canopy_verify_instance.bash` follows it.
-  - `util/experiment_stack.bash` falls back to juniper-ml's primary `tmp/juniper-experiments` for its lock root when
-    `XDG_RUNTIME_DIR` is unset.
-  - `util/host_state_probe.bash`, `util/headless_signing_preflight.bash` and `util/ad-hoc/watch_fable5_availability.bash`
-    make their scratch dir under `TMPDIR`, else the checkout's `tmp/` (no `git`), and
-    `tests/test_headless_signing_preflight.py`'s socket dir no longer uses `/tmp`.
-  - `AGENTS.md` gains a resident hazard and § Temporary files, and drops § Script placement's "/tmp as a scratch
-    workspace" exception. § Requirements (JR-ID) moved to `docs/REFERENCE.md` to pay for them (25930 -> 25991 chars).
-  - The operative procedures that wrote under `/tmp` now use `tmp/`: the PyPI publish, worktree cleanup, YubiKey
-    key-to-card and Docker Hub secret procedures, the SOPS guide (the new age key goes beside the old one), the
-    isolated-stack checklist, the release-train runbook, `docs/REFERENCE.md`, the developer cheatsheet and the
-    Template Agent's standing rule.
-
-- **The owner's 2026-10-26 rulings on `tmp/`**, quoted in section 1 of
-  `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`: the doc-link checker and local Docker
-  builds ignore `tmp/`; pytest does not; a counting script chooses its scope deliberately (the owner's revision, later
-  the same day); full-tree repo copies and log copies may live there; and a work arc's `tmp/` file is kept until four
-  conjunctive conditions hold (that doc's section 6).
-  - `--exclude tmp` reaches the remaining doc-link checker invocations: two more cheatsheet rows, `docs/REFERENCE.md`'s
-    Docs Full Check summary and `juniper-doc-tools/README.md` (CLI and library examples). The `--version` smoke steps
-    walk nothing. `--exclude` matches any path component, so a nested `juniper-*/tmp/` is covered too (measured).
-  - pytest: no `norecursedirs`, `--ignore` or `collect_ignore` names `tmp` at the root, in the six sub-packages or in
-    the three `conftest.py` files, so nothing changed; `testpaths` keeps a bare `pytest` in `tests/`.
-  - Docker: juniper-ml has no build context (no Dockerfile, Containerfile, compose file or `.dockerignore`, the
-    sub-packages included).
-  - The owner's revised search ruling: a script that counts matches with `grep` or `find` searches the repo with its
-    `tmp/` excluded, or `tmp/` alone, and both only for a stated edge case; existing counting scripts are to be
-    modified to make that choice explicit, not left to `.gitignore` or a tool's defaults. The convention doc's new
-    section 11 documents the juniper-ml counting sites still owed that change (ten rows, twelve files), as the owner
-    asked; none of them is modified here. The ten sibling repos report theirs in their own PRs.
-  - `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` (0.3.0) makes the choice: by default the repo with `tmp/` excluded by
-    the explicit root-anchored glob `!tmp/**` (not by ripgrep's `.gitignore` handling), and with `--tmp-only` the
-    `tmp/` alone, its own ignore files disregarded, reported as a `scratch` class.
-  - `AGENTS.md` § Temporary files gains the rulings and drops the "tree walkers must skip `tmp/`" bullet they
-    supersede (26390 -> 27404 of 28000 chars). The convention doc gains them in sections 1, 4.7, 4.8 (new), 6, 9, 10
-    and 11 (new), and the Template Agent's standing rules gain `repo_tmp_rulings`.
 
 - **`HARCOT` joins the `notes/` repository tokens (2026-11-10).** juniper-harcot, the private
   equities-analysis repository built on juniper-recurrence, names its notes
@@ -157,7 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     tests are rewritten against `main` after #2438 and #2468 (the `--` before the prompt, `-v` reporting Claude Code's
     version, remote control on by default), and #2407's mypy error is fixed. #2403's effort test keeps only its
     `--effort 1` half: its `--effort 0` half pinned `--effort auto`, which Claude Code rejects ("Unknown --effort
-    value"), so the script's default is left as an open question rather than locked in.
+    value"), so that carrier left the script's default open; the launchers entry under Fixed, below, sets it to
+    `max`.
   - **From two docs drafts**, the Test Suite Reference sentences this block owns: #2424's on the `--getglobalstate`
     line in `tests/test_host_state_check.py`'s entry, and #2432's on when `aggregate` falls back from `stats.json`
     in `tests/test_run_suite.py`'s, each without its link to a section only the docs carrier adds.
@@ -191,7 +143,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   now; and juniper-ml#2271's one setting moved to user settings, with its branch deleted. Later rulings decide that
   the agent guard's brace cap is to fail closed, that the gitleaks fix is to be ported to the seven other
   repositories that run the action, and that four more defects found while the first fixes were built are to be
-  fixed, each in its own PR; none of these has landed yet. §5's six manifests and render config are archived under
+  fixed, each in its own PR; none of these had landed when this record merged. Since then the brace-cap change and the
+  two `juniper-service-core` fixes among those four (the broadcast-drop and stop-then-start entries under Fixed, below)
+  have landed in this repository. §5's six manifests and render config are archived under
   `reports/2026-11-08_flood4-disposition/`, from which §5 re-rendered byte for byte (the renderer also reads each
   PR's live state). The arc's 160 `util/ad-hoc/2026-11-07_flood4_*` and `2026-11-08_flood4_*` scripts, from the
   nine of its worktrees that held them, are kept as provenance. Before upload they were made to pass gates G-TMP
@@ -200,6 +154,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   handoff and its successor are archived under `prompts/thread-handoff_automated-prompts/`.
 
 ### Changed
+
+- **Fixed temp paths instead of the system temp dir** (the 2026-10-26 repo `tmp/` rule).
+  - `scripts/wake_the_claude.bash` exports `TMPDIR` / `TMP` / `TEMP` (the starting Juniper repo's primary `tmp/`, else
+    juniper-ml's) and `CLAUDE_CODE_TMPDIR` (juniper-ml's, as `~/.claude/settings.json` sets it), and refuses to launch
+    when no `tmp/` can be made. It also exports `GIT_CEILING_DIRECTORIES` at the `tmp/` dirs, so git run under a
+    `TMPDIR` inside a checkout does not find the enclosing checkout; the SessionStart hook in
+    `util/ad-hoc/2026-10-26_session_tmpdir_hook_probe.py` writes the same list (6 of 6 known answers pass).
+  - Five tests that build a "not a git repository" fixture set `GIT_CEILING_DIRECTORIES` in their subprocess env
+    (`tests/test_configure_commit_signing.py`, `tests/test_predict_merge.py`, `tests/test_prompt_discovery.py`); no
+    assertion changed.
+  - `juniper-check-doc-links` gets `--exclude tmp` in the pre-commit hook, `ci.yml`, `docs-full-check.yml` (both
+    invocations), `AGENTS.md` and the cheatsheet: it walks the tree, so scratch markdown under `tmp/` failed it locally.
+  - `util/isolated_stack.bash` defaults its run dir to the FIXED `tmp/juniper-e2e` of the juniper-ml primary checkout,
+    never derived from `TMPDIR`; `util/ad-hoc/2026-09-04_canopy_verify_instance.bash` follows it.
+  - `util/experiment_stack.bash` falls back to juniper-ml's primary `tmp/juniper-experiments` for its lock root when
+    `XDG_RUNTIME_DIR` is unset.
+  - `util/host_state_probe.bash`, `util/headless_signing_preflight.bash` and `util/ad-hoc/watch_fable5_availability.bash`
+    make their scratch dir under `TMPDIR`, else the checkout's `tmp/` (no `git`), and
+    `tests/test_headless_signing_preflight.py`'s socket dir no longer uses `/tmp`.
+  - `AGENTS.md` gains a resident hazard and § Temporary files, and drops § Script placement's "/tmp as a scratch
+    workspace" exception. § Requirements (JR-ID) moved to `docs/REFERENCE.md` to pay for them (25930 -> 25991 chars).
+  - The operative procedures that wrote under `/tmp` now use `tmp/`: the PyPI publish, worktree cleanup, YubiKey
+    key-to-card and Docker Hub secret procedures, the SOPS guide (the new age key goes beside the old one), the
+    isolated-stack checklist, the release-train runbook, `docs/REFERENCE.md`, the developer cheatsheet and the
+    Template Agent's standing rule.
+
+- **The owner's 2026-10-26 rulings on `tmp/`**, quoted in section 1 of
+  `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`: the doc-link checker and local Docker
+  builds ignore `tmp/`; pytest does not; a counting script chooses its scope deliberately (the owner's revision, later
+  the same day); full-tree repo copies and log copies may live there; and a work arc's `tmp/` file is kept until four
+  conjunctive conditions hold (that doc's section 6).
+  - `--exclude tmp` reaches the remaining doc-link checker invocations: two more cheatsheet rows, `docs/REFERENCE.md`'s
+    Docs Full Check summary and `juniper-doc-tools/README.md` (CLI and library examples). The `--version` smoke steps
+    walk nothing. `--exclude` matches any path component, so a nested `juniper-*/tmp/` is covered too (measured).
+  - pytest: no `norecursedirs`, `--ignore` or `collect_ignore` names `tmp` at the root, in the six sub-packages or in
+    the three `conftest.py` files, so nothing changed; `testpaths` keeps a bare `pytest` in `tests/`.
+  - Docker: juniper-ml has no build context (no Dockerfile, Containerfile, compose file or `.dockerignore`, the
+    sub-packages included).
+  - The owner's revised search ruling: a script that counts matches with `grep` or `find` searches the repo with its
+    `tmp/` excluded, or `tmp/` alone, and both only for a stated edge case; existing counting scripts are to be
+    modified to make that choice explicit, not left to `.gitignore` or a tool's defaults. The convention doc's new
+    section 11 documents the juniper-ml counting sites still owed that change (ten rows, twelve files), as the owner
+    asked; none of them is modified here. The ten sibling repos report theirs in their own PRs.
+  - `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` (0.3.0) makes the choice: by default the repo with `tmp/` excluded by
+    the explicit root-anchored glob `!tmp/**` (not by ripgrep's `.gitignore` handling), and with `--tmp-only` the
+    `tmp/` alone, its own ignore files disregarded, reported as a `scratch` class.
+  - `AGENTS.md` § Temporary files gains the rulings and drops the "tree walkers must skip `tmp/`" bullet they
+    supersede (26390 -> 27404 of 28000 chars). The convention doc gains them in sections 1, 4.7, 4.8 (new), 6, 9, 10
+    and 11 (new), and the Template Agent's standing rules gain `repo_tmp_rulings`.
 
 - **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
   session turns on remote control (owner rulings, 2026-11-06).** In `scripts/wake_the_claude.bash` (now 1.1.0), `-v`
@@ -233,7 +236,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   captured logs there can fail it. On 2026-11-08 the primary checkout failed with 2,424 broken-link lines,
   every one under `tmp/`. With `--exclude tmp` it passes: 2,365 files scanned, every link valid. This
   implements the 2026-10-26 owner ruling for the
-  hook only. The hunk is byte-identical to juniper-ml#2360's, so that PR still merges cleanly; it carries
+  hook only. The hunk is byte-identical to juniper-ml#2360's, which has since merged (2026-11-12 UTC) and carries
   the CI and documented invocations. `--exclude` matches a whole path component, so only directories named
   exactly `tmp` are skipped; no tracked file lives in one.
   `util/ad-hoc/2026-11-08_doc_links_tmp_exclusion_check.py` reads the hook's arguments from
@@ -404,7 +407,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pause release on a paused completion or failure also wakes such a `fit` if it is waiting at the
   shared pause gate, and a start is then accepted beside it. The owner has ruled that this race gets
   its own fix, in its own PR (§8, ruling 11 of
-  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`); that fix is the
+  stop-then-start entry below, with which such a start is refused while the stopped `fit` still runs.
   - Pinned by `juniper-service-core/tests/test_lifecycle_paused_fit_return.py` (11 tests).
     `util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py` runs nine mutants of `manager.py`;
     each is killed by that file and by no other test. `util/ad-hoc/2026-11-08_paused_fit_wedge_doc_stamps.py`
@@ -469,6 +473,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and its cost, and keep the overlap for juniper-service-core 0.7.2 and earlier, which still have it.
   - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the next juniper-service-core
     release, 0.8.0.
+
+- **The orphan reaper protected the isolated stack only when its own `TMPDIR` matched the stack's.**
+  `util/reap_pytest_orphans.bash` derived the stack's protected run dir from `${TMPDIR:-/tmp}`, so a stack launched under
+  one `TMPDIR` and reaped under another had no pid-file protection, and every session sets `TMPDIR` now. It protects the
+  FIXED default (`util/juniper_repo_tmp.bash`), resolved after the arguments are parsed, plus, read-only, the legacy
+  `/tmp/juniper-e2e` and `${TMPDIR}/juniper-e2e` that older checkouts' stacks may still use. It exits 1, reaping nothing,
+  when it cannot resolve the default. `tests/test_reap_pytest_orphans.py` gains 8 tests and redirects the legacy roots.
 
 ## [0.11.4] - 2026-11-06
 
@@ -548,13 +559,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - turing's firewall condition passes. G-SEC still fails, on SIP (task C1) and the key exports (task C3).
 
 ### Fixed
-
-- **The orphan reaper protected the isolated stack only when its own `TMPDIR` matched the stack's.**
-  `util/reap_pytest_orphans.bash` derived the stack's protected run dir from `${TMPDIR:-/tmp}`, so a stack launched under
-  one `TMPDIR` and reaped under another had no pid-file protection, and every session sets `TMPDIR` now. It protects the
-  FIXED default (`util/juniper_repo_tmp.bash`), resolved after the arguments are parsed, plus, read-only, the legacy
-  `/tmp/juniper-e2e` and `${TMPDIR}/juniper-e2e` that older checkouts' stacks may still use. It exits 1, reaping nothing,
-  when it cannot resolve the default. `tests/test_reap_pytest_orphans.py` gains 8 tests and redirects the legacy roots.
 
 - **Cascor suites carry headline columns: `aggregate.csv` and `REPORT.md` gain `train_accuracy` and `val_accuracy`, a
   finished suite gains them without re-running, and a NaN or infinite value fails every acceptance band** (register row

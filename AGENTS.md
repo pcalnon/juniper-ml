@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.11.4
+**Version**: 0.11.5
 **Last Updated**: 2026-11-13
 
 ---
