@@ -2,23 +2,23 @@
 
 **Release Date:** 2026-11-13
 **Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Priority:** High: upgrade every environment installed through `juniper-ml[tools]` or `juniper-ml[all]`
 **Package Affected:** juniper-ml
 
 ---
 
-This is a security-bearing release of `juniper-ml` v0.11.5. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-package ships no code: its `[tools]` extra now floors `juniper-observability>=0.4.2`, the security patch that scrubs Sentry transactions, parsed cookies and four more credential headers, and `juniper-service-core>=0.7.2,<0.8.0`, so upgrading an environment through `juniper-ml[tools]` or `juniper-ml[all]` also upgrades an older release of either. juniper-observability 0.4.2 is rated Medium in its own notes, and so is this release; juniper-service-core 0.7.2 is a plain patch. 0.4.2 does not close every path to Sentry: its notes list what stays open for 0.4.3, query strings and Sentry Logs among them. `[servers]` and `[recurrence]` are unchanged: the newest juniper-canopy, juniper-cascor, juniper-data and juniper-recurrence releases still accept juniper-observability 0.4.1 and juniper-service-core 0.7.1, and each is to raise its own floors in its next release (owner ruling 2026-11-09).
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-ml` |
 | **Fixed in** | 0.11.5 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | Fixed by juniper-observability 0.4.2, which this release floors: sensitive information sent to an external service ([CWE-201](https://cwe.mitre.org/data/definitions/201.html)) |
+| **Advisory** | None. Internal findings, fixed in juniper-observability 0.4.2, which its own notes rate Medium: round-42 finding F2 (2026-09-24) and the validation of consolidated-plan item P3-07 (2026-11-08); there is no CVE or Dependabot alert |
 
 ---
 
