@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.67
-**Date**: 2026-11-12
+**Version**: 1.0.68
+**Date**: 2026-11-13
 **Project**: juniper-ml
 
 ---
@@ -689,6 +689,7 @@ Tip: a CAN-015 replay replaces that cascor's network. Bring the stack up with `u
 Tip: the shared `ReplaySession` (`POST /v1/snapshots/{id}/replay/control`) clamps speed to [-10, 10]. A magnitude below 0.1 stays `paused: false` and leaves the index.
 The thread sleeps `min(1/abs(speed), 0.5)`, so speed `1` advances every 0.5 s. Range `end` is exclusive, and an inverted range collapses.
 A `fit` that returns while the lifecycle is PAUSED settles COMPLETED (unreleased; first in the juniper-service-core release after 0.7.2): resume is then a 409 and a start runs a new `fit`. On 0.7.2 and earlier it stays PAUSED with `monitor.status` `completed`, resume reports STARTED with the thread already gone, and a start with data is refused (409) until `POST /v1/training/stop` or `/reset`.
+A start right after a stop or reset is a 409 (`Training cannot be started: The stopped run's fit is still running (a stop takes effect at its next event)`) until the stopped `fit` has ended (unreleased; first in juniper-service-core 0.8.0): retry it. A `fit` that does not end holds every start back; reset does not clear it, and the status keeps reading STOPPED. On 0.7.2 and earlier that start runs beside the stopped `fit`.
 [REFERENCE — Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion).
 
 Tip: F-CANOPY-027 is **12-slot dash-renderer starvation**, not missing wiring (FIXED canopy#507/#509/#511). Terminal render callbacks lose `sortPriority` DESC arbitration.
@@ -1243,7 +1244,7 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 - [Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) -- W0.8/W0.9 replay and matrix; exit 0 is not a passing crossval
 - [F-039 Store Probe](REFERENCE.md#f-039-store-probe) -- apply / soak / report / revert; read the whole series; `--target topology` refuses
 - [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) -- throwaway wrapper on `8113`/`8214`/`8063`; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start
-- [Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion) -- shared replay clamps speed to [-10, 10]; below 0.1 the index stays; a fit that returns while paused settles COMPLETED (unreleased; 0.7.2 and earlier stay wedged, PAUSED and then STARTED after a resume, until stop or reset)
+- [Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion) -- shared replay clamps speed to [-10, 10]; below 0.1 the index stays; a fit that returns while paused settles COMPLETED (unreleased; 0.7.2 and earlier stay wedged, PAUSED and then STARTED after a resume, until stop or reset); a start while a stopped run's fit is still running is a 409 (unreleased; 0.7.2 and earlier run it beside that fit)
 - [Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- exit **2** is P-5 free-threaded; exit **4** is May-7 wheel layout
 - [Environment Floor Drift — Malformed Input](REFERENCE.md#malformed-operator-input) -- a truthy non-mapping exits 2 with a reason; a bad extra does not drop `dependencies` floors
 - [MEMORY.md Index Check](REFERENCE.md#memorymd-index-check) -- local `MEMORY.md` gate; hook-not-line; CI cannot see `~/.claude`
@@ -1269,6 +1270,6 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 
 ---
 
-**Last Updated:** 2026-11-12
-**Version:** 1.0.67
+**Last Updated:** 2026-11-13
+**Version:** 1.0.68
 **Maintainer:** Paul Calnon

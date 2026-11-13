@@ -18,17 +18,22 @@ a fresh ``fit``. A stop that races the completion still settles STOPPED, and a r
 before ``fit`` returns still continues the same run. A ``fit`` that raises while paused settles
 FAILED and releases the pause as well.
 
-The training thread settles only a run it still owns. A start issued right after a stop can make
-a newer run current while the stopped run's ``fit`` is still running: before that ``fit`` reaches
-an event (the start clears the stop, so the ``fit`` keeps running), or while it is still unwinding
-from the stop. The ``test_a_stopped_runs_*`` tests pin that the stale thread's settle leaves the
-newer run alone. Their stale ``fit`` calls emit no event after the newer start; a real stale
-``fit`` still does, through the same sink. On 0.7.2 and earlier the stale thread completed a newer
-run that was still training (a third start was then accepted beside it), failed it, or wrote its
-monitor context ``stopped``; and the paused-completion branch, unguarded, would also have resumed
-a newer paused run and completed it mid-``fit``. The run's result is recorded under the same
-guard, so a ``fit`` whose run was stopped records none, superseded or not, unless a refused start
-cleared the stop first (see ``start_training``).
+The training thread settles only a run it still owns. ``start_training`` now refuses a start while
+a stopped run's ``fit`` is still running (the stop-then-start race, pinned by
+``tests/test_lifecycle_stop_then_start.py``), so a newer run can no longer become current first.
+Before that refusal, a start issued right after a stop made a newer run current while the stopped
+run's ``fit`` was still running: before that ``fit`` reached an event (the start cleared the stop,
+so the ``fit`` kept running), or while it was still unwinding from the stop. The
+``test_a_stopped_runs_*`` tests rebuild that interleaving by clearing the stop before the start
+(``_start_beside_the_stopped_fit``), and pin that the ownership check, now a second line of
+defence, still keeps the stale thread's settle off the newer run. On 0.7.2 and earlier the stale
+thread completed a newer run that was still training (a third start was then accepted beside it),
+failed it, or wrote its monitor context ``stopped``; and the paused-completion branch, unguarded,
+would also have resumed a newer paused run and completed it mid-``fit``. The run's result is
+recorded under the same guard, so a ``fit`` whose run was stopped records none, superseded or
+not: no start can clear its stop while it is still running, because ``start_training`` refuses
+first (also from ``INVESTIGATING`` and ``REPLAYING``, where the stop used to be cleared before the
+state machine refused the start).
 """
 
 from __future__ import annotations
@@ -379,18 +384,30 @@ _NEW_RUNS = (("emit", "training_start"), ("gate", "new"))
 _NEW_PAUSES = (*_NEW_RUNS, ("emit", "epoch_end"), ("gate", "new-tail"))
 
 
-def _stop_then_start_at_once(mgr: ServiceLifecycleManager, model: _ScriptedModel) -> threading.Thread:
-    """Park run 1 before its next event, stop it, and start run 2 at once; return run 1's thread.
+def _start_beside_the_stopped_fit(mgr: ServiceLifecycleManager, X: np.ndarray, y: np.ndarray) -> dict[str, Any]:
+    """Start a newer run while the stopped run's ``fit`` is still running, as a start once could.
 
-    The start clears the stop before run 1's ``fit`` reaches an event, so that ``fit`` never sees
-    it and keeps running beside run 2, which parks at its ``new`` gate. Run 1's thread is no longer
-    the manager's.
+    ``start_training`` refuses that start while the stop is pending (the stop-then-start race;
+    ``tests/test_lifecycle_stop_then_start.py``). Clearing the stop first, as the start itself
+    used to, rebuilds the interleaving the refusal now prevents, so the tests below still pin the
+    ownership check behind it.
+    """
+    mgr._stop_event.clear()
+    return mgr.start_training(X, y)
+
+
+def _stop_then_start_at_once(mgr: ServiceLifecycleManager, model: _ScriptedModel) -> threading.Thread:
+    """Park run 1 before its next event, stop it, and start run 2 beside it; return run 1's thread.
+
+    The start lands with the stop cleared before run 1's ``fit`` reaches an event, so that ``fit``
+    never sees it and keeps running beside run 2, which parks at its ``new`` gate. Run 1's thread
+    is no longer the manager's.
     """
     X, y = _zeros()
     mgr.start_training(X, y)
     assert model.reached("old")
     assert mgr.stop_training()["state_machine"]["status"] == "STOPPED"
-    assert mgr.start_training(X, y)["state_machine"]["status"] == "STARTED"
+    assert _start_beside_the_stopped_fit(mgr, X, y)["state_machine"]["status"] == "STARTED"
     assert model.reached("new")
     return model.threads[0]
 
@@ -490,7 +507,7 @@ def test_a_stopped_runs_interrupt_leaves_a_newer_runs_monitor_alone(scripted) ->
     assert mgr.stop_training()["state_machine"]["status"] == "STOPPED"
     model.open("old")  # run 1's next event sees the stop, and the sink raises TrainingInterrupted
     assert model.reached("old-unwind")  # run 1's fit is still cleaning up when run 2 starts
-    assert mgr.start_training(X, y)["state_machine"]["status"] == "STARTED"
+    assert _start_beside_the_stopped_fit(mgr, X, y)["state_machine"]["status"] == "STARTED"
     assert model.reached("new")
     old_thread = model.threads[0]
     model.open("old-unwind")
@@ -534,11 +551,11 @@ def test_only_the_run_that_completes_records_its_result(scripted) -> None:
     assert 1 in model.results  # fit 1 returned a result ...
     assert mgr._last_result is None  # ... and it was not recorded
 
-    # Run 2 is stopped and run 3 started at once; run 2's fit then returns, its run superseded.
+    # Run 2 is stopped and run 3 started beside it; run 2's fit then returns, its run superseded.
     mgr.start_training(X, y)
     assert model.reached("b")
     assert mgr.stop_training()["state_machine"]["status"] == "STOPPED"
-    assert mgr.start_training(X, y)["state_machine"]["status"] == "STARTED"
+    assert _start_beside_the_stopped_fit(mgr, X, y)["state_machine"]["status"] == "STARTED"
     assert model.reached("c")
     stale_thread = model.threads[1]
     model.open("b")

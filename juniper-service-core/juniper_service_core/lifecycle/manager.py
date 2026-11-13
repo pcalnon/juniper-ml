@@ -23,10 +23,12 @@ while paused and raises :class:`TrainingInterrupted` on stop. A model that emits
 during ``fit`` (the model-core contract encourages exactly this) is therefore interruptible
 with no model-specific hook. A pause that arrives after the last boundary cannot hold ``fit``:
 it returns, and the run settles ``COMPLETED`` as if the pause had not been requested. A stop,
-likewise, is seen only at the next boundary, and a start issued before then clears it, so the
-stopped run's ``fit`` can keep running beside the new run, and the sink applies its events to
-the new run. When that ``fit`` ends, its thread settles nothing, because the newer run is not
-its own.
+likewise, is seen only at the next boundary (a ``fit`` that emits no events runs until it
+returns), so ``start_training`` refuses a start while a run it launched has been stopped or
+reset and its ``fit`` has not ended: that start would clear the stop, and the stopped ``fit``
+would run on beside the new one, its events landing in the new run. The check reads the
+training thread and the pending stop, so a ``fit`` driven by a direct ``run()`` on another
+thread is outside it, as it is outside ``is_active()``.
 """
 
 from __future__ import annotations
@@ -162,13 +164,30 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
 
         ``fit_kwargs`` is forwarded verbatim to ``model.fit`` (e.g. sequence auxiliaries
         ``dt`` / ``readout_mask``). Returns the post-transition status dict. Raises
-        ``RuntimeError`` if no model is attached or a run is already active.
+        ``RuntimeError`` if no model is attached, a run is already active, or a stopped run's
+        ``fit`` has not ended yet.
         """
         with self._lock:
             if self.model is None:
                 raise RuntimeError("No model attached")
             if self.state_machine.is_active():
                 raise RuntimeError("Training already in progress")
+            # The stop-then-start race. A stop is seen only at fit's next event (a fit that emits
+            # none runs until it returns), and this start would clear it: the stopped run's fit
+            # would then never see the stop, and would keep running beside the new run, on the
+            # same model, through the same event sink and pause gate. So the start is refused
+            # until that fit has ended, before anything below is touched. Only this method clears
+            # the stop, and it does so before it launches a thread, so a live previous thread
+            # with the stop set is a run that a stop, reset or shutdown was requested for and
+            # whose fit has not ended (or, for an instant, one that has and whose thread is
+            # exiting). A wait could not replace the refusal: the stopped thread needs this lock
+            # to settle, so a wait would have to release it and check again, and a fit that emits
+            # no events outlasts any bound. The check reads self._thread, which only this method
+            # sets, so a fit driven by a direct run() on another thread is outside it, as it is
+            # outside is_active().
+            previous = self._thread
+            if previous is not None and previous.is_alive() and self._stop_event.is_set():
+                raise RuntimeError("The stopped run's fit is still running (a stop takes effect at its next event)")
             self._train_x, self._train_y = X, y
             self._val_x, self._val_y = X_val, y_val
             self._dataset_name = dataset_name
@@ -281,20 +300,19 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         """Background thread entry: run the body, then settle the state machine.
 
         Every branch settles only a run this thread still owns (``self._thread`` is this
-        thread). A stop is honoured at ``fit``'s next event, so a start issued right after a
-        stop replaces ``self._thread`` while the stopped run's ``fit`` may still be running. When
-        that ``fit`` returns or raises, the newer run is not this thread's to settle: its state,
-        its pause gate, its monitor context, its error and its result are all left alone. Only
-        the settle is fenced. Until that ``fit`` ends, its events still go through
-        :meth:`_handle_event`, which applies them to the newer run's monitor and phase.
+        thread). :meth:`start_training` refuses a start while a stopped run's ``fit`` is still
+        running, so the stop stays set, that ``fit`` sees it at its next event, and a start after
+        a stop or reset no longer makes a newer run current before this thread has settled. The
+        ownership check is a second line of defence behind that refusal: were a newer run made
+        current first, this thread would leave its state, its pause gate, its monitor context,
+        its error and its result alone.
 
         A ``fit`` that returns normally with no stop requested settles ``COMPLETED`` even when
         the run is paused, so a normal return never leaves the machine ``PAUSED`` with no thread
         behind it. A ``fit`` that raises settles ``FAILED`` and releases the pause gate too. The
-        manager has one pause gate for every ``fit`` it runs, so either release also wakes a
-        stopped run's ``fit`` waiting at it: one whose stop a newer start cleared, and which
-        reached its next event while that newer run was paused. It runs on with no command, and
-        a start is then accepted beside it.
+        manager has one pause gate for every ``fit`` it runs. A stopped run's ``fit`` keeps its
+        stop (no start clears it while that ``fit`` is running), so at its next event it unwinds
+        instead of waiting at the gate, and neither release wakes one.
 
         A ``fit`` that raises after a stop or reset is still recorded as a failure: this branch
         checks ownership, not the stop, and ``mark_failed`` refuses ``STOPPED``, so the machine
