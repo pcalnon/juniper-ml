@@ -44,11 +44,11 @@ The pyproject pins matching `juniper-ml` 0.11.4:
 | `juniper-data-client`                         | `>=0.5.0`        |
 | `juniper-doc-tools`                           | `>=0.1.0,<0.2.0` |
 | `juniper-model-core`                          | `>=0.1.0,<0.4.0` |
-| `juniper-observability`                       | `>=0.4.1`        |
+| `juniper-observability`                       | `>=0.4.2`        |
 | `juniper-recurrence`                          | `>=0.8.1,<0.9.0` |
 | `juniper-recurrence-client`                   | `>=0.3.0,<0.4.0` |
 | `juniper-recurrence-model`                    | `>=0.6.0,<0.7.0` |
-| `juniper-service-core`                        | `>=0.7.1,<0.8.0` |
+| `juniper-service-core`                        | `>=0.7.2,<0.8.0` |
 
 For full-stack Docker deployment and integration tests, see [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy). For the non-Docker host-mode stack, use the [Host Orchestration Utilities](docs/REFERENCE.md#host-orchestration-utilities) runbook in this repository.
 
@@ -90,7 +90,7 @@ juniper-ml ──hosts independent package workflows──> juniper-observabilit
 | `clients`    | `juniper-data-client>=0.5.0`, `juniper-cascor-client>=0.8.0`                                     |
 | `worker`     | `juniper-cascor-worker>=0.4.0`                                                                   |
 | `servers`    | `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`, `juniper-cascor[api,juniper-data]>=0.12.0`, `juniper-data[api]>=0.17.1` |
-| `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.4.1`, `juniper-service-core>=0.7.1,<0.8.0` |
+| `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.4.2`, `juniper-service-core>=0.7.2,<0.8.0` |
 | `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)         |
 | `recurrence` | `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.1,<0.9.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
 | `all`        | All of the above                                                                                 |

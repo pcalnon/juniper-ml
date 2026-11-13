@@ -128,8 +128,8 @@
 |             | `juniper-config-tools`                                                                   | `>=0.1.0,<0.2.0`  |
 |             | `juniper-doc-tools`                                                                      | `>=0.1.0,<0.2.0`  |
 |             | `juniper-model-core`                                                                     | `>=0.1.0,<0.4.0`  |
-|             | `juniper-observability`                                                                  | `>=0.4.1`         |
-|             | `juniper-service-core`                                                                   | `>=0.7.1,<0.8.0`  |
+|             | `juniper-observability`                                                                  | `>=0.4.2`         |
+|             | `juniper-service-core`                                                                   | `>=0.7.2,<0.8.0`  |
 | `doc-tools` | `juniper-doc-tools` (back-compat alias for the doc-tools entry in `tools`)               | `>=0.1.0,<0.2.0`  |
 | `recurrence`| `juniper-recurrence-model`                                                               | `>=0.6.0,<0.7.0`  |
 |             | `juniper-recurrence`                                                                     | `>=0.8.1,<0.9.0`  |
@@ -181,7 +181,7 @@ pip install juniper-ml[all]       # Everything
 
 ## Ecosystem Compatibility
 
-`juniper-ml` 0.11.4 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups. The `0.6.x` row is kept for history and covers 0.7.x too -- 0.7.0/0.7.1 changed no floor. The `0.11.x` row is 0.11.4's, and its floors are 0.11.2's. 0.11.3 and 0.11.4 move no floor in a column: 0.11.3 requests the three servers with their own extras (juniper-ml#2062; the extras table above names them), and an extras marker has no column here. 0.11.0 and 0.11.1 published `juniper-data>=0.17.0` and `juniper-cascor>=0.11.0`, which 0.11.2 raised to `>=0.17.1` and `>=0.12.0`. 0.11.0 published `juniper-observability>=0.2.0`, which 0.11.1 raised to `>=0.4.1`; 0.11.1 also raised `juniper-service-core`, which has no column here, from `>=0.2.0,<0.8.0` to `>=0.7.1,<0.8.0`. The three `recurrence` pins have no columns here. 0.11.4 sets them to `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.1,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0` (see the extras table above): it raises `juniper-recurrence` to `>=0.8.1`, the release that floors `juniper-model-core[crossval]>=0.3.0`. 0.11.0 through 0.11.3 published `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`, and 0.8.0 through 0.10.0 published `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`.
+`juniper-ml` 0.11.4 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups. The `0.6.x` row is kept for history and covers 0.7.x too -- 0.7.0/0.7.1 changed no floor. The `0.11.x` row is 0.11.4's, and its floors are 0.11.2's, except the `juniper-observability` cell: it holds `main`'s floor, `>=0.4.2` (unreleased; first in juniper-ml 0.11.5), where the published 0.11.4 declares `>=0.4.1`. 0.11.3 and 0.11.4 move no floor in a column: 0.11.3 requests the three servers with their own extras (juniper-ml#2062; the extras table above names them), and an extras marker has no column here. 0.11.0 and 0.11.1 published `juniper-data>=0.17.0` and `juniper-cascor>=0.11.0`, which 0.11.2 raised to `>=0.17.1` and `>=0.12.0`. 0.11.0 published `juniper-observability>=0.2.0`, which 0.11.1 raised to `>=0.4.1`; 0.11.1 also raised `juniper-service-core`, which has no column here, from `>=0.2.0,<0.8.0` to `>=0.7.1,<0.8.0`; `main` raises it to `>=0.7.2,<0.8.0` (unreleased; first in juniper-ml 0.11.5). The three `recurrence` pins have no columns here. 0.11.4 sets them to `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.1,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0` (see the extras table above): it raises `juniper-recurrence` to `>=0.8.1`, the release that floors `juniper-model-core[crossval]>=0.3.0`. 0.11.0 through 0.11.3 published `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.0,<0.9.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`, and 0.8.0 through 0.10.0 published `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0` and `juniper-recurrence-client>=0.3.0,<0.4.0`.
 
 | juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools  | juniper-observability |
 |------------|--------------|----------------|----------------|---------------------|-----------------------|-----------------------|------------------|--------------------|-----------------------|
@@ -189,7 +189,7 @@ pip install juniper-ml[all]       # Everything
 | 0.8.x      | >=0.14.0     | >=0.11.0       | >=0.7.0        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 | 0.9.x      | >=0.14.0     | >=0.11.0       | >=0.8.1        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 | 0.10.x     | >=0.15.0     | >=0.11.0       | >=0.8.1        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
-| 0.11.x     | >=0.17.1     | >=0.12.0       | >=0.9.0        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.4.1               |
+| 0.11.x     | >=0.17.1     | >=0.12.0       | >=0.9.0        | >=0.5.0             | >=0.8.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.4.2               |
 
 ### Service Ports
 
@@ -8817,18 +8817,18 @@ Services that don't need the full meta-package can still depend on `juniper-obse
 | Field                 | Value                                                                      |
 |-----------------------|----------------------------------------------------------------------------|
 | **PyPI Name**         | `juniper-observability`                                                    |
-| **Current Version**   | `0.4.1`                                                                    |
+| **Current Version**   | `0.4.2`                                                                    |
 | **Python**            | `>=3.12`                                                                   |
 | **Importable Module** | `juniper_observability`                                                    |
 | **Package Docs**      | [`../juniper-observability/README.md`](../juniper-observability/README.md) |
 
 Available extras:
 
-| Extra        | Additional packages          |
-|--------------|------------------------------|
-| `prometheus` | `prometheus-client>=0.20.0`  |
-| `sentry`     | `sentry-sdk[fastapi]>=2.0.0` |
-| `all`        | Both optional groups         |
+| Extra        | Additional packages           |
+|--------------|-------------------------------|
+| `prometheus` | `prometheus-client>=0.20.0`   |
+| `sentry`     | `sentry-sdk[fastapi]>=2.35.0` |
+| `all`        | Both optional groups          |
 
 `configure_sentry` never sends frame-local variables (`include_local_variables=False`; there is no parameter to turn them back on), and its `before_send` hook also deletes frame `vars`. Both are first released in **0.4.1**. Why, and what a non-ASCII `X-API-Key` does to that path: [Non-ASCII API keys and Sentry frame locals](#non-ascii-api-keys-and-sentry-frame-locals).
 
@@ -8924,10 +8924,10 @@ python3 -m unittest -v tests/test_subpackage_py_typed.py
 | Field                 | Value                                                                    |
 |-----------------------|--------------------------------------------------------------------------|
 | **PyPI Name**         | `juniper-service-core`                                                   |
-| **Current Version**   | `0.7.1`                                                                  |
+| **Current Version**   | `0.7.2`                                                                  |
 | **Python**            | `>=3.12`                                                                 |
 | **Importable Module** | `juniper_service_core`                                                   |
-| **Meta pin**          | `juniper-service-core>=0.7.1,<0.8.0` under `[tools]` / `[all]`            |
+| **Meta pin**          | `juniper-service-core>=0.7.2,<0.8.0` under `[tools]` / `[all]`            |
 | **Package Docs**      | [`../juniper-service-core/README.md`](../juniper-service-core/README.md) |
 
 #### HTTP middleware contracts

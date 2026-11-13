@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (owner ruling
+  2026-11-09).** They were `>=0.4.1` and `>=0.7.1,<0.8.0`. By default pip upgrades a dependency only when the
+  installed one no longer satisfies its range, so `pip install -U juniper-ml[tools]` left an environment that held
+  0.4.1 and 0.7.1 on them.
+  - **juniper-observability 0.4.2** is the security patch in which `configure_sentry` scrubs Sentry transactions as
+    well as error events, redacts the request's parsed cookies and filters four more credential headers
+    (`notes/releases/RELEASE_NOTES_juniper-observability_v0.4.2.md`).
+  - **juniper-service-core 0.7.2**'s one module change rounds `FailedAuthThrottle`'s `Retry-After` up instead of
+    truncating it (`notes/releases/RELEASE_NOTES_juniper-service-core_v0.7.2.md`).
+  - The extras tables in `README.md` (both), `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with
+    the floors, as do `docs/REFERENCE.md`'s two **Current Version** cells (which still read 0.4.1 and 0.7.1), its
+    observability `sentry` extra row (0.4.2 requires `sentry-sdk[fastapi]>=2.35.0`, and the row said `>=2.0.0`), its
+    service-core **Meta pin** row and `juniper-service-core/README.md`'s pin advice. The compatibility matrix's
+    `0.11.x` row moves its `juniper-observability` cell with them, and the paragraph above it says that the published
+    0.11.4 declares `>=0.4.1`; the sentence naming the release moves at the 0.11.5 cut.
+    `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`'s "Current truth" for the service-core pin moves too: it still read
+    `>=0.2.0,<0.8.0`, the floor before 0.11.1's.
+  - The floors reach `pip` users with juniper-ml 0.11.5. The consumers' own floors (juniper-data, juniper-cascor,
+    juniper-canopy and juniper-recurrence) move in each one's next release PR, by the same day's ruling; their locks
+    already pin both releases.
+
 ### Added
 
 - **The repo `tmp/` convention: no file is written under `/tmp`** (owner directive, 2026-10-26;
