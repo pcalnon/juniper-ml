@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Backup Phase D, step 14: the remaining checks become two tools with tested predicates
+  (2026-11-11).** Until now each step of the sitting was a command block written by hand for one use,
+  and four of the sitting's corrections were defects in those blocks: a count of a log line the
+  wrapper never writes, a `--since` cut placed after the event it was for, a warning filter that
+  matched path text, and a parser that met a UTF-8 BOM and reported 0 entries without an error.
+  - `util/ad-hoc/yamaguchi_acceptance_probe.py` (new) prints one verdict line per acceptance
+    criterion of the backup design's section 9: AC-1, AC-2, AC-13, the job's option names, AC-5,
+    AC-6a, AC-7, AC-12, the newest run and its age, off-schedule starts, and the destination's
+    census and modes. It is read-only, runs as the operator, and never prints a warning's text, a
+    URL, the server's answer to a refused login, or an option value outside its allow-list.
+    `util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash` and
+    `util/systemd/yamaguchi-acceptance-probe.{service,timer}` put it on a daily user timer; the unit
+    runs copies under `~/.local/lib/yamaguchi-acceptance/`, not a checkout.
+  - `util/ad-hoc/2026-11-11_phase_d_finish.{bash,py}` (new) run the root steps as verbs: `plan`,
+    `drill {1,2}`, `aside`, `ac6`, `status`, `shred`. A drill's output must be one complete driver
+    run; its verdict is then recomputed from its numbers with AC-4's floors and must agree with the
+    driver's own result. `aside` copies every dlist of the destination, through descriptors on the
+    opened directory and the opened source. `plan` predicts what the first retention pass deletes,
+    from the retention port and the destination's real dlist list. The wrapper runs
+    `/usr/bin/python3 -I` under `env -i` with an allow-listed environment.
+  - A review on 2026-11-12, before any verb had run on the host, found three ways a drill could
+    read `PASS` without having passed (a `FATAL` beside a `RESULT`, a second run in the same file,
+    a sampled path with a newline in it), a stale snapshot that passed AC-6b by matching itself, a
+    prediction that sampled eight pass times and could miss a deletion between two of them, and a
+    probe whose `RESULT` could never read `PASS`. Each is fixed and is a test.
+    `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py` gains a dated correction:
+    Duplicati 2.4.0.0 keeps a partial fileset inside a frame without measuring the next interval
+    from it, so a partial one can change which fileset is deleted. That is why `aside` no longer
+    copies a predicted list.
+  - Tests, all CI-wired: `tests/test_yamaguchi_acceptance_probe.py` (92),
+    `tests/test_phase_d_finish.py` (128) and `tests/test_ac4_restore_drill.py` (23). The last one
+    absorbs the AC-4 driver's self-test, which lived in a gitignored `tmp/`; the regression job now
+    installs `cryptography` for it. `util/ad-hoc/2026-11-11_phase_d_tools_mutation_check.py` seeds
+    208 defects into the two tools, the wrapper and the deploy script; the suites kill all of them.
+  - `docs/REFERENCE.md` and `AGENTS.md` record the three suites (242 in all) and the two tools.
+
+### Fixed
+
+- **A test sent a real desktop alert, `Backup FAILED: duplicati-backup.service`, on every local run
+  (2026-11-13, juniper-ml#2559).** `tests/test_duplicati_scheduled_backup.py` gave its children
+  `PATH=<stubs>:/usr/bin:/bin` and wrote the `notify-send` stub in one test only, so another test ran
+  `util/duplicati_backup_failure.bash` against the real `notify-send`. The alert named a `failures.log` in
+  a temporary directory that was gone when the test ended; no backup was involved, and CI runners, which
+  have no desktop, showed nothing. Every fixture now writes a recording stub, children get a session bus
+  address that names no socket, and `TestFixtureReachesNoDesktop` pins both (35 tests, 32 before).
+
 ## [0.11.5] - 2026-11-13
 
 ### Security

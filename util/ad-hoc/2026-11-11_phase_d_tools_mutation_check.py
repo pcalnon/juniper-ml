@@ -45,7 +45,7 @@ DEPLOY = "util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash"
 PROBE_SUITE = "tests/test_yamaguchi_acceptance_probe.py"
 FINISH_SUITE = "tests/test_phase_d_finish.py"
 COPIED = [
-    PROBE, FINISH, WRAPPER, DEPLOY, PROBE_SUITE, FINISH_SUITE, "tests/duplicati_api_stub.py", "util/ad-hoc/yamaguchi_server_api.py", "util/ad-hoc/yamaguchi_watchdog.py", "util/ad-hoc/yamaguchi_server_db_snapshot.py",
+    PROBE, FINISH, WRAPPER, DEPLOY, PROBE_SUITE, FINISH_SUITE, "tests/duplicati_api_stub.py", "tests/redacted_env.py", "util/ad-hoc/yamaguchi_server_api.py", "util/ad-hoc/yamaguchi_watchdog.py", "util/ad-hoc/yamaguchi_server_db_snapshot.py",
     "util/ad-hoc/2026-11-09_ac4_restore_drill.py",
     "util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py", "util/systemd/yamaguchi-acceptance-probe.service", "util/systemd/yamaguchi-acceptance-probe.timer",
     "notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md",
