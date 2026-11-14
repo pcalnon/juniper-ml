@@ -1,5 +1,8 @@
 # Handoff: R-OBS-SC-2 follow-ups -- juniper-ml 0.11.5 at the owner's `pypi` gate; the guard + register PR, two consumer cuts, the 0.4.3 design prompt and plan v1.15.16 remain
 
+> **Updated 2026-11-14 by session `7d425759`: juniper-ml 0.11.5 is now on PyPI.** Read "Update, 2026-11-14" (the
+> next section) first; where it and the 11-13 record below disagree, the update holds. The 11-13 record is unchanged.
+
 **Written**: 2026-11-13 10:40Z by session `218ff61e` (listed in `ListAgents` as
 `r-obs-sc-2-follow-ups-five-prs-validated-opening-next`, ref `13c125`), which ends with this file.
 **Predecessors** (both on `main`; this file points into them instead of repeating them):
@@ -20,6 +23,123 @@ approval or a later merge changes. `tmp/fsf/handoff_text_check.py` compared each
 and each named path with the disk. One independent fact-checker then re-derived what those two do not cover; its
 findings are applied. A time is given only where a tool printed it. What this session was told by another, and did
 not re-derive, is marked "reported". Not checked by anyone but this session: that both review rounds ran on Opus.
+
+## Update, 2026-11-14 (session `7d425759`; read first)
+
+**Session** `7d425759` (`ListAgents`: `recurrence-equities-0-11-4-published-parent-agents-edited-plan-v1-15-14`, ref
+`9892ad`), worktree `.claude/worktrees/toasty-prancing-karp`. The owner opened it at 10:10:33Z with "continue work
+arc from handoff: juniper-ml/prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-07_recurrence-equities-0-11-4-published-parent-agents-edited-plan-v1-15-14.md"
+and "merge approval granted" (per-session; it does not carry). That 11-07 file is this line's ancestor, eight
+handoffs back: a session started from it continues from this file. All times are UTC, as a tool printed them.
+
+**Measured on 2026-11-14**
+
+- **juniper-ml 0.11.5 is published.** `pcalnon` approved run 43408809021's `pypi` gate ("approved for pypi"), and
+  Publish to PyPI ran 00:16:06-00:16:27Z. PyPI holds the wheel from 00:16:22Z and the sdist from 00:16:23Z; their
+  sha256 (`7b7e36ff72d4bc1c…`, `a52d70087a5e5864…`) equal TestPyPI's. `/pypi/juniper-ml/0.11.5/json` answers 200,
+  and its `requires_dist` holds `juniper-observability>=0.4.2; extra == "tools"` and
+  `juniper-service-core<0.8.0,>=0.7.2; extra == "tools"`. Item 1's condition is met; neither of its edits is made
+  (`docs/QUICK_START.md` lines 85 and 102 still read 0.11.4 on `main`).
+- **`main` is `76488449`** (22:15Z). After this file's #2563 came two handoffs (juniper-ml#2562, #2564) and the
+  backup arc's #2548 (merged 11:04:33Z), which touched `CHANGELOG.md`, `docs/REFERENCE.md` and `.github/workflows/ci.yml`: cite anchors in those
+  by text. The register, the plan, `tests/test_service_fork_drift.py` and `docs/QUICK_START.md` are unchanged since
+  `9238be21`.
+- **The guard** still hashes as item 2 says in logical-percolating-sparkle; byte-identical copies of both files sit
+  uncommitted in toasty-prancing-karp. **Its mutation check passes against each repository's `main`** (run at 10:20Z
+  through `util/ad-hoc/2026-11-12_run_with_blank_sentry_dsns.py`, with item 2's `--main-ref main --prefix …`
+  arguments): "control green; 5 pre-fix copies and 63 mutations each caught and attributed to
+  'retry-after-rounds-up'; the whole-file form would have passed 42 of the 63 mutations". Log:
+  `tmp/s1/guard_mutation_check.log`. Its `mkdtemp` scratch stays at `juniper-ml/tmp/retry-after-guard-ssq1mano`
+  (21 MB; the script neither prints nor removes it).
+- **One independent review of the guard** (an Opus sub-agent; final message 10:41:08Z, saved verbatim as
+  `tmp/s1/guard_review_round1.md` in toasty-prancing-karp, sha256 `37508e487e0eda00…`; its probes are in
+  `tmp/s1/review/`). No BLOCKER; 1 MAJOR, 6 MINOR, 6 NIT. It found the guard green on all four copies (17 tests, no
+  skips, `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`, siblings at `origin/main`) and failing on every pre-fix state. Settle each
+  before the PR opens (the report's numbers; "re-read" marks what this session checked itself):
+  1. MAJOR: `register_ids` cites `APD-ECO-016`, which the register lacks (re-read). File the row in the same PR, as
+     item 2 plans, and name juniper-data#537, juniper-cascor#757 and juniper-canopy#817 in the guard, as the
+     `APD-ECO-015` guard names its PRs.
+  2. The summary's "kept truncating until 2026-11-12" is a local date. The fixes merged on 2026-11-13: canopy#817
+     01:02:07Z, cascor#757 01:07:08Z, data#537 02:54:07Z (re-read with `gh`).
+  3. `_WRONG_ROUNDINGS` names `int(` in only two spellings and has no `//`. Add `" int("`, `"(int("` and `"//"`;
+     the report found none of them in the 11 current scoped bodies.
+  4. Only M2 (4 of the 63 runs, all in the helper scope) depends on the forbidden list. Add mutations that keep the
+     marker beside each forbidden form, in each scope.
+  5. The new docstring paragraph's reason for scoping is half wrong: this session's log shows R6-R9 (the `check`
+     regressions) as `whole-file form: FAIL` in all four copies. The real reasons are that the helper and the
+     throttle share the `max(1, math.ceil(` text, and that `int(` is legitimate elsewhere in these files.
+  6. Item 2 names only `docs/REFERENCE.md`'s guard count ("all eight guards are `ENFORCED`"). Also stale once the
+     guard lands (re-read): that entry's canopy clause ("`juniper-canopy`'s own `APIKeyAuth` for the two
+     key-handling guards"), its repository-tree comment, `ci.yml`'s fork-drift comment ("the juniper-data /
+     juniper-cascor forks"), and the register's "all eight guards are `ENFORCED`" (§2.3) and "… eight since
+     2026-10-26 added `APD-ECO-015`'s …" passages. The register's two may already be among
+     `tmp/lps/register_anchor_probe.py`'s 26 anchors.
+  7. The module docstring calls the shared package a site of "those two guards"; it is a site of four. Capitalise
+     "canopy" and reflow.
+  8. NITs 8-13: canopy forks more than `APIKeyAuth` and `RateLimiter` (say "the only canopy code this gate
+     checks"); key the second `check` marker on the full `"(True, self._limit - count - 1, self._seconds_until_reset("`;
+     the residual-gap comment misnames the gap (arithmetic after the round-up, and the header formatting); cite
+     juniper-ml#2524 for the throttle fix, not "0.7.2"; the mutation script's docstring overstates its item 2 for
+     `#1300^` and leaks its scratch; add the scope to the subTest keys.
+- **The two releases** (re-measured at 22:15Z; unchanged since 11-13):
+  - juniper-cascor `main` `66b39a5c`, 27 commits past `v0.13.0`; `pyproject.toml` unchanged since the tag.
+    `[Unreleased]` has Added (a public API addition: `WebSocketManager.promote_to_active` gains `replayed_through=`
+    and a `bool` return, plus a close code and a `replay_incomplete` metric outcome), Changed, Fixed and Security.
+    Floors to raise: `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0`.
+  - juniper-canopy `main` `55ac2168`, 58 commits past `v0.9.0`. Its `pyproject.toml` raised `dash>=3.0.0` to
+    `dash>=4.0.0` (canopy#760, F-CANOPY-069) and added a pytest marker. `[Unreleased]` has Added, Fixed, Changed and
+    Security. Floors: `juniper-observability>=0.4.1,<0.5.0` and `juniper-service-core>=0.7.1,<0.8.0`.
+  - `util/release_train/detect.py` proposes a minor for each (0.14.0, 0.10.0). No repository's `main` caps either
+    package (`tmp/s1/cap_census.py`, `git grep` over ten repositories), so neither choice widens anything first.
+    Both primaries sit on `main` at `origin/main`, and neither repository has a PR newer than this arc's.
+- **Parent `Juniper/AGENTS.md`**: sha256 `90df2783…`, Last Updated 2026-11-10 (it was `48e2568a…` after the 11-07
+  edit; another session changed it on 11-10). `util/ad-hoc/2026-11-07_parent_agents_released_paragraph_reprobe.py
+  --expect juniper-ml=0.11.5` (exit 0) found three of its eleven packages moved since the paragraph's 11-07
+  re-probe: juniper-ml 0.11.5 (2026-11-14 00:16:22Z), juniper-observability 0.4.2 (2026-11-09 09:51:35Z) and
+  juniper-service-core 0.7.2 (09:52:45Z). The paragraph names neither 0.4.2 nor 0.7.2, so an edit that moves its
+  re-probe date must add them too, not only move the 0.11.4 bullet and its `[tools]` sub-bullet. Not edited.
+
+**The owner dialog is open.** Asked 10:20:43Z, four questions with background: (1) does this session take this
+file's whole list; (2) edit the parent `AGENTS.md` (Recommended) or leave it; (3) cascor 0.14.0 (Recommended) or
+0.13.1; (4) canopy 0.10.0 (Recommended) or 0.9.1. At 22:10:39Z the owner chose to clarify, answered none, and asked
+for this update. The full text prints with `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py 7d425759
+--full`. The owner then ruled, at 22:37:55Z: "the four open questions should be handled by the session working from
+the updated handoff." **A successor's first turn**: ask the owner what they want to clarify, then re-ask what is
+still open, one question at a time with background (ruling 3's form), together with this file's merge-approval
+request. Until the answers come, open no release PR and make no parent edit.
+
+**Corrections to the 11-13 record below**
+
+- Item 2's list of texts to update is incomplete (finding 6 above).
+- "Still open with the owner" gives A1's open limbs as the F-S10 fixes only, as the four-ruled handoff first did.
+  Plan v1.15.15 lists two more as A1's remainder: P6 OD-2 and canopy#685 call (a). They appear in its Overview bullet
+  "P12 ran ahead of the owner's rulings…" and in item 8 of Wave 0's "Owner sitting" list. No R-OBS-SC-2 handoff
+  records a ruling on either, so both stay open, and plan v1.15.16 must not drop them.
+- Its "Verification commands" and "Git status" describe 2026-11-13 10:39Z. `pending_deployments` now prints nothing,
+  and `origin/main` has moved. Use these instead, one per call (fetch each sibling first):
+
+```bash
+git fetch origin && git log -1 --format='%h %s' origin/main     # 76488449 at 22:15Z; later merges are expected
+curl -s -o /dev/null -w '%{http_code}\n' https://pypi.org/pypi/juniper-ml/0.11.5/json      # 200
+python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py 7d425759 --full                  # one call; no answer ("clarify")
+sha256sum /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/toasty-prancing-karp/tests/test_service_fork_drift.py    # 98ead3169bcc1fbe... until the review is applied
+sha256sum /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/toasty-prancing-karp/tmp/s1/guard_review_round1.md    # 37508e487e0eda00...
+git -C /home/pcalnon/Development/python/Juniper/juniper-cascor rev-list --count v0.13.0..origin/main   # 27
+git -C /home/pcalnon/Development/python/Juniper/juniper-canopy rev-list --count v0.9.0..origin/main    # 58
+python3 -I util/ad-hoc/2026-11-07_parent_agents_released_paragraph_reprobe.py --expect juniper-ml=0.11.5   # exit 0
+```
+
+**Git status (2026-11-14 22:15Z)**: toasty-prancing-karp, branch `worktree-toasty-prancing-karp` at `4a786c81`, one
+merge behind `origin/main`. Uncommitted: the guard (`M tests/test_service_fork_drift.py`) and its mutation check
+(`?? util/ad-hoc/2026-11-12_retry_after_guard_mutation_check.py`). The gitignored `tmp/s1/` holds the
+review report, the mutation log, the reviewer's probes (`tmp/s1/review/`) and this session's four probes
+(`first_user_msgs.py`, `cap_census.py`, `dialog_times.py`, `extract_final_message.py`). Keep the worktree, its `tmp/`
+and `juniper-ml/tmp/retry-after-guard-ssq1mano` until the guard PR has merged (the retention rule).
+
+**Changed by this session**: this file only (this section and the note under the title). It lands through its own
+one-file docs PR, which this session opens and merges on the owner's word (22:37:55Z: "let's merge and PR the updated
+handoff"). Nothing else this session did is committed: the two guard files are copied, unchanged, for the guard PR.
+The parent `AGENTS.md` is untouched.
 
 ## Goal
 
