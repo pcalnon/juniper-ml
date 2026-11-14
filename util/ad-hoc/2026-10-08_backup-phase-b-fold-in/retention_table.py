@@ -30,6 +30,14 @@ been written since. All are assumed FULL backups (a partial one is never deleted
 result smaller). Post-recovery filesets are newer than all nine, so they cannot change what happens to the nine
 (each frame keeps from its oldest member upward); the default scenario still models them.
 
+Correction, 2026-11-12 (DeleteHandler.cs read again at the same tag): the sentence in parentheses above is
+wrong on both counts. Inside a frame a partial fileset is kept, but the next interval is NOT measured from it
+(`if (isFullBackup) { lastKept = fileset; }`), so a partial one can change WHICH full fileset is deleted, not
+only how many. And a partial fileset older than every frame is deleted with the rest
+(`versionsToDelete.AddRange(clonedBackupList)` has no type check). The port still treats every fileset as full,
+and it works in UTC where Duplicati compares its own `DateTime.Now`. For both reasons
+util/ad-hoc/2026-11-11_phase_d_finish.py copies EVERY dlist aside and uses this port for a prediction only.
+
 Usage:  retention_table.py [--policy P] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--recovered-days N]
         Prints one row per run of dates with the same outcome for the nine. --check reproduces R3B's
         published table for the OLD policy and exits non-zero on a mismatch.

@@ -1,0 +1,15 @@
+[Unit]
+Description=Daily acceptance probe of the Duplicati backup service (Yamaguchi job)
+
+[Timer]
+# The job starts at 14:00 UTC. Measured 2026-11-07 to 11-11 from each dlist's name and mtime, a run
+# took between 28 minutes and 8 h 47 min (4 h 05 min on 11-11), so a probe at 15:30 UTC would judge
+# yesterday's backup on most days. 23:30 UTC is nine and a half hours after the start. The time is
+# written in UTC so that it keeps its distance from the job across a daylight-saving change.
+OnCalendar=*-*-* 23:30:00 UTC
+# A workstation that was off at the probe time runs it at the next start instead of skipping the day.
+Persistent=true
+Unit=yamaguchi-acceptance-probe.service
+
+[Install]
+WantedBy=timers.target
