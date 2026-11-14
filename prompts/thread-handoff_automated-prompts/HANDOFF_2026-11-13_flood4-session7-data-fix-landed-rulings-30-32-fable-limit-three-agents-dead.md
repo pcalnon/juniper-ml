@@ -28,9 +28,9 @@
 
 ## Landed in session 7
 
-| Item | PR | Squash | Merged | Drafts closed |
-|---|---|---|---|---|
-| The Retry-After round-up fix (47 tests) | juniper-data#537 | `3cf8867c` | 2026-11-13T02:54:07Z | — |
+| Item                                    | PR               | Squash     | Merged               | Drafts closed |
+|-----------------------------------------|------------------|------------|----------------------|---------------|
+| The Retry-After round-up fix (47 tests) | juniper-data#537 | `3cf8867c` | 2026-11-13T02:54:07Z | —             |
 
 Signed, frozen on `c68e6b4c`, probed for sequence safety, scanned with a planted-token control, merged by `util/safe_merge.py`; the three post-merge runs on `3cf8867c` succeeded. The R-OBS-SC-2 arc's session was sent the number at open and at merge. Evidence: `tmp/flood4/session7/land/data-code/`.
 
