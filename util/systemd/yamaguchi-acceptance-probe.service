@@ -1,0 +1,24 @@
+[Unit]
+Description=Daily acceptance probe of the Duplicati backup service (Yamaguchi job)
+# One verdict line per acceptance criterion of the backup design (section 9), from fixed, tested
+# predicates: util/ad-hoc/yamaguchi_acceptance_probe.py. Read-only on the host and on the server.
+#
+# Install with util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash --backup-id <id>, never by copying
+# this file alone. That script COPIES the probe and the API client it imports into
+# ~/.local/lib/yamaguchi-acceptance/ and writes the job id to this unit's drop-in. The unit runs
+# those copies, not a checkout: the primary checkout is often on a branch that does not hold the
+# probe, and a unit that runs a checkout changes behaviour at every merge. Re-run the deploy script
+# to take a new version of the probe.
+
+[Service]
+Type=oneshot
+# The job id has no default (a rebuilt job is not id 2). The braced form expands to exactly ONE
+# argument, so without the drop-in the probe receives an empty --backup-id and exits 64.
+# -I: isolated mode -- no user site-packages, no PYTHON* variables; the probe adds its own
+# directory to sys.path for the one sibling module it imports.
+ExecStart=/usr/bin/python3 -I %h/.local/lib/yamaguchi-acceptance/yamaguchi_acceptance_probe.py --backup-id ${YAMAGUCHI_BACKUP_ID}
+# Exit 1 is a FAIL verdict and exit 2 an unreadable piece of evidence; either leaves the unit
+# "failed" in `systemctl --user --failed`, on purpose. The verdict lines are in the journal
+# (journalctl --user -u yamaguchi-acceptance-probe.service) and in
+# ~/.local/state/duplicati/acceptance.json.
+Nice=10
