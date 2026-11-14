@@ -101,7 +101,11 @@ import subprocess
 import sys
 import zipfile
 
+<<<<<<< HEAD
 VERSION = "1.2.0"
+=======
+VERSION = "1.1.0"
+>>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
 UTC = dt.timezone.utc
 HERE = os.path.dirname(os.path.abspath(__file__))
 WRAPPER = os.path.join(HERE, "2026-11-11_phase_d_finish.bash")
@@ -114,7 +118,11 @@ SOURCE_USER = "pcalnon"  # the backup Source is this user's home, and the web cr
 DEST = "/mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi"
 ASIDE = "/mnt/Backups/Ubuntu/_yamaguchi_retention_aside"
 RUN_ROOT = "/root/phase-d-tmp"
+<<<<<<< HEAD
 POLICY = "2W:U,6M:1W,2Y:1M,5Y:2M"  # owner ruling 2026-10-08, amended 2026-11-14 (Q7): the two-week frame keeps every fileset
+=======
+POLICY = "2W:1D,6M:1W,2Y:1M,5Y:2M"  # owner ruling 2026-10-08
+>>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
 DRILLS = {"1": "duplicati-20260918T140000Z.dlist.zip.aes", "2": "duplicati-20261107T212908Z.dlist.zip.aes"}
 AC4_MIN_VERIFIED = 15  # design AC-4: "SHA-256 and length match on >= 15 files"
 AC4_LIVE_FLOOR = 5  # the driver's reviewed default

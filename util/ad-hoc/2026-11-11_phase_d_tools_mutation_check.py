@@ -42,13 +42,20 @@ PROBE = "util/ad-hoc/yamaguchi_acceptance_probe.py"
 FINISH = "util/ad-hoc/2026-11-11_phase_d_finish.py"
 WRAPPER = "util/ad-hoc/2026-11-11_phase_d_finish.bash"
 DEPLOY = "util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash"
+<<<<<<< HEAD
 RETENTION = "util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py"
+=======
+>>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
 PROBE_SUITE = "tests/test_yamaguchi_acceptance_probe.py"
 FINISH_SUITE = "tests/test_phase_d_finish.py"
 COPIED = [
     PROBE, FINISH, WRAPPER, DEPLOY, PROBE_SUITE, FINISH_SUITE, "tests/duplicati_api_stub.py", "tests/redacted_env.py", "util/ad-hoc/yamaguchi_server_api.py", "util/ad-hoc/yamaguchi_watchdog.py", "util/ad-hoc/yamaguchi_server_db_snapshot.py",
     "util/ad-hoc/2026-11-09_ac4_restore_drill.py",
+<<<<<<< HEAD
     RETENTION, "util/systemd/yamaguchi-acceptance-probe.service", "util/systemd/yamaguchi-acceptance-probe.timer",
+=======
+    "util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py", "util/systemd/yamaguchi-acceptance-probe.service", "util/systemd/yamaguchi-acceptance-probe.timer",
+>>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
     "notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md",
 ]
 
@@ -62,6 +69,7 @@ MUTANTS = [
     (PROBE, "AC-1: NRestarts is not judged", '"NeedDaemonReload": "no", "NRestarts": "0"}', '"NeedDaemonReload": "no"}'),
     (PROBE, "AC-2: a trailing slash on TargetURL fails", 'target.rstrip("/") == EXPECTED_TARGET', "target == EXPECTED_TARGET"),
     (PROBE, "AC-2: the schedule's time of day is not judged", "    if time_of_day != EXPECTED_TIME_OF_DAY:\n", "    if False:\n"),
+<<<<<<< HEAD
     (PROBE, "AC-2: the old 14:00 slot is still expected", "EXPECTED_TIME_OF_DAY = dt.time(13, 0, 0)\n", "EXPECTED_TIME_OF_DAY = dt.time(14, 0, 0)\n"),
     (PROBE, "schedule: the move takes effect a day late", "SCHEDULE_MOVED = dt.date(2026, 11, 15)\n", "SCHEDULE_MOVED = dt.date(2026, 11, 16)\n"),
     (PROBE, "OFFSCHED: every run is judged against the newest slot", '        slot = slot_on(run["begin"].astimezone(UTC).date(), slots)\n', "        slot = EXPECTED_TIME_OF_DAY\n"),
@@ -75,6 +83,12 @@ MUTANTS = [
     (PROBE, "OPTIONS: keep-time and keep-versions pass", "        if name in names:\n            fails.append(f\"{shown(name, options[name])} is set", "        if False:\n            fails.append(f\"{shown(name, options[name])} is set"),
     (PROBE, "OPTIONS: any retention-policy value passes", '    if state == "restored" and options["retention-policy"] != [RULED_RETENTION]:\n', "    if False:\n"),
     (PROBE, "OPTIONS: the superseded 2026-10-08 policy is the ruled one", 'RULED_RETENTION = "2W:U,6M:1W,2Y:1M,5Y:2M"\n', 'RULED_RETENTION = "2W:1D,6M:1W,2Y:1M,5Y:2M"\n'),
+=======
+    (PROBE, "AC-2: the filter count is not judged", "    if n_filters != EXPECTED_FILTERS:\n", "    if False:\n"),
+    (PROBE, "AC-13: a second run-script option passes", "    if others:\n        fails.append(f\"other run-script options", "    if False:\n        fails.append(f\"other run-script options"),
+    (PROBE, "OPTIONS: keep-time and keep-versions pass", "        if name in names:\n            fails.append(f\"{shown(name, options[name])} is set", "        if False:\n            fails.append(f\"{shown(name, options[name])} is set"),
+    (PROBE, "OPTIONS: any retention-policy value passes", '    if state == "restored" and options["retention-policy"] != [RULED_RETENTION]:\n', "    if False:\n"),
+>>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
     (PROBE, "OPTIONS: --expect-retention is ignored", '    if expect_retention in ("suspended", "restored") and state != expect_retention:\n', "    if False:\n"),
     (PROBE, "OPTIONS: an unrecorded option name passes", "    if unexpected:\n", "    if False:\n"),
     (PROBE, "OPTIONS: a recorded option gone missing passes", "    if missing:\n        fails.append(f\"recorded option names now absent", "    if False:\n        fails.append(f\"recorded option names now absent"),
@@ -82,9 +96,12 @@ MUTANTS = [
     (PROBE, "values: every option value is printable", "    if name in PRINTABLE_VALUES:\n        return f\"{name}=", "    if True:\n        return f\"{name}="),
     (PROBE, "AC-5: other jobs' records count", "    mine = [r for r in records if r[3] == str(backup_id)]\n", "    mine = list(records)\n"),
     (PROBE, "AC-5: one OK record makes the day OK", 'all(verdict == "OK" for verdict, _code in by_day[day])', 'any(verdict == "OK" for verdict, _code in by_day[day])'),
+<<<<<<< HEAD
     (PROBE, "AC-5: a RUNNING day counts", "    while day in by_day and all_ok(day) and not ran(day):\n", "    while day in by_day and all_ok(day):\n"),
     (PROBE, "AC-5: a newest RUNNING day fails", "    if not all_ok(newest_day):\n", "    if streak == 0:\n"),
     (PROBE, "AC-5: the RUNNING days that do not count go unreported", "        discounted += 1\n", "        discounted += 0\n"),
+=======
+>>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
     (PROBE, "AC-5: a 999 record from before the recovery counts", ' and backup == str(probe_id) and when.date() >= recovered_on)', " and backup == str(probe_id))"),
     (PROBE, "AC-5: any ALERT for 999 counts, whatever its code", 'if verdict == "ALERT" and code == "JOB_MISSING" and backup == str(probe_id)', 'if verdict == "ALERT" and backup == str(probe_id)'),
     (PROBE, "AC-5: 36 h is already stale", "    if age_h > max_gap_hours:\n", "    if age_h >= max_gap_hours:\n"),
@@ -94,7 +111,11 @@ MUTANTS = [
     (PROBE, "AC-6a: a run at the enable instant is outside", "    records = [r for r in records if r[0] >= enabled]", "    records = [r for r in records if r[0] > enabled]"),
     (PROBE, "AC-6a: another source passes", "    if wrong:\n", "    if False:\n"),
     (PROBE, "AC-6a: no source line is not an error", "    if not sources:\n", "    if False:\n"),
+<<<<<<< HEAD
     (PROBE, "AC-6a: the grace is exclusive", "    if now >= today + grace:\n", "    if now > today + grace:\n"),
+=======
+    (PROBE, "AC-6a: the grace is exclusive", "    return today if now >= today + grace else", "    return today if now > today + grace else"),
+>>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
     (PROBE, "AC-6a: the mtime slack is exclusive", "> mtime_slack:  # exactly the slack still matches", ">= mtime_slack:  # exactly the slack still matches"),
     (PROBE, "AC-6a: one day is already daily", "min_days=2, mtime_slack=180.0", "min_days=1, mtime_slack=180.0"),
     (PROBE, "AC-6a: a stub snapshot passes", '        if snapshot["size"] <= 4096:\n', "        if False:\n"),
@@ -246,9 +267,12 @@ MUTANTS = [
     (FINISH, "plan: only the first frame of the policy has edges", "        for frame, _interval in policy:\n", "        for frame, _interval in policy[:1]:\n"),
     (FINISH, "plan: an edge outside the window is evaluated", "                if now <= at <= end:\n", "                if True:\n"),
     (FINISH, "plan: a policy that cannot be parsed is a traceback", "    except (KeyError, ValueError, IndexError):\n", "    except KeyError:\n"),
+<<<<<<< HEAD
     (FINISH, "plan: the superseded 2026-10-08 policy is the default", 'POLICY = "2W:U,6M:1W,2Y:1M,5Y:2M"', 'POLICY = "2W:1D,6M:1W,2Y:1M,5Y:2M"'),
     (RETENTION, "port: an interval of U is read as one day", "        return timedelta(0)\n", "        return timedelta(days=1)\n"),
     (RETENTION, "port: a lower-case u is refused", '    if text.upper() == "U":\n', '    if text == "U":\n'),
+=======
+>>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
     # --- AC-6b -----------------------------------------------------------------------------------------------------
     (FINISH, "ac6b: a live file written at the fileset's start is not the one it read", '    if live["mtime"] <= fileset_start or (', '    if live["mtime"] < fileset_start or ('),
     (FINISH, "ac6b: a snapshot rewritten during the backup is never the same generation", '    if live["mtime"] <= fileset_start or (when is not None and when == live["mtime"].replace(microsecond=0)):\n', '    if live["mtime"] <= fileset_start:\n'),
@@ -293,7 +317,11 @@ MUTANTS = [
     (WRAPPER, "wrapper: one more variable is let through", "for name in HOME USER LOGNAME TERM; do", "for name in HOME USER LOGNAME TERM COLUMNS; do"),
     (WRAPPER, "wrapper: the interpreter runs without isolated mode", '"$PY" -I "$TOOL" "$@"', '"$PY" "$TOOL" "$@"'),
 ]
+<<<<<<< HEAD
 SUITE_OF = {PROBE: PROBE_SUITE, DEPLOY: PROBE_SUITE, FINISH: FINISH_SUITE, WRAPPER: FINISH_SUITE, RETENTION: FINISH_SUITE}
+=======
+SUITE_OF = {PROBE: PROBE_SUITE, DEPLOY: PROBE_SUITE, FINISH: FINISH_SUITE, WRAPPER: FINISH_SUITE}
+>>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
 SUITE_TIMEOUT = 300  # seconds: a mutant that makes a test wait for ever is killed by the clock, and reported as such
 
 
