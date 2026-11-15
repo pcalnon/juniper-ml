@@ -38,7 +38,18 @@ import argparse
 import sys
 from pathlib import Path
 
-DEFAULT = Path("/home/pcalnon/Development/python/Juniper/AGENTS.md")
+
+def default_parent_agents() -> Path:
+    """The ecosystem root's AGENTS.md: the nearest ancestor of this script holding both ``juniper-ml/`` and ``AGENTS.md``.
+
+    It is found, not written down, so the script holds no home-directory literal (pre-commit's G5) and works from the
+    primary checkout and from a ``.claude/worktrees/`` checkout alike.
+    """
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "juniper-ml").is_dir() and (parent / "AGENTS.md").is_file():
+            return parent / "AGENTS.md"
+    raise SystemExit("no ancestor holds both juniper-ml/ and AGENTS.md; pass --path")
+
 
 EDITS = [
     (
@@ -95,9 +106,11 @@ EDITS = [
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--path", type=Path, default=DEFAULT)
+    ap.add_argument("--path", type=Path, default=None, help="the parent AGENTS.md (default: found from this script, see default_parent_agents)")
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
+    if args.path is None:
+        args.path = default_parent_agents()
     text = args.path.read_text(encoding="utf-8")
     pending = 0
     for old, new in EDITS:
