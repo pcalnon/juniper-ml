@@ -1,4 +1,4 @@
-# Handoff: R-OBS-SC-2 follow-ups -- juniper-cascor 0.14.0 and juniper-canopy 0.10.0 wait at the owner's `pypi` gates; the guard PR is armed; deploy pins, the parent paragraph and plan v1.15.16 remain
+# Handoff: R-OBS-SC-2 follow-ups -- juniper-cascor 0.14.0 and juniper-canopy 0.10.0 wait at the owner's `pypi` gates; the guard PR (#2576) is armed; deploy pins, the parent paragraph and plan v1.15.16 remain
 
 **Written**: 2026-11-15 ~02:10Z by session `1b4fec84` (`ListAgents`: `r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next`, ref `55486c`), worktree `.claude/worktrees/buzzing-growing-whale`.
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next.md`
@@ -32,7 +32,7 @@ The owner opened the session with "continue work arc from handoff: …HANDOFF_20
   - Round 2: 24 of 25 resolved; the last was fixed.
   - Each finding was re-checked at the head before it was applied.
 - **The 0.4.3 design start prompt** (ruling 4 of 11-13): `prompts/generated/JUNIPER_ML_OBSERVABILITY-0-4-3-SENTRY-SCRUBBING_DESIGN_2026-11-15_0010.md`, in juniper-ml#2568.
-- **The guard + register PR, juniper-ml#2573**: `retry-after-rounds-up` ENFORCED, `APD-ECO-016` filed FIXED, REFERENCE.md at 0.6.72. It was built by an Opus executor in worktree `.claude/worktrees/agent-a4c8d9de35bfc0d67`.
+- **The guard + register PR, juniper-ml#2576**: `retry-after-rounds-up` ENFORCED, `APD-ECO-016` filed FIXED, REFERENCE.md at 0.6.72. It was built by an Opus executor in worktree `.claude/worktrees/agent-a4c8d9de35bfc0d67`. It replaces juniper-ml#2573, now closed. #2573 went DIRTY when juniper-ml#2571 merged first (02:29:05Z, `0578d2ec`, the 0.6.71 row): a merge commit cannot be signed through the API, so the same files were re-based on `0578d2ec` and opened fresh.
   - Two independent reviews, every finding applied.
   - Mutation check: "5 pre-fix copies … 151 mutations each caught at the one scope it edits; … 88 …; the whole-file form would have passed 130 of the 151; every total as EXPECTED".
 
@@ -43,9 +43,9 @@ The owner opened the session with "continue work arc from handoff: …HANDOFF_20
 | cascor publish run 43663237489 | Publish to TestPyPI success; **Publish to PyPI waiting at `pypi`** (owner) |
 | canopy publish run 43664277663 | Build and Validate and Publish to TestPyPI success; **waiting at `pypi`** (owner) |
 | image runs | cascor 43663237432, canopy 43664277607 (in progress at 01:4xZ) |
-| juniper-ml#2568 (QUICK_START + four cut tools + start prompt) | OPEN, safe_merge armed. Its first run failed only G5 (a `/home/pcalnon` literal); fixed by commit 3 |
-| juniper-ml#2570 (cascor archive) | OPEN, auto-merge armed, was BEHIND; `update-branch` run at ~02:06Z |
-| juniper-ml#2573 (guard + register) | OPEN, safe_merge armed. After it merges, **dispatch `Docs Full Check`** (the only run of the cross-repo arms) |
+| juniper-ml#2568 (QUICK_START + four cut tools + start prompt) | MERGED 2026-11-15T02:15:25Z as `7ce8d365`. Its first run failed only G5 (a `/home/pcalnon` literal), fixed by its third commit |
+| juniper-ml#2570 (cascor archive) | OPEN, auto-merge armed, up to date with `main` (head `890a6567`) and waiting on its checks at 02:33Z |
+| juniper-ml#2576 (guard + register; replaces closed #2573) | OPEN, safe_merge armed. After it merges, **dispatch `Docs Full Check`** (the only run of the cross-repo arms) |
 
 `Regression Tests (Python 3.15)` (informational, from juniper-ml#2567) failed on #2570. It is not required and is not this arc's.
 
@@ -62,13 +62,13 @@ The owner opened the session with "continue work arc from handoff: …HANDOFF_20
    - the 11-13 handoff's item 5 list;
    - this session's three rulings;
    - both releases (PRs, merge and tag shas, runs);
-   - juniper-ml#2568, #2570, #2572 and #2573;
+   - juniper-ml#2568, #2570, #2572, #2573 (closed) and #2576;
    - the findings below.
 5. **Findings to record**:
    - canopy `conf/conda_environment_cpu.yaml` still pins `dash=3.3.0`, below the new `dash>=4.0.0` floor;
    - canopy `juniper-data-schema-drift.yml:40-41` carries the stale "once juniper-data's notify-consumers matrix lists it";
    - "ruling 17" names two different flood-4 items in cascor's and canopy's CHANGELOGs, and the flood-4 record's §8 lists rulings 1-14 only;
-   - #2573's PR body lists three plan passages it makes stale (v1 "with no register row" and one more; v2 "has no APD-ECO-016"), two stale passages it leaves, and a proposed tripwire for a future canopy `FailedAuthThrottle`.
+   - #2576's PR body lists three plan passages it makes stale (v1 "with no register row" and one more; v2 "has no APD-ECO-016"), two stale passages it leaves, and a proposed tripwire for a future canopy `FailedAuthThrottle`.
 6. **Archive the reviews.** The round-1 guard review is in `.claude/worktrees/toasty-prancing-karp/tmp/s1/guard_review_round1.md` (sha256 `37508e48…`). The notes reviews and the round-2 guard review exist only in this session's transcript (`1b4fec84`). Archive them, as plan v1.15.16 decides, before any worktree holding evidence is removed.
 7. **Housekeeping, worktree by worktree, on the owner's word**:
    - from the 11-13 file: logical-percolating-sparkle, foamy-squishing-floyd, the never-opened juniper-data worktree, and the cascor and canopy primaries' two local branches;
@@ -90,7 +90,7 @@ gh api repos/pcalnon/juniper-cascor/actions/runs/43663237489/pending_deployments
 gh api repos/pcalnon/juniper-canopy/actions/runs/43664277663/pending_deployments --jq '.[].environment.name'   # pypi until approved
 curl -s -o /dev/null -w '%{http_code}\n' https://pypi.org/pypi/juniper-cascor/0.14.0/json   # 404 until approved, then 200
 curl -s -o /dev/null -w '%{http_code}\n' https://pypi.org/pypi/juniper-canopy/0.10.0/json   # 404 until approved, then 200
-gh pr view 2573 --repo pcalnon/juniper-ml --json state,mergedAt
+gh pr view 2576 --repo pcalnon/juniper-ml --json state,mergedAt
 gh pr view 2568 --repo pcalnon/juniper-ml --json state,mergedAt
 gh pr view 2570 --repo pcalnon/juniper-ml --json state,mergedAt
 gh api repos/pcalnon/juniper-cascor/releases/tags/v0.14.0 --jq '[.target_commitish, .published_at] | @tsv'   # bf6f0108…, 2026-11-15T01:28:19Z
@@ -111,5 +111,5 @@ This worktree's branch `worktree-buzzing-growing-whale` is at `a949d504`, behind
   - in juniper-ml:
     - through #2568: `docs/QUICK_START.md`, `util/ad-hoc/2026-11-14_cascor_canopy_release_cochanges.py`, `util/ad-hoc/2026-11-14_parent_agents_released_paragraph_0_11_5.py`, `util/ad-hoc/2026-11-15_cascor_0_14_0_canopy_0_10_0_security_notes_header.py`, `util/ad-hoc/2026-11-15_cascor_canopy_release_notes_corrections.py` and the start prompt;
     - through #2570 and #2572: `notes/releases/RELEASE_NOTES_juniper-cascor_v0.14.0.md` and `notes/releases/RELEASE_NOTES_juniper-canopy_v0.10.0.md`;
-    - through #2573: `tests/test_service_fork_drift.py`, `util/ad-hoc/2026-11-12_retry_after_guard_mutation_check.py`, the register, `docs/REFERENCE.md`, `CHANGELOG.md`, `.github/workflows/ci.yml`, `.github/workflows/docs-full-check.yml`;
+    - through #2576: `tests/test_service_fork_drift.py`, `util/ad-hoc/2026-11-12_retry_after_guard_mutation_check.py`, the register, `docs/REFERENCE.md`, `CHANGELOG.md`, `.github/workflows/ci.yml`, `.github/workflows/docs-full-check.yml`;
     - and this file.
