@@ -2403,5 +2403,208 @@ class VersionSectionPrefixTest(unittest.TestCase):
         self.assertEqual(ce.changelog_version_section(self.TEXT, "0.3.1"), OrderedDict([("Fixed", ["an unbracketed heading"])]))
 
 
+# ── the one-artifact publishers (juniper-cascor#763 and its ports, 2026-11-15) ──────────────────────
+#
+# Every Juniper publisher now builds ONCE, in ``Build and Validate``, and its two publish jobs upload that
+# artifact; a dispatch from the release tag runs ``Republish the tested files (dispatch only)`` (the owner's
+# recovery ladder, rung 1). Job names below are the real ones (juniper-cascor publish.yml at 675884888f5a).
+
+BUILD = "Build and Validate"
+TESTPYPI = "Publish to TestPyPI"
+PYPI = "Publish to PyPI"
+REPUBLISH = "Republish the tested files (dispatch only)"
+
+
+def _one_artifact_run(status, conclusion, build, testpypi, pypi, republish):
+    """A run of a one-artifact publisher: each job given as (status, conclusion)."""
+    return {
+        "status": status,
+        "conclusion": conclusion,
+        "jobs": [{"name": name, "status": s, "conclusion": c} for name, (s, c) in ((BUILD, build), (TESTPYPI, testpypi), (PYPI, pypi), (REPUBLISH, republish))],
+    }
+
+
+SKIPPED = ("completed", "skipped")
+FAILED_BUILD_RUN = _one_artifact_run("completed", "failure", ("completed", "failure"), SKIPPED, SKIPPED, SKIPPED)
+
+
+class OneArtifactPublisherClassifyTest(unittest.TestCase):
+    """A bad build now fails ``Build and Validate`` and SKIPS the TestPyPI job, so before ``HALT_BUILD`` it
+    read as ``HALT_PUBLISH``: a note and no issue, where the same failure inside a TestPyPI job that built for
+    itself had filed one (the handoff's release-train gap (a))."""
+
+    def test_a_failed_build_job_halts_as_a_build_failure(self):
+        self.assertEqual(ce.classify_publish_run(FAILED_BUILD_RUN), "HALT_BUILD")
+
+    def test_the_build_failure_is_read_before_the_run_level_failure(self):
+        # The same run without the build job's verdict is what the pre-fix classifier saw: HALT_PUBLISH.
+        run = dict(FAILED_BUILD_RUN, jobs=[j for j in FAILED_BUILD_RUN["jobs"] if j["name"] != BUILD])
+        self.assertEqual(ce.classify_publish_run(run), "HALT_PUBLISH")
+
+    def test_a_green_build_then_a_failed_testpypi_job_is_still_halt_testpypi(self):
+        run = _one_artifact_run("completed", "failure", ("completed", "success"), ("completed", "failure"), SKIPPED, SKIPPED)
+        self.assertEqual(ce.classify_publish_run(run), "HALT_TESTPYPI")
+
+    def test_only_the_build_job_by_its_exact_name_counts(self):
+        # Another workflow's "Build image" job failing is not this package's build: the run-level verdict stands.
+        run = {"status": "completed", "conclusion": "failure", "jobs": [{"name": "Build image", "status": "completed", "conclusion": "failure"}]}
+        self.assertEqual(ce.classify_publish_run(run), "HALT_PUBLISH")
+        run = {"status": "completed", "conclusion": "failure", "jobs": [{"name": "  build AND validate ", "status": "completed", "conclusion": "failure"}]}
+        self.assertEqual(ce.classify_publish_run(run), "HALT_BUILD")
+
+    def test_a_skipped_or_green_build_job_never_halts_as_a_build_failure(self):
+        for build in (SKIPPED, ("completed", "success"), ("in_progress", None)):
+            with self.subTest(build=build):
+                run = _one_artifact_run("in_progress", None, build, ("in_progress", None), ("queued", None), SKIPPED)
+                self.assertNotEqual(ce.classify_publish_run(run), "HALT_BUILD")
+
+    def test_a_release_run_parked_at_the_gate_is_pending(self):
+        run = _one_artifact_run("waiting", None, ("completed", "success"), ("completed", "success"), ("waiting", None), SKIPPED)
+        self.assertEqual(ce.classify_publish_run(run), "PENDING_PYPI_APPROVAL")
+
+    def test_a_republish_dispatch_run_classifies_by_its_own_status(self):
+        # Build and both publish jobs skip on the dispatch; the republish job's name holds neither "testpypi" nor
+        # "pypi", so the run's own status decides. A failed republish never reads as a TestPyPI failure.
+        for status, conclusion, republish, want in (
+            ("waiting", None, ("waiting", None), "PENDING_PYPI_APPROVAL"),
+            ("in_progress", None, ("in_progress", None), "IN_PROGRESS"),
+            ("completed", "success", ("completed", "success"), "RELEASED"),
+            ("completed", "failure", ("completed", "failure"), "HALT_PUBLISH"),
+        ):
+            with self.subTest(want=want):
+                run = _one_artifact_run(status, conclusion, SKIPPED, SKIPPED, SKIPPED, republish)
+                self.assertEqual(ce.classify_publish_run(run), want)
+
+    def test_the_monitor_stops_at_a_build_failure(self):
+        src, box = _monitor_sources(FAILED_BUILD_RUN)
+        clock = {"t": 0.0}
+
+        def monotonic():
+            # A fake clock: were HALT_BUILD not terminal, the monitor would time out after two polls, not spin for real.
+            clock["t"] += 20.0
+            return clock["t"]
+
+        verdict = ce.monitor_publish_run(src, "juniper-ml", "tag", timeout_seconds=30, poll_seconds=0, sleep=lambda s: None, monotonic=monotonic)
+        self.assertEqual(verdict, "HALT_BUILD")
+        self.assertEqual(box["polls"], 1)
+
+    def test_execute_files_a_build_failed_issue_and_halts(self):
+        rec = _Recorder()
+        src = _sources(recorder=rec, run_status=FAILED_BUILD_RUN)
+        plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
+        result = ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
+        self.assertEqual(result["state"], "HALTED")
+        self.assertIn("issue_url", result)
+        issues = [c for c in rec.calls if c[0] == "upsert_halt_issue"]
+        self.assertEqual(len(issues), 1)
+        self.assertTrue(issues[0][2].endswith(" -- build-failed"), issues[0][2])
+        # Archive + Release were already cut before the monitor; a halt must not re-cut them.
+        self.assertEqual([c[0] for c in rec.calls], ["open_archive_pr", "enable_automerge", "create_release", "upsert_halt_issue"])
+
+    def test_the_testpypi_issue_keeps_its_reason_key(self):
+        # The dedup issue's title is keyed on the reason key: changing it would open a second issue for one halt.
+        rec = _Recorder()
+        src = _sources(recorder=rec, run_status=FAILED_TESTPYPI_RUN)
+        plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
+        ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
+        titles = [c[2] for c in rec.calls if c[0] == "upsert_halt_issue"]
+        self.assertEqual(len(titles), 1)
+        self.assertTrue(titles[0].endswith(" -- testpypi-verify-failed"), titles[0])
+
+
+class PublishRunStatusDispatchTest(unittest.TestCase):
+    """The live seam's ``publish_run_status`` reads the release-event runs AND that publisher's own dispatch runs
+    on the tag, so a republish (the recovery ladder's rung 1) or a plain re-fire is seen (the handoff's
+    release-train gap (b)); no other workflow's dispatch run is ever read. Driven with a scripted ``gh``."""
+
+    TAG = "juniper-ci-tools-v0.9.9"
+    PUBLISHER = 280582223  # "Publish juniper-ci-tools to PyPI"'s workflow id (gh run list, 2026-11-15)
+    SIBLING = 295930791  # "Publish juniper-model-core to PyPI": fires on the same Release, guard-skipped
+    FIELDS = "databaseId,headBranch,displayTitle,status,conclusion,workflowDatabaseId"
+
+    def setUp(self):
+        self.calls = []
+        self.views = {}
+
+    def _gh(self, release_runs, dispatch_runs):
+        def gh(args, timeout=90):
+            self.calls.append(list(args))
+            ce._assert_gh_allowed(args, frozenset({"pcalnon/juniper-ml"}))  # every call stays inside the R7 surface
+            if args[:2] == ["run", "list"]:
+                event = args[args.index("--event") + 1]
+                self.assertEqual(args[args.index("--json") + 1], self.FIELDS)
+                if event == "release":
+                    self.assertNotIn("--workflow", args)
+                    return json.dumps(release_runs)
+                self.assertEqual(event, "workflow_dispatch")
+                return json.dumps([r for r in dispatch_runs if str(r.get("workflowDatabaseId")) == args[args.index("--workflow") + 1]])
+            if args[:2] == ["run", "view"]:
+                return json.dumps(self.views[int(args[2])])
+            raise AssertionError(f"unexpected gh call {args}")
+
+        return gh
+
+    def _status(self, release_runs, dispatch_runs):
+        src = ce.make_live_sources("pcalnon", REPO_ROOT, REPO_ROOT.parent, gh=self._gh(release_runs, dispatch_runs), git=lambda *a, **k: "")
+        return src.publish_run_status("juniper-ml", self.TAG)
+
+    def _run(self, run_id, workflow, status, conclusion, branch=None):
+        return {"databaseId": run_id, "headBranch": branch or self.TAG, "displayTitle": "x", "status": status, "conclusion": conclusion, "workflowDatabaseId": workflow}
+
+    def _viewed(self):
+        return [int(a[2]) for a in self.calls if a[:2] == ["run", "view"]]
+
+    def test_a_waiting_republish_dispatch_beats_the_failed_release_run(self):
+        release = [self._run(10, self.SIBLING, "completed", "skipped"), self._run(11, self.PUBLISHER, "completed", "failure")]
+        dispatch = [self._run(20, self.PUBLISHER, "waiting", None)]
+        self.views = {20: _one_artifact_run("waiting", None, SKIPPED, SKIPPED, SKIPPED, ("waiting", None)), 11: FAILED_BUILD_RUN}
+        status = self._status(release, dispatch)
+        self.assertEqual(self._viewed(), [20])
+        self.assertEqual(ce.classify_publish_run(status), "PENDING_PYPI_APPROVAL")
+        lists = [a for a in self.calls if a[:2] == ["run", "list"]]
+        self.assertEqual([a[a.index("--event") + 1] for a in lists], ["release", "workflow_dispatch"])
+        self.assertEqual(lists[1][lists[1].index("--workflow") + 1], str(self.PUBLISHER))
+
+    def test_a_successful_republish_reads_as_released(self):
+        release = [self._run(11, self.PUBLISHER, "completed", "failure")]
+        dispatch = [self._run(21, self.PUBLISHER, "completed", "success")]
+        self.views = {21: _one_artifact_run("completed", "success", SKIPPED, SKIPPED, SKIPPED, ("completed", "success"))}
+        self.assertEqual(ce.classify_publish_run(self._status(release, dispatch)), "RELEASED")
+        self.assertEqual(self._viewed(), [21])
+
+    def test_without_a_dispatch_the_release_run_is_read_as_before(self):
+        release = [self._run(10, self.SIBLING, "completed", "skipped"), self._run(11, self.PUBLISHER, "completed", "failure")]
+        self.views = {11: FAILED_BUILD_RUN}
+        self.assertEqual(ce.classify_publish_run(self._status(release, [])), "HALT_BUILD")
+        self.assertEqual(self._viewed(), [11])
+
+    def test_another_branch_and_another_workflow_are_never_read(self):
+        release = [self._run(11, self.PUBLISHER, "completed", "failure")]
+        # A dispatch of this publisher from main, and one of another workflow on the tag (the scripted gh returns it
+        # whatever the --workflow filter says), are both newer and unfinished, and neither may be selected.
+        dispatch = [self._run(30, self.PUBLISHER, "waiting", None, branch="main"), self._run(31, self.SIBLING, "waiting", None)]
+
+        def gh(args, timeout=90):
+            self.calls.append(list(args))
+            if args[:2] == ["run", "list"]:
+                return json.dumps(release if args[args.index("--event") + 1] == "release" else dispatch)
+            return json.dumps(self.views[int(args[2])])
+
+        self.views = {11: FAILED_BUILD_RUN}
+        src = ce.make_live_sources("pcalnon", REPO_ROOT, REPO_ROOT.parent, gh=gh, git=lambda *a, **k: "")
+        src.publish_run_status("juniper-ml", self.TAG)
+        self.assertEqual(self._viewed(), [11])
+
+    def test_a_release_run_without_a_workflow_id_reads_no_dispatch_runs(self):
+        release = [{k: v for k, v in self._run(11, self.PUBLISHER, "completed", "failure").items() if k != "workflowDatabaseId"}]
+        self.views = {11: FAILED_BUILD_RUN}
+        self.assertEqual(ce.classify_publish_run(self._status(release, [self._run(20, self.PUBLISHER, "waiting", None)])), "HALT_BUILD")
+        self.assertEqual([a[a.index("--event") + 1] for a in self.calls if a[:2] == ["run", "list"]], ["release"])
+
+    def test_no_release_run_is_not_found_and_reads_no_dispatch_runs(self):
+        self.assertIsNone(self._status([], [self._run(20, self.PUBLISHER, "waiting", None)]))
+        self.assertEqual(len(self.calls), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

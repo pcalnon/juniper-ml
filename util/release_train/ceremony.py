@@ -608,13 +608,27 @@ def select_publish_run(runs: "list[dict]", tag: str) -> "dict | None":
     return max(unfinished or live, key=lambda r: r.get("databaseId") or 0)
 
 
+#: The name every Juniper publisher gives the job that builds the one artifact both publish jobs upload (the
+#: one-artifact publish template, juniper-cascor#763 and its ports; each repo's own test pins it). Compared lowercased.
+BUILD_JOB_NAME = "build and validate"
+
+
 def classify_publish_run(run: "dict | None") -> str:
     """Map a publish run's status to a ceremony terminal signal (plan S8 TestPyPI gate / S5.1).
 
     Returns: ``PENDING_PYPI_APPROVAL`` (TestPyPI verify passed; the pypi deploy job is parked at the env
-    gate -- SUCCESS for the train), ``HALT_TESTPYPI`` (TestPyPI verify failed before Gate 2),
-    ``HALT_PUBLISH`` (the run failed otherwise), ``RELEASED`` (both gates done -- owner already
-    approved), ``IN_PROGRESS`` (still running -> keep polling), ``NOT_FOUND`` (no run yet)."""
+    gate -- SUCCESS for the train), ``HALT_BUILD`` (the build job failed, so nothing reached TestPyPI),
+    ``HALT_TESTPYPI`` (the TestPyPI job failed before Gate 2), ``HALT_PUBLISH`` (the run failed otherwise),
+    ``RELEASED`` (both gates done -- owner already approved), ``IN_PROGRESS`` (still running -> keep
+    polling), ``NOT_FOUND`` (no run yet).
+
+    A publisher that builds once (the one-artifact template) fails a bad build in ``Build and Validate``,
+    which leaves the TestPyPI job SKIPPED rather than failed. Before ``HALT_BUILD`` that run read as
+    ``HALT_PUBLISH`` (a note, no issue), where the same failure inside a TestPyPI job that built for itself
+    had filed one. A republish dispatch run (the owner's recovery ladder, 2026-11-15) skips the build and both
+    publish jobs and runs ``Republish the tested files (dispatch only)``, whose name holds neither "testpypi"
+    nor "pypi": it classifies by the run's own status (waiting -> PENDING_PYPI_APPROVAL, success -> RELEASED,
+    failure -> HALT_PUBLISH)."""
     if not run:
         return "NOT_FOUND"
     jobs = run.get("jobs") or []
@@ -624,7 +638,10 @@ def classify_publish_run(run: "dict | None") -> str:
 
     testpypi_jobs = named("testpypi")
     pypi_jobs = [j for j in jobs if "pypi" in (j.get("name") or "").lower() and "testpypi" not in (j.get("name") or "").lower()]
+    build_jobs = [j for j in jobs if (j.get("name") or "").strip().lower() == BUILD_JOB_NAME]
 
+    if any((j.get("conclusion") or "").lower() == "failure" for j in build_jobs):
+        return "HALT_BUILD"
     if any((j.get("conclusion") or "").lower() == "failure" for j in testpypi_jobs):
         return "HALT_TESTPYPI"
 
@@ -809,11 +826,21 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         return git(_repo_dir(detect.META_REPO), ["cat-file", "-e", f"origin/main:{relpath}"], 60, False) is not None
 
     def publish_run_status(repo: str, tag: str) -> "dict | None":
-        out = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--event", "release", "--json", "databaseId,headBranch,displayTitle,status,conclusion", "--limit", "20"])
+        fields = "databaseId,headBranch,displayTitle,status,conclusion,workflowDatabaseId"
+        out = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--event", "release", "--json", fields, "--limit", "20"])
         runs = json.loads(out) if out else []
         match = select_publish_run(runs, tag)
         if match is None:
             return None
+        # A dispatch of the same publisher from the release tag -- its republish job (the owner's recovery ladder,
+        # 2026-11-15) or a plain re-fire -- is a workflow_dispatch run, which the release-event listing never shows.
+        # Only THAT workflow's dispatch runs on THIS tag count: a repo's other dispatch runs (CI, docs, an image
+        # publish) say nothing about this package's PyPI state. The newest live run of the set wins (select_publish_run).
+        workflow_id = match.get("workflowDatabaseId")
+        if workflow_id:
+            out_d = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--event", "workflow_dispatch", "--workflow", str(workflow_id), "--json", fields, "--limit", "20"])
+            dispatched = [r for r in (json.loads(out_d) if out_d else []) if (r.get("headBranch") or "") == tag and r.get("workflowDatabaseId") == workflow_id]
+            match = select_publish_run([match, *dispatched], tag) or match
         out2 = _cgh(["run", "view", str(match["databaseId"]), "--repo", f"{owner}/{repo}", "--json", "status,conclusion,jobs"])
         data = json.loads(out2) if out2 else {}
         return {
@@ -1113,7 +1140,7 @@ def monitor_publish_run(sources: CeremonySources, repo: str, tag: str, *, timeou
     deadline = monotonic() + max(0, timeout_seconds)
     while True:
         verdict = classify_publish_run(sources.publish_run_status(repo, tag))
-        if verdict in ("PENDING_PYPI_APPROVAL", "HALT_TESTPYPI", "HALT_PUBLISH", "RELEASED"):
+        if verdict in ("PENDING_PYPI_APPROVAL", "HALT_BUILD", "HALT_TESTPYPI", "HALT_PUBLISH", "RELEASED"):
             return verdict
         if monotonic() >= deadline:
             return "IN_PROGRESS"
@@ -1193,9 +1220,14 @@ def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: 
             result["release_url"] = sources.create_release(plan.repo, plan.tag, f"{plan.pypi_name} v{plan.target_version}", plan.archive_relpath, plan.archive_content, latest=plan.latest, target=plan.target_sha)
         elif action.kind == "monitor_publish":
             verdict = monitor_publish_run(sources, plan.repo, plan.tag, **(monitor_kwargs or {}))
-            if verdict == "HALT_TESTPYPI":
+            # Both pre-gate failures file the dedup issue; the reason keys stay stable, because the issue title is keyed on them.
+            pre_gate = {
+                "HALT_BUILD": ("build-failed", "the publish workflow's Build and Validate job failed, so nothing reached TestPyPI -- the run is not healthy"),
+                "HALT_TESTPYPI": ("testpypi-verify-failed", "the publish workflow's TestPyPI job failed before Gate 2 (its dist check, the TestPyPI upload, the TestPyPI sha256 check or the install-verify) -- the run is not healthy"),
+            }
+            if verdict in pre_gate:
                 if sources.upsert_halt_issue is not None:
-                    issue = halt_issue_payload(plan.pypi_name, plan.target_version, "testpypi-verify-failed", "the publish workflow's TestPyPI install-verify step failed before Gate 2 -- the run is not healthy", _today())
+                    issue = halt_issue_payload(plan.pypi_name, plan.target_version, *pre_gate[verdict], _today())
                     # Same graceful degradation as the precondition HALT: a gh-issue-API failure never crashes the run.
                     _file_halt_issue(sources, plan.repo, issue, result)
                 result["state"] = "HALTED"

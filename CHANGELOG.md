@@ -316,6 +316,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Scan job runs it with `GITLEAKS_PARITY_REQUIRED=1`. `util/ad-hoc/2026-11-14_verify_gitleaks_pr_scan_tests_are_not_vacuous.py`
     shows that each of its 72 mutations turns the cases it names red. `docs/REFERENCE.md` describes the job.
 
+- **The release-train monitor files an issue for a failed build, and sees a republish dispatch.** Every Juniper
+  publisher now builds once, in `Build and Validate`, and both publish jobs upload that one artifact
+  (juniper-cascor#763 and #767, and their ports). That opened two gaps in `util/release_train/ceremony.py`:
+  - a failed build leaves the TestPyPI job skipped, not failed, so the run read as `HALT_PUBLISH`, a note with no
+    issue, where the same failure inside a TestPyPI job that built for itself had filed one. `classify_publish_run`
+    now returns `HALT_BUILD` for a failed `Build and Validate` job, and `execute_ceremony` files a `build-failed`
+    dedup issue for it. The `testpypi-verify-failed` issue keeps its reason key; its text now names every step
+    of the TestPyPI job (the dist check, the upload, the TestPyPI sha256 check, the install-verify);
+  - `publish_run_status` listed release-event runs only, so the monitor never saw a dispatch of the publisher
+    from its release tag, such as the republish job (the owner's recovery ladder of 2026-11-15, rung 1). It now
+    also reads that publisher's own `workflow_dispatch` runs on the tag, filtered by the release run's workflow
+    id, so no other workflow's dispatch (CI, docs, an image publish) can classify a package's publish.
+  - `tests/test_release_train_ceremony.py` gains `OneArtifactPublisherClassifyTest` and
+    `PublishRunStatusDispatchTest`; `util/ad-hoc/2026-11-15_ceremony_gap_fixes_mutation_check.py` shows each of its
+    five mutations of the fix fails the suite. The operator runbook's §4.1 and the cheatsheet describe both.
+
 ## [0.11.5] - 2026-11-13
 
 ### Security

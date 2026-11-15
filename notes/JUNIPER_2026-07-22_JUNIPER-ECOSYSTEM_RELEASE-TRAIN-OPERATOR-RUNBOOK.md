@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.2.5
+**Version**: 1.2.6
 **Last Updated**: 2026-11-15
 
 ---
@@ -725,7 +725,7 @@ python util/release_train/archive_guard.py --base origin/main --head HEAD --trai
   the owner-gated `pypi` environment — GitHub reports that as run status `waiting`, which the train
   reports as **`PENDING_PYPI_APPROVAL`** (`ceremony.py:531`). **That terminal state is SUCCESS for the
   train** (plan §5.1). Terminal monitor returns are only
-  `PENDING_PYPI_APPROVAL` / `RELEASED` / `HALT_TESTPYPI` / `HALT_PUBLISH`
+  `PENDING_PYPI_APPROVAL` / `RELEASED` / `HALT_BUILD` / `HALT_TESTPYPI` / `HALT_PUBLISH`
   (`monitor_publish_run`, `ceremony.py:938-941`).
   - **`NOT_FOUND` is not terminal.** Right after `gh release create`, the publish workflow is often
     invisible for a poll or two (`classify_publish_run(None) -> NOT_FOUND`, `ceremony.py:505`). The
@@ -792,17 +792,26 @@ invocation error (`ceremony.py:71-72`).
 | `archive-too-large` | the rendered archive, base64-encoded, exceeds the one-request signed-commit cap (default 1,000,000 B since 2026-10-26; `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides). Checked in the planner after the re-entry checks and **before** `create_branch`, so no empty `release-notes/<pkg>-v<ver>` branch is left behind (juniper-ml#2227). The cap is the GraphQL request body: a `FileAddition` replaces the whole file, so a large archive cannot be split across mutations | `ceremony.py` (`plan_ceremony` step 4b; `archive_b64_max`) | Condense the notes (`util/ad-hoc/2026-10-17_condense_release_notes_section.py`, the juniper-canopy 0.9.0 precedent) and re-run, or raise the env var. The default was 125,000 B, the figure measured from turing, until the runner-side measurement of 2026-10-26: a GitHub-hosted runner had every GraphQL body up to 16 MiB accepted (run 40410086979; `reports/2026-10-26_graphql-body-cap-probe/`), so the turing figure was that host's weak link (GitHub's GraphQL frontend drops a request that runs past about 7-10 s). The owner then ruled the default up to 1,000,000 B. Never invent an archive body. |
 | `missing-declared-version` | manifest has no `declared_version` for a `BUMPED_NOT_RELEASED` pkg | `ceremony.py:711` | A malformed manifest — re-run detection (`report` mode) to regenerate it. |
 | `not-in-registry` | package is `BUMPED_NOT_RELEASED` in the manifest but absent from `registry.yaml` | `ceremony.py` (`_plans_for` / `ceremony.py:1152`) | Add the package to `util/release_train/registry.yaml` (registry lint gates it). Propose's parallel for `UNRELEASED_CHANGES` is a **skip stub** (`skipped_reason="package not in registry.yaml"`, §3.2) — not a HALT. |
-| `testpypi-verify-failed` | (during the monitor) the publish workflow's TestPyPI install-verify failed before Gate 2 | `ceremony.py:876` | The run is not healthy — inspect the publish run's TestPyPI job; fix and re-cut is idempotent. |
+| `testpypi-verify-failed` | (during the monitor) the publish workflow's TestPyPI job failed before Gate 2: its dist check, the TestPyPI upload, the TestPyPI sha256 check or the install-verify | `execute_ceremony` (`ceremony.py`) | The run is not healthy — inspect the publish run's TestPyPI job; fix and re-cut is idempotent. |
+| `build-failed` | (during the monitor) the publish workflow's `Build and Validate` job failed, so nothing reached TestPyPI (added 2026-11-15: every publisher builds once since juniper-cascor#763 and its ports, so a bad build no longer fails the TestPyPI job) | `execute_ceremony` (`ceremony.py`) | The run is not healthy — inspect the build job; fix and re-cut is idempotent. |
 
 ### 4.1 Monitor terminals after the Release is cut
 
 After the archive PR + Release succeed, `monitor_publish` maps the publish workflow via
-`classify_publish_run` (`ceremony.py:497-532`) and `execute_ceremony` handles the two failure classes
+`classify_publish_run` (`ceremony.py:497-532`) and `execute_ceremony` handles the failure classes
 **asymmetrically** (`ceremony.py:1016-1028`; pinned by `tests/test_release_train_ceremony.py`):
+
+The run it reads is the newest live one among the tag's release-event runs and, since 2026-11-15, that same
+publisher's `workflow_dispatch` runs on the tag (`publish_run_status`; filtered by the release run's workflow
+id, so no other workflow's dispatch counts). A republish dispatch (the owner's recovery ladder, rung 1: it
+copies TestPyPI's files to PyPI) skips the build and both publish jobs and runs `Republish the tested files
+(dispatch only)`, which classifies by the run's own status: `waiting` → `PENDING_PYPI_APPROVAL`, `success` →
+`RELEASED`, `failure` → `HALT_PUBLISH`.
 
 | Terminal | Classifier trigger | Dedup issue? | Operator response |
 |---|---|---|---|
-| `HALT_TESTPYPI` | any `*testpypi*` job `conclusion=failure` | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue` | Inspect TestPyPI install-verify; fix; re-cut (idempotent). |
+| `HALT_BUILD` | the job named `Build and Validate` has `conclusion=failure` (read first: it leaves the TestPyPI job skipped, not failed) | **Yes** — `reason_key=build-failed` via `upsert_halt_issue` | Inspect the build job; fix; re-cut (idempotent). |
+| `HALT_TESTPYPI` | any `*testpypi*` job `conclusion=failure` | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue` | Inspect the TestPyPI job (dist check, upload, sha256 check, install-verify); fix; re-cut (idempotent). |
 | `HALT_PUBLISH` | run `status=completed` and `conclusion` in `{failure, cancelled, timed_out}` **and** TestPyPI did **not** fail (so this is post-TestPyPI) | **No** — note only: `"the publish run failed before the pypi gate."` | Open the publish run UI; diagnose the non-TestPyPI failure (cancelled deploy, timed-out job, etc.). Do **not** wait for a GitHub issue. Archive + Release were already cut — re-entry resumes at the monitor and must not re-cut. |
 | `PENDING_PYPI_APPROVAL` | run `waiting` / TestPyPI ok + pypi job parked | n/a (success for the train) | Approve Gate 2 when ready (§3.3). |
 | `RELEASED` | run completed `success` (both gates done) | n/a | Owner already approved; nothing to do. |
