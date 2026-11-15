@@ -38,6 +38,15 @@ only how many. And a partial fileset older than every frame is deleted with the 
 and it works in UTC where Duplicati compares its own `DateTime.Now`. For both reasons
 util/ad-hoc/2026-11-11_phase_d_finish.py copies EVERY dlist aside and uses this port for a prediction only.
 
+Amendment, 2026-11-14 (the owner's ruling on the Phase D sitting's question Q7): the policy to restore is now
+`2W:U,6M:1W,2Y:1M,5Y:2M`, so the two-week frame keeps every fileset. An interval of `U` (any case) is Duplicati's
+keep-all: RetentionPolicyValue.CreateFromString makes it zero (Options.cs 2059-2061 at the tag), IsKeepAllVersions()
+tests `Interval <= TimeSpan.Zero` (2019), and the walk keeps every fileset of that frame (DeleteHandler.cs 393). The
+port reads it the same way. A `U` TIMEFRAME (unlimited) is refused here: this port and the finish tool's pass instants
+need a finite frame. NEW_POLICY stays the 2026-10-08 string. For the nine the two give the same table: which filesets
+a frame takes depends only on their dates, not on what a smaller frame kept, and the nine left the two-week frame on
+2026-10-02.
+
 Usage:  retention_table.py [--policy P] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--recovered-days N]
         Prints one row per run of dates with the same outcome for the nine. --check reproduces R3B's
         published table for the OLD policy and exits non-zero on a mismatch.
@@ -66,8 +75,16 @@ def parse_span(text: str) -> timedelta:
     return timedelta(days=n * UNIT_DAYS[unit])
 
 
+def parse_interval(text: str) -> timedelta:
+    """An interval; `U` in any case is Duplicati's keep-all, interval zero (Options.cs 2059-2061 at the tag)."""
+    if text.upper() == "U":
+        return timedelta(0)
+    return parse_span(text)
+
+
 def parse_policy(text: str) -> list[tuple[timedelta, timedelta]]:
-    return [(parse_span(a), parse_span(b)) for a, b in (pair.split(":") for pair in text.split(","))]
+    """(timeframe, interval) pairs. A `U` timeframe raises ValueError: the port needs a finite frame."""
+    return [(parse_span(a), parse_interval(b)) for a, b in (pair.split(":") for pair in text.split(","))]
 
 
 def stamp(text: str) -> datetime:
@@ -84,7 +101,8 @@ def to_delete(filesets: list[datetime], now: datetime, policy: list[tuple[timede
             in_frame.insert(0, remaining.pop(0))
         last = None
         for f in in_frame:
-            if last is None or f - last >= interval:
+            # DeleteHandler.cs 393: the first, or a keep-all frame (interval zero), or at least the interval later.
+            if last is None or interval <= timedelta(0) or f - last >= interval:
                 last = f
             else:
                 deleted.add(f)

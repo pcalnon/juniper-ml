@@ -354,6 +354,16 @@ class ExportTest(unittest.TestCase):
         twice["Backup"]["Settings"].append({"Name": "blocksize", "Value": "1MB"})
         self.assertIn("set more than once: blocksize", probe.judge_options(twice).summary)
 
+    def test_the_ruled_policy_is_the_2026_11_14_amendment(self) -> None:
+        # Q7: the two-week frame keeps every fileset. The read-back judges the string the owner types, exactly.
+        self.assertEqual(probe.RULED_RETENTION, "2W:U,6M:1W,2Y:1M,5Y:2M")
+        restored = probe.judge_options(export(retention="2W:U,6M:1W,2Y:1M,5Y:2M"), "restored")
+        self.assertEqual(restored.verdict, "PASS")
+        self.assertIn("retention-policy=2W:U,6M:1W,2Y:1M,5Y:2M", restored.summary)
+        superseded = probe.judge_options(export(retention="2W:1D,6M:1W,2Y:1M,5Y:2M"), "restored")
+        self.assertEqual(superseded.verdict, "FAIL", "the 2026-10-08 string, typed from an older note, is caught")
+        self.assertIn("is not the ruled 2W:U,6M:1W,2Y:1M,5Y:2M", superseded.summary)
+
     def test_a_non_export_is_an_error_for_all_three(self) -> None:
         docs: list[object] = [{}, None, [], {"Backup": {}}, {"Backup": {"Settings": None}}, {"error": "x"}]
         for doc in docs:

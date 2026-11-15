@@ -58,6 +58,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     208 defects into the two tools, the wrapper and the deploy script; the suites kill all of them.
   - `docs/REFERENCE.md` and `AGENTS.md` record the three suites (242 in all) and the two tools.
 
+### Changed
+
+- **Backup Phase D, step 14: the retention policy to restore keeps every fileset of the last two
+  weeks (owner ruling, 2026-11-14).** The 2026-10-08 ruling `2W:1D,6M:1W,2Y:1M,5Y:2M` becomes
+  `2W:U,6M:1W,2Y:1M,5Y:2M`. Duplicati keeps a fileset in a frame only if it lies at least the interval
+  after the last kept one. Under a one-day interval, the job's off-schedule runs displaced the scheduled
+  filesets beside them (on 2026-11-13 the first pass was predicted to delete 9 of 18 dlists), and a daily
+  fileset stamped one second early was deleted. `U` is Duplicati's keep-all interval.
+  - `util/ad-hoc/yamaguchi_acceptance_probe.py` 1.2.0 judges the amended string in its read-back, so a
+    restore of the 2026-10-08 string reads `FAIL`. `util/ad-hoc/2026-11-11_phase_d_finish.py` 1.2.0
+    predicts with it: 5 of the 16 dlists of 2026-11-11, all pre-recovery, where the old string gave 8.
+  - `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py` reads an interval of `U` as
+    Duplicati 2.4.0.0 does (zero, keep-all) and refuses a `U` timeframe. For the nine pre-recovery
+    filesets its table is the same under both strings.
+  - Tests: `tests/test_phase_d_finish.py` (132; the mechanics tests keep the 2026-10-08 string, on which
+    their fixtures were built) and `tests/test_yamaguchi_acceptance_probe.py` (93). The mutation harness
+    seeds 212 defects, the retention port's among them.
+  - The integrated design's note 10.1h records the ruling. The recovery plan's §6.0 item 5 and §6.4
+    step 14 point to it.
+
 ### Fixed
 
 - **A test sent a real desktop alert, `Backup FAILED: duplicati-backup.service`, on every local run
