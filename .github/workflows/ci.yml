@@ -580,13 +580,17 @@ jobs:
           # docs-full-check.yml. The full cross-repo assertion runs
           # weekly via docs-full-check.yml.
           python3 -m unittest -v tests/test_ci_tools_drift.py
-          # tests/test_service_fork_drift.py: security guards that must not
-          # diverge across the juniper-data / juniper-cascor forks of the
-          # service-core middleware (defect-register §2.3 "Copy drift"). Same
-          # skip semantics as the two drift lints above -- the sibling-walking
-          # assertions auto-skip here and run weekly via docs-full-check.yml,
-          # while the registry structure checks and the matcher's negative
-          # control always run.
+          # tests/test_service_fork_drift.py: security guards, each asserted
+          # at the sites the gate names for it in the copies of the
+          # service-tier security code -- the juniper-data / juniper-cascor
+          # forks of the service-core middleware, juniper-canopy's own
+          # APIKeyAuth and RateLimiter, and the shared package itself
+          # (defect-register §2.3 "Copy drift").
+          # Same skip semantics as the two drift lints above -- the
+          # sibling-walking assertions auto-skip here and run weekly via
+          # docs-full-check.yml, while the registry structure checks, the
+          # matchers' negative controls and the shared package's own sites
+          # (SharedPackageGuardTest) always run.
           python3 -m unittest -v tests/test_service_fork_drift.py
           # tests/test_publish_env_policy_drift.py: the publish environments'
           # tag-only deployment ref policy (publish-path design §6 Option A /

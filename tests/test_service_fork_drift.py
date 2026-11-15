@@ -46,6 +46,17 @@ expression the same module's other methods use legitimately, and only a scope
 can say "not here". It is still a structural proxy -- it reads code, not
 behaviour.
 
+``retry-after-rounds-up`` (``APD-ECO-016``) asks three things of one file: the
+helper must round up, BOTH returns of ``RateLimiter.check`` that carry a remainder
+must go through it, and the throttle must round up too. It needs a scope for two
+reasons. The helper and the throttle share the ``max(1, math.ceil(`` text, so a
+whole-file marker is satisfied by either one: a copy whose helper truncates passes
+on the throttle's text, and the shared package before ``juniper-ml#2524``, a fixed
+helper beside a truncating throttle, passes outright. And its forbidden forms need
+a scope, because ``int(`` is legitimate elsewhere in these files (juniper-data's
+``_warn_on_capacity_locked``, canopy's ``int(port)``). So a repo appears there
+once per definition.
+
 The KNOWN_GAP ledger is self-maintaining
 ----------------------------------------
 Guards the forks have *not* adopted are recorded with ``status=KNOWN_GAP`` and
@@ -76,11 +87,12 @@ KNOWN_GAP = "KNOWN_GAP"
 _VALID_STATUSES = frozenset({ENFORCED, KNOWN_GAP})
 
 # Repos a guard site may name. juniper-data and juniper-cascor fork the
-# service-core middleware and security code; juniper-canopy forks only
-# ``APIKeyAuth`` (APD-ECO-008), so it is a site of the two key-handling guards
-# and of nothing else. ``juniper-recurrence`` consumes the shared package
-# directly and so cannot drift this way -- which is exactly why the shared package
-# itself is a site: a regression there reaches recurrence silently.
+# service-core middleware and security code. The only canopy code this gate checks
+# is its own ``APIKeyAuth`` (APD-ECO-008) and ``RateLimiter`` (APD-ECO-016), so
+# canopy is a site of the two key-handling guards and of ``retry-after-rounds-up``,
+# and of nothing else. ``juniper-recurrence`` consumes the shared package directly
+# and so cannot drift this way -- which is exactly why the shared package itself is
+# a site: a regression there reaches recurrence silently.
 _FORK_REPOS = ("juniper-data", "juniper-cascor", "juniper-canopy", "juniper-ml")
 
 # The repo this file lives in. Its sites are read from THIS checkout, never from
@@ -160,6 +172,52 @@ _SERVICE_CORE_SECURITY = "juniper-service-core/juniper_service_core/security.py"
 _THROTTLE_CHECK_SCOPE = "FailedAuthThrottle.check"
 _THROTTLE_CHECK_MARKERS = ("self._failures.get(",)
 _THROTTLE_CHECK_FORBIDDEN = ("self._failures[", "self._failures.setdefault(")
+
+# ``retry-after-rounds-up`` (APD-ECO-016) asks the same thing of every copy of the
+# limiter, and of the throttle where a copy has one: the seconds until a window
+# resets are ``max(1, math.ceil(...))``, never a truncation. It reads three
+# definitions, each through its own scoped site:
+#
+# * ``RateLimiter._seconds_until_reset`` holds the formula;
+# * ``RateLimiter.check`` returns it on BOTH paths that carry a remainder. The
+#   rejection path feeds ``Retry-After`` and the allowed path ``X-RateLimit-Reset``,
+#   so each return has its own marker: one marker would be satisfied by either.
+#   Each marker is its return's whole tuple up to the helper call, byte-identical
+#   in all four copies. That is deliberately brittle. A correct refactor of either
+#   return (a local ``reset_in``, which was the pre-fix shape, or a clamp on the
+#   remaining count) fails the gate as a regression of APD-ECO-016, and the marker
+#   has to move with it. A looser ``1, self._seconds_until_reset(`` would also
+#   match a new-window return rewritten to call the helper, so a copy whose allowed
+#   return had stopped rounding would still pass;
+# * ``FailedAuthThrottle.check`` rounds its wait the same way.
+#
+# The forbidden forms are the wrong roundings of that remainder: ``int(`` on the
+# window arithmetic or on ``remaining``, and any ``int(`` after a space or an
+# opening parenthesis (truncation, the defect); ``//`` (floor division); and
+# ``math.floor(``, ``math.trunc(`` and ``round(``, which under-report it too. The
+# space and parenthesis prefixes keep ``print(x)`` out of ``" int("`` and
+# ``"(int("`` only. The other forms can false-alarm: ``int(remaining`` matches
+# ``print(remaining)``, ``int(self._window`` matches ``print(self._window - e)``,
+# ``round(`` matches ``background(`` and ``//`` a URL in a string. Each fails
+# closed, so it can only fail the gate on correct code, never pass it vacuously.
+# None of the eight occurs in any of the eleven scoped bodies on each
+# repository's ``main`` (2026-11-15).
+_RESET_HELPER_SCOPE = "RateLimiter._seconds_until_reset"
+_RATE_LIMITER_CHECK_SCOPE = "RateLimiter.check"
+_ROUND_UP_MARKERS = ("max(1, math.ceil(",)
+_CHECK_RETURNS_THE_HELPER_MARKERS = ("(False, 0, self._seconds_until_reset(", "(True, self._limit - count - 1, self._seconds_until_reset(")
+_WRONG_ROUNDINGS = ("int(self._window", "int(remaining", " int(", "(int(", "//", "math.floor(", "math.trunc(", "round(")
+
+
+def _retry_after_sites(repo: str, path: str, throttle: bool) -> tuple[ForkSite, ...]:
+    """One copy's sites for ``retry-after-rounds-up``: the helper, ``check``, and the throttle if it has one."""
+    sites = [
+        ForkSite(repo, path, _ROUND_UP_MARKERS, scope=_RESET_HELPER_SCOPE, forbidden=_WRONG_ROUNDINGS),
+        ForkSite(repo, path, _CHECK_RETURNS_THE_HELPER_MARKERS, scope=_RATE_LIMITER_CHECK_SCOPE, forbidden=_WRONG_ROUNDINGS),
+    ]
+    if throttle:
+        sites.append(ForkSite(repo, path, _ROUND_UP_MARKERS, scope=_THROTTLE_CHECK_SCOPE, forbidden=_WRONG_ROUNDINGS))
+    return tuple(sites)
 
 
 GUARDS: tuple[Guard, ...] = (
@@ -298,6 +356,47 @@ GUARDS: tuple[Guard, ...] = (
             ForkSite("juniper-data", _DATA_SECURITY, _THROTTLE_CHECK_MARKERS, scope=_THROTTLE_CHECK_SCOPE, forbidden=_THROTTLE_CHECK_FORBIDDEN),
             ForkSite("juniper-cascor", _CASCOR_SECURITY, _THROTTLE_CHECK_MARKERS, scope=_THROTTLE_CHECK_SCOPE, forbidden=_THROTTLE_CHECK_FORBIDDEN),
             ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, _THROTTLE_CHECK_MARKERS, scope=_THROTTLE_CHECK_SCOPE, forbidden=_THROTTLE_CHECK_FORBIDDEN),
+        ),
+    ),
+    Guard(
+        guard_id="retry-after-rounds-up",
+        summary=(
+            "The seconds until a rate-limit window resets are rounded UP and never below 1: max(1, math.ceil(window - elapsed)). RateLimiter.check reported int(window - elapsed), which truncates, so a rejection in a window's last second "
+            "said Retry-After: 0 -- an instruction to retry at once into a limiter that rejects again -- and every other fractional remainder was a second short. The allowed path, which feeds X-RateLimit-Reset, truncated the same way, "
+            "and FailedAuthThrottle.check reported max(1, int(...)): never 0, still short. The shared package fixed its limiter (APD-SVCCORE-004, juniper-ml#1300) and its throttle (juniper-ml#2524); the three forks import none of its security module and kept truncating until 2026-11-13 (UTC), when juniper-canopy#817, juniper-cascor#757 and juniper-data#537 merged."
+        ),
+        register_ids=("APD-ECO-016", "APD-SVCCORE-004"),
+        status=ENFORCED,
+        canonical="juniper-service-core/juniper_service_core/security.py",
+        sites=(
+            # SCOPED, one site per definition (see the comment at _RESET_HELPER_SCOPE). Every
+            # copy was fixed before this guard existed, so it entered ENFORCED and was never
+            # a KNOWN_GAP: the shared package by juniper-ml#1300 and, for the throttle,
+            # juniper-ml#2524; the forks by juniper-data#537, juniper-cascor#757 and
+            # juniper-canopy#817.
+            #
+            # juniper-canopy has a RateLimiter and no FailedAuthThrottle (APD-ECO-010, open),
+            # so it has two sites where the others have three.
+            #
+            # Still a structural proxy, which reads the rendered code of three definitions.
+            # Inside a scope the markers prove only that their text is present. What it
+            # cannot see: arithmetic after a correct round-up (``- 1`` on the helper's
+            # result, or on ``max(1, math.ceil(...))``), which brings ``Retry-After: 0``
+            # back; a second helper the formula delegates to; any return path added beside
+            # the kept markers that skips the helper or rounds in a spelling the list does
+            # not name (a literal 0, an unrounded float, ``[int(x)][0]``, a bare ``floor(``,
+            # ``x - x % 1``); and the header formatting, which happens outside every scope:
+            # each limiter's ``__call__`` builds its 429's headers, and each copy's
+            # middleware writes the allowed path's X-RateLimit-Reset, and the throttle's
+            # Retry-After where the copy has a throttle. The behavioural pins:
+            # test_retry_after_rounds_up.py in each fork, which freezes the clock and reads
+            # both headers; juniper-service-core's tests/test_failed_auth_retry_after.py,
+            # which freezes it too; and its tests/test_security.py, whose APD-SVCCORE-004
+            # class waits with time.sleep (only its window-boundary class freezes the clock).
+            *_retry_after_sites("juniper-data", _DATA_SECURITY, throttle=True),
+            *_retry_after_sites("juniper-cascor", _CASCOR_SECURITY, throttle=True),
+            *_retry_after_sites("juniper-canopy", _CANOPY_SECURITY, throttle=False),
+            *_retry_after_sites(_SELF_REPO, _SERVICE_CORE_SECURITY, throttle=True),
         ),
     ),
     Guard(
@@ -638,7 +737,7 @@ class ServiceForkDriftTest(unittest.TestCase):
         self._require_cross_repo()
         for guard in (g for g in GUARDS if g.status == ENFORCED):
             for site in guard.sites:
-                with self.subTest(guard=guard.guard_id, repo=site.repo):
+                with self.subTest(guard=guard.guard_id, repo=site.repo, scope=site.scope):
                     source = self._read_site(site)
                     if source is None:
                         self.skipTest(f"{site.repo}/{site.path} not readable")
@@ -675,7 +774,7 @@ class ServiceForkDriftTest(unittest.TestCase):
         self._require_cross_repo()
         for guard in (g for g in GUARDS if g.status == KNOWN_GAP):
             for site in guard.sites:
-                with self.subTest(guard=guard.guard_id, repo=site.repo):
+                with self.subTest(guard=guard.guard_id, repo=site.repo, scope=site.scope):
                     source = self._read_site(site)
                     if source is None:
                         self.skipTest(f"{site.repo}/{site.path} not readable")
@@ -689,7 +788,7 @@ class ServiceForkDriftTest(unittest.TestCase):
         self._require_cross_repo()
         for guard in GUARDS:
             for site in guard.sites:
-                with self.subTest(guard=guard.guard_id, repo=site.repo):
+                with self.subTest(guard=guard.guard_id, repo=site.repo, scope=site.scope):
                     path = _site_path(site, self.juniper_ml_root, self.ecosystem_root)
                     self.assertTrue(
                         path.is_file(),
@@ -711,7 +810,7 @@ class SharedPackageGuardTest(unittest.TestCase):
         self_sites = [(guard, site) for guard in GUARDS for site in guard.sites if site.repo == _SELF_REPO]
         self.assertTrue(self_sites, "no guard names the shared package, so this test would check nothing")
         for guard, site in self_sites:
-            with self.subTest(guard=guard.guard_id):
+            with self.subTest(guard=guard.guard_id, scope=site.scope):
                 path = _site_path(site, juniper_ml_root, None)
                 self.assertTrue(path.is_file(), f"{site.path} does not exist in this checkout; until the registry is corrected, guard '{guard.guard_id}' checks nothing in the shared package.")
                 source = path.read_text(encoding="utf-8")
