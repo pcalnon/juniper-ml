@@ -97,6 +97,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The informational Python 3.15 legs no longer show as failed checks** (the owner's report of 2026-11-15: they
+  "are supposed to produce an informational message without affecting the ability of code to commit, push, PR,
+  or merge"). juniper-ml#2567's job-level `continue-on-error` kept the Quality Gate green, but the leg's own check
+  still concluded `failure`: every pull request showed a red X and "Some checks were not successful", its merge
+  state read `UNSTABLE`, and `gh pr checks` and any tool that reads every check called it failing.
+  - Every step of `ci.yml`'s `Regression Tests` and the six `ci-<pkg>.yml` `test` jobs now carries `id:` and
+    `continue-on-error: ${{ matrix.experimental == true }}`, so on the 3.15 leg a failing step neither stops the job
+    nor turns its check red. A last step, `Report the informational Python 3.15 result`, reports each failed step
+    as a `::warning` annotation and as a table in the job summary. The blocking legs are unchanged: the expression
+    is false on them.
+  - `tests/test_python_version_matrix_drift.py` holds every informational job to that shape (each step carries the
+    expression and an id, and the report step comes last and reads `toJSON(steps)`), with negative controls. On
+    `main`'s previous `tests` job it reports 9 violations.
+  - Applied by `util/ad-hoc/2026-11-15_py315_informational_green_legs.py`, a textual edit checked by re-parsing
+    the workflow (same steps in the same order, plus the report step; no other job changed).
+
 - **A test sent a real desktop alert, `Backup FAILED: duplicati-backup.service`, on every local run
   (2026-11-13, juniper-ml#2559).** `tests/test_duplicati_scheduled_backup.py` gave its children
   `PATH=<stubs>:/usr/bin:/bin` and wrote the `notify-send` stub in one test only, so another test ran
