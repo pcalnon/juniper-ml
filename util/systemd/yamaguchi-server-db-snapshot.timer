@@ -4,16 +4,17 @@ Description=Daily Duplicati server-DB snapshot, just before the Yamaguchi backup
 Documentation=file:///usr/local/lib/duplicati/yamaguchi_server_db_snapshot.py
 
 [Timer]
-# The Yamaguchi job fires daily at 14:00Z. Snapshot 15 minutes earlier so the
-# copy is picked up by that same run rather than waiting a further 24 h.
+# The Yamaguchi job fires daily at 13:00Z since the owner moved it on 2026-11-15
+# (14:00Z before; this timer fired at 13:45Z until then). Snapshot 15 minutes earlier
+# so the copy is picked up by that same run rather than waiting a further 24 h.
 #
 # The UTC suffix is load-bearing, NOT decoration. OnCalendar defaults to LOCAL
-# time, and the backup schedule is fixed in UTC. A local "08:45" would sit 15 min
+# time, and the backup schedule is fixed in UTC. A local "07:45" would sit 15 min
 # BEFORE the backup under CDT (UTC-5) and 45 min AFTER it under CST (UTC-6) --
 # so at the next DST change the snapshot would silently start missing its own
 # backup by a day, with no error anywhere. Pin it to UTC and the relationship
 # holds year-round.
-OnCalendar=*-*-* 13:45:00 UTC
+OnCalendar=*-*-* 12:45:00 UTC
 # A workstation is often off at the check time; without this a missed snapshot is
 # skipped silently. On catch-up the snapshot may land after that day's backup and
 # ride along in the next one -- still current, just one cycle behind.

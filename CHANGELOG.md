@@ -176,6 +176,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Backup Phase D: the acceptance probe follows two owner rulings of 2026-11-15.** AC-2 expects the job's 5
+  sources and 76 filters: the owner changed them on purpose, and the design fixed 2 and 45 before. AC-5 no longer
+  counts a day whose watchdog check found the job still running (`OK RUNNING`). Such a day ends the three-day
+  streak and reads `PENDING`, not `FAIL`.
+  - `util/ad-hoc/yamaguchi_acceptance_probe.py` 1.3.0; `tests/test_yamaguchi_acceptance_probe.py` (97 tests);
+    the mutation harness seeds 223 defects, eleven of them new, and the suites kill all 223.
+  - The integrated design's §9 rows for AC-2 and AC-5 and its note 10.1i record both rulings. The note also
+    records that D-14 stands, with the host's `UMask=0017` an interim measure of the owner's.
+- **Backup Phase D: the job starts at 13:00 UTC (07:00 CST) and the watchdog checks at 20:00 local (owner, 2026-11-15).**
+  At 12:00 local the watchdog found most runs still going, and a RUNNING day no longer counts toward AC-5.
+  `util/systemd/yamaguchi-watchdog.timer` fires at 20:00 local; `util/systemd/yamaguchi-server-db-snapshot.timer`
+  at 12:45 UTC, 15 minutes before the backup as before. The probe judges each run against the slot in force on its
+  own UTC date, so the runs before the move stay on schedule; its AC-6a follows the snapshot's fire time. The
+  design's note 10.1j records the move, and why the snapshot timer is installed as one file, not by the installer.
 - **Backup Phase D, step 14: the retention policy to restore keeps every fileset of the last two
   weeks (owner ruling, 2026-11-14).** The 2026-10-08 ruling `2W:1D,6M:1W,2Y:1M,5Y:2M` becomes
   `2W:U,6M:1W,2Y:1M,5Y:2M`. Duplicati keeps a fileset in a frame only if it lies at least the interval
