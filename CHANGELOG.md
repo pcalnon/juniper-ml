@@ -139,6 +139,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   have no desktop, showed nothing. Every fixture now writes a recording stub, children get a session bus
   address that names no socket, and `TestFixtureReachesNoDesktop` pins both (35 tests, 32 before).
 
+- **The release-train proposal rewrites the four `docs/REFERENCE.md` sites that name the meta-package's release
+  (owner ruling on juniper-ml#2507: "Carry + extend propose.py").** juniper-ml#2507's tests
+  (`ReferenceCompatibilityMatrixTest`) pin the Package Overview Version cell, the "`juniper-ml` X.Y.Z declares the
+  following pins" sentence, the Ecosystem Compatibility matrix's current-series row and the `[recurrence]` "sets
+  them to" clause to `pyproject.toml`. `util/release_train/propose.py` edited none of them, and every cut from
+  0.11.0 to 0.11.4 rewrote whichever of them moved with a one-off `util/ad-hoc/*_cut_cochanges.py` script. Under
+  those tests every juniper-ml release proposal, and a sub-package proposal that moves a matrix column (today only
+  a juniper-doc-tools bump past its `<0.2.0` ceiling), would fail CI until someone edited REFERENCE by hand. So
+  this change lands first, and the tests land after it, in the flood-4 round-2 tests carrier.
+  - New step 5b-v renders the four sites from the `pyproject.toml` the proposal leaves behind:
+    `set_reference_version_cell`, `set_reference_declares_version`, `set_reference_matrix_row` and
+    `set_reference_recurrence_clause`, composed by `apply_reference_compat_cochanges`. They share one REFERENCE edit
+    with the extras-table true-up, and 5b-v renders from the final pyproject, so an escaping in-repo pin with a
+    matrix column (today only doc-tools: ci-tools and observability carry no ceiling to escape) moves its cell
+    as well.
+  - **The series rule.** A new minor adds its `0.N.x` row and never touches the previous series' row, which
+    should describe releases already on PyPI: #1991 added the 0.9.x row and kept the 0.8.x row, "ADDED TO rather
+    than rewritten", and the 0.11.0 cut (#2306) did the same. A patch rewrites its own series' row in place, as
+    the 0.11.1 and 0.11.2 cuts did. The previous row stays true only if no column pin moved since its series'
+    last release: `ReferenceCompatibilityMatrixTest` makes such a move (an escaping in-repo pin, or a hand floor
+    raise) rewrite the then-current row in place, so on a minor the checklist's REVIEW line asks the reviewer to
+    restore the pins that series' last release published. Those are the pins a row holds, because each patch
+    rewrites it: in the file tagged `v0.11.4` the 0.11.x row is what 0.11.2 to 0.11.4 published, not 0.11.0's or
+    0.11.1's floors (`util/ad-hoc/2026-11-12_flood4r2_ml-propose-r3_series_row_history.py`).
+  - Each helper keeps `set_agents_version`'s contract: an absent or doubled site is left untouched, and the
+    co-change checklist marks it REQUIRED on the meta's own bump. A sub-package's proposal owes one such line
+    only: the series row, when its own escaping pin could not be rendered into it. The paragraph's history (which
+    release raised which floor) is prose that no gate reads. The train never writes it, and the checklist asks the
+    reviewer to. Renaming the clause's release also hands any explanation after it to the new release: the 0.11.4
+    cut left "0.11.4 sets them to ...: it raises `juniper-recurrence` to `>=0.8.1`", and a proposal puts its own
+    version in front of those words. So the generated paragraph is not correct until that review. The REVIEW line
+    names the clause whenever it moves.
+  - The REVIEW line also names a cell this proposal moved in place (an escaping in-repo pin) and any
+    `[recurrence]` pins it replaced. A hand floor raise must rewrite those sites itself to pass
+    `ReferenceCompatibilityMatrixTest`, so the meta's own proposal then finds them current and names neither:
+    the history, the renamed clause and, on a minor, the previous series' row are what its REVIEW line asks about.
+    Words such a raise wrote into the paragraph (which cell runs ahead of the published release, which release
+    will publish it) are prose too: the proposal leaves them as they are, and the REVIEW line does not name them.
+  - **Measured with #2507's tests installed** (`util/ad-hoc/2026-11-12_flood4r2_ml-propose-r3_simulate.py`, over
+    `main`'s files and over a copy with a hand `[tools]` floor raise applied first). The unextended script's patch
+    proposal fails 3 of #2507's 8 tests and its minor proposal 4. After a hand floor raise that also rewrites its
+    row or its clause (the raise those tests let merge), its patch proposal still fails 3. All pass with this
+    change. `tests/test_release_train_propose.py` gains 32 tests (156 to 188).
+    `util/ad-hoc/2026-11-12_flood4r2_ml-propose-r3_mutation_check.py` kills 56 of its 59 mutants of the new code
+    and records why the other three survive (two are equivalent, one is a disclosed edge). `docs/REFERENCE.md` and
+    the release-train runbook (§3.2) describe the step.
+
 ## [0.11.5] - 2026-11-13
 
 ### Security
