@@ -106,6 +106,12 @@ DLISTS_2026_11_11 = [
     "duplicati-20261111T140001Z.dlist.zip.aes",
 ]
 FIVE_PRE_RECOVERY = [f"duplicati-{stamp}.dlist.zip.aes" for stamp in ("20260912T140000Z", "20260915T085649Z", "20260916T183346Z", "20260917T221344Z", "20260918T140000Z")]
+# The three scheduled post-recovery filesets of that list that the off-schedule ones displace under a one-day interval.
+SCHEDULED_DISPLACED = ["duplicati-20261108T140001Z.dlist.zip.aes", "duplicati-20261109T140001Z.dlist.zip.aes", "duplicati-20261110T140000Z.dlist.zip.aes"]
+# The owner's 2026-10-08 policy, amended on 2026-11-14 (Q7) to finish.POLICY. The tests of the pass's mechanics keep it:
+# their fixtures were built on its one-day interval, which the amended two-week frame no longer has.
+POLICY_2026_10_08 = "2W:1D,6M:1W,2Y:1M,5Y:2M"
+AMENDED_POLICY = "2W:U,6M:1W,2Y:1M,5Y:2M"
 
 
 def dlist_name(when: dt.datetime) -> str:
@@ -898,14 +904,46 @@ class PlanTest(unittest.TestCase):
         return found
 
     def test_the_real_list_of_2026_11_11_loses_eight(self) -> None:
-        plan = finish.plan_first_pass(DLISTS_2026_11_11, finish.POLICY, self.NOW, retention)
-        post = ["duplicati-20261108T140001Z.dlist.zip.aes", "duplicati-20261109T140001Z.dlist.zip.aes", "duplicati-20261110T140000Z.dlist.zip.aes"]
-        self.assertEqual(plan["delete"], sorted(FIVE_PRE_RECOVERY + post))
+        # Under the 2026-10-08 policy: its one-day interval lets the off-schedule filesets displace three scheduled ones.
+        plan = finish.plan_first_pass(DLISTS_2026_11_11, POLICY_2026_10_08, self.NOW, retention)
+        self.assertEqual(plan["delete"], sorted(FIVE_PRE_RECOVERY + SCHEDULED_DISPLACED))
         self.assertEqual(plan["varies"], [], "no fileset meets a frame's edge in the next 60 hours")
         self.assertEqual([at for at, _names in plan["evaluated"]], [self.NOW, self.NOW + dt.timedelta(hours=60)], "so only the window's two ends are evaluated")
         self.assertEqual(len(plan["keep"]), 8)
         self.assertIn(finish.DRILLS["2"], plan["keep"], "drill 2's fileset survives the first pass")
         self.assertIn(finish.DRILLS["1"], plan["delete"], "drill 1's fileset does not -- which is why it is drilled first")
+
+    def test_the_policy_is_the_amended_ruling(self) -> None:
+        self.assertEqual(finish.POLICY, AMENDED_POLICY, "the owner's 2026-11-14 ruling (Q7): the two-week frame keeps every fileset")
+        self.assertEqual(retention.parse_policy(finish.POLICY)[0], (dt.timedelta(days=14), dt.timedelta(0)))
+
+    def test_under_the_amended_policy_the_real_list_loses_only_the_five(self) -> None:
+        plan = finish.plan_first_pass(DLISTS_2026_11_11, finish.POLICY, self.NOW, retention)
+        self.assertEqual(plan["delete"], sorted(FIVE_PRE_RECOVERY), "inside two weeks nothing is deleted, so no off-schedule fileset displaces a scheduled one")
+        for name in SCHEDULED_DISPLACED + [finish.DRILLS["2"]]:
+            self.assertIn(name, plan["keep"])
+        self.assertEqual(plan["varies"], [])
+        self.assertIn(finish.DRILLS["1"], plan["delete"], "drill 1's fileset still goes: the six-month frame thins it")
+
+    def test_under_the_amended_policy_a_fileset_one_second_early_is_kept(self) -> None:
+        # Q7's second effect. K is kept; D, stamped a second earlier in the day, is 23:59:59 after K. One-day interval:
+        # D is deleted. Keep-all frame: D is kept.
+        k = self.NOW - dt.timedelta(days=3) + dt.timedelta(seconds=1)
+        names = [dlist_name(k), dlist_name(k + dt.timedelta(days=1, seconds=-1))]
+        old = finish.plan_first_pass(names, POLICY_2026_10_08, self.NOW, retention, horizon=dt.timedelta(0))
+        self.assertEqual(old["delete"], [names[1]], "the fixture must show the defect, or this test proves nothing")
+        new = finish.plan_first_pass(names, finish.POLICY, self.NOW, retention, horizon=dt.timedelta(0))
+        self.assertEqual(new["delete"], [])
+
+    def test_an_interval_of_u_is_duplicatis_keep_all(self) -> None:
+        for text in ("2W:U,6M:1W", "2W:u,6M:1W"):
+            with self.subTest(policy=text):
+                self.assertEqual(retention.parse_policy(text), [(dt.timedelta(days=14), dt.timedelta(0)), (dt.timedelta(days=180), dt.timedelta(days=7))])
+        now = dt.datetime(2026, 11, 15, 14, 30, tzinfo=UTC)
+        hourly = [now - dt.timedelta(hours=h) for h in range(1, 300)]  # every hour of the last 12.5 days
+        self.assertEqual(retention.to_delete(hourly, now, retention.parse_policy("2W:U")), set(), "a keep-all frame deletes none of its members")
+        older = now - dt.timedelta(days=15)
+        self.assertEqual(retention.to_delete(hourly + [older], now, retention.parse_policy("2W:U")), {older}, "anything older than every frame still goes")
 
     def test_the_nine_alone_lose_the_five_the_recovery_plan_names(self) -> None:
         nine = DLISTS_2026_11_11[:9]
@@ -941,15 +979,15 @@ class PlanTest(unittest.TestCase):
 
     def test_every_pass_time_is_covered_not_a_sample_of_them(self) -> None:
         # The 2026-11-12 review: 20261111T140000Z is deleted only between 2026-11-24T14:00Z and 22:15Z, which falls
-        # between the old +48h and +60h sample points.
+        # between the old +48h and +60h sample points. The counter-example is the 2026-10-08 policy's.
         names = [f"duplicati-{stamp}.dlist.zip.aes" for stamp in self.REVIEW_STAMPS]
         missed = "duplicati-20261111T140000Z.dlist.zip.aes"
-        sampled = self.union_at(names, [self.REVIEW_NOW + dt.timedelta(hours=h) for h in self.OLD_SAMPLE_HOURS])
+        sampled = self.union_at(names, [self.REVIEW_NOW + dt.timedelta(hours=h) for h in self.OLD_SAMPLE_HOURS], POLICY_2026_10_08)
         self.assertNotIn(missed, sampled, "the fixture must be one the old sampling gets wrong, or this test proves nothing")
-        plan = finish.plan_first_pass(names, finish.POLICY, self.REVIEW_NOW, retention)
+        plan = finish.plan_first_pass(names, POLICY_2026_10_08, self.REVIEW_NOW, retention)
         self.assertIn(missed, plan["delete"])
         self.assertIn(missed, plan["varies"])
-        every_minute = self.union_at(names, [self.REVIEW_NOW + dt.timedelta(minutes=k) for k in range(finish.HORIZON_HOURS * 60 + 1)])
+        every_minute = self.union_at(names, [self.REVIEW_NOW + dt.timedelta(minutes=k) for k in range(finish.HORIZON_HOURS * 60 + 1)], POLICY_2026_10_08)
         self.assertEqual(set(plan["delete"]), every_minute, "the edges give exactly what a sweep of every minute of the window gives")
 
     def test_the_instants_are_each_edge_and_the_second_after_it_inside_the_window(self) -> None:
@@ -965,7 +1003,7 @@ class PlanTest(unittest.TestCase):
         self.assertIn(self.NOW + dt.timedelta(hours=5), finish.pass_instants([six_months], policy, self.NOW, horizon), "every frame of the policy has edges, not only the smallest")
 
     def test_a_policy_that_cannot_be_parsed_is_an_error(self) -> None:
-        for policy in ("2W:1Q", "garbage", "2W", ""):
+        for policy in ("2W:1Q", "garbage", "2W", "", "U:1M", "2W:X"):  # a U timeframe is Duplicati's, not this port's
             with self.subTest(policy=policy):
                 with self.assertRaises(finish.ToolError) as caught:
                     finish.plan_first_pass(DLISTS_2026_11_11, policy, self.NOW, retention)
@@ -1064,8 +1102,8 @@ class AsideTest(unittest.TestCase):
         code, text = self.run_aside()
         self.assertEqual(code, finish.EXIT_PASS)
         copied = sorted(p.name for p in self.aside.iterdir() if p.name != finish.MANIFEST)
-        self.assertEqual(copied, sorted(DLISTS_2026_11_11), "all sixteen, not the eight the prediction names")
-        self.assertIn("predicted   : the first pass under 2W:1D,6M:1W,2Y:1M,5Y:2M deletes 8 of 16 dlists", text)
+        self.assertEqual(copied, sorted(DLISTS_2026_11_11), "all sixteen, not the five the prediction names")
+        self.assertIn("predicted   : the first pass under 2W:U,6M:1W,2Y:1M,5Y:2M deletes 5 of 16 dlists", text)
         self.assertEqual(os.stat(self.aside).st_mode & 0o777, 0o700)
         for name in copied:
             source, copy = os.stat(self.dest / name), os.stat(self.aside / name)
@@ -1743,13 +1781,17 @@ class CommandLineTest(unittest.TestCase):
             # --at pins the pass time: the answer for these sixteen names depends on the date, as it must.
             code, out, _err = self.run_main("--dest", tmp, "plan", "--at", "2026-11-12T01:00:00Z")
             self.assertEqual(code, finish.EXIT_PASS)
-            self.assertEqual(out.count("  DELETE  "), 8)
-            self.assertIn("predicted   : 8 of 16 deleted (5 pre-recovery, 3 post-recovery), 80 B", out)
+            self.assertEqual(out.count("  DELETE  "), 5)
+            self.assertIn("== first retention pass, policy 2W:U,6M:1W,2Y:1M,5Y:2M, over the 16 dlists", out)
+            self.assertIn("predicted   : 5 of 16 deleted (5 pre-recovery, 0 post-recovery), 50 B", out)
             self.assertIn("assumes     : every fileset is a full backup", out)
             self.assertIn(f"retention   : retention_table.py sha256[:16]={hashlib.sha256(Path(finish.RETENTION_TABLE).read_bytes()).hexdigest()[:16]}", out)
+            code, old, _err = self.run_main("--dest", tmp, "--policy", POLICY_2026_10_08, "plan", "--at", "2026-11-12T01:00:00Z")
+            self.assertEqual(code, finish.EXIT_PASS)
+            self.assertIn("predicted   : 8 of 16 deleted (5 pre-recovery, 3 post-recovery), 80 B", old, "--policy still evaluates the superseded string")
             code, later, _err = self.run_main("--dest", tmp, "plan", "--at", "2027-06-01T00:00:00Z")
             self.assertEqual(code, finish.EXIT_PASS)
-            self.assertNotEqual(later.count("  DELETE  "), 8, "seven months on, the frames have moved and so has the answer")
+            self.assertNotEqual(later.count("  DELETE  "), 5, "seven months on, the frames have moved and so has the answer")
             self.assertIn("from 2027-06-01T00:00:00Z", later)
             code, _out, err = self.run_main("--dest", os.path.join(tmp, "missing"), "plan")
             self.assertEqual(code, finish.EXIT_ERROR)
@@ -1809,7 +1851,7 @@ class WrapperTest(unittest.TestCase):
             env = RedactedEnv(os.environ, PYTHONPATH="/nonexistent/should-be-ignored", PATH="/nonexistent:" + os.environ.get("PATH", ""))
             proc = subprocess.run(["/bin/bash", str(WRAPPER), "--dest", tmp, "plan", "--at", "2026-11-12T01:00:00Z"], capture_output=True, text=True, env=env, check=False)
             self.assertEqual(proc.returncode, 0, proc.stderr)
-            self.assertIn("predicted   : 8 of 16 deleted", proc.stdout)
+            self.assertIn("predicted   : 5 of 16 deleted", proc.stdout)
             proc = subprocess.run(["/bin/bash", str(WRAPPER), "aside"], capture_output=True, text=True, env=env, check=False)
             self.assertEqual(proc.returncode, finish.EXIT_REFUSED)
             self.assertIn("VERDICT: REFUSED", proc.stdout)
