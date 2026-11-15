@@ -26,7 +26,10 @@ right before `Install dependencies`, so the sdist builds. The step carries an `i
 `Report the informational Python 3.15 result` step lists it too. The blocking legs skip it and are unchanged.
 Drop the step once h5py ships a cp315 wheel.
 
-juniper-ml's own `Regression Tests` leg has the same failure; its fix is a separate change (juniper-ml's `ci.yml`).
+juniper-ml's own `Regression Tests` leg (its `tests` job) has the same failure, and `--repo juniper-ml` applies the
+same step there, before `Install test dependencies`. It also corrects that step's comment, which said h5py never
+builds from source. There the failed h5py install also skipped setuptools, wheel and cryptography, which the step
+installs after it.
 
 Every edit is an exact-substring replacement that must match exactly once, so the set can be re-applied onto a moved
 `origin/main` from a fresh worktree (re-run, never re-type) and a drifted base fails loudly instead of being
@@ -38,7 +41,7 @@ Usage
     python3 util/ad-hoc/2026-11-15_py315_h5py_hdf5_headers.py --repo juniper-cascor --worktree <cascor worktree> --check
 
 Bases: juniper-canopy origin/main bab3ec8d (juniper-canopy#820); juniper-cascor origin/main f5ffefb7
-(juniper-cascor#761). Both 2026-11-15.
+(juniper-cascor#761); juniper-ml origin/main 725c6343 (juniper-ml#2584). All 2026-11-15.
 """
 
 from __future__ import annotations
@@ -88,7 +91,7 @@ def hdf5_step(how_h5py_arrives: str) -> str:
 FIXED_ANCHOR = "### Fixed\n\n- **The informational Python 3.15 legs no longer show as failed checks**"
 
 
-def changelog_entry(repo_effect: str) -> str:
+def changelog_entry(repo_effect: str, job: str = "unit-tests", install_step: str = "Install dependencies") -> str:
     return f"""\
 ### Fixed
 
@@ -97,8 +100,8 @@ def changelog_entry(repo_effect: str) -> str:
   CPython 3.15 wheel (3.16.0, 2026-03-06, the newest release on PyPI when re-probed on 2026-11-15, ships
   cp310-cp314), so pip builds it from the sdist there, and the runner image lacks the libhdf5 headers and
   pkg-config that build needs. {repo_effect}
-  - `ci.yml`'s `unit-tests` gains `Install the HDF5 headers h5py builds against (Python 3.15 only)`, which installs
-    `libhdf5-dev` and `pkg-config` before `Install dependencies`, on the 3.15 leg alone
+  - `ci.yml`'s `{job}` gains `Install the HDF5 headers h5py builds against (Python 3.15 only)`, which installs
+    `libhdf5-dev` and `pkg-config` before `{install_step}`, on the 3.15 leg alone
     (`if: matrix.experimental == true && runner.os == 'Linux'`). Like the job's other steps it carries an `id` and
     the leg's `continue-on-error` expression, so the 3.15 report step lists it.
   - The blocking legs skip the step and still install h5py's wheel. The 3.15 leg stays informational.
@@ -108,7 +111,50 @@ def changelog_entry(repo_effect: str) -> str:
 - **The informational Python 3.15 legs no longer show as failed checks**"""
 
 
+ML_INSTALL_ANCHOR = """\
+      - name: Install test dependencies
+        id: install-test-dependencies
+        continue-on-error: ${{ matrix.experimental == true }}
+"""
+
+ML_COMMENT_OLD = """\
+          # without it the suites cannot even be collected. Wheels exist for the
+          # whole 3.12/3.13/3.14 matrix, so this never builds from source.
+"""
+
+ML_COMMENT_NEW = """\
+          # without it the suites cannot even be collected. Wheels exist for 3.12,
+          # 3.13 and 3.14. 3.15 has none yet, so on the informational 3.15 leg pip
+          # builds it from the sdist, against the HDF5 headers the step above
+          # installs.
+"""
+
 EDITS: dict[str, list[Edit]] = {
+    "juniper-ml": [
+        Edit(
+            CI,
+            ML_INSTALL_ANCHOR,
+            hdf5_step(
+                "Without them `Install test dependencies` stops at\n"
+                "        # `pip install \"h5py>=3.11\"`, so the packages it installs after h5py (setuptools, wheel,\n"
+                "        # cryptography) are never installed either."
+            )
+            + ML_INSTALL_ANCHOR,
+        ),
+        Edit(CI, ML_COMMENT_OLD, ML_COMMENT_NEW),
+        Edit(
+            CHANGELOG,
+            FIXED_ANCHOR,
+            changelog_entry(
+                "On `main`'s 3.15 leg (run 43681267307) h5py's wheel build stopped at `Unable to load dependency\n"
+                "  HDF5`. That ended `Install test dependencies` at `pip install \"h5py>=3.11\"`, before it installed\n"
+                "  setuptools, wheel and cryptography, so `Run Python regression tests` then failed 6 tests on `No module named\n"
+                "  'setuptools'`. The step's comment, which said h5py never builds from source, now names the 3.15 exception.",
+                job="tests",
+                install_step="Install test dependencies",
+            ),
+        ),
+    ],
     "juniper-canopy": [
         Edit(
             CI,

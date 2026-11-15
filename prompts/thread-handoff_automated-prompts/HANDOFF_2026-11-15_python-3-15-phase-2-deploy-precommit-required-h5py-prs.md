@@ -3,9 +3,9 @@
 **Date**: 2026-11-15 (facts read 04:58Z to 05:45Z)
 **Session**: host yamaguchi, juniper-ml worktree `.claude/worktrees/zazzy-seeking-wirth` (session c473918e).
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-15_python-3-15-phase-2-approved-deploy-precommit-matrix.md`.
-It lives in worktree `.claude/worktrees/witty-giggling-twilight` and is not on `main`. Its own predecessor,
-`HANDOFF_2026-11-15_python-3-15-informational-checks-phase-1-rolled-out.md`, is on `main`. Read both; this file
-adds only what this session did and found.
+It is on `main` through juniper-ml#2582. So is its own predecessor,
+`HANDOFF_2026-11-15_python-3-15-informational-checks-phase-1-rolled-out.md`. Read both; this file adds only what
+this session did and found.
 
 ## Goal statement
 
@@ -53,15 +53,18 @@ stay INFORMATIONAL (green with a warning). Do not make any 3.15 check required (
 ## Remaining work (priority order)
 
 1. ~~Finish #821 / #762~~: both merged, and their CI results are recorded in each PR body.
-2. **juniper-ml `Regression Tests` 3.15 leg: the same h5py failure.** It is likely hiding more, as canopy's was. `ci.yml`'s `Install test dependencies` step
-   runs `pip install "h5py>=3.11"`, and its comment says wheels cover the whole matrix. That is false on 3.15.
-   - Add the same gated step. The juniper-ml green-legs guard, `tests/test_python_version_matrix_drift.py`, wants an
-     `id` and `continue-on-error` on every step of a 3.15 job.
-   - Fix that comment, and add a CHANGELOG entry.
-   - **Peer hold:** the flood-4 session asked other sessions not to merge juniper-ml PRs that touch `ci.yml`,
-     `CHANGELOG.md`, `docs/REFERENCE.md`, `AGENTS.md` or `main-verify.yml` until it sends "flood-4 sitting done".
-     It asked at 04:12Z, for about 2-3 hours. Check `ListAgents` and the inbox.
-   - The owner's PR sweeper arms auto-merge on open PRs, so open this one only after the hold lifts.
+2. **juniper-ml `Regression Tests` 3.15 leg: juniper-ml#2586** (head `cddf5824`) is OPEN with the same step. It
+   was opened after flood-4 sent "flood-4 sitting done" at about 05:50Z, which lifted the hold.
+   - On `main` (run 43681267307) the failed h5py build ended `Install test dependencies` early, so setuptools, wheel
+     and cryptography were never installed, and 6 tests failed on `No module named 'setuptools'`.
+   - Read #2586's 3.15 leg, record it in its `## CI result`, and merge with `util/safe_merge.py`.
+   - Locally, `tests/test_workflow_script_paths.py`'s `test_raises_when_no_dot_github_workflows_in_ancestors` fails
+     because `TMPDIR` is inside the checkout. That is environmental, and the test would need a ceiling. It is not
+     #2586's concern.
+   - flood-4's peer hold on juniper-ml's `ci.yml`, `CHANGELOG.md`, `docs/REFERENCE.md`, `AGENTS.md` and
+     `main-verify.yml` is LIFTED. flood-4 will send one more juniper-ml PR later, porting the gitleaks
+     pull-request scan into `ci.yml`'s Security Scan job and `CHANGELOG.md`. It is rebuilt three-way on the
+     latest `main`, so nothing needs holding for it.
 3. **dill / `code.co_lnotab`**: cascor's 2 failing 3.15 tests, measured on #762, and 2 of juniper-cascor-model's 3.
    No released dill handles 3.15.
    0.4.1 (2026-01-19) is the newest, and its classifiers stop at 3.14. The fix is on dill's `master` only: commit
@@ -114,9 +117,12 @@ gh run list --repo pcalnon/juniper-ml --workflow ci.yml --branch main --limit 1 
 
 ## Git status
 
-- The juniper-ml worktree `zazzy-seeking-wirth` is at `main` (`2afe16fc`).
+- The juniper-ml worktree `zazzy-seeking-wirth` was fast-forwarded to `main` `725c6343`. It holds #2586's
+  `ci.yml` and `CHANGELOG.md` edits, uncommitted, because #2586's signed API commit carries them. Restore both
+  from `origin/main` once #2586 merges.
 - This file and four `util/ad-hoc/2026-11-15_*` scripts reach `main` through a provenance PR that only adds files:
   `deploy_precommit_python_matrix.py`, `deploy_ruleset_require_precommit_legs.py`, `py315_h5py_hdf5_headers.py`
   and `py315_check_added_step.py`.
-- No branch of this arc is open in any repo except the provenance PR's. canopy's `ci/gitleaks-pr-commit-scan` PR
+- Open branches of this arc: juniper-ml `docs/handoff-py315-phase2-deploy-precommit-h5py` (#2585, provenance) and
+  `ci/python-3-15-h5py-hdf5-headers` (#2586). No other repo has one. canopy's `ci/gitleaks-pr-commit-scan` PR
   (#822) is the flood-4 session's. Its CHANGELOG hunk (line 51) does not overlap #821's (line 37).
