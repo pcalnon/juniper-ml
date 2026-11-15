@@ -15,6 +15,7 @@
   - P0.5a item 1 is released now (note 10.1g); if it has already run, this order starts at item 2.
   - Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except (1) the in-tree escrow `…/Dropbox/Backups/_yamaguchi_keys/`, which only P1 step 4 deletes, once P0.5a item 5 or P1 step 4 has copied it out, and (2) the old filesets the job's own retention pass deletes once P0 step 11 restores `retention-policy` — as `2W:1D,6M:1W,2Y:1M,5Y:2M`, after AC-4's first drill has passed, and after the five dlists it will delete are copied out of the Dropbox root; P0 step 10 removes
     it and restarts the unit, so the first backup after the recovery runs from the edited job and deletes nothing (owner ruling 2026-10-08); and (3), on Procedure B only and only if Verify finds the index inconsistent, the remote files a Repair deletes — volumes the index does not know, the index's own temporary, deleting or incompletely uploaded files, and empty or replaced index files — which P0 step 8 first copies aside after a dry run.
+  - **Retention, amended 2026-11-14** (note 10.1h): step 11 restores `2W:U,6M:1W,2Y:1M,5Y:2M`, so the two-week frame keeps every fileset.
 - **Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
 - **Companions**:
   - [`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md) (the design of record, "PLAN"),
@@ -1814,7 +1815,7 @@ Dropbox prerequisite: the daemon must run with gid 139. After `pcalnon` logs in 
 Job settings are the certified ones (R-16) with **four** changes: `--tempdir=/home/duplicati/.cache/duplicati-tmp`; `--run-script-before-required=/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash`; `TargetURL=file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi`; and **`--aes-version` pinned explicitly**. The fourth is new and is not cosmetic: the existing 877 volumes are AES Crypt **v2** (newest dlist header bytes `41455302`), whose KDF is the legacy
 iterated SHA-256, while 2.4.0.0 defaults to `--aes-version=3` (PBKDF2, `--aes-v3-iterations` 300000). Left unpinned, the first post-recovery run silently changes the on-disk format mid-set. Pin **2** to keep the set homogeneous, or pin 3 and accept a mixed set — in which case AC-4 must drill one pre- and one post-upgrade fileset. This only matters if `PASSPHRASE` is not random: with 32 random characters both KDFs are irrelevant, with a human phrase v2 is GPU-crackable. Record the
 passphrase's provenance (generator and length) with the decision. Everything else — sources, 45 filters, AES, `--blocksize=1MB`, `--dblock-size=500MB`, `--no-auto-compact=true`, `retention-policy` (removed by P0 step 10 and restored by step 11, after AC-4's first drill, as `2W:1D,6M:1W,2Y:1M,5Y:2M` — replacing the snapshot's `1W:1D,1M:1W,1Y:1M,3Y:2M`; owner ruling 2026-10-08), `--asynchronous-upload-limit=1`,
-`--allow-missing-source=true`, `compression-module=zip`, schedule 14:00 UTC daily — is taken from the 2026-09-20 snapshot.
+`--allow-missing-source=true`, `compression-module=zip`, schedule 14:00 UTC daily — is taken from the 2026-09-20 snapshot. The retention string was amended on 2026-11-14 to `2W:U,6M:1W,2Y:1M,5Y:2M` (note 10.1h).
 
 Rules for a destination that is also a Dropbox-synced folder:
 
@@ -2387,7 +2388,8 @@ outside the Dropbox root, and the deletions reach Dropbox (step 11; owner ruling
 `…/Dropbox/Backups/_yamaguchi_keys/`, which P0.5a item 5 or P1 step 4 first **copies** to a sibling outside the
 Dropbox root, and which only P1 step 4 then deletes from the synced tree (S-4). The earlier revision of this preamble stated the rule
 without the exception while P1 step 4 performed it — a contradiction inside one document. The pcalnon profile
-directory is not modified by anything here.
+directory is not modified by anything here. The retention string step 11 restores was amended on 2026-11-14 to `2W:U,6M:1W,2Y:1M,5Y:2M` (note 10.1h): the first
+pass still deletes the five pre-recovery filesets, and none of the last two weeks.
 
 ### P0 — freeze and recover the job (target: same day)
 
@@ -2814,6 +2816,9 @@ echo "SHRED ${OUT} once step 8 has installed the database -- it is cleartext key
     that. **Before restoring it, copy the five dlists it will delete** (`duplicati-<timestamp>.dlist.zip.aes`, the timestamps above, or the port's for a later date) to a root-only directory outside the Dropbox root — `sudo install -d -m 0700 -o root -g root /mnt/Backups/Ubuntu/_yamaguchi_retention_aside`, `sudo cp -p` each, and compare `sha256sum` on both sides — so this destructive step too is preceded by a copy; `--no-auto-compact=true` keeps every dblock and dindex those
     dlists reference, so the copies keep the five filesets recoverable (Phase B round 4, lane B NIT-5). Only dlists go, and **the deletions reach Dropbox**, which keeps a deleted file 30 or 180 days by plan (§10.2 step 8). The figures are a port of 2.4.0.0's retention remover (`DeleteHandler.cs`, `RetentionPolicyRemover`), `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py`. `AC-6` cannot be proved here: step 8's installer re-points the snapshot lane, but AC-6
     needs the 13:45 UTC fire and the 14:00 UTC fileset after the timer is re-enabled (P0.5a item 2) — and `AC-1` needs 24 h.
+    **Amended 2026-11-14 (note 10.1h): restore `2W:U,6M:1W,2Y:1M,5Y:2M` instead, with an upper-case `U`.** The
+    two-week frame then keeps every fileset, so post-recovery filesets are thinned only after two weeks, to one a week;
+    the acceptance probe's `--expect-retention restored` reads the 2026-10-08 string as `FAIL`.
 
 ### P0.5a — items 1, 2 and 4, in that order, before P0; items 5–7 alongside it
 
@@ -3104,6 +3109,27 @@ and what the STOP block at the top of §8 holds (note 10.1g).
   must secure first, with the passphrase, and it needs step 1's freeze, which writes. **"This arc's reports"**
   are every validation round of the arc, any still running and the follow-up's own, archived verbatim into a
   record merged to `main`. Both readings hold back more than the words alone would; the owner may widen them.
+- **(10.1h)** **Retention: the two-week frame keeps every fileset — ruled 2026-11-14.** The 2026-10-08 ruling
+  restores `retention-policy` as `2W:1D,6M:1W,2Y:1M,5Y:2M` (P0 step 11). On 2026-11-14 the owner amended it, in
+  the Phase D sitting (its question Q7), to **`2W:U,6M:1W,2Y:1M,5Y:2M`**. The other three frames are unchanged.
+  - **Why.** Duplicati 2.4.0.0 keeps a fileset in a frame only if it is the frame's first, or lies at least the
+    interval after the last kept full fileset (`DeleteHandler.cs` 393 at tag `v2.4.0.0_stable_2026-09-03`).
+    A one-day interval therefore had two effects. First, the filesets of the job's off-schedule runs became the
+    kept ones and the scheduled filesets beside them were deleted: on 2026-11-13 the first pass was predicted to
+    delete 9 of 18 dlists, among them the scheduled filesets of 11-08, 11-09 and 11-10. Second, a daily fileset
+    stamped one second earlier than the last kept one (`140000` after `140001`) is 23:59:59 later, and is deleted.
+  - **What `U` is.** `RetentionPolicyValue.CreateFromString` reads an interval of `U` as zero (`Options.cs`
+    2059-2061), and `IsKeepAllVersions()` treats zero as keep-all (2019). The legacy UI's custom field accepts
+    the string with an upper-case `U` (`EditBackupController.js` 309, whose pattern has no lower-case `u`).
+  - **What does not change.** The nine pre-recovery filesets: they left the two-week frame on 2026-10-02, and a
+    frame's members depend only on their dates, so the port's table for the nine is the same under both strings.
+    Until 2026-11-21 21:29Z, when the first post-recovery fileset leaves the two-week frame, the port predicts
+    that the first pass deletes exactly the five pre-recovery filesets P0 step 11 names (it treats every fileset
+    as a full backup). `keep-time` and `keep-versions` are
+    still never restored, and step 14's `aside` still copies every dlist before the restore.
+  - **The tools.** The acceptance probe (1.2.0) judges the amended string in `--expect-retention restored`, so
+    a restore of the 2026-10-08 string now reads `FAIL`. The finish tool (1.2.0) predicts with it, and the port
+    `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py` reads `U` as Duplicati does.
 
 ### 10.2 D-2 execution: confirm the scrub, rotate, re-encrypt — order of operations
 
