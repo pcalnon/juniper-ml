@@ -103,6 +103,41 @@ def violations(job: dict, informational: list[str]) -> list[str]:
     return problems
 
 
+REPORT_STEP_NAME = "Report the informational Python 3.15 result"
+REPORT_STEP_IF = "always() && matrix.experimental == true"
+
+
+def green_violations(job: dict) -> list[str]:
+    """What would let this job's informational leg conclude FAILURE (a red check) instead of reporting a warning.
+
+    The job-level expression keeps every gate's ``needs.<job>.result`` at success, but on its own the leg's check
+    still turns red, and a red check reads as a failing pull request (the owner's report of 2026-11-15). So every
+    step must carry the same expression, and the last step must report what failed.
+    """
+    problems: list[str] = []
+    steps = [s for s in job.get("steps") or [] if isinstance(s, dict)]
+    if not steps:
+        return ["the job has no steps to check"]
+    *body, last = steps
+    for step in body:
+        label = step.get("name") or step.get("uses") or "?"
+        coe = step.get("continue-on-error")
+        if not isinstance(coe, str) or " ".join(coe.split()) != COE_EXPRESSION:
+            problems.append(f"step {label!r}: continue-on-error is {coe!r}, not {COE_EXPRESSION!r}")
+        if not step.get("id"):
+            problems.append(f"step {label!r} has no id, so the report step cannot see its outcome")
+    if last.get("name") != REPORT_STEP_NAME:
+        problems.append(f"the last step is {last.get('name') or last.get('uses')!r}, not {REPORT_STEP_NAME!r}")
+    else:
+        if " ".join(str(last.get("if", "")).split()) != REPORT_STEP_IF:
+            problems.append(f"the report step's if is {last.get('if')!r}, not {REPORT_STEP_IF!r}")
+        if "toJSON(steps)" not in str((last.get("env") or {}).get("STEPS_JSON", "")):
+            problems.append("the report step does not read the step outcomes (env STEPS_JSON: ${{ toJSON(steps) }})")
+        if "::warning" not in str(last.get("run", "")):
+            problems.append("the report step emits no ::warning for a failed step")
+    return problems
+
+
 def pip_requirements(script: str) -> set[str]:
     """The requirement arguments of every ``pip install`` in a shell script (comments and options skipped)."""
     found: set[str] = set()
@@ -165,6 +200,16 @@ class MatrixDriftTest(unittest.TestCase):
                 self.assertEqual(violations(job, self.informational), [])
         self.assertGreaterEqual(checked, len(EXPECTED_JOBS))
 
+    def test_every_informational_leg_concludes_green_and_reports_instead(self) -> None:
+        checked = 0
+        for (name, job_id), job in sorted(self.jobs.items()):
+            if job_id in EXEMPT_JOBS:
+                continue
+            checked += 1
+            with self.subTest(workflow=name, job=job_id):
+                self.assertEqual(green_violations(job), [])
+        self.assertGreaterEqual(checked, len(EXPECTED_JOBS))
+
     def test_every_blocking_version_stays_blocking_where_ci_yml_runs_it(self) -> None:
         tests = self.jobs[("ci.yml", "tests")]
         plain = [str(v) for v in python_matrix(tests).get("python-version")]
@@ -219,6 +264,62 @@ class ViolationNegativeControlTest(unittest.TestCase):
         self.assertIsNone(python_matrix({"runs-on": "ubuntu-latest"}))
         self.assertIsNone(python_matrix({"strategy": {"matrix": {"os": ["ubuntu-latest"]}}}))
         self.assertIsNotNone(python_matrix({"strategy": {"matrix": {"include": [{"python-version": "3.15"}]}}}))
+
+
+class GreenLegNegativeControlTest(unittest.TestCase):
+    """green_violations bites on each shape that would let the informational leg's check turn red."""
+
+    def good_job(self) -> dict:
+        return {
+            "continue-on-error": COE_EXPRESSION,
+            "steps": [
+                {"uses": "actions/checkout@x", "id": "checkout", "continue-on-error": COE_EXPRESSION},
+                {"name": "Run tests", "id": "run-tests", "continue-on-error": COE_EXPRESSION, "run": "pytest"},
+                {
+                    "name": REPORT_STEP_NAME,
+                    "if": REPORT_STEP_IF,
+                    "env": {"STEPS_JSON": "${{ toJSON(steps) }}"},
+                    "run": "echo '::warning title=Python 3.15 (informational)::x'",
+                },
+            ],
+        }
+
+    def test_the_good_shape_passes(self) -> None:
+        self.assertEqual(green_violations(self.good_job()), [])
+
+    def test_a_step_without_the_expression_is_caught(self) -> None:
+        for coe in (None, True, "true", "${{ matrix.experimental }}"):
+            with self.subTest(coe=coe):
+                job = self.good_job()
+                if coe is None:
+                    del job["steps"][1]["continue-on-error"]
+                else:
+                    job["steps"][1]["continue-on-error"] = coe
+                self.assertTrue(any("'Run tests': continue-on-error" in p for p in green_violations(job)))
+
+    def test_a_step_without_an_id_is_caught(self) -> None:
+        job = self.good_job()
+        del job["steps"][1]["id"]
+        self.assertTrue(any("has no id" in p for p in green_violations(job)))
+
+    def test_a_missing_or_misplaced_report_step_is_caught(self) -> None:
+        job = self.good_job()
+        job["steps"].append(job["steps"].pop(0))
+        self.assertTrue(any("the last step is" in p for p in green_violations(job)))
+        job = self.good_job()
+        job["steps"].pop()
+        self.assertTrue(any("the last step is" in p for p in green_violations(job)))
+
+    def test_a_report_step_that_sees_nothing_or_says_nothing_is_caught(self) -> None:
+        for key, value, needle in (
+            ("if", "matrix.experimental == true", "report step's if"),
+            ("env", {}, "does not read the step outcomes"),
+            ("run", "echo done", "emits no ::warning"),
+        ):
+            with self.subTest(key=key):
+                job = self.good_job()
+                job["steps"][-1][key] = value
+                self.assertTrue(any(needle in p for p in green_violations(job)))
 
 
 class JuniperMlRecipeTest(unittest.TestCase):
