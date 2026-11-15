@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.69
+**Version:** 0.6.70
 **Status:** Active
-**Last Updated:** 2026-11-13
+**Last Updated:** 2026-11-15
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -8087,7 +8087,7 @@ Each in-repo published sub-package has its own subdirectory CI at `.github/workf
 | `ci-observability.yml` | `juniper-observability/` | 3.12–3.13 | 90 | package subdir | none (`twine check` only) |
 | `ci-service-core.yml` | `juniper-service-core/` | 3.12–3.13 | 80 | **none** (monorepo root) | none (`twine check` only) |
 
-Matrix rows are **minimum floors** — extra versions are fine. Every workflow is `permissions: contents: read`.
+Matrix rows are **minimum floors** — extra versions are fine. Each workflow also runs an informational Python 3.15 leg (an `include` entry with `experimental: true`, under the job-level `continue-on-error: ${{ matrix.experimental == true }}`), and so does `ci.yml`'s `Regression Tests`: it reports, and a failure there fails neither the job nor the run (phase 1 of the Python 3.15 migration, 2026-11-14; no ruleset requires a 3.15 context). Every workflow is `permissions: contents: read`.
 
 | Contract | Rule | Why it matters |
 |----------|------|----------------|
@@ -8865,13 +8865,13 @@ Available extras:
 
 Publish and CI constraints:
 
-1. `ci-observability.yml` runs package tests on Python 3.12 and 3.13, then builds and validates the distribution.
+1. `ci-observability.yml` runs package tests on Python 3.12 and 3.13 (plus an informational 3.15 leg), then builds and validates the distribution.
 2. `publish-observability.yml` runs on `release: published` when the Release tag starts with `juniper-observability-v` (or on `workflow_dispatch`), builds from the subdirectory, publishes to TestPyPI, verifies installation, then publishes the same artifact to PyPI. It deliberately does **not** subscribe to `push: tags` — see [Independent Sibling Package Publish Pipelines](#independent-sibling-package-publish-pipelines).
 3. The publish workflow uses OIDC trusted publishing, GitHub-hosted `ubuntu-latest` runners, and SHA-pinned actions. If the runner type or pinned artifact actions change, verify compatibility before cutting a Release.
 
 ### juniper-config-tools
 
-`juniper-config-tools` lives under `juniper-config-tools/` and publishes independently (`juniper-config-tools-v*` → `.github/workflows/publish-config-tools.yml`; CI: `ci-config-tools.yml`, Python 3.11–3.14, `--cov-fail-under=85`). It is the stdlib-only env-var alias helper (`os` and `warnings` only; no runtime dependencies). Since `juniper-ml` 0.6.0, the first release whose PyPI metadata declares it, it is aggregated under `[tools]` and `[all]` at `juniper-config-tools>=0.1.0,<0.2.0`. Package Python is `>=3.10`.
+`juniper-config-tools` lives under `juniper-config-tools/` and publishes independently (`juniper-config-tools-v*` → `.github/workflows/publish-config-tools.yml`; CI: `ci-config-tools.yml`, Python 3.11–3.14 plus an informational 3.15 leg, `--cov-fail-under=85`). It is the stdlib-only env-var alias helper (`os` and `warnings` only; no runtime dependencies). Since `juniper-ml` 0.6.0, the first release whose PyPI metadata declares it, it is aggregated under `[tools]` and `[all]` at `juniper-config-tools>=0.1.0,<0.2.0`. Package Python is `>=3.10`.
 
 | Field | Value |
 |-------|-------|
@@ -9430,6 +9430,7 @@ Source: `juniper-service-core/juniper_service_core/workers/registry.py` (`record
 | 0.6.67  | 2026-11-12 | Training-stream broadcast drop (unreleased; first in the next juniper-service-core release, 0.8.0): a socket whose live send fails or times out is closed **1011** `Broadcast send failed or timed out` as well as dropped, at most once and never when already closed, within one send timeout's wait; the receive loop drains until the disconnect after a server-side close. A Shared Service-Core Contracts bullet; in the resume section, a corrected sentence, a paragraph on the close, one on a service's own handler, a list of four things the close does not fix (the per-IP cap while a dropped socket closes, a close that never completes, an unserialisable broadcast, `/ws/control`'s receive after a close), a paragraph on 0.7.2's behaviour, a Gate line and the Source line; and one troubleshooting row. Through 0.7.2 the socket was left open. |
 | 0.6.68  | 2026-11-13 | Cursor flood-4 round-2 code carrier: the agent guard (1.3.0) expands brace sequences (`{x..y..incr}`, zero padding) as bash 5.3 does, fails closed on a brace expansion past its 64-alternative cap or its scan budget, and denies the git and GnuPG prefixes that sign (re-derived on git 2.53.0 and GnuPG 2.4.8); `wake_the_claude.bash` defaults to `--effort max` and sends no flag for `auto`; five suites registered (239); the brace-cap suite's description inverted |
 | 0.6.69  | 2026-11-13 | The stop-then-start race is fixed on `main` (unreleased; first in the next juniper-service-core release, 0.8.0; §8, ruling 11 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`): a start sent while a stopped run's `fit` is still running is a 409 that leaves the run as it was (the route still merges the request's `params` and `epochs` into the parameter store), so the stop stays set and that `fit` unwinds at its next event. The paused-completion section's two overlap paragraphs now state the refusal and keep the 0.7.2-and-earlier overlap. Two paragraphs are new: what the refusal costs and does not cover (a `fit` that does not end holds every start back, and a reset does not clear it; a direct `run()` and a replay `stop` over a running run are outside the check), and a snapshot load after a stop, a known defect that is not fixed. One troubleshooting row is rescoped to 0.7.2 and earlier, another notes the refusal, and two are added (the new 409; a load after a stop); the coverage paragraph names `test_lifecycle_stop_then_start.py`; § Shared Service-Core Contracts names the check and its two conditions. |
+| 0.6.70  | 2026-11-15 | Python 3.15 informational CI legs (phase 1 of the 3.15 migration, owner request 2026-11-14): `ci.yml`'s `Regression Tests` and the six `ci-<pkg>.yml` test matrices each run a 3.15 leg under `continue-on-error: ${{ matrix.experimental == true }}`, which reports and blocks nothing (§ Shared-Package CI Workflows) |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -9983,6 +9984,6 @@ Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordi
 
 ---
 
-**Last Updated:** 2026-11-13
-**Version:** 0.6.69
+**Last Updated:** 2026-11-15
+**Version:** 0.6.70
 **Maintainer:** Paul Calnon
