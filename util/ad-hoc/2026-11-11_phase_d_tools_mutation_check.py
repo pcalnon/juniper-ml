@@ -42,12 +42,13 @@ PROBE = "util/ad-hoc/yamaguchi_acceptance_probe.py"
 FINISH = "util/ad-hoc/2026-11-11_phase_d_finish.py"
 WRAPPER = "util/ad-hoc/2026-11-11_phase_d_finish.bash"
 DEPLOY = "util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash"
+RETENTION = "util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py"
 PROBE_SUITE = "tests/test_yamaguchi_acceptance_probe.py"
 FINISH_SUITE = "tests/test_phase_d_finish.py"
 COPIED = [
     PROBE, FINISH, WRAPPER, DEPLOY, PROBE_SUITE, FINISH_SUITE, "tests/duplicati_api_stub.py", "tests/redacted_env.py", "util/ad-hoc/yamaguchi_server_api.py", "util/ad-hoc/yamaguchi_watchdog.py", "util/ad-hoc/yamaguchi_server_db_snapshot.py",
     "util/ad-hoc/2026-11-09_ac4_restore_drill.py",
-    "util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py", "util/systemd/yamaguchi-acceptance-probe.service", "util/systemd/yamaguchi-acceptance-probe.timer",
+    RETENTION, "util/systemd/yamaguchi-acceptance-probe.service", "util/systemd/yamaguchi-acceptance-probe.timer",
     "notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md",
 ]
 
@@ -65,6 +66,7 @@ MUTANTS = [
     (PROBE, "AC-13: a second run-script option passes", "    if others:\n        fails.append(f\"other run-script options", "    if False:\n        fails.append(f\"other run-script options"),
     (PROBE, "OPTIONS: keep-time and keep-versions pass", "        if name in names:\n            fails.append(f\"{shown(name, options[name])} is set", "        if False:\n            fails.append(f\"{shown(name, options[name])} is set"),
     (PROBE, "OPTIONS: any retention-policy value passes", '    if state == "restored" and options["retention-policy"] != [RULED_RETENTION]:\n', "    if False:\n"),
+    (PROBE, "OPTIONS: the superseded 2026-10-08 policy is the ruled one", 'RULED_RETENTION = "2W:U,6M:1W,2Y:1M,5Y:2M"\n', 'RULED_RETENTION = "2W:1D,6M:1W,2Y:1M,5Y:2M"\n'),
     (PROBE, "OPTIONS: --expect-retention is ignored", '    if expect_retention in ("suspended", "restored") and state != expect_retention:\n', "    if False:\n"),
     (PROBE, "OPTIONS: an unrecorded option name passes", "    if unexpected:\n", "    if False:\n"),
     (PROBE, "OPTIONS: a recorded option gone missing passes", "    if missing:\n        fails.append(f\"recorded option names now absent", "    if False:\n        fails.append(f\"recorded option names now absent"),
@@ -233,6 +235,9 @@ MUTANTS = [
     (FINISH, "plan: only the first frame of the policy has edges", "        for frame, _interval in policy:\n", "        for frame, _interval in policy[:1]:\n"),
     (FINISH, "plan: an edge outside the window is evaluated", "                if now <= at <= end:\n", "                if True:\n"),
     (FINISH, "plan: a policy that cannot be parsed is a traceback", "    except (KeyError, ValueError, IndexError):\n", "    except KeyError:\n"),
+    (FINISH, "plan: the superseded 2026-10-08 policy is the default", 'POLICY = "2W:U,6M:1W,2Y:1M,5Y:2M"', 'POLICY = "2W:1D,6M:1W,2Y:1M,5Y:2M"'),
+    (RETENTION, "port: an interval of U is read as one day", "        return timedelta(0)\n", "        return timedelta(days=1)\n"),
+    (RETENTION, "port: a lower-case u is refused", '    if text.upper() == "U":\n', '    if text == "U":\n'),
     # --- AC-6b -----------------------------------------------------------------------------------------------------
     (FINISH, "ac6b: a live file written at the fileset's start is not the one it read", '    if live["mtime"] <= fileset_start or (', '    if live["mtime"] < fileset_start or ('),
     (FINISH, "ac6b: a snapshot rewritten during the backup is never the same generation", '    if live["mtime"] <= fileset_start or (when is not None and when == live["mtime"].replace(microsecond=0)):\n', '    if live["mtime"] <= fileset_start:\n'),
@@ -277,7 +282,7 @@ MUTANTS = [
     (WRAPPER, "wrapper: one more variable is let through", "for name in HOME USER LOGNAME TERM; do", "for name in HOME USER LOGNAME TERM COLUMNS; do"),
     (WRAPPER, "wrapper: the interpreter runs without isolated mode", '"$PY" -I "$TOOL" "$@"', '"$PY" "$TOOL" "$@"'),
 ]
-SUITE_OF = {PROBE: PROBE_SUITE, DEPLOY: PROBE_SUITE, FINISH: FINISH_SUITE, WRAPPER: FINISH_SUITE}
+SUITE_OF = {PROBE: PROBE_SUITE, DEPLOY: PROBE_SUITE, FINISH: FINISH_SUITE, WRAPPER: FINISH_SUITE, RETENTION: FINISH_SUITE}
 SUITE_TIMEOUT = 300  # seconds: a mutant that makes a test wait for ever is killed by the clock, and reported as such
 
 

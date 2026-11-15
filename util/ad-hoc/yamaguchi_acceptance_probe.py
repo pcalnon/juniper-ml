@@ -94,7 +94,7 @@ import urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import yamaguchi_server_api as api  # noqa: E402 -- sibling module; path fixed one line above
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 SCHEMA = "yamaguchi-acceptance/1"
 UTC = dt.timezone.utc
 
@@ -110,7 +110,10 @@ EXPECTED_FILTERS = 45
 EXPECTED_REPEAT = "1D"
 EXPECTED_TIME_OF_DAY = dt.time(14, 0, 0)
 GUARD_PATH = "/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash"
-RULED_RETENTION = "2W:1D,6M:1W,2Y:1M,5Y:2M"  # owner ruling 2026-10-08
+# Owner ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
+# Under `2W:1D` an off-schedule run's fileset displaced the scheduled one beside it, and a daily fileset stamped one
+# second earlier than the last kept one was deleted. `U` is Duplicati's keep-all interval.
+RULED_RETENTION = "2W:U,6M:1W,2Y:1M,5Y:2M"
 RETENTION_COMBINERS = ("keep-time", "keep-versions")  # never restored: they combine with the policy
 # The job's option names after step 11 (running record, 2026-11-07 B6 and 2026-11-08 "12 option names"): the nine
 # of B1 less retention-policy, plus the two the sitting set and the two the UI's save added.
