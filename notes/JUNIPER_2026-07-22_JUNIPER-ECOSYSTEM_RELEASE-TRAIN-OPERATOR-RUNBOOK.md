@@ -33,12 +33,12 @@ describes behavior the code does not implement.
 Mode is resolved once by the detect job's `id: mode` step (`release-train.yml:161-178`) and exposed as
 `needs.detect.outputs.mode`; the two write jobs gate on it.
 
-| Mode | Runs | Writes | Gate on |
-|---|---|---|---|
-| **`off`** | nothing beyond mode resolution | **nothing** — detection is skipped, both write jobs unreachable | quiesce step `release-train.yml:182-190` |
-| **`report`** (default) | detect job only | **nothing** to GitHub/PyPI — only a step-summary table + the `release-manifest.json` run artifact + a non-blocking Slack post | detect job, workflow-level `contents: read` (`release-train.yml:139`) |
-| **`propose`** | detect + **propose** job | opens **standard-gated** release-proposal PRs (version bump + CHANGELOG move + drafted notes + pin / `_version.py` dunder co-changes) **upstream-first**, plus D6 ceiling-bump follow-ons when a consumer pin escapes; **no** Releases, **no** (Test)PyPI | `propose` job `if: needs.detect.outputs.mode == 'propose'` (`release-train.yml:382`) |
-| **`ceremony`** | detect + **ceremony** job | for `BUMPED_NOT_RELEASED` packages: opens the add-only notes-archive PR (central in juniper-ml, via a **GitHub-signed API commit** → auto-merges hands-free), enables `--auto`, **cuts the Release** on the owning repo, monitors its publish run to `PENDING_PYPI_APPROVAL`; **never** touches (Test)PyPI | `ceremony` job `if: needs.detect.outputs.mode == 'ceremony'` (`release-train.yml:587`) |
+| Mode                   | Runs                           | Writes                                                                                                                                                                                                                                                                                                     | Gate on                                                                                |
+|------------------------|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| **`off`**              | nothing beyond mode resolution | **nothing** — detection is skipped, both write jobs unreachable                                                                                                                                                                                                                                            | quiesce step `release-train.yml:182-190`                                               |
+| **`report`** (default) | detect job only                | **nothing** to GitHub/PyPI — only a step-summary table + the `release-manifest.json` run artifact + a non-blocking Slack post                                                                                                                                                                              | detect job, workflow-level `contents: read` (`release-train.yml:139`)                  |
+| **`propose`**          | detect + **propose** job       | opens **standard-gated** release-proposal PRs (version bump + CHANGELOG move + drafted notes + pin / `_version.py` dunder co-changes) **upstream-first**, plus D6 ceiling-bump follow-ons when a consumer pin escapes; **no** Releases, **no** (Test)PyPI                                                  | `propose` job `if: needs.detect.outputs.mode == 'propose'` (`release-train.yml:382`)   |
+| **`ceremony`**         | detect + **ceremony** job      | for `BUMPED_NOT_RELEASED` packages: opens the add-only notes-archive PR (central in juniper-ml, via a **GitHub-signed API commit** → auto-merges hands-free), enables `--auto`, **cuts the Release** on the owning repo, monitors its publish run to `PENDING_PYPI_APPROVAL`; **never** touches (Test)PyPI | `ceremony` job `if: needs.detect.outputs.mode == 'ceremony'` (`release-train.yml:587`) |
 
 Notes:
 
@@ -96,24 +96,24 @@ The detector's proposed bump feeds Gate 1. Two internals decide whether code shi
 bucket `propose` suggests (`detect.py:has_substantive_hunk`, `local_git_compare`, `propose_semver`;
 plan §4.2 / §6):
 
-| Signal | Ships? | Notes |
-|---|---|---|
-| Whitespace-only hunk | **No** | Empty / space-only `+/-` lines are stripped before comment/code checks (`has_substantive_hunk`). |
-| Pure comment / docstring / link edit | **No** | Notes-rename residue class — discounted. |
-| Pure **code** deletion (with `file_text`) | **Yes** | `_removed_codeish` path; deleting a real statement must not thin SemVer. |
-| Add / delete / rename / **copy** of a `.py` module (`A`/`D`/`R`/`C` in `local_git_compare`) | **Yes** | Inherently substantive — no blob compare (`detect.py:334-335`). Copy (`C075`) is rarer than A/D/R (needs copy detection) but shares the same short-circuit; do not expect a module copy to fall through to `SHIP_UNCERTAIN`. |
-| Patch unavailable | **Uncertain** | Surfaces as `SHIP_UNCERTAIN`, not a silent `UP_TO_DATE`. |
+| Signal                                                                                      | Ships?        | Notes                                                                                                                                                                                                                        |
+|---------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Whitespace-only hunk                                                                        | **No**        | Empty / space-only `+/-` lines are stripped before comment/code checks (`has_substantive_hunk`).                                                                                                                             |
+| Pure comment / docstring / link edit                                                        | **No**        | Notes-rename residue class — discounted.                                                                                                                                                                                     |
+| Pure **code** deletion (with `file_text`)                                                   | **Yes**       | `_removed_codeish` path; deleting a real statement must not thin SemVer.                                                                                                                                                     |
+| Add / delete / rename / **copy** of a `.py` module (`A`/`D`/`R`/`C` in `local_git_compare`) | **Yes**       | Inherently substantive — no blob compare (`detect.py:334-335`). Copy (`C075`) is rarer than A/D/R (needs copy detection) but shares the same short-circuit; do not expect a module copy to fall through to `SHIP_UNCERTAIN`. |
+| Patch unavailable                                                                           | **Uncertain** | Surfaces as `SHIP_UNCERTAIN`, not a silent `UP_TO_DATE`.                                                                                                                                                                     |
 
 Keep-a-Changelog categories + conventional-commit classes map to the proposed bump
 (`FEATURE_CATEGORIES` / `FIX_CATEGORIES` / `BREAKING_CATEGORIES`, `detect.py:107-109`;
 `propose_semver`, `detect.py:804-815`; pre-1.0 policy plan §6):
 
-| Input | Proposed bump (pre-1.0) |
-|---|---|
-| `### Security` or `### Fixed` (or `fix:` commits) | **patch** |
-| `### Added` / `### Changed` / `### Deprecated` (or `feat:` commits) | **minor** |
-| `### Removed`, `feat!` / `fix!`, or a `BREAKING CHANGE` footer | **minor** (breaking is not major pre-1.0) |
-| No release-worthy cats/classes | **none** |
+| Input                                                               | Proposed bump (pre-1.0)                   |
+|---------------------------------------------------------------------|-------------------------------------------|
+| `### Security` or `### Fixed` (or `fix:` commits)                   | **patch**                                 |
+| `### Added` / `### Changed` / `### Deprecated` (or `feat:` commits) | **minor**                                 |
+| `### Removed`, `feat!` / `fix!`, or a `BREAKING CHANGE` footer      | **minor** (breaking is not major pre-1.0) |
+| No release-worthy cats/classes                                      | **none**                                  |
 
 When reviewing a Gate 1 PR, a `Security`-only Unreleased section should propose **patch**, not minor;
 a `Changed` section should propose **minor**. A mismatch means the detector/SemVer path drifted —
@@ -138,12 +138,12 @@ version (`detect.py:_upload_time`); missing/empty upload times → `None` (never
 GitHub's compare API caps the `files` array at **300**. Live detect (`make_live_sources().compare`,
 `detect.py:362-373`) must not leave busy subdir packages with a thinned path-scoped window:
 
-| Condition | Behavior |
-|---|---|
-| `len(files) >= 300` | Fall back to path-scoped `local_git_compare` (cap-free). When that local compare succeeds **and** the remote payload had commits, **keep the remote commit first-lines** for the SemVer signal (`detect.py:368-371`) — local commit messages are discarded. |
-| Below 300 | Use the `gh` payload as-is — `local_git_compare` is **not** called. |
-| Compare missing / not found | Return error (`ok=False`) — **no** local fallback. |
-| Cap hit but local compare fails | Surface the local error (never invent an empty `UP_TO_DATE`). |
+| Condition                       | Behavior                                                                                                                                                                                                                                                    |
+|---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `len(files) >= 300`             | Fall back to path-scoped `local_git_compare` (cap-free). When that local compare succeeds **and** the remote payload had commits, **keep the remote commit first-lines** for the SemVer signal (`detect.py:368-371`) — local commit messages are discarded. |
+| Below 300                       | Use the `gh` payload as-is — `local_git_compare` is **not** called.                                                                                                                                                                                         |
+| Compare missing / not found     | Return error (`ok=False`) — **no** local fallback.                                                                                                                                                                                                          |
+| Cap hit but local compare fails | Surface the local error (never invent an empty `UP_TO_DATE`).                                                                                                                                                                                               |
 
 Full-history sibling clones exist so this fallback has tags + history (`release-train.yml` detect
 checkout note). A residual detector note `compare diff hit the 300-file cap with no ship evidence in
@@ -159,13 +159,13 @@ report and Slack "Needs release action" count include it, and exit 1 is expected
 (`classify_package`, `detect.py:899-973`). Read the per-package note lines under the step summary (also in
 `release-manifest.json` → `packages[].notes`).
 
-| Note / signal | Cause | Operator action |
-|---|---|---|
-| `could not read declared version from the checkout` | Missing/unparseable `pyproject.toml` / `_version.py` for that package path (`detect.py:899-902`) | Fix the checkout (sibling clone missing? wrong `path:` in `registry.yaml`?) and re-run `report`. |
-| `no tag under '<pattern>' matches released <ver>` | Released version has no matching git tag (`detect.py:917-920`) | Cut/restore the Release+tag convention (never bare-tag; §8 item 3), then re-run. |
-| `compare … not found` / `compare unavailable` / other `comp.error` | Soft-fail compare (`comp.ok=False`, `detect.py:923-926`) — missing base/head, transport | Confirm the tag exists on the owning repo and `gh` auth; re-run. Do **not** hand-propose from a quiet report. |
-| `compare diff hit the 300-file cap with no ship evidence in view; page or re-run (--local-git)` | Truncated compare window, no ship file in view (`detect.py:954-957`) | Live detect already falls back to `local_git_compare` past the 300-file cap (`make_live_sources`, `detect.py:360-372`; pin in juniper-ml#729). If you still see this note, re-run locally with `--local-git` or inspect the package path-scoped diff by hand. |
-| `ship_uncertain` file rows in the manifest (no truncated note) | Patch unavailable / ambiguous hunks (`detect.py:952-955`, patch-unavailable → uncertain) | Open the listed files; decide ship vs discount; prefer a CHANGELOG corroboration before `propose`. |
+| Note / signal                                                                                   | Cause                                                                                            | Operator action                                                                                                                                                                                                                                               |
+|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `could not read declared version from the checkout`                                             | Missing/unparseable `pyproject.toml` / `_version.py` for that package path (`detect.py:899-902`) | Fix the checkout (sibling clone missing? wrong `path:` in `registry.yaml`?) and re-run `report`.                                                                                                                                                              |
+| `no tag under '<pattern>' matches released <ver>`                                               | Released version has no matching git tag (`detect.py:917-920`)                                   | Cut/restore the Release+tag convention (never bare-tag; §8 item 3), then re-run.                                                                                                                                                                              |
+| `compare … not found` / `compare unavailable` / other `comp.error`                              | Soft-fail compare (`comp.ok=False`, `detect.py:923-926`) — missing base/head, transport          | Confirm the tag exists on the owning repo and `gh` auth; re-run. Do **not** hand-propose from a quiet report.                                                                                                                                                 |
+| `compare diff hit the 300-file cap with no ship evidence in view; page or re-run (--local-git)` | Truncated compare window, no ship file in view (`detect.py:954-957`)                             | Live detect already falls back to `local_git_compare` past the 300-file cap (`make_live_sources`, `detect.py:360-372`; pin in juniper-ml#729). If you still see this note, re-run locally with `--local-git` or inspect the package path-scoped diff by hand. |
+| `ship_uncertain` file rows in the manifest (no truncated note)                                  | Patch unavailable / ambiguous hunks (`detect.py:952-955`, patch-unavailable → uncertain)         | Open the listed files; decide ship vs discount; prefer a CHANGELOG corroboration before `propose`.                                                                                                                                                            |
 
 `SHIP_UNCERTAIN` can still carry a `proposed_bump` / `proposed_version` when SemVer inputs are available
 (`detect.py:963-964`) — treat that as a **hint**, not a Gate 1 mandate, until the uncertainty is cleared.
@@ -212,21 +212,21 @@ gh workflow run release-train.yml -f mode=propose -f packages=juniper-observabil
 After a `mode=propose` run, open the job's GitHub **step summary** (not only the log). `propose.py`
 prints one machine line per package (`propose.py` execute loop):
 
-| Line prefix | Meaning |
-|---|---|
-| `opened: <pypi_name> (<repo>) -- <url>` | a standard-gated proposal PR was opened |
+| Line prefix                              | Meaning                                              |
+|------------------------------------------|------------------------------------------------------|
+| `opened: <pypi_name> (<repo>) -- <url>`  | a standard-gated proposal PR was opened              |
 | `skip: <pypi_name> (<repo>) -- <reason>` | no PR (dup-guard, no-App sibling skip, empty URL, …) |
 
 The workflow's "Render propose step summary" step (`release-train.yml:539-568`) buckets those lines into
 operator-facing markdown:
 
-| Summary signal | What it means | Operator action |
-|---|---|---|
-| `N proposal PR(s) opened, M skipped.` | count of `opened:` / `skip:` lines | Follow the **Opened** links for Gate 1 review |
-| `### Opened (standard-gated -- Overtoad reviews & merges)` | each opened package + PR URL | Review / merge (Gate 1); never auto-merged |
-| `### Skipped` | each skip reason (e.g. duplicate open PR, `--cross-repo required…`) | Expected on re-dispatch / no-App path — do **not** re-open by hand |
-| `**propose.py produced no output**` | `propose-output.txt` empty / missing | Treat as a crash — read the run log; do **not** assume zero eligible packages |
-| Counts `0` / `0` **without** the crash banner | non-empty no-op output (e.g. no `UNRELEASED_CHANGES`) | Healthy idle — nothing to propose |
+| Summary signal                                             | What it means                                                       | Operator action                                                               |
+|------------------------------------------------------------|---------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| `N proposal PR(s) opened, M skipped.`                      | count of `opened:` / `skip:` lines                                  | Follow the **Opened** links for Gate 1 review                                 |
+| `### Opened (standard-gated -- Overtoad reviews & merges)` | each opened package + PR URL                                        | Review / merge (Gate 1); never auto-merged                                    |
+| `### Skipped`                                              | each skip reason (e.g. duplicate open PR, `--cross-repo required…`) | Expected on re-dispatch / no-App path — do **not** re-open by hand            |
+| `**propose.py produced no output**`                        | `propose-output.txt` empty / missing                                | Treat as a crash — read the run log; do **not** assume zero eligible packages |
+| Counts `0` / `0` **without** the crash banner              | non-empty no-op output (e.g. no `UNRELEASED_CHANGES`)               | Healthy idle — nothing to propose                                             |
 
 The summary footer always reminds Gate-1 framing: App-minted PRs get normal CI + sibling-repo targeting;
 the degraded no-App path skips siblings and may need a close/reopen (or empty commit) to start checks
@@ -241,14 +241,14 @@ Both write jobs (`propose` and `ceremony`) share the same shell prefix **before*
 weakened regex or a reordered `APP_TOKEN` gate — open juniper-ml#729 `PackagesInputRehearsalTest`
 extracts and *runs* the real prefix.
 
-| Input / condition | Result |
-|---|---|
-| Empty `packages` | No `--package` filter → all eligible (`package filter: <all eligible packages>`) |
-| Comma- or whitespace-separated tokens | Equivalent — `juniper-observability, juniper-ci-tools` → two `--package` args |
-| Token matching `^[a-z0-9][a-z0-9-]*$` | Accepted (lowercase letters, digits, hyphens; e.g. `juniper-observability`) |
+| Input / condition                                                                  | Result                                                                                               |
+|------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| Empty `packages`                                                                   | No `--package` filter → all eligible (`package filter: <all eligible packages>`)                     |
+| Comma- or whitespace-separated tokens                                              | Equivalent — `juniper-observability, juniper-ci-tools` → two `--package` args                        |
+| Token matching `^[a-z0-9][a-z0-9-]*$`                                              | Accepted (lowercase letters, digits, hyphens; e.g. `juniper-observability`)                          |
 | Garbage token (`Juniper-Observability`, `juniper_observability`, `../x`, `a;rm …`) | Job exits **2** with `::error::invalid package token …` **before** `propose.py` / `ceremony.py` runs |
-| `APP_TOKEN` non-empty (App mint succeeded) | `--cross-repo` appended (Phase 4.1) |
-| `APP_TOKEN` empty (`RELEASE_TRAIN_APP_ID` unset) | No `--cross-repo`; siblings skipped — degraded in-repo path (§7) |
+| `APP_TOKEN` non-empty (App mint succeeded)                                         | `--cross-repo` appended (Phase 4.1)                                                                  |
+| `APP_TOKEN` empty (`RELEASE_TRAIN_APP_ID` unset)                                   | No `--cross-repo`; siblings skipped — degraded in-repo path (§7)                                     |
 
 **Pitfall:** Title Case, underscores, path fragments, and shell metacharacters fail the write job hard
 (exit ≥ 2). Fix the dispatch input and re-run — do not treat it as a python / §8 HALT failure.
@@ -260,15 +260,15 @@ unusable — it never invents a shippable bump or an empty CHANGELOG section (`p
 `execute_proposal` already no-ops on `skipped`, so these are dry-run / JSON / step-summary signals.
 Coverage: juniper-ml#749 (`BuildProposalTest` refusal cases).
 
-| `skipped_reason` contains | Cause | Operator response |
-|---|---|---|
-| `dup-guard: open release PR already exists` | Concurrent / prior proposal still open | Review / merge / close the existing PR; do not force a second |
-| `changelog conflict -- refuse to auto-author` | Detector flagged Unreleased vs ship evidence mismatch | Fix CHANGELOG or ship evidence by hand; re-run `report` then `propose` |
-| `no proposable version` (`bump=none` / missing `proposed_version`) | SemVer inputs empty (often test/docs-only tip → no ship) | Confirm detect did not invent `UNRELEASED_CHANGES`; no Gate 1 PR expected |
-| `could not read the version file` | Missing `pyproject.toml` / `_version.py` for the package path | Restore the version file on `main`; re-run propose |
-| `could not locate the version assignment` | File present but assignment unparseable | Fix the version assignment syntax; re-run propose |
-| `CHANGELOG move refused` (`no content to move` / missing Unreleased heading) | Empty or missing `## [Unreleased]` body | Add real Unreleased bullets (or drop the false `UNRELEASED_CHANGES`); never invent an empty section |
-| `could not read …/CHANGELOG.md` | CHANGELOG missing after version staging | Restore CHANGELOG; re-run propose |
+| `skipped_reason` contains                                                    | Cause                                                         | Operator response                                                                                   |
+|------------------------------------------------------------------------------|---------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `dup-guard: open release PR already exists`                                  | Concurrent / prior proposal still open                        | Review / merge / close the existing PR; do not force a second                                       |
+| `changelog conflict -- refuse to auto-author`                                | Detector flagged Unreleased vs ship evidence mismatch         | Fix CHANGELOG or ship evidence by hand; re-run `report` then `propose`                              |
+| `no proposable version` (`bump=none` / missing `proposed_version`)           | SemVer inputs empty (often test/docs-only tip → no ship)      | Confirm detect did not invent `UNRELEASED_CHANGES`; no Gate 1 PR expected                           |
+| `could not read the version file`                                            | Missing `pyproject.toml` / `_version.py` for the package path | Restore the version file on `main`; re-run propose                                                  |
+| `could not locate the version assignment`                                    | File present but assignment unparseable                       | Fix the version assignment syntax; re-run propose                                                   |
+| `CHANGELOG move refused` (`no content to move` / missing Unreleased heading) | Empty or missing `## [Unreleased]` body                       | Add real Unreleased bullets (or drop the false `UNRELEASED_CHANGES`); never invent an empty section |
+| `could not read …/CHANGELOG.md`                                              | CHANGELOG missing after version staging                       | Restore CHANGELOG; re-run propose                                                                   |
 
 **Upstream of propose — test paths never ship.** `classify_change` discounts `_is_test_path` matches
 (`tests/` / `test/` path segments, `test_*.py`, `*_test.py`, `conftest.py`) as `nonship` **before** the
@@ -325,14 +325,14 @@ older step-5 path for the same header lockstep (`tests/test_agents_md_version_dr
 
 When reviewing a Gate 1 proposal for a **sibling primary** or the **meta** package, expect:
 
-| Signal in the proposal PR | Meaning | Operator action |
-|---|---|---|
-| Diff edits `AGENTS.md` `**Version**:` in lockstep with the version bump | Normal co-change (header was at the from-version) | Merge when the rest of the proposal looks right |
-| Checklist names the AGENTS.md bump as "included in this PR" | Train already applied the header edit | No extra manual edit |
+| Signal in the proposal PR                                                                                 | Meaning                                                                                                                     | Operator action                                                                              |
+|-----------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
+| Diff edits `AGENTS.md` `**Version**:` in lockstep with the version bump                                   | Normal co-change (header was at the from-version)                                                                           | Merge when the rest of the proposal looks right                                              |
+| Checklist names the AGENTS.md bump as "included in this PR"                                               | Train already applied the header edit                                                                                       | No extra manual edit                                                                         |
 | **No** `AGENTS.md` edit **and** **no** AGENTS checklist item; checkout header already equals `to_version` | Already-at-target / partial heal / re-entry (juniper-ml#720) — silent success; same class as the ml#701 dunder re-entry fix | Confirm the header really matches the proposed version, then merge when the rest looks right |
-| Checklist item **REQUIRED**; file missing, or present without a `**Version**:` line | Train never invents a header (juniper-ml#720) | Add / restore `**Version**: <to_version>` by hand in the same PR before merge |
-| Checklist item **REQUIRED**; header present but neither from-version nor to-version | Unexpected value — train left the file alone (never clobbers) | Verify / edit `**Version**:` by hand in the same PR before merge |
-| Diff omits `AGENTS.md`, **no** checklist item, and checkout header is **not** at `to_version` | Pre-#706 / stale train / bug | Do **not** merge as-is; bump the header (or re-dispatch `propose` after #706+#720) |
+| Checklist item **REQUIRED**; file missing, or present without a `**Version**:` line                       | Train never invents a header (juniper-ml#720)                                                                               | Add / restore `**Version**: <to_version>` by hand in the same PR before merge                |
+| Checklist item **REQUIRED**; header present but neither from-version nor to-version                       | Unexpected value — train left the file alone (never clobbers)                                                               | Verify / edit `**Version**:` by hand in the same PR before merge                             |
+| Diff omits `AGENTS.md`, **no** checklist item, and checkout header is **not** at `to_version`             | Pre-#706 / stale train / bug                                                                                                | Do **not** merge as-is; bump the header (or re-dispatch `propose` after #706+#720)           |
 
 **Does not apply when:** the bumped package is a **sub-package** hosted in a sibling (`pypi_name != repo`,
 e.g. `juniper-cascor-model` in `juniper-cascor`) — the host header tracks the primary, so step 5a never
@@ -358,12 +358,12 @@ Unlike the header, the table is **per package**: a sub-package (`juniper-recurre
 own row while the host header — which tracks the primary package — stays put. Header + row + the
 in-repo extras-pin true-up compose into **one** `AGENTS.md` file edit.
 
-| Signal in the proposal PR | Meaning | Operator action |
-|---|---|---|
-| Diff edits the package's table row in lockstep with the version bump; checklist says "version-table row … included in this PR" | Normal co-change (row was at the from-version) | Merge when the rest looks right |
-| **No** `AGENTS.md` row edit and **no** table checklist item | Either the repo has no such table (7 of the 8 repos) or the row already equals `to_version` (partial heal / re-entry) — silent success | Nothing to do |
-| Checklist item **REQUIRED** (version-table row) | A row names the package but its cell is neither the from- nor the to-version, or the row is ambiguous (two version cells) — the train never guesses at a cell | Fix the row by hand in the same PR before merge |
-| Row diff touches a **different** package's row | Should be impossible (the needle is the backtick-delimited name, byte-identical to the target repo's own `_agents_table_version`) | Treat as a bug; do not merge |
+| Signal in the proposal PR                                                                                                      | Meaning                                                                                                                                                       | Operator action                                 |
+|--------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
+| Diff edits the package's table row in lockstep with the version bump; checklist says "version-table row … included in this PR" | Normal co-change (row was at the from-version)                                                                                                                | Merge when the rest looks right                 |
+| **No** `AGENTS.md` row edit and **no** table checklist item                                                                    | Either the repo has no such table (7 of the 8 repos) or the row already equals `to_version` (partial heal / re-entry) — silent success                        | Nothing to do                                   |
+| Checklist item **REQUIRED** (version-table row)                                                                                | A row names the package but its cell is neither the from- nor the to-version, or the row is ambiguous (two version cells) — the train never guesses at a cell | Fix the row by hand in the same PR before merge |
+| Row diff touches a **different** package's row                                                                                 | Should be impossible (the needle is the backtick-delimited name, byte-identical to the target repo's own `_agents_table_version`)                             | Treat as a bug; do not merge                    |
 
 **Open question (deliberately out of scope):** the recurrence `AGENTS.md` also mentions package
 versions in **prose** (`AGENTS.md:118`, the Status paragraph). Its drift hook does not check prose
@@ -383,11 +383,11 @@ row and the `[recurrence]` "sets them to" clause. `propose.py` step 5b-v renders
 (`apply_reference_compat_cochanges`), in the one `docs/REFERENCE.md` file edit, and `_reference_compat_items`
 writes up to three checklist lines:
 
-| Signal in the proposal PR | Meaning | Operator action |
-|---|---|---|
-| `docs/REFERENCE.md release sites (included in this PR)` | The train moved the named sites. On the meta's own bump: the Version cell, the sentence and the clause, plus a new `0.N.x` row on a minor (the older rows are not touched) or, on a patch that moves a cell, the series row in place. On a sub-package bump: a cell its escaping pin moved, or a site a drifted REFERENCE left stale | Merge when the rest looks right |
-| `docs/REFERENCE.md release sites (REQUIRED -- ...)` | A site is absent or doubled, or cannot be rendered from `pyproject.toml` (an unpinned or conflicting column, a series row of the wrong width, a newer series, a version that is not N.N.N). The train left it byte-untouched. On the meta's own bump the line names every such site; on a sub-package bump it names only the series row, and only when that package's escaping pin moved | Edit the named site by hand in the same PR; `ReferenceCompatibilityMatrixTest` stays red until then |
-| `docs/REFERENCE.md "Ecosystem Compatibility" prose (REVIEW by hand in this PR)` | The paragraph's history is prose no gate reads. The line names what to check: a clause renamed to this release (words after its pins, such as ": it raises ...", now describe it), a row moved in place, replaced `[recurrence]` pins, and on a minor the previous series' row | Reword the history in the same PR. On a minor, if a PR since the previous series' last release rewrote that row in place, restore the pins that series' last release published: a patch rewrites its series' row in place, so the row as it stood at that release's tag holds them (`git show v<that release>:docs/REFERENCE.md`) |
+| Signal in the proposal PR                                                       | Meaning                                                                                                                                                                                                                                                                                                                                                                                  | Operator action                                                                                                                                                                                                                                                                                                                   |
+|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `docs/REFERENCE.md release sites (included in this PR)`                         | The train moved the named sites. On the meta's own bump: the Version cell, the sentence and the clause, plus a new `0.N.x` row on a minor (the older rows are not touched) or, on a patch that moves a cell, the series row in place. On a sub-package bump: a cell its escaping pin moved, or a site a drifted REFERENCE left stale                                                     | Merge when the rest looks right                                                                                                                                                                                                                                                                                                   |
+| `docs/REFERENCE.md release sites (REQUIRED -- ...)`                             | A site is absent or doubled, or cannot be rendered from `pyproject.toml` (an unpinned or conflicting column, a series row of the wrong width, a newer series, a version that is not N.N.N). The train left it byte-untouched. On the meta's own bump the line names every such site; on a sub-package bump it names only the series row, and only when that package's escaping pin moved | Edit the named site by hand in the same PR; `ReferenceCompatibilityMatrixTest` stays red until then                                                                                                                                                                                                                               |
+| `docs/REFERENCE.md "Ecosystem Compatibility" prose (REVIEW by hand in this PR)` | The paragraph's history is prose no gate reads. The line names what to check: a clause renamed to this release (words after its pins, such as ": it raises ...", now describe it), a row moved in place, replaced `[recurrence]` pins, and on a minor the previous series' row                                                                                                           | Reword the history in the same PR. On a minor, if a PR since the previous series' last release rewrote that row in place, restore the pins that series' last release published: a patch rewrites its series' row in place, so the row as it stood at that release's tag holds them (`git show v<that release>:docs/REFERENCE.md`) |
 
 A floor raise between releases (a column or a `[recurrence]` pin) fails `ReferenceCompatibilityMatrixTest` until
 its own PR rewrites the current series' row or the clause's pins, so the meta's next proposal finds those sites
@@ -420,14 +420,14 @@ run does two operator-visible things beyond the per-package proposal itself:
    same run and are **never** folded into the upstream proposal or the exempt notes-archive path
    (2026-07-06 ci-tools incident class; rec#85 is the hand-made model).
 
-| `consumer_pin_state` | Meaning | Operator action |
-|---|---|---|
-| `within_range` | Consumer pin already admits the new version | None — no follow-on |
-| `floor_only (no ceiling)` | Floor-only pin; no `<ceiling` to raise | None — no follow-on |
-| `escaped -> follow-on` | Ceiling escapes; follow-on PR opened (or dry-run previewed) | **Gate 1 review** the follow-on in the **consumer** repo (pin-only diff) |
-| `escaped -> skipped(<reason>)` | Escaped, but this run cannot open (no `--cross-repo` / sibling missing / dup-guard) | Read the reason; on the degraded no-App path, open/merge the ceiling bump by hand (or re-run with App + sibling checkouts) |
-| `escaped -> deferred (juniper-ml meta…)` | Meta pin escaped a **sibling** upstream | Manual Q-META — bump the meta pin when the meta itself is next released (in-repo upstreams stay on the #661 folded co-change; meta never gets a follow-on) |
-| `no_versioned_pin (…)` / `unknown (…)` | Registry edge without a versioned requirement, or unreadable pyproject | Investigate the consumer pin / checkout; do not invent a ceiling |
+| `consumer_pin_state`                     | Meaning                                                                             | Operator action                                                                                                                                            |
+|------------------------------------------|-------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `within_range`                           | Consumer pin already admits the new version                                         | None — no follow-on                                                                                                                                        |
+| `floor_only (no ceiling)`                | Floor-only pin; no `<ceiling` to raise                                              | None — no follow-on                                                                                                                                        |
+| `escaped -> follow-on`                   | Ceiling escapes; follow-on PR opened (or dry-run previewed)                         | **Gate 1 review** the follow-on in the **consumer** repo (pin-only diff)                                                                                   |
+| `escaped -> skipped(<reason>)`           | Escaped, but this run cannot open (no `--cross-repo` / sibling missing / dup-guard) | Read the reason; on the degraded no-App path, open/merge the ceiling bump by hand (or re-run with App + sibling checkouts)                                 |
+| `escaped -> deferred (juniper-ml meta…)` | Meta pin escaped a **sibling** upstream                                             | Manual Q-META — bump the meta pin when the meta itself is next released (in-repo upstreams stay on the #661 folded co-change; meta never gets a follow-on) |
+| `no_versioned_pin (…)` / `unknown (…)`   | Registry edge without a versioned requirement, or unreadable pyproject              | Investigate the consumer pin / checkout; do not invent a ceiling                                                                                           |
 
 **Reviewing a follow-on PR (Gate 1, consumer repo):**
 
@@ -453,13 +453,13 @@ dup-guard; dry-run writes nothing).
 (`notes_render.render_notes`; plan §10.1). Review these header signals before merge — a wrong draft
 still archives at ceremony time:
 
-| Signal in the drafted notes | Expected | Source |
-|---|---|---|
-| Title `# … vX.Y.Z Release Notes` | Meta-package → **`# Juniper ML v…`** (not `# juniper-ml v…`); every other dist keeps its `pypi_name` | `display_name` (`notes_render.py:93-95`) |
-| `**Release Type:** …` | `major` → **MAJOR**, `minor` → **MINOR**, `patch`/`none`/unknown → **PATCH** | `release_type` / `_RELEASE_TYPE` (`notes_render.py:52`, `89-90`) |
-| `**Breaking changes:** …` | **YES** only when a Keep-a-Changelog **`Removed`** category is present (case-insensitive); otherwise **NO** | `notes_render.py:239` |
-| Bullets under What's New | Both `-` and `*` markers; indented / bare continuations fold into the current bullet; stray prose before any marker is ignored | `_split_bullets` (`notes_render.py:101-120`) / `parse_unreleased` |
-| Repo-relative CHANGELOG links | Rewritten absolute via `link_base` (table below) so centrally archived notes do not 404 | `rewrite_relative_links` (`notes_render.py:373-388`) |
+| Signal in the drafted notes      | Expected                                                                                                                       | Source                                                            |
+|----------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| Title `# … vX.Y.Z Release Notes` | Meta-package → **`# Juniper ML v…`** (not `# juniper-ml v…`); every other dist keeps its `pypi_name`                           | `display_name` (`notes_render.py:93-95`)                          |
+| `**Release Type:** …`            | `major` → **MAJOR**, `minor` → **MINOR**, `patch`/`none`/unknown → **PATCH**                                                   | `release_type` / `_RELEASE_TYPE` (`notes_render.py:52`, `89-90`)  |
+| `**Breaking changes:** …`        | **YES** only when a Keep-a-Changelog **`Removed`** category is present (case-insensitive); otherwise **NO**                    | `notes_render.py:239`                                             |
+| Bullets under What's New         | Both `-` and `*` markers; indented / bare continuations fold into the current bullet; stray prose before any marker is ignored | `_split_bullets` (`notes_render.py:101-120`) / `parse_unreleased` |
+| Repo-relative CHANGELOG links    | Rewritten absolute via `link_base` (table below) so centrally archived notes do not 404                                        | `rewrite_relative_links` (`notes_render.py:373-388`)              |
 
 **Pitfalls:**
 
@@ -481,19 +481,19 @@ read outside that repo (the canopy v0.6.0 archive class).
 URL (`https://github.com/<Overtoad>/<repo>/blob/<ref>`, no trailing slash). Callers set it as follows
 (also overridable via CLI `--link-base`):
 
-| Caller | Default `link_base` | Source |
-|---|---|---|
-| **ceremony** (central archive) | Owning repo's **tag-pinned** blob URL — `…/blob/{plan.tag}` | `ceremony.py` → `render_notes(…, link_base=…)` |
-| **propose** (Gate 1 draft) | Owning repo's `blob/main` — `…/blob/main` | `propose.py` → `render_notes(…, link_base=…)` |
-| CLI / offline | Explicit `--link-base URL`, or omit (no rewrite; back-compat) | `notes_render.py` CLI |
+| Caller                         | Default `link_base`                                           | Source                                         |
+|--------------------------------|---------------------------------------------------------------|------------------------------------------------|
+| **ceremony** (central archive) | Owning repo's **tag-pinned** blob URL — `…/blob/{plan.tag}`   | `ceremony.py` → `render_notes(…, link_base=…)` |
+| **propose** (Gate 1 draft)     | Owning repo's `blob/main` — `…/blob/main`                     | `propose.py` → `render_notes(…, link_base=…)`  |
+| CLI / offline                  | Explicit `--link-base URL`, or omit (no rewrite; back-compat) | `notes_render.py` CLI                          |
 
 What is rewritten vs left alone (`test_rewrite_relative_links_shapes`, juniper-ml#877):
 
-| Link form | Treatment |
-|---|---|
+| Link form                                                            | Treatment                                                                               |
+|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
 | `[t](notes/X.md)`, `[t](./notes/X.md#sec)`, `[t](docs/Y.md "Title")` | → `{link_base}/notes/X.md` (leading `./` stripped; path anchors + markdown titles kept) |
-| Absolute `https://…` / `http://…` | Untouched |
-| `mailto:…`, bare `#anchor`, protocol-relative `//…` | Untouched |
+| Absolute `https://…` / `http://…`                                    | Untouched                                                                               |
+| `mailto:…`, bare `#anchor`, protocol-relative `//…`                  | Untouched                                                                               |
 
 **Gate 1 check:** open the drafted notes (or the archive PR file) and confirm CHANGELOG-sourced relative
 links resolve to the owning repo (tag tip for ceremony; `main` for propose). Coverage pins:
@@ -508,10 +508,10 @@ empty / missing Unreleased body (`CHANGELOG move refused: …`) or a missing CHA
 (`prop.edits.clear()`) so the skipped stub matches the dup-guard / `bump=none` shape:
 `edits=[]`, `branch=None`, `skipped_reason` set (`propose.py` ~1099–1110 after #751).
 
-| Signal (dry-run / `--json` / step summary) | Meaning | Operator response |
-|---|---|---|
-| `skip:` + `CHANGELOG move refused` / `could not read …/CHANGELOG.md` **and** `edits=[]` | Honest refusal stub (post-#751) | Fix Unreleased bullets or restore CHANGELOG; re-run `report` then `propose` |
-| Same `skipped_reason` **but** `edits` still lists a pyproject / dunder bump | Pre-#751 half-proposal — `execute_proposal` still no-ops on `skipped`, but JSON looks shippable | Do **not** treat leftover edits as a Gate 1 candidate; upgrade train past #751, then re-run |
+| Signal (dry-run / `--json` / step summary)                                              | Meaning                                                                                         | Operator response                                                                           |
+|-----------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| `skip:` + `CHANGELOG move refused` / `could not read …/CHANGELOG.md` **and** `edits=[]` | Honest refusal stub (post-#751)                                                                 | Fix Unreleased bullets or restore CHANGELOG; re-run `report` then `propose`                 |
+| Same `skipped_reason` **but** `edits` still lists a pyproject / dunder bump             | Pre-#751 half-proposal — `execute_proposal` still no-ops on `skipped`, but JSON looks shippable | Do **not** treat leftover edits as a Gate 1 candidate; upgrade train past #751, then re-run |
 
 **Why this matters:** `execute_proposal` already guards on `prop.skipped` (`propose.py` ~1310), so a
 half-staged stub never opened a PR. Operators reading dry-run JSON still saw leftover version edits and
@@ -529,12 +529,12 @@ Orthogonal to `build_proposal` refusal stubs (coverage juniper-ml#749): these ar
 abort the whole propose job mid-loop; a miswired `--execute` seam must hard-fail before any partial
 write.
 
-| Signal | Cause | Operator response |
-|---|---|---|
+| Signal                                                                                | Cause                                                                                                                                       | Operator response                                                                                                                                                                                                         |
+|---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Dry-run / JSON `skipped_reason="package not in registry.yaml"`; summary counts a skip | A proposable manifest package's `pypi_name` is absent from `registry.yaml` (`propose.py:1415-1418`). Loop continues for remaining packages. | Add the package to `util/release_train/registry.yaml` (registry lint) or drop the stale manifest entry; re-run `report` then `propose`. Ceremony's parallel for `BUMPED_NOT_RELEASED` is the `not-in-registry` HALT (§4). |
-| `--package` / dispatch `packages=` names an unknown `pypi_name` → exit 2 | Invocation error before the loop (`propose.py:1388-1392`) — not a skip stub | Fix the `packages=` input against `registry.yaml` |
-| `--execute` exits 2: `execute mode needs write_file/run_git/open_pr seam members` | Live seam missing a write member (`execute_proposal` / `execute_follow_on`, `propose.py:1319-1320`, `896`) | Workflow / wiring bug — re-dispatch the GitHub Actions job; do not hand-run `--execute` without live sources |
-| `skip: …` / empty URL; no branch, commit, or PR | `prop.skipped` or `branch is None` → `execute_proposal` returns `""` and issues **zero** write/git/pr calls (`propose.py:1321-1322`) | Expected for registry-miss / refusal stubs; read the printed skip reason |
+| `--package` / dispatch `packages=` names an unknown `pypi_name` → exit 2              | Invocation error before the loop (`propose.py:1388-1392`) — not a skip stub                                                                 | Fix the `packages=` input against `registry.yaml`                                                                                                                                                                         |
+| `--execute` exits 2: `execute mode needs write_file/run_git/open_pr seam members`     | Live seam missing a write member (`execute_proposal` / `execute_follow_on`, `propose.py:1319-1320`, `896`)                                  | Workflow / wiring bug — re-dispatch the GitHub Actions job; do not hand-run `--execute` without live sources                                                                                                              |
+| `skip: …` / empty URL; no branch, commit, or PR                                       | `prop.skipped` or `branch is None` → `execute_proposal` returns `""` and issues **zero** write/git/pr calls (`propose.py:1321-1322`)        | Expected for registry-miss / refusal stubs; read the printed skip reason                                                                                                                                                  |
 
 Coverage (hermetic): juniper-ml#764 —
 `CliTest.test_manifest_package_absent_from_registry_is_skipped` + `ExecuteProposalSeamTest`.
@@ -613,11 +613,11 @@ since 2026-09-23; the Release **creates** the tag, so deliberately **no** `--ver
   inspects juniper-ml (central archive, plan §10.2) for an open PR on the archive branch and for the
   notes file already on `main` (`ceremony.py:902-914`):
 
-  | Truth | Plan actions | Execute contract |
-  |---|---|---|
+  | Truth                          | Plan actions                                                                       | Execute contract                                                                                                                                                                                           |
+  |--------------------------------|------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
   | Open archive PR already exists | `enable_auto_merge` → `cut_release` → `monitor_publish` (**no** `open_archive_pr`) | Must **not** open a duplicate exempt PR. `enable_automerge` receives `pr_ref or plan.archive_branch` so a reused plan (no fresh `pr_url`) still arms `--auto` against the **branch** (`ceremony.py:1008`). |
-  | Archive file already on `main` | `cut_release` → `monitor_publish` only | **No** archive-PR / auto-merge seam calls — only `create_release` (+ monitor). |
-  | Neither | full happy path: open → auto-merge → cut → monitor | Fresh signed archive PR as in the bullet above. |
+  | Archive file already on `main` | `cut_release` → `monitor_publish` only                                             | **No** archive-PR / auto-merge seam calls — only `create_release` (+ monitor).                                                                                                                             |
+  | Neither                        | full happy path: open → auto-merge → cut → monitor                                 | Fresh signed archive PR as in the bullet above.                                                                                                                                                            |
 
   Re-dispatching `ceremony` while an archive PR is still open (or after it merged to `main` but before
   the Release exists) is therefore safe — do **not** close a healthy open archive PR to "start over".
@@ -630,24 +630,24 @@ The ceremony arms `--auto` behind `ci.yml`'s PR-only `release-train-archive-guar
 `util/release_train/archive_guard.py` over the PR's `git diff --name-status` (plan §7.2). Verdicts
 (`archive_guard.py:100-108`, `174-217`):
 
-| Verdict | CI outcome | Meaning | Operator action |
-|---|---|---|---|
-| `SKIP` | pass | Diff does **not** touch `notes/releases/` — not an archive PR | None. Normal PRs always SKIP so the required check never blocks them. |
-| `OK` | pass | Pure `A` adds of well-formed `notes/releases/RELEASE_NOTES_*.md`; all four rules hold | Auto-merge proceeds (with the signed archive commit, above). |
-| `WAIVED` | pass (exit 0) | Path-confined + single-purpose, and the only non-add change(s) are in-place archive edits waived by an `Allow-Archive-Edit:` commit trailer (see below) | None — the correction PR is mergeable. The waived paths are named in the check log; carry the trailer into the squash message. |
-| `FAIL` | fail (exit 1) | One or more **unwaived** rule violations | The PR **falls back to the standard Overtoad gate** and **never auto-merges** (`archive_guard.py:371`). Fix or close; do not force-merge a dirty archive PR onto the exempt path. |
+| Verdict  | CI outcome    | Meaning                                                                                                                                                 | Operator action                                                                                                                                                                   |
+|----------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `SKIP`   | pass          | Diff does **not** touch `notes/releases/` — not an archive PR                                                                                           | None. Normal PRs always SKIP so the required check never blocks them.                                                                                                             |
+| `OK`     | pass          | Pure `A` adds of well-formed `notes/releases/RELEASE_NOTES_*.md`; all four rules hold                                                                   | Auto-merge proceeds (with the signed archive commit, above).                                                                                                                      |
+| `WAIVED` | pass (exit 0) | Path-confined + single-purpose, and the only non-add change(s) are in-place archive edits waived by an `Allow-Archive-Edit:` commit trailer (see below) | None — the correction PR is mergeable. The waived paths are named in the check log; carry the trailer into the squash message.                                                    |
+| `FAIL`   | fail (exit 1) | One or more **unwaived** rule violations                                                                                                                | The PR **falls back to the standard Overtoad gate** and **never auto-merges** (`archive_guard.py:371`). Fix or close; do not force-merge a dirty archive PR onto the exempt path. |
 
 `touches_releases` inspects **every** path on a change — including **both** sides of a rename/copy
 (`archive_guard.py:169-171`). That is the load-bearing contract against destination-only blindness:
 a rename **out** of `notes/releases/` is still an archive PR and must **FAIL**, never SKIP. Non-add
 statuses that FAIL as archive PRs (pinned by juniper-ml#754 coverage):
 
-| Diff shape | Why it is still an archive PR | Typical violations |
-|---|---|---|
-| `R notes/releases/X.md → docs/moved.md` (rename-OUT) | Source path is under `notes/releases/` | rule1 (add-only) + rule4 (single-purpose) |
-| `C` (Copy) into `notes/releases/` | Status letter is not `A` (git may emit `C075`) | rule1 (+ rule4 if the copy source is out of path) |
-| `T` (Typechange) on an archive path | Non-add mutation of an existing archive file | rule1 |
-| `M` / `D` / rename-IN / mixed with non-archive paths | Classic non-add or multi-purpose | rule1 and/or rule2/rule3/rule4 |
+| Diff shape                                           | Why it is still an archive PR                  | Typical violations                                |
+|------------------------------------------------------|------------------------------------------------|---------------------------------------------------|
+| `R notes/releases/X.md → docs/moved.md` (rename-OUT) | Source path is under `notes/releases/`         | rule1 (add-only) + rule4 (single-purpose)         |
+| `C` (Copy) into `notes/releases/`                    | Status letter is not `A` (git may emit `C075`) | rule1 (+ rule4 if the copy source is out of path) |
+| `T` (Typechange) on an archive path                  | Non-add mutation of an existing archive file   | rule1                                             |
+| `M` / `D` / rename-IN / mixed with non-archive paths | Classic non-add or multi-purpose               | rule1 and/or rule2/rule3/rule4                    |
 
 **Do not** try to clear a FAIL by renaming the notes file out of `notes/releases/` hoping for SKIP —
 both rename paths count, so that still FAILs. Close the PR (or land a pure-`A` follow-up) and let
@@ -679,12 +679,12 @@ Token semantics — deliberately identical to the sequence-safety `Allow-Docs-Re
 `Allow-Symbol-Loss:` trailers, so there is one idiom to remember
 (`archive_guard.py:187-235`):
 
-| Token form | Example | Waives |
-|---|---|---|
-| Full repo-relative path | `notes/releases/RELEASE_NOTES_juniper-canopy_v0.6.0.md` | exactly that file |
-| Bare basename | `RELEASE_NOTES_juniper-canopy_v0.6.0.md` | any archive file with that basename |
-| Wildcard | `*` | every archive-confined edit in the diff |
-| Several at once | `A.md, B.md` (comma **or** whitespace separated) | each named file |
+| Token form              | Example                                                 | Waives                                  |
+|-------------------------|---------------------------------------------------------|-----------------------------------------|
+| Full repo-relative path | `notes/releases/RELEASE_NOTES_juniper-canopy_v0.6.0.md` | exactly that file                       |
+| Bare basename           | `RELEASE_NOTES_juniper-canopy_v0.6.0.md`                | any archive file with that basename     |
+| Wildcard                | `*`                                                     | every archive-confined edit in the diff |
+| Several at once         | `A.md, B.md` (comma **or** whitespace separated)        | each named file                         |
 
 The trailer key is case-insensitive and is read from the **whole body** of **every** commit in the
 `BASE..HEAD` range (`ci.yml` produces the text with `git log --format=%B FETCH_HEAD..HEAD` and passes
@@ -696,13 +696,13 @@ What the trailer can **NOT** do — the escape only relaxes rules 1/4 for change
 a flat `notes/releases/RELEASE_NOTES_*.md` file (`change_waived`, `archive_guard.py:225`). All of these
 still **FAIL** no matter what the trailer says:
 
-| Diff shape | Why the waiver does not apply |
-|---|---|
-| `M notes/releases/X.md` + `M util/foo.py` | the code path is out of the archive — rule4 still bites |
-| `R notes/releases/X.md → docs/moved.md` | the destination leaves `notes/releases/` |
-| `M notes/releases/RELEASE_NOTES_pkg/v1.0.0.md` | nested, not a flat archive file |
-| trailer naming a **different** archive file than the one edited | no path match, so no waiver |
-| no `Allow-Archive-Edit:` trailer at all | escape inactive (fail-closed) — the pre-existing FAIL |
+| Diff shape                                                      | Why the waiver does not apply                           |
+|-----------------------------------------------------------------|---------------------------------------------------------|
+| `M notes/releases/X.md` + `M util/foo.py`                       | the code path is out of the archive — rule4 still bites |
+| `R notes/releases/X.md → docs/moved.md`                         | the destination leaves `notes/releases/`                |
+| `M notes/releases/RELEASE_NOTES_pkg/v1.0.0.md`                  | nested, not a flat archive file                         |
+| trailer naming a **different** archive file than the one edited | no path match, so no waiver                             |
+| no `Allow-Archive-Edit:` trailer at all                         | escape inactive (fail-closed) — the pre-existing FAIL   |
 
 **Squash-merge gotcha (carry the trailer).** GitHub's squash merge composes a **new** commit message,
 so an `Allow-*` trailer that lives only in a branch commit is **lost on `main`**. Paste the trailer
@@ -765,10 +765,10 @@ python util/release_train/archive_guard.py --base origin/main --head HEAD --trai
 
 ### 3.4 The two Overtoad gates (never automated)
 
-| Gate | What it guards | Who | Where |
-|---|---|---|---|
+| Gate       | What it guards                                                                                               | Who                                              | Where                                                                                          |
+|------------|--------------------------------------------------------------------------------------------------------------|--------------------------------------------------|------------------------------------------------------------------------------------------------|
 | **Gate 1** | the version bump (+ static `_version.py` dunder lockstep when present) **and** any D6 ceiling-bump follow-on | Overtoad reviews + merges each standard-gated PR | the upstream `propose` PR **and** any `deps/<upstream>-ceiling-*` follow-on in a consumer repo |
-| **Gate 2** | the PyPI deploy | Overtoad approves the `pypi` environment | the publish run's environment review |
+| **Gate 2** | the PyPI deploy                                                                                              | Overtoad approves the `pypi` environment         | the publish run's environment review                                                           |
 
 Neither gate is ever a release-train identity action (plan §9.3; enforced in code by
 `ceremony.py:_assert_gh_allowed`, §7 below).
@@ -782,18 +782,18 @@ not turn the run red); it is surfaced in the ceremony step summary, a dedup issu
 and Slack. The `ceremony.py` exit is `1` when any package HALTED (Overtoad attention), `2` only on an
 invocation error (`ceremony.py:71-72`).
 
-| `reason_key` | Trigger | Code | Operator response |
-|---|---|---|---|
-| `main-ci-not-green` | newest **completed** run of the package's own main-CI workflow (registry `main_ci_workflow`, default `ci.yml`; the 3 recurrence packages → their path-scoped `ci-recurrence-*.yml` lane) on `main` has conclusion ≠ `success` | `ceremony.py:893` (probe `654-664`) | Fix `main` CI (Overtoad rule: check main green before blaming a red PR); re-run ceremony. **Self-observation class FIXED (2026-08-08):** pre-fix the probe read the newest run of ANY workflow on `main`, so a `workflow_dispatch` ceremony read the in-progress release-train run ITSELF (empty conclusion → HALT) and dispatched ceremonies self-halted deterministically on a fully-green `main` (run 31257045597 / issue #855; the 2026-07-29 #854–#857 batch was this class). The probe is now `--workflow <name> --status completed`-scoped, so an in-progress self-run can no longer be read; a genuine red `main` (or a brand-new repo with zero completed runs of that workflow) still HALTs fail-closed (correct). |
-| `declared-lt-released-anomaly` | declared version < the version PyPI already serves (yank/rollback) | `ceremony.py:724` | Investigate the PyPI yank/rollback manually; do NOT release. Reconcile the declared version. |
-| `pypi-truth-missing` | manifest said released, but PyPI now returns no version | `ceremony.py:726` | A first-publish/yank a human must resolve — confirm the trusted-publisher config (procedure §3.3) before re-running. |
-| `changelog-section-missing` | no non-empty `CHANGELOG [<version>]` section to source the notes | `ceremony.py:741` | The proposal PR (Gate 1) should have created it — merge the proposal first, or add the section, then re-run. |
-| `notes-render-failed` | `notes_render.render_notes` raises `OSError` (missing/unreadable `notes/templates/TEMPLATE_RELEASE_NOTES.md` or the security template) while building the central archive content | `ceremony.py:887-890` | Restore the template under `notes/templates/` in the **central** juniper-ml checkout the ceremony uses as `repo_root`; do not invent archive body by hand. Re-run ceremony — it re-plans from CHANGELOG truth (coverage: `PreconditionHaltTest.test_notes_render_failed_halts`, juniper-ml#741). |
-| `archive-too-large` | the rendered archive, base64-encoded, exceeds the one-request signed-commit cap (default 1,000,000 B since 2026-10-26; `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides). Checked in the planner after the re-entry checks and **before** `create_branch`, so no empty `release-notes/<pkg>-v<ver>` branch is left behind (juniper-ml#2227). The cap is the GraphQL request body: a `FileAddition` replaces the whole file, so a large archive cannot be split across mutations | `ceremony.py` (`plan_ceremony` step 4b; `archive_b64_max`) | Condense the notes (`util/ad-hoc/2026-10-17_condense_release_notes_section.py`, the juniper-canopy 0.9.0 precedent) and re-run, or raise the env var. The default was 125,000 B, the figure measured from turing, until the runner-side measurement of 2026-10-26: a GitHub-hosted runner had every GraphQL body up to 16 MiB accepted (run 40410086979; `reports/2026-10-26_graphql-body-cap-probe/`), so the turing figure was that host's weak link (GitHub's GraphQL frontend drops a request that runs past about 7-10 s). The Overtoad then ruled the default up to 1,000,000 B. Never invent an archive body. |
-| `missing-declared-version` | manifest has no `declared_version` for a `BUMPED_NOT_RELEASED` pkg | `ceremony.py:711` | A malformed manifest — re-run detection (`report` mode) to regenerate it. |
-| `not-in-registry` | package is `BUMPED_NOT_RELEASED` in the manifest but absent from `registry.yaml` | `ceremony.py` (`_plans_for` / `ceremony.py:1152`) | Add the package to `util/release_train/registry.yaml` (registry lint gates it). Propose's parallel for `UNRELEASED_CHANGES` is a **skip stub** (`skipped_reason="package not in registry.yaml"`, §3.2) — not a HALT. |
-| `testpypi-verify-failed` | (during the monitor) a job of the publish workflow whose name holds `testpypi` failed before Gate 2; its failed step names the cause (a publisher with no separate build job builds inside that job) | `execute_ceremony` (`ceremony.py`) | The run is not healthy — open the publish run's TestPyPI job and read its failed step. Transient (TestPyPI not yet serving the upload, a network error): "Re-run failed jobs" on the run, within 30 days, never "Re-run all jobs". A broken package (a real install-check failure): fix it and cut a new patch version, never the republish dispatch, which would copy the broken files to PyPI. Do not re-cut the Release ([PyPI publish procedure §11.8](JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi)). |
-| `build-failed` | (during the monitor) the publish workflow's separate `Build and Validate` job failed, so that attempt published nothing (added 2026-11-15, juniper-ml#2592). 13 of the 18 publishers had that job before juniper-cascor#763 (canopy, juniper-ml's 7, recurrence's 3, cascor's protocol and model), and their build failures were a note with no issue until then; #763 gave cascor's main publisher one, and its ports give the last 4 one | `execute_ceremony` (`ceremony.py`) | The run is not healthy — open the build job and read its failed step. Transient (a network or runner error): "Re-run failed jobs" on the run, within 30 days. Otherwise fix it and cut a new patch version. |
+| `reason_key`                   | Trigger                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Code                                                       | Operator response                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `main-ci-not-green`            | newest **completed** run of the package's own main-CI workflow (registry `main_ci_workflow`, default `ci.yml`; the 3 recurrence packages → their path-scoped `ci-recurrence-*.yml` lane) on `main` has conclusion ≠ `success`                                                                                                                                                                                                                                                    | `ceremony.py:893` (probe `654-664`)                        | Fix `main` CI (Overtoad rule: check main green before blaming a red PR); re-run ceremony. **Self-observation class FIXED (2026-08-08):** pre-fix the probe read the newest run of ANY workflow on `main`, so a `workflow_dispatch` ceremony read the in-progress release-train run ITSELF (empty conclusion → HALT) and dispatched ceremonies self-halted deterministically on a fully-green `main` (run 31257045597 / issue #855; the 2026-07-29 #854–#857 batch was this class). The probe is now `--workflow <name> --status completed`-scoped, so an in-progress self-run can no longer be read; a genuine red `main` (or a brand-new repo with zero completed runs of that workflow) still HALTs fail-closed (correct). |
+| `declared-lt-released-anomaly` | declared version < the version PyPI already serves (yank/rollback)                                                                                                                                                                                                                                                                                                                                                                                                               | `ceremony.py:724`                                          | Investigate the PyPI yank/rollback manually; do NOT release. Reconcile the declared version.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `pypi-truth-missing`           | manifest said released, but PyPI now returns no version                                                                                                                                                                                                                                                                                                                                                                                                                          | `ceremony.py:726`                                          | A first-publish/yank a human must resolve — confirm the trusted-publisher config (procedure §3.3) before re-running.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `changelog-section-missing`    | no non-empty `CHANGELOG [<version>]` section to source the notes                                                                                                                                                                                                                                                                                                                                                                                                                 | `ceremony.py:741`                                          | The proposal PR (Gate 1) should have created it — merge the proposal first, or add the section, then re-run.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `notes-render-failed`          | `notes_render.render_notes` raises `OSError` (missing/unreadable `notes/templates/TEMPLATE_RELEASE_NOTES.md` or the security template) while building the central archive content                                                                                                                                                                                                                                                                                                | `ceremony.py:887-890`                                      | Restore the template under `notes/templates/` in the **central** juniper-ml checkout the ceremony uses as `repo_root`; do not invent archive body by hand. Re-run ceremony — it re-plans from CHANGELOG truth (coverage: `PreconditionHaltTest.test_notes_render_failed_halts`, juniper-ml#741).                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `archive-too-large`            | the rendered archive, base64-encoded, exceeds the one-request signed-commit cap (default 1,000,000 B since 2026-10-26; `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides). Checked in the planner after the re-entry checks and **before** `create_branch`, so no empty `release-notes/<pkg>-v<ver>` branch is left behind (juniper-ml#2227). The cap is the GraphQL request body: a `FileAddition` replaces the whole file, so a large archive cannot be split across mutations | `ceremony.py` (`plan_ceremony` step 4b; `archive_b64_max`) | Condense the notes (`util/ad-hoc/2026-10-17_condense_release_notes_section.py`, the juniper-canopy 0.9.0 precedent) and re-run, or raise the env var. The default was 125,000 B, the figure measured from turing, until the runner-side measurement of 2026-10-26: a GitHub-hosted runner had every GraphQL body up to 16 MiB accepted (run 40410086979; `reports/2026-10-26_graphql-body-cap-probe/`), so the turing figure was that host's weak link (GitHub's GraphQL frontend drops a request that runs past about 7-10 s). The Overtoad then ruled the default up to 1,000,000 B. Never invent an archive body.                                                                                                         |
+| `missing-declared-version`     | manifest has no `declared_version` for a `BUMPED_NOT_RELEASED` pkg                                                                                                                                                                                                                                                                                                                                                                                                               | `ceremony.py:711`                                          | A malformed manifest — re-run detection (`report` mode) to regenerate it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `not-in-registry`              | package is `BUMPED_NOT_RELEASED` in the manifest but absent from `registry.yaml`                                                                                                                                                                                                                                                                                                                                                                                                 | `ceremony.py` (`_plans_for` / `ceremony.py:1152`)          | Add the package to `util/release_train/registry.yaml` (registry lint gates it). Propose's parallel for `UNRELEASED_CHANGES` is a **skip stub** (`skipped_reason="package not in registry.yaml"`, §3.2) — not a HALT.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `testpypi-verify-failed`       | (during the monitor) a job of the publish workflow whose name holds `testpypi` failed before Gate 2; its failed step names the cause (a publisher with no separate build job builds inside that job)                                                                                                                                                                                                                                                                             | `execute_ceremony` (`ceremony.py`)                         | The run is not healthy — open the publish run's TestPyPI job and read its failed step. Transient (TestPyPI not yet serving the upload, a network error): "Re-run failed jobs" on the run, within 30 days, never "Re-run all jobs". A broken package (a real install-check failure): fix it and cut a new patch version, never the republish dispatch, which would copy the broken files to PyPI. Do not re-cut the Release ([PyPI publish procedure §11.8](JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi)).                                                                                                                               |
+| `build-failed`                 | (during the monitor) the publish workflow's separate `Build and Validate` job failed, so that attempt published nothing (added 2026-11-15, juniper-ml#2592). 13 of the 18 publishers had that job before juniper-cascor#763 (canopy, juniper-ml's 7, recurrence's 3, cascor's protocol and model), and their build failures were a note with no issue until then; #763 gave cascor's main publisher one, and its ports give the last 4 one                                       | `execute_ceremony` (`ceremony.py`)                         | The run is not healthy — open the build job and read its failed step. Transient (a network or runner error): "Re-run failed jobs" on the run, within 30 days. Otherwise fix it and cut a new patch version.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ### 4.1 Monitor terminals after the Release is cut
 
@@ -811,13 +811,13 @@ copies TestPyPI's files to PyPI) skips the build and both publish jobs and runs 
 (dispatch only)`, which classifies by the run's own status: `waiting` → `PENDING_PYPI_APPROVAL`, `success` →
 `RELEASED`, `failure` → `HALT_PUBLISH`.
 
-| Terminal | Classifier trigger | Dedup issue? | Operator response |
-|---|---|---|---|
-| `HALT_BUILD` | the job named `Build and Validate` has `conclusion=failure` (read first: it leaves the TestPyPI job skipped, not failed) | **Yes** — `reason_key=build-failed` via `upsert_halt_issue` | Inspect the build job's failed step. Transient: "Re-run failed jobs" on the run, within 30 days. Otherwise fix it and cut a new patch version. |
-| `HALT_TESTPYPI` | any `*testpypi*` job `conclusion=failure` (the build job did not fail) | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue` | Inspect the TestPyPI job's failed step. Transient (TestPyPI not yet serving the upload): "Re-run failed jobs" on the run, within 30 days. A broken package (a real install-check failure): fix it and cut a new patch version, never the republish dispatch (procedure §11.8). |
-| `HALT_PUBLISH` | run `status=completed` and `conclusion` in `{failure, cancelled, timed_out}` **and** no build or TestPyPI job has `conclusion=failure` (a cancelled build lands here too, as does a failed republish run) | **No** — note only: `"the publish run failed, was cancelled or timed out, with no failed build or TestPyPI job: open the run (no issue is filed for this class)."` | Open the publish run UI; diagnose the failure (cancelled deploy, timed-out job, a failed PyPI or republish job, etc.). Do **not** wait for a GitHub issue. Archive + Release were already cut — re-entry resumes at the monitor and must not re-cut. |
-| `PENDING_PYPI_APPROVAL` | run `waiting` / TestPyPI ok + pypi job parked | n/a (success for the train) | Approve Gate 2 when ready (§3.3). |
-| `RELEASED` | run completed `success` (both gates done) | n/a | The Overtoad already approved; nothing to do. |
+| Terminal                | Classifier trigger                                                                                                                                                                                        | Dedup issue?                                                                                                                                                       | Operator response                                                                                                                                                                                                                                                              |
+|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `HALT_BUILD`            | the job named `Build and Validate` has `conclusion=failure` (read first: it leaves the TestPyPI job skipped, not failed)                                                                                  | **Yes** — `reason_key=build-failed` via `upsert_halt_issue`                                                                                                        | Inspect the build job's failed step. Transient: "Re-run failed jobs" on the run, within 30 days. Otherwise fix it and cut a new patch version.                                                                                                                                 |
+| `HALT_TESTPYPI`         | any `*testpypi*` job `conclusion=failure` (the build job did not fail)                                                                                                                                    | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue`                                                                                              | Inspect the TestPyPI job's failed step. Transient (TestPyPI not yet serving the upload): "Re-run failed jobs" on the run, within 30 days. A broken package (a real install-check failure): fix it and cut a new patch version, never the republish dispatch (procedure §11.8). |
+| `HALT_PUBLISH`          | run `status=completed` and `conclusion` in `{failure, cancelled, timed_out}` **and** no build or TestPyPI job has `conclusion=failure` (a cancelled build lands here too, as does a failed republish run) | **No** — note only: `"the publish run failed, was cancelled or timed out, with no failed build or TestPyPI job: open the run (no issue is filed for this class)."` | Open the publish run UI; diagnose the failure (cancelled deploy, timed-out job, a failed PyPI or republish job, etc.). Do **not** wait for a GitHub issue. Archive + Release were already cut — re-entry resumes at the monitor and must not re-cut.                           |
+| `PENDING_PYPI_APPROVAL` | run `waiting` / TestPyPI ok + pypi job parked                                                                                                                                                             | n/a (success for the train)                                                                                                                                        | Approve Gate 2 when ready (§3.3).                                                                                                                                                                                                                                              |
+| `RELEASED`              | run completed `success` (both gates done)                                                                                                                                                                 | n/a                                                                                                                                                                | The Overtoad already approved; nothing to do.                                                                                                                                                                                                                                  |
 
 **Why the asymmetry.** `testpypi-verify-failed` and `build-failed` are named, recoverable §8 classes with
 stable `reason_key`s for dedup. A generic failure outside the build and TestPyPI jobs has no single reason key worth filing — the
@@ -898,11 +898,11 @@ Consequences for recovery:
 - A **partial run is safe to re-enter**: a re-run re-computes state from PyPI/Release truth
   (`ceremony.py:plan_ceremony`). Operator-visible plan states:
 
-  | Truth on re-entry | `plan.state` | Execute does | Step-summary bucket |
-  |---|---|---|---|
-  | PyPI already serves `target` | `ALREADY_RELEASED` | nothing (idempotent no-op) | already-released / DONE |
-  | Release tag exists, PyPI not yet | `RESUME_MONITOR` | **only** `monitor_publish` — no `open_archive_pr` / `enable_automerge` / `create_release` | resume-monitor / RESUME |
-  | Neither | `CEREMONY_PLANNED` | full archive → auto-merge → cut Release → monitor | ceremony / CEREMONY |
+  | Truth on re-entry                | `plan.state`       | Execute does                                                                              | Step-summary bucket     |
+  |----------------------------------|--------------------|-------------------------------------------------------------------------------------------|-------------------------|
+  | PyPI already serves `target`     | `ALREADY_RELEASED` | nothing (idempotent no-op)                                                                | already-released / DONE |
+  | Release tag exists, PyPI not yet | `RESUME_MONITOR`   | **only** `monitor_publish` — no `open_archive_pr` / `enable_automerge` / `create_release` | resume-monitor / RESUME |
+  | Neither                          | `CEREMONY_PLANNED` | full archive → auto-merge → cut Release → monitor                                         | ceremony / CEREMONY     |
 
   `plan_state` stays at the classification while `state` becomes the monitor verdict
   (`ceremony.py:980-983`). On `RESUME_MONITOR` + `HALT_TESTPYPI`, the train files the dedup issue and
@@ -918,12 +918,12 @@ Consequences for recovery:
 
 These are **not** train actions — they are Overtoad console/CLI actions the train depends on:
 
-| Item | What | Why |
-|---|---|---|
-| `RELEASE_TRAIN_MODE` | repo variable (`off`/`report`/`propose`/`ceremony`) | the mode + kill switch (§2/§5) |
-| `RELEASE_TRAIN_APP_ID` | repo variable = the GitHub App's id | gates the App-token mint step (`release-train.yml:399`, `605`) |
-| `RELEASE_TRAIN_APP_PRIVATE_KEY` | repo secret = the App private key | minted into the cross-repo token (§7) |
-| `SLACK_WEBHOOK_URL` | repo secret (optional) | the non-blocking Slack summary (`release-train.yml:325-366`) |
+| Item                            | What                                                | Why                                                            |
+|---------------------------------|-----------------------------------------------------|----------------------------------------------------------------|
+| `RELEASE_TRAIN_MODE`            | repo variable (`off`/`report`/`propose`/`ceremony`) | the mode + kill switch (§2/§5)                                 |
+| `RELEASE_TRAIN_APP_ID`          | repo variable = the GitHub App's id                 | gates the App-token mint step (`release-train.yml:399`, `605`) |
+| `RELEASE_TRAIN_APP_PRIVATE_KEY` | repo secret = the App private key                   | minted into the cross-repo token (§7)                          |
+| `SLACK_WEBHOOK_URL`             | repo secret (optional)                              | the non-blocking Slack summary (`release-train.yml:325-366`)   |
 
 **Verify-before-first-cron (mandatory).** After any change to the train, trigger it once with
 `gh workflow run release-train.yml` and confirm the run behaves before trusting the daily cron

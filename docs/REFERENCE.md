@@ -5,6 +5,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 **Version:** 0.6.77
 **Status:** Active
 **Last Updated:** 2026-11-16
@@ -16,6 +17,9 @@
 =======
 **Version:** 0.6.72
 >>>>>>> 6befa3ba (test(fork-drift): retry-after-rounds-up is ENFORCED in all four copies, and APD-ECO-016 is filed FIXED (#2576))
+=======
+**Version:** 0.6.73
+>>>>>>> 11cac1af (fix(release-train): propose.py renders the four docs/REFERENCE.md release sites that #2507's tests pin to pyproject.toml (#2579))
 **Status:** Active
 **Last Updated:** 2026-11-15
 >>>>>>> a949d504 (ci(tests): run the regression and sub-package tests on Python 3.15 as informational legs (#2567))
@@ -9885,6 +9889,7 @@ Source: `juniper-service-core/juniper_service_core/workers/registry.py` (`record
 | 0.6.70  | 2026-11-15 | Python 3.15 informational CI legs (phase 1 of the 3.15 migration, owner request 2026-11-14): `ci.yml`'s `Regression Tests` and the six `ci-<pkg>.yml` test matrices each run a 3.15 leg under `continue-on-error: ${{ matrix.experimental == true }}`, which reports and blocks nothing (§ Shared-Package CI Workflows) |
 | 0.6.71  | 2026-11-15 | Local Python-version checks (phase 1 of the Python 3.15 migration, owner ruling 2026-11-14): `util/python_version_check.py` runs a repo's own test wrapper in a venv at `{root}/{repo}/tmp/pyvenv/py{version}` built from `/usr/bin/python<version>`, from the version lists and recipes in `conf/python_versions.yaml`, and exits 0 unless `--strict` (§ Utility Script Reference); `tests/test_python_version_matrix_drift.py` holds CI's Python matrices to the same lists (§ Shared-Package CI Workflows); two suites registered (244) |
 | 0.6.72  | 2026-11-15 | The fork-drift gate's ninth guard, `retry-after-rounds-up` (`APD-ECO-016`, filed already fixed in the defect register on the owner's ruling of 2026-11-09): the `tests/test_service_fork_drift.py` entry names canopy's own `RateLimiter` as a site and the shared package as a site of four guards, counts nine guards (eight of them copy-drift guards), and describes the guard's eleven scoped sites, its eight forbidden roundings, its deliberately brittle `check` markers, its mutation check (`util/ad-hoc/2026-11-12_retry_after_guard_mutation_check.py`) and what it cannot see. The repository-tree comment names canopy's `RateLimiter`. |
+| 0.6.73  | 2026-11-15 | Release-train step 5b-v (owner ruling on juniper-ml#2507, "Carry + extend propose.py"): `propose.py` renders the four release sites from `pyproject.toml`: the Package Overview **Version** cell and, under Ecosystem Compatibility, the "declares" sentence, the current-series row and the `[recurrence]` clause. The propose suite gains `ReferenceCompatHelperTest` and `BuildProposalReferenceCompatTest`; the Test Suite Reference and `propose.py` entries describe the step, its `REQUIRED` and `REVIEW` lines, and the floor-raise obligation that juniper-ml#2507's `ReferenceCompatibilityMatrixTest` creates. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -10470,6 +10475,7 @@ Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordi
 **Last Updated:** 2026-11-15
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 **Version:** 0.6.70
 >>>>>>> a949d504 (ci(tests): run the regression and sub-package tests on Python 3.15 as informational legs (#2567))
 =======
@@ -10478,4 +10484,7 @@ Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordi
 =======
 **Version:** 0.6.72
 >>>>>>> 6befa3ba (test(fork-drift): retry-after-rounds-up is ENFORCED in all four copies, and APD-ECO-016 is filed FIXED (#2576))
+=======
+**Version:** 0.6.73
+>>>>>>> 11cac1af (fix(release-train): propose.py renders the four docs/REFERENCE.md release sites that #2507's tests pin to pyproject.toml (#2579))
 **Maintainer:** Paul Calnon
