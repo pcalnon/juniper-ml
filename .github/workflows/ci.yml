@@ -209,6 +209,22 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install the HDF5 headers h5py builds against (Python 3.15 only)
+        # Phase 2 of the ecosystem's Python 3.15 migration. h5py publishes no CPython 3.15 wheel
+        # (3.16.0, 2026-03-06, the newest release, ships cp310-cp314), so on the 3.15 leg pip builds
+        # it from the sdist, and that build needs libhdf5's headers and pkg-config, which the runner
+        # image lacks. Without them `Install test dependencies` stops at
+        # `pip install "h5py>=3.11"`, so the packages it installs after h5py (setuptools, wheel,
+        # cryptography) are never installed either.
+        # The blocking legs install h5py's wheel and skip this step. Drop it once h5py ships a cp315
+        # wheel.
+        id: install-the-hdf5-headers-h5py-builds-against
+        if: matrix.experimental == true && runner.os == 'Linux'
+        continue-on-error: ${{ matrix.experimental == true }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libhdf5-dev pkg-config
+
       - name: Install test dependencies
         id: install-test-dependencies
         continue-on-error: ${{ matrix.experimental == true }}
@@ -239,8 +255,10 @@ jobs:
           # h5py is required by the two snapshot suites below. Both are hermetic
           # -- they build HDF5 fixtures directly and never touch the real ~27.9k
           # archive -- but the modules under test import h5py at module scope, so
-          # without it the suites cannot even be collected. Wheels exist for the
-          # whole 3.12/3.13/3.14 matrix, so this never builds from source.
+          # without it the suites cannot even be collected. Wheels exist for 3.12,
+          # 3.13 and 3.14. 3.15 has none yet, so on the informational 3.15 leg pip
+          # builds it from the sdist, against the HDF5 headers the step above
+          # installs.
           pip install "h5py>=3.11"
           # tests/test_subpackage_py_typed.py builds the six sub-package wheels
           # in this interpreter (no build isolation), so the job installs what
