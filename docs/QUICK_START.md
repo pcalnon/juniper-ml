@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.45
+**Version:** 0.3.46
 **Status:** Active
-**Last Updated:** 2026-11-09
+**Last Updated:** 2026-11-15
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -129,7 +129,8 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Conda Env Torch Shadow Diagnostic](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) -- classify `import torch` / `torch._C` (exit **2** = P-5 free-threaded; exit **4** = May-7; does not rebuild)
 - [Environment Floor Drift — Malformed Input](REFERENCE.md#malformed-operator-input) -- `env_floor_drift_check.py` exit 2 is a resolution failure, including a truthy non-mapping in `ecosystem.yaml`; a bad extra does not drop `dependencies` floors
 - [Cascor Primary Freeze Tell](REFERENCE.md#cascor-primary-freeze-tell) -- whether a live importer holds the cascor primary; exit 0 is "no user-owned importer", not "no importer"
-- [Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety) -- `predict_merge` + `Allow-Docs-Rewrite` trailer parity (#926)
+- [Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety) -- `predict_merge` scratch is `git init` plus `objects/info/alternates`, copies the checkout's `shallow` file, and writes `* -filter`; a history cut above the merge base is an error, not `NEEDS-UPDATE-BRANCH`. `Allow-Docs-Rewrite` trailer parity (#926)
+- [WEAKENED line bounds](REFERENCE.md#a-python-body-that-keeps-at-most-60-percent-and-loses-at-least-4-lines-is-weakened) -- a Python body fails Sequence Safety at exactly 60 percent and a drop of 4 lines; 15 lines down to 10 does not
 - [Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage) -- re-run after an `AGENTS.md` cut; the candidate count grows by construction (health is score ≥ 3)
 - [Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) -- why a required name that never reports leaves `main` unmergeable; re-run, do not quote the 2026-08-10 §1 counts
 - [Flood-Remediation CI Gates](REFERENCE.md#flood-remediation-ci-gates) -- G4 pre-commit split, required Sequence Safety (outside the Quality Gate) and advisory Fleet PR Lint, post-merge `main-verify` catch-up
@@ -153,6 +154,10 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default `equities` / `equities_seq` is 422 at 14 symbols (cost is per request; silent slice deleted in data#354)
 - [Equities Dataset Id Does Not Pin Array Content](REFERENCE.md#equities-dataset-id-does-not-pin-array-content) -- one `dataset_id` can be two arrays; compare `meta.checksum` before quoting a crossval r²
 - [Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) -- re-run the E-H W0.8/W0.9 scripts; exit 0 is not a passing crossval
+- [Lane A3 checks](REFERENCE.md#lane-a3-checks) -- numpy-only NPZ report; an all-constant last step exits 0 (`min-nonzero=none (no column has a std > 0)`)
+- [Actions outage re-run](REFERENCE.md#actions-outage-re-run) -- wait for exact `operational` on the `Actions` component; a malformed status page reads `unknown`, so the wait gives up with exit 2 and re-runs nothing
+- [GnuPG long-option abbreviations](REFERENCE.md#gnupg-long-option-abbreviations) -- the agent guard denies `gpg --list` and `gpg --ex`; `gpg --export` and `gpg --list-keys` stay allowed; a one-character prefix is below the floor
+- [Agent-guard brace cap](REFERENCE.md#utility-script-reference) (the `util/claude_agent_guard.py` entry) -- a brace expansion of more than 64 alternatives is refused (hook exit 2); a 64-alternative list is still expanded and judged; `{1..64}` fits and `{1..65}` is refused
 - [Canopy E2E Matrix Writes](REFERENCE.md#canopy-e2e-matrix-writes) -- fill / set-verdicts / rescore for the click-by-click ledger (fill is dry-run; set-verdicts is not)
 - [F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) -- 12-slot dash-renderer starvation (FIXED); do not add a new Interval; isolated stack only
 - [Worktree Divergence / in-use probe](REFERENCE.md#worktree-divergence-is-a-memory-cost) -- cwd-only liveness is not enough; STRONG cwd/open-fd vs WEAK cmdline
@@ -190,6 +195,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check) -- verifies `**Last Updated**:` was bumped on PRs touching `AGENTS.md`
 - [The MERGED line's SHA is the verified head](REFERENCE.md#the-merged-lines-sha-is-the-verified-head) -- `safe_merge` prints the pull request head; the squash commit is `gh pr view --json mergeCommit`
 - [Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) -- L2/L3 `ANTHROPIC_API_KEY` safeguards + `DEFAULT_REPOS` fan-out
+- [Local Claude Code Launchers](REFERENCE.md#local-claude-code-launchers) -- `./claudey` versus the older default session; an empty `--file` / `--path` exits 1; `claudey` returns wake's status; a refused flag prints `Error: refused "<flag>"`; `-v` prints Claude Code's version; `--effort auto` sends no flag
 - [Idle compaction and the tracked settings file](REFERENCE.md#idle-compaction-and-the-tracked-settings-file) -- `"idleCompaction": false` in repo-root `settings.local.json` is not loaded; Claude Code reads `.claude/settings.local.json`
 - [juniper-service-core](REFERENCE.md#juniper-service-core) -- body limit, 429 headers, control-WS sanitizer, `/ws/workers` contracts
 - [A task assigned for exactly the reassignment timeout stays assigned](REFERENCE.md#a-task-assigned-for-exactly-the-reassignment-timeout-stays-assigned) -- equality stays assigned; any larger age requeues; the worker stays registered and its next idle heartbeat can be given the same task
@@ -223,6 +229,6 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 
 ---
 
-**Last Updated:** 2026-11-09
-**Version:** 0.3.45
+**Last Updated:** 2026-11-15
+**Version:** 0.3.46
 **Status:** Active
