@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **CI runs the regression tests and every sub-package's tests on Python 3.15 as well, as informational legs that
+  block nothing.** Phase 1 of the ecosystem's Python 3.15 migration (the owner's request of 2026-11-14): 3.15
+  results are reported, and no merge, commit or deployment waits on them.
+  - `ci.yml`'s `Regression Tests` and the `test` job of all six `ci-<pkg>.yml` workflows gain an `include` entry,
+    Python `"3.15"` with `experimental: true`, and the job-level `continue-on-error: ${{ matrix.experimental == true }}`,
+    which is true on that leg alone. A red 3.15 leg leaves the job's result, and so the Quality Gate's
+    `needs.tests.result`, at `success`; no ruleset requires the new contexts. Measured on juniper-data#538 (run
+    43655144734): with the 3.15 leg failed on purpose, the gate printed `Unit Tests: success` and passed.
+  - Pre-commit stays on 3.12-3.14 (the owner's ruling the same day), and `requires-python`, the classifiers and the
+    tool targets are unchanged: 3.15 is tested, not yet supported.
+  - `util/ad-hoc/2026-11-14_py315_informational_edits.py` applies this change and juniper-data#538's as exact,
+    re-runnable replacements. `docs/REFERENCE.md` § Shared-Package CI Workflows says so.
+
 - **Backup Phase D, step 14: the remaining checks become two tools with tested predicates
   (2026-11-11).** Until now each step of the sitting was a command block written by hand for one use,
   and four of the sitting's corrections were defects in those blocks: a count of a log line the
