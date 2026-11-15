@@ -102,7 +102,8 @@ def main() -> int:
         "python": args.python,
         "target_sha256": original_sha,
         "test_file_sha256": r3.sha256(args.tree / r3.SUITE),
-        "bytes_equal_the_full_runs": here == recorded and original_sha == recorded["propose"],
+        # here == recorded holds at this point: the check above exits otherwise.
+        "bytes_equal_the_full_runs": original_sha == recorded["propose"],
         "full_run": str(args.full_run),
         "full_run_summary": full.get("summary"),
         "control_whole_suite": r3.run(args.python, args.tree, (r3.SUITE,), args.out / "control_whole_suite.log"),
