@@ -93,6 +93,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     fork-drift comments in `.github/workflows/ci.yml` and `.github/workflows/docs-full-check.yml` name canopy's
     `RateLimiter` as a site.
 
+- **Regression tests carried from 18 Cursor fleet drafts of the flood-4 round 2 (owner rulings "Fold into round 2",
+  2026-11-08, and "Carry + extend propose.py", 2026-11-09), each mutation-checked against the code it pins.** Fifteen
+  new suites, wired into `ci.yml` and `docs/REFERENCE.md` (259 in all): the agent guard's 12-deep nesting cap (#2469),
+  `git push --signed=<value>` (#2489), ANSI-C `\u`, `\U` and octal escapes that spell `.ssh` (#2491),
+  `git -c *.gpgsign=<value>` (#2492), and a later `-c` gpgsign on-switch and the subcommands whose `-S` signs (#2515);
+  the launchers' empty `claude --version` (#2478), a prompt file of `0` or `1` (#2495), a directory as the prompt file
+  (#2503), the `--` spacer (#2509), and prompt-over-file precedence with a non-first version flag (#2472);
+  `predict_merge`'s scratch on a shallow linked worktree, a sha256 source and its two LFS protections (#2481), the
+  common directory's shallow graft read from a linked worktree (#2484), a missing boundary parent, inherited git
+  location variables, unrelated histories and a failed prepare (#2496, whose first test is also #2480's, carried
+  once), and an `ERROR` row's screen coverage (#2512); and a measured zero and `enabled` in the cascor eval blocks
+  (#2499). All fifteen are mirrored into `main-verify.yml`'s Regression Battery too, in `ci.yml`'s order (the
+  owner's ruling of 2026-11-14, "Add all fifteen"); no test compares that battery with `ci.yml`. In `juniper-ci-tools`:
+  the symbol-loss WEAKENED arms at equality (#2475). In existing suites: `tests/test_predict_merge.py` checks that a
+  non-shallow source's scratch gets no graft (#2480), and `tests/test_pyproject_extras.py` pins four
+  `docs/REFERENCE.md` sites to `pyproject.toml`: the Package Overview Version cell, the "declares the following pins"
+  sentence, the current Ecosystem Compatibility row and the recurrence "sets them to" clause (#2507).
+  `util/release_train/propose.py` renders those four sites since juniper-ml#2579, which landed first.
+  - **Fixed before carrying.** mypy in #2469, #2472 and #2491 (class attributes set in `setUpClass`, and a tuple of
+    cases, annotated), flake8 C420 in #2499, black in #2472, #2478, #2495, #2496, #2503 and #2509, and a CodeQL alert
+    in #2496 (`unittest` imported both ways). #2481's LFS case passed with either of the scratch's two LFS protections
+    removed, so it pinned neither: it is now two tests, one for `* -filter` and one for `GIT_LFS_SKIP_SMUDGE=1`; and
+    its fixture built a git environment with `os.environ.copy()`, which `tests/test_env_repr_safety.py` refuses, so it
+    is a `RedactedEnv` now. #2484 keeps its first test; its second pinned a refusal only #2480's code makes, and `main`
+    already copies the graft (#2474). #2507's text said `util/release_train/propose.py` does not edit those four
+    sites; it now states the rule, that a change moving the version or one of those floors rewrites them in the same
+    change. Two of #2507's parser tests took live pins as fixture input (two `[servers]` pins, and `pyproject.toml`'s
+    `juniper-data` floor as the value a stale cell must differ from): both now use floors and series labels no
+    release declares, so a floor raise, which replaces a pin string exactly, cannot move what they prove. #2515's git
+    behaviour was re-checked on git 2.53.0; its docstring said no suite names the signing flag on `pull`, `am`,
+    `revert`, `cherry-pick` and `commit-tree`, and now says which do: juniper-ml#2554's
+    `tests/test_claude_agent_guard_git_sign_abbrev.py` names the long option, and this suite the short `-S`. #2512's
+    `ERROR` row in `docs/REFERENCE.md` now says how `screen_coverage` counts it.
+  - **ci.yml's `host-tooling-macos` job runs every agent-guard suite**, by the owner's ruling of 2026-11-12 (the next
+    update of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` adds it to its section 8).
+    `HOST_TOOLING_SUITES` gains the eight that ran in the Linux step alone: `tests/test_claude_agent_guard_brace_cap.py`
+    (juniper-ml#2517), juniper-ml#2554's `tests/test_claude_agent_guard_git_sign_abbrev.py` and
+    `tests/test_claude_agent_guard_push_signed_abbrev.py`, and the five carried here; 20 suites in all.
+    `tests/test_ci_host_tooling_macos.py` pins the list and, new, compares it with the
+    `tests/test_claude_agent_guard*.py` files on disk, so a later guard suite cannot be left to the Linux step. None of
+    the eight starts a shell, git or GnuPG (an exec census under `strace`), and each passes under CPython 3.9, the
+    version of macOS's `/usr/bin/python3`; the job itself runs them under its Python 3.12.
+  - **Not carried.** #2480's code and its copy of #2496's first test, #2484's second test, and #2480's
+    `docs/REFERENCE.md` paragraph on the scratch copying the checkout's shallow graft, which is documentation.
+
 ### Changed
 
 - **Backup Phase D, step 14: the retention policy to restore keeps every fileset of the last two
