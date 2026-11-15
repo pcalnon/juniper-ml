@@ -1,24 +1,24 @@
-# juniper-canopy v0.10.0 – :lock: SECURITY PATCH RELEASE
+# juniper-canopy v0.10.0 – :lock: SECURITY RELEASE (MINOR)
 
 **Release Date:** 2026-11-15
-**Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Release Type:** MINOR (security-bearing)
+**Priority:** High: upgrade every juniper-canopy deployment that reports to Sentry, first any with `ws_auth_enabled` on
 **Package Affected:** juniper-canopy
 
 ---
 
-This is a security-bearing release of `juniper-canopy` v0.10.0. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a security-bearing minor release of `juniper-canopy` v0.10.0. Its image locks `juniper-observability` 0.4.2, and its wheel now floors `juniper-observability>=0.4.2,<0.5.0`, whose `configure_sentry` scrubs transactions as well as error events and filters four more credential headers. Under 0.4.1, once a Sentry DSN was set, a request's `Sec-WebSocket-Protocol`, `X-CSRF-Token` and `X-XSRF-Token` headers reached Sentry in every error event and transaction, and `Sec-WebSocket-Protocol` carries canopy's own WebSocket key (`bearer, <key>`) when the opt-in `ws_auth_enabled` is on. canopy leaves `send_pii` off, so the `X-API-Key` and cookie leaks that 0.4.2 also closes were not reachable here. It also floors `juniper-service-core>=0.7.2,<0.8.0`, a plain patch. 0.4.2 does not close every path to Sentry: its notes leave query strings, Sentry Logs, request bodies, breadcrumbs and exception values for 0.4.3. For canopy the first includes the `?api_key=` WebSocket query parameter, which reaches Sentry under the default `send_pii=False`. The second Security entry makes CI's Gitleaks step load gitleaks' built-in ruleset; it had loaded none and could not fail. The release also fixes F-CANOPY-069 (under every dash 3.x the dashboard was inert; the fix works on dash 3 too) and raises the runtime floor to `dash>=4.0.0`, the line canopy tests, so an environment still on dash 3 moves to dash 4 with it.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-canopy` |
 | **Fixed in** | 0.10.0 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | Fixed by juniper-observability 0.4.2, which this release floors and its image locks: sensitive information sent to an external service ([CWE-201](https://cwe.mitre.org/data/definitions/201.html)) |
+| **Advisory** | None. Internal findings, fixed in juniper-observability 0.4.2, which its own notes rate Medium: round-42 finding F2 (2026-09-24) and the validation of consolidated-plan item P3-07 (2026-11-08); there is no CVE or Dependabot alert |
 
 ---
 
