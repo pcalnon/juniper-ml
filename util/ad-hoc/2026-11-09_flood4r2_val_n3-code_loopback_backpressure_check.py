@@ -15,6 +15,7 @@ Related: util/ad-hoc/2026-11-09_flood4r2_val_n3-code_e2e_uvicorn.py
 """
 
 import asyncio
+import importlib
 import json
 import socket
 import sys
@@ -25,11 +26,14 @@ SRC = sys.argv[1]
 sys.path.insert(0, SRC)
 
 import uvicorn  # noqa: E402
-import websockets.legacy.protocol as _wlp
 from api.websocket.manager import WebSocketManager  # noqa: E402
 from api.websocket.training_stream import training_stream_handler  # noqa: E402
 from fastapi import FastAPI  # noqa: E402
 from websockets.asyncio.client import connect  # noqa: E402
+
+# websockets.legacy is deprecated and often invisible to static import resolvers
+# (Pylance reportMissingImports) even when present at runtime; load by name.
+_wlp = importlib.import_module("websockets.legacy.protocol")
 
 PAUSES = []
 _orig_pause = _wlp.WebSocketCommonProtocol.pause_writing
