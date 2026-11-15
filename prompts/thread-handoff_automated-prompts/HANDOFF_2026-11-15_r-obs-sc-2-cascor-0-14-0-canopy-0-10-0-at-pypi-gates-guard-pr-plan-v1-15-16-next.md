@@ -1,4 +1,4 @@
-# Handoff: R-OBS-SC-2 follow-ups -- juniper-cascor 0.14.0 and juniper-canopy 0.10.0 wait at the owner's `pypi` gates; the guard PR (#2576) is armed; deploy pins, the parent paragraph and plan v1.15.16 remain
+# Handoff: R-OBS-SC-2 follow-ups -- juniper-cascor 0.14.0 and juniper-canopy 0.10.0 wait at the owner's `pypi` gates; the guard PR (#2576) is merged; deploy pins, the parent paragraph and plan v1.15.16 remain
 
 **Written**: 2026-11-15 ~02:10Z by session `1b4fec84` (`ListAgents`: `r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next`, ref `55486c`), worktree `.claude/worktrees/buzzing-growing-whale`.
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next.md`
@@ -44,8 +44,8 @@ The owner opened the session with "continue work arc from handoff: …HANDOFF_20
 | canopy publish run 43664277663 | Build and Validate and Publish to TestPyPI success; **waiting at `pypi`** (owner) |
 | image runs | cascor 43663237432, canopy 43664277607 (in progress at 01:4xZ) |
 | juniper-ml#2568 (QUICK_START + four cut tools + start prompt) | MERGED 2026-11-15T02:15:25Z as `7ce8d365`. Its first run failed only G5 (a `/home/pcalnon` literal), fixed by its third commit |
-| juniper-ml#2570 (cascor archive) | OPEN, auto-merge armed, up to date with `main` (head `890a6567`) and waiting on its checks at 02:33Z |
-| juniper-ml#2576 (guard + register; replaces closed #2573) | OPEN, safe_merge armed. After it merges, **dispatch `Docs Full Check`** (the only run of the cross-repo arms) |
+| juniper-ml#2570 (cascor archive) | OPEN, auto-merge armed. It goes BEHIND whenever `main` moves (the strict ruleset), so it was updated again at ~02:53Z. If it is still open, run `gh api -X PUT repos/pcalnon/juniper-ml/pulls/2570/update-branch` again |
+| juniper-ml#2576 (guard + register; replaces closed #2573) | MERGED 2026-11-15T02:51:37Z as `6befa3ba`. `Docs Full Check` was dispatched on it (run 43669737463), and the fork-drift step ran its 17 tests against freshly cloned siblings: OK, no skips |
 
 `Regression Tests (Python 3.15)` (informational, from juniper-ml#2567) failed on #2570. It is not required and is not this arc's.
 
