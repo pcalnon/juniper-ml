@@ -58,6 +58,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     208 defects into the two tools, the wrapper and the deploy script; the suites kill all of them.
   - `docs/REFERENCE.md` and `AGENTS.md` record the three suites (242 in all) and the two tools.
 
+- **The fork-drift gate's ninth guard, `retry-after-rounds-up`, and defect-register row `APD-ECO-016`, filed
+  already fixed (2026-11-15).** The three forks' `RateLimiter` truncated the seconds until a window resets, so a
+  rejection in a window's last second said `Retry-After: 0`, and juniper-data's and juniper-cascor's
+  `FailedAuthThrottle` truncated its wait too, after the shared package had rounded both up (juniper-ml#1300 and
+  juniper-ml#2524). The owner ruled on 2026-11-09 to file the row, fix all three forks and add a guard naming it; the
+  fixes merged on 2026-11-13 (juniper-data#537, juniper-cascor#757 and juniper-canopy#817).
+  - `tests/test_service_fork_drift.py` gains the guard: eleven scoped sites in the four copies (canopy has no
+    throttle), at `RateLimiter._seconds_until_reset`, the two returns of `RateLimiter.check` that carry a remainder,
+    and `FailedAuthThrottle.check`, with eight wrong roundings forbidden in each scope. Its site loops key each
+    subtest by scope as well, so a copy's three sites do not share one subtest header.
+  - `util/ad-hoc/2026-11-12_retry_after_guard_mutation_check.py` (new) runs the real gate on a synthetic ecosystem
+    root. The five pre-fix copies fail it, and so do 151 mutations of the current copies, each at the one scope it
+    edits; in 88 of them a forbidden form beside the kept markers is the only thing that catches the mutation.
+  - `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` files the row in §4.9 and §5.1, adds it to §2.3's
+    copy-drift table and moves every count it changes. `docs/REFERENCE.md` (0.6.72) counts nine guards, and it and the
+    fork-drift comments in `.github/workflows/ci.yml` and `.github/workflows/docs-full-check.yml` name canopy's
+    `RateLimiter` as a site.
+
 ### Changed
 
 - **Backup Phase D, step 14: the retention policy to restore keeps every fileset of the last two
