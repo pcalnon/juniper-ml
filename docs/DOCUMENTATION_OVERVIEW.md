@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.57
+**Version:** 0.2.58
 **Status:** Active
-**Last Updated:** 2026-11-09
+**Last Updated:** 2026-11-15
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -40,7 +40,7 @@
 | **Check installed juniper-* floor drift** | [REFERENCE — Environment Floor Drift](REFERENCE.md#environment-floor-drift-check) (exit 2 includes a truthy non-mapping; a bad extra keeps `dependencies` floors) | docs/    |
 | **Diagnose a broken conda `import torch`** | [REFERENCE — Conda Env Torch Shadow](REFERENCE.md#conda-env-torch-shadow-diagnostic-p-5) (exit **2** = P-5 free-threaded; exit **4** = May-7 wheel layout; does not rebuild) | docs/    |
 | **Check custom-agent suite health**     | [REFERENCE.md](REFERENCE.md#agent-suite-doctor)                                                                                  | docs/    |
-| **Triage fleet PRs / sequence-safety**  | [REFERENCE.md § Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety)                                 | docs/    |
+| **Triage fleet PRs / sequence-safety**  | [REFERENCE.md § Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety) (the scratch copies the checkout's `shallow` file and writes `* -filter`; a history cut above the merge base is an error) | docs/    |
 | **Triage resident-hazard gaps after an AGENTS.md cut** | [REFERENCE — Resident-Hazard Gap Triage](REFERENCE.md#resident-hazard-gap-triage) (count grows after a cut; health is score ≥ 3) + [fleet record](../notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_RESIDENT-HAZARD-GAP-TRIAGE.md) | docs/ + notes/ |
 | **Run the isolated E2E trio**           | [Isolated-stack E2E checklist](../notes/JUNIPER_2026-07-21_JUNIPER-ECOSYSTEM_ISOLATED-STACK-E2E-CHECKLIST.md) + [REFERENCE — Isolated Stack](REFERENCE.md#isolated-stack-e2e-utilities) | notes/ + docs/ |
 | **Re-drive the CAN-015 replay player**  | [REFERENCE — CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) (throwaway wrapper `8113`/`8214`/`8063`; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start) | docs/ |
@@ -50,7 +50,7 @@
 | **Triage canopy E2E findings (P0/P1 exit)** | [REFERENCE — Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) (`e2e_finding_triage.py`; WITHDRAWN ≠ ACCEPTED ≠ FIXED ≠ OPEN) | docs/ |
 | **Score canopy Topology-tab rows**      | [REFERENCE — Canopy E2E Topology Driver](REFERENCE.md#canopy-e2e-topology-driver) (`e2e_seg17_topology_driver.py`; `STEPS` is the authority; M-06/M-07/M-12 can PASS the easier half) | docs/ |
 | **Drive canopy dataset-tab / W6 rows**  | [REFERENCE — Canopy E2E Dataset Drivers](REFERENCE.md#canopy-e2e-dataset-drivers) (W6 `--steps` vs §3.6 `--step`; never confirm restart) | docs/ |
-| **Triage Cursor-fleet / predicted-merge PRs** | [REFERENCE — Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety)                            | docs/    |
+| **Triage Cursor-fleet / predicted-merge PRs** | [REFERENCE — Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety) (`git init` + alternates; fetch `origin` first; the scratch's own git commands drop an inherited `GIT_DIR`, the screens do not) | docs/    |
 | **Audit required-status-check contexts / why `main` is BLOCKED** | [REFERENCE — Ruleset Context Audit](REFERENCE.md#ruleset-context-audit) (read-only; 2026-08-10 class; do not quote the note's §1 counts) | docs/    |
 | **Run a per-run experiment stack**      | [REFERENCE — Experiment Stack](REFERENCE.md#experiment-stack-utilities) (incl. partial-`--up` → `teardown_run`) + [CLI experimentation plan](../notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) | docs/ + notes/ |
 | **Refuse a stale recurrence env before serve** | [REFERENCE — Recurrence Env Preflight](REFERENCE.md#recurrence-env-preflight) (W0.2, juniper-ml#2139: scoped `pip check`, installed pins, `derive_full_split`; CUDA `pip check` noise does not refuse; `/v1/health/ready` alone misses F-E1) | docs/ |
@@ -75,6 +75,9 @@
 | **Run `equities` / `equities_seq` without a 422** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (14-symbol refuse; unit is symbols because cost is per request; silent slice deleted) | docs/    |
 | **Tell two `equities_seq` mints apart** | [REFERENCE — Equities Dataset Id Does Not Pin Array Content](REFERENCE.md#equities-dataset-id-does-not-pin-array-content) (`dataset_id` hashes the request; compare `meta.checksum`; an all-zero `dividend` is a silent fill) | docs/    |
 | **Re-run or read the E-H equities crossval measurement** | [REFERENCE — Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) (`replay` / `matrix`; exit 0 is not HTTP 200) + [investigation note](../notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md) | docs/ + notes/ |
+| **Read a Lane A3 `checks` exit** | [REFERENCE — Lane A3 checks](REFERENCE.md#lane-a3-checks) (numpy-only NPZ report; an all-constant last step exits 0 with `min-nonzero=none (no column has a std > 0)`) | docs/ |
+| **Re-run a PR after an Actions outage** | [REFERENCE — Actions outage re-run](REFERENCE.md#actions-outage-re-run) (exact `Actions` / `operational`; a malformed status page reads `unknown`, and the wait gives up with exit 2) | docs/ |
+| **See why `gpg --list` or `gpg --ex` was denied** | [REFERENCE — GnuPG long-option abbreviations](REFERENCE.md#gnupg-long-option-abbreviations) (a prefix of 2 or more characters of a secret or sign option; `gpg --export` and `gpg --list-keys` stay allowed; one character is below the floor) | docs/ |
 | **Import a CSV/JSON dataset (byte cap)** | [REFERENCE — CSV Import Byte Cap](REFERENCE.md#csv-import-byte-cap) (128 MiB, 422 until opt-in, `IMPORT_DIR` pitfall; equities is capped in symbols instead) | docs/    |
 | **Bound an `equities` request (do not use a byte cap)** | [REFERENCE — Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) (per-request cost, 14-symbol cap: a 422 or an annotated cut, never a silent slice; default 503 names ≈ 34 min) | docs/    |
 | **Index / classify / backfill the snapshot archive** | [REFERENCE — Snapshot Sidecar Chain](REFERENCE.md#snapshot-sidecar-chain) (`--scan`, two-axis classify, derivation levels, `--root` trap) | docs/    |
@@ -92,10 +95,12 @@
 | **Run / score a pointer-follow soak probe** | [REFERENCE — Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) (least-covered vs characterisation; `--dry-run` is exempt from the terminal-verdict stop) | docs/    |
 | **Refresh the requirements snapshot** | [REFERENCE — Requirements Snapshot Consolidation](REFERENCE.md#requirements-snapshot-consolidation) (`by-area` is the corpus of record; ledger has no `detail`; `--check-roundtrip` then `--check-views`) | docs/    |
 | **See which E2E matrix rows are still empty** | [REFERENCE — Unfilled-Rows Ledger](REFERENCE.md#canopy-e2e-unfilled-rows-ledger) (`e2e_unfilled_rows.py`; do not plan from the TSV estimator) | docs/    |
+| **See why a brace range was refused by the agent guard** | [REFERENCE — Utility Script Reference](REFERENCE.md#utility-script-reference), the `util/claude_agent_guard.py` entry (1.3.0: more than 64 brace alternatives is a refusal, hook exit 2; exactly 64 are still expanded and judged; `$(seq 1 100)` instead of `{1..100}`) | docs/    |
 | **Quick-reference dev tasks**           | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md)                                                         | docs/    |
 | **Operate the PyPI release train**      | [Release-train operator runbook](../notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md)                 | notes/   |
 | **Understand flood CI gates / main-verify** | [REFERENCE.md § Flood-Remediation CI Gates](REFERENCE.md#flood-remediation-ci-gates) + [flood analysis](../notes/JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md) | docs/ + notes/ |
 | **Triage Sequence Safety red / Quality Gate green** | [REFERENCE — Flood-Remediation CI Gates](REFERENCE.md#flood-remediation-ci-gates) (`Sequence Safety` is required in `juniper-ml-rules`; QG green does not mean mergeable) | docs/    |
+| **See when a gut is WEAKENED** | [REFERENCE — WEAKENED line bounds](REFERENCE.md#a-python-body-that-keeps-at-most-60-percent-and-loses-at-least-4-lines-is-weakened) (at most 60 percent of the lines and a drop of at least 4; both inclusive; bash is WARN) | docs/    |
 | **Triage post-merge main-verify / G3.1**| [REFERENCE — Post-Merge Main Verification](REFERENCE.md#post-merge-main-verification) (incl. stable-title failure notify)       | docs/    |
 | **Read a `safe_merge` success SHA** | [REFERENCE — The MERGED line's SHA is the verified head](REFERENCE.md#the-merged-lines-sha-is-the-verified-head) (the line prints `headRefOid`; the squash commit is `mergeCommit.oid`) | docs/    |
 | **Provision YubiKey GPG (ed448 caveat)** | [REFERENCE — YubiKey GPG](REFERENCE.md#yubikey-gpg-provisioning) + [keytocard procedure](../notes/JUNIPER_2026-08-03_JUNIPER-ECOSYSTEM_YUBIKEY-GPG-ED448-KEYTOCARD-PROCEDURE.md) | docs/ + notes/ |
@@ -113,6 +118,7 @@
 | **Read the release-train detect summary / Slack** | [REFERENCE — Detect Summary and Slack](REFERENCE.md#release-train-detect-summary-and-slack)                             | docs/    |
 | **Understand the AGENTS.md date check** | [REFERENCE — AGENTS.md Date Check](REFERENCE.md#agentsmd-date-check)                                                             | docs/    |
 | **Audit `claude.yml` access safeguards**| [REFERENCE — Claude.yml Access Validation](REFERENCE.md#claudeyml-access-validation) + [ANTHROPIC API key walkthrough](../notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md) | docs/ + notes/ |
+| **Launch a local Claude Code session** | [REFERENCE — Local Claude Code Launchers](REFERENCE.md#local-claude-code-launchers) (`./claudey`; an empty `--file` or `CLAUDE_PROMPT_FILE` exits 1; `claudey` returns wake's status; a refused flag prints `Error: refused`; `-v` is Claude Code's version; `--effort auto` sends no flag) + [cheatsheet](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/ |
 | **Operate the GitHub `@claude` assistant** | [REFERENCE — Claude Code Action](REFERENCE.md#claude-code-action) (live pin, `@claude` `if:`, template-snapshot drift) | docs/ |
 | **Turn off Claude Code idle compaction** | [REFERENCE — Idle compaction and the tracked settings file](REFERENCE.md#idle-compaction-and-the-tracked-settings-file) (repo-root `settings.local.json` is not loaded) | docs/ |
 | **Read a turing host-check failure** | [REFERENCE — Host-Check Wording](REFERENCE.md#host-check-wording-e-h3) (kubectl's fix is task D3 first; G-MEM names speculative pages) | docs/ |
@@ -271,6 +277,6 @@ Exact floors and ranges: [`REFERENCE.md`](REFERENCE.md#extras-reference) and `py
 
 ---
 
-**Last Updated:** 2026-11-09
-**Version:** 0.2.57
+**Last Updated:** 2026-11-15
+**Version:** 0.2.58
 **Maintainer:** Paul Calnon
