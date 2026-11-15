@@ -395,8 +395,15 @@ jobs:
           # MIRROR of ci.yml's `tests` job list (keep in sync -- no auto-discovery).
           python3 -m unittest -v tests/test_wake_the_claude.py
           python3 -m unittest -v tests/test_prompt_file_later_flag.py
+          python3 -m unittest -v tests/test_launcher_empty_version_output.py
+          # A prompt file of the script's own 0/1 booleans is still that prompt;
+          # carriage return, vertical tab, and form feed alone are not a prompt.
+          python3 -m unittest -v tests/test_prompt_file_boolean_tokens.py
+          python3 -m unittest -v tests/test_prompt_file_kind.py
+          python3 -m unittest -v tests/test_wake_spacer_flags.py
           python3 -m unittest -v tests/test_claude_interactive.py
           python3 -m unittest -v tests/test_claudey_empty_prompt_file_env.py
+          python3 -m unittest -v tests/test_launcher_prompt_and_version_edges.py
           python3 -m unittest -v tests/test_env_repr_safety.py
           python3 -m unittest -v tests/test_worktree_cleanup.py
           python3 -m unittest -v tests/test_worktree_activate.py
@@ -427,6 +434,11 @@ jobs:
           python3 -m unittest -v tests/test_install_agents.py
           python3 -m unittest -v tests/test_agent_suite_doctor.py
           python3 -m unittest -v tests/test_agent_suite_summary.py
+          python3 -m unittest -v tests/test_predict_merge_scratch_edges.py
+          python3 -m unittest -v tests/test_predict_merge_shallow_worktree.py
+          python3 -m unittest -v tests/test_predict_merge_guard_edges.py
+          # An ERROR row's empty gates are absent, not a pass (mirror ci.yml).
+          python3 -m unittest -v tests/test_predict_merge_error_screen.py
           python3 -m unittest -v tests/test_requirements_drift_check.py
           python3 -m unittest -v tests/test_validate_claude_yaml_access.py
           python3 -m unittest -v tests/test_workflow_script_paths.py
@@ -473,7 +485,14 @@ jobs:
           python3 -m unittest -v tests/test_juniper_chop_all.py
           python3 -m unittest -v tests/test_isolated_stack_script.py
           python3 -m unittest -v tests/test_check_conda_env_torch.py
+          python3 -m unittest -v tests/test_claude_agent_guard_nest_depth.py
+          python3 -m unittest -v tests/test_claude_agent_guard_push_signed.py
+          python3 -m unittest -v tests/test_claude_agent_guard_ansi_escapes.py
+          python3 -m unittest -v tests/test_claude_agent_guard_gpgsign_off.py
+          # A later -c gpgsign on-switch still denies, and pull/am/revert/cherry-pick/commit-tree -S deny.
+          python3 -m unittest -v tests/test_claude_agent_guard_sign_edges.py
           python3 -m unittest -v tests/test_configure_commit_signing.py
+          python3 -m unittest -v tests/test_cascor_eval_zero_and_enabled.py
 
       - name: Run bash regression tests
         if: steps.changes.outputs.run == 'true'
