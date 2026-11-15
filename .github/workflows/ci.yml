@@ -1586,6 +1586,21 @@ jobs:
           # the sample filter that keeps secret-bearing paths out of a drill; the SHA-256 and length oracle. Absorbs the
           # self-test that lived in a gitignored tmp/. Needs cryptography (installed above).
           python3 -m unittest -v tests/test_ac4_restore_drill.py
+          # tests/test_python_version_check.py: util/python_version_check.py, the local half of phase 1 of the Python 3.15
+          # migration (owner ruling 2026-11-14). It builds a venv per repo and version at a FIXED path in the repo's primary
+          # tmp/ (pyvenv/py<version>), installs the repo with its CI's commands and runs the repo's own wrapper there, exiting 0
+          # whatever the results unless --strict. Pinned: conf/python_versions.yaml's ruling and validation; the venv path,
+          # which TMPDIR, the cwd and --checkout do not move; unavailable versus failed; --dry-run and --list writing nothing;
+          # where the logs land; the child environment; the venv's reuse and the paths it never removes; and that pre-commit
+          # never runs it. A stub interpreter, venv and wrapper on PATH: no real venv, pip or repo. Stdlib plus PyYAML.
+          python3 -m unittest -v tests/test_python_version_check.py
+          # tests/test_python_version_matrix_drift.py: every Python-version matrix in .github/workflows/ (pre-commit exempt)
+          # runs each informational version of conf/python_versions.yaml as an `include` entry with `experimental: true`,
+          # under the job-level continue-on-error expression on matrix.experimental, and never in its plain list; no blocking
+          # version is experimental, and this job's matrix runs exactly the blocking list. The config's juniper-ml recipe
+          # installs exactly the requirements of this job's "Install test dependencies" step. Negative controls for each
+          # violating shape. PyYAML only.
+          python3 -m unittest -v tests/test_python_version_matrix_drift.py
 
       - name: Run bash regression tests
         run: |
