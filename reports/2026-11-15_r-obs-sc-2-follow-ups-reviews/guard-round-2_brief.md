@@ -1,0 +1,30 @@
+You are an independent reviewer of an uncommitted juniper-ml change set. Find what is wrong: false statements, wrong counts, broken invariants, untested claims. Do NOT edit, commit, push or comment anywhere; return your findings as your FINAL MESSAGE (you cannot write report files here).
+
+## The change set
+Seven files in the worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/agent-a4c8d9de35bfc0d67/`, built on juniper-ml commit `a949d5045f912ae907acb35cc8104247b1494a48`. Compare each against its base with `git show a949d504:<path>` (run git from `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/buzzing-growing-whale`, which shares the object store) and `diff`:
+- `tests/test_service_fork_drift.py`: a new ENFORCED fork-drift guard, `retry-after-rounds-up` (register ids `APD-ECO-016`, `APD-SVCCORE-004`), scoped to `RateLimiter._seconds_until_reset`, `RateLimiter.check` and `FailedAuthThrottle.check` in four copies of the service security code (juniper-data, juniper-cascor, juniper-canopy without a throttle, and juniper-service-core in this repo).
+- `util/ad-hoc/2026-11-12_retry_after_guard_mutation_check.py` (new): proves the guard is not vacuous.
+- `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`: files row `APD-ECO-016` already FIXED, with its touches.
+- `docs/REFERENCE.md` (document version 0.6.71), `CHANGELOG.md` (`[Unreleased]`), `.github/workflows/ci.yml` and `.github/workflows/docs-full-check.yml` (comments only, by the author's account).
+
+## Background you can rely on (verified by the briefing session)
+- The owner's ruling of 2026-11-09 ("Row + fix all three"): file APD-ECO-016 (register §2.3, copy drift), fix each fork's `Retry-After` / `X-RateLimit-Reset` truncation to service-core's `max(1, math.ceil(...))`, and add a fork-drift guard naming the row.
+- The fork fixes merged on 2026-11-13 UTC: juniper-canopy#817 (`55ac2168`, 01:02:07Z), juniper-cascor#757 (`66b39a5c`, 01:07:08Z), juniper-data#537 (`3cf8867c`, 02:54:07Z). The shared package's: juniper-ml#1300 (the limiter; APD-SVCCORE-004) and juniper-ml#2524 (the throttle; merged 2026-11-08T15:53:33Z; first released in juniper-service-core 0.7.2, PyPI 2026-11-09).
+- The precedent this follows: APD-ECO-015, juniper-ml#2365 (its diff is saved at `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/logical-percolating-sparkle/tmp/lps/ml2365.diff`). The register's §1 "Closing a row -- the five touches" is the filing procedure.
+- An earlier review of the guard code alone is at `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/toasty-prancing-karp/tmp/s1/guard_review_round1.md`; the author says all 13 of its findings are applied. Spot-check that claim, but spend most of your effort on what that review never saw: the register filing, the doc and workflow comments, the CHANGELOG entry, and the mutation script's new mutations.
+
+## What to check
+1. **The register**: every touch the §1 procedure requires; every count that the new row changes ("twenty-one entries", "nine guards", "TWENTY-SIX", "forty-two filed", open/fixed totals), and that each is consistent with every other place in the file that states it. Re-derive the counts yourself from the tables, and run `python3 util/ad-hoc/register_open_set.py` and `python3 util/ad-hoc/register_status_crosscheck.py` from the agent worktree. Every PR number, sha and date in the row against `gh` (read-only).
+2. **The guard**: that each site reads the definition it claims, that the forbidden list cannot fire on any current scoped body (render each body the way the gate does, `site_code`), and that the comments' account of the residual gaps is true. Run the module with its cross-repo arms on: `python3 util/ad-hoc/2026-11-12_run_with_blank_sentry_dsns.py --set JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 -- python3 -m unittest tests/test_service_fork_drift.py` from the agent worktree (check the wrapper's `--help` for the exact form). The siblings resolve to the primaries under `/home/pcalnon/Development/python/Juniper/`: read-only, never pull or switch them.
+3. **The mutation script**: that its 88 new forbidden-form mutations really isolate each forbidden entry (a mutation that a marker deletion would also catch proves nothing about the forbidden list), and that its summary line cannot pass when something is not caught. You may run it from the agent worktree via the same wrapper: `... -- python3 util/ad-hoc/2026-11-12_retry_after_guard_mutation_check.py --main-ref main --prefix juniper-cascor=44b60af28d1741d828f66375e58f333862c8fa29 --prefix juniper-canopy=b9417b2f29ba059b645d96c405625be0a5399027 --prefix juniper-data=c68e6b4c8e17be71be1bef1d0dcb6ac213505d6e` (slow; the host is loaded). Never run anything that writes into another worktree.
+4. **REFERENCE.md, ci.yml, docs-full-check.yml, CHANGELOG.md**: every factual statement against the code; the version-history row; that the workflow edits are comment-only (diff them), and that no test pins the changed text (grep `tests/`).
+5. Anything an outside reader of the register or REFERENCE.md could not follow.
+
+## Constraints
+- Read-only everywhere. Never write under `/tmp`; scratch, if you need any, goes in `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/buzzing-growing-whale/tmp/s2/review-eco016/` (create it).
+- The host's `grep` is ugrep honouring .gitignore: use `command grep` where ignored paths matter.
+- Blank the six Sentry DSN variables for every test run (the wrapper above does it).
+- Cite evidence for every finding (file:line, a sha, a command's output). Re-check at the source; do not guess.
+
+## Final message format
+A numbered list of findings, each with severity (BLOCKER: false statement, broken invariant or a check that can pass vacuously; MAJOR: misleading or incomplete in a way a reader would act on; MINOR; NIT), the file and anchor, the evidence, and the exact fix. Then what you checked and found correct. Give times only where a tool printed them.
