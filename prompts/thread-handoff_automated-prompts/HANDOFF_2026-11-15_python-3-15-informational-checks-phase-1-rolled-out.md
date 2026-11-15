@@ -111,11 +111,30 @@ The owner reported that every juniper-ml PR read as failing. The job-level `cont
 - guarded by `tests/test_python_version_matrix_drift.py`'s `green_violations`.
 
 It was measured on #2578's head `91591864`: `Regression Tests (Python 3.15)` concluded `success` while 2 of its steps
-failed, and carried the warning. It was held for the flood-4 sitting; merge it if it is still open. The owner chose
-"All nine now": the same script is being applied to the nine sibling repos on branch `ci/python-3-15-green-legs`,
-one PR each, by agents that merge under the owner's approval. Brief:
-`juniper-ml/.claude/worktrees/witty-giggling-twilight/tmp/py315/GREEN_LEGS_BRIEF.md`. Check each repo with
-`gh pr list --repo pcalnon/<repo> --state all --head ci/python-3-15-green-legs`.
+failed, and carried the warning. **#2578 merged 2026-11-15T04:10:39Z (`be092a2e`).** The owner chose "All nine now", and
+the same script, applied on branch `ci/python-3-15-green-legs`, is MERGED in every sibling repo:
+
+| Repo | PR -> squash | 3.15 check after the fix |
+|------|--------------|--------------------------|
+| juniper-cascor | #760 -> `28975264` | unit `success` + warning (install, tests and coverage steps failed: h5py); cascor-model `success` + warning (3 tests); protocol notice |
+| juniper-canopy | #820 -> `bab3ec8d` | unit `success` + warning (install failed; then 5120 passed, 5 failed `No module named 'h5py'`); scheduled notice |
+| juniper-data | #541 -> `de9ff9d6` | unit notice (2530 passed) |
+| juniper-cascor-worker | #229 -> `68782443` | unit and integration notice |
+| juniper-data-client | #262 -> `56ab8ebb` | unit and integration notice |
+| juniper-cascor-client | #197 -> `1ad7f5c8` | unit and integration notice |
+| juniper-deploy | #275 -> `dd299fbf` | `Unit Tests (Python 3.15)` notice; the required `Unit Tests` still posts |
+| juniper-recurrence | #235 -> `e150add6` | all four lanes notice |
+| juniper-harcot | #23 -> `6e5e4bd2` | notice |
+
+How these PRs merged:
+- **None was merged by the session or its agents.** Auto-merge was armed from the `pcalnon` account (the owner's PR
+  sweeper; see memory `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`). The same account
+  re-armed #2575 after the session had disarmed it to honour a peer's merge hold.
+- **harcot#23 merged before its checks finished.** That private repo enforces no rules. Its checks then passed on the
+  merged head, and so did `main`.
+- **The squash merges reorder the commit trailers.** GitHub moves `Co-authored-by` into its own final paragraph.
+- **Phase-2 findings** are unchanged by the fix, and now readable from each leg's warning: h5py (ml, cascor, canopy)
+  and dill's `co_lnotab` (cascor-model).
 
 ## Remaining work
 
