@@ -1,0 +1,131 @@
+---
+# conf/python_versions.yaml -- the Juniper ecosystem's Python version list, and the recipe
+# util/python_version_check.py runs for each repo.
+#
+# Project:     juniper-ml
+# Author:      Paul Calnon (authored via Claude Code)
+# Created:     2026-11-15
+# Related:     util/python_version_check.py (reads this file); tests/test_python_version_check.py;
+#              tests/test_python_version_matrix_drift.py (holds CI's matrices to these lists);
+#              juniper-ml#2567 (the CI half: informational Python 3.15 legs)
+#
+# Owner ruling, 2026-11-14 (phase 1 of the Python 3.15 migration): 3.12, 3.13 and 3.14 are
+# BLOCKING; 3.15 is INFORMATIONAL -- its checks report results and block no commit, merge or
+# deployment. Every Python-version matrix in juniper-ml's own workflows (ci.yml's `tests` job and
+# the six ci-<pkg>.yml `test` jobs; pre-commit is exempt) runs each informational version as an
+# `include` entry with `experimental: true`, under the job-level
+# `continue-on-error: ${{ matrix.experimental == true }}`, and never in its plain version list.
+# tests/test_python_version_matrix_drift.py fails when a matrix and these lists disagree, so moving
+# a version between the lists here and in the workflows is one change.
+#
+# A version is a QUOTED string: YAML reads an unquoted 3.10 as the float 3.1.
+schema: 1
+blocking: ["3.12", "3.13", "3.14"]
+informational: ["3.15"]
+
+# One recipe per repo. For each repo and version, util/python_version_check.py builds a venv at the
+# FIXED path {root}/{repo}/tmp/pyvenv/py{version}/ ({root} is JUNIPER_ROOT, so that is the primary
+# checkout's gitignored tmp/) from /usr/bin/python{version}, else python{version} on PATH. It then
+# runs each `install` command in order, and each `test` command (name: command), from the checkout's
+# root with `bash -e -o pipefail -c`. The venv's bin/ is first on PATH and VIRTUAL_ENV names the
+# venv, so `python` and `pip` are the venv's. TMPDIR is the repo's tmp/, and PYTHONPATH, PYTHONHOME
+# and each `env_unset` name are removed.
+#
+# The commands are the repo's own: `install` is its CI's install step (.github/workflows/ci.yml,
+# "Install dependencies"), and `test` is its existing local wrapper. Change them together.
+repos:
+  juniper-canopy:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      - python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - python -m pip install -e ".[test,juniper-cascor,observability]"
+      - python -m pip install "h5py>=3.0"
+    test:
+      # The Makefile's `test` target runs $(PYTEST) (unit, integration and regression; the
+      # Playwright UI suite is excluded by the pytest config).
+      test: make test PYTEST="$VIRTUAL_ENV/bin/python -m pytest"
+
+  juniper-cascor:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      - python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - python -m pip install "juniper-data-client @ git+https://github.com/pcalnon/juniper-data-client.git@main" || true
+      - python -m pip install -e ".[all]"
+    test:
+      coverage: bash util/run_coverage.bash
+    # Six unit tests assert this variable's UNSET fallback, so a session that sets it to keep logs
+    # out of the tree would see them fail under every interpreter.
+    env_unset: [JUNIPER_CASCOR_LOG_DIR]
+
+  juniper-cascor-client:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      - python -m pip install -e ".[test]"
+    test:
+      coverage: bash util/run_coverage.bash
+
+  juniper-cascor-worker:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      # CI pins torch to the image's ARG TORCH_VERSION; read it the same way.
+      - python -m pip install "torch==$(sed -n 's/^ARG TORCH_VERSION=//p' Dockerfile)+cpu" --index-url https://download.pytorch.org/whl/cpu
+      - python -m pip install -e ".[test]"
+      # util/run_coverage.bash runs the per-file gate only when juniper-coverage-gap-map is installed.
+      - python -m pip install "juniper-ci-tools>=0.9.0,<0.10.0"
+    test:
+      coverage: bash util/run_coverage.bash
+
+  juniper-data:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      - python -m pip install "juniper-data-client @ git+https://github.com/pcalnon/juniper-data-client.git@main"
+      - python -m pip install -e ".[all]"
+      # util/run_coverage.bash exits 2 without juniper-coverage-gap-map.
+      - python -m pip install "juniper-ci-tools>=0.9.0,<0.10.0"
+    test:
+      coverage: bash util/run_coverage.bash
+
+  juniper-data-client:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      - python -m pip install -e ".[test]"
+    test:
+      coverage: bash util/run_coverage.bash
+
+  juniper-deploy:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      - python -m pip install -r requirements-test.txt
+    test:
+      # CI's `Unit Tests` command. `make test` runs the live-stack suite in Docker on
+      # python:3.12-slim, so it never sees the venv.
+      unit: pytest tests/ -v --tb=short
+
+  juniper-harcot:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      - python -m pip install -e ".[test]"
+    test:
+      coverage: PYTHON="$VIRTUAL_ENV/bin/python" bash util/run_coverage.bash
+
+  juniper-ml:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      # Exactly the requirements of ci.yml's `tests` job, "Install test dependencies";
+      # tests/test_python_version_matrix_drift.py fails when the two differ.
+      - python -m pip install "pyyaml>=6.0" "packaging>=22.0" "juniper-ci-tools>=0.9.0,<0.10.0" "numpy>=1.26" "matplotlib>=3.8" "h5py>=3.11" "setuptools>=68" wheel "cryptography>=44.0.1"
+    test:
+      # Every suite of ci.yml's "Run Python regression tests" step, past failures.
+      regression: python util/ad-hoc/2026-11-15_run_ci_regression_list_locally.py --python "$VIRTUAL_ENV/bin/python"
+
+  juniper-recurrence:
+    install:
+      - python -m pip install --upgrade "pip>=26.1.1"
+      # One venv for the repo: the three packages editable, so the app resolves the checkout's model.
+      - python -m pip install -e "./juniper-recurrence-model[test]" -e "./juniper-recurrence-client[test]" -e "./juniper-recurrence[test,observability,bench]"
+    test:
+      # AGENTS.md § Testing: each package from its own subdirectory, the bench from the repo root.
+      model: cd juniper-recurrence-model && python -m pytest
+      client: cd juniper-recurrence-client && python -m pytest
+      app: cd juniper-recurrence && python -m pytest
+      bench: python -m pytest bench/
