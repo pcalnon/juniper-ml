@@ -4,8 +4,8 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.2.4
-**Last Updated**: 2026-10-26
+**Version**: 1.2.5
+**Last Updated**: 2026-11-15
 
 ---
 
@@ -373,6 +373,29 @@ alone rather than invent an ungated rewrite. If a repo ever gates prose, that is
 Hermetic coverage: `tests/test_release_train_propose.py` (`AgentsTableVersionHelperTest` +
 `BuildProposalAgentsTableTest`, juniper-ml#851 — a table-bearing sibling fixture mirroring the real
 recurrence shape).
+
+#### Gate 1 review: `docs/REFERENCE.md` release sites (juniper-ml#2507)
+
+juniper-ml#2507's tests (`ReferenceCompatibilityMatrixTest` in `tests/test_pyproject_extras.py`) pin four
+`docs/REFERENCE.md` sites to the root `pyproject.toml`: the Package Overview **Version** cell, the
+"`juniper-ml` X.Y.Z declares the following pins" sentence, the Ecosystem Compatibility matrix's current-series
+row and the `[recurrence]` "sets them to" clause. `propose.py` step 5b-v renders them for every in-repo proposal
+(`apply_reference_compat_cochanges`), in the one `docs/REFERENCE.md` file edit, and `_reference_compat_items`
+writes up to three checklist lines:
+
+| Signal in the proposal PR | Meaning | Operator action |
+|---|---|---|
+| `docs/REFERENCE.md release sites (included in this PR)` | The train moved the named sites. On the meta's own bump: the Version cell, the sentence and the clause, plus a new `0.N.x` row on a minor (the older rows are not touched) or, on a patch that moves a cell, the series row in place. On a sub-package bump: a cell its escaping pin moved, or a site a drifted REFERENCE left stale | Merge when the rest looks right |
+| `docs/REFERENCE.md release sites (REQUIRED -- ...)` | A site is absent or doubled, or cannot be rendered from `pyproject.toml` (an unpinned or conflicting column, a series row of the wrong width, a newer series, a version that is not N.N.N). The train left it byte-untouched. On the meta's own bump the line names every such site; on a sub-package bump it names only the series row, and only when that package's escaping pin moved | Edit the named site by hand in the same PR; `ReferenceCompatibilityMatrixTest` stays red until then |
+| `docs/REFERENCE.md "Ecosystem Compatibility" prose (REVIEW by hand in this PR)` | The paragraph's history is prose no gate reads. The line names what to check: a clause renamed to this release (words after its pins, such as ": it raises ...", now describe it), a row moved in place, replaced `[recurrence]` pins, and on a minor the previous series' row | Reword the history in the same PR. On a minor, if a PR since the previous series' last release rewrote that row in place, restore the pins that series' last release published: a patch rewrites its series' row in place, so the row as it stood at that release's tag holds them (`git show v<that release>:docs/REFERENCE.md`) |
+
+A floor raise between releases (a column or a `[recurrence]` pin) fails `ReferenceCompatibilityMatrixTest` until
+its own PR rewrites the current series' row or the clause's pins, so the meta's next proposal finds those sites
+current; the REVIEW line's notes are then the only prompt. They name no sentence the raise itself wrote into the
+paragraph (which cell is ahead of the published release, which release will publish it): the proposal renames
+the release in the "declares" sentence and in the clause and leaves every other word as it is, so read the whole
+paragraph at Gate 1. Hermetic coverage: `tests/test_release_train_propose.py` (`ReferenceCompatHelperTest` +
+`BuildProposalReferenceCompatTest`).
 
 #### Gate 1 — Phase 4.2 dependency order + consumer ceiling-bump follow-ons
 

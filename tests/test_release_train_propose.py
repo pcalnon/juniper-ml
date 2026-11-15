@@ -28,6 +28,14 @@ Covers (task acceptance list):
     its lead-in (the ml#2306 class), an escaping in-repo bump moves the package's split-column row in
     the SAME README edit as the extras table, and both editors are read back through the gate's own
     parsers on the live README
+  * docs/REFERENCE.md's four release sites (step 5b-v; juniper-ml#2507's tests,
+    ``ReferenceCompatibilityMatrixTest`` in tests/test_pyproject_extras.py, pin them): the Package Overview
+    **Version** cell, the "declares the following pins" sentence, the current series' matrix row and the
+    [recurrence] "sets them to" clause. A patch rewrites its series' row in place, a new minor ADDS a row and
+    never touches the previous series' (the REVIEW line names it), an escaping pin with a matrix column moves
+    its cell in the one REFERENCE edit, an absent or doubled site is never invented or guessed at (REQUIRED
+    on the meta's own bump; for a sub-package, only a row its moved pin could not reach), a moved clause is
+    named for review, and every anchor is found in the live file
 
 ``util/`` is not pre-commit-lint-gated, so this unittest IS the gate (the ``env_floor_drift_check``
 precedent, shared with ``detect.py``). Imported via the house ``sys.path.insert`` idiom.
@@ -307,6 +315,86 @@ _META_REFERENCE = textwrap.dedent("""\
 
     | **Meta pin**          | `juniper-service-core>=0.2.0,<0.5.0` under `[tools]` / `[all]`            |
     """)
+
+
+# docs/REFERENCE.md's four RELEASE sites -- the ones juniper-ml#2507's tests (ReferenceCompatibilityMatrixTest) pin to
+# pyproject.toml -- trimmed from the live file: the Package Overview **Version** cell (beside the **PyPI Name**
+# row, with a prose **Version** mention below; neither is a candidate), the split-column extras table, and the
+# "Ecosystem Compatibility" paragraph (its "declares the following pins" sentence, its "sets them to" clause
+# and the "published" history after it) above a two-series matrix, then an unrelated table under the next
+# heading. The pins mirror _COMPAT_PYPROJECT, so the file is consistent at 0.6.0.
+_COMPAT_REFERENCE = textwrap.dedent("""\
+    # Reference
+
+    ## Package Overview
+
+    | Field                  | Value        |
+    |------------------------|--------------|
+    | **PyPI Name**          | `juniper-ml` |
+    | **Version**            | `0.6.0`      |
+    | **Python**             | `>=3.12`     |
+
+    The train rewrites the **Version** cell above; this prose mention is not a cell.
+
+    ## Extras Reference
+
+    ### Available Extras
+
+    | Extra        | Packages Installed          | Min Version       |
+    |--------------|-----------------------------|-------------------|
+    | `tools`      | `juniper-service-core`      | `>=0.2.0,<0.5.0`  |
+    |              | `juniper-doc-tools`         | `>=0.1.0,<0.2.0`  |
+    |              | `juniper-observability`     | `>=0.2.0`         |
+    | `doc-tools`  | `juniper-doc-tools` (alias) | `>=0.1.0,<0.2.0`  |
+    | `recurrence` | `juniper-recurrence-model`  | `>=0.1.5,<0.3.0`  |
+    |              | `juniper-recurrence`        | `>=0.2.0,<0.5.0`  |
+
+    ## Ecosystem Compatibility
+
+    `juniper-ml` 0.6.0 declares the following pins. The `0.5.x` row is kept for history. The two `recurrence` pins have no columns here. 0.6.0 sets them to `juniper-recurrence-model>=0.1.5,<0.3.0` and `juniper-recurrence>=0.2.0,<0.5.0` (see the extras table above). 0.5.0 published `juniper-recurrence-model>=0.1.0,<0.2.0` and `juniper-recurrence>=0.1.0,<0.2.0`.
+
+    | juniper-ml | juniper-doc-tools  | juniper-observability |
+    |------------|--------------------|-----------------------|
+    | 0.5.x      | >=0.1.0,<0.2.0     | >=0.1.0               |
+    | 0.6.x      | >=0.1.0,<0.2.0     | >=0.2.0               |
+
+    ### Service Ports
+
+    | Service      | Port |
+    |--------------|------|
+    | juniper-data | 8100 |
+    """)
+
+# The meta pyproject.toml _COMPAT_REFERENCE is consistent with: doc-tools in two extras (the same spec, so one
+# matrix cell), a floor-only column (observability), a pin with no column (service-core), two [recurrence] pins
+# (no columns either), and [all]'s self-reference.
+_COMPAT_PYPROJECT = textwrap.dedent("""\
+    [project]
+    name = "juniper-ml"
+    version = "0.6.0"
+    dependencies = []
+
+    [project.optional-dependencies]
+    tools = [
+        "juniper-service-core>=0.2.0,<0.5.0",
+        "juniper-doc-tools>=0.1.0,<0.2.0",
+        "juniper-observability>=0.2.0",
+    ]
+    doc-tools = [
+        "juniper-doc-tools>=0.1.0,<0.2.0",
+    ]
+    recurrence = [
+        "juniper-recurrence-model>=0.1.5,<0.3.0",
+        "juniper-recurrence>=0.2.0,<0.5.0",
+    ]
+    all = [
+        "juniper-ml[tools,doc-tools,recurrence]",
+    ]
+    """)
+
+_COMPAT_SPECS = {"juniper-service-core": ">=0.2.0,<0.5.0", "juniper-doc-tools": ">=0.1.0,<0.2.0", "juniper-observability": ">=0.2.0"}
+_COMPAT_ROW_05 = "| 0.5.x      | >=0.1.0,<0.2.0     | >=0.1.0               |\n"
+_COMPAT_ROW_06 = "| 0.6.x      | >=0.1.0,<0.2.0     | >=0.2.0               |\n"
 
 
 def _write_meta_surface(repo_root: Path) -> None:
@@ -1745,6 +1833,7 @@ class BuildProposalConsumerPinTest(unittest.TestCase):
         self.assertIn("Consumer-pin co-changes", prop.pr_body or "")
         self.assertIn("`[tools]`: `juniper-service-core>=0.2.0,<0.5.0` -> `juniper-service-core>=0.2.0,<0.6.0`", prop.pr_body or "")
         self.assertTrue(any("In-repo meta consumer pin" in item for item in prop.co_change_checklist))
+        self.assertEqual([item for item in prop.co_change_checklist if "release sites (REQUIRED" in item], [], "a sub-package bump owes none of the meta's release sites")
 
     def test_doc_tools_bump_updates_both_extras(self):
         _write_pkg(self.repo_root, "juniper-doc-tools/", name="juniper-doc-tools", version="0.1.5", changelog=_CHANGELOG)
@@ -1818,8 +1907,10 @@ class BuildProposalConsumerPinTest(unittest.TestCase):
         self.assertEqual(len(changed), 2, f"only the lead-in moves on the meta's own bump: {changed}")
         self.assertIn("- `README.md`", prop.pr_body or "")  # listed under "Files changed in this proposal"
         self.assertTrue(any("README.md" in item and "lead-in" in item and "included in this PR" in item for item in prop.co_change_checklist))
-        # REFERENCE's release sentence and matrix row stay manual, so the checklist says so
-        self.assertTrue(any("docs/REFERENCE.md" in item and "NOT edited by the train" in item for item in prop.co_change_checklist))
+        # This fixture's REFERENCE carries none of the four release sites, so the train edits none of them and
+        # flags all four REQUIRED rather than invent one (BuildProposalReferenceCompatTest has a REFERENCE that does)
+        self.assertIsNone(self._edit(prop, "docs/REFERENCE.md"))
+        self.assertTrue(any("docs/REFERENCE.md release sites (REQUIRED" in item and "**Version** cell" in item and "sets them to" in item for item in prop.co_change_checklist))
 
     def test_meta_self_bump_readme_lead_in_already_at_target_is_silent_success(self):
         (self.repo_root / "README.md").write_text(_META_README.replace("`juniper-ml` 0.6.0:", "`juniper-ml` 0.7.0:"))
@@ -1863,6 +1954,418 @@ class BuildProposalConsumerPinTest(unittest.TestCase):
         consumers = {e["consumer"] for e in edges}
         self.assertNotIn("juniper-ml", consumers)  # folded into the same PR
         self.assertIn("juniper-recurrence", consumers)  # cross-repo follow-on remains
+
+
+def _changed(old: str, new: str) -> list:
+    return [ln for ln in difflib.ndiff(old.splitlines(), new.splitlines()) if ln.startswith(("- ", "+ "))]
+
+
+class ReferenceCompatHelperTest(unittest.TestCase):
+    """The four docs/REFERENCE.md release-site helpers (step 5b-v), on ``_COMPAT_REFERENCE`` and the live file.
+
+    Each 0.11.x cut rewrote whichever of these four sites moved with a one-off script, and juniper-ml#2507's
+    tests (ReferenceCompatibilityMatrixTest in tests/test_pyproject_extras.py) pin them to pyproject.toml. Each
+    helper keeps the ``set_agents_version`` contract: an absent or doubled anchor returns the text untouched
+    with ``old=None``, never a half-edit."""
+
+    # -- 1. the Package Overview **Version** cell
+
+    def test_version_cell_moves_only_the_version_and_keeps_the_width(self):
+        out, old = pr.set_reference_version_cell(_COMPAT_REFERENCE, "0.7.0")
+        self.assertEqual(old, "0.6.0")
+        self.assertIn("| **Version**            | `0.7.0`      |\n", out)
+        self.assertEqual(_changed(_COMPAT_REFERENCE, out), ["- | **Version**            | `0.6.0`      |", "+ | **Version**            | `0.7.0`      |"])
+        self.assertIn("this prose mention is not a cell", out)
+
+    def test_version_cell_widens_only_a_cell_too_narrow_for_the_version(self):
+        out, old = pr.set_reference_version_cell("| **Version** | `0.6.0` |\n", "0.10.10")
+        self.assertEqual((out, old), ("| **Version** | `0.10.10` |\n", "0.6.0"))
+
+    def test_version_cell_already_current_is_untouched(self):
+        self.assertEqual(pr.set_reference_version_cell(_COMPAT_REFERENCE, "0.6.0"), (_COMPAT_REFERENCE, "0.6.0"))
+
+    def test_version_cell_never_invents_or_guesses(self):
+        prose = "The **Version** is `0.6.0`.\n"
+        self.assertEqual(pr.set_reference_version_cell(prose, "0.7.0"), (prose, None))
+        twice = _COMPAT_REFERENCE + "\n| **Version**            | `0.5.0`      |\n"
+        self.assertEqual(pr.set_reference_version_cell(twice, "0.7.0"), (twice, None), "two cells: never guess which one is the release")
+        indented = "  | **Version** | `0.6.0` |\n"
+        self.assertEqual(pr.set_reference_version_cell(indented, "0.7.0"), (indented, None), "the gate anchors the row at column 0")
+        annotated = "| **Version** | `0.6.0` (pre-release) |\n"
+        self.assertEqual(pr.set_reference_version_cell(annotated, "0.7.0"), (annotated, None), "a cell holding text beside its backticked version is not the gate's cell")
+
+    # -- 2. the "declares the following pins" sentence
+
+    def test_declares_sentence_moves_only_its_version(self):
+        out, old = pr.set_reference_declares_version(_COMPAT_REFERENCE, "0.7.0")
+        self.assertEqual(old, "0.6.0")
+        self.assertIn("`juniper-ml` 0.7.0 declares the following pins. The `0.5.x` row", out)
+        self.assertIn("0.6.0 sets them to `juniper-recurrence-model", out, "the clause is the clause helper's, not this one's")
+        self.assertEqual(len(_changed(_COMPAT_REFERENCE, out)), 2)
+
+    def test_declares_sentence_absent_or_doubled_is_untouched(self):
+        self.assertEqual(pr.set_reference_declares_version("No sentence here.\n", "0.7.0"), ("No sentence here.\n", None))
+        twice = "`juniper-ml` 0.6.0 declares the following pins.\n`juniper-ml` 0.5.0 declares the following pins.\n"
+        self.assertEqual(pr.set_reference_declares_version(twice, "0.7.0"), (twice, None))
+        no_period = "`juniper-ml` 0.6.0 declares the following pins:\n"
+        self.assertEqual(pr.set_reference_declares_version(no_period, "0.7.0"), (no_period, None), "the gate reads the sentence only with its period")
+
+    # -- 4. the [recurrence] "sets them to" clause
+
+    def test_recurrence_clause_rewrites_the_release_and_pins_and_keeps_the_history(self):
+        pins = ["juniper-recurrence-model>=0.3.0,<0.4.0", "juniper-recurrence>=0.5.0,<0.6.0"]
+        out, old = pr.set_reference_recurrence_clause(_COMPAT_REFERENCE, "0.7.0", pins)
+        self.assertEqual(old, ["juniper-recurrence-model>=0.1.5,<0.3.0", "juniper-recurrence>=0.2.0,<0.5.0"])
+        self.assertIn("0.7.0 sets them to `juniper-recurrence-model>=0.3.0,<0.4.0` and `juniper-recurrence>=0.5.0,<0.6.0` (see the extras table above).", out)
+        self.assertIn("0.5.0 published `juniper-recurrence-model>=0.1.0,<0.2.0` and `juniper-recurrence>=0.1.0,<0.2.0`.", out)
+        self.assertIn("`juniper-ml` 0.6.0 declares", out, "the sentence is the declares helper's, not this one's")
+
+    def test_recurrence_clause_joins_pins_as_the_paragraph_does(self):
+        self.assertEqual(pr._join_backticked(["a"]), "`a`")
+        self.assertEqual(pr._join_backticked(["a", "b"]), "`a` and `b`")
+        self.assertEqual(pr._join_backticked(["a", "b", "c"]), "`a`, `b` and `c`")
+
+    def test_recurrence_clause_refuses_what_the_gate_could_not_read(self):
+        pins = ["juniper-recurrence>=0.5.0,<0.6.0"]
+        self.assertEqual(pr.set_reference_recurrence_clause(_COMPAT_REFERENCE, "0.7.0", []), (_COMPAT_REFERENCE, None))
+        self.assertEqual(pr.set_reference_recurrence_clause(_COMPAT_REFERENCE, "0.7.0", ["juniper-recurrence~=0.5"]), (_COMPAT_REFERENCE, None))
+        self.assertEqual(pr.set_reference_recurrence_clause(_COMPAT_REFERENCE, "0.7.0", [*pins, "juniper-recurrence-model~=0.3"]), (_COMPAT_REFERENCE, None), "one unreadable pin refuses the whole clause")
+        plural = "0.11.0 through 0.11.3 set them to `juniper-recurrence>=0.8.0,<0.9.0`.\n"
+        self.assertEqual(pr.set_reference_recurrence_clause(plural, "0.11.4", pins), (plural, None), "only the singular clause names this release")
+        twice = "0.6.0 sets them to `juniper-recurrence>=0.2.0`. 0.5.0 sets them to `juniper-recurrence>=0.1.0`.\n"
+        self.assertEqual(pr.set_reference_recurrence_clause(twice, "0.7.0", pins), (twice, None))
+
+    # -- 3. the matrix row of the current series
+
+    def test_matrix_patch_with_no_floor_move_is_current(self):
+        self.assertEqual(pr.set_reference_matrix_row(_COMPAT_REFERENCE, "0.6.1", _COMPAT_SPECS), (_COMPAT_REFERENCE, "current"))
+
+    def test_matrix_patch_that_moves_a_floor_rewrites_the_series_row_in_place(self):
+        out, status = pr.set_reference_matrix_row(_COMPAT_REFERENCE, "0.6.1", dict(_COMPAT_SPECS, **{"juniper-observability": ">=0.3.0"}))
+        self.assertEqual(status, "edited")
+        self.assertEqual(_changed(_COMPAT_REFERENCE, out), ["- " + _COMPAT_ROW_06.rstrip("\n"), "+ | 0.6.x      | >=0.1.0,<0.2.0     | >=0.3.0               |"])
+
+    def test_matrix_new_minor_adds_a_row_and_never_rewrites_the_previous_series(self):
+        """The series rule (#1991; the 0.11.0 cut, #2306): the 0.6.x row describes published releases."""
+        out, status = pr.set_reference_matrix_row(_COMPAT_REFERENCE, "0.7.0", dict(_COMPAT_SPECS, **{"juniper-doc-tools": ">=0.1.0,<0.3.0"}))
+        self.assertEqual(status, "added")
+        self.assertIn(_COMPAT_ROW_05 + _COMPAT_ROW_06 + "| 0.7.x      | >=0.1.0,<0.3.0     | >=0.2.0               |\n\n### Service Ports", out)
+        self.assertEqual(len(_changed(_COMPAT_REFERENCE, out)), 1, "one row added, nothing rewritten")
+
+    def test_matrix_new_row_widens_only_a_cell_too_narrow_for_its_spec(self):
+        out, status = pr.set_reference_matrix_row(_COMPAT_REFERENCE, "0.7.0", dict(_COMPAT_SPECS, **{"juniper-observability": ">=0.20.0,<0.21.0,!=0.20.3"}))
+        self.assertEqual(status, "added")
+        self.assertIn("| 0.7.x      | >=0.1.0,<0.2.0     | >=0.20.0,<0.21.0,!=0.20.3 |\n", out)
+
+    def test_matrix_never_guesses(self):
+        cases = {
+            "a column pyproject does not pin": (_COMPAT_REFERENCE, "0.6.1", {"juniper-doc-tools": ">=0.1.0,<0.2.0"}),
+            "a column two extras pin differently": (_COMPAT_REFERENCE, "0.6.1", dict(_COMPAT_SPECS, **{"juniper-doc-tools": None})),
+            "a version that is not N.N.N": (_COMPAT_REFERENCE, "0.7.0rc1", _COMPAT_SPECS),
+            "two rows for the series": (_COMPAT_REFERENCE.replace(_COMPAT_ROW_06, _COMPAT_ROW_06 * 2), "0.6.1", dict(_COMPAT_SPECS, **{"juniper-observability": ">=0.3.0"})),
+            "a series row of the wrong width": (_COMPAT_REFERENCE.replace(_COMPAT_ROW_06, "| 0.6.x      | >=0.1.0,<0.2.0     |\n"), "0.6.1", dict(_COMPAT_SPECS, **{"juniper-observability": ">=0.3.0"})),
+            "a series row wider than the header": (_COMPAT_REFERENCE.replace(_COMPAT_ROW_06, _COMPAT_ROW_06.rstrip("\n") + " extra |\n"), "0.6.1", dict(_COMPAT_SPECS, **{"juniper-observability": ">=0.3.0"})),
+            "a newer series already in the table": (_COMPAT_REFERENCE.replace(_COMPAT_ROW_06, _COMPAT_ROW_06 + "| 0.8.x      | >=0.1.0,<0.2.0     | >=0.2.0               |\n"), "0.7.0", _COMPAT_SPECS),
+            "a row label that is not N.N.x": (_COMPAT_REFERENCE.replace("| 0.5.x      |", "| legacy     |"), "0.7.0", _COMPAT_SPECS),
+            "a header row that does not close": (_COMPAT_REFERENCE.replace("| juniper-observability |\n|---", "| juniper-observability\n|---"), "0.7.0", _COMPAT_SPECS),
+        }
+        for name, (text, version, specs) in cases.items():
+            with self.subTest(name):
+                self.assertEqual(pr.set_reference_matrix_row(text, version, specs), (text, "unexpected"))
+
+    def test_matrix_outside_its_section_is_absent(self):
+        text = "## Other\n\n| juniper-ml | juniper-doc-tools |\n|------------|-------------------|\n| 0.6.x      | >=0.1.0           |\n"
+        self.assertEqual(pr.set_reference_matrix_row(text, "0.7.0", _COMPAT_SPECS), (text, "absent"), "a juniper-ml table under another heading is not the matrix")
+        no_separator = "## Ecosystem Compatibility\n\n| juniper-ml | juniper-doc-tools |\n| 0.6.x      | >=0.1.0           |\n"
+        self.assertEqual(pr.set_reference_matrix_row(no_separator, "0.7.0", _COMPAT_SPECS), (no_separator, "absent"))
+        later = "## Ecosystem Compatibility\n\nNo matrix here.\n\n## Other\n\n" + text.split("\n\n", 1)[1]
+        self.assertEqual(pr.set_reference_matrix_row(later, "0.7.0", _COMPAT_SPECS), (later, "absent"), "the next heading closes the section")
+
+    def test_matrix_decoy_table_before_the_section_is_never_edited(self):
+        decoy = "## Other\n\n| juniper-ml | juniper-doc-tools  | juniper-observability |\n|---|---|---|\n| 0.6.x | old | old |\n\n"
+        out, status = pr.set_reference_matrix_row(decoy + _COMPAT_REFERENCE, "0.7.0", _COMPAT_SPECS)
+        self.assertEqual(status, "added")
+        self.assertTrue(out.startswith(decoy), "the decoy above the section moved")
+
+    # -- the pyproject facts and the composer
+
+    def test_meta_reference_pins_reads_specs_and_recurrence_from_pyproject(self):
+        text = _COMPAT_PYPROJECT.replace('"juniper-observability>=0.2.0",', '"juniper-observability>=0.2.0",\n    "juniper-canopy[juniper-cascor,juniper-data]>=0.9.0",')
+        version, specs, recurrence = pr.meta_reference_pins(text)
+        self.assertEqual(version, "0.6.0")
+        expected = dict(_COMPAT_SPECS, **{"juniper-canopy": ">=0.9.0", "juniper-recurrence-model": ">=0.1.5,<0.3.0", "juniper-recurrence": ">=0.2.0,<0.5.0"})
+        self.assertEqual(specs, expected, "every extra but [all]; extras marker dropped; [all]'s self-reference skipped")
+        self.assertEqual(recurrence, ["juniper-recurrence-model>=0.1.5,<0.3.0", "juniper-recurrence>=0.2.0,<0.5.0"], "file order")
+        clash = _COMPAT_PYPROJECT.replace('doc-tools = [\n    "juniper-doc-tools>=0.1.0,<0.2.0"', 'doc-tools = [\n    "juniper-doc-tools>=0.1.0,<0.3.0"')
+        self.assertIsNone(pr.meta_reference_pins(clash)[1]["juniper-doc-tools"], "two extras that disagree have no one cell")
+        direct_all = _COMPAT_PYPROJECT.replace('"juniper-ml[tools,doc-tools,recurrence]",', '"juniper-ml[tools,doc-tools,recurrence]",\n    "juniper-doc-tools>=9.9.9",')
+        self.assertEqual(pr.meta_reference_pins(direct_all)[1]["juniper-doc-tools"], ">=0.1.0,<0.2.0", "[all] is never a column's source, as in the gate")
+        self.assertEqual(pr.meta_reference_pins("not = [toml"), (None, {}, []))
+
+    def test_composer_renders_all_four_sites_from_the_pyproject(self):
+        pyproject = _COMPAT_PYPROJECT.replace('version = "0.6.0"', 'version = "0.7.0"').replace("juniper-recurrence>=0.2.0,<0.5.0", "juniper-recurrence>=0.5.0,<0.6.0")
+        out, report = pr.apply_reference_compat_cochanges(_COMPAT_REFERENCE, pyproject)
+        self.assertEqual({k: report[k] for k in ("version_cell", "declares", "matrix_row", "recurrence", "series")}, {"version_cell": "edited", "declares": "edited", "matrix_row": "added", "recurrence": "edited", "series": "0.7.x"})
+        self.assertTrue(report["recurrence_moved"])
+        self.assertEqual(report["recurrence_old"], ["juniper-recurrence-model>=0.1.5,<0.3.0", "juniper-recurrence>=0.2.0,<0.5.0"])
+        self.assertIn("| **Version**            | `0.7.0`      |", out)
+        self.assertIn("`juniper-ml` 0.7.0 declares the following pins.", out)
+        self.assertIn("0.7.0 sets them to `juniper-recurrence-model>=0.1.5,<0.3.0` and `juniper-recurrence>=0.5.0,<0.6.0`", out)
+        self.assertIn(_COMPAT_ROW_06 + "| 0.7.x      |", out)
+
+    def test_composer_reports_the_cells_an_in_place_edit_moved(self):
+        pyproject = _COMPAT_PYPROJECT.replace('version = "0.6.0"', 'version = "0.6.1"').replace("juniper-observability>=0.2.0", "juniper-observability>=0.3.0")
+        _, report = pr.apply_reference_compat_cochanges(_COMPAT_REFERENCE, pyproject)
+        self.assertEqual((report["matrix_row"], report["moved"], report["recurrence_moved"]), ("edited", ["juniper-observability: >=0.2.0 -> >=0.3.0"], False))
+
+    def test_composer_on_a_current_reference_is_a_no_op(self):
+        out, report = pr.apply_reference_compat_cochanges(_COMPAT_REFERENCE, _COMPAT_PYPROJECT)
+        self.assertEqual(out, _COMPAT_REFERENCE)
+        self.assertEqual({report[k] for k in ("version_cell", "declares", "matrix_row", "recurrence")}, {"current"})
+        self.assertEqual(pr.apply_reference_compat_cochanges(_COMPAT_REFERENCE, "not = [toml"), (_COMPAT_REFERENCE, pr._reference_compat_report()))
+
+    def _assert_the_next_minor_moves_only_the_release_sites(self, reference: str, pyproject: str) -> int:
+        """Move ``pyproject`` to its next minor and render ``reference`` from it: all four sites must move, only
+        the lines that hold a site may be rewritten (each once), and one series row is added. Checked per SITE,
+        never as a count of physical lines. -> how many distinct lines held the three rewritten sites."""
+        version = tomllib.loads(pyproject)["project"]["version"]
+        major, minor, _ = (int(part) for part in version.split("."))
+        bumped = pyproject.replace(f'version = "{version}"', f'version = "{major}.{minor + 1}.0"', 1)
+        out, report = pr.apply_reference_compat_cochanges(reference, bumped)
+        self.assertEqual({k: report[k] for k in ("version_cell", "declares", "matrix_row", "recurrence")}, {"version_cell": "edited", "declares": "edited", "matrix_row": "added", "recurrence": "edited"}, report)
+        before = reference.splitlines()
+        holders = {
+            "the **Version** cell": [ln for ln in before if ln.startswith("| **Version**") and f"`{version}`" in ln],
+            'the "declares" sentence': [ln for ln in before if pr._REFERENCE_DECLARES.search(ln)],
+            'the "sets them to" clause': [ln for ln in before if pr._REFERENCE_SETS_THEM.search(ln)],
+        }
+        self.assertEqual({site: len(held) for site, held in holders.items()}, dict.fromkeys(holders, 1), "docs/REFERENCE.md: each rewritten site must sit on exactly one line")
+        site_lines = {held[0] for held in holders.values()}
+        changed = _changed(reference, out)
+        self.assertEqual(sorted(ln[2:] for ln in changed if ln.startswith("- ")), sorted(site_lines), "only the lines that hold a release site are rewritten")
+        added = [ln[2:] for ln in changed if ln.startswith("+ ")]
+        self.assertEqual(len(added), len(site_lines) + 1, "each site line rewritten once, and one series row added")
+        self.assertEqual(sum(ln.startswith(f"| {major}.{minor + 1}.x ") for ln in added), 1, "the one added line is the new series' row")
+        return len(site_lines)
+
+    def test_helpers_find_every_site_in_the_live_reference(self):
+        """Positive control on the live files, against the vacuous pass: a no-op helper, or an anchor that stopped
+        matching docs/REFERENCE.md, satisfies every 'untouched' assertion above. Moving the live pyproject to its next
+        minor must move all four live sites -- three rewritten, one series row added.
+
+        The control must not depend on the paragraph's layout. The sentence and the clause may share one physical
+        line (two lines rewritten) or be parted by a paragraph break, which neither the gate nor propose.py minds
+        and the checklist's own REVIEW line invites ("move them into the history"): three lines rewritten. Both
+        layouts are run here, the second built from the live file by parting the clause from the sentence."""
+        reference = (REPO_ROOT / "docs" / "REFERENCE.md").read_text(encoding="utf-8")
+        pyproject = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        self.assertTrue(any(pr._REFERENCE_COMPAT_HEADING.match(ln.strip()) for ln in reference.splitlines()), "docs/REFERENCE.md: 'Ecosystem Compatibility' anchor matches nothing")
+        self.assertIn(self._assert_the_next_minor_moves_only_the_release_sites(reference, pyproject), (2, 3), "the cell's line, and the sentence and the clause on one line or on two")
+        clause = pr._REFERENCE_SETS_THEM.search(reference)
+        parted = reference[: clause.start()].rstrip(" ") + "\n\n" + reference[clause.start() :]
+        self.assertEqual(self._assert_the_next_minor_moves_only_the_release_sites(parted, pyproject), 3, "a paragraph break between the sentence and the clause: three lines, and the control still holds")
+
+
+class BuildProposalReferenceCompatTest(unittest.TestCase):
+    """docs/REFERENCE.md's four release sites through build_proposal (step 5b-v): the meta's own patch and minor
+    bumps, a bump after a hand [recurrence] floor raise, and in-repo sub-package bumps with and without a matrix
+    column. A synthetic tree with _COMPAT_REFERENCE + _COMPAT_PYPROJECT over the shared meta surface."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+        self.repo_root = self.root / "juniper-ml"
+        self.repo_root.mkdir()
+        _install_templates(self.repo_root)
+        _write_meta_surface(self.repo_root)
+        (self.repo_root / "pyproject.toml").write_text(_COMPAT_PYPROJECT)
+        (self.repo_root / "docs" / "REFERENCE.md").write_text(_COMPAT_REFERENCE)
+        (self.repo_root / "CHANGELOG.md").write_text(_CHANGELOG)
+        self.fake = _FakeSources(self.repo_root, self.root)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _propose(self, name: str, to_version: str, *, path: str = ".", from_version: str = "0.6.0"):
+        if name == "juniper-ml":
+            entry = _entry(pypi_name=name, path=".", tag_pattern="v*", archive_name="RELEASE_NOTES_v{version}.md", ship_paths=[])
+        else:
+            entry = _entry(pypi_name=name, path=path, tag_pattern=f"{name}-v*", archive_name=f"RELEASE_NOTES_{name}_v{{version}}.md", ship_paths=[f"{path}{name.replace('-', '_')}/"])
+        bump = "patch" if to_version.split(".")[:2] == from_version.split(".")[:2] else "minor"
+        pkg = _manifest_pkg(pypi_name=name, released_version=from_version, declared_version=from_version, proposed_bump=bump, proposed_version=to_version)
+        before = _sha_tree(self.repo_root)
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.root, [entry], "2026-11-09")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        self.assertEqual(before, _sha_tree(self.repo_root), "build_proposal must stay dry-run pure")
+        return prop
+
+    def _reference(self, prop) -> str:
+        edits = [e for e in prop.edits if e.path == "docs/REFERENCE.md"]
+        self.assertEqual(len(edits), 1, "docs/REFERENCE.md must carry exactly one FileEdit")
+        return edits[0].new_text
+
+    def _items(self, prop, needle: str) -> list:
+        return [item for item in prop.co_change_checklist if needle in item]
+
+    def test_meta_patch_bump_names_the_release_and_keeps_the_series_row(self):
+        prop = self._propose("juniper-ml", "0.6.1")
+        ref = self._reference(prop)
+        self.assertIn("| **Version**            | `0.6.1`      |", ref)
+        self.assertIn("`juniper-ml` 0.6.1 declares the following pins.", ref)
+        self.assertIn("0.6.1 sets them to `juniper-recurrence-model>=0.1.5,<0.3.0` and `juniper-recurrence>=0.2.0,<0.5.0`", ref)
+        self.assertIn(_COMPAT_ROW_05 + _COMPAT_ROW_06 + "\n### Service Ports", ref, "a patch moves no row and adds none")
+        self.assertEqual(len(_changed(_COMPAT_REFERENCE, ref)), 4, "the cell and the paragraph, nothing else")
+        included = self._items(prop, "docs/REFERENCE.md release sites (included in this PR)")
+        self.assertEqual(len(included), 1)
+        self.assertIn("**Version** cell", included[0])
+        self.assertIn("sets them to", included[0])
+        self.assertNotIn("matrix row", included[0])
+        self.assertEqual(self._items(prop, "REQUIRED --"), [], "every site was found")
+        review = self._items(prop, "prose (REVIEW by hand in this PR)")
+        self.assertEqual(len(review), 1, "the paragraph's history is the reviewer's")
+        self.assertIn("the [recurrence] clause now names 0.6.1, so words after its pins", review[0], "the renamed clause hands ': it raises ...' to this release")
+        self.assertNotIn("previous series' row", review[0], "a patch adds no row")
+        self.assertNotIn("moved in place", review[0], "the series row was already current, so the train moved no cell")
+        self.assertNotIn("pins moved", review[0], "the clause keeps the pins it held: only its release was renamed")
+        self.assertIn("- `docs/REFERENCE.md`", prop.pr_body or "")
+
+    def test_meta_minor_bump_adds_the_new_series_row(self):
+        prop = self._propose("juniper-ml", "0.7.0")
+        ref = self._reference(prop)
+        self.assertIn(_COMPAT_ROW_05 + _COMPAT_ROW_06 + "| 0.7.x      | >=0.1.0,<0.2.0     | >=0.2.0               |\n\n### Service Ports", ref)
+        self.assertIn("`juniper-ml` 0.7.0 declares the following pins.", ref)
+        self.assertTrue(any("a new `0.7.x` matrix row (the older rows are not touched)" in item for item in self._items(prop, "(included in this PR)")))
+        review = self._items(prop, "prose (REVIEW by hand in this PR)")
+        self.assertEqual(len(review), 1)
+        self.assertIn("the previous series' row is not touched: if a PR since that series' last release rewrote it in place", review[0])
+
+    def test_meta_minor_after_an_in_place_row_raise_flags_the_previous_row_for_review(self):
+        """The flow ReferenceCompatibilityMatrixTest forces: a hand floor raise between releases must rewrite the
+        then-current 0.6.x row in place (here the observability floor), so the next minor adds 0.7.x and leaves
+        0.6.x stating a floor no 0.6.x release published. The train cannot tell which pins a series published, so
+        the checklist vouches for no older row, and the REVIEW line names the previous series' row."""
+        raised_row = "| 0.6.x      | >=0.1.0,<0.2.0     | >=0.3.0               |\n"
+        (self.repo_root / "pyproject.toml").write_text(_COMPAT_PYPROJECT.replace("juniper-observability>=0.2.0", "juniper-observability>=0.3.0"))
+        (self.repo_root / "docs" / "REFERENCE.md").write_text(_COMPAT_REFERENCE.replace(_COMPAT_ROW_06, raised_row).replace("`>=0.2.0`         |", "`>=0.3.0`         |"))
+        prop = self._propose("juniper-ml", "0.7.0")
+        ref = self._reference(prop)
+        self.assertIn(_COMPAT_ROW_05 + raised_row + "| 0.7.x      | >=0.1.0,<0.2.0     | >=0.3.0               |\n", ref, "the train leaves the previous row as the raise left it")
+        self.assertFalse(any("describe published releases" in item for item in prop.co_change_checklist), "the checklist must not vouch for a row the train did not check")
+        review = self._items(prop, "prose (REVIEW by hand in this PR)")
+        self.assertEqual(len(review), 1)
+        self.assertIn("the previous series' row is not touched", review[0])
+        self.assertIn("restore the pins that series' last release published", review[0], "a row holds its series' LAST release's pins: a patch rewrites it in place")
+
+    def test_meta_bump_after_a_recurrence_floor_raise_moves_the_clause(self):
+        """The 0.11.4 shape (the raise juniper-ml#2473, then the cut juniper-ml#2482): a hand PR raised a [recurrence]
+        floor, which has no column, and the clause is that pin's only record. Under ReferenceCompatibilityMatrixTest
+        such a raise is red until it rewrites the clause itself, so this REFERENCE (the clause still at the old pin)
+        cannot reach main through a green merge: the test pins the REVIEW note for a REFERENCE that drifted anyway."""
+        raised = _COMPAT_PYPROJECT.replace("juniper-recurrence>=0.2.0,<0.5.0", "juniper-recurrence>=0.2.1,<0.5.0")
+        (self.repo_root / "pyproject.toml").write_text(raised)
+        prop = self._propose("juniper-ml", "0.6.1")
+        ref = self._reference(prop)
+        self.assertIn("0.6.1 sets them to `juniper-recurrence-model>=0.1.5,<0.3.0` and `juniper-recurrence>=0.2.1,<0.5.0` (see", ref)
+        self.assertIn("0.5.0 published `juniper-recurrence-model>=0.1.0,<0.2.0`", ref, "the history stays")
+        review = self._items(prop, "prose (REVIEW by hand in this PR)")
+        self.assertEqual(len(review), 1)
+        self.assertIn("the [recurrence] pins moved (the clause held `juniper-recurrence-model>=0.1.5,<0.3.0`, `juniper-recurrence>=0.2.0,<0.5.0`)", review[0])
+
+    def test_escaping_subpackage_bump_moves_its_matrix_cell_in_the_one_reference_edit(self):
+        """doc-tools has a matrix column: its raised ceiling must reach the current series row, in the SAME
+        REFERENCE FileEdit as the extras table (the executor writes each edit's whole text)."""
+        _write_pkg(self.repo_root, "juniper-doc-tools/", name="juniper-doc-tools", version="0.1.5", changelog=_CHANGELOG)
+        prop = self._propose("juniper-doc-tools", "0.2.0", path="juniper-doc-tools/", from_version="0.1.5")
+        ref = self._reference(prop)
+        self.assertEqual(ref.count("`>=0.1.0,<0.3.0`"), 2, "both extras-table rows")
+        self.assertIn("| 0.6.x      | >=0.1.0,<0.3.0     | >=0.2.0               |\n", ref)
+        self.assertIn(_COMPAT_ROW_05, ref, "the history row stays")
+        self.assertIn("| **Version**            | `0.6.0`      |", ref, "a sub-package bump names no new meta release")
+        self.assertIn("`juniper-ml` 0.6.0 declares", ref)
+        included = self._items(prop, "(included in this PR)")
+        self.assertTrue(any("the `0.6.x` matrix row, in place (juniper-doc-tools: >=0.1.0,<0.2.0 -> >=0.1.0,<0.3.0)" in item for item in included), included)
+        review = self._items(prop, "prose (REVIEW by hand in this PR)")
+        self.assertEqual(len(review), 1)
+        self.assertIn("record what the earlier 0.6.x releases published", review[0])
+        self.assertNotIn("previous series' row", review[0], "an in-place edit adds no row, so there is no previous row to restore")
+        self.assertEqual(self._items(prop, "REQUIRED --"), [], "the pin reached its row: nothing is owed")
+
+    def test_escaping_subpackage_bump_that_cannot_reach_its_row_is_required_and_a_patch_owes_nothing(self):
+        """The one REQUIRED line a sub-package proposal can owe. Its escaping pin moved, and the current series'
+        row could not be rendered from pyproject (here the row is doubled, and the train never guesses which one
+        is the series'). The line names the row alone, never the meta's own release sites. A patch of the same
+        package moves no pin, so against the same REFERENCE it owes nothing and includes nothing."""
+        (self.repo_root / "docs" / "REFERENCE.md").write_text(_COMPAT_REFERENCE.replace(_COMPAT_ROW_06, _COMPAT_ROW_06 * 2))
+        _write_pkg(self.repo_root, "juniper-doc-tools/", name="juniper-doc-tools", version="0.1.5", changelog=_CHANGELOG)
+        blocked = self._propose("juniper-doc-tools", "0.2.0", path="juniper-doc-tools/", from_version="0.1.5")
+        required = self._items(blocked, "release sites (REQUIRED")
+        self.assertEqual(len(required), 1, "the escaping pin could not reach its doubled row")
+        self.assertIn("the compatibility matrix's current-series row", required[0])
+        self.assertIn("not found exactly once, or not renderable from pyproject.toml", required[0])
+        for label in ("**Version** cell", "declares the following pins", "sets them to"):
+            self.assertNotIn(label, required[0], "a sub-package bump owes only the row its pin moved")
+        ref = self._reference(blocked)
+        self.assertEqual(ref.count(_COMPAT_ROW_06), 2, "neither row is guessed at")
+        self.assertEqual(ref.count("`>=0.1.0,<0.3.0`"), 2, "the extras table still moves, in the same REFERENCE edit")
+        self.assertEqual(self._items(blocked, "release sites (included in this PR)"), [], "no release site moved")
+        unmoved = self._propose("juniper-doc-tools", "0.1.6", path="juniper-doc-tools/", from_version="0.1.5")
+        self.assertEqual(self._items(unmoved, "docs/REFERENCE.md release sites"), [], "no pin moved: nothing owed, nothing included")
+        self.assertEqual([e for e in unmoved.edits if e.path == "docs/REFERENCE.md"], [], "and no REFERENCE edit")
+
+    def test_escaping_subpackage_bump_without_a_column_leaves_the_release_sites_alone(self):
+        _write_pkg(self.repo_root, "juniper-service-core/", name="juniper-service-core", version="0.4.0", changelog=_CHANGELOG)
+        prop = self._propose("juniper-service-core", "0.5.0", path="juniper-service-core/", from_version="0.4.0")
+        ref = self._reference(prop)
+        self.assertEqual(_changed(_COMPAT_REFERENCE, ref), ["- | `tools`      | `juniper-service-core`      | `>=0.2.0,<0.5.0`  |", "+ | `tools`      | `juniper-service-core`      | `>=0.2.0,<0.6.0`  |"])
+        self.assertEqual(self._items(prop, "docs/REFERENCE.md release sites"), [])
+        self.assertEqual(self._items(prop, "prose (REVIEW"), [])
+
+    def test_subpackage_bump_that_moves_only_the_clause_gets_the_review_line(self):
+        """A sub-package proposal renders the four sites too. On a REFERENCE that drifted from pyproject (a
+        [recurrence] floor its clause does not name yet) only the clause moves, and the REVIEW line comes with it:
+        a sub-package bump gets one whenever a site moved, not only for an in-place row edit."""
+        (self.repo_root / "pyproject.toml").write_text(_COMPAT_PYPROJECT.replace("juniper-recurrence>=0.2.0,<0.5.0", "juniper-recurrence>=0.2.1,<0.5.0"))
+        _write_pkg(self.repo_root, "juniper-service-core/", name="juniper-service-core", version="0.4.0", changelog=_CHANGELOG)
+        prop = self._propose("juniper-service-core", "0.4.1", path="juniper-service-core/", from_version="0.4.0")
+        ref = self._reference(prop)
+        self.assertIn("0.6.0 sets them to `juniper-recurrence-model>=0.1.5,<0.3.0` and `juniper-recurrence>=0.2.1,<0.5.0`", ref)
+        self.assertIn("| **Version**            | `0.6.0`      |", ref, "a sub-package bump names no new meta release")
+        included = self._items(prop, "release sites (included in this PR)")
+        self.assertEqual(len(included), 1)
+        self.assertIn("sets them to", included[0])
+        review = self._items(prop, "prose (REVIEW by hand in this PR)")
+        self.assertEqual(len(review), 1, "a moved site always comes with the history review")
+        self.assertIn("the [recurrence] clause now names 0.6.0", review[0])
+        self.assertIn("the [recurrence] pins moved (the clause held `juniper-recurrence-model>=0.1.5,<0.3.0`, `juniper-recurrence>=0.2.0,<0.5.0`)", review[0])
+        self.assertEqual(self._items(prop, "REQUIRED --"), [], "a sub-package bump owes no release site")
+
+    def test_meta_bump_on_a_current_reference_emits_no_reference_edit(self):
+        current = _COMPAT_REFERENCE.replace("`0.6.0`  ", "`0.6.1`  ").replace("`juniper-ml` 0.6.0 declares", "`juniper-ml` 0.6.1 declares").replace("0.6.0 sets them to", "0.6.1 sets them to")
+        (self.repo_root / "docs" / "REFERENCE.md").write_text(current)
+        prop = self._propose("juniper-ml", "0.6.1")
+        self.assertEqual([e for e in prop.edits if e.path == "docs/REFERENCE.md"], [], "no phantom REFERENCE edit")
+        self.assertEqual(self._items(prop, "docs/REFERENCE.md release sites"), [])
+        review = self._items(prop, "prose (REVIEW by hand in this PR)")
+        self.assertEqual(len(review), 1, "the meta's own bump always asks for the history review")
+        self.assertNotIn("clause now names", review[0], "a clause already at the release was not renamed")
+        self.assertNotIn("previous series' row", review[0], "a patch adds no row")
+
+    def test_meta_bump_with_a_doubled_site_flags_only_that_one_required(self):
+        (self.repo_root / "docs" / "REFERENCE.md").write_text(_COMPAT_REFERENCE + "\n`juniper-ml` 0.5.0 declares the following pins.\n")
+        prop = self._propose("juniper-ml", "0.6.1")
+        required = self._items(prop, "release sites (REQUIRED")
+        self.assertEqual(len(required), 1)
+        self.assertIn('the "declares the following pins" sentence', required[0])
+        self.assertNotIn("**Version** cell", required[0])
+        self.assertEqual(self._reference(prop).count("declares the following pins"), 2, "neither sentence is guessed at")
+
+    def test_meta_bump_with_an_unreadable_reference_flags_every_site_required(self):
+        (self.repo_root / "docs" / "REFERENCE.md").unlink()
+        prop = self._propose("juniper-ml", "0.6.1")
+        required = self._items(prop, "release sites (REQUIRED -- docs/REFERENCE.md could not be read")
+        self.assertEqual(len(required), 1)
+        for label in ("**Version** cell", "declares the following pins", "current-series row", "sets them to"):
+            self.assertIn(label, required[0])
 
 
 # ── CLI: dry-run report / json / writes-nothing / exit codes ─────────────────

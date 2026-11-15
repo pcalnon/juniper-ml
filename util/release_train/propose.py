@@ -26,6 +26,20 @@ single **standard-gated release-proposal PR** (plan S5.4):
     `juniper-ml` X:"), which ``ReadmeCompatTableTest`` requires to name the ``pyproject.toml`` version.
     The 0.11.0 proposal (ml#2306) was the first one generated since that guard landed (ml#1972), and
     it needed the line by hand;
+  * the four ``docs/REFERENCE.md`` sites that name the meta-package's release and the pins it declares,
+    which juniper-ml#2507's tests (``ReferenceCompatibilityMatrixTest`` in tests/test_pyproject_extras.py)
+    pin to ``pyproject.toml`` (step 5b-v): the "Package Overview" **Version** cell, the
+    "`juniper-ml` X.Y.Z declares the following pins" sentence, the compatibility matrix's current-series
+    row, and the "X.Y.Z sets them to" clause, the only record of the three ``[recurrence]`` pins. A new
+    minor ADDS its ``0.N.x`` row and never touches the previous series' row, which should describe
+    published releases; a column pin that moved since that series' last release rewrote it in place (the
+    gate makes it), so the checklist asks the reviewer to restore the pins that release published. A patch
+    rewrites its own series' row in place, so a row holds its series' LAST release's pins. All four are
+    rendered from the ``pyproject.toml`` the proposal leaves behind, so an escaping in-repo pin with a
+    matrix column moves its cell too. Every cut from 0.11.0 to 0.11.4 rewrote whichever of them moved with
+    a one-off script. The paragraph's history (which release raised which floor) stays a REVIEW item on
+    the co-change checklist: no gate reads it, the train never writes it, and renaming the clause's
+    release hands any words after its pins to the new release;
   * for an **in-repo** package (the meta-package or one of its six co-located sub-packages), the
     meta-package's own **consumer-pin co-changes** (plan S5.4): a pre-1.0 MINOR bump that escapes a
     ``[project.optional-dependencies]`` ``<next-minor`` ceiling moves that pin AND its SIX lockstep
@@ -809,6 +823,324 @@ def apply_pin_edits_agents_table(text: str, pypi_name: str, new_req: str, headin
     return "".join(out)
 
 
+# ── docs/REFERENCE.md: the meta-package release's name and pins (four sites) ─
+#
+# docs/REFERENCE.md names the meta-package's release, and the pins it declares, in four places that
+# ``pyproject.toml`` decides. juniper-ml#2507's tests (``ReferenceCompatibilityMatrixTest`` in
+# tests/test_pyproject_extras.py) pin each one:
+#
+#   1. the "Package Overview" ``| **Version** | `X.Y.Z` |`` cell;
+#   2. the sentence above the "Ecosystem Compatibility" matrix, "`juniper-ml` X.Y.Z declares the following pins.";
+#   3. the matrix row of the current series (``X.Y.x``): one cell per column package, holding its pyproject spec;
+#   4. the same paragraph's "X.Y.Z sets them to `pin`, `pin` and `pin`" clause, the only record of the three
+#      ``[recurrence]`` pins, which have no matrix column.
+#
+# Every juniper-ml cut from 0.11.0 to 0.11.4 rewrote whichever of them moved, by hand, with a one-off script
+# (util/ad-hoc/2026-10-21_juniper_ml_0_11_0_cut_cochanges.py and its four successors). Each helper below keeps
+# the ``set_agents_version`` honesty contract: an anchor that is absent, or present more than once (the gate
+# refuses a doubled cell, sentence or clause; it keeps the last of two series rows), returns the text
+# untouched with ``old=None`` (``absent`` / ``unexpected`` for the matrix row), never a half-edit. The
+# paragraph's HISTORY -- which release raised which floor, "The `0.N.x` row is X's" -- is prose no gate
+# reads. The train never writes it, and the co-change checklist asks the reviewer to. Renaming the clause's
+# release also hands any words after its pins (": it raises ...") to the new release, so the checklist names
+# the clause whenever it moves.
+#
+# The series rule. A NEW series (the first proposal of a minor or a major) gets a NEW row, rendered from
+# pyproject.toml and appended below the newest one. The previous series' row is never renamed or rewritten by
+# the train (the checklist asks the reviewer to restore it if a PR rewrote it in place since its last
+# release): it should describe releases already on PyPI. That is the rule #1991 stated when it added the 0.9.x
+# row: the 0.8.x row is "ADDED TO rather than rewritten", and the shape of the 0.11.0 cut (#2306). It holds
+# unless a column pin moved since that series' last release: ReferenceCompatibilityMatrixTest makes such a move
+# (an escaping in-repo pin, or a hand floor raise) rewrite the then-current row in place. A release inside the
+# current series (a patch) rewrites that series' row in place, as the 0.11.1 and 0.11.2 cuts did (#2319,
+# #2339), and the prose records what the earlier patches published. So a series' row holds the pins of that
+# series' LAST release, and those are the pins the checklist asks the reviewer to restore. The release history
+# agrees. In the file tagged v0.11.4 the 0.11.x row holds what 0.11.2 to 0.11.4 published, not 0.11.0's or
+# 0.11.1's floors, and the 0.6.x row, which covers 0.7.x, holds 0.7.1's pins, not 0.6.0's
+# (util/ad-hoc/2026-11-12_flood4r2_ml-propose-r3_series_row_history.py).
+
+_REFERENCE_COMPAT_HEADING = re.compile(r"^#{2,4}\s+Ecosystem Compatibility\s*$", re.IGNORECASE)
+_REFERENCE_DECLARES = re.compile(r"(`juniper-ml` )(\d+\.\d+\.\d+)( declares the following pins\.)")
+# One recurrence pin in the shape the gate's clause parser reads: a name, an optional extras marker, then ``>=``.
+_REFERENCE_CLAUSE_PIN_BODY = r"juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\])?>=[^`\n]+"
+_REFERENCE_CLAUSE_PIN = "`" + _REFERENCE_CLAUSE_PIN_BODY + "`"
+_REFERENCE_SETS_THEM = re.compile(r"(?<![0-9.])(\d+\.\d+\.\d+) sets them to (" + _REFERENCE_CLAUSE_PIN + r"(?:(?:, | and )" + _REFERENCE_CLAUSE_PIN + r")*)")
+# A meta extras requirement split into its package and its spec, the PEP 508 extras marker dropped:
+# ``juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`` -> ``juniper-canopy`` / ``>=0.9.0``. A matrix cell is the
+# spec alone. ``[all]``'s ``juniper-ml[...]`` self-reference carries no operator, so it never matches.
+_META_REQ_SPEC = re.compile(r"^(?P<pkg>juniper-[a-z0-9-]+)(?:\[[^\]]*\])?(?P<spec>[<>=!~].*)$")
+_RELEASE_VERSION = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
+_SERIES_LABEL = re.compile(r"^(\d+)\.(\d+)\.x$")
+
+
+def meta_reference_pins(pyproject_text: str) -> tuple:
+    """What docs/REFERENCE.md's compatibility record is rendered from. -> ``(version, specs, recurrence)``.
+
+    ``version`` is ``[project].version``. ``specs`` maps every package an extra other than ``all`` names to its
+    spec, extras marker dropped; a package two extras pin DIFFERENTLY maps to ``None``, because no one matrix
+    cell can state both. ``recurrence`` is the ``[recurrence]`` extra's requirements in file order. An
+    unparseable file gives ``(None, {}, [])``."""
+    try:
+        data = tomllib.loads(pyproject_text)
+    except (tomllib.TOMLDecodeError, ValueError):
+        return None, {}, []
+    project = data.get("project") or {}
+    extras = project.get("optional-dependencies") or {}
+    specs: dict = {}
+    for extra_name, reqs in extras.items():
+        if extra_name == "all":
+            continue
+        for req in reqs or []:
+            m = _META_REQ_SPEC.match(req.strip()) if isinstance(req, str) else None
+            if m is None:
+                continue
+            pkg, spec = m.group("pkg"), m.group("spec").strip()
+            specs[pkg] = spec if specs.get(pkg, spec) == spec else None
+    recurrence = [req.strip() for req in extras.get("recurrence") or [] if isinstance(req, str)]
+    version = project.get("version")
+    return (version if isinstance(version, str) else None), specs, recurrence
+
+
+def _row_body(line: str) -> str:
+    return line.rstrip("\r\n")
+
+
+def _table_cells(line: str) -> list:
+    """A markdown-table row's cells, stripped (no leading or trailing empty cell)."""
+    return [cell.strip() for cell in _row_body(line).strip().strip("|").split("|")]
+
+
+def _fit_cell(cell: str, content: str) -> str:
+    """``content`` in a table cell as wide as ``cell``: one space before it, padded after; a value too long for
+    the column widens that one cell, keeping a space on each side."""
+    rendered = f" {content} "
+    return rendered.ljust(len(cell)) if len(rendered) <= len(cell) else rendered
+
+
+def set_reference_version_cell(text: str, new_version: str) -> tuple:
+    """Replace the version docs/REFERENCE.md's "Package Overview" ``**Version**`` cell names. -> (new_text, old|None).
+
+    A candidate is a line that STARTS with ``|`` (the gate's anchor) whose first cell is exactly ``**Version**``
+    and whose second cell is one backticked value, so a prose ``**Version**`` mention and the ``**PyPI Name**``
+    row are never candidates. Exactly one candidate is rewritten, keeping the column's width; none, or more than
+    one, returns the text untouched with ``old=None`` -- the gate requires exactly one cell, so two are a
+    defect to fix by hand, not a guess at which one is the release."""
+    lines = text.splitlines(keepends=True)
+    hits: list = []
+    for i, line in enumerate(lines):
+        if not line.startswith("|"):
+            continue
+        raw = _row_body(line).split("|")
+        if len(raw) < 4 or raw[1].strip() != "**Version**":
+            continue
+        m = re.fullmatch(r"`([^`]+)`", raw[2].strip())
+        if m is not None:
+            hits.append((i, raw, m.group(1)))
+    if len(hits) != 1:
+        return text, None
+    i, raw, old = hits[0]
+    if old == new_version:
+        return text, old
+    raw[2] = _fit_cell(raw[2], f"`{new_version}`")
+    lines[i] = "|".join(raw) + lines[i][len(_row_body(lines[i])) :]
+    return "".join(lines), old
+
+
+def set_reference_declares_version(text: str, new_version: str) -> tuple:
+    """Replace the release named by "`juniper-ml` X.Y.Z declares the following pins." -> (new_text, old|None).
+
+    Only the version moves; the rest of the paragraph is left as it is. Not exactly one such sentence ->
+    untouched, ``old=None``."""
+    matches = list(_REFERENCE_DECLARES.finditer(text))
+    if len(matches) != 1:
+        return text, None
+    m = matches[0]
+    return text[: m.start(2)] + new_version + text[m.end(2) :], m.group(2)
+
+
+def _join_backticked(items: list) -> str:
+    """``[a, b, c]`` -> ```a`, `b` and `c```, the paragraph's list style."""
+    quoted = [f"`{item}`" for item in items]
+    return quoted[0] if len(quoted) == 1 else ", ".join(quoted[:-1]) + " and " + quoted[-1]
+
+
+def set_reference_recurrence_clause(text: str, new_version: str, pins: list) -> tuple:
+    """Rewrite the "X.Y.Z sets them to `pin`, `pin` and `pin`" clause: the release and the ``[recurrence]`` pins.
+    -> ``(new_text, old_pins|None)``, ``old_pins`` being the pins the clause named before.
+
+    The three recurrence pins have no matrix column, so this clause is their only record. Only the clause moves:
+    the paragraph's "X published `...`" history around it keeps the previous floors, which is why a parser of
+    the clause alone never mistakes an old floor for this release's. The pins are written in ``pins`` order.
+    Not exactly one clause, no pins, or a pin the gate's clause parser cannot read (it expects
+    ``name[extras]>=...``) -> untouched, ``None``."""
+    if not pins or any(re.fullmatch(_REFERENCE_CLAUSE_PIN_BODY, pin) is None for pin in pins):
+        return text, None
+    matches = list(_REFERENCE_SETS_THEM.finditer(text))
+    if len(matches) != 1:
+        return text, None
+    m = matches[0]
+    old_pins = re.findall(r"`([^`]+)`", m.group(2))
+    return text[: m.start()] + f"{new_version} sets them to {_join_backticked(pins)}" + text[m.end() :], old_pins
+
+
+def _series_label(version: str) -> "str | None":
+    """``0.11.4`` -> ``0.11.x``, the matrix row a release belongs to; ``None`` for a version that is not N.N.N."""
+    m = _RELEASE_VERSION.match(version)
+    return f"{m.group(1)}.{m.group(2)}.x" if m else None
+
+
+def _reference_matrix(lines: list) -> "tuple | None":
+    """Locate the compatibility matrix inside docs/REFERENCE.md's "Ecosystem Compatibility" section.
+
+    -> ``(header index, [data-row indices])``: the header is the first row there whose first cell is
+    ``juniper-ml``, it must be followed by a separator row, and the data rows run to the first line that is not
+    a table row. ``None`` when the section, its header or the separator is missing."""
+    in_section = False
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if _REFERENCE_COMPAT_HEADING.match(stripped):
+            in_section = True
+            continue
+        if not in_section:
+            continue
+        if stripped.startswith("#"):
+            return None  # the next heading closed the section before any matrix
+        if line.startswith("|") and _table_cells(line)[:1] == ["juniper-ml"]:
+            sep = lines[i + 1] if i + 1 < len(lines) else ""
+            if not sep.startswith("|") or set(_row_body(sep).replace("|", "").strip()) - set("-: ") or "-" not in sep:
+                return None
+            rows: list = []
+            j = i + 2
+            while j < len(lines) and lines[j].startswith("|"):
+                rows.append(j)
+                j += 1
+            return i, rows
+    return None
+
+
+def _matrix_row_cells(text: str, series: str) -> "dict | None":
+    """The ``series`` row of the compatibility matrix as ``{column package: cell}``, or ``None``."""
+    lines = text.splitlines(keepends=True)
+    located = _reference_matrix(lines)
+    if located is None:
+        return None
+    header_idx, rows = located
+    header = _table_cells(lines[header_idx])
+    for i in rows:
+        cells = _table_cells(lines[i])
+        if cells[:1] == [series] and len(cells) == len(header):
+            return dict(zip(header[1:], cells[1:]))
+    return None
+
+
+def set_reference_matrix_row(text: str, version: str, specs: dict) -> tuple:
+    """Render the compatibility-matrix row of ``version``'s series (``0.11.4`` -> ``0.11.x``) from ``specs``
+    (package -> spec, as :func:`meta_reference_pins` returns them). -> ``(new_text, status)``:
+
+    * ``edited`` -- the series row exists and a cell moved (a patch inside the series, or an escaping in-repo
+      pin with a column). The row is rewritten in place, and each cell keeps its width where the spec fits.
+    * ``added`` -- no row for the series yet (the first proposal of a new minor). A row rendered from ``specs``
+      in the header's column widths is appended below the newest row, which the train never touches (the
+      series rule above: the checklist asks the reviewer to check it).
+    * ``current`` -- the row already matches.
+    * ``absent`` -- the section has no ``| juniper-ml |`` header row and separator. Untouched.
+    * ``unexpected`` -- untouched, never guessed at. Raised for a column package ``specs`` cannot fill
+      (unpinned, or pinned differently by two extras), a version that is not N.N.N, a series row of the wrong
+      width, two rows for the series, a row label that is not N.N.x, or a series at or above ``version``'s
+      already in the table without being its row."""
+    lines = text.splitlines(keepends=True)
+    located = _reference_matrix(lines)
+    if located is None:
+        return text, "absent"
+    header_idx, rows = located
+    header = _table_cells(lines[header_idx])
+    series = _series_label(version)
+    values = [specs.get(pkg) for pkg in header[1:]]
+    if series is None or any(value is None for value in values):
+        return text, "unexpected"
+    labelled = [i for i in rows if _table_cells(lines[i])[:1] == [series]]
+    if len(labelled) > 1:
+        return text, "unexpected"
+    if labelled:
+        i = labelled[0]
+        raw = _row_body(lines[i]).split("|")
+        if len(raw) != len(header) + 2:
+            return text, "unexpected"
+        moved = False
+        for k, value in enumerate(values, start=2):
+            if raw[k].strip() != value:
+                raw[k] = _fit_cell(raw[k], value)
+                moved = True
+        if not moved:
+            return text, "current"
+        lines[i] = "|".join(raw) + lines[i][len(_row_body(lines[i])) :]
+        return "".join(lines), "edited"
+    rm = _RELEASE_VERSION.match(version)
+    new_key = (int(rm.group(1)), int(rm.group(2)))
+    for i in rows:
+        lm = _SERIES_LABEL.match(_table_cells(lines[i])[0])
+        if lm is None or (int(lm.group(1)), int(lm.group(2))) >= new_key:
+            return text, "unexpected"
+    widths = [len(cell) for cell in _row_body(lines[header_idx]).split("|")[1:-1]]
+    if len(widths) != len(header):
+        return text, "unexpected"  # a header row that does not close with "|" has no width for its last column
+    newline = lines[header_idx][len(_row_body(lines[header_idx])) :] or "\n"
+    last = rows[-1] if rows else header_idx + 1
+    if not lines[last].endswith(("\n", "\r")):
+        lines[last] += newline
+    lines.insert(last + 1, "|" + "|".join(_fit_cell(" " * width, value) for width, value in zip(widths, [series, *values])) + "|" + newline)
+    return "".join(lines), "added"
+
+
+def _reference_compat_report(**overrides) -> dict:
+    report = {"version_cell": "absent", "declares": "absent", "matrix_row": "absent", "recurrence": "absent", "version": None, "series": None, "moved": [], "recurrence_old": None, "recurrence_moved": False, "unreadable": False}
+    report.update(overrides)
+    return report
+
+
+def _site_status(old, candidate: str, text: str) -> str:
+    if old is None:
+        return "absent"
+    return "edited" if candidate != text else "current"
+
+
+def apply_reference_compat_cochanges(text: str, pyproject_text: str) -> tuple:
+    """Render docs/REFERENCE.md's four release sites from the ``pyproject.toml`` a proposal leaves behind.
+
+    -> ``(new_text, report)``. ``report`` holds each site's status: ``version_cell``, ``declares`` and
+    ``recurrence`` are ``edited`` / ``current`` / ``absent``, and ``matrix_row`` is a
+    :func:`set_reference_matrix_row` status. It also holds what the co-change checklist names: the release
+    (``version``), the row's ``series``, its ``moved`` cells (``pkg: old -> new``, for an in-place edit) and
+    the pins the clause held before (``recurrence_old``). Rendered from the FINAL pyproject text, so the
+    meta's own bump names its ``to_version``, and an escaping in-repo pin's raised ceiling reaches that
+    package's matrix column."""
+    version, specs, recurrence = meta_reference_pins(pyproject_text)
+    report = _reference_compat_report()
+    if version is None:
+        return text, report
+    new_text = text
+    candidate, old = set_reference_version_cell(new_text, version)
+    report["version_cell"] = _site_status(old, candidate, new_text)
+    new_text = candidate
+    candidate, old = set_reference_declares_version(new_text, version)
+    report["declares"] = _site_status(old, candidate, new_text)
+    new_text = candidate
+    series = _series_label(version)
+    report["version"] = version
+    report["series"] = series
+    before = _matrix_row_cells(new_text, series) if series else None
+    candidate, report["matrix_row"] = set_reference_matrix_row(new_text, version, specs)
+    if report["matrix_row"] == "edited" and before is not None:
+        after = _matrix_row_cells(candidate, series) or {}
+        report["moved"] = [f"{pkg}: {cell} -> {after.get(pkg)}" for pkg, cell in before.items() if cell != after.get(pkg)]
+    new_text = candidate
+    candidate, old_pins = set_reference_recurrence_clause(new_text, version, recurrence)
+    report["recurrence"] = _site_status(old_pins, candidate, new_text)
+    report["recurrence_old"] = old_pins
+    report["recurrence_moved"] = old_pins is not None and set(old_pins) != set(recurrence)
+    return candidate, report
+
+
 # ── CHANGELOG [Unreleased] -> [version] move ─────────────────────────────────
 
 
@@ -1235,7 +1567,60 @@ def _changelog_rel(entry: "detect.PackageEntry") -> str:
     return os.path.normpath(os.path.join(entry.path, "CHANGELOG.md")).replace(os.sep, "/")
 
 
-def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, agents_edited: bool, cochanges: list, dunder_rel: "str | None" = None, dunder_edited: bool = False, *, agents_surface: bool = True, agents_table_status: str = "absent", readme_lead_status: "str | None" = None) -> list:
+_REFERENCE_SITE_LABELS = (
+    ("version_cell", "the Package Overview **Version** cell"),
+    ("declares", 'the "declares the following pins" sentence'),
+    ("matrix_row", "the compatibility matrix's current-series row"),
+    ("recurrence", 'the [recurrence] "sets them to" clause'),
+)
+
+
+def _reference_compat_items(report: "dict | None", *, meta_bump: bool, pins_moved: bool) -> list:
+    """The co-change checklist's docs/REFERENCE.md lines for one proposal (step 5b-v's ``report``).
+
+    At most three: what the train moved (included), what it could not (REQUIRED: on the meta's own bump every
+    site, otherwise only a matrix row a moved pin could not be rendered into), and the paragraph's history,
+    which no gate reads and the train never writes (REVIEW: on the meta's own bump, and whenever a site moved).
+    The REVIEW line names what to check: a row moved in place, a clause that now names this release or holds
+    new pins (words after its pins describe whatever it names), and, on a new series, the previous series'
+    row, which the train never touches but a PR since that series' last release may have rewritten in place.
+    ``report`` is ``None`` for a package outside juniper-ml."""
+    if report is None:
+        return []
+    items: list = []
+    series = report.get("series") or "0.N.x"
+    done: list = []
+    for key, label in _REFERENCE_SITE_LABELS:
+        status = report.get(key)
+        if key == "matrix_row" and status == "added":
+            done.append(f"a new `{series}` matrix row (the older rows are not touched)")
+        elif key == "matrix_row" and status == "edited":
+            done.append(f"the `{series}` matrix row, in place ({'; '.join(report.get('moved') or [])})")
+        elif status == "edited":
+            done.append(label)
+    gate = "pinned to pyproject.toml by tests/test_pyproject_extras.py's ReferenceCompatibilityMatrixTest (juniper-ml#2507)"
+    if done:
+        items.append(f"docs/REFERENCE.md release sites (included in this PR): {', '.join(done)}, rendered from the pyproject.toml this proposal leaves behind; {gate}.")
+    owed = [label for key, label in _REFERENCE_SITE_LABELS if (meta_bump and report.get(key) not in ("edited", "added", "current")) or (key == "matrix_row" and pins_moved and report.get(key) == "unexpected")]
+    if owed:
+        why = "docs/REFERENCE.md could not be read" if report.get("unreadable") else "not found exactly once, or not renderable from pyproject.toml"
+        items.append(f"docs/REFERENCE.md release sites (REQUIRED -- {why}; the train never invents a site or guesses at one, so edit it by hand in this PR): {', '.join(owed)}; {gate}.")
+    if meta_bump or done:
+        notes = ["the train renders the release, the pins and the current series' row, and never the paragraph's history (which release raised which floor, and \"The `0.N.x` row is X's\")"]
+        if report.get("matrix_row") == "edited":
+            notes.append(f"the `{series}` row moved in place, so record what the earlier {series} releases published")
+        if report.get("matrix_row") == "added":
+            notes.append("the previous series' row is not touched: if a PR since that series' last release rewrote it in place (an escaping column pin, or a hand floor raise that ReferenceCompatibilityMatrixTest made move the then-current row), restore the pins that series' last release published")
+        if report.get("recurrence") == "edited":
+            named = report.get("version")
+            notes.append(f"the [recurrence] clause now names {named}, so words after its pins that say what a release changed (': it raises ...') now describe {named}: reword them, or move them into the history")
+        if report.get("recurrence_moved"):
+            notes.append("the [recurrence] pins moved (the clause held " + ", ".join(f"`{pin}`" for pin in report.get("recurrence_old") or []) + "), so record those as history")
+        items.append("docs/REFERENCE.md \"Ecosystem Compatibility\" prose (REVIEW by hand in this PR): " + "; ".join(notes) + " -- util/ad-hoc/2026-11-06_juniper_ml_0_11_4_cut_cochanges.py is the 0.11.4 cut's wording.")
+    return items
+
+
+def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, agents_edited: bool, cochanges: list, dunder_rel: "str | None" = None, dunder_edited: bool = False, *, agents_surface: bool = True, agents_table_status: str = "absent", readme_lead_status: "str | None" = None, reference_compat: "dict | None" = None) -> list:
     items: list = []
     if dunder_rel is not None:
         state = "included in this PR" if dunder_edited else "REQUIRED (``__version__`` assignment not found -- edit manually)"
@@ -1260,8 +1645,8 @@ def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, a
         items.append("README.md \"Ecosystem Compatibility\" lead-in names the release (included in this PR); guarded by tests/test_pyproject_extras.py (ReadmeCompatTableTest), which requires it to name the pyproject version.")
     elif readme_lead_status == "required":
         items.append("README.md \"Ecosystem Compatibility\" lead-in (REQUIRED -- README.md or its 'The pyproject pins matching `juniper-ml` X:' line was not found; the train never invents one, so edit it by hand); guarded by tests/test_pyproject_extras.py (ReadmeCompatTableTest).")
-    if readme_lead_status is not None:
-        items.append("docs/REFERENCE.md \"Ecosystem Compatibility\": the sentence naming the release and the compatibility matrix (one row per minor) are NOT edited by the train, and no test guards them -- for a minor, update the sentence and add the `0.N.x` row by hand on this branch (util/ad-hoc/2026-10-21_juniper_ml_0_11_0_cut_cochanges.py is the 0.11.0 pattern).")
+    # docs/REFERENCE.md's four release sites (step 5b-v): None = not an in-repo package.
+    items.extend(_reference_compat_items(reference_compat, meta_bump=entry.pypi_name == notes_render.META_PACKAGE, pins_moved=bool(cochanges)))
     if cochanges:
         extras_touched = ", ".join(sorted({f"[{cc.extra}]" for cc in cochanges}))
         items.append(f"In-repo meta consumer pin (included in this PR): raised the {extras_touched} ceiling for {entry.pypi_name} to {cochanges[0].new_req} -- root pyproject.toml + tests/test_pyproject_extras.py membership + all four documented extras tables (AGENTS.md, README.md, docs/QUICK_START.md, docs/REFERENCE.md) + README.md's \"Ecosystem Compatibility\" row, moved together in THIS PR (closes the ml#657 RK-11 gap and the ml#1458 docs-lockstep gap; guarded by tests/test_pyproject_extras.py + the per-package RK-11 drift gate).")
@@ -1535,11 +1920,16 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
     #
     # README.md is read ONCE and composed like AGENTS.md (see the step-5 note): its extras table
     # (5b-ii), its compatibility row (5b-iii) and the meta's compatibility lead-in (5b-iv) all land in
-    # the single README FileEdit appended at the end of 5b-iv.
+    # the single README FileEdit appended at the end of 5b-iv. docs/REFERENCE.md is read once the same
+    # way: its extras table (5b-ii) and its four release sites (5b-v) land in the single REFERENCE
+    # FileEdit appended at the end of 5b-v.
     readme_lead_status = None
+    reference_compat = None
     if entry.repo == detect.META_REPO:
         readme_text = sources.read_file(entry, _README_REL)
         readme_new = readme_text
+        ref_text = sources.read_file(entry, _REFERENCE_EXTRAS_REL)
+        ref_new = ref_text
         root_pyproject = sources.read_file(entry, "pyproject.toml")
         if root_pyproject is not None:
             cochanges = compute_consumer_pin_cochanges(root_pyproject, entry.pypi_name, to_version)
@@ -1582,11 +1972,8 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
                     doc_new = apply_pin_edits_agents_table(doc_text, entry.pypi_name, cochanges[0].new_req, doc_heading)
                     if doc_new != doc_text:
                         prop.edits.append(FileEdit(path=doc_rel, old_text=doc_text, new_text=doc_new))
-                ref_text = sources.read_file(entry, _REFERENCE_EXTRAS_REL)
-                if ref_text is not None:
-                    ref_new = apply_pin_edits_reference_table(ref_text, entry.pypi_name, cochanges[0].new_req)
-                    if ref_new != ref_text:
-                        prop.edits.append(FileEdit(path=_REFERENCE_EXTRAS_REL, old_text=ref_text, new_text=ref_new))
+                if ref_new is not None:
+                    ref_new = apply_pin_edits_reference_table(ref_new, entry.pypi_name, cochanges[0].new_req)
         # 5b-iv. the meta-package's own bump: README's compatibility lead-in names the release
         # (``ReadmeCompatTableTest``). A lead-in already at to_version is silent success; a missing
         # README or lead-in is REQUIRED-manual, never invented (the ``set_agents_version`` contract).
@@ -1599,6 +1986,19 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
                     readme_new = candidate
         if readme_text is not None and readme_new != readme_text:
             prop.edits.append(FileEdit(path=_README_REL, old_text=readme_text, new_text=readme_new))
+        # 5b-v. docs/REFERENCE.md's four release sites: the Package Overview Version cell, the "declares the
+        # following pins" sentence, the current series' matrix row and the [recurrence] "sets them to" clause.
+        # Rendered from the pyproject.toml this proposal LEAVES BEHIND -- the last edit to it, which is how the
+        # executor ends up writing it -- so the meta's own bump names to_version and an escaping pin with a
+        # matrix column moves its cell. The four sites were each cut's hand co-change from 0.11.0 to 0.11.4.
+        # Silent when nothing moves; on the meta's own bump an unreadable REFERENCE is REQUIRED-manual.
+        final_root = next((e.new_text for e in reversed(prop.edits) if e.path == "pyproject.toml"), root_pyproject)
+        if ref_new is not None and final_root is not None:
+            ref_new, reference_compat = apply_reference_compat_cochanges(ref_new, final_root)
+        elif entry.pypi_name == notes_render.META_PACKAGE:
+            reference_compat = _reference_compat_report(unreadable=True)
+        if ref_text is not None and ref_new != ref_text:
+            prop.edits.append(FileEdit(path=_REFERENCE_EXTRAS_REL, old_text=ref_text, new_text=ref_new))
 
     # 5c. **Last Updated** true-up. Runs ONLY when a previous composer actually changed AGENTS.md --
     # the date-check workflow is path-filtered to AGENTS.md, so a proposal that does not touch the file
@@ -1630,7 +2030,7 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
         trigger_title=f"release: {entry.pypi_name} v{to_version} (proposal)",
         date=date,
     )
-    prop.co_change_checklist = _co_change_checklist(entry, bump, prop.propagation_edges, agents_edited, prop.consumer_pin_cochanges, dunder_rel=dunder_rel, dunder_edited=dunder_edited, agents_surface=agents_surface, agents_table_status=agents_table_status, readme_lead_status=readme_lead_status)
+    prop.co_change_checklist = _co_change_checklist(entry, bump, prop.propagation_edges, agents_edited, prop.consumer_pin_cochanges, dunder_rel=dunder_rel, dunder_edited=dunder_edited, agents_surface=agents_surface, agents_table_status=agents_table_status, readme_lead_status=readme_lead_status, reference_compat=reference_compat)
 
     # 8. branch / commit / PR metadata.
     prop.branch = release_branch(entry.pypi_name, to_version)
