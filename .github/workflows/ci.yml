@@ -266,6 +266,20 @@ jobs:
           # tests/test_prompt_file_later_flag.py: a later --file / --path that does not resolve must not
           # send the prompt an earlier flag resolved.
           python3 -m unittest -v tests/test_prompt_file_later_flag.py
+          # Empty `claude --version` output is refused on stderr, and claudey
+          # keeps an explicit WTC_DEBUG=0 when it asks for that version.
+          python3 -m unittest -v tests/test_launcher_empty_version_output.py
+          # A prompt file of the script's own 0/1 booleans is still that prompt;
+          # carriage return, vertical tab, and form feed alone are not a prompt.
+          python3 -m unittest -v tests/test_prompt_file_boolean_tokens.py
+          # A directory (or a symlink to one) is not a prompt file; a symlink
+          # to a regular file is followed. Dropping the post-parse PATH_NAME
+          # check would launch claude with no prompt.
+          python3 -m unittest -v tests/test_prompt_file_kind.py
+          # The caller's `--` is a spacer: flags after it still apply, including
+          # --dangerously-skip-permissions, and the spacer is not forwarded.
+          # A bare word after it must not launch claude.
+          python3 -m unittest -v tests/test_wake_spacer_flags.py
           # claude_interactive.bash (`claudey`): DEBUG-forced
           # --dangerously-skip-permissions + inverted TRUE/FALSE opt-in
           # convention vs the older default_interactive launcher.
@@ -273,6 +287,11 @@ jobs:
           # An exported empty CLAUDE_PROMPT_FILE / CLAUDE_PROMPT_PATH is the env form of
           # -f "${HANDOFF}" with HANDOFF unset: claudey must refuse it, not send the default prompt.
           python3 -m unittest -v tests/test_claudey_empty_prompt_file_env.py
+          # Prompt-vs-file precedence in wake_the_claude.bash, and the claudey
+          # edges a first-argument version check cannot see: a version flag
+          # after another flag still execs wake with --version, and
+          # CLAUDE_PROMPT_PATH suppresses the default prompt.
+          python3 -m unittest -v tests/test_launcher_prompt_and_version_edges.py
           # Env-repr safety: lint gate forbidding raw os.environ-derived
           # subprocess env mappings in tests/ (secret-leak class; the
           # RedactedEnv wrapper in tests/redacted_env.py is the fix).
@@ -457,6 +476,25 @@ jobs:
           # tests/test_predict_merge_inherited_git_env.py: GIT_SHALLOW_FILE, GIT_GRAFT_FILE, and
           # GIT_INDEX_FILE inherited from a hook must not change the predicted verdict or the source index.
           python3 -m unittest -v tests/test_predict_merge_inherited_git_env.py
+          # tests/test_predict_merge_scratch_edges.py: the scratch borrows a shallow
+          # linked worktree's common object store (not the worktree git dir), matches
+          # a sha256 source's object format, and each LFS protection is pinned alone
+          # (* -filter in the scratch, GIT_LFS_SKIP_SMUDGE=1 on every git call).
+          # Beside test_predict_merge.py; util/ is not lint-gated, so this unittest is the gate.
+          python3 -m unittest -v tests/test_predict_merge_scratch_edges.py
+          # tests/test_predict_merge_shallow_worktree.py: a linked worktree of a shallow
+          # checkout copies the common dir's graft (a missing boundary parent stays
+          # NEEDS-UPDATE-BRANCH, a real edit stays CONFLICT).
+          python3 -m unittest -v tests/test_predict_merge_shallow_worktree.py
+          # tests/test_predict_merge_guard_edges.py: shallow boundary whose parent object is
+          # missing (clean behind-main stays NEEDS-UPDATE-BRANCH, a real edit stays CONFLICT),
+          # inherited GIT_INDEX_FILE / GIT_OBJECT_DIRECTORY / GIT_COMMON_DIR do not redirect the
+          # scratch, unrelated histories raise, and a prepare OSError removes the scratch.
+          python3 -m unittest -v tests/test_predict_merge_guard_edges.py
+          # tests/test_predict_merge_error_screen.py: an ERROR row (empty gates, the
+          # shape triage_batch writes) counts as absent, not a pass, and an empty
+          # verdict list does not divide by zero. Stdlib only.
+          python3 -m unittest -v tests/test_predict_merge_error_screen.py
           # tests/test_fleet_supervisor_contract.py: static contract for the read-only
           # fleet-supervisor subagent (.claude/agents/fleet-supervisor.md) -- exact tool set
           # {Read,Grep,Glob,Bash}, opus+max, and body wiring to predict_merge.py + all four
@@ -1481,6 +1519,27 @@ jobs:
           # push. `--s` is ambiguous with `--set-upstream` and stays allowed, and so does
           # `--si=false`.
           python3 -m unittest -v tests/test_claude_agent_guard_push_signed_abbrev.py
+          # tests/test_claude_agent_guard_nest_depth.py: BashAnalyzer still judges a
+          # command nested exactly MAX_DEPTH (12) evals deep, and fails closed one
+          # deeper. The guard source is unchanged.
+          python3 -m unittest -v tests/test_claude_agent_guard_nest_depth.py
+          # tests/test_claude_agent_guard_push_signed.py: the =value form of git push --signed.
+          # Exact casefolded false / no / off / 0 is not a signing use. true, if-asked, an empty
+          # value, a longer word, and 00 are GPG-SIGN. The main guard suite only sends the bare flag.
+          python3 -m unittest -v tests/test_claude_agent_guard_push_signed.py
+          # tests/test_claude_agent_guard_ansi_escapes.py: $'\u' / $'\U' / octal that
+          # spell .ssh are denied. U+10FFFF stays that character and passes; one past
+          # it becomes "?" and ~/.?sh is denied. The guard source is unchanged.
+          python3 -m unittest -v tests/test_claude_agent_guard_ansi_escapes.py
+          # tests/test_claude_agent_guard_gpgsign_off.py: git -c <key containing gpgsign>=<value>.
+          # An exact casefolded false/no/off/0 is not a signing use, including whitespace
+          # strip() removes. yes/on/1/true, an empty value, falsehood, offside, 00 and 0.0
+          # are GPG-SIGN. commit.GPGSIGN=true is denied. A key without gpgsign stays allowed.
+          python3 -m unittest -v tests/test_claude_agent_guard_gpgsign_off.py
+          # tests/test_claude_agent_guard_sign_edges.py: a later -c gpgsign on-switch still
+          # denies (git's last -c wins), and pull/am/revert/cherry-pick/commit-tree -S deny.
+          # git commit -mS stays allowed: that S is the message, not a signature.
+          python3 -m unittest -v tests/test_claude_agent_guard_sign_edges.py
           # tests/test_git_remote_alias_check.py: turing bring-up G2 / R-G2a/b/c (gate G-ALIAS).
           # util/git_remote_alias_check.py checks each checkout's PERSISTED origin and pushurl
           # (config --get; remote get-url would expand insteadOf), the alias's ssh -G view and the
@@ -1526,7 +1585,7 @@ jobs:
           python3 -m unittest -v tests/test_home_path_literal_check.py
           # tests/test_ci_host_tooling_macos.py: turing bring-up G4. ci.yml's required host-tooling-macos
           # job: macos-latest, no path filter, every step after detection gated on its `relevant` output,
-          # the suite list equal to the turing host-tooling set, /bin/bash 3.x and a non-/usr/local brew
+          # the suite list equal to the host-tooling set (the turing suites and every agent-guard suite on disk), /bin/bash 3.x and a non-/usr/local brew
           # prefix asserted, a hard Quality Gate need since 2026-10-20. The detection shell runs under a stub git.
           python3 -m unittest -v tests/test_ci_host_tooling_macos.py
           # tests/test_host_state_probe.py: turing bring-up G1. util/host_state_probe.bash captures a macOS
@@ -1567,6 +1626,10 @@ jobs:
           # null final, a service before juniper-cascor#614) says why and never borrows the in-loop numbers. Fixtures are real
           # `/v1/metrics` bodies from the run corpus (`tests/cascor_eval_fixtures.py`).
           python3 -m unittest -v tests/test_stats_summary_eval_blocks.py
+          # tests/test_cascor_eval_zero_and_enabled.py: juniper-ml#2064 comparisons the corpus fixtures do not pin.
+          # An in-loop scalar of 0.0 is a score, not "no in-loop eval scalars". enabled is False discards a populated
+          # final; a missing enabled key and enabled 0 do not. held_out is the exact split "test". A caption prints n=0.
+          python3 -m unittest -v tests/test_cascor_eval_zero_and_enabled.py
           # tests/test_host_api_filesystems_check.py: the yamaguchi securityfs incident (2026-10-27 unmount, 2026-11-07 report).
           # util/host_api_filesystems_check.py judges /proc/self/mountinfo -- not systemctl's unit list, which cannot show PID 1's
           # own API mounts once they are gone -- against systemd's API-filesystem table, and fails when AppArmor is enabled but its
@@ -2583,6 +2646,8 @@ jobs:
   # BSD userland and /bin/bash 3.2, which the Linux regression step cannot show: each suite calls
   # /bin/bash itself, and on macos-latest that is 3.2. A step asserts it, and that `brew --prefix`
   # is not turing's Intel /usr/local, so a green run also shows the scripts are prefix-independent.
+  # The agent guard's other suites are the exception: they start no shell, and run here because the
+  # guard is the hook the macOS host runs (the owner's ruling of 2026-11-12).
   #
   # No on.paths filter (it would skip all of ci.yml). The detection step sets `relevant`, and every
   # later step is gated on it, so the job reports success when no host-tooling path changed; it
@@ -2601,8 +2666,12 @@ jobs:
       # The suites (tests/test_<name>.py) and the other paths whose change re-runs the job;
       # tests/redacted_env.py and this workflow always count. G1's check suite pins the conf/hosts/turing/
       # files listed here against each other.
+      # Every tests/test_claude_agent_guard*.py is listed (the owner's ruling of 2026-11-12), and
+      # tests/test_ci_host_tooling_macos.py compares the list with the files on disk.
       HOST_TOOLING_SUITES: >-
         juniper_clone find_encryption_readme_notes macvm_ctl claude_agent_guard
+        claude_agent_guard_brace_cap claude_agent_guard_git_sign_abbrev claude_agent_guard_push_signed_abbrev
+        claude_agent_guard_nest_depth claude_agent_guard_push_signed claude_agent_guard_ansi_escapes claude_agent_guard_gpgsign_off claude_agent_guard_sign_edges
         git_remote_alias_check headless_signing_preflight juniper_repo_ssh_setup home_path_literal_check configure_commit_signing
         host_state_probe host_state_check
         mcp_setup

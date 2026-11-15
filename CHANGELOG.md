@@ -93,6 +93,87 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     fork-drift comments in `.github/workflows/ci.yml` and `.github/workflows/docs-full-check.yml` name canopy's
     `RateLimiter` as a site.
 
+- **Regression tests carried from 18 Cursor fleet drafts of the flood-4 round 2 (owner rulings "Fold into round 2",
+  2026-11-08, and "Carry + extend propose.py", 2026-11-09), each mutation-checked against the code it pins.** Fifteen
+  new suites, wired into `ci.yml` and `docs/REFERENCE.md` (259 in all): the agent guard's 12-deep nesting cap (#2469),
+  `git push --signed=<value>` (#2489), ANSI-C `\u`, `\U` and octal escapes that spell `.ssh` (#2491),
+  `git -c *.gpgsign=<value>` (#2492), and a later `-c` gpgsign on-switch and the subcommands whose `-S` signs (#2515);
+  the launchers' empty `claude --version` (#2478), a prompt file of `0` or `1` (#2495), a directory as the prompt file
+  (#2503), the `--` spacer (#2509), and prompt-over-file precedence with a non-first version flag (#2472);
+  `predict_merge`'s scratch on a shallow linked worktree, a sha256 source and its two LFS protections (#2481), the
+  common directory's shallow graft read from a linked worktree (#2484), a missing boundary parent, inherited git
+  location variables, unrelated histories and a failed prepare (#2496, whose first test is also #2480's, carried
+  once), and an `ERROR` row's screen coverage (#2512); and a measured zero and `enabled` in the cascor eval blocks
+  (#2499). All fifteen are mirrored into `main-verify.yml`'s Regression Battery too, in `ci.yml`'s order (the
+  owner's ruling of 2026-11-14, "Add all fifteen"); no test compares that battery with `ci.yml`. In `juniper-ci-tools`:
+  the symbol-loss WEAKENED arms at equality (#2475). In existing suites: `tests/test_predict_merge.py` checks that a
+  non-shallow source's scratch gets no graft (#2480), and `tests/test_pyproject_extras.py` pins four
+  `docs/REFERENCE.md` sites to `pyproject.toml`: the Package Overview Version cell, the "declares the following pins"
+  sentence, the current Ecosystem Compatibility row and the recurrence "sets them to" clause (#2507).
+  `util/release_train/propose.py` renders those four sites since juniper-ml#2579, which landed first.
+  - **Fixed before carrying.** mypy in #2469, #2472 and #2491 (class attributes set in `setUpClass`, and a tuple of
+    cases, annotated), flake8 C420 in #2499, black in #2472, #2478, #2495, #2496, #2503 and #2509, and a CodeQL alert
+    in #2496 (`unittest` imported both ways). #2481's LFS case passed with either of the scratch's two LFS protections
+    removed, so it pinned neither: it is now two tests, one for `* -filter` and one for `GIT_LFS_SKIP_SMUDGE=1`; and
+    its fixture built a git environment with `os.environ.copy()`, which `tests/test_env_repr_safety.py` refuses, so it
+    is a `RedactedEnv` now. #2484 keeps its first test; its second pinned a refusal only #2480's code makes, and `main`
+    already copies the graft (#2474). #2507's text said `util/release_train/propose.py` does not edit those four
+    sites; it now states the rule, that a change moving the version or one of those floors rewrites them in the same
+    change. Two of #2507's parser tests took live pins as fixture input (two `[servers]` pins, and `pyproject.toml`'s
+    `juniper-data` floor as the value a stale cell must differ from): both now use floors and series labels no
+    release declares, so a floor raise, which replaces a pin string exactly, cannot move what they prove. #2515's git
+    behaviour was re-checked on git 2.53.0; its docstring said no suite names the signing flag on `pull`, `am`,
+    `revert`, `cherry-pick` and `commit-tree`, and now says which do: juniper-ml#2554's
+    `tests/test_claude_agent_guard_git_sign_abbrev.py` names the long option, and this suite the short `-S`. #2512's
+    `ERROR` row in `docs/REFERENCE.md` now says how `screen_coverage` counts it.
+  - **ci.yml's `host-tooling-macos` job runs every agent-guard suite**, by the owner's ruling of 2026-11-12 (the next
+    update of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` adds it to its section 8).
+    `HOST_TOOLING_SUITES` gains the eight that ran in the Linux step alone: `tests/test_claude_agent_guard_brace_cap.py`
+    (juniper-ml#2517), juniper-ml#2554's `tests/test_claude_agent_guard_git_sign_abbrev.py` and
+    `tests/test_claude_agent_guard_push_signed_abbrev.py`, and the five carried here; 20 suites in all.
+    `tests/test_ci_host_tooling_macos.py` pins the list and, new, compares it with the
+    `tests/test_claude_agent_guard*.py` files on disk, so a later guard suite cannot be left to the Linux step. None of
+    the eight starts a shell, git or GnuPG (an exec census under `strace`), and each passes under CPython 3.9, the
+    version of macOS's `/usr/bin/python3`; the job itself runs them under its Python 3.12.
+  - **Not carried.** #2480's code and its copy of #2496's first test, #2484's second test, and #2480's
+    `docs/REFERENCE.md` paragraph on the scratch copying the checkout's shallow graft, which is documentation.
+
+- **Operator documentation consolidated from the Cursor flood-4 round-2 docs drafts** (ml#2479, #2483, #2487,
+  #2490 and #2494, with #2470's index pointers and one paragraph of #2484's diff, written in draft #2480's commit,
+  which its branch is stacked on), every claim re-derived from `main` with the agent guard at 1.3.0:
+  `docs/REFERENCE.md`, the developer cheatsheet, the documentation overview, the quick start and
+  `.claude/agents/fleet-supervisor.md`.
+  - **New sections.** Local Claude Code Launchers (#2479: entry points, effort, version flags, what still prints on
+    stderr with the debug log off, prompt files); the symbol-loss screen's `WEAKENED` bounds (#2483); Lane A3
+    `checks` and the Actions outage re-run (#2487); GnuPG long-option abbreviations (#2490); and `predict_merge`'s
+    scratch repository (#2494, #2484).
+  - **Rewritten where a draft predates juniper-ml#2554.** #2490 documented a four-character GnuPG prefix floor.
+    The guard's floor is two, so its table is rebuilt from the guard itself: `--cl`, `--ls`, `--li` and `--ex` are
+    denied, one character is not, and the exact `--export` stays allowed. #2470 documented a 65th brace
+    alternative as passing. The guard now refuses such a word and `docs/REFERENCE.md` already says so, so only
+    #2470's three index pointers are carried, rewritten to the refusal. The launcher section adds what #2554
+    changed: `max` is the effort default, `auto` sends no `--effort`, an exported empty `CLAUDE_PROMPT_FILE` or
+    `CLAUDE_PROMPT_PATH` is refused, and a later prompt-file flag that does not resolve drops the earlier file.
+  - **Corrected in the drafts.** #2494 listed a missing filter binary and an inherited `GIT_DIR` among
+    `predict_merge`'s errors; the script handles both. Its list of dropped variables gains `GIT_SHALLOW_FILE` and
+    `GIT_GRAFT_FILE`. #2484 said a shallow source without the copied `shallow` file reads as `CONFLICT`; on `main`
+    a history cut above the merge base is an error (`--pr` exit 2, an `ERROR` row in `--batch`). #2479's entry table
+    listed what reaches `wake_the_claude.bash`; it now lists what Claude Code is handed, read from a stub `claude`.
+  - **Corrected in `main`'s own pages**, stale since juniper-ml#1004 (2026-08-07), #1740 (2026-09-05) and #2474 (2026-11-06):
+    `predict_merge`'s docs screen is `juniper-docs-additions-check` on every changed `.md`, with `main-verify`'s
+    thresholds, not an inline counter that fails any removed line; heal-first ordering reads a `fix/` / `heal/` /
+    `hotfix/` branch or a `fix(` / `fix:` / `heal` title, not `restore` / `repair` / `fix-first` anywhere in
+    either; the hook battery includes `ruff` and `ruff-format`; and the scratch is a `git init` with alternates,
+    not a detached clone. The sequence-safety gate paths name `juniper-ci-tools/tests/`, where juniper-ml#1024 moved those suites.
+  - **Stated as it is.** The two loss screens and `pre-commit` run as separate processes with the caller's
+    environment. Under an inherited `GIT_DIR` each screen with a file to read (the symbol
+    screen or the docs screen) reads the repository that variable names, exits 2 and is recorded as `skip`, so the
+    verdict is computed without it.
+  - Not carried: every draft's version-stamp hunks and Version History row; the pre-squash code and test commits
+    of juniper-ml#2468 and #2474 that #2479 and #2494 sit on, which `main` already holds; #2494's docstring hunk,
+    which juniper-ml#2554 took; #2494's troubleshooting rows for symptoms `main` no longer produces; and #2470's
+    own section, which described the behaviour the "Fail closed" ruling replaced.
+
 ### Changed
 
 - **Backup Phase D: the acceptance probe follows two owner rulings of 2026-11-15.** AC-2 expects the job's 5

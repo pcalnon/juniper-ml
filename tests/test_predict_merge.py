@@ -475,6 +475,7 @@ class NoMutationTest(_RepoCase):
         clone = clones[0]
         self.assertFalse(str(clone).startswith(str(self.repo)), "scratch clone must not live inside the source repo")
         self.assertTrue((clone / ".git").is_dir(), "scratch must be a git clone (.git dir), not a worktree pointer")
+        self.assertFalse((clone / ".git" / "shallow").exists(), "a non-shallow source must not grow a shallow graft")
 
     def test_a_head_reachable_only_from_origin_resolves_in_the_scratch(self):
         """A PR head reachable only from ``refs/remotes/origin/*`` -- every fleet PR's case -- is simulated, not ERROR.

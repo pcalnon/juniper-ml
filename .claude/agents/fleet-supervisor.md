@@ -26,12 +26,17 @@ and report. **You never push, merge, close, comment on, or author a PR.** Fixes 
 ## The deterministic script does the heavy lifting
 
 The per-merge simulation is a **deterministic script**, `util/fleet_triage/predict_merge.py` —
-NOT you. Per PR it builds a throwaway **detached `git clone`** under the system tempdir (never a
-`git worktree` of the primary repo, never the owner's checkout, never a push), merges
-`origin/main` into the branch tip, and on the RESULT runs the repo-pinned fast gates
-(`pre-commit run black isort flake8 mypy check-ast --files <changed>`) plus two screens CI cannot
-see — an **AST symbol screen** (a symbol on `origin/main` absent in the merged result) and a
-**docs additions-only screen** (any removed content line on a `.md`). It emits per-PR JSON with a
+NOT you. Per PR it builds a throwaway scratch repository under the system tempdir
+(`git init` plus an `objects/info/alternates` entry naming the checkout's object store, so a
+shallow checkout's `origin/*` heads resolve; it copies the checkout's `shallow` file when there is
+one and writes `* -filter`; never a `git worktree` of the primary repo, never the owner's checkout,
+never a push), merges `origin/main` into the branch tip, and on the RESULT runs the repo-pinned
+fast gates (`pre-commit run <hook> --files <changed>` for `black`, `isort`, `flake8`, `ruff`,
+`ruff-format`, `mypy` and `check-ast`; a hook the repo does not define is skipped) plus two screens
+CI cannot see — an **AST symbol screen** (a symbol on `origin/main` absent in the merged result)
+and a **docs additions-only screen** (`juniper-docs-additions-check` on every changed `.md`: a
+deleted heading, or a run of five or more deleted lines with nothing added, fails; a small
+in-place swap does not). It emits per-PR JSON with a
 verdict and the **TRUE changed-file delta** from the merge result. It re-runs in seconds; you
 invoke it, you do not re-implement it. You are invoked **once per batch** — the script, not you,
 re-runs per merge.
@@ -71,9 +76,9 @@ re-runs per merge.
 The script emits four verdicts; you carry them through and add the fifth (DUP-CLOSE) as a
 recommendation only:
 
-- **MERGE-CLEAN** — the merge result is conflict-free, every fast gate passes, the AST screen finds
-  no lost symbol, the docs diff is additions-only, and the branch already contains `main`. Safe to
-  merge as-is.
+- **MERGE-CLEAN** — the merge result is conflict-free, no fast gate fails, the AST screen reports
+  no lost symbol, the docs screen reports no deleted heading or deletion run, and the branch
+  already contains `main`. Safe to merge as-is.
 - **NEEDS-UPDATE-BRANCH** — the predicted result is clean but the branch is **behind main**;
   branch-head CI is stale. The fix is GitHub's server-side **update-branch**, whose merge commit
   GitHub signs — never a local rebase on a host that cannot sign, which re-creates the commits
@@ -140,6 +145,7 @@ checkpoints; you are not re-invoked per merge. (Fully draining a same-file clust
 - Every per-PR claim is backed by the script's JSON for that PR — cite it. Do not assert a verdict
   you did not obtain from `predict_merge.py`.
 - The TRUE delta is the script's `git diff` of the merge result, **never** `gh --json files`.
-- If the script errors on a PR (unresolved ref, clone failure), report it as `ERROR` for that PR
-  and continue — never invent a verdict.
+- If the script errors on a PR (an unresolved ref, a scratch repository that cannot be prepared,
+  or a merge or ancestor check git could not complete, such as a history cut above the merge base
+  in a shallow checkout), report it as `ERROR` for that PR and continue — never invent a verdict.
 - You ask no questions and request no tools beyond `Read` / `Grep` / `Glob` / `Bash`.
