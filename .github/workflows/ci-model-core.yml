@@ -44,10 +44,16 @@ jobs:
   test:
     name: Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    # Python 3.15 is INFORMATIONAL (phase 1 of the 3.15 migration, 2026-11-14): its leg reports, but a
+    # failure there fails neither this job nor the run. Same pattern as ci.yml's `tests` job.
+    continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.12", "3.13", "3.14"]
+        include:
+          - python-version: "3.15"
+            experimental: true
     defaults:
       run:
         working-directory: juniper-model-core
