@@ -391,6 +391,9 @@ class ExportTest(unittest.TestCase):
         self.assertIn("set more than once: blocksize", probe.judge_options(twice).summary)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
     def test_the_ruled_policy_is_the_2026_11_14_amendment(self) -> None:
         # Q7: the two-week frame keeps every fileset. The read-back judges the string the owner types, exactly.
         self.assertEqual(probe.RULED_RETENTION, "2W:U,6M:1W,2Y:1M,5Y:2M")
@@ -401,8 +404,11 @@ class ExportTest(unittest.TestCase):
         self.assertEqual(superseded.verdict, "FAIL", "the 2026-10-08 string, typed from an older note, is caught")
         self.assertIn("is not the ruled 2W:U,6M:1W,2Y:1M,5Y:2M", superseded.summary)
 
+<<<<<<< HEAD
 =======
 >>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
+=======
+>>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
     def test_a_non_export_is_an_error_for_all_three(self) -> None:
         docs: list[object] = [{}, None, [], {"Backup": {}}, {"Backup": {"Settings": None}}, {"error": "x"}]
         for doc in docs:

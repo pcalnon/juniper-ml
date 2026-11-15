@@ -14,7 +14,11 @@
   - P0.5a items 5–7 run alongside, each before the step that needs it: item 7 before step 8's first start, item 5 before step 10's `resume`; item 6, a repository change, lands whenever it is ready and gates nothing (Overtoad ruling 2026-09-24, note 10.1f).
   - P0.5a item 1 is released now (note 10.1g); if it has already run, this order starts at item 2.
   - Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except (1) the in-tree escrow `…/Dropbox/Backups/_yamaguchi_keys/`, which only P1 step 4 deletes, once P0.5a item 5 or P1 step 4 has copied it out, and (2) the old filesets the job's own retention pass deletes once P0 step 11 restores `retention-policy` — as `2W:1D,6M:1W,2Y:1M,5Y:2M`, after AC-4's first drill has passed, and after the five dlists it will delete are copied out of the Dropbox root; P0 step 10 removes
+<<<<<<< HEAD
     it and restarts the unit, so the first backup after the recovery runs from the edited job and deletes nothing (Overtoad ruling 2026-10-08); and (3), on Procedure B only and only if Verify finds the index inconsistent, the remote files a Repair deletes — volumes the index does not know, the index's own temporary, deleting or incompletely uploaded files, and empty or replaced index files — which P0 step 8 first copies aside after a dry run.
+=======
+    it and restarts the unit, so the first backup after the recovery runs from the edited job and deletes nothing (owner ruling 2026-10-08); and (3), on Procedure B only and only if Verify finds the index inconsistent, the remote files a Repair deletes — volumes the index does not know, the index's own temporary, deleting or incompletely uploaded files, and empty or replaced index files — which P0 step 8 first copies aside after a dry run.
+>>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
   - **Retention, amended 2026-11-14** (note 10.1h): step 11 restores `2W:U,6M:1W,2Y:1M,5Y:2M`, so the two-week frame keeps every fileset.
 - **Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
 - **Companions**:
@@ -1814,8 +1818,13 @@ Dropbox prerequisite: the daemon must run with gid 139. After `pcalnon` logs in 
 
 Job settings are the certified ones (R-16) with **four** changes: `--tempdir=/home/duplicati/.cache/duplicati-tmp`; `--run-script-before-required=/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash`; `TargetURL=file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi`; and **`--aes-version` pinned explicitly**. The fourth is new and is not cosmetic: the existing 877 volumes are AES Crypt **v2** (newest dlist header bytes `41455302`), whose KDF is the legacy
 iterated SHA-256, while 2.4.0.0 defaults to `--aes-version=3` (PBKDF2, `--aes-v3-iterations` 300000). Left unpinned, the first post-recovery run silently changes the on-disk format mid-set. Pin **2** to keep the set homogeneous, or pin 3 and accept a mixed set — in which case AC-4 must drill one pre- and one post-upgrade fileset. This only matters if `PASSPHRASE` is not random: with 32 random characters both KDFs are irrelevant, with a human phrase v2 is GPU-crackable. Record the
+<<<<<<< HEAD
 passphrase's provenance (generator and length) with the decision. Everything else — sources, 45 filters, AES, `--blocksize=1MB`, `--dblock-size=500MB`, `--no-auto-compact=true`, `retention-policy` (removed by P0 step 10 and restored by step 11, after AC-4's first drill, as `2W:1D,6M:1W,2Y:1M,5Y:2M` — replacing the snapshot's `1W:1D,1M:1W,1Y:1M,3Y:2M`; Overtoad ruling 2026-10-08), `--asynchronous-upload-limit=1`,
 `--allow-missing-source=true`, `compression-module=zip`, schedule 14:00 UTC daily — is taken from the 2026-09-20 snapshot.
+=======
+passphrase's provenance (generator and length) with the decision. Everything else — sources, 45 filters, AES, `--blocksize=1MB`, `--dblock-size=500MB`, `--no-auto-compact=true`, `retention-policy` (removed by P0 step 10 and restored by step 11, after AC-4's first drill, as `2W:1D,6M:1W,2Y:1M,5Y:2M` — replacing the snapshot's `1W:1D,1M:1W,1Y:1M,3Y:2M`; owner ruling 2026-10-08), `--asynchronous-upload-limit=1`,
+`--allow-missing-source=true`, `compression-module=zip`, schedule 14:00 UTC daily — is taken from the 2026-09-20 snapshot. The retention string was amended on 2026-11-14 to `2W:U,6M:1W,2Y:1M,5Y:2M` (note 10.1h).
+>>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
 
 Rules for a destination that is also a Dropbox-synced folder:
 
@@ -3108,9 +3117,15 @@ and what the STOP block at the top of §8 holds (note 10.1g).
   and run no Duplicati binary: P0 step 0(c) calls itself read-only, but it runs `duplicati-cli`, which item 1
   must secure first, with the passphrase, and it needs step 1's freeze, which writes. **"This arc's reports"**
   are every validation round of the arc, any still running and the follow-up's own, archived verbatim into a
+<<<<<<< HEAD
   record merged to `main`. Both readings hold back more than the words alone would; the Overtoad may widen them.
 - **(10.1h)** **Retention: the two-week frame keeps every fileset — ruled 2026-11-14.** The 2026-10-08 ruling
   restores `retention-policy` as `2W:1D,6M:1W,2Y:1M,5Y:2M` (P0 step 11). On 2026-11-14 the Overtoad amended it, in
+=======
+  record merged to `main`. Both readings hold back more than the words alone would; the owner may widen them.
+- **(10.1h)** **Retention: the two-week frame keeps every fileset — ruled 2026-11-14.** The 2026-10-08 ruling
+  restores `retention-policy` as `2W:1D,6M:1W,2Y:1M,5Y:2M` (P0 step 11). On 2026-11-14 the owner amended it, in
+>>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
   the Phase D sitting (its question Q7), to **`2W:U,6M:1W,2Y:1M,5Y:2M`**. The other three frames are unchanged.
   - **Why.** Duplicati 2.4.0.0 keeps a fileset in a frame only if it is the frame's first, or lies at least the
     interval after the last kept full fileset (`DeleteHandler.cs` 393 at tag `v2.4.0.0_stable_2026-09-03`).
@@ -3130,6 +3145,7 @@ and what the STOP block at the top of §8 holds (note 10.1g).
   - **The tools.** The acceptance probe (1.2.0) judges the amended string in `--expect-retention restored`, so
     a restore of the 2026-10-08 string now reads `FAIL`. The finish tool (1.2.0) predicts with it, and the port
     `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py` reads `U` as Duplicati does.
+<<<<<<< HEAD
 - **(10.1i)** **AC-2's counts, AC-5's days and D-14's standing -- ruled 2026-11-15**, in the Phase D sitting.
   - **AC-2: 5 sources and 76 filters.** The owner changed the job's sources and filters on purpose after AC-2 had read
     2 and 45 on 2026-11-07/08. The acceptance probe (1.3.0) expects the new counts. It counts them only: what the lists
@@ -3153,6 +3169,8 @@ and what the STOP block at the top of §8 holds (note 10.1g).
   message still says "14:00Z daily", in the repo and on the host alike; it changes nothing it does.
   Install the new snapshot timer by copying that one file: `util/install_duplicati_service.bash` would also install
   the repo's `duplicati.service`, with `UMask=0027`, over the host's interim `0017` (note 10.1i).
+=======
+>>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
 
 ### 10.2 D-2 execution: confirm the scrub, rotate, re-encrypt — order of operations
 
