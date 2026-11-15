@@ -448,6 +448,8 @@ jobs:
           python3 -m unittest -v tests/test_main_verify_battery_paths.py
           python3 -m unittest -v tests/test_ci_quality_gate.py
           python3 -m unittest -v tests/test_publish_subpackage_workflows.py
+          # One-artifact publish, all 7 publishers (mirror ci.yml).
+          python3 -m unittest -v tests/test_publish_one_artifact.py
           # Flood-remediation sequence-safety screens (P2 G1/G2) now ship as the PyPI
           # package juniper-ci-tools (>=0.8.0); their unit tests live in juniper-ci-tools/tests/
           # (rollout W3). The label-hatch rehearsal below stays juniper-ml's gate.

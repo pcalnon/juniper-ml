@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.2.5
+**Version**: 1.2.6
 **Last Updated**: 2026-11-15
 
 ---
@@ -869,8 +869,14 @@ branch); the dup-guard means a corrected re-dispatch will open a fresh one rathe
 
 ### 5.5 The immutable-index recovery stance (§11)
 
-**PyPI and TestPyPI files are immutable**, and the publish steps use `skip-existing: true`
-(plan §8 "Idempotent re-entry", citing `publish-service-core.yml:139,185`). Consequences for recovery:
+**PyPI and TestPyPI files are immutable.** The publish steps used `skip-existing: true`
+(plan §8 "Idempotent re-entry", citing `publish-service-core.yml:139,185`) until the one-artifact publish dropped
+it: in juniper-cascor (#763 / #767) and juniper-ml's seven publishers on 2026-11-15, and in each other repository as
+its port lands. A TestPyPI upload that skips an existing file lets Gate 1 test an earlier build than the one PyPI
+takes. A release that did not reach PyPI follows the owner's recovery ladder: the republish dispatch, then (within 30
+days) "Re-run failed jobs", then a new patch version
+([PyPI publish procedure §11.8](JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi)).
+Consequences for recovery:
 
 - A **partial run is safe to re-enter**: a re-run re-computes state from PyPI/Release truth
   (`ceremony.py:plan_ceremony`). Operator-visible plan states:

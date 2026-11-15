@@ -316,6 +316,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Scan job runs it with `GITLEAKS_PARITY_REQUIRED=1`. `util/ad-hoc/2026-11-14_verify_gitleaks_pr_scan_tests_are_not_vacuous.py`
     shows that each of its 72 mutations turns the cases it names red. `docs/REFERENCE.md` describes the job.
 
+- **PyPI now receives the files TestPyPI took, checked by sha256, in all seven publishers** (`publish.yml` and the six
+  `publish-<pkg>.yml`; the port of juniper-cascor#763 and #767). The owner's directive of 2026-11-15: "deploy to pypi
+  should send the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after
+  testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks
+  again." Each publisher handed both publish jobs one artifact, but nothing checked it, and a re-run broke it:
+  juniper-ci-tools 0.9.1's run 38045867684, attempt 1, failed at `Publish to PyPI`'s download on day 11, because the
+  7-day artifact had expired before the `pypi` gate was approved; attempt 2 ("Re-run all jobs") built again, its
+  TestPyPI upload passed under `skip-existing` while TestPyPI kept the first build, and PyPI took the second. PyPI
+  serves that wheel as `1dc8e01e…`, TestPyPI as `ade363e8…`.
+  - **juniper-cascor's template, copied verbatim.** The steps marked `One-artifact publish template` and the whole
+    `republish` job are byte-identical to juniper-cascor's `publish.yml` at `675884888f5a`. They read only the workflow
+    `env` values `PUBLISH_PACKAGE` and `PUBLISH_DIST_DIR`, a step's `INDEX_URL`, and the runner's own variables.
+  - **Build once, and reuse it on a re-run.** `Build and Validate` keeps its build, check and tag-assertion steps,
+    then records `SHA256SUMS` and uploads it with the dist directory as one artifact, `<package>-dist` (the
+    meta-package's was `dist`, which nothing else reads), kept 90 days instead of 7: longer than the `pypi` gate's
+    30-day cap and the 30-day re-run window. Its new first step, `Reuse an earlier attempt's artifact`, skips every
+    later build step when the run already holds that artifact, so "Re-run all jobs" can no longer make a rebuild the
+    file both publish jobs take.
+  - **The checks.** Each publish job checks the files against `SHA256SUMS` before it uploads them. After the TestPyPI
+    upload, TestPyPI's JSON for the version must list exactly those files with those sha256, before the install check
+    runs; the PyPI job checks TestPyPI's JSON again before its own upload, and PyPI's after. No upload sets
+    `skip-existing`: on TestPyPI it kept an earlier build silently, and the install check tested that file.
+  - **Permissions.** Only the jobs that upload hold `id-token: write`. `publish.yml`'s workflow block is now `{}`; the
+    sub-packages' stays `contents: read`. The build holds `contents: read` and `actions: read`, the TestPyPI job
+    `contents: read` and `id-token: write`, every PyPI job `id-token: write` alone (none checks out; `publish.yml`'s
+    no longer checks out or sets up Python), and the republish job `actions: read` and `id-token: write`.
+  - **The owner's recovery ladder (2026-11-15)** for a release that did not reach PyPI: (1) dispatch its workflow from
+    the release tag with `-f republish_from_testpypi=true`, which runs only `Republish the tested files (dispatch
+    only)`: behind the same `pypi` gate it copies TestPyPI's files for the version to PyPI, checked against TestPyPI's
+    JSON and the release run's `SHA256SUMS`, and builds nothing; (2) if that fails, within 30 days of the release run,
+    "Re-run failed jobs" on it, never "Re-run all jobs"; (3) otherwise, a new patch version. A dispatch without the
+    input still re-fires the whole publish from the tag; it builds again, so it works only while TestPyPI does not hold
+    the version yet.
+  - Unchanged: the `release: published` trigger and the tag guards, the job names `Publish to TestPyPI` and
+    `Publish to PyPI` (`util/release_train/ceremony.py` tells the jobs apart by them; the republish job's name carries
+    no "pypi", and the ceremony reads release-event runs only), the environments, `publish.yml`'s two-phase install
+    check and `attestations: true`, and the sub-packages' concurrency groups, environment URLs, `verbose` uploads and
+    install checks.
+  - Pins: `tests/test_publish_one_artifact.py` (new, 57 cases, unittest; wired into `ci.yml` and the
+    `main-verify.yml` battery) pins that wiring in all seven workflows, what each kept, and every template step
+    byte-identical to the others and to juniper-cascor's. Its rehearsals run each template step's own Python against a
+    stand-in index and GitHub API on 127.0.0.1. `tests/test_publish_subpackage_workflows.py` and
+    `tests/test_publish_testpypi_verify.py` now pin no `skip-existing` and the per-job permissions. The negative
+    control, `util/ad-hoc/2026-11-15_verify_publish_one_artifact_tests_are_not_vacuous.py`, makes 55 edits to
+    a copy of the workflows, each undoing one property, and the tests catch every one.
+  - Docs: `docs/REFERENCE.md` (§ Meta-Package Publish Pipeline and § Independent Sibling Package Publish Pipelines, with
+    each workflow's republish command), `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` (§10.3
+    and the new §11.8: the contract and the ladder for every Juniper repository),
+    `notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md` §5.5, and
+    `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`.
+
 ## [0.11.5] - 2026-11-13
 
 ### Security

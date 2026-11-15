@@ -1,6 +1,6 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.69
+**Version**: 1.0.70
 **Date**: 2026-11-15
 **Project**: juniper-ml
 
@@ -840,7 +840,10 @@ only input is `secrets.ANTHROPIC_API_KEY` (a **repo** secret). The job `if:` req
 
 Tip: meta publish Gate 1 polls TestPyPI 10×6s (~60s ceiling) for the just-uploaded wheel, then runs **three** local-wheel installs (bare → `[clients]` → `[tools]`; never `--no-deps` on the installs, never `--extra-index-url`, never the heavy extras) before PyPI. Do not restore `sleep 30`.
 
-Tip: the six shared `publish-*.yml` are Release-only (`release: published`; no `push: tags` — the #555 double-publish race); a bare `git push <tag>` starts **no run**. Each is tag-prefix-guarded, with a `--no-deps` TestPyPI-only 5×10s verify and `skip-existing: true`. Do not resurrect a `Require a GitHub Release for this tag` step under `if: github.event_name == 'push'` — that condition is unreachable (#1310). See [REFERENCE — Build and Release](REFERENCE.md#build-and-release).
+Tip: the six shared `publish-*.yml` are Release-only (`release: published`; no `push: tags` — the #555 double-publish race); a bare `git push <tag>` starts **no run**. Each is tag-prefix-guarded, with a `--no-deps` TestPyPI-only 5×10s verify. Do not resurrect a `Require a GitHub Release for this tag` step under `if: github.event_name == 'push'` — that condition is unreachable (#1310). See [REFERENCE — Build and Release](REFERENCE.md#build-and-release).
+
+Tip: all seven publishers build once and check by sha256 (juniper-cascor#763 / #767's one-artifact template): both publish jobs upload the build job's artifact (dist and `SHA256SUMS`, 90 days), TestPyPI's JSON must list exactly those sha256 after the TestPyPI upload and again before the PyPI one, and PyPI's after; no `skip-existing`; only the uploading jobs hold `id-token: write`.
+A release that did not reach PyPI: dispatch its workflow from the tag with `-f republish_from_testpypi=true` (copies TestPyPI's files, builds nothing); if that fails, within 30 days **Re-run failed jobs**, never "Re-run all jobs"; otherwise cut a new patch version. See [REFERENCE — One artifact, and recovering a release that did not reach PyPI](REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi).
 
 Tip: shared-package `ci-*.yml` (six sub-packages) must keep path self-inclusion, matrix floors, `--cov-fail-under`, and a blocking `juniper-coverage-gap-map --enforce`. Dropping the workflow self-path or `--enforce` ships green while the package suite stops running or stops enforcing gaps; service-core installs sibling `juniper-model-core` from the monorepo root (no test-job `working-directory`). Full table: [REFERENCE — Shared-Package CI](REFERENCE.md#shared-package-ci-workflows).
 
@@ -1290,5 +1293,5 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 ---
 
 **Last Updated:** 2026-11-15
-**Version:** 1.0.69
+**Version:** 1.0.70
 **Maintainer:** Paul Calnon
