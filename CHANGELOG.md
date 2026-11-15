@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Local Python-version checks: `util/python_version_check.py` runs a repo's own tests under Python 3.15 (or any
+  listed version) in a venv kept at a fixed path, and reports without blocking.** The local half of phase 1 of the
+  Python 3.15 migration (the owner's request and ruling of 2026-11-14; juniper-ml#2567 was the CI half).
+  - `conf/python_versions.yaml` holds the ecosystem's version lists, `blocking` 3.12, 3.13 and 3.14 and
+    `informational` 3.15, and one recipe per repo: its CI's install commands and its existing local wrapper.
+  - For each repo and version the helper builds a venv from `/usr/bin/python<version>` at
+    `{root}/{repo}/tmp/pyvenv/py{version}`, the primary checkout's gitignored `tmp/`, runs the recipe with the venv
+    first on PATH, and writes `summary.json` and each step's log under juniper-ml's primary `tmp/`. It exits 0
+    whatever the results unless `--strict`, reports a missing interpreter as `unavailable`, and is not a pre-commit
+    hook. `/usr/bin/python3` stays 3.14.
+  - Two suites are wired into ci.yml: `tests/test_python_version_check.py` (stubs only, no real venv, pip or repo)
+    and `tests/test_python_version_matrix_drift.py` (every CI Python matrix runs each informational version as an
+    experimental `include` entry and never in its plain list; the juniper-ml recipe installs exactly what ci.yml's
+    `tests` job installs). `util/ad-hoc/2026-11-15_wire_python_version_check.py` writes this entry and the other
+    shared-file edits from the current base, so the counts and the docs version are derived, not remembered.
+  - First real run, juniper-data-client on 3.15.2: passed (537 passed, 19 skipped; coverage 99.68%).
+
 - **CI runs the regression tests and every sub-package's tests on Python 3.15 as well, as informational legs that
   block nothing.** Phase 1 of the ecosystem's Python 3.15 migration (the owner's request of 2026-11-14): 3.15
   results are reported, and no merge, commit or deployment waits on them.
