@@ -31,12 +31,15 @@ WHY THIS EXISTS
 
 WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 127.0.0.1:8300)
     AC-1      the /etc/systemd/system unit, active as `duplicati`, NeedDaemonReload=no, NRestarts=0, up for 24 h
-    AC-2      server: job name, TargetURL, 2 sources, 45 filters, schedule 1D at 14:00 UTC, blocksize 1MB
+    AC-2      server: job name, TargetURL, 5 sources, 76 filters (owner ruling 2026-11-15; 2 and 45 until then),
+              schedule 1D at 13:00 UTC (07:00 CST; 14:00 UTC until the owner moved it on 2026-11-15),
+              blocksize 1MB
     AC-13     server: run-script-before-required is the installed guard and no other run-script option is set
     OPTIONS   server: the job's option NAMES against the recorded set; retention suspended or restored as ruled;
               keep-time and keep-versions absent; tempdir, aes-version and no-auto-compact as step 11 left them
-    AC-5      the watchdog log: three consecutive days whose every record reads OK, and a JOB_MISSING record for a
-              deliberate `--backup-id 999` on or after the recovery date
+    AC-5      the watchdog log: three consecutive days whose every record reads OK and none reads RUNNING (owner
+              ruling 2026-11-15: a check that found the job still running judged no result), and a JOB_MISSING
+              record for a deliberate `--backup-id 999` on or after the recovery date
     AC-6a     the snapshot lane: reads the service's data folder, one successful run per day, file mtime = newest run
     AC-6b     NOT judged here, and printed as INFO: "the snapshot appears in the next fileset" needs the dlist,
               which is root's and the passphrase's (util/ad-hoc/2026-11-11_phase_d_finish.bash ac6)
@@ -94,7 +97,7 @@ import urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import yamaguchi_server_api as api  # noqa: E402 -- sibling module; path fixed one line above
 
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 SCHEMA = "yamaguchi-acceptance/1"
 UTC = dt.timezone.utc
 
@@ -105,10 +108,12 @@ SERVICE_USER = "duplicati"
 SERVICE_GROUP = "duplicati"
 JOB_NAME = "Yamaguchi"
 EXPECTED_TARGET = "file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi"
-EXPECTED_SOURCES = 2
-EXPECTED_FILTERS = 45
+# The owner changed the job's sources and filters on purpose (ruling 2026-11-15); the design fixed 2 and 45 until then.
+EXPECTED_SOURCES = 5
+EXPECTED_FILTERS = 76
 EXPECTED_REPEAT = "1D"
-EXPECTED_TIME_OF_DAY = dt.time(14, 0, 0)
+# The job's daily start, UTC: 13:00 since the owner moved it on 2026-11-15 (07:00 CST); 14:00 until then.
+EXPECTED_TIME_OF_DAY = dt.time(13, 0, 0)
 GUARD_PATH = "/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash"
 # Owner ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
 # Under `2W:1D` an off-schedule run's fileset displaced the scheduled one beside it, and a daily fileset stamped one
@@ -129,6 +134,9 @@ PRINTABLE_VALUES = frozenset({"blocksize", "tempdir", "aes-version", "no-auto-co
 TRUE_WORDS = frozenset({"true", "1", "on", "yes"})
 
 RECOVERY_DATE = dt.date(2026, 11, 7)  # the service's first start under the new unit; step 10
+# A run is judged against the slot in force on its own UTC date (slot_on); AC-2 judges the job against the newest.
+SCHEDULE_MOVED = dt.date(2026, 11, 15)
+SCHEDULE_SLOTS = ((RECOVERY_DATE, dt.time(14, 0, 0)), (SCHEDULE_MOVED, EXPECTED_TIME_OF_DAY))
 WATCHDOG_LOG = "server-watchdog.log"
 WATCHDOG_LINE = re.compile(r"^(\S+) (OK|ALERT|UNDETERMINED) ([A-Z_]+) backup=(\S+)(?: (.*))?$")
 JOB_MISSING_PROBE_ID = "999"
@@ -138,7 +146,8 @@ SNAPSHOT_FILE = "~/.local/state/duplicati-server-db/Duplicati-server.sqlite"
 SNAPSHOT_SOURCE = "/home/duplicati/.config/Duplicati/Duplicati-server.sqlite"  # "the new data folder"
 SNAPSHOT_SOURCE_LINE = re.compile(r"^source\s*: (.+) \([^()]*\)$")  # yamaguchi_server_db_snapshot.py:110
 SNAPSHOT_ENABLED = dt.datetime(2026, 11, 8, 19, 57, 0, tzinfo=UTC)  # step 13's `enable --now`
-SNAPSHOT_FIRE = dt.time(13, 45, 0)  # the timer's OnCalendar, UTC
+SNAPSHOT_FIRE = dt.time(12, 45, 0)  # the timer's OnCalendar, UTC: 15 min before the backup, since 2026-11-15
+SNAPSHOT_FIRES = ((SNAPSHOT_ENABLED.date(), dt.time(13, 45, 0)), (SCHEDULE_MOVED, SNAPSHOT_FIRE))  # 13:45 UTC until then
 
 KEYS_DIR = "/mnt/Backups/Ubuntu/_yamaguchi_keys"
 DROPBOX_INFO = "~/.dropbox/info.json"
@@ -432,28 +441,45 @@ def judge_ac5(log_text, backup_id, now, need_days=3, probe_id=JOB_MISSING_PROBE_
         by_day[when.date()].append((verdict, code))
     newest_when = max(r[0] for r in mine)
     newest_day = newest_when.date()
+
+    def all_ok(day):
+        return all(verdict == "OK" for verdict, _code in by_day[day])
+
+    def ran(day):
+        return any(code == "RUNNING" for _verdict, code in by_day[day])
+
+    # A day counts only if every record reads OK and none reads RUNNING: a check that found the job still running
+    # judged no result (owner ruling 2026-11-15, the sitting's question Q6). The days must be consecutive, so an
+    # OK RUNNING day ends the streak; it is not a failure.
     streak, days, day = 0, [], newest_day
-    while day in by_day and all(verdict == "OK" for verdict, _code in by_day[day]):
+    while day in by_day and all_ok(day) and not ran(day):
         streak += 1
         days.append(f"{day.isoformat()} {'+'.join(sorted({code for _verdict, code in by_day[day]}))}")
+        day -= dt.timedelta(days=1)
+    discounted = 0
+    while day in by_day and all_ok(day) and ran(day):
+        discounted += 1
         day -= dt.timedelta(days=1)
     probe_seen = sorted(utc_stamp(when) for when, verdict, code, backup in records if verdict == "ALERT" and code == "JOB_MISSING" and backup == str(probe_id) and when.date() >= recovered_on)
     age_h = (now - newest_when).total_seconds() / 3600
     newest_codes = "+".join(sorted({f"{verdict} {code}" for verdict, code in by_day[newest_day]}))
     facts = {"streak_days": streak, "days": days, "newest_record": utc_stamp(newest_when), "newest_reads": newest_codes, "job_missing_probe": probe_seen, "unparsed_lines": unparsed,
-             "running_days": sum(1 for d in days if "RUNNING" in d)}
+             "running_days": discounted}
     fails, pending = [], []
     if age_h > max_gap_hours:
         fails.append(f"the newest record is {age_h:.1f} h old (> {max_gap_hours:g} h): the watchdog is not checking")
-    if streak == 0:
+    if not all_ok(newest_day):
         fails.append(f"the newest check, {newest_day.isoformat()}, reads {newest_codes}")
     elif streak < need_days:
-        pending.append(f"OK on {streak} consecutive day(s) of {need_days}: {', '.join(reversed(days))}")
+        counted = f"OK OK on {streak} consecutive day(s) of {need_days}" + (f": {', '.join(reversed(days))}" if days else "")
+        if discounted:
+            counted += f"; the {discounted} day(s) before read OK RUNNING and do not count (owner ruling 2026-11-15)" if streak else f"; the newest check found the job running, and the {discounted} OK RUNNING day(s) do not count (owner ruling 2026-11-15)"
+        pending.append(counted)
     if not probe_seen:
         pending.append(f"no JOB_MISSING record for a deliberate --backup-id {probe_id} since {recovered_on.isoformat()}")
     if fails or pending:
         return Finding("AC-5", settle(fails, pending=pending), "; ".join(fails + pending), facts)
-    return Finding("AC-5", "PASS", f"OK on {streak} consecutive days ({', '.join(reversed(days[:need_days]))}); JOB_MISSING fired for --backup-id {probe_id} at {probe_seen[-1]}", facts)
+    return Finding("AC-5", "PASS", f"OK OK on {streak} consecutive days ({', '.join(reversed(days[:need_days]))}); JOB_MISSING fired for --backup-id {probe_id} at {probe_seen[-1]}", facts)
 
 
 # --- AC-6a ----------------------------------------------------------------------------------------------------------
@@ -474,10 +500,26 @@ def parse_journal(text):
     return records, unparsed
 
 
-def last_due_fire(now, fire=SNAPSHOT_FIRE, grace=dt.timedelta(minutes=15)):
-    """The newest daily fire that must have finished by `now`: today's once `grace` has passed, else yesterday's."""
-    today = dt.datetime.combine(now.astimezone(UTC).date(), fire, UTC)
-    return today if now >= today + grace else today - dt.timedelta(days=1)
+def slot_on(day, slots):
+    """The time of day in force on `day`, a UTC date: the newest entry of `slots` whose start is not after it."""
+    chosen = slots[0][1]
+    for start, time_of_day in slots:
+        if start <= day:
+            chosen = time_of_day
+    return chosen
+
+
+def last_due_fire(now, fires=SNAPSHOT_FIRES, grace=dt.timedelta(minutes=15)):
+    """The newest daily fire that must have finished by `now`: today's once `grace` has passed, else yesterday's.
+
+    Each day's fire is the one in force on that UTC date: the timer moved from 13:45Z to 12:45Z on 2026-11-15.
+    """
+    day = now.astimezone(UTC).date()
+    today = dt.datetime.combine(day, slot_on(day, fires), UTC)
+    if now >= today + grace:
+        return today
+    yesterday = day - dt.timedelta(days=1)
+    return dt.datetime.combine(yesterday, slot_on(yesterday, fires), UTC)
 
 
 def judge_ac6a(snapshot, journal_text, now, expected_source=SNAPSHOT_SOURCE, enabled=SNAPSHOT_ENABLED, min_days=2, mtime_slack=180.0, me=None):
@@ -828,25 +870,34 @@ def seconds_off_schedule(begin, time_of_day):
     return min(delta, 86400 - delta)
 
 
-def judge_schedule(entries, time_of_day=EXPECTED_TIME_OF_DAY, since=RECOVERY_DATE, slack=SCHEDULE_SLACK, window=PRECEDING_WINDOW):
-    """Backups that began off the daily slot, each with the operations logged in the 15 minutes before it.
+def judge_schedule(entries, slots=SCHEDULE_SLOTS, since=RECOVERY_DATE, slack=SCHEDULE_SLACK, window=PRECEDING_WINDOW):
+    """Backups that began off their day's slot, each with the operations logged in the 15 minutes before it.
 
-    `entries`: summarize_entry() results of EVERY operation examined, newest first.
+    `entries`: summarize_entry() results of EVERY operation examined, newest first. `slots`: (first UTC date, time of
+    day) pairs, oldest first; a run is judged against the slot in force on its own UTC date.
     """
     backups = [e for e in entries if e.get("operation") == "Backup" and e.get("begin") and e["begin"].date() >= since]
     if not backups:
         return Finding("OFFSCHED", "ERROR", f"no Backup since {since.isoformat()} among the job-log entries examined")
-    off = []
+    off, used = [], []
     for run in backups:
-        if seconds_off_schedule(run["begin"], time_of_day) <= slack.total_seconds():  # exactly the slack is on schedule
+        slot = slot_on(run["begin"].astimezone(UTC).date(), slots)
+        if slot not in used:
+            used.append(slot)
+        if seconds_off_schedule(run["begin"], slot) <= slack.total_seconds():  # exactly the slack is on schedule
             continue
         before = collections.Counter(str(e.get("operation")) for e in entries if e is not run and e.get("begin") and run["begin"] - window <= e["begin"] <= run["begin"] and e.get("operation") != "Backup")
         off.append({"begin": utc_stamp(run["begin"]), "result": run["result"], "preceded_by": dict(sorted(before.items()))})
     facts = {"backups_examined": len(backups), "off_schedule": off}
+    if len(used) == 1:
+        target, of_target = f"the {used[0]}Z slot", f"{used[0]}Z"
+    else:
+        which = ", ".join(f"{time_of_day}Z from {start.isoformat()}" for start, time_of_day in slots if time_of_day in used)
+        target = of_target = f"their day's slot ({which})"
     if not off:
-        return Finding("OFFSCHED", "PASS", f"all {len(backups)} backups examined since {since.isoformat()} began within {int(slack.total_seconds() // 60)} min of {time_of_day}Z", facts)
+        return Finding("OFFSCHED", "PASS", f"all {len(backups)} backups examined since {since.isoformat()} began within {int(slack.total_seconds() // 60)} min of {of_target}", facts)
     parts = [f"{o['begin']} (preceded by {', '.join(f'{k} x{n}' for k, n in o['preceded_by'].items()) or 'no logged operation'})" for o in off]
-    return Finding("OFFSCHED", "ATTN", f"{len(off)} of {len(backups)} backups began off the {time_of_day}Z slot: " + "; ".join(parts), facts)
+    return Finding("OFFSCHED", "ATTN", f"{len(off)} of {len(backups)} backups began off {target}: " + "; ".join(parts), facts)
 
 
 # --- CENSUS and MODES -----------------------------------------------------------------------------------------------
@@ -1147,7 +1198,7 @@ def run_table(backups, limit):
         drift = percent(run["examined"], older["examined"]) if older else None
         w = run["warnings"]
         warn = f"W={w['total']}" + (f" (allow-listed {w['allowed']})" if w["total"] else "")
-        slot = "scheduled" if run["begin"] and seconds_off_schedule(run["begin"], EXPECTED_TIME_OF_DAY) <= SCHEDULE_SLACK.total_seconds() else "OFF-SCHEDULE"
+        slot = "scheduled" if run["begin"] and seconds_off_schedule(run["begin"], slot_on(run["begin"].astimezone(UTC).date(), SCHEDULE_SLOTS)) <= SCHEDULE_SLACK.total_seconds() else "OFF-SCHEDULE"
         lines.append(f"  run {utc_stamp(run['begin'])}  {hours_minutes(run['seconds']):>7}  {str(run['result']):<8} {warn:<22} E={run['errors']}  examined={run['examined']}" + (f" ({drift:+.1%})" if drift is not None else "") + f"  {slot}")
     return lines
 

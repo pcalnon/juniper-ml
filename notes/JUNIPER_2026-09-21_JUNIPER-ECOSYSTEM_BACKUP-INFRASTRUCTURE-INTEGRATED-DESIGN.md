@@ -2948,10 +2948,10 @@ the item that closes S-1 and S-2, so it is not deferrable to P1 — but it is al
 | ID | Criterion | Verification |
 | --- | --- | --- |
 | AC-1 | `duplicati.service` is the `/etc/systemd/system` unit, active as `duplicati`, `NeedDaemonReload=no`, `NRestarts=0` over 24 h | `systemctl show duplicati.service -p FragmentPath,User,NeedDaemonReload,NRestarts,ActiveState` |
-| AC-2 | The job `Yamaguchi` exists with `TargetURL=file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi`, 2 sources, 45 filters, schedule `1D` at 14:00 UTC, `--blocksize=1MB` | `python3 util/ad-hoc/yamaguchi_server_api.py status` and `export <id>` — **`<id>` is 2 only if P0 step 7 (Procedure B) did not assign another**; record the assigned id in the validation record and pass it here, to the census, to AC-5 and to the watchdog unit |
+| AC-2 | The job `Yamaguchi` exists with `TargetURL=file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi`, 5 sources, 76 filters (2 and 45 until the owner's ruling of 2026-11-15, note 10.1i), schedule `1D` at 13:00 UTC (07:00 CST; 14:00 UTC until 2026-11-14, note 10.1j), `--blocksize=1MB` | `python3 util/ad-hoc/yamaguchi_server_api.py status` and `export <id>` — **`<id>` is 2 only if P0 step 7 (Procedure B) did not assign another**; record the assigned id in the validation record and pass it here, to the census, to AC-5 and to the watchdog unit |
 | AC-3 | First post-recovery backup `ParsedResult=Success`, **`Warnings=0` and `NotProcessedFiles=0`**, `SourceFilesCount` within 2 % of 1,024,167 and `SourceSizeString` within 5 % of 290.61 GiB, **plus a positive find of one `~/.ssh` and one `~/.gnupg` path**; census `AGREE` (note AC-3a) | `python3 util/ad-hoc/yamaguchi_census.py --runs 1`; `duplicati-cli find`; `Metadata` via the forensics script on a fresh snapshot |
 | AC-4 | **Two** restore drills, not one: one from `duplicati-20260918T140000Z` (pre-recovery) and one from the first post-recovery fileset. Both with local blocks **off** (the 2.4.0.0 default; never pass `--restore-with-local-blocks`; `--no-local-blocks` is deprecated), SHA-256 and length match on ≥ 15 files, one negative control fails (note AC-4a) | `util/ad-hoc/yamaguchi_drill_watch.bash` lineage |
-| AC-5 | Watchdog reads `OK` three consecutive days; a deliberate `--backup-id 999` fires `JOB_MISSING` | `~/.local/state/duplicati/server-watchdog.log` |
+| AC-5 | Watchdog reads `OK` three consecutive days, a day whose check found the job running (`OK RUNNING`) not counted (owner ruling 2026-11-15, note 10.1i); a deliberate `--backup-id 999` fires `JOB_MISSING` | `~/.local/state/duplicati/server-watchdog.log` |
 | AC-6 | **(Provable the day after P0, not at its end: the 13:45 UTC fire after the timer is re-enabled.)** Snapshot lane reads the new data folder; the snapshot file's mtime advances daily; it appears in the next fileset | snapshot journal; `duplicati-cli list` / UI search |
 | AC-7 | Dropbox daemon carries gid 139; newest dlist `up to date` within 24 h of its write; `_yamaguchi_keys/` outside the Dropbox root | `/proc/<pid>/status`; `dropbox filestatus`; `ls` |
 | AC-8 | No secret in **either log store** since the hardening timestamp: zero `LINE: "`, `Exporting Environment` and `Settings Encryption Key:` lines in the journal **and in `/var/log/syslog*`**; zero in the job log's run-script output; `.env` has no commented assignment; the wrapper has no credential-shaped literal; the P0.5 gitleaks rule passes (note AC-8a) | `journalctl --since <ts>`; `sudo grep -c` over `/var/log/syslog*`; `2026-09-21_env_file_shape.py` |
@@ -3130,6 +3130,29 @@ and what the STOP block at the top of §8 holds (note 10.1g).
   - **The tools.** The acceptance probe (1.2.0) judges the amended string in `--expect-retention restored`, so
     a restore of the 2026-10-08 string now reads `FAIL`. The finish tool (1.2.0) predicts with it, and the port
     `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py` reads `U` as Duplicati does.
+- **(10.1i)** **AC-2's counts, AC-5's days and D-14's standing -- ruled 2026-11-15**, in the Phase D sitting.
+  - **AC-2: 5 sources and 76 filters.** The owner changed the job's sources and filters on purpose after AC-2 had read
+    2 and 45 on 2026-11-07/08. The acceptance probe (1.3.0) expects the new counts. It counts them only: what the lists
+    hold is the owner's to compare.
+  - **AC-5: an `OK RUNNING` day does not count.** The watchdog's 12:00 CST check often finds the job still running, and
+    such a record judges no result. A day counts toward AC-5's three consecutive days only if every record reads `OK`
+    and none reads `RUNNING`. The days must be consecutive, so an `OK RUNNING` day ends a streak; it is not a failure,
+    and the probe reads `PENDING`. On 2026-11-15 the streak was one day (11-14): 11-11 to 11-13 read `OK RUNNING`.
+  - **D-14 stands.** Since 2026-11-14 05:28Z the host's unit runs `UMask=0017`, the owner's interim measure, so new
+    volumes are written `0660 duplicati:duplicati` and Dropbox, in the duplicati group, can process them. The unit
+    returns to `0027` once the offsite copy is sent another way. Until then AC-7 keeps reading `FAIL`, as expected.
+
+- **(10.1j)** **The job starts at 13:00 UTC, the snapshot at 12:45 UTC, the watchdog at 20:00 local -- moved by the
+  owner on 2026-11-15.** At its 12:00 local check the watchdog found the job still running on four of the six days to
+  2026-11-14 (`OK RUNNING`), and note 10.1i's AC-5 ruling no longer counts such a day. So the job's schedule moved from
+  14:00 UTC to 13:00 UTC (07:00 CST, 08:00 CDT), and the watchdog's check from 12:00 to 20:00 local, 12 to 13 h after
+  the start. The server-DB snapshot keeps its place 15 minutes before the backup (12:45 UTC, pinned in UTC as before),
+  so each fileset still holds that morning's snapshot. A run still going at 20:00 is past the watchdog's 6 h
+  `--max-run-hours` and reads `ALERT STUCK`. The acceptance probe (1.3.0) judges each run against the slot in force on
+  its own UTC date, so the runs of 2026-11-07 to 11-14 stay on schedule at 14:00 UTC. The snapshot script's closing
+  message still says "14:00Z daily", in the repo and on the host alike; it changes nothing it does.
+  Install the new snapshot timer by copying that one file: `util/install_duplicati_service.bash` would also install
+  the repo's `duplicati.service`, with `UMask=0027`, over the host's interim `0017` (note 10.1i).
 
 ### 10.2 D-2 execution: confirm the scrub, rotate, re-encrypt — order of operations
 
