@@ -97,6 +97,26 @@ python3 util/python_version_check.py --repo juniper-data-client --python 3.15   
 2. Should deploy's `Unit Tests (Python 3.13)` and `(Python 3.14)` become required in ruleset 14715370? Today they
    block only through its Quality Gate.
 
+## Follow-up the same night: the informational legs now conclude GREEN (owner request 2026-11-15)
+
+The owner reported that every juniper-ml PR read as failing. The job-level `continue-on-error` kept the gates green
+(#2568, #2569 and #2572 merged past it, and no 3.15 context is required), but the 3.15 leg's own check concluded
+`failure`: a red X on every PR, `UNSTABLE`, and `gh pr checks` failing.
+
+**juniper-ml#2578** (branch `ci/python-3-15-informational-green-legs`) makes the leg conclude green:
+- every step of each 3.15 job gets an `id` and `continue-on-error: ${{ matrix.experimental == true }}`;
+- a last step, `Report the informational Python 3.15 result`, reads `toJSON(steps)` and emits a `::warning` naming
+  the failed steps (or a `::notice` when all passed), plus a job-summary table;
+- applied by `util/ad-hoc/2026-11-15_py315_informational_green_legs.py`;
+- guarded by `tests/test_python_version_matrix_drift.py`'s `green_violations`.
+
+It was measured on #2578's head `91591864`: `Regression Tests (Python 3.15)` concluded `success` while 2 of its steps
+failed, and carried the warning. It was held for the flood-4 sitting; merge it if it is still open. The owner chose
+"All nine now": the same script is being applied to the nine sibling repos on branch `ci/python-3-15-green-legs`,
+one PR each, by agents that merge under the owner's approval. Brief:
+`juniper-ml/.claude/worktrees/witty-giggling-twilight/tmp/py315/GREEN_LEGS_BRIEF.md`. Check each repo with
+`gh pr list --repo pcalnon/<repo> --state all --head ci/python-3-15-green-legs`.
+
 ## Remaining work
 
 1. Clean up the rollout worktrees per `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`. Their `tmp/` dirs hold test venvs
