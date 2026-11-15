@@ -54,8 +54,8 @@ coincide, so the split is a no-op and behaviour is byte-identical to Phase 3:
   6. **Monitor** -- watch the triggered publish run; the run legitimately parks at the ``pypi``
      environment gate: that terminal state ``PENDING_PYPI_APPROVAL`` **is success for the train** (plan
      S5.1 terminal-healthy). A build or TestPyPI failure before Gate 2 is a HALT. The run read is the
-     PyPI publisher's (never the image publisher's run on the same Release), newest of its release run and
-     its dispatches from the tag, such as the republish job.
+     PyPI publisher's (never the image publisher's run on the same Release): of its release run and its
+     dispatches from the tag, such as the republish job, an unfinished one, else the latest-started one.
 
 **R7 hard invariant (plan S9.3), enforced in code AND asserted by the tests:** the ``gh`` surface the
 ceremony's write identity may touch is exactly {``pr create``, ``pr merge --auto``, ``release create``,
@@ -859,8 +859,8 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         # A dispatch of the same publisher from the release tag -- its republish job (the owner's recovery ladder,
         # 2026-11-15) or a plain re-fire -- is a workflow_dispatch run, which the release-event listing never shows.
         # Only THAT workflow's dispatch runs on THIS tag count: a repo's other dispatch runs (CI, docs, an image
-        # publish) say nothing about this package's PyPI state. select_publish_run then picks the live run of the set
-        # whose latest attempt started last, so a release run re-run after a failed dispatch is the one read.
+        # publish) say nothing about this package's PyPI state. select_publish_run then prefers an unfinished run of the
+        # set, then the one whose latest attempt started last, so a release run re-run after a failed dispatch is read.
         workflow_id = match.get("workflowDatabaseId")
         if workflow_id:
             out_d = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--event", "workflow_dispatch", "--workflow", str(workflow_id), "--branch", tag, "--json", fields, "--limit", "20"])

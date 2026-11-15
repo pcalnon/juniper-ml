@@ -2526,9 +2526,8 @@ class OneArtifactPublisherClassifyTest(unittest.TestCase):
 
 class SelectPublishRunPublisherTest(unittest.TestCase):
     """``select_publish_run`` reads the PyPI publisher's run, never ``Publish Container Image``: five repos run that
-    workflow on the same Release, on the same tag, and its run often has the larger ``databaseId`` (juniper-cascor
-    v0.11.0, v0.12.0 and v0.13.0; canopy v0.8.0 and v0.9.0; data v0.14.0; cascor-worker v0.6.0 and v0.6.1; recurrence
-    v0.7.0 and v0.8.0, per the ml#2592 review). Among finished runs, the one whose latest attempt started last wins."""
+    workflow on the same Release, on the same tag, and its run often has the larger ``databaseId`` (in 11 of the 20
+    Releases the ml#2592 reviews sampled on 2026-11-15, among them juniper-cascor v0.11.0, v0.12.0 and v0.13.0). Among finished runs, the one whose latest attempt started last wins."""
 
     TAG = "v0.13.0"
 
@@ -2551,6 +2550,17 @@ class SelectPublishRunPublisherTest(unittest.TestCase):
                 if name is None:
                     del run["workflowName"]
                 self.assertEqual(ce.select_publish_run([run], self.TAG)["databaseId"], 100)
+
+    def test_among_unfinished_runs_the_latest_started_wins_over_the_larger_id(self):
+        older = self._run(200, "Publish to PyPI", "waiting", None, started="2026-11-15T10:00:00Z")
+        newer = self._run(100, "Publish to PyPI", "in_progress", None, started="2026-11-15T11:00:00Z")
+        self.assertEqual(ce.select_publish_run([older, newer], self.TAG)["databaseId"], 100)
+
+    def test_equal_start_times_fall_back_to_the_newest_id(self):
+        first = self._run(100, "Publish to PyPI", "completed", "failure")
+        second = self._run(101, "Publish to PyPI", "completed", "success")
+        self.assertEqual(ce.select_publish_run([second, first], self.TAG)["databaseId"], 101)
+        self.assertEqual(ce.select_publish_run([first, second], self.TAG)["databaseId"], 101)
 
     def test_among_finished_runs_the_latest_started_attempt_wins_over_the_larger_id(self):
         # A re-run keeps its databaseId and restarts: run 100's attempt 2 started after dispatch 200 finished.
@@ -2612,7 +2622,8 @@ class PublishRunStatusDispatchTest(unittest.TestCase):
         return [a[a.index("--workflow") + 1] for a in self.calls if a[:2] == ["run", "list"] and "workflow_dispatch" in a]
 
     def test_a_waiting_republish_dispatch_beats_the_failed_release_run(self):
-        release = [self._run(11, self.PUBLISHER, "completed", "failure"), self._run(15, self.IMAGE, "completed", "success")]
+        # The image run is listed FIRST, as gh lists cascor v0.13.0's runs: the lookup must key on the selected run.
+        release = [self._run(15, self.IMAGE, "completed", "success"), self._run(11, self.PUBLISHER, "completed", "failure")]
         dispatch = [self._run(20, self.PUBLISHER, "waiting", None, started="2026-11-16T10:00:00Z")]
         self.views = {20: _one_artifact_run("waiting", None, SKIPPED, SKIPPED, SKIPPED, ("waiting", None))}
         self.assertEqual(ce.classify_publish_run(self._status(release, dispatch)), "PENDING_PYPI_APPROVAL")
@@ -2635,7 +2646,8 @@ class PublishRunStatusDispatchTest(unittest.TestCase):
     def test_the_image_publishers_run_on_the_same_release_is_never_read(self):
         # The ml#2592 review's S1: the PyPI build failed, the image run succeeded with the larger id. Before the fix the
         # image run was selected (RELEASED, exit 0, no issue) and the dispatch listing was keyed on the image workflow.
-        release = [self._run(11, self.PUBLISHER, "completed", "failure"), self._run(15, self.IMAGE, "completed", "success")]
+        # Listed first, as gh lists them, so a lookup keyed on the first listed run instead of the selected one fails.
+        release = [self._run(15, self.IMAGE, "completed", "success"), self._run(11, self.PUBLISHER, "completed", "failure")]
         self.views = {11: FAILED_BUILD_RUN, 15: {"status": "completed", "conclusion": "success", "jobs": []}}
         self.assertEqual(ce.classify_publish_run(self._status(release, [])), "HALT_BUILD")
         self.assertEqual(self._viewed(), [11])

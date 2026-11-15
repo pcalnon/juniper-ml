@@ -46,6 +46,10 @@ MUTATIONS = {
     "release listing not per tag": ('"--event", "release", "--branch", tag, ', '"--event", "release", '),
     "the newest dispatch always wins": ("            match = select_publish_run([match, *dispatched], tag) or match\n", '            match = max([match, *dispatched], key=lambda r: r.get("databaseId") or 0)\n'),
     "a skipped dispatch is not dropped": ("            match = select_publish_run([match, *dispatched], tag) or match\n", "            match = (dispatched or [match])[-1]\n"),
+    # The round-2 review: gh does not list the PyPI run first, and the tie-breaks among unfinished or equal-start runs.
+    "dispatch lookup keyed on the first listed run": ('        workflow_id = match.get("workflowDatabaseId")\n', '        workflow_id = runs[0].get("workflowDatabaseId") if runs else None\n'),
+    "equal start times prefer the oldest id": ('key=lambda r: (r.get("startedAt") or "", r.get("databaseId") or 0))', 'key=lambda r: (r.get("startedAt") or "", -(r.get("databaseId") or 0)))'),
+    "unfinished runs ordered by id alone": ("    return max(unfinished or live, key=", "    return max(unfinished, key=lambda r: r.get(\"databaseId\") or 0) if unfinished else max(live, key="),
 }
 
 

@@ -214,8 +214,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   republish dispatch.** Three gaps in the publish monitor of `util/release_train/ceremony.py`: the two the
   2026-11-15 handoff named, and one its reviews found.
   - **It could read the wrong workflow.** juniper-cascor, juniper-canopy, juniper-data, juniper-cascor-worker and
-    juniper-recurrence also run `Publish Container Image` on each Release, on the same tag. In 9 of the 17
-    Releases checked on 2026-11-15 that run had the larger run id, so once both finished it was the run read,
+    juniper-recurrence also run `Publish Container Image` on each Release, on the same tag. In 11 of the 20
+    Releases sampled on 2026-11-15 that run had the larger run id, so once both finished it was the run read,
     and a failed PyPI build would have read as `RELEASED`. `select_publish_run` now drops any run whose workflow
     is not named `... to PyPI`. Among finished runs, the one whose latest attempt started last wins, since a
     re-run keeps its run id.
@@ -231,7 +231,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     id. So the republish job (rung 1 of the owner's recovery ladder of 2026-11-15) is seen.
   - **Tests.** `tests/test_release_train_ceremony.py` gains `OneArtifactPublisherClassifyTest`,
     `SelectPublishRunPublisherTest` and `PublishRunStatusDispatchTest`, and `LiveSeamSurfaceTest` drives the new
-    listing through the R7 guard (180 tests). Each of the ten mutations of the fix in
+    listing through the R7 guard (182 tests). Each of the thirteen mutations of the fix in
     `util/ad-hoc/2026-11-15_ceremony_gap_fixes_mutation_check.py` fails the suite.
     `util/ad-hoc/2026-11-15_precommit_in_clean_copy.py` runs pre-commit in a copy of a worktree that has no
     `.git`.
