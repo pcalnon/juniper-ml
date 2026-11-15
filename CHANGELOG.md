@@ -316,21 +316,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Scan job runs it with `GITLEAKS_PARITY_REQUIRED=1`. `util/ad-hoc/2026-11-14_verify_gitleaks_pr_scan_tests_are_not_vacuous.py`
     shows that each of its 72 mutations turns the cases it names red. `docs/REFERENCE.md` describes the job.
 
-- **The release-train monitor files an issue for a failed build, and sees a republish dispatch.** Every Juniper
-  publisher now builds once, in `Build and Validate`, and both publish jobs upload that one artifact
-  (juniper-cascor#763 and #767, and their ports). That opened two gaps in `util/release_train/ceremony.py`:
-  - a failed build leaves the TestPyPI job skipped, not failed, so the run read as `HALT_PUBLISH`, a note with no
-    issue, where the same failure inside a TestPyPI job that built for itself had filed one. `classify_publish_run`
-    now returns `HALT_BUILD` for a failed `Build and Validate` job, and `execute_ceremony` files a `build-failed`
-    dedup issue for it. The `testpypi-verify-failed` issue keeps its reason key; its text now names every step
-    of the TestPyPI job (the dist check, the upload, the TestPyPI sha256 check, the install-verify);
-  - `publish_run_status` listed release-event runs only, so the monitor never saw a dispatch of the publisher
-    from its release tag, such as the republish job (the owner's recovery ladder of 2026-11-15, rung 1). It now
-    also reads that publisher's own `workflow_dispatch` runs on the tag, filtered by the release run's workflow
-    id, so no other workflow's dispatch (CI, docs, an image publish) can classify a package's publish.
-  - `tests/test_release_train_ceremony.py` gains `OneArtifactPublisherClassifyTest` and
-    `PublishRunStatusDispatchTest`; `util/ad-hoc/2026-11-15_ceremony_gap_fixes_mutation_check.py` shows each of its
-    five mutations of the fix fails the suite. The operator runbook's §4.1 and the cheatsheet describe both.
+- **The release-train monitor reads the PyPI publisher's run, files an issue for a failed build, and sees a
+  republish dispatch.** Three gaps in the publish monitor of `util/release_train/ceremony.py`: the two the
+  2026-11-15 handoff named, and one its reviews found.
+  - **It could read the wrong workflow.** juniper-cascor, juniper-canopy, juniper-data, juniper-cascor-worker and
+    juniper-recurrence also run `Publish Container Image` on each Release, on the same tag. In 9 of the 17
+    Releases checked on 2026-11-15 that run had the larger run id, so once both finished it was the run read,
+    and a failed PyPI build would have read as `RELEASED`. `select_publish_run` now drops any run whose workflow
+    is not named `... to PyPI`. Among finished runs, the one whose latest attempt started last wins, since a
+    re-run keeps its run id.
+  - **A failed build filed no issue.** 13 of the 18 publishers have a separate `Build and Validate` job: canopy's,
+    juniper-ml's 7, recurrence's 3, and cascor's protocol and model publishers. juniper-cascor#763 gave cascor's
+    main publisher one too, and its ports give the last 4 one. A failed build skips the TestPyPI job, so the run
+    read as `HALT_PUBLISH`, a note with no issue. `classify_publish_run` now returns `HALT_BUILD`, and
+    `execute_ceremony` files a `build-failed` dedup issue for it. The `testpypi-verify-failed` issue keeps its
+    reason key. Its text, and the `HALT_PUBLISH` note, now claim only what the classifier knows.
+  - **A dispatch from the tag was invisible.** `publish_run_status` listed a repo-wide window of 20 release-event
+    runs, which is fewer than three Releases in juniper-ml, and no dispatch runs. It now lists the Release's own
+    runs with `--branch <tag>`, then that publisher's `workflow_dispatch` runs on the tag, filtered by its workflow
+    id. So the republish job (rung 1 of the owner's recovery ladder of 2026-11-15) is seen.
+  - **Tests.** `tests/test_release_train_ceremony.py` gains `OneArtifactPublisherClassifyTest`,
+    `SelectPublishRunPublisherTest` and `PublishRunStatusDispatchTest`, and `LiveSeamSurfaceTest` drives the new
+    listing through the R7 guard (180 tests). Each of the ten mutations of the fix in
+    `util/ad-hoc/2026-11-15_ceremony_gap_fixes_mutation_check.py` fails the suite.
+    `util/ad-hoc/2026-11-15_precommit_in_clean_copy.py` runs pre-commit in a copy of a worktree that has no
+    `.git`.
+  - **Docs.** The operator runbook (§3.3, §4, §4.1), `docs/REFERENCE.md` and the cheatsheet describe the changes.
 
 ## [0.11.5] - 2026-11-13
 

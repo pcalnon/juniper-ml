@@ -534,13 +534,13 @@ exempt archive path). Meta (`juniper-ml`) never gets a follow-on. Operator table
 only tip-at-base or single-commit-atop-base are safe re-entry shapes. Operator table:
 [`notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md`](../notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md) §3.3.
 
-**Ceremony monitor: `HALT_BUILD` / `HALT_TESTPYPI` vs `HALT_PUBLISH`.** A failed `Build and Validate` job
-(every publisher builds once, juniper-cascor#763 and its ports) → `HALT_BUILD` and a `build-failed` dedup
-issue. TestPyPI job failure → `HALT_TESTPYPI` and a `testpypi-verify-failed` dedup issue. A later run
-`failure`/`cancelled`/`timed_out` (TestPyPI already green) → `HALT_PUBLISH` with a note only — **no** GitHub
-issue. Open the publish run; do not wait for an issue. The monitor also reads that publisher's own
-`workflow_dispatch` runs on the tag, so a republish dispatch (the recovery ladder's first rung) is seen.
-Details: operator runbook §4.1.
+**Ceremony monitor: `HALT_BUILD` / `HALT_TESTPYPI` vs `HALT_PUBLISH`.** A failed separate `Build and
+Validate` job → `HALT_BUILD` and a `build-failed` dedup issue (a note only until juniper-ml#2592). A failed
+TestPyPI job → `HALT_TESTPYPI` and a `testpypi-verify-failed` dedup issue. Any other run
+`failure`/`cancelled`/`timed_out` (no failed build or TestPyPI job) → `HALT_PUBLISH` with a note only —
+**no** GitHub issue. Open the publish run; do not wait for an issue. The monitor reads the PyPI publisher's
+runs on the tag (never `Publish Container Image`), its dispatches from the tag included, so a republish
+dispatch (the recovery ladder's first rung) is seen. Details: operator runbook §4.1.
 
 **Ceremony re-entry (`RESUME_MONITOR`).** If a Release tag already exists, re-dispatching
 `mode=ceremony` only monitors the publish run — it does **not** re-open the archive PR or re-cut the

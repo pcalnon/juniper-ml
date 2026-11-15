@@ -39,6 +39,13 @@ MUTATIONS = {
     "no dispatch listing": ("        if workflow_id:\n            out_d", "        if False:\n            out_d"),
     "no workflow-id filter on dispatch runs": (' and r.get("workflowDatabaseId") == workflow_id]', "]"),
     "build-failed files no issue": ('                "HALT_BUILD": ("build-failed",', '                "HALT_BUILD_X": ("build-failed",'),
+    # The ml#2592 reviews: the image publisher's run on the same Release, a re-run's old id, the 20-run window, and the
+    # merge rule between the release run and its dispatches.
+    "image runs not dropped": ("    runs = [r for r in runs if is_pypi_publisher_run(r)]\n", ""),
+    "ordered by id alone": ('key=lambda r: (r.get("startedAt") or "", r.get("databaseId") or 0))', 'key=lambda r: r.get("databaseId") or 0)'),
+    "release listing not per tag": ('"--event", "release", "--branch", tag, ', '"--event", "release", '),
+    "the newest dispatch always wins": ("            match = select_publish_run([match, *dispatched], tag) or match\n", '            match = max([match, *dispatched], key=lambda r: r.get("databaseId") or 0)\n'),
+    "a skipped dispatch is not dropped": ("            match = select_publish_run([match, *dispatched], tag) or match\n", "            match = (dispatched or [match])[-1]\n"),
 }
 
 

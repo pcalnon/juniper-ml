@@ -483,6 +483,9 @@ class LiveSeamSurfaceTest(unittest.TestCase):
     def _rec_gh(self, args, timeout=90):
         self.gh_calls.append(list(args))
         pair = (args[0], args[1])
+        if pair == ("run", "list") and args[args.index("--event") + 1 if "--event" in args else 0] == "release":
+            # One publisher run on the Release, so publish_run_status goes on to list that workflow's dispatch runs too.
+            return json.dumps([{"databaseId": 1, "headBranch": "juniper-service-core-v0.5.0", "displayTitle": "x", "status": "waiting", "conclusion": None, "workflowDatabaseId": 7, "workflowName": "Publish juniper-service-core to PyPI", "startedAt": "2026-11-15T00:00:00Z"}])
         if pair in (("pr", "list"), ("run", "list")):
             return "[]"
         if pair == ("run", "view"):
@@ -524,6 +527,14 @@ class LiveSeamSurfaceTest(unittest.TestCase):
             else:
                 self.assertIn((args[0], args[1]), ce.GH_ALLOWED_SURFACE, args)
                 self.assertFalse(set(args) & ce.GH_FORBIDDEN_TOKENS, args)
+
+    def test_the_publish_run_lookup_lists_this_tags_runs_and_the_publishers_dispatches(self):
+        self._drive()
+        lists = [a for a in self.gh_calls if a[:2] == ["run", "list"] and "--event" in a]
+        self.assertEqual([a[a.index("--event") + 1] for a in lists], ["release", "workflow_dispatch"])
+        for args in lists:
+            self.assertEqual(args[args.index("--branch") + 1], "juniper-service-core-v0.5.0")
+        self.assertEqual(lists[1][lists[1].index("--workflow") + 1], "7")
 
     def test_mutating_calls_carry_the_required_flags(self):
         self._drive()
@@ -1204,7 +1215,7 @@ class ExecuteTest(unittest.TestCase):
         plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
         result = ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
         self.assertEqual(result["state"], "HALTED")
-        self.assertTrue(any("failed before the pypi gate" in n for n in result["notes"]))
+        self.assertTrue(any("with no failed build or TestPyPI job" in n for n in result["notes"]))
         self.assertNotIn("issue_url", result)
         self.assertFalse(any(c[0] == "upsert_halt_issue" for c in rec.calls))
         # Archive + Release were already cut before the monitor; HALT_PUBLISH must not re-cut.
@@ -2436,8 +2447,9 @@ class OneArtifactPublisherClassifyTest(unittest.TestCase):
     def test_a_failed_build_job_halts_as_a_build_failure(self):
         self.assertEqual(ce.classify_publish_run(FAILED_BUILD_RUN), "HALT_BUILD")
 
-    def test_the_build_failure_is_read_before_the_run_level_failure(self):
-        # The same run without the build job's verdict is what the pre-fix classifier saw: HALT_PUBLISH.
+    def test_control_without_the_build_job_the_same_failed_run_reads_as_halt_publish(self):
+        # A control, not an ordering test: the same run minus the build job is what the pre-fix classifier effectively
+        # saw. test_a_failed_build_job_halts_as_a_build_failure fails if the build check moves after the run-level one.
         run = dict(FAILED_BUILD_RUN, jobs=[j for j in FAILED_BUILD_RUN["jobs"] if j["name"] != BUILD])
         self.assertEqual(ce.classify_publish_run(run), "HALT_PUBLISH")
 
@@ -2512,94 +2524,164 @@ class OneArtifactPublisherClassifyTest(unittest.TestCase):
         self.assertTrue(titles[0].endswith(" -- testpypi-verify-failed"), titles[0])
 
 
-class PublishRunStatusDispatchTest(unittest.TestCase):
-    """The live seam's ``publish_run_status`` reads the release-event runs AND that publisher's own dispatch runs
-    on the tag, so a republish (the recovery ladder's rung 1) or a plain re-fire is seen (the handoff's
-    release-train gap (b)); no other workflow's dispatch run is ever read. Driven with a scripted ``gh``."""
+class SelectPublishRunPublisherTest(unittest.TestCase):
+    """``select_publish_run`` reads the PyPI publisher's run, never ``Publish Container Image``: five repos run that
+    workflow on the same Release, on the same tag, and its run often has the larger ``databaseId`` (juniper-cascor
+    v0.11.0, v0.12.0 and v0.13.0; canopy v0.8.0 and v0.9.0; data v0.14.0; cascor-worker v0.6.0 and v0.6.1; recurrence
+    v0.7.0 and v0.8.0, per the ml#2592 review). Among finished runs, the one whose latest attempt started last wins."""
 
-    TAG = "juniper-ci-tools-v0.9.9"
-    PUBLISHER = 280582223  # "Publish juniper-ci-tools to PyPI"'s workflow id (gh run list, 2026-11-15)
-    SIBLING = 295930791  # "Publish juniper-model-core to PyPI": fires on the same Release, guard-skipped
-    FIELDS = "databaseId,headBranch,displayTitle,status,conclusion,workflowDatabaseId"
+    TAG = "v0.13.0"
+
+    def _run(self, run_id, name, status, conclusion, started="2026-11-15T10:00:00Z"):
+        return {"databaseId": run_id, "workflowName": name, "displayTitle": "juniper-cascor v0.13.0", "headBranch": self.TAG, "status": status, "conclusion": conclusion, "startedAt": started}
+
+    def test_the_image_publishers_run_is_dropped_even_when_it_is_newer(self):
+        runs = [self._run(100, "Publish to PyPI", "completed", "failure"), self._run(105, "Publish Container Image", "completed", "success")]
+        self.assertEqual(ce.select_publish_run(runs, self.TAG)["databaseId"], 100)
+        runs = [self._run(100, "Publish to PyPI", "completed", "failure"), self._run(105, "Publish Container Image", "in_progress", None)]
+        self.assertEqual(ce.select_publish_run(runs, self.TAG)["databaseId"], 100)
+
+    def test_a_tag_with_only_an_image_run_has_no_publish_run(self):
+        self.assertIsNone(ce.select_publish_run([self._run(105, "Publish Container Image", "completed", "success")], self.TAG))
+
+    def test_every_pypi_publisher_name_is_kept_and_a_run_without_a_name_is_kept_as_before(self):
+        for name in ("Publish to PyPI", "Publish juniper-ci-tools to PyPI", "Publish juniper-recurrence-model to PyPI", None):
+            with self.subTest(name=name):
+                run = self._run(100, name, "waiting", None)
+                if name is None:
+                    del run["workflowName"]
+                self.assertEqual(ce.select_publish_run([run], self.TAG)["databaseId"], 100)
+
+    def test_among_finished_runs_the_latest_started_attempt_wins_over_the_larger_id(self):
+        # A re-run keeps its databaseId and restarts: run 100's attempt 2 started after dispatch 200 finished.
+        rerun = self._run(100, "Publish to PyPI", "completed", "success", started="2026-11-15T12:00:00Z")
+        dispatch = self._run(200, "Publish to PyPI", "completed", "failure", started="2026-11-15T11:00:00Z")
+        self.assertEqual(ce.select_publish_run([rerun, dispatch], self.TAG)["databaseId"], 100)
+
+
+class PublishRunStatusDispatchTest(unittest.TestCase):
+    """The live seam's ``publish_run_status`` lists this Release's runs alone (``--branch <tag>``), keeps the PyPI
+    publisher's, and adds that publisher's own ``workflow_dispatch`` runs on the tag, so a republish (the recovery
+    ladder's rung 1) or a plain re-fire is seen (the handoff's release-train gap (b)), and no other workflow's run is
+    ever read. Driven with a scripted ``gh``; every call it records passes ``_assert_gh_allowed`` with the real
+    registry-derived repo set."""
+
+    TAG = "v0.13.0"
+    PUBLISHER = 101  # "Publish to PyPI"
+    IMAGE = 353119920  # "Publish Container Image": fires on the same Release (the workflow id the ml#2592 review saw)
+    SIBLING = 102  # another PyPI publisher of the repo (cascor's protocol publisher), dispatched from the same tag
+    FIELDS = "databaseId,headBranch,displayTitle,status,conclusion,workflowDatabaseId,workflowName,startedAt"
+    NAMES = {PUBLISHER: "Publish to PyPI", IMAGE: "Publish Container Image", SIBLING: "Publish juniper-cascor-protocol to PyPI"}
 
     def setUp(self):
         self.calls = []
         self.views = {}
+        self.allowed = ce.publishing_repo_slugs(d.load_registry(UTIL_DIR / "registry.yaml"), "pcalnon")
 
-    def _gh(self, release_runs, dispatch_runs):
+    def _gh(self, release_runs, dispatch_runs, filter_by_workflow=True):
         def gh(args, timeout=90):
             self.calls.append(list(args))
-            ce._assert_gh_allowed(args, frozenset({"pcalnon/juniper-ml"}))  # every call stays inside the R7 surface
+            ce._assert_gh_allowed(args, self.allowed)
             if args[:2] == ["run", "list"]:
-                event = args[args.index("--event") + 1]
                 self.assertEqual(args[args.index("--json") + 1], self.FIELDS)
+                self.assertEqual(args[args.index("--branch") + 1], self.TAG)
+                event = args[args.index("--event") + 1]
                 if event == "release":
                     self.assertNotIn("--workflow", args)
                     return json.dumps(release_runs)
                 self.assertEqual(event, "workflow_dispatch")
-                return json.dumps([r for r in dispatch_runs if str(r.get("workflowDatabaseId")) == args[args.index("--workflow") + 1]])
+                wanted = args[args.index("--workflow") + 1]
+                return json.dumps([r for r in dispatch_runs if not filter_by_workflow or str(r.get("workflowDatabaseId")) == wanted])
             if args[:2] == ["run", "view"]:
                 return json.dumps(self.views[int(args[2])])
             raise AssertionError(f"unexpected gh call {args}")
 
         return gh
 
-    def _status(self, release_runs, dispatch_runs):
-        src = ce.make_live_sources("pcalnon", REPO_ROOT, REPO_ROOT.parent, gh=self._gh(release_runs, dispatch_runs), git=lambda *a, **k: "")
-        return src.publish_run_status("juniper-ml", self.TAG)
+    def _status(self, release_runs, dispatch_runs, **kwargs):
+        src = ce.make_live_sources("pcalnon", REPO_ROOT, REPO_ROOT.parent, gh=self._gh(release_runs, dispatch_runs, **kwargs), git=lambda *a, **k: "")
+        return src.publish_run_status("juniper-cascor", self.TAG)
 
-    def _run(self, run_id, workflow, status, conclusion, branch=None):
-        return {"databaseId": run_id, "headBranch": branch or self.TAG, "displayTitle": "x", "status": status, "conclusion": conclusion, "workflowDatabaseId": workflow}
+    def _run(self, run_id, workflow, status, conclusion, started="2026-11-15T10:00:00Z"):
+        return {"databaseId": run_id, "headBranch": self.TAG, "displayTitle": "x", "status": status, "conclusion": conclusion, "workflowDatabaseId": workflow, "workflowName": self.NAMES[workflow], "startedAt": started}
 
     def _viewed(self):
         return [int(a[2]) for a in self.calls if a[:2] == ["run", "view"]]
 
+    def _dispatch_workflows(self):
+        return [a[a.index("--workflow") + 1] for a in self.calls if a[:2] == ["run", "list"] and "workflow_dispatch" in a]
+
     def test_a_waiting_republish_dispatch_beats_the_failed_release_run(self):
-        release = [self._run(10, self.SIBLING, "completed", "skipped"), self._run(11, self.PUBLISHER, "completed", "failure")]
-        dispatch = [self._run(20, self.PUBLISHER, "waiting", None)]
-        self.views = {20: _one_artifact_run("waiting", None, SKIPPED, SKIPPED, SKIPPED, ("waiting", None)), 11: FAILED_BUILD_RUN}
-        status = self._status(release, dispatch)
+        release = [self._run(11, self.PUBLISHER, "completed", "failure"), self._run(15, self.IMAGE, "completed", "success")]
+        dispatch = [self._run(20, self.PUBLISHER, "waiting", None, started="2026-11-16T10:00:00Z")]
+        self.views = {20: _one_artifact_run("waiting", None, SKIPPED, SKIPPED, SKIPPED, ("waiting", None))}
+        self.assertEqual(ce.classify_publish_run(self._status(release, dispatch)), "PENDING_PYPI_APPROVAL")
         self.assertEqual(self._viewed(), [20])
-        self.assertEqual(ce.classify_publish_run(status), "PENDING_PYPI_APPROVAL")
-        lists = [a for a in self.calls if a[:2] == ["run", "list"]]
-        self.assertEqual([a[a.index("--event") + 1] for a in lists], ["release", "workflow_dispatch"])
-        self.assertEqual(lists[1][lists[1].index("--workflow") + 1], str(self.PUBLISHER))
+        self.assertEqual(self._dispatch_workflows(), [str(self.PUBLISHER)])
 
     def test_a_successful_republish_reads_as_released(self):
         release = [self._run(11, self.PUBLISHER, "completed", "failure")]
-        dispatch = [self._run(21, self.PUBLISHER, "completed", "success")]
+        dispatch = [self._run(21, self.PUBLISHER, "completed", "success", started="2026-11-16T10:00:00Z")]
         self.views = {21: _one_artifact_run("completed", "success", SKIPPED, SKIPPED, SKIPPED, ("completed", "success"))}
         self.assertEqual(ce.classify_publish_run(self._status(release, dispatch)), "RELEASED")
         self.assertEqual(self._viewed(), [21])
 
-    def test_without_a_dispatch_the_release_run_is_read_as_before(self):
-        release = [self._run(10, self.SIBLING, "completed", "skipped"), self._run(11, self.PUBLISHER, "completed", "failure")]
+    def test_without_a_dispatch_the_release_run_is_read(self):
+        release = [self._run(11, self.PUBLISHER, "completed", "failure")]
         self.views = {11: FAILED_BUILD_RUN}
         self.assertEqual(ce.classify_publish_run(self._status(release, [])), "HALT_BUILD")
         self.assertEqual(self._viewed(), [11])
 
-    def test_another_branch_and_another_workflow_are_never_read(self):
-        release = [self._run(11, self.PUBLISHER, "completed", "failure")]
-        # A dispatch of this publisher from main, and one of another workflow on the tag (the scripted gh returns it
-        # whatever the --workflow filter says), are both newer and unfinished, and neither may be selected.
-        dispatch = [self._run(30, self.PUBLISHER, "waiting", None, branch="main"), self._run(31, self.SIBLING, "waiting", None)]
+    def test_the_image_publishers_run_on_the_same_release_is_never_read(self):
+        # The ml#2592 review's S1: the PyPI build failed, the image run succeeded with the larger id. Before the fix the
+        # image run was selected (RELEASED, exit 0, no issue) and the dispatch listing was keyed on the image workflow.
+        release = [self._run(11, self.PUBLISHER, "completed", "failure"), self._run(15, self.IMAGE, "completed", "success")]
+        self.views = {11: FAILED_BUILD_RUN, 15: {"status": "completed", "conclusion": "success", "jobs": []}}
+        self.assertEqual(ce.classify_publish_run(self._status(release, [])), "HALT_BUILD")
+        self.assertEqual(self._viewed(), [11])
+        self.assertEqual(self._dispatch_workflows(), [str(self.PUBLISHER)])
 
-        def gh(args, timeout=90):
-            self.calls.append(list(args))
-            if args[:2] == ["run", "list"]:
-                return json.dumps(release if args[args.index("--event") + 1] == "release" else dispatch)
-            return json.dumps(self.views[int(args[2])])
-
-        self.views = {11: FAILED_BUILD_RUN}
-        src = ce.make_live_sources("pcalnon", REPO_ROOT, REPO_ROOT.parent, gh=gh, git=lambda *a, **k: "")
-        src.publish_run_status("juniper-ml", self.TAG)
+    def test_a_release_run_re_run_after_a_failed_republish_is_the_one_read(self):
+        # The ladder's rung 1 failed, then rung 2 ("Re-run failed jobs" on the release run) succeeded: the re-run keeps
+        # its older databaseId, so ordering by id alone read the failed dispatch (HALT_PUBLISH).
+        release = [self._run(11, self.PUBLISHER, "completed", "success", started="2026-11-17T10:00:00Z")]
+        dispatch = [self._run(20, self.PUBLISHER, "completed", "failure", started="2026-11-16T10:00:00Z")]
+        self.views = {11: RELEASED_RUN}
+        self.assertEqual(ce.classify_publish_run(self._status(release, dispatch)), "RELEASED")
         self.assertEqual(self._viewed(), [11])
 
-    def test_a_release_run_without_a_workflow_id_reads_no_dispatch_runs(self):
+    def test_a_skipped_dispatch_never_overrides_the_release_run(self):
+        release = [self._run(11, self.PUBLISHER, "completed", "failure")]
+        dispatch = [self._run(20, self.PUBLISHER, "completed", "skipped", started="2026-11-16T10:00:00Z")]
+        self.views = {11: FAILED_BUILD_RUN}
+        self._status(release, dispatch)
+        self.assertEqual(self._viewed(), [11])
+
+    def test_an_unfinished_release_run_beats_a_newer_finished_dispatch(self):
+        release = [self._run(11, self.PUBLISHER, "waiting", None)]
+        dispatch = [self._run(20, self.PUBLISHER, "completed", "failure", started="2026-11-16T10:00:00Z")]
+        self.views = {11: PENDING_RUN}
+        self.assertEqual(ce.classify_publish_run(self._status(release, dispatch)), "PENDING_PYPI_APPROVAL")
+        self.assertEqual(self._viewed(), [11])
+
+    def test_a_dispatch_of_another_workflow_on_the_tag_is_never_read(self):
+        # The scripted gh ignores --workflow here, so only the seam's own filters keep these out: the image re-push by
+        # its name, and another PyPI publisher dispatched from the same tag by its workflow id alone.
+        release = [self._run(11, self.PUBLISHER, "completed", "failure")]
+        for other in (self.IMAGE, self.SIBLING):
+            with self.subTest(other=self.NAMES[other]):
+                self.calls = []
+                dispatch = [self._run(30, other, "in_progress", None, started="2026-11-16T10:00:00Z")]
+                self.views = {11: FAILED_BUILD_RUN}
+                self._status(release, dispatch, filter_by_workflow=False)
+                self.assertEqual(self._viewed(), [11])
+
+    def test_defensively_a_release_run_without_a_workflow_id_reads_no_dispatch_runs(self):
+        # gh always returns workflowDatabaseId when asked; this pins that its absence degrades to the release run alone.
         release = [{k: v for k, v in self._run(11, self.PUBLISHER, "completed", "failure").items() if k != "workflowDatabaseId"}]
         self.views = {11: FAILED_BUILD_RUN}
         self.assertEqual(ce.classify_publish_run(self._status(release, [self._run(20, self.PUBLISHER, "waiting", None)])), "HALT_BUILD")
-        self.assertEqual([a[a.index("--event") + 1] for a in self.calls if a[:2] == ["run", "list"]], ["release"])
+        self.assertEqual(self._dispatch_workflows(), [])
 
     def test_no_release_run_is_not_found_and_reads_no_dispatch_runs(self):
         self.assertIsNone(self._status([], [self._run(20, self.PUBLISHER, "waiting", None)]))
