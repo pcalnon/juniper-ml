@@ -103,6 +103,7 @@ def _mtime(path: Path) -> str:
 
 
 def main() -> int:
+    ok = False
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--predecessor", required=True, type=Path)
     ap.add_argument("--scratch", required=True, type=Path)
