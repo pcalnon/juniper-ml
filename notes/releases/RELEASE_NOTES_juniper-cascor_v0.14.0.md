@@ -1,24 +1,24 @@
-# juniper-cascor v0.14.0 – :lock: SECURITY PATCH RELEASE
+# juniper-cascor v0.14.0 – :lock: SECURITY RELEASE (MINOR)
 
 **Release Date:** 2026-11-15
-**Release Type:** Security Patch
-**Priority:** [PRIORITY_LEVEL]
+**Release Type:** MINOR (security-bearing)
+**Priority:** High: upgrade every juniper-cascor deployment that reports to Sentry (`JUNIPER_CASCOR_SENTRY_DSN` set)
 **Package Affected:** juniper-cascor
 
 ---
 
-This is a security-bearing release of `juniper-cascor` v0.14.0. It carries a `Security` Keep-a-Changelog category and was drafted by the release-train from the security template; complete the advisory details (CWE, advisory URL, affected versions) before the ceremony.
+This is a security-bearing minor release of `juniper-cascor` v0.14.0. Its image locks `juniper-observability` 0.4.2, and its wheel now floors `juniper-observability>=0.4.2`, whose `configure_sentry` scrubs transactions as well as error events and filters four more credential headers. Under 0.4.1, once `JUNIPER_CASCOR_SENTRY_DSN` was set, a request's `Sec-WebSocket-Protocol`, `X-CSRF-Token` and `X-XSRF-Token` headers reached Sentry in every error event and transaction. cascor reads no credential from any of the three (it authenticates REST and WebSocket callers by `X-API-Key` alone), so they carried a secret only when a client put one there. cascor leaves `send_pii` off, so the `X-API-Key` and cookie leaks that 0.4.2 also closes were not reachable here. It also floors `juniper-service-core>=0.7.2,<0.8.0`, a plain patch. 0.4.2 does not close every path to Sentry: its notes list what stays open for 0.4.3, query strings and Sentry Logs among them. The release also fixes a 429 that said `Retry-After: 0` (APD-ECO-016), a lifecycle that wedged in `PAUSED`, a WebSocket resume that missed broadcasts, and a start that cancelled the stop before it; it adds a keyword and a `bool` return to `WebSocketManager.promote_to_active`.
 
 ---
 
-## Security Impact ([SEVERITY])
+## Security Impact (Medium)
 
 | Attribute | Value |
 | --------- | ----- |
 | **Package** | `juniper-cascor` |
 | **Fixed in** | 0.14.0 |
-| **Vulnerability class** | [VULNERABILITY_CLASS] ([CWE_ID]) |
-| **Advisory** | [DEPENDABOT_ALERT_URL] |
+| **Vulnerability class** | Fixed by juniper-observability 0.4.2, which this release floors and its image locks: sensitive information sent to an external service ([CWE-201](https://cwe.mitre.org/data/definitions/201.html)) |
+| **Advisory** | None. Internal findings, fixed in juniper-observability 0.4.2, which its own notes rate Medium: round-42 finding F2 (2026-09-24) and the validation of consolidated-plan item P3-07 (2026-11-08); there is no CVE or Dependabot alert |
 
 ---
 
