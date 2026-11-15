@@ -12,7 +12,14 @@
 #         juniper-cascor's existing workflow).
 #      2. The `pytest -m` selector — repos with `slow` markers should
 #         use `slow or integration`; repos without should use just
-#         `integration`.
+#         `integration`. Do not keep the default in a repo that
+#         registers no `slow` marker: from pytest 9.2.0 an unregistered
+#         marker in a `-m` expression is a usage error under
+#         `--strict-markers` (exit 4). The default failed every nightly
+#         leg of juniper-data-client, juniper-cascor-client and
+#         juniper-cascor-worker from 2026-10-28 until each moved to
+#         `integration` (juniper-data-client#263,
+#         juniper-cascor-client#198, juniper-cascor-worker#231).
 #
 #    juniper-cascor already ships a richer scheduled-tests.yml (slow
 #    unit + slow integration + long-running + benchmarks). That richer
