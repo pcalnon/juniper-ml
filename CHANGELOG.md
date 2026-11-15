@@ -280,6 +280,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `util/ad-hoc/2026-11-12_flood4r2_ml-propose-r3_mutation_check.py` kills 56 of its 59 mutants of the new code
     and records why the other three survive (two are equivalent, one is a disclosed edge). `docs/REFERENCE.md` and
     the release-train runbook (§3.2) describe the step.
+- **The `Security Scan` job's Gitleaks step scans a pull request's whole `base..head`, merge commits included** (the
+  port of juniper-data#530; ruling 10 in section 8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+  gitleaks-action v3.0.0 lists a pull request's commits in one unpaginated page of 30 and scans
+  `--no-merges --first-parent <first>^..<last>` across it, so it never reached commit 31 and dropped whatever a merge
+  brought in. Here that is not latent: of the 1,487 pull requests numbered #1076 (which added the step) to #2583,
+  read on 2026-11-15, seven hold non-merge commits of their own that the action's window, simulated from each
+  listing, never reaches, and on #1797 (88 commits) it logged `12 commits scanned.`, one of them the pull request's own.
+  - On `pull_request` the action is skipped. `Install Gitleaks (pull request)` fetches the same 8.24.3 release and
+    checks it against its pinned SHA-256; `Run Gitleaks over the pull request` scans every commit in the event's
+    `base..head` with `--remerge-diff`, so a merge commit's own changes are scanned too, refuses an octopus merge,
+    and fails on a leak. The shell is juniper-data's, unchanged. `push` and `workflow_dispatch` keep the action,
+    and `merge_group`, which the action rejects, fails as before.
+  - A pull request's report is `reports/security/gitleaks.sarif` in the new `gitleaks-report` artifact, uploaded
+    under `if: always()`; a pull request no longer uploads a `gitleaks-results.sarif` artifact. On a pull request
+    the ruleset's real-engine self-test now finds the installed binary on `PATH`.
+  - `tests/test_gitleaks_pr_scan.py` (25 cases, unittest) pins the wiring and what keeps a leak blocking the
+    required check, and runs the scan step's own shell with stand-in engines and with the real one; the Security
+    Scan job runs it with `GITLEAKS_PARITY_REQUIRED=1`. `util/ad-hoc/2026-11-14_verify_gitleaks_pr_scan_tests_are_not_vacuous.py`
+    shows that each of its 72 mutations turns the cases it names red. `docs/REFERENCE.md` describes the job.
 
 ## [0.11.5] - 2026-11-13
 
