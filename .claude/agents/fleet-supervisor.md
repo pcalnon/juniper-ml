@@ -71,9 +71,9 @@ re-runs per merge.
 The script emits four verdicts; you carry them through and add the fifth (DUP-CLOSE) as a
 recommendation only:
 
-- **MERGE-CLEAN** — the merge result is conflict-free, every fast gate passes, the AST screen finds
-  no lost symbol, the docs diff is additions-only, and the branch already contains `main`. Safe to
-  merge as-is.
+- **MERGE-CLEAN** — the merge result is conflict-free, no fast gate fails, the AST screen reports
+  no lost symbol, the docs screen reports no deleted heading or deletion run, and the branch
+  already contains `main`. Safe to merge as-is.
 - **NEEDS-UPDATE-BRANCH** — the predicted result is clean but the branch is **behind main**;
   branch-head CI is stale. The fix is GitHub's server-side **update-branch**, whose merge commit
   GitHub signs — never a local rebase on a host that cannot sign, which re-creates the commits
@@ -140,6 +140,7 @@ checkpoints; you are not re-invoked per merge. (Fully draining a same-file clust
 - Every per-PR claim is backed by the script's JSON for that PR — cite it. Do not assert a verdict
   you did not obtain from `predict_merge.py`.
 - The TRUE delta is the script's `git diff` of the merge result, **never** `gh --json files`.
-- If the script errors on a PR (unresolved ref, clone failure), report it as `ERROR` for that PR
-  and continue — never invent a verdict.
+- If the script errors on a PR (an unresolved ref, a scratch repository that cannot be prepared,
+  or a merge or ancestor check git could not complete, such as a history cut above the merge base
+  in a shallow checkout), report it as `ERROR` for that PR and continue — never invent a verdict.
 - You ask no questions and request no tools beyond `Read` / `Grep` / `Glob` / `Bash`.

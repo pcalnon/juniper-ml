@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.68
-**Date**: 2026-11-13
+**Version**: 1.0.69
+**Date**: 2026-11-15
 **Project**: juniper-ml
 
 ---
@@ -72,7 +72,7 @@
 | `python util/experiments/make_baseline.py --tag TAG --suite SUITE_DIR` | Bless a suite as a named Q-8 baseline (operator-only; no `--force`) |
 | `python util/experiments/compare_baseline.py --baseline TAG --suite SUITE_DIR` | Split compare vs a baseline (exit 0/1/2). Same-branch FAIL is a real move; branch flip REFUSES. **Do not wire to CI.** |
 | `python util/agent_suite_doctor.py --json`             | Custom-agent suite health check (OK/WARN/FAIL; discovery fail-closed) |
-| `python util/fleet_triage/predict_merge.py --pr N --json` | Predicted-merge triage for one open PR (detached clone; never pushes) |
+| `python util/fleet_triage/predict_merge.py --pr N --json` | Predicted-merge triage for one open PR (throwaway scratch repository on the checkout's objects; never pushes) |
 | `python3 util/ruleset_scope_guard.py` | Assert this repo's rulesets are not scoped `~ALL` (Quality Gate hard need) |
 | `python3 util/ruleset_scope_guard.py --fleet` | Same check across all 9 Juniper repos |
 | `python3 -m unittest -v tests/test_ruleset_scope_guard.py` | Hermetic gate for the ~ALL-scope guard |
@@ -89,7 +89,7 @@
 | `python3 util/soak_run_probe.py --probe-id FULL-SLUG`  | Run a named soak probe (full slug; do not `--force`) |
 | `python util/env_floor_drift_check.py --repo-root PATH --env NAME` | Floor-drift: installed `juniper-*` vs pyproject floors (I-2) |
 | `util/check_conda_env_torch.bash JuniperCascor1` | Classify P-5 / May-7 torch._C shadow (exit 0/1/2/3/4; does not rebuild) |
-| `python util/fleet_triage/predict_merge.py --pr N --json` | Predicted-merge triage for one open PR (detached clone; never pushes) |
+| `python util/fleet_triage/predict_merge.py --pr N --json` | Predicted-merge triage for one open PR (throwaway scratch repository on the checkout's objects; never pushes) |
 | `python util/fleet_triage/predict_merge.py --batch --json` | Batch triage + same-file cluster map + merge order |
 | `python3 util/ad-hoc/2026-08-31_resident_gap_triage.py . --min-score 3` | Rank source comments that are hazard-shaped and resident nowhere |
 | `python3 util/ad-hoc/2026-08-31_resident_gap_triage.py ../juniper-cascor --self-check --agents tmp/pre609.md` | Positive control: cascor `max_epochs` split must score ≥ 3 and rank top 5 |
@@ -176,6 +176,8 @@ Stealth is reported in the message.
 ## Claude Code Session Script
 
 > See: `scripts/claude_interactive.bash` | `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
+>
+> Operator contract: [REFERENCE — Local Claude Code Launchers](REFERENCE.md#local-claude-code-launchers).
 
 | Entry Point                                                 | Behavior                                                                                                                        |
 |-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
@@ -195,7 +197,15 @@ Code's last argument, after `--`, so a bare `--worktree` or `--remote-control` c
 `--remote-control` never takes a value. In both `wake_the_claude.bash` and `claudey`, `-v`, `-V`, `--version` and
 `--claude-version` print Claude Code's version, as `claude -v` does, and `--script-version` prints the launcher's own.
 `claudey` refuses a prompt together with a prompt file (exit 1): `wake_the_claude.bash` would send the prompt and drop
-the file. `-u` prints the usage text and exits 1.
+the file. `--file ''` and `--path ''` (also `-f` and `-l`) exit 1 with `Missing value for` that flag and do not call wake; an
+exported empty `CLAUDE_PROMPT_FILE` or `CLAUDE_PROMPT_PATH` is refused the same way.
+An empty word exits 1 (`Unknown argument: (an empty word)`), except `-w ''`, which is a bare `--worktree` and does not end the parse.
+`claudey` exits with `wake_the_claude.bash`'s status after the `Closed` line. `./claudey -v` leaves wake's debug log off
+unless `WTC_DEBUG` is already set. With `WTC_DEBUG=1`, a missing `claude`, an empty `claude --version`, a prompt file
+that never resolves, and a flag the parser refuses (`Error: refused "<flag>": its value is missing or invalid (WTC_DEBUG=0 logs why)`)
+still print an `Error:` line on stderr. A later `--file` or `--path` that does not resolve drops the file an earlier one resolved.
+`--effort auto` sends no `--effort` flag, and `--effort 0` sends `--effort max`. claudey's usage shows `--prompt` or a prompt file,
+not both as separate slots. `-u` prints the usage text and exits 1.
 
 **Interactive** (default): runs `claude` in foreground. **Headless**: add `--print` to launch via `nohup`, logs to `logs/wake_the_claude.nohup.log` (fallback: `$HOME/`).
 
@@ -401,15 +411,19 @@ Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `
 
 **Sequence-safety / fleet triage (juniper-ml#895 / #908 / #910 / #926):** `predict_merge` shells out
 to `juniper-symbol-loss-check (juniper-ci-tools)` on the merged RESULT (byte-identical to post-merge
-`main-verify`; fail-soft: checker `skip` ≠ damage). The inline docs screen counts removed content `-`
-lines on changed `.md` only (ignores the `---` header) and honors `Allow-Docs-Rewrite` trailers
+`main-verify`; fail-soft: checker `skip` ≠ damage). The docs screen hands every changed `.md` to
+`juniper-docs-additions-check` (a deleted heading, or 5 or more deleted lines in a hunk that adds nothing, fails; a
+small swap does not) and honors `Allow-Docs-Rewrite` trailers
 (path / basename / `*`). Intentional symbol removals need an `Allow-Symbol-Loss: <qualified.symbol>`
 commit trailer in BASE..HEAD — the per-PR `allow-symbol-loss` label is WARN-only advisory and does
 **not** green `main-verify`. Docs-only deltas skip the pre-commit battery (`no .py files in delta`).
-`--batch` orders heal titles/branches first (`restore` / `heal` / `repair` / `fix-first`). Verdicts:
+`--batch` orders heal PRs first (a `fix/` / `heal/` / `hotfix/` branch, or a `fix(` / `fix:` / `heal` title). Verdicts:
 `NEEDS-UPDATE-BRANCH` means behind-main; `DAMAGED-FIX-FIRST` is gate **or** symbol **or** docs `fail`.
-Skip local pre-commit with `JUNIPER_FLEET_SKIP_PRECOMMIT=1`. Full contract:
+Skip local pre-commit with `JUNIPER_FLEET_SKIP_PRECOMMIT=1`. The scratch is `git init` plus `objects/info/alternates` on the checkout's common object store, copies the checkout's `shallow` file, and disables filters (`* -filter`). `git fetch origin` first. A history cut above the merge base is an error (`--pr` exit 2, `--batch` `ERROR`), not `NEEDS-UPDATE-BRANCH`. Full contract:
 [REFERENCE.md § Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety).
+
+**WEAKENED bounds.** A Python function, class, or method is `WEAKENED` / `FAIL` only when the head keeps at most 60 percent of the base line count and the body lost at least 4 lines. Both bounds include equality: 10 lines down to 6 fails; 15 down to 10 does not; 7 down to 4 does not. A bash function at those bounds is `WARN`. Gutting a method can also fail the enclosing class, and each key needs its own `Allow-Symbol-Loss` token.
+[REFERENCE — WEAKENED bounds](REFERENCE.md#a-python-body-that-keeps-at-most-60-percent-and-loses-at-least-4-lines-is-weakened).
 
 **Ruleset context audit:** a required name that never reports leaves `main` unmergeable with every
 visible check green (2026-08-10 fleet-union of 30). Re-run the auditor; do not quote the note's
@@ -548,11 +562,11 @@ the `git/refs` POST omitted a heads ref — fail-closed code bug, not an auth bl
 ref. Re-dispatch after #770; see runbook §7.
 
 **Sequence-safety / fleet triage (juniper-ml#895 / #926):** `predict_merge` shells out to
-`juniper-symbol-loss-check (juniper-ci-tools)` on the merge RESULT. Its docs screen stays a stricter
-any-removed-line counter (not heading/`--min-run`), but honors `Allow-Docs-Rewrite: <path>` / `*`
+`juniper-symbol-loss-check (juniper-ci-tools)` on the merge RESULT. Its docs screen is
+`juniper-docs-additions-check` on every changed `.md` (the heading / `--min-run` thresholds `main-verify` uses), and honors `Allow-Docs-Rewrite: <path>` / `*`
 trailers like `docs_additions_check.py` so intentional docs rewrites are not forever
 `DAMAGED-FIX-FIRST`. `Allow-Symbol-Loss: *` is still rejected. Exit `0` always emits a report —
-read each `verdict`. Full contract:
+read each `verdict`. The scratch copies the checkout's `shallow` file and writes `* -filter`; `git fetch origin` first. A shallow cut above the merge base is an error, not a clean behind-main verdict. Full contract:
 [REFERENCE.md § Fleet Triage and Sequence Safety](REFERENCE.md#fleet-triage-and-sequence-safety).
 
 **Post-merge main-verify (G3 / G3.1 / notify 0.3.0):** every `push:main` runs
@@ -797,10 +811,11 @@ Tip: `util/juniper-backup.bash` writes per-repo `.tbz2.gpg` (bzip2). Restore wit
 Full contract: [REFERENCE — Juniper Project-Tree Backup](REFERENCE.md#juniper-project-tree-backup).
 
 Tip: before merging a Cursor-fleet batch, run `python util/fleet_triage/predict_merge.py --batch --json`.
-Prefer heal PRs first (title/branch tokens `restore`/`heal`/`repair`/`fix-first` sort ahead of colliding
+Prefer heal PRs first (a `fix/` / `heal/` / `hotfix/` branch, or a `fix(` / `fix:` / `heal` title, sorts ahead of colliding
 feat PRs); never treat script exit `0` as “all clean” — read each `verdict`. Symbol screen matches
-`main-verify` (#895). Docs screen is stricter (any removed `.md` line; unified-diff `---` headers never
-count) but honors `Allow-Docs-Rewrite` trailers (#926). Docs-only PRs skip the pre-commit battery.
+`main-verify` (#895). Docs screen uses `main-verify`'s thresholds on every changed `.md` (a small swap is not damage)
+and honors `Allow-Docs-Rewrite` trailers (#926). Docs-only PRs skip the pre-commit battery.
+The scratch is `git init` plus alternates and copies the checkout's `shallow` file. `git fetch origin` first.
 See [REFERENCE.md § Fleet Triage](REFERENCE.md#fleet-triage-and-sequence-safety).
 
 Tip: flood CI gates (#869/#880) — per-PR `Sequence Safety` is a **required** `juniper-ml-rules` context, even though it is absent from Quality Gate `needs:`. The `ci.yml` banner said advisory until 2026-10-08.
@@ -896,7 +911,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | L2/L3 auditor green after permissions widen | Expected — bash is structure-only; `LiveClaudeWorkflowContractTests` pins the map |
 | Slack PR-budget WARN/ALARM | Open the `PR Budget Alarm` run step summary; drain oldest `cursor/` same-file clusters; confirm dashboard per-run caps. Raise thresholds only via `PR_BUDGET_WARN` / `PR_BUDGET_ALARM` repo vars. |
 | Budget alarm cron green but no Slack on breach | Confirm `SLACK_WEBHOOK_URL` is set; missing secret skips notification by design (run stays green). |
-| `predict_merge` exit `2` | Bad args / non-git `--repo-root` / missing `gh` / unresolved branch ref — not a damage finding. |
+| `predict_merge` exit `2` | Bad args / non-git `--repo-root` / missing `gh` / unresolved branch ref — not a damage finding. A history cut above the merge base in a shallow checkout, or a merge or ancestor check git could not complete, is the same exit in `--pr` (a soft `ERROR` row in `--batch`). |
 | `DAMAGED-FIX-FIRST` on intentional delete | Add `Allow-Symbol-Loss: func:…` (qualified) on a commit in the PR; re-run `--pr`. Label alone will not green `main-verify`. |
 | Local triage stuck in pre-commit | `JUNIPER_FLEET_SKIP_PRECOMMIT=1` (screens still run). |
 | Startup exits before launching services | Check the preflight output for missing `curl`, `ss`, conda, sibling repo directories, or occupied ports. |
@@ -907,10 +922,10 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Worker binary missing | Run `conda activate JuniperCascor1 && pip install juniper-cascor-worker`. |
 | `chop_all` cannot find `JuniperProject.pid` | Confirm `plant_all` finished in `nohup` mode and rerun with `JUNIPER_PROJECT_DIR` set to the same project root; for systemd mode, stop with `util/juniper_chop_all.bash --systemd`. |
 | Doctor green but Template Agent grounding dead | Re-run without `--no-discovery`; fix `util/prompt_discovery/cli.py` until it emits `schema_version` + `provenance.head_sha`. |
-| `predict_merge` exit `2` | Bad args / non-git `--repo-root` / missing `gh` — not a damage finding. (Unresolved tip in `--batch` is soft-`ERROR`, exit 0.) |
-| New `.md` falsely `DAMAGED-FIX-FIRST` | Header-counting bug class: only content `-` lines count; `---` file headers must be ignored (#910). |
+| `predict_merge` exit `2` | Bad args / non-git `--repo-root` / missing `gh` — not a damage finding. (Unresolved tip in `--batch` is soft-`ERROR`, exit 0.) A history cut above the merge base in a shallow checkout is the same class: `--pr` exit 2, `--batch` `ERROR`, not `NEEDS-UPDATE-BRANCH`. |
+| Docs PR `DAMAGED-FIX-FIRST` on a `.md` | Since juniper-ml#1004 the docs screen applies `juniper-docs-additions-check`'s rule (the console script itself since #1024): a deleted heading, or 5 or more deleted lines in a hunk that adds nothing. An in-place swap or a shorter deletion passes. An intended rewrite needs `Allow-Docs-Rewrite`. |
 | Docs-only PR “fails” gates | No `.py` in TRUE delta → battery `skip` (`no .py files in delta`), not fail. |
-| Heal PR not first in `--batch` order | Title or branch needs `restore`/`heal`/`repair`/`fix-first` (not bare `fix`/`hotfix`). |
+| Heal PR not first in `--batch` order | The head branch must start with `fix/`, `heal/` or `hotfix/`, or the title with `fix(`, `fix:` or `heal`. `restore`, `repair` and `fix-first` no longer promote. |
 | Local triage stuck in pre-commit | `JUNIPER_FLEET_SKIP_PRECOMMIT=1` (screens still run). |
 | `ast_symbol_screen.status=skip` in JSON | Checker missing/exit 2/non-JSON — **not** damage (#908). |
 | Isolated `--up` missing `python3.14` | Put `python3.14` on `PATH`; abort is before venv/pid create. |
@@ -996,7 +1011,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Soak `probe-run --outcome miss` rejected | Missing `--class` (`discoverability` / `hazard` / `pointer-defect`). |
 | Soak `status` exits 1 with an otherwise healthy rate | Open escalation or `BET-FAILING` — do **not** `resolve` to green the exit code. |
 | Soak probe reaped / no `status.json` | Pidfile was under `reports/soak/runs/` (unscanned) or interpreter was `JuniperC*`. Use `/usr/bin/python3`. |
-| `predict_merge` exit `2` | Bad args / non-git `--repo-root` / missing `gh` / unresolved branch ref — not a damage finding. |
+| `predict_merge` exit `2` | Bad args / non-git `--repo-root` / missing `gh` / unresolved branch ref — not a damage finding. A history cut above the merge base in a shallow checkout, or a merge or ancestor check git could not complete, is the same exit in `--pr` (a soft `ERROR` row in `--batch`). |
 | Fleet `DAMAGED` on intentional docs rewrite | Add `Allow-Docs-Rewrite: <path>` or `*` in BASE..RESULT (#926); wrong-path trailers do not waive. |
 | Mixed `--systemd` / pidfile modes | Match plant and chop modes; systemd never writes `JuniperProject.pid`. |
 | Plant WARNING `invalid health-check interval` / stuck health wait | Unset `HEALTH_CHECK_INTERVAL` or set a positive integer (default `2`); `0` was a busy-loop. |
@@ -1242,6 +1257,9 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 - [Equities Symbol Cap](REFERENCE.md#equities-symbol-cap) -- default `equities` is 422 at 14 symbols; unit is symbols because cost is per request
 - [Equities Dataset Id Does Not Pin Array Content](REFERENCE.md#equities-dataset-id-does-not-pin-array-content) -- `dataset_id` hashes the request; compare `meta.checksum`; `dividend` / `split_ratio` zero-fill when yfinance omits the columns
 - [Recurrence Equities Crossval Instruments](REFERENCE.md#recurrence-equities-crossval-instruments) -- W0.8/W0.9 replay and matrix; exit 0 is not a passing crossval
+- [Lane A3 checks](REFERENCE.md#lane-a3-checks) -- numpy-only NPZ report; an all-constant last step exits 0 with `min-nonzero=none (no column has a std > 0)`
+- [Actions outage re-run](REFERENCE.md#actions-outage-re-run) -- exact `Actions` status `operational`; a malformed status page reads `unknown`, and the wait gives up with exit 2
+- [GnuPG long-option abbreviations](REFERENCE.md#gnupg-long-option-abbreviations) -- the agent guard denies a prefix of 2 or more characters of a secret or sign option (`gpg --list`, `gpg --ex`, `gpg --cl`); exact `gpg --export` stays allowed; one character is below the floor
 - [F-039 Store Probe](REFERENCE.md#f-039-store-probe) -- apply / soak / report / revert; read the whole series; `--target topology` refuses
 - [CAN-015 Replay Re-drive](REFERENCE.md#can-015-replay-re-drive) -- throwaway wrapper on `8113`/`8214`/`8063`; explicit `POST /v1/snapshots`; Stop or `reset()` before the next Start
 - [Replay speed, range, and a paused completion](REFERENCE.md#replay-speed-range-and-a-paused-completion) -- shared replay clamps speed to [-10, 10]; below 0.1 the index stays; a fit that returns while paused settles COMPLETED (unreleased; 0.7.2 and earlier stay wedged, PAUSED and then STARTED after a resume, until stop or reset); a start while a stopped run's fit is still running is a 409 (unreleased; 0.7.2 and earlier run it beside that fit)
@@ -1267,9 +1285,10 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 - [F-CANOPY-027 Poller Starvation Probes](REFERENCE.md#f-canopy-027-poller-starvation-probes) -- 12-slot dash-renderer starvation (FIXED canopy#507/#509/#511); do not add a new Interval
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session `topodiag` tally; exit 0 is not a paint PASS
 - [SOPS Usage Guide](../notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) -- complete secrets management reference
+- [Agent-guard brace cap](REFERENCE.md#utility-script-reference) (the `util/claude_agent_guard.py` entry, 1.3.0) -- a word whose brace expansion needs more than 64 alternatives is refused (hook exit 2), not judged on its first 64; a list of exactly 64 is still expanded, so a `.ssh` assembled in its last alternative is denied; `for i in {1..100}` is refused and `$(seq 1 100)` is not
 
 ---
 
-**Last Updated:** 2026-11-13
-**Version:** 1.0.68
+**Last Updated:** 2026-11-15
+**Version:** 1.0.69
 **Maintainer:** Paul Calnon

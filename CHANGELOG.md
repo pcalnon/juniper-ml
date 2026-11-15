@@ -138,6 +138,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Not carried.** #2480's code and its copy of #2496's first test, #2484's second test, and #2480's
     `docs/REFERENCE.md` paragraph on the scratch copying the checkout's shallow graft, which is documentation.
 
+- **Operator documentation consolidated from the Cursor flood-4 round-2 docs drafts** (ml#2479, #2483, #2487,
+  #2490 and #2494, with #2470's index pointers and one paragraph of #2484's diff, written in draft #2480's commit,
+  which its branch is stacked on), every claim re-derived from `main` with the agent guard at 1.3.0:
+  `docs/REFERENCE.md`, the developer cheatsheet, the documentation overview, the quick start and
+  `.claude/agents/fleet-supervisor.md`.
+  - **New sections.** Local Claude Code Launchers (#2479: entry points, effort, version flags, what still prints on
+    stderr with the debug log off, prompt files); the symbol-loss screen's `WEAKENED` bounds (#2483); Lane A3
+    `checks` and the Actions outage re-run (#2487); GnuPG long-option abbreviations (#2490); and `predict_merge`'s
+    scratch repository (#2494, #2484).
+  - **Rewritten where a draft predates juniper-ml#2554.** #2490 documented a four-character GnuPG prefix floor.
+    The guard's floor is two, so its table is rebuilt from the guard itself: `--cl`, `--ls`, `--li` and `--ex` are
+    denied, one character is not, and the exact `--export` stays allowed. #2470 documented a 65th brace
+    alternative as passing. The guard now refuses such a word and `docs/REFERENCE.md` already says so, so only
+    #2470's three index pointers are carried, rewritten to the refusal. The launcher section adds what #2554
+    changed: `max` is the effort default, `auto` sends no `--effort`, an exported empty `CLAUDE_PROMPT_FILE` or
+    `CLAUDE_PROMPT_PATH` is refused, and a later prompt-file flag that does not resolve drops the earlier file.
+  - **Corrected in the drafts.** #2494 listed a missing filter binary and an inherited `GIT_DIR` among
+    `predict_merge`'s errors; the script handles both. Its list of dropped variables gains `GIT_SHALLOW_FILE` and
+    `GIT_GRAFT_FILE`. #2484 said a shallow source without the copied `shallow` file reads as `CONFLICT`; on `main`
+    a history cut above the merge base is an error (`--pr` exit 2, an `ERROR` row in `--batch`). #2479's entry table
+    listed what reaches `wake_the_claude.bash`; it now lists what Claude Code is handed, read from a stub `claude`.
+  - **Corrected in `main`'s own pages**, stale since juniper-ml#1004 (2026-08-07), #1740 (2026-09-05) and #2474 (2026-11-06):
+    `predict_merge`'s docs screen is `juniper-docs-additions-check` on every changed `.md`, with `main-verify`'s
+    thresholds, not an inline counter that fails any removed line; heal-first ordering reads a `fix/` / `heal/` /
+    `hotfix/` branch or a `fix(` / `fix:` / `heal` title, not `restore` / `repair` / `fix-first` anywhere in
+    either; the hook battery includes `ruff` and `ruff-format`; and the scratch is a `git init` with alternates,
+    not a detached clone. The sequence-safety gate paths name `juniper-ci-tools/tests/`, where juniper-ml#1024 moved those suites.
+  - **Stated as it is.** The two loss screens and `pre-commit` run as separate processes with the caller's
+    environment. Under an inherited `GIT_DIR` each screen with a file to read (the symbol
+    screen or the docs screen) reads the repository that variable names, exits 2 and is recorded as `skip`, so the
+    verdict is computed without it.
+  - Not carried: every draft's version-stamp hunks and Version History row; the pre-squash code and test commits
+    of juniper-ml#2468 and #2474 that #2479 and #2494 sit on, which `main` already holds; #2494's docstring hunk,
+    which juniper-ml#2554 took; #2494's troubleshooting rows for symptoms `main` no longer produces; and #2470's
+    own section, which described the behaviour the "Fail closed" ruling replaced.
+
 ### Changed
 
 - **Backup Phase D, step 14: the retention policy to restore keeps every fileset of the last two

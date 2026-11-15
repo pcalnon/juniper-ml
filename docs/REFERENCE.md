@@ -2,7 +2,7 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.74
+**Version:** 0.6.75
 **Status:** Active
 **Last Updated:** 2026-11-15
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -77,9 +77,13 @@
 - [Equities Symbol Cap](#equities-symbol-cap)
 - [Equities Dataset Id Does Not Pin Array Content](#equities-dataset-id-does-not-pin-array-content)
 - [Recurrence Equities Crossval Instruments](#recurrence-equities-crossval-instruments)
+- [Lane A3 checks](#lane-a3-checks)
+- [Actions outage re-run](#actions-outage-re-run)
+- [GnuPG long-option abbreviations](#gnupg-long-option-abbreviations)
 - [Release-Train Detect Summary and Slack](#release-train-detect-summary-and-slack)
 - [AGENTS.md Date Check](#agentsmd-date-check)
 - [Claude.yml Access Validation](#claudeyml-access-validation)
+- [Local Claude Code Launchers](#local-claude-code-launchers)
 - [Claude Code Action](#claude-code-action)
 - [Idle compaction and the tracked settings file](#idle-compaction-and-the-tracked-settings-file)
 - [CodeQL Analysis](#codeql-analysis)
@@ -2676,7 +2680,7 @@ Flood-remediation tooling for Cursor-fleet / third-party open PRs and for silent
 | Layer | Path | Role |
 |-------|------|------|
 | Sequence-safety screens | the `juniper-symbol-loss-check` / `juniper-docs-additions-check` console scripts (PyPI `juniper-ci-tools>=0.8.0`) | Path-invoked BASE..HEAD screens used by CI (`sequence-safety` job, `main-verify.yml`) |
-| Predicted-merge triage | `util/fleet_triage/predict_merge.py` | Detached-clone merge of `origin/main` into a PR tip; runs fast gates + screens on the **merge RESULT** |
+| Predicted-merge triage | `util/fleet_triage/predict_merge.py` | Merges `origin/main` into a PR tip in a throwaway scratch repository (`git init` + object-store alternates, see [Scratch repository](#scratch-repository)); runs fast gates + screens on the **merge RESULT** |
 | Fleet supervisor agent | `.claude/agents/fleet-supervisor.md` | Read-only adjudication over a `--batch` report (never pushes/merges/closes) |
 
 Design context: [`notes/JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`](../notes/JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md) §4 items 7–8.
@@ -2701,7 +2705,35 @@ Constraints (verified in the checkers):
 - `Allow-Symbol-Loss: *` / blanket wildcards are **rejected** (waive nothing).
 - `Allow-Docs-Rewrite: *` **is** accepted (waives every deleted `.md` in scope) — opposite of the symbol wildcard rule.
 - Per-PR labels `allow-symbol-loss` / `docs-rewrite` only demote the per-PR job via `--advisory` (WARN-only exit 0). That greens the required `Sequence Safety` context on the PR. They are invisible to `push:main` `main-verify` — use the commit trailer for post-merge green.
-- Exit codes: `0` clean, `1` ≥1 unwaived FAIL, `2` usage / bad ref. Gates: `tests/test_symbol_loss_check.py`, `tests/test_docs_additions_check.py`.
+- Exit codes: `0` clean, `1` ≥1 unwaived FAIL, `2` usage / bad ref. Gates: `juniper-ci-tools/tests/test_symbol_loss_check.py`, `juniper-ci-tools/tests/test_docs_additions_check.py`.
+- Python `WEAKENED` needs both arms, and both include equality. One arm alone does not fail. Detail: [A Python body that keeps at most 60 percent and loses at least 4 lines is WEAKENED](#a-python-body-that-keeps-at-most-60-percent-and-loses-at-least-4-lines-is-weakened).
+
+### A Python body that keeps at most 60 percent and loses at least 4 lines is WEAKENED
+
+`classify_file` in `juniper-ci-tools/juniper_ci_tools/symbol_loss_check.py` flags a Python function, class, or method as `WEAKENED` / `FAIL` only when both constants hold (`WEAKEN_RATIO = 0.6`, `WEAKEN_MIN_DELTA = 4`):
+
+- `head_lines <= 0.6 * base_lines` (60 percent exactly is included)
+- `base_lines - head_lines >= 4` (a drop of exactly 4 is included)
+
+The line count is the AST source segment: its newline count plus one. That includes the `def` or `class` line. A decorator on the line above the `def` is not part of the count. The finding's `ratio` field is `round(head_lines / base_lines, 2)`. The gate does not compare that rounded field. It compares the integer line counts with the two arms above. `0.6 * 10` is `6.0` and `0.6 * 15` is `9.0`; `0.6 * 7` is `4.2`.
+
+A bash function uses the same two arms. Its line count is the distance to the next function, or to the end of the file, and never less than 1. The verdict is `WARN`, so it does not fail the gate.
+
+| Base lines | Head lines | Result |
+|------------|------------|--------|
+| 10 | 6 | `WEAKENED` / `FAIL`. Ratio exactly 0.6, delta exactly 4. |
+| 7 | 3 | `WEAKENED` / `FAIL`. `3 <= 4.2`, delta exactly 4. Reported `ratio` is `0.43`. |
+| 15 | 10 | Not flagged. Five lines were removed, but `10 <= 9.0` is false. |
+| 7 | 4 | Not flagged. `4 <= 4.2`, but the delta is 3. |
+| 7 | 2 | `WEAKENED` / `FAIL`. `test_weakened_shrink_past_threshold_fails` (far past both arms). |
+| 4 | 3 | Not flagged. `test_small_shrink_below_threshold_is_not_flagged` (`3 <= 2.4` is false). |
+| same | same | Not flagged. `test_same_length_gutting_is_invisible_blind_spot` (delta 0). |
+
+Those three tests live in `juniper-ci-tools/tests/test_symbol_loss_check.py`. The equality rows are the `<=` and `>=` comparisons in `classify_file`.
+
+Shrinking a method shrinks the enclosing class segment too. One edit can emit `WEAKENED` / `FAIL` for both `method:C.m` and `class:C`. `Allow-Symbol-Loss` matches one finding key (or that key with its kind prefix, `func:` / `method:` / `class:`, removed). Naming the method does not waive the class.
+
+A deleted name is `LOST`, not `WEAKENED`. A name that appears twice at head is `DUPLICATED` and is not also scored as `WEAKENED`. Imports and module constants are never `WEAKENED`.
 
 ### `predict_merge.py` operator contract
 
@@ -2717,8 +2749,26 @@ Per PR, the script:
 
 1. Creates a throwaway **detached** scratch repository under the system tempdir: `git init` plus an `objects/info/alternates` entry naming the checkout's object store, so a PR head that exists only as `origin/<branch>` resolves, even from a shallow checkout (never a worktree, never writes the source checkout, never pushes). It was `git clone --shared` until 2026-11-06, which turns its local mode off for a shallow source and then carries only local branches. Scratch git commands drop inherited `GIT_DIR`, `GIT_INDEX_FILE`, `GIT_SHALLOW_FILE`, and `GIT_GRAFT_FILE`. A shallow-file path that names the branch tip otherwise makes `git merge` refuse unrelated histories. A graft that names `main` as that tip's parent otherwise reports `MERGE-CLEAN` and includes main's file in the true delta. `GIT_INDEX_FILE` left set would rewrite the source index.
 2. Merges `origin/main` into the branch tip (`git merge --no-ff`, `commit.gpgsign=false`).
-3. On the RESULT: runs `pre-commit` hooks `black` / `isort` / `flake8` / `mypy` / `check-ast` over `changed_existing` — the TRUE delta filtered to paths that still resolve as a blob at `HEAD` — and **only when that set contains at least one `.py` file**; otherwise each hook reports `status=skip` with detail `no .py files in delta` (docs-only / non-Python PRs never invoke the gate runner). A **deleted** `.py` therefore stays in `true_delta` for the symbol screen but is never handed to `pre-commit --files`, so a pure-deletion PR can be gate-clean and still `DAMAGED-FIX-FIRST` from the symbol screen. `JUNIPER_FLEET_SKIP_PRECOMMIT=1` forces `skip_all`. It also shells out to `juniper-symbol-loss-check (juniper-ci-tools) --repo-root <clone> --base <base> --head <result> --json` (same CLI as `main-verify` — juniper-ml#895 / ml#872); runs an **inline** docs additions-only screen that flags **any** removed content line on a changed `.md` (deliberately stricter than `juniper-docs-additions-check`'s heading / `--min-run` gate) and honors `Allow-Docs-Rewrite: <path>[, …]` / `*` trailers in `BASE..RESULT` (juniper-ml#926 — same escape hatch as sequence-safety so intentional rewrites are not forever `DAMAGED-FIX-FIRST`).
+3. On the RESULT: runs `pre-commit` hooks `black` / `isort` / `flake8` / `ruff` / `ruff-format` / `mypy` / `check-ast` (`PRECOMMIT_HOOKS`; a hook the target repo does not define is `status=skip`, not a failure) over `changed_existing` — the TRUE delta filtered to paths that still resolve as a blob at `HEAD` — and **only when that set contains at least one `.py` file**; otherwise each hook reports `status=skip` with detail `no .py files in delta` (docs-only / non-Python PRs never invoke the gate runner). A **deleted** `.py` therefore stays in `true_delta` for the symbol screen but is never handed to `pre-commit --files`, so a pure-deletion PR can be gate-clean and still `DAMAGED-FIX-FIRST` from the symbol screen. `JUNIPER_FLEET_SKIP_PRECOMMIT=1` forces `skip_all`. It also shells out to `juniper-symbol-loss-check (juniper-ci-tools) --repo-root <clone> --base <base> --head <result> --json` (same CLI as `main-verify` — juniper-ml#895 / ml#872), and to `juniper-docs-additions-check --repo-root <clone> --base <base> --head <result> --files <every changed .md> --json`, the deletion-magnitude screen `main-verify` runs: a deleted heading (unless the same hunk adds one), or a run of at least 5 consecutive deleted lines in a hunk that adds nothing, is `status=fail`; a smaller deletion or an in-place swap is a WARN there and does not fail. `Allow-Docs-Rewrite: <path>[, …]` / `*` trailers in `BASE..RESULT` waive it (juniper-ml#926 — same escape hatch as sequence-safety so intentional rewrites are not forever `DAMAGED-FIX-FIRST`). Until juniper-ml#1004 (2026-08-07) the docs screen was an inline counter that failed **any** removed content line.
 4. Emits the **TRUE** changed-file delta from `git diff --name-only origin/main <result>` (not the stale `gh pr … --json files` list).
+
+#### Scratch repository
+
+The directory is `<tempdir>/fleet-triage-*/clone`. `_scratch_clone` builds it, and `_git` runs every git command of the simulation, against the scratch or reading the source.
+
+- `git init --object-format=<source's>` matches `git rev-parse --show-object-format` in the source.
+- `clone/.git/objects/info/alternates` names `<git rev-parse --path-format=absolute --git-common-dir>/objects`, so a linked worktree as the source borrows the common store, including objects reachable only from `refs/remotes/origin/*`. No transport and no hardlink of git objects, so the scratch may sit on another filesystem. The merge writes new objects only into the scratch.
+- When the source is shallow, its `shallow` file (in the common git directory, so a linked worktree's source works too) is copied to the scratch's `.git/shallow`. A shallow source whose cut lies below the merge base then triages as a full one does. A cut above the merge base, such as a PR head fetched with `--depth=1`, is an error and not a verdict (`merge failed: fatal: refusing to merge unrelated histories` on git 2.53). Without the copy git cannot read the commits beyond the cut (`could not parse commit`).
+- `clone/.git/info/attributes` is the line `* -filter`, so no filter driver runs: a configured filter whose binary is absent (`filter.lfs.required` without git-lfs) would otherwise fail every checkout.
+- Every `_git` call also sets `GIT_LFS_SKIP_SMUDGE=1`, so Git LFS pointers stay pointers. The simulation needs blobs, not LFS content.
+- Git stdout and stderr are decoded with `errors="replace"`, so a binary blob (`git show` of a PDF) does not raise `UnicodeDecodeError` and abort `--batch`.
+- `_git` removes nine variables from the environment of every git command it runs, `git init` included: `GIT_DIR`, `GIT_WORK_TREE`, `GIT_INDEX_FILE`, `GIT_COMMON_DIR`, `GIT_OBJECT_DIRECTORY`, `GIT_ALTERNATE_OBJECT_DIRECTORIES`, `GIT_NAMESPACE`, `GIT_SHALLOW_FILE` and `GIT_GRAFT_FILE`. An inherited `GIT_DIR` (as inside a hook) made `git init` re-initialise the source checkout.
+- The two console-script screens and `pre-commit` are separate processes, started with the caller's environment as it is. Under an inherited `GIT_DIR` each screen that has a file to read (the symbol screen on a `.py` or `.bash` file, the docs screen on a `.md` file) looks for `refs/fleet/base` in the repository that variable names, exits 2, and is recorded as `status=skip`. A `skip` is not a pass: the verdict is then computed without that screen, so a section deletion the docs screen would fail no longer makes the PR `DAMAGED-FIX-FIRST`, and a `--batch` report's `screen_coverage` lists the PR as unscreened.
+- SHAs are resolved in the **source** checkout (`origin/main` and the PR ref) before `update-ref` pins `refs/fleet/base` and `refs/fleet/branch`. An unfetched head fails with `branch ref … does not resolve` and never reaches `update-ref`, so `git fetch origin` first. The alternate cannot supply an object this checkout never fetched.
+- `merge-base --is-ancestor` and `git merge` treat exit 0 and 1 as answers (1 is "not an ancestor" or "conflicts"). Any other exit raises `PredictMergeError`. A behind branch whose merge exits 0 must have main's SHA as `HEAD^2`; otherwise the error is `the merge of main into the branch did not happen`.
+- The source is not written, not registered as a worktree, and not pushed to. The merge commit uses `commit.gpgsign=false` (`_MERGE_IDENT`). A failure while preparing the scratch deletes it and raises `PredictMergeError`. The scratch is removed when the simulation finishes unless the caller passes `keep_scratch` (tests).
+
+Pins: `NoMutationTest` in `tests/test_predict_merge.py` (an `origin/*`-only head on a shallow source, a cut above the merge base, a filter whose binary is absent, a binary file, an inherited `GIT_DIR` on a delta no screen reads, a linked worktree) and `tests/test_predict_merge_inherited_git_env.py` (`GIT_SHALLOW_FILE`, `GIT_GRAFT_FILE`, `GIT_INDEX_FILE`).
 
 | Verdict | Meaning (verified in `simulate_merge`) |
 |---------|----------------------------------------|
@@ -2726,24 +2776,24 @@ Per PR, the script:
 | `NEEDS-UPDATE-BRANCH` | Merge succeeds; branch tip is **behind** `origin/main`; screens/gates did not fail |
 | `DAMAGED-FIX-FIRST` | Merge succeeds; a fast-gate hook **or** symbol screen **or** docs screen reports `status=fail` |
 | `CONFLICT` | Merge conflict against `origin/main` |
-| `ERROR` | `--batch` only: soft-fail row when a single PR cannot be simulated (e.g. unresolvable `origin/<headRefName>`); `true_delta=[]`, `gates` empty, and the rest of the open-PR set still runs. `screen_coverage` counts each of that row's gates as `absent`: the row stays in the denominator and out of `evaluated`, so an all-`ERROR` batch reports a screened fraction of 0. It is not a pass, and not `unscreened` |
+| `ERROR` | `--batch` only: soft-fail row when one PR's simulation raises `PredictMergeError` (an unresolvable `origin/<headRefName>`, a scratch that cannot be prepared, a history cut above the merge base, a merge or ancestor exit other than 0 or 1, a behind branch whose clean merge did not take main as `HEAD^2`); `true_delta=[]`, `gates` empty, and the rest of the open-PR set still runs. `screen_coverage` counts each of that row's gates as `absent`: the row stays in the denominator and out of `evaluated`, so an all-`ERROR` batch reports a screened fraction of 0. It is not a pass, and not `unscreened`. The same failure is exit `2` in `--pr`. |
 
-`--batch` also builds a same-file cluster map and a suggested merge order. Heal-first detection (`_is_heal`) looks at the PR **title** and **branch** (case-insensitive) for any of `restore` / `heal` / `repair` / `fix-first`, sorts those ahead of ordinary PRs, then ascending same-file contention. `triage_batch` **continues** after a per-PR `PredictMergeError` (the `ERROR` row above). Exit `0` always reports (even when every verdict is `DAMAGED` / `CONFLICT` / `ERROR`); exit `2` is usage/precondition only (`gh` missing, bad `--repo-root`, or an unresolvable ref in single `--pr` mode).
+`--batch` also builds a same-file cluster map and a suggested merge order. Heal-first detection (`_is_heal`) promotes a PR whose head **branch** starts with `fix/`, `heal/` or `hotfix/`, or whose **title** starts with `fix(`, `fix:` or the word `heal` (both case-insensitive); those sort ahead of ordinary PRs, then ascending same-file contention, then PR number. Since juniper-ml#1004 (2026-08-07) a `restore`, `repair` or `fix-first` elsewhere in the title or branch no longer promotes: the substring match had sorted an ordinary `test(...)` PR to the front. `triage_batch` **continues** after a per-PR `PredictMergeError` (the `ERROR` row above). Exit `0` always reports (even when every verdict is `DAMAGED` / `CONFLICT` / `ERROR`); exit `2` is usage/precondition only (`gh` missing, bad `--repo-root`, or an unresolvable ref in single `--pr` mode).
 
 **`--pr` hard-fail vs `--batch` soft-ERROR.** The two modes deliberately diverge on a `gh` failure: in single-PR mode `triage_pr` raises `PredictMergeError` when `gh` exits nonzero or returns non-JSON, so the CLI exits `2` (there is no partial report worth printing). In `--batch`, the same condition becomes a soft `ERROR` row for that PR only, and the rest of the open-PR set still runs. An exit `2` from `--pr` is a precondition failure, never a damage finding.
 
-Degrade paths (never crash the report): missing/broken `symbol_loss_check.py`, checker exit `2`, or non-JSON stdout → symbol screen `status=skip`. A delta with no `.py`/`.bash` short-circuits the symbol subprocess. Gate: `tests/test_predict_merge.py` (incl. `Allow-Symbol-Loss` and `Allow-Docs-Rewrite` trailer → `MERGE-CLEAN` arms).
+Degrade paths (never crash the report): a missing `juniper-symbol-loss-check` or `juniper-docs-additions-check` console script (juniper-ci-tools not installed), checker exit `2`, empty stdout, or non-JSON stdout → that screen's `status=skip`. A delta with no `.py`/`.bash` short-circuits the symbol subprocess, and one with no `.md` the docs subprocess (`status=pass`). Gate: `tests/test_predict_merge.py` (incl. `Allow-Symbol-Loss` and `Allow-Docs-Rewrite` trailer → `MERGE-CLEAN` arms).
 
 #### Docs screen vs `docs_additions_check.py` (honesty)
 
-| | `docs_additions_check.py` (CI / main-verify) | `predict_merge` inline docs screen |
+| | `juniper-docs-additions-check` in CI / main-verify | The same script as `predict_merge` runs it |
 |--|---------------------------------------------|-------------------------------------|
-| Scope | `AGENTS.md` + `docs/**` + `notes/**` | Every changed `.md` in the TRUE delta |
-| FAIL threshold | Deleted heading, or ≥`N` consecutive deleted lines (default 5) | **Any** removed content line (`-` not `---`) |
+| Scope | `AGENTS.md` + `docs/**` + `notes/**` | Every changed `.md` in the TRUE delta (passed with `--files`) |
+| FAIL threshold | Deleted heading, or ≥`N` consecutive deleted lines (default 5) | The same: no `--min-run` is passed |
 | `Allow-Docs-Rewrite` trailer | Yes (path / basename / `*`) | Yes (path / basename / `*` — juniper-ml#926) |
-| JSON | Full screen report | `deletions` + `waived` lists on the docs screen object |
+| JSON | Full screen report | `deletions` (the FAIL findings) + `waived` lists on the docs screen object; a WARN finding is in neither |
 
-Do not assume trailer-less docs deletions that pass `--min-run` on main-verify will be `MERGE-CLEAN` in fleet triage — the inline screen is stricter by design.
+The thresholds are the same since juniper-ml#1004 (2026-08-07). The scope is wider: a deletion run in a `.md` outside `AGENTS.md`, `docs/` and `notes/` (a `README.md`, for one) is `DAMAGED-FIX-FIRST` in fleet triage, while `main-verify`'s default scope does not screen that file.
 
 ### Operator pitfalls
 
@@ -3793,6 +3843,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_prompt_validator_contract.py` -- Static contract test for the `prompt-validator` subagent (`.claude/agents/prompt-validator.md`, PR 3): frontmatter shape (`tools` = exactly `Read, Grep, Glob, Bash`, `model` concretely pinned per OQ-4), every rubric ID it cites exists in `RUBRIC.md` (incl. the `R2.0`/`R3.4` hard gates), and the pinned verdict schema + PASS/FAIL samples in `tests/fixtures/prompt_validator/` match the §5.3 contract. E-3: re-probe block is `<target>`-qualified (not CWD).
 - `tests/test_prompt_discovery.py` -- Behavioural tests for `util/prompt_discovery/` (custom-agent suite PR 4): the grounding-bundle schema + provenance envelope emitted by `cli.py`, per-probe graceful degradation, the hard-stop on a non-git root (exit 2), the `test_status` `cold_cache`/empty distinction, plus E-3 `--target-repo` cross-repo grounding. `util/` is not pre-commit-lint-gated (flake8/black scope to `scripts`+`tests`), so this unittest is the gate; imported via the `sys.path.insert` idiom.
 - `tests/test_symbol_overlay.py` -- Tests for `util/prompt_discovery/symbol_overlay.py` (the Serena symbol overlay, design OQ-8): the deterministic merge of Skill-resolved Serena facts into a bundle's `symbol_probe` slice -- Serena-resolved wins, grep is the fallback, an unresolvable symbol stays `UNRESOLVED`, the input bundle is not mutated, and `cli.py`'s contract is untouched. Stdlib only; importlib-loaded.
+<<<<<<< HEAD
 - `tests/test_predict_merge.py` -- Hermetic tests for `util/fleet_triage/predict_merge.py` (Stage-0 supervisor script layer): bare-origin + branch fixtures drive the four verdicts (symbol-loss / docs-deletion / injected gate-fail DAMAGED, plus MERGE-CLEAN / NEEDS-UPDATE-BRANCH / CONFLICT), TRUE-delta-vs-stale-file-list discrimination, `--batch` cluster map + order (fake `gh`), detached-clone-never-mutates-source, CLI exit codes.
   - Also covers docs-screen edges (header ignore / additions-only / non-`.md`), no-`.py` gate skip, and `repair`/`fix-first` heal tokens (juniper-ml#910). `util/` not lint-gated so this is the gate; `sys.path.insert` + `RedactedEnv`.
 <<<<<<< HEAD
@@ -3800,6 +3851,11 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_macos_host_sme_contract.py` -- Static contract for the `macos-host-sme` subagent (`.claude/agents/macos-host-sme.md`; turing bring-up H2, `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` §11). Tools exactly `{Read,Grep,Glob,Bash,Write}`. Must-never: `sudo`, reading `~/.ssh/**` or `~/.gnupg/**`, `defaults write`, changing settings, credential probes. Wiring: `util/host_state_check.py --json` and its JSON fields, every one of the ten gates (read from the check's own `GATES` and `NOT_EVALUATED`), the check as the judge, and one never-overwritten `reports/<date>_<host>-bringup/` file. Shared checks in `tests/agent_contract_support.py`: the frontmatter (`model: opus`, `effort: max`, name == stem) and the exact tool set; each plan §11 Must-never item in a bold span of a `## Must never` bullet that cites its enforcing rule as `(guard: RULE-ID)`; every cited rule in `util/claude_agent_guard.py --list-rules`; the guard, run as a subprocess against a temporary home, denying a representative call for each item under that rule and passing each call the agent's procedure prescribes; and a denied call recorded for the Overtoad, never retried.
 - `tests/test_signing_auth_sme_contract.py` -- Static contract for the `signing-auth-sme` subagent (`.claude/agents/signing-auth-sme.md`; turing bring-up H2, plan §11). Tools exactly `{Read,Grep,Glob,Bash,Write}`. Must-never: `gpg --card-status`, `gpg -K`, `ssh-add`, `ssh -T`, PIN-bearing commands, `gh api` with `-X` / `-f` / `--method`, any `gh` write, credential paths, the signing configuration, the keychain. Wiring: the non-credential checkers (`util/git_remote_alias_check.py`, `util/configure_commit_signing.py --check`, `util/headless_signing_preflight.bash`), every prescribed `gh api` call a plain GET (`--jq` only) that the guard passes, `ssh -G`, the deploy-key 403 under D11's token, and the OVERTOAD command list closing one `reports/` file. Shared checks in `tests/agent_contract_support.py`: the frontmatter (`model: opus`, `effort: max`, name == stem) and the exact tool set; each plan §11 Must-never item in a bold span of a `## Must never` bullet that cites its enforcing rule as `(guard: RULE-ID)`; every cited rule in `util/claude_agent_guard.py --list-rules`; the guard, run as a subprocess against a temporary home, denying a representative call for each item under that rule and passing each call the agent's procedure prescribes; and a denied call recorded for the Overtoad, never retried.
 =======
+=======
+- `tests/test_predict_merge.py` -- Hermetic tests for `util/fleet_triage/predict_merge.py` (Stage-0 supervisor script layer): bare-origin + branch fixtures drive the four verdicts (symbol-loss / docs-deletion / injected gate-fail DAMAGED, plus MERGE-CLEAN / NEEDS-UPDATE-BRANCH / CONFLICT), TRUE-delta-vs-stale-file-list discrimination, `--batch` cluster map + order (fake `gh`), scratch-never-mutates-source, CLI exit codes.
+  - Also pins the scratch (juniper-ml#2474): an `origin/*`-only head on a shallow source, a shallow cut above the merge base (`PredictMergeError`, not a verdict), `filter.lfs.required` with no git-lfs binary, a non-UTF-8 blob, an inherited `GIT_DIR` that must not re-initialise the source, and a linked worktree borrowing the common object store. Operator surface: [Scratch repository](#scratch-repository).
+  - Also covers docs-screen edges (a small deletion is not damage / additions-only / non-`.md`), no-`.py` gate skip, and the heal-first prefixes (a `fix/` or `hotfix/` branch, a `fix:` / `fix(` / `heal` title; `repair` and `fix-first` no longer promote). `util/` not lint-gated so this is the gate; `sys.path.insert` + `RedactedEnv`.
+>>>>>>> 725c6343 (docs(reference): carry seven Cursor flood-4 round-2 docs drafts, each claim re-derived from the code (#2584))
 - `tests/test_predict_merge_inherited_git_env.py` -- Inherited `GIT_SHALLOW_FILE`, `GIT_GRAFT_FILE`, and `GIT_INDEX_FILE` leave a behind branch `NEEDS-UPDATE-BRANCH` with true delta equal to the branch's own file, and leave the source index, HEAD, and refs unchanged. Before juniper-ml#2513 the shallow file made the merge exit 128 and the graft reported `MERGE-CLEAN`. Carried from juniper-ml#2513.
 - `tests/test_predict_merge_scratch_edges.py` -- A shallow linked worktree's origin-only PR head is borrowed from the common object store (not the worktree git dir), and a sha256 source's scratch is initialized with that object format. Each LFS protection is pinned on its own: a required smudge that always fails never runs in the scratch (`* -filter` in its `.git/info/attributes`), and `predict_merge`'s git helper sets `GIT_LFS_SKIP_SMUDGE=1`, so a smudge that honors it keeps the pointer in a repository without `* -filter`. Production `predict_merge.py` is unchanged.
 - `tests/test_predict_merge_shallow_worktree.py` -- `simulate_merge` run from a shallow linked worktree (its `.git` is a file; its graft lives in the common directory) on PR heads whose boundary commit's parent object is missing. The scratch copies the common directory's `shallow` graft, so a clean behind-main PR stays `NEEDS-UPDATE-BRANCH` instead of raising and a real edit of the file main changed stays `CONFLICT`; the source's refs, worktrees and graft are unchanged. Production `predict_merge.py` is unchanged.
@@ -4001,8 +4057,8 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_save_model_recorded_cli_contract.py` -- The W1.9 save_model re-run through the launcher-recorded CLI (the path a real `--up` takes): the model-version probe and the train child both see the run's `JUNIPER_DATA_URL` and an empty `LD_LIBRARY_PATH` despite a poisoned parent env; numeric-zero hyperparameters are forwarded and `None` ones omitted; a non-string `cli` / `python` / `model_version` in the launch record is not coerced; `stderr_tail` and a failing probe's reason keep the tail, not the head; a query, fragment or userinfo URL sets the record aside; every recurrence train key maps to its CLI flag. No live services.
 - `tests/test_recurrence_operation_identity_and_dataset_budget.py` -- W1.5's driver half (`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; F-D5, F-S6, F-S9, F-CON1, F-CON2) against one loopback stub playing juniper-data and juniper-recurrence. `POST /v1/datasets` is bounded by `dataset_create_timeout_seconds` (CLI > YAML `outputs` > 120 s, positive and finite on both routes) and train / predict / crossval by the wall budget, neither feeding the other; an expired dataset budget is `timed_out` (exit 1) naming the knob on both paths, and nothing trains or stages after it. The plan's acceptance case, time scaled 1:100: a juniper-data that sleeps 40 s fails inside a service modelled on juniper-recurrence#192 (`502 juniper-data unreachable`) at the client's old 30 s default while the driver's budgets are untouched, and succeeds at the budget `run_suite.recurrence_data_timeout_env` exports. `X-Request-ID` goes out on train (sanitised, distinct per call); the returned `operation_id` comes back as `expect_operation_id` on predict and never on crossval; a model another caller replaced is refused (409, `degraded`); a missing, blank or non-string `operation_id` (juniper-recurrence 0.5.0) is never echoed; a timed-out train and a busy 409 each leave a note in `manifest.operation`. `save_model` carries the same id on `POST /v1/model/snapshots` and copies the snapshot to `model.npz`, size-checked; a 409, an unusable id or a size mismatch fails the phase with no re-fit, a snapshot the run cannot see is recorded rather than faked, and only a train response without an id re-fits (juniper-ml#2211). No live services.
 - `tests/test_yamaguchi_edit_target.py` -- Migration step 3 for `util/ad-hoc/yamaguchi_edit_target.py`, the passphrase-safe `TargetURL` repoint, which shipped with zero tests. A PUT of a new destination against a populated local job makes every remote volume look missing. Pins the refusals that must happen before that PUT (busy rc 3, same path / not a directory / unmounted / fewer volumes / different byte total rc 4, passphrase count / mask / fingerprint rc 5, no fstab entry rc 7) and the read-back that must happen after (a moved source or an unmasked passphrase is rc 6; a clean read-back is rc 0 and the PUT carried the real passphrase). `--allow-shrink` is the only way past the census and does not itself send the PUT; `--allow-non-durable` does not skip the census; `--dry-run` substitutes the passphrase in memory and sends nothing. `tests/duplicati_api_stub.py` replaces `urlopen`; `mountpoint` and `findmnt` are not executed, and neither secret is printed.
-- `tests/test_rerun_after_actions_outage.py` -- Hermetic gate for `util/ad-hoc/2026-10-05_rerun_after_actions_outage.py`. Only a completed failure, cancelled, timed_out or startup_failure run is re-run; any Actions status other than exactly `operational` (or exactly `degraded_performance` under `--accept-degraded`) never calls `gh`, and the wait gives up with exit 2; `--merge` returns `util/safe_merge.py`'s exit code and `--no-merge` never invokes it. `gh`, the status page and the clock are stubbed.
-- `tests/test_equities_lane_a3_report.py` -- The `checks` report of `util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py`, the numpy-only Lane A3 instrument of the consensus review of `notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`: a negative `dt` is flagged and a nonzero first `dt` column is not all-zero; a backwards `window_end_date` is not monotone; a missing archive is `NO ARTIFACT` and the report is still written, identical archive bytes match and one changed array does not; `meta_fields` keeps `access_count` 0 and drops unknown keys; `y_reg` wins over `y`; a non-finite target or `X` is not finite; fold 0's cut uses `n // (n_folds + 1)` and the embargo. The `compare` / `fold-threads` subcommands are not covered.
+- `tests/test_rerun_after_actions_outage.py` -- Hermetic gate for `util/ad-hoc/2026-10-05_rerun_after_actions_outage.py`. Only a completed failure, cancelled, timed_out or startup_failure run is re-run; any Actions status other than exactly `operational` (or exactly `degraded_performance` under `--accept-degraded`) never calls `gh`, and the wait gives up with exit 2; `--merge` returns `util/safe_merge.py`'s exit code and `--no-merge` never invokes it. Since helper 0.3.0 a payload that is not an object, or whose `components` is not a list of objects, reads as `unknown (...)` before any status is read, even with an operational Actions object beside a non-object; with a dict-shaped `components` the wait gives up with exit 2 and re-runs nothing. `gh`, the status page and the clock are stubbed. Operator surface: [Actions outage re-run](#actions-outage-re-run).
+- `tests/test_equities_lane_a3_report.py` -- The `checks` report of `util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py`, the numpy-only Lane A3 instrument of the consensus review of `notes/JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`: a negative `dt` is flagged and a nonzero first `dt` column is not all-zero; a backwards `window_end_date` is not monotone; a missing archive is `NO ARTIFACT` and the report is still written, identical archive bytes match and one changed array does not; `meta_fields` keeps `access_count` 0 and drops unknown keys; `y_reg` wins over `y`; a non-finite target or `X` is not finite; fold 0's cut uses `n // (n_folds + 1)` and the embargo. An all-constant last step still writes the JSON and exits 0; the summary says `min-nonzero=none (no column has a std > 0)` and `X_last_step_std_min_nonzero` is null. Before script 0.3.1 that line formatted the null with `.3e` after the write and the process exited 1. The `compare` / `fold-threads` subcommands are not covered. Operator surface: [Lane A3 checks](#lane-a3-checks).
 - `tests/test_archive_consensus_screen.py` -- The credential screen in `util/ad-hoc/2026-09-22_archive_consensus_reports.py`, which later archivers call before a report is written into public `notes/`. Pins the 30-40 character window and the `* @ $ %` mark, the path and URL exclusions, the `enc-v1:` and JWT shapes, a problem line that counts hits and never prints the value, last-assistant-message extraction, and a hit that refuses the whole archive (exit 2, nothing written) unless `--allow-shaped`. `--check` writes nothing and does not bypass the screen.
 - `tests/test_main_verify_screen_verdicts.py` -- Executes `main-verify.yml`'s own `symbol-screen` shells, extracted from the YAML and run under `bash -eo pipefail`, with the two screen console scripts and `git` as PATH stubs. `Assert screens reached a verdict` passes on a finding (exit 1 is a verdict, so the catch-up base advances) and fails on an invocation error (exit 2 or higher, 99 included) or an absent or empty code; `Assert screens clean` fails on any finding or missing code. The screens step records both codes from the human run, not the `--json` arm, and exits 0, falling back to `HEAD^1` on an empty or unresolvable base. `tests/test_main_verify_catchup_base.py` pins only the step names and order. Also run by `main-verify.yml`'s battery.
 - `tests/test_gitleaks_secret_assignment_rule.py` -- Backup recovery B9 (design P0.5a item 6). `.gitleaks.toml` must carry `[extend] useDefault = true`: without it gitleaks v8 loads only the file's own `[[rules]]`, of which there were none, so CI's Security Scan ran with zero rules from 2026-08-13 to 2026-10-10. Through a Python model of gitleaks 8.24.3's matcher (regex, the value group -- `secretGroup`, else the first non-empty group -- rule and global allowlists, compiled with `re.ASCII`), `juniper-secret-assignment` must fire on a backup credential literal (the 2026-09-20 shape: 36 characters carrying `* @ $ %`), and also on a diceware-style passphrase (lowercase words joined by `-` or `_`), a 12-15 character word-only value, hex, base64 and punctuated values, under every `export` / systemd `Environment=` / comment / argv form of every name. Since 2026-10-25 it must also fire on a QUOTED multi-word phrase in both quote styles under every name, reporting the whole phrase: a value opened by `"` or `'` right after the `=` runs to its own close quote, spaces included. The same phrases must stay silent in every unquoted form, which keeps the no-whitespace rule. It must stay silent on expansions, templates, `REDACTED` / `changeme` / `xxx` / `...` / `***`, empty values, prose, quoted prose (`passphrase="the one you set"`, held by a function-word allowlist), code, one-word fixtures, other variable names, and the documented boundary: under 12 characters, whitespace in a value not quoted right after the `=` (unquoted, unterminated, or systemd's `Environment="NAME=..."`), one lowercase word, and words joined by `.`. Every positive is assembled at runtime, so the file holds no literal the rule, the default ruleset or push protection flags. Also pins that every `.gitleaksignore` entry is commit-scoped and sits in a group under a comment naming its class, with the two S-1 entries present; and that `ci.yml`'s `GITLEAKS_VERSION` equals the pre-commit hook's `rev`. The `RealEngine` tests run the same samples through a gitleaks binary (`GITLEAKS_BIN` or PATH) and skip without one, except in the Security Scan job, which sets `GITLEAKS_PARITY_REQUIRED=1`. `util/ad-hoc/2026-10-10_gitleaks_rule_mutation_check.py` shows that each of 21 breakages turns the suite red, among them dropping the quoted branches, letting an unquoted value run on through spaces or a quoted value run past its close quote, and dropping the quoted-prose allowlist.
@@ -4148,13 +4204,15 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
   - Execute terminal `RELEASED`: publish run `completed`+`success` (both gates done) surfaces as final state with **no** halt issue — distinct from plan-time `ALREADY_RELEASED` (PyPI already serves target). Operator guidance: runbook §3.3.
 - `util/prompt_discovery/` -- Discovery helpers for the custom-agent suite (PR 4); path-invoked (`python util/prompt_discovery/cli.py --repo-root <path>`), emits a JSON grounding bundle (closed-world facts + provenance: `head_sha`/`dirty`/`ttl_seconds`/`per_probe_status`) from seven probes (`repo_context`, `test_status`, `file_probe`, `symbol_probe`, `dependency_facts`, `conventions`, `concurrency`). Accepts `--target-repo` (cross-repo alias of `--repo-root`). A discovery failure is a hard stop (exit 2).
 - The **sequence-safety screens** now ship in `juniper-ci-tools` (>=0.8.0) as two console scripts; rollout W3 deleted the inline `util/sequence_safety/` copy (unit tests → `juniper-ci-tools/tests/`; resurrection-guarded by `tests/test_ci_tools_drift.py`). `juniper-symbol-loss-check` -- symbol-loss screen (P2 gate G1/G3): AST inventory of BASE vs HEAD; FAIL on a deleted (`LOST`) / gutted (`WEAKENED`) / duplicated def, with an SF3 qualified-name relocation downgrade and a `Allow-Symbol-Loss:` trailer escape.
+  - Python `WEAKENED` needs both arms, including equality: [60 percent and 4 lines](#a-python-body-that-keeps-at-most-60-percent-and-loses-at-least-4-lines-is-weakened).
 - `juniper-docs-additions-check` -- docs deletion-magnitude screen (P2 gate G2 / G3 step 4): for `AGENTS.md` + `docs/**` + `notes/**`, FAIL on a deleted heading or a `>=N`-line deletion run (default 5, `--min-run`); WARN on small deletions / swaps / retitles; `Allow-Docs-Rewrite:` trailer escape.
 - Both screens keep `--base/--head [--files] [--advisory] [--json]`, exit 0/1/2, the WARN-only `--advisory` label hatch (SF5), and add a repeatable `--scope GLOB`. juniper-ml's `ci.yml` (per-PR) + `main-verify.yml` (post-merge G3) install the package; the symbol screen passes the explicit ml scope `--scope 'tests/*.py' --scope 'util/**/*.py' --scope 'util/**/*.bash'` (docs = universal default), reproducing the in-repo predicate byte-for-byte.
-- `util/fleet_triage/predict_merge.py` -- Deterministic predicted-merge triage for third-party fleet PRs (Stage-0 supervisor script layer; flood §4 item 7). Per PR, in a throwaway detached `git clone` under the system tempdir (never a `git worktree`, never a push), merges `origin/main` into the branch tip and on the result runs the repo-pinned fast gates + an AST symbol-loss screen + a docs additions-only screen. `--pr N | --batch [--json] [--repo-root P]`; exit 0/2. Tests: `tests/test_predict_merge.py`.
-  - Emits per-PR JSON (`verdict` MERGE-CLEAN / NEEDS-UPDATE-BRANCH / DAMAGED-FIX-FIRST / CONFLICT + the TRUE changed-file delta from the merge result, NOT `gh --json files`); `--batch` builds the same-file cluster map + a heal-first (`restore`/`heal`/`repair`/`fix-first`), least-colliding merge order.
+- `util/fleet_triage/predict_merge.py` -- Deterministic predicted-merge triage for third-party fleet PRs (Stage-0 supervisor script layer; flood §4 item 7). Per PR, in a throwaway scratch repository under the system tempdir (never a `git worktree`, never a push), merges `origin/main` into the branch tip and on the result runs the repo-pinned fast gates + an AST symbol-loss screen + a docs deletion-magnitude screen. `--pr N | --batch [--json] [--repo-root P]`; exit 0/2. Tests: `tests/test_predict_merge.py` and every `tests/test_predict_merge_*.py` suite.
+  - The scratch is `git init` plus `objects/info/alternates` on the common object store, a copy of the source's `shallow` file when it has one, and `* -filter`. Operator surface: [Scratch repository](#scratch-repository).
+  - Emits per-PR JSON (`verdict` MERGE-CLEAN / NEEDS-UPDATE-BRANCH / DAMAGED-FIX-FIRST / CONFLICT + the TRUE changed-file delta from the merge result, NOT `gh --json files`); `--batch` builds the same-file cluster map + a heal-first (a `fix/` / `heal/` / `hotfix/` branch, or a `fix(` / `fix:` / `heal` title), least-colliding merge order.
     - The read-only `fleet-supervisor` agent invokes it once per batch.
     - The AST symbol + docs screens shell out to the `juniper-ci-tools` console scripts (`juniper-symbol-loss-check` / `juniper-docs-additions-check`, >=0.8.0) on the merged RESULT (same CLIs as post-merge `main-verify`; rollout W3 replaced the in-repo `util/sequence_safety/` paths). predict_merge therefore now **requires juniper-ci-tools installed** alongside `gh`; an absent console script degrades that screen to `skip` (never crashes the report).
-    - The docs screen counts removed content `-` lines on changed `.md` only (ignores unified-diff `---` headers); no-`.py` TRUE deltas skip the pre-commit battery.
+    - The docs screen hands every changed `.md` to `juniper-docs-additions-check` with `--files`, so it fails on a deleted heading or a run of at least 5 deleted lines in a hunk that adds nothing, not on any removed line; no-`.py` TRUE deltas skip the pre-commit battery.
     - `--pr` / `triage_pr`: a `gh` nonzero exit or non-JSON response raises `PredictMergeError` -> CLI exit `2` (hard-fail; there is no partial report worth printing). `--batch` / `triage_batch`: the same condition becomes a soft `ERROR` row and the rest of the open-PR set still runs.
     - The gate battery runs over `changed_existing` (TRUE delta filtered to paths that still resolve as a blob at `HEAD`), so a **deleted** `.py` stays in `true_delta` for the symbol screen but is never passed to `pre-commit --files` — a pure-deletion PR can be gate-clean and still `DAMAGED-FIX-FIRST`. `JUNIPER_FLEET_SKIP_PRECOMMIT=1` forces hook `skip_all`.
     - Operator surface: [`docs/REFERENCE.md` § Fleet Triage and Sequence Safety](#fleet-triage-and-sequence-safety).
@@ -4654,7 +4712,7 @@ juniper-ml/
     ├── memory_index_check.py             # MEMORY.md index gate (option A): 200 lines / 25k UTF-8 bytes; new-row hook len() vs 120; --accept samples history
     ├── release_train/                    # PyPI release-train: registry.yaml (18-package registry) + detect.py (report-only "needs deploy?" engine, Phase 1) + propose.py/notes_render.py (manifest -> proposal-PR content, dry-run, Phase 2.1) + archive_guard.py (exempt notes-archive PR structural guard, Phase 3.1) + ceremony.py (exempt-archive + Release ceremony, dry-run, Phase 3.2)
     ├── prompt_discovery/                 # Custom-agent suite (PR 4): env-discovery probes -> JSON grounding bundle (path-invoked, --repo-root)
-    ├── fleet_triage/                     # Flood §4 item 7 (Stage-0 supervisor script layer): predict_merge.py -- detached-clone predicted-merge per PR (4 verdicts, TRUE delta, cluster map + order; delegates the 2 screens to juniper-ci-tools console scripts); --pr N | --batch, exit 0/2
+    ├── fleet_triage/                     # Flood §4 item 7 (Stage-0 supervisor script layer): predict_merge.py -- scratch-repository predicted-merge per PR (git init + alternates; 4 verdicts, TRUE delta, cluster map + order; delegates the 2 screens to juniper-ci-tools console scripts); --pr N | --batch, exit 0/2
     ├── generated_prompt_index.py         # Custom-agent suite (P4): index + safety-gated prune of prompts/generated/
     ├── template_data_resolver.py         # Custom-agent suite (PR 6b): loads prompts/agent_templates/data/*.yaml (data-layer resolver)
     ├── template_select_preview.py        # Custom-agent suite (P2): offline preview of the Template Agent's match_signals selection
@@ -4846,7 +4904,7 @@ With the `SLACK_WEBHOOK_URL` repo secret present (Overtoad-provisioned incoming 
 
 ### Claude Code Action (`claude.yml`)
 
-GitHub `@claude` assistant (`anthropics/claude-code-action`). Event-driven (comments/reviews/issues), SHA-pinned, **not** a required check and **not** the local `claudey` launcher. Operator surface: [Claude Code Action](#claude-code-action). Access audit: [Claude.yml Access Validation](#claudeyml-access-validation).
+GitHub `@claude` assistant (`anthropics/claude-code-action`). Event-driven (comments/reviews/issues), SHA-pinned, **not** a required check and **not** the local `claudey` launcher. Operator surface: [Claude Code Action](#claude-code-action). Local launchers: [Local Claude Code Launchers](#local-claude-code-launchers). Access audit: [Claude.yml Access Validation](#claudeyml-access-validation).
 
 ### CodeQL Analysis (`codeql.yml`)
 
@@ -8517,6 +8575,23 @@ Two recorded runs use these names: `reports/2026-10-04_recurrence-equities-cv-ma
 | Conditioning `cond_2norm` is `inf` | `sigma_min` was 0. The script still returns 0 when it finishes the folds. |
 | You wanted resolved ridge, gamma, or per-fold theta from the HTTP body | `replay` saves that body as the service returned it. Those resolved values are what `matrix` reads off the in-process model (`theta_resolved`, `ridge_resolved`, `gamma_resolved`). |
 | A required flag was omitted | argparse usage (exit 2). Nothing is written. |
+| `checks` prints `min-nonzero=none (no column has a std > 0)` and exits 0 | No last-step column has a std above 0 (the pinned case is an all-constant last step). The JSON is already written and `X_last_step_std_min_nonzero` is null. Before script 0.3.1 the summary formatted that null with `.3e`, raised `TypeError`, and exited 1 on a valid report. See [Lane A3 checks](#lane-a3-checks). |
+
+### Lane A3 checks
+
+[`util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py`](../util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py) (script 0.3.1) is the numpy-only instrument of the same consensus review. Its `checks` subcommand shares no code with the matrix or the service: it reads one NPZ, rebuilds the `full` view, and writes one JSON, with numpy and the standard library alone. It imports neither `juniper_data_client`, nor `juniper_recurrence_model`, nor model-core. `compare` and `fold-threads` are separate subcommands; `fold-threads` does use the model instruments. The regression suite covers `checks` only (`tests/test_equities_lane_a3_report.py`).
+
+```bash
+python3 util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py checks \
+  --npz path/to/artifact.npz \
+  --out reports/lane-a3-checks.json
+```
+
+`--meta`, `--archive-npz` and `--archive-meta` are optional. `--n-folds` defaults to 5 and `--embargo` to 2, the values the matrix script pins in `E_H_CV`; the cut is `fold_size = n // (n_folds + 1)`. A missing `--npz` or `--out` is argparse usage (exit 2) and writes nothing.
+
+`cmd_checks` writes the JSON, then prints the summary, then returns 0. A negative `dt` (`dt_any_negative`), a non-finite `X` (`full_view.X_all_finite`) or target (`target_all_finite`), and a missing archive (`archive.status` = `NO ARTIFACT`) are fields in that report, not a non-zero exit. Exit 0 means the report was written.
+
+Last-step feature stds are `X[:, -1, :]` reduced in float64 and again in float32. `X_last_step_std_min_nonzero` is the minimum among columns whose float64 std is `> 0`, or JSON `null` when none are. The summary then reads `min-nonzero=none (no column has a std > 0)`. `X_last_step_n_zero_std_columns` counts `std == 0` only, so a null min-nonzero and a zero-std count answer different questions. The constant-column case the suite pins sets both: null, and a zero-std count equal to the feature count, with the constant values in `X_last_step_zero_std_columns_value`.
 
 ### Reading a run
 
@@ -8530,6 +8605,71 @@ Two recorded runs use these names: `reports/2026-10-04_recurrence-equities-cv-ma
 | A configured-theta row equals its fold-resolved twin | Expected on this artifact (91.0 everywhere). The matrix does not test theta as a lever. |
 
 The note's §2.5 records the instrument's limits: one ticker, one window, one dataset seed, `d` 16, five expanding folds, one RFF seed (seeds 0–5 span −0.115 … −0.252 on the E-H cell), a CV population whose fold 4 holds the whole `test` partition, and the private attributes above.
+
+---
+
+## Actions outage re-run
+
+`util/ad-hoc/2026-10-05_rerun_after_actions_outage.py` (helper 0.3.0) waits until GitHub's Actions component is exactly `operational`, re-runs abandoned workflow runs on a PR's current head, then optionally hands off to `util/safe_merge.py --execute`. It was written for the 2026-10-05 Actions outage, when queued jobs were cancelled with zero steps and the code under test had not failed. Pins: `tests/test_rerun_after_actions_outage.py`.
+
+```bash
+python3 util/ad-hoc/2026-10-05_rerun_after_actions_outage.py --repo juniper-ml --pr 2164 --no-merge
+python3 util/ad-hoc/2026-10-05_rerun_after_actions_outage.py --repo juniper-recurrence --pr 192 --merge --accept-degraded
+```
+
+`--merge` and `--no-merge` are mutually exclusive and one of them is required. The status page is `https://www.githubstatus.com/api/v2/components.json`. The component name that counts is exactly `Actions`. `actions` and `GitHub Actions` do not, even when their status is `operational`. `--accept-degraded` also accepts exactly `degraded_performance`. `Operational`, a trailing space, and any other string do not.
+
+Only a run that is `completed` with conclusion `failure`, `cancelled`, `timed_out`, or `startup_failure` is re-run (`gh run rerun` on that head). `--no-merge` returns 0 after those re-runs. `--merge` returns `util/safe_merge.py`'s exit code. Defaults: poll every 120 s, give up once more than 4 hours have passed (`--poll-seconds`, `--max-wait-seconds`).
+
+### A bad status page is not operational
+
+Statuspage API v2 serves `components` as a list of objects. The helper checks that shape before it reads any `status`:
+
+| Payload | Reading |
+| --- | --- |
+| Request failed, or the body is not JSON | `unknown (<exception class>)` |
+| JSON is not an object | `unknown (payload is <type>, not an object)` |
+| `components` is not a list | `unknown (components is <type>, not a list)` |
+| Any element is not an object | `unknown (a component is <type>, not an object)` |
+| No object named `Actions` (a missing `components` key included) | `unknown (no Actions component)` |
+| `Actions` is present and `status` is missing | the string `None` |
+
+A list that contains a well-formed `{"name": "Actions", "status": "operational"}` beside `null` or an int is still `unknown`. The operational object is not read. Until 0.3.0 the walk sat outside the request `try`: a dict-shaped `components` raised `AttributeError` out of `main` and aborted the wait, and a non-object after an operational Actions object was never reached, so the page counted as operational.
+
+`unknown (...)` and the string `None` are not accepted statuses. The wait keeps polling and, past the budget, prints `GAVE UP` and exits 2. Nothing is re-run and `safe_merge` is not called.
+
+---
+
+## GnuPG long-option abbreviations
+
+[`util/claude_agent_guard.py`](../util/claude_agent_guard.py) denies secret-key and signing commands on `gpg` and `gpg2` (`GPG-SECRET`, `GPG-SIGN`). GnuPG accepts a prefix of a long option, so the guard counts a prefix too. `GPG_MIN_ABBREV` is 2 since guard 1.3.0. It was 4.
+
+A typed long option of 2 characters or more is denied when a denied option starts with it. One character is not. The name is casefolded. Text after `=` is not part of the name. A longer word that no denied option starts with is allowed.
+
+`GPG_EXACT_ALLOWED` is checked first and contains only `export`. Public `gpg --export` stays allowed. Every shorter prefix of two letters or more does not: `--ex`, `--exp`, `--expo` and `--expor` are prefixes of `export-secret-keys`.
+
+Short options are a different table and do not use this floor. `-K` is `GPG-SECRET`. `-s`, `-b`, and `-d` are `GPG-SIGN`. `-k` is allowed. The command name compares case-insensitively (`gpg`, `gpg2`, `GPG`).
+
+| Command | Result |
+| --- | --- |
+| `gpg --export`, `gpg --EXPORT`, `gpg --export=KEYID` | allowed (exact `export`) |
+| `gpg --ex`, `gpg --expo`, `gpg --expo=KEYID`, `gpg --expor` | `GPG-SECRET` (prefix of `export-secret-keys`) |
+| `gpg --li`, `gpg --list`, `gpg --LIST`, `gpg --list=keys` | `GPG-SECRET` (prefix of `list-secret-keys`) |
+| `gpg --list-keys`, `gpg --list-key` | allowed (`list-secret-keys` does not start with `list-key`) |
+| `gpg --list-secret` | `GPG-SECRET` |
+| `gpg --ca`, `gpg --card` | `GPG-SECRET` (prefix of `card-status` and `card-edit`) |
+| `gpg --cl`, `gpg --cle`, `gpg --clea` | `GPG-SIGN` (prefix of `clearsign` and `clear-sign`) |
+| `gpg --ls`, `gpg --lsi` | `GPG-SIGN` (prefix of `lsign-key`) |
+| `gpg --si`, `gpg --sign`, `gpg --SIGN`, `gpg --de`, `gpg --det`, `gpg --decr`, `gpg --pa`, `gpg --qu` | `GPG-SIGN` |
+| `gpg --e`, `gpg --s`, `gpg --c`, `gpg --d`, `gpg --l` | allowed (one character) |
+| `gpg -K` | `GPG-SECRET` (short option, not the two-character floor) |
+| `gpg -k` | allowed |
+
+`gpg --list --sign x` names `GPG-SECRET` for `--list` and adds `Also matched: GPG-SIGN`. The deny is one JSON object on stdout and exit 0. An allowed command prints nothing. The reason says the call is owner-run under D11 and says not to retry it or look for a way around the guard. A one-letter prefix passes the guard, and the guard's own comment at `GPG_MIN_ABBREV` records that one character is ambiguous to GnuPG for every denied option, so it is not a spelling to retry after a deny.
+
+Nested command text is scanned. `bash -c 'gpg --expo'` and `echo $(gpg --expo)` are still `GPG-SECRET`.
+
+`GPG_CASES` in `tests/test_claude_agent_guard.py` pins the floor on both sides: `--cl`, `--cle`, `--ls`, `--lsi`, `--det` and `--clea` are `GPG-SIGN`; `--li`, `--ex`, `--ca`, `--expo`, `--list=keys` and `--LIST` are `GPG-SECRET`; and the one-letter `--s`, `--c`, `--d`, `--l` and `--e`, with the exact `--export`, are allowed. The cut itself is `_gpg_option` together with `GPG_MIN_ABBREV`. The guard's entry in the [Utility Script Reference](#utility-script-reference) says what GnuPG 2.4.8 does with those prefixes.
 
 ---
 
@@ -8629,9 +8769,135 @@ The bash auditor covers L2/L3 structure only; juniper-ml's own `on:` event matri
 
 ---
 
+## Local Claude Code Launchers
+
+Three local entry points start Claude Code. `./claudey` is the repo-root symlink to `scripts/claude_interactive.bash`. It does not run `scripts/default_interactive_session_claude_code.bash`. The GitHub `@claude` workflow is a different surface: [Claude Code Action](#claude-code-action).
+
+`TRUE="0"` and `FALSE="1"` in both `claude_interactive.bash` and `wake_the_claude.bash`. A `1` after a boolean flag is off. `CLAUDE_SKIP_PERMISSIONS=1` on the older default-session script is the opposite convention: that `1` means on.
+
+### Entry points
+
+| Entry | What Claude Code is handed |
+|-------|----------------------------|
+| `./claudey` | A bare `--worktree`, a bare `--remote-control`, `--effort` and `--model` with the script's `DEFAULT_EFFORT` and `DEFAULT_MODEL` (`max` and `opus` as of juniper-ml#2554; the model default is switched from time to time, so read the script), `--dangerously-skip-permissions`, then `--` and the prompt `Hello World, Claude!`. Shipped `DEBUG=TRUE` (`0`) is what sends `--dangerously-skip-permissions` on every launch. |
+| `./claudey --file <file>` or `--path` | The same options. The file's text is the prompt, and the default prompt is not sent. |
+| `bash scripts/default_interactive_session_claude_code.bash` | `--session-id` plus a new UUID (the script passes `--id`, and wake generates it), a bare `--worktree`, a bare `--remote-control`, `--effort high`, then `--` and `Hello World, Claude!`. No `--model`. `--dangerously-skip-permissions` only when `CLAUDE_SKIP_PERMISSIONS=1`. |
+| `bash scripts/wake_the_claude.bash ...` | Whatever the parser accepts. No arguments prints usage and exits 1. `-u` / `--usage` print usage and exit 1. `-h` / `--help` print usage and exit 0. |
+
+`claudey` hands `wake_the_claude.bash` the worktree as `--worktree 0` (a true boolean), which wake sends bare. `./claudey` turns worktree and remote control on (2026-11-04). `--no-worktree` and `--no-remote-control` turn them off, as do `CLAUDE_WORKTREE=1` and `CLAUDE_REMOTE_CONTROL=1`. The older default-session script gained the bare `--remote-control` on 2026-11-06. It still passes `--id` and `--effort high`, which `./claudey` does not.
+
+`-s` is not the same flag in both scripts. On `claudey` it is `--id` and it requires a value. On `wake_the_claude.bash` it is `--dangerously-skip-permissions`.
+
+`claudey` exits with `wake_the_claude.bash`'s status. It prints `Closed Default Interactive session with Claude Code` and then returns that status. It used to `exit 0` after the Closed line, so a prompt file wake refused still looked successful. The default-session script already returned wake's status.
+
+### Effort
+
+`wake_the_claude.bash`'s `EFFORT_DEFAULT` is `max` again (owner ruling, 2026-11-08). The flag is `-e`, `--effort`, `--effort-type` or `--effort-level`.
+
+| Value after the flag | What Claude Code is handed |
+|----------------------|----------------------------|
+| `low`, `medium`, `high`, `xhigh`, `max` | `--effort` and that value |
+| `0` | `--effort max` (the default) |
+| `auto`, in any case | No `--effort` flag: Claude Code uses its own default. Claude Code has no `auto` value (the comment at `EFFORT_DEFAULT`). |
+| `1` | No `--effort` flag |
+| Anything else, or no value | Nothing: wake exits 1 with the `Error: refused` line below |
+
+`./claudey` sends its own `DEFAULT_EFFORT`, so `./claudey -e auto` launches with no `--effort` flag.
+
+### Version flags
+
+Both launchers follow `claude -v` (2026-11-06). `wake_the_claude.bash` is 1.1.0. `claudey` is 0.2.0.
+
+| Flag | `wake_the_claude.bash` | `./claudey` |
+|------|------------------------|-------------|
+| `-v`, `-V`, `--version`, `--claude-version` | Runs `claude --version`, prints `<path-to-claude> <that output>`, exits 0, starts no session. | `exec`s `wake_the_claude.bash --version`. Same output. Any other arguments are dropped. |
+| `--script-version` | Prints `wake_the_claude.bash 1.1.0` and exits 0. An exported `SCRIPT_VERSION` is ignored (claudey exports `0.2.0`). | Prints `0.2.0` and exits 0. Does not call wake. |
+
+`./claudey -v` sets `WTC_DEBUG` to `1` when that variable is unset, so the version line is not wrapped in wake's debug log. Export `WTC_DEBUG=0` before `./claudey -v` to keep the log. `--script-version` on claudey never calls wake.
+
+`WTC_DEBUG` defaults to `0` inside `wake_the_claude.bash` (debug on). `WTC_DEBUG=1` turns the debug log off. These failures still print on stderr when the log is off:
+
+| Failure | stderr |
+|---------|--------|
+| Version flag, no executable `claude` on `PATH` | `Error: claude command not found in PATH` (exit 1) |
+| `claude --version` prints nothing | `Error: "<path-to-claude> --version" printed no version` (exit 1) |
+| `--file` / `--path` never resolves to a file | `Error: no prompt file found for --file "<name>" and --path "<path>"`, then usage (exit 1) |
+| A recognized flag's parser returns failure | `Error: refused "<flag as typed>": its value is missing or invalid (WTC_DEBUG=0 logs why)`, then usage (exit 1) |
+| The prompt file cannot be read, or holds only whitespace | `Error: the prompt file "<path>" could not be read, or holds no prompt` (exit 1, no usage) |
+| Launch cannot find `claude` | `Error: claude command not found in PATH` (exit 1) |
+| The repo's `tmp/` cannot be created | `Error: cannot create juniper-ml's tmp/ (from <repo root>); refusing to launch on the system temp dir` (exit 1) |
+| Headless mode cannot open a nohup log | `Error: Failed to open nohup log file at <logs> or <HOME>` (exit 1) |
+
+### Prompt file
+
+`claudey` forwards a prompt file (2026-11-06). `--file`, `-f`, and `--file-name` name the file. `--path`, `-l`, and `--file-path` name the file, or the directory that holds `--file`. `CLAUDE_PROMPT_FILE` and `CLAUDE_PROMPT_PATH` do the same when the flags are absent. A flag overwrites the matching variable.
+
+`wake_the_claude.bash` prefers `--prompt` to a file, so claudey sends no default prompt once a file is set. An explicit prompt together with a file exits 1 before wake runs. The message is `A prompt and a prompt file are exclusive: give --prompt (or CLAUDE_PROMPT), or --file / --path (or CLAUDE_PROMPT_FILE / CLAUDE_PROMPT_PATH), not both`. `CLAUDE_PROMPT=1` (off) alongside a file is accepted and still sends no `--prompt`.
+
+`./claudey --file ''`, `--path ''`, `-f ''`, and `-l ''` exit 1 with `Missing value for` that flag and do not call wake. An empty expansion, such as `-f "${HANDOFF}"` when `HANDOFF` is unset, used to launch with the default prompt. An exported empty `CLAUDE_PROMPT_FILE` or `CLAUDE_PROMPT_PATH` is the environment form of the same mistake and is refused the same way: `Missing value for --file` or `Missing value for --path`, exit 1, and wake is not called, even when a `--prompt` is given.
+
+An empty word is parsed. `./claudey '' --file prompt.md` exits 1 with `Unknown argument: (an empty word)`. claudey's parse loop used to stop at the empty word, and `wake_the_claude.bash` still breaks its loop when the current word is empty, so the `--file` was dropped and the default prompt was sent. `-w ''` is the exception: it is a bare `--worktree` (Claude Code names it), and flags after it are still parsed.
+
+`./claudey --prompt` with no word exits 1 (`Missing value for --prompt`) and does not call wake. On wake, the word after `-p` / `--prompt` / `--prompt-string` is the prompt even when it starts with `-`. `0` or an empty word sends `Hello World, Claude!`. `1` sends no prompt. A missing word on wake also sends that default text.
+
+wake reads the file after parsing. `$(cat)` strips trailing newlines; interior newlines stay, including a leading `---` front-matter line.
+The text is Claude Code's last argument, after `--`. No `--prompt` flag reaches `claude`.
+A file that exists but cannot be read, or that holds only whitespace, prints `Error: the prompt file "<path>" could not be read, or holds no prompt` on stderr and exits 1.
+A `--file` name that is not a file, while no `--path` directory has been given, and a `--path` that is a directory with no file name, print the unresolved-file error above and then usage.
+A later `--file` or `--path` that does not resolve drops the prompt file an earlier one resolved. `--file good.md --file missing.md` used to send `good.md` and exit 0; it now ends in the unresolved-file error, as does `--path good.md --path <a directory>` with no file name.
+A `--path` that is neither a file nor a directory (`--path no-such-dir`), a `--file` whose next word starts with `-` (`--file -x`), and a directory plus a name that is not a file there, are refused while parsing: the `Error: refused` row above, then usage.
+None of those launch. An unknown flag is different: with the debug log off it prints usage only, and nothing on stderr. The version-flag errors do not add the refused line, because those parsers exit on their own `Error:`.
+
+claudey's usage line is prefixed `Usage: claude_interactive.bash` (`SCRIPT_NAME` after `realpath` of the symlink) and lists `-h`. It goes to stdout, with the `Missing value` or `Unknown argument` line above it. The prompt slot is one alternative, joined by `|`: `--prompt <text>`, or the `--file` / `--path` group. It is not two independent slots.
+
+### Where the prompt sits
+
+The prompt is the last argument, after `--`. Claude Code treats the word after a bare `--worktree` or `--remote-control` as that option's value. The `--` keeps the prompt, and a front-matter line that starts with `-`, from becoming that value. Both the interactive call and the headless `nohup` call pass `"${CLAUDE_CODE_PARAMS[@]}"`.
+
+`--remote-control` (`-c`, `--remote`, `--control` on wake; `--remote-control`, `--remote-control-session` and `-rc` on claudey) takes no session name.
+On wake, `0`, the end of the input or a following flag is a bare `--remote-control`, `1` omits it, and any other word exits 1: stderr is `Error: refused "--remote-control": its value is missing or invalid (WTC_DEBUG=0 logs why)`, then usage.
+On claudey the flag is a switch: the next word is parsed on its own, so `./claudey --remote-control laptop` exits 1 with `Unknown argument: laptop`. `./claudey --no-remote-control --prompt --remote-control` leaves remote control off. The prompt text is `--remote-control`.
+
+### Examples
+
+```bash
+./claudey -v
+./claudey --script-version
+bash scripts/wake_the_claude.bash --script-version
+./claudey --file prompts/handoff.md
+./claudey --path prompts --file handoff.md
+./claudey -w '' --file prompts/handoff.md
+./claudey --no-worktree --no-remote-control --prompt "two words"
+./claudey -e auto
+```
+
+### Launcher pitfalls
+
+| What you see | What happened |
+|--------------|---------------|
+| `./claudey -f "$HANDOFF"` exits 1, `Missing value for -f` | `HANDOFF` is empty. Wake is not called, so the default prompt is not sent in its place. |
+| `./claudey` exits 1, `Missing value for --file`, and no `--file` was typed | `CLAUDE_PROMPT_FILE` is exported and empty (`--path`: `CLAUDE_PROMPT_PATH`). Unset it, or give it a file. |
+| `./claudey '' --file prompt.md` exits 1, `Unknown argument: (an empty word)` | An empty word is its own argument. `-w '' --file prompt.md` is a bare worktree plus that file, and the default prompt is not sent. |
+| `Closed Default Interactive session` and then a failing status | `claudey` returns wake's status. A refused prompt file is exit 1. The Closed line is still printed before that status. |
+| `./claudey -v` exits 1, `Error: claude command not found in PATH` | No executable `claude` on `PATH`. claudey turns wake's debug log off for this call unless `WTC_DEBUG` is already set. |
+| `--file missing.md` exits 1 and names the file on stderr | `Error: no prompt file found for --file "missing.md" and --path ""`, then usage. The debug log is not required to see it. |
+| `--file good.md --file missing.md` exits 1 and names `missing.md` | The later flag did not resolve, and that drops the file the earlier one resolved. The earlier file is not sent in its place. |
+| `--path no-such-dir` or `--file -x` exits 1, `Error: refused "--path"` or `"--file"` | The parser rejected the value (not a file or directory, or the next word looks like a flag). Usage follows. `WTC_DEBUG=1` still prints the line; `WTC_DEBUG=0` also logs why. |
+| `--effort auto`, and `claude` is started without `--effort` | By design (owner ruling, 2026-11-08; juniper-ml#2554): Claude Code has no `auto` value, so wake sends no flag and Claude Code uses its own default. |
+
+Quick card: [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) § Claude Code Session Script.
+Regression: `python3 -m unittest tests/test_wake_the_claude.py tests/test_claude_interactive.py tests/test_claudey_empty_prompt_file_env.py tests/test_prompt_file_later_flag.py`.
+The version split is `test_version_flags_report_claude_codes_version_only`, `test_script_version_flag_reports_this_scripts_own_version`, and `ClaudeInteractiveEndToEndTests.test_version_flags_report_claude_codes_version` (that last one also asserts the debug log is absent).
+The stderr lines with debug off are `test_version_flags_without_claude_say_why_with_debug_output_off`, `test_a_claude_that_prints_no_version_says_so_with_debug_output_off`, `test_prompt_file_that_never_resolves_says_why_with_debug_output_off`, and `test_a_refused_flag_says_why_with_debug_output_off`.
+The prompt file is `test_a_prompt_file_replaces_the_default_prompt`, `test_a_prompt_and_a_prompt_file_are_refused_together`, `test_a_prompt_file_flag_with_an_empty_value_is_refused`, `test_an_empty_word_is_parsed_not_the_end_of_the_input`, `test_claudey_exits_with_wake_the_claudes_status`, `test_a_prompt_file_wake_the_claude_refuses_fails_claudey`, and `test_a_prompt_file_reaches_claude_as_the_prompt`; the empty variables are `tests/test_claudey_empty_prompt_file_env.py`, and the later flag is `tests/test_prompt_file_later_flag.py`.
+The effort default is `test_effort_true_sends_the_max_default`, `test_effort_auto_sends_no_effort_flag`, and `test_effort_false_omits_the_effort`.
+The default session's bare `--remote-control` is `test_default_interactive_script_forwards_expected_defaults`.
+
+---
+
 ## Claude Code Action
 
-`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher (`scripts/wake_the_claude.bash` / `claudey`). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
+`.github/workflows/claude.yml` is the GitHub Actions `@claude` assistant. It is **not** the local CLI launcher (`scripts/wake_the_claude.bash` / `claudey`; [Local Claude Code Launchers](#local-claude-code-launchers)). Mentioning `@claude` on a public issue or PR spends `secrets.ANTHROPIC_API_KEY`. Access-safeguard audit (L2/L3, `DEFAULT_REPOS`) is [Claude.yml Access Validation](#claudeyml-access-validation); this section is the **live workflow contract** — triggers, permissions, SHA pin, and Dependabot.
 
 The job is **not** a required status check and is **not** in Quality Gate `needs:`. It has no `push` or `pull_request` trigger, so a commit to `main` does not start it.
 
@@ -9470,6 +9736,7 @@ Source: `juniper-service-core/juniper_service_core/workers/registry.py` (`record
 | 0.6.72  | 2026-11-15 | The fork-drift gate's ninth guard, `retry-after-rounds-up` (`APD-ECO-016`, filed already fixed in the defect register on the owner's ruling of 2026-11-09): the `tests/test_service_fork_drift.py` entry names canopy's own `RateLimiter` as a site and the shared package as a site of four guards, counts nine guards (eight of them copy-drift guards), and describes the guard's eleven scoped sites, its eight forbidden roundings, its deliberately brittle `check` markers, its mutation check (`util/ad-hoc/2026-11-12_retry_after_guard_mutation_check.py`) and what it cannot see. The repository-tree comment names canopy's `RateLimiter`. |
 | 0.6.73  | 2026-11-15 | Release-train step 5b-v (owner ruling on juniper-ml#2507, "Carry + extend propose.py"): `propose.py` renders the four release sites from `pyproject.toml`: the Package Overview **Version** cell and, under Ecosystem Compatibility, the "declares" sentence, the current-series row and the `[recurrence]` clause. The propose suite gains `ReferenceCompatHelperTest` and `BuildProposalReferenceCompatTest`; the Test Suite Reference and `propose.py` entries describe the step, its `REQUIRED` and `REVIEW` lines, and the floor-raise obligation that juniper-ml#2507's `ReferenceCompatibilityMatrixTest` creates. |
 | 0.6.74  | 2026-11-15 | Cursor flood-4 round-2 tests carrier: fifteen suites registered (259 in all) and juniper-ml#2507's Ecosystem Compatibility pins added to `tests/test_pyproject_extras.py`; the predict_merge `ERROR` row says how `screen_coverage` counts it; two Repository Structure tree lines; ci.yml's `host-tooling-macos` job runs every agent-guard suite, 20 suites in all. |
+| 0.6.75  | 2026-11-15 | Cursor flood-4 round-2 docs carrier (each claim re-derived from `main`): Local Claude Code Launchers (entry points, effort, version flags, stderr with the debug log off, prompt files); the symbol-loss `WEAKENED` bounds; Lane A3 `checks` and the Actions outage re-run; GnuPG long-option abbreviations at the guard's two-letter floor; the `predict_merge` scratch repository. Stale fleet-triage text corrected: since juniper-ml#1004 the docs screen has `juniper-docs-additions-check`'s thresholds (the console script since #1024), not an inline any-removed-line counter, and `_is_heal` reads branch and title prefixes; the hook battery includes `ruff` and `ruff-format` |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -10024,5 +10291,5 @@ Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordi
 ---
 
 **Last Updated:** 2026-11-15
-**Version:** 0.6.74
+**Version:** 0.6.75
 **Maintainer:** Paul Calnon
