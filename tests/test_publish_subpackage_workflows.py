@@ -18,8 +18,12 @@ have already bitten in production:
     *target* package on production PyPI during TestPyPI index lag. Sibling verify
     steps must install from TestPyPI only (companion to
     ``tests/test_workflow_script_paths.py``'s no-deps+extra-index lint).
-  * **skip-existing** — residual overlap (manual dispatch during a release) must
-    be a no-op, not an immutable-upload 400.
+  * **no skip-existing** — both uploads set it until 2026-11-15, so a residual
+    overlap was a no-op; but on TestPyPI it kept an earlier build under the same
+    file name silently, and the install check tested that file. juniper-ci-tools
+    0.9.1's re-run (run 38045867684) passed TestPyPI on the first build's files and
+    sent PyPI a second build. The one-artifact checks that replace it are pinned by
+    ``tests/test_publish_one_artifact.py``.
   * **subdirectory build** — ``working-directory`` + artifact path under the
     package dir so a root-level build cannot ship the wrong package.
 
@@ -86,8 +90,9 @@ def _workflow_on(doc: dict) -> dict:
 
 
 def _verify_step_run(doc: dict) -> tuple[str, str]:
+    # The install check, by name: the one-artifact template's own "Verify ..." steps run Python before it.
     steps = (doc.get("jobs") or {}).get("publish-testpypi", {}).get("steps") or []
-    step = next((s for s in steps if "Verify" in str(s.get("name") or "") and "run" in s), None)
+    step = next((s for s in steps if str(s.get("name") or "").startswith("Verify install from TestPyPI") and "run" in s), None)
     if step is None:
         raise unittest.SkipTest("could not locate Verify install step in publish-testpypi")
     return str(step["name"]), step["run"]
@@ -140,25 +145,36 @@ class PublishSubpackageStructuralTest(unittest.TestCase):
                 self.assertNotIn("push", on, f"{pkg}: must not subscribe to push:tags (ml#555 race)")
 
     def test_permissions_are_oidc_plus_contents_read(self) -> None:
-        """OIDC is scoped to the publish jobs; the workflow block grants only reads.
+        """OIDC is scoped to the jobs that upload; the workflow block grants only reads.
 
         P4 (juniper-ml#357) moved ``id-token: write`` off the workflow block --
         the build job compiles the tree and must not be able to mint a PyPI
         credential.  Job-level ``permissions`` REPLACE the workflow block rather
-        than merging with it, so each publish job restates ``contents: read``.
+        than merging with it, so each job states its own.  Since the one-artifact
+        publish (2026-11-15): the build ``contents: read`` and ``actions: read``
+        (its reuse step lists the run's artifacts), the TestPyPI job
+        ``contents: read`` for its sparse checkout, the PyPI job, which checks
+        nothing out, ``id-token: write`` alone, and the republish job
+        ``actions: read`` for the release run's artifact.
         """
+        expected = {
+            "build": {"contents": "read", "actions": "read"},
+            "publish-testpypi": {"id-token": "write", "contents": "read"},
+            "publish-pypi": {"id-token": "write"},
+            "republish": {"actions": "read", "id-token": "write"},
+        }
         for pkg, info in self.loaded.items():
             doc = info["doc"]
             jobs = doc.get("jobs") or {}
             with self.subTest(pkg=pkg):
                 self.assertEqual(doc.get("permissions"), {"contents": "read"}, f"{pkg}: workflow-level permissions must NOT grant id-token; scope it to the publish jobs")
-                for job_name in ("publish-testpypi", "publish-pypi"):
+                for job_name, permissions in expected.items():
                     self.assertEqual(
                         (jobs.get(job_name) or {}).get("permissions"),
-                        {"id-token": "write", "contents": "read"},
-                        f"{pkg}: {job_name} must carry its own OIDC grant",
+                        permissions,
+                        f"{pkg}: {job_name} must carry its own grant, and only a job that uploads may mint OIDC",
                     )
-                self.assertNotIn("permissions", jobs.get("build") or {}, f"{pkg}: the build job must not be granted OIDC minting rights")
+                self.assertNotIn("id-token", (jobs.get("build") or {}).get("permissions") or {}, f"{pkg}: the build job must not be granted OIDC minting rights")
 
     def test_build_asserts_release_tag_matches_built_version(self) -> None:
         """P3: each build job proves it is building a tag whose version it actually built."""
@@ -195,15 +211,22 @@ class PublishSubpackageStructuralTest(unittest.TestCase):
                 self.assertEqual(wd, subdir)
 
     def test_artifact_path_under_subdirectory(self) -> None:
+        # The one-artifact template's upload names the artifact and its path through the workflow env (2026-11-15), so
+        # resolve them: still `<pkg>-dist`, still the package subdirectory's dist/, now beside SHA256SUMS.
         for _suffix, pkg, subdir in SHARED_PACKAGES:
             doc = self.loaded[pkg]["doc"]
+            env = doc.get("env") or {}
             steps = ((doc.get("jobs") or {}).get("build") or {}).get("steps") or []
             upload = next((s for s in steps if "upload-artifact" in str(s.get("uses") or "")), None)
             with self.subTest(pkg=pkg):
                 self.assertIsNotNone(upload)
+                self.assertEqual(env.get("PUBLISH_PACKAGE"), pkg)
+                self.assertEqual(env.get("PUBLISH_DIST_DIR"), f"{subdir}/dist")
                 with_ = upload.get("with") or {}
-                self.assertEqual(with_.get("name"), f"{pkg}-dist")
-                self.assertEqual(with_.get("path"), f"{subdir}/dist/")
+                self.assertEqual(with_.get("name"), "${{ env.PUBLISH_PACKAGE }}-dist")
+                paths = [p.strip() for p in str(with_.get("path") or "").splitlines() if p.strip()]
+                self.assertEqual(paths, ["${{ env.PUBLISH_DIST_DIR }}/", "SHA256SUMS"])
+                self.assertEqual(paths[0].replace("${{ env.PUBLISH_DIST_DIR }}", str(env.get("PUBLISH_DIST_DIR"))), f"{subdir}/dist/")
                 self.assertEqual(with_.get("if-no-files-found"), "error")
 
     def test_publish_chain_and_environments(self) -> None:
@@ -229,7 +252,10 @@ class PublishSubpackageStructuralTest(unittest.TestCase):
                 self.assertEqual(tp_name, "testpypi")
                 self.assertEqual(py_name, "pypi")
 
-    def test_skip_existing_on_both_publish_steps(self) -> None:
+    def test_no_skip_existing_on_either_publish_step(self) -> None:
+        # The one-artifact publish (2026-11-15) dropped skip-existing from both uploads. On TestPyPI it kept an earlier
+        # build under the same file name silently and the install check tested that file: juniper-ci-tools 0.9.1's
+        # re-run (run 38045867684, attempt 2) passed TestPyPI on the first build's files and sent PyPI the second build.
         for pkg, info in self.loaded.items():
             jobs = info["doc"].get("jobs") or {}
             with self.subTest(pkg=pkg):
@@ -237,15 +263,19 @@ class PublishSubpackageStructuralTest(unittest.TestCase):
                     pubs = _pypi_publish_steps(jobs[job_name])
                     self.assertEqual(len(pubs), 1, f"{pkg}/{job_name}: expected one pypi-publish action")
                     with_ = pubs[0].get("with") or {}
-                    self.assertIs(with_.get("skip-existing"), True, f"{pkg}/{job_name}: skip-existing required (#555 residual)")
+                    self.assertNotIn("skip-existing", with_, f"{pkg}/{job_name}: skip-existing would keep an earlier upload silently")
+                    self.assertNotIn("skip_existing", with_, f"{pkg}/{job_name}: the deprecated alias is the same switch")
 
     def test_testpypi_publish_targets_testpypi_legacy(self) -> None:
-        for pkg, info in self.loaded.items():
-            pubs = _pypi_publish_steps(info["doc"]["jobs"]["publish-testpypi"])
+        for _suffix, pkg, subdir in SHARED_PACKAGES:
+            doc = self.loaded[pkg]["doc"]
+            pubs = _pypi_publish_steps(doc["jobs"]["publish-testpypi"])
             with self.subTest(pkg=pkg):
                 with_ = pubs[0].get("with") or {}
                 self.assertEqual(with_.get("repository-url"), "https://test.pypi.org/legacy/")
-                self.assertEqual(with_.get("packages-dir"), "dist/")
+                # The artifact restores into the workspace since 2026-11-15, so the files sit in the package's own dist/.
+                self.assertEqual(with_.get("packages-dir"), "${{ env.PUBLISH_DIST_DIR }}/")
+                self.assertEqual((doc.get("env") or {}).get("PUBLISH_DIST_DIR"), f"{subdir}/dist")
 
     def test_verify_uses_no_deps_testpypi_only(self) -> None:
         for pkg, info in self.loaded.items():
