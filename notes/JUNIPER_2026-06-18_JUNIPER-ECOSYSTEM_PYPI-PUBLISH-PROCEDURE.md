@@ -371,7 +371,7 @@ Requirements:
 
 ### 10.2 Workflow file
 
-The `juniper-ml` project uses `.github/workflows/publish.yml`. The YAML below is the **original simplified design**, not the live workflow — see the 2026-08-08 and 2026-08-24 amendments after §10.3. Live contract: [`docs/REFERENCE.md` § Meta-Package Publish Pipeline](../docs/REFERENCE.md#meta-package-publish-pipeline).
+The `juniper-ml` project uses `.github/workflows/publish.yml`. The YAML below is the **original simplified design**, not the live workflow — see the 2026-08-08, 2026-08-24 and 2026-11-15 amendments after §10.3. Live contract: [`docs/REFERENCE.md` § Meta-Package Publish Pipeline](../docs/REFERENCE.md#meta-package-publish-pipeline).
 
 ```yaml
 name: Publish to PyPI
@@ -553,7 +553,7 @@ gh run watch                       # Live tail the run
 
 Or visit **Actions** tab in the repository.
 
-If the run fails, or the `pypi` approval does not come in time, do not re-cut the Release and never "Re-run all jobs": follow [§11.8](#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi).
+If the run fails, or the `pypi` approval does not come in time, do not re-cut the Release and never "Re-run all jobs": follow [§11.8](#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi). Its first two rungs need a TestPyPI job, install check included, that succeeded or failed only for a transient index lag; a real install-check failure means a broken package, which ships fixed as a new patch version.
 
 ### 11.6 Verify
 
@@ -690,7 +690,7 @@ The contract and the template's steps: [juniper-cascor `docs/ci_cd/MANUAL.md` §
 
 Why: juniper-cascor 0.13.0's and 0.14.0's wheels differ between PyPI and TestPyPI (`eda26e26…` against `f5dbc1b6…`, and `b70f3d39…` against `c5c9a5dc…`), because its PyPI job built again. juniper-ci-tools 0.9.1's do too (`1dc8e01e…` on PyPI, `ade363e8…` on TestPyPI): run 38045867684's PyPI job failed at its download on day 11, after the 7-day artifact expired, and its second attempt ("Re-run all jobs") built again, while the `skip-existing` TestPyPI upload kept the first build.
 
-**Recovering a release that did not reach PyPI.** The owner's ladder (ruling of 2026-11-15), in this order. Every rung publishes the files TestPyPI took, or nothing ([juniper-cascor `docs/ci_cd/MANUAL.md` § Recovering a Release That Did Not Reach PyPI](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#recovering-a-release-that-did-not-reach-pypi)):
+**Recovering a release that did not reach PyPI.** The owner's ladder (ruling of 2026-11-15). Every rung publishes the files TestPyPI took, or nothing ([juniper-cascor `docs/ci_cd/MANUAL.md` § Recovering a Release That Did Not Reach PyPI](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#recovering-a-release-that-did-not-reach-pypi)). **Rungs 1 and 2 apply only when the release run's TestPyPI job, install check included, succeeded, or failed only for a transient index lag (TestPyPI not yet serving the upload).** A real install-check failure means a broken package: fix it and cut a new patch version, never rung 1, which would copy the broken files to PyPI. A failed build published nothing: "Re-run failed jobs" if the failure was transient, otherwise fix it and cut a new patch version. The ladder, in this order:
 
 1. **Republish TestPyPI's files.** Dispatch the release's own publish workflow from its release tag:
 

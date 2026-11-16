@@ -17,8 +17,10 @@ and PyPI's after it. No upload sets ``skip-existing``, and only the jobs that up
 dispatch from the release tag with ``republish_from_testpypi`` runs the republish job, the first rung of the owner's
 recovery ladder (2026-11-15): it copies TestPyPI's files for the version to PyPI and builds nothing.
 
-The static cases pin that wiring in all seven workflows, what each workflow kept (``TestUnchanged``), and every copy of
-a template step byte-identical to the others and to juniper-cascor's template. The rehearsals run each template step's
+The static cases pin that wiring in all seven workflows, each job's exact steps and conditions (no ``if:`` beyond the
+template's, no ``continue-on-error``), what each workflow kept (``TestUnchanged``), and every copy of a template step
+byte-identical to the others and to juniper-cascor's template. Every ``publish*.yml``, and every workflow that uploads
+to an index, must be one of the seven, so an eighth publisher cannot go unchecked. The rehearsals run each template step's
 own Python, extracted from ``publish.yml``, in a scratch workspace, against a stand-in index and a stand-in GitHub API on
 127.0.0.1. The negative control is ``util/ad-hoc/2026-11-15_verify_publish_one_artifact_tests_are_not_vacuous.py``.
 
@@ -118,6 +120,14 @@ PUBLISH_ACTION = "pypa/gh-action-pypi-publish@"
 BUILD_COMMAND = re.compile(r"\bpython3?\s+-m\s+build\b|\bpip3?\s+wheel\b|\buv\s+build\b|\bsetup\.py\s+(?:sdist|bdist_wheel)\b")
 #: GitHub lets a deployment wait this many days for its reviewer: the PyPI job may start that late, and needs the artifact.
 GATE_APPROVAL_DAYS = 30
+#: How long the build's artifact is kept: what the docs state, and longer than the gate's cap and the 30-day re-run window.
+ARTIFACT_RETENTION_DAYS = 90
+#: Every publish workflow is found by these globs (tests/test_publish_release_only_trigger.py uses the first), and every
+#: workflow that uploads to an index by this pattern: each must be one of PUBLISHERS, or no case here would read it.
+PUBLISH_GLOBS = ("publish*.yml", "publish*.yaml")
+UPLOAD_STEP = re.compile(r"^\s*(?:-\s+)?uses:\s*pypa/gh-action-pypi-publish@", re.M)
+#: The one conditional step of the republish job: it downloads the release run's artifact only when the find step found one.
+FETCH_ORIGINAL_IF = "steps.original.outputs.run-id != ''"
 ARTIFACT = "${{ env.PUBLISH_PACKAGE }}-dist"
 DIST_INPUT = "${{ env.PUBLISH_DIST_DIR }}/"
 META_GUARD = "(github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')) || (github.event_name == 'workflow_dispatch' && !inputs.republish_from_testpypi)"
@@ -144,6 +154,30 @@ def _workflow(name: str) -> dict:
 
 def _names(job: dict) -> list[str]:
     return [str(s.get("name") or s.get("uses") or "") for s in job.get("steps") or []]
+
+
+def _step_list(job: dict) -> list[str]:
+    """Each step's name, or its action without the ref, so that a bump of a pinned action does not move it."""
+    return [str(s.get("name") or str(s.get("uses") or "").split("@")[0]) for s in job.get("steps") or []]
+
+
+def _expected_steps(workflow: str) -> dict[str, list[str]]:
+    """Each job's steps, in order. A step added between a check and the upload it vouches for (one that rewrites the
+    dist after its sha256 check, say) leaves every order pin true; so does a dropped step that no case names."""
+    _, _, test_id, prod_id = PUBLISHERS[workflow]
+    meta = workflow == "publish.yml"
+    build, check = ("Build package", "Check package") if meta else ("Build sdist + wheel", "Validate distribution metadata")
+    if meta:
+        testpypi = ["actions/checkout", "actions/setup-python", DOWNLOAD, VERIFY_DIST, "Publish to TestPyPI", TESTPYPI_AFTER, "Verify TestPyPI install"]
+    else:
+        install = "Verify install from TestPyPI (no-deps, version-only import)" if workflow == "publish-model-core.yml" else "Verify install from TestPyPI"
+        testpypi = [DOWNLOAD, VERIFY_DIST, "Publish to TestPyPI", TESTPYPI_AFTER, "actions/checkout", install]
+    return {
+        "build": [REUSE, "actions/checkout", "actions/setup-python", "Install build tools", build, check, "Assert release tag matches built version", RECORD, UPLOAD],
+        test_id: testpypi,
+        prod_id: [DOWNLOAD, VERIFY_DIST, TESTPYPI_BEFORE, "Publish to PyPI", PYPI_AFTER],
+        REPUBLISH: [FIND, FETCH_ORIGINAL, FETCH, VERIFY_DIST, "Publish to PyPI", PYPI_AFTER],
+    }
 
 
 def _index(job: dict, name: str) -> int:
@@ -271,6 +305,14 @@ class _Scratch(unittest.TestCase):
 # Wiring: one build, one artifact, a check before every upload, and the names the release train reads
 # ─────────────────────────────────────────────────────────────────────────────────────────────
 class TestWiring(unittest.TestCase):
+    def test_every_publish_workflow_is_one_of_the_seven(self) -> None:
+        # Every case here reads the workflows PUBLISHERS names, so an eighth publisher would be checked by none of them:
+        # add it to PUBLISHERS (and give it the template), or rename it if it is not a publisher.
+        found = sorted({path.name for pattern in PUBLISH_GLOBS for path in WORKFLOWS.glob(pattern)})
+        self.assertEqual(found, sorted(PUBLISHERS), "a publish*.yml that no case here reads")
+        uploading = sorted(path.name for path in WORKFLOWS.iterdir() if path.is_file() and path.suffix in (".yml", ".yaml") and UPLOAD_STEP.search(path.read_text(encoding="utf-8")))
+        self.assertEqual(uploading, sorted(PUBLISHERS), "a workflow that uploads to an index and that no case here reads")
+
     def test_the_template_parameters_name_this_package(self) -> None:
         for workflow, (package, dist_dir, _, _) in sorted(PUBLISHERS.items()):
             with self.subTest(workflow=workflow):
@@ -287,17 +329,48 @@ class TestWiring(unittest.TestCase):
                 self.assertEqual(_uploads(jobs["build"]), [])
 
     def test_the_publish_jobs_chain_on_the_build_under_the_names_the_release_train_reads(self) -> None:
-        for workflow, (_, _, test_id, prod_id) in sorted(PUBLISHERS.items()):
+        for workflow, (package, _, test_id, prod_id) in sorted(PUBLISHERS.items()):
             with self.subTest(workflow=workflow):
                 jobs = _workflow(workflow)["jobs"]
                 self.assertEqual(sorted(jobs), sorted(["build", test_id, prod_id, REPUBLISH]))
                 self.assertEqual(jobs[test_id]["needs"], "build")
                 self.assertEqual(jobs[prod_id]["needs"], test_id)
-                # util/release_train/ceremony.py tells the two jobs apart by name ("testpypi" / "pypi").
+                # util/release_train/ceremony.py reads only the runs of a workflow named "... to PyPI" (juniper-ml#2592),
+                # and tells the two jobs apart by name ("testpypi" / "pypi").
+                self.assertEqual(_workflow(workflow)["name"], "Publish to PyPI" if workflow == "publish.yml" else f"Publish {package} to PyPI")
                 self.assertEqual(jobs[test_id]["name"], "Publish to TestPyPI")
                 self.assertEqual(jobs[prod_id]["name"], "Publish to PyPI")
                 self.assertEqual(_environment(jobs[test_id]), "testpypi")
                 self.assertEqual(_environment(jobs[prod_id]), "pypi")
+
+    def test_each_job_runs_exactly_its_steps(self) -> None:
+        for workflow in sorted(PUBLISHERS):
+            with self.subTest(workflow=workflow):
+                jobs = _workflow(workflow)["jobs"]
+                self.assertEqual({job_id: _step_list(job) for job_id, job in jobs.items()}, _expected_steps(workflow))
+
+    def test_nothing_runs_on_a_condition_beyond_the_templates_and_nothing_continues_on_error(self) -> None:
+        # A check that can be skipped (`if:`), or can fail without failing its job (`continue-on-error`), vouches for
+        # nothing; an upload or a publish job on another condition can run without the checks before it.
+        for workflow, (_, _, test_id, prod_id) in sorted(PUBLISHERS.items()):
+            with self.subTest(workflow=workflow):
+                jobs = _workflow(workflow)["jobs"]
+                for job_id, job in jobs.items():
+                    self.assertNotIn("continue-on-error", job, f"job {job_id}")
+                    for step in job.get("steps") or []:
+                        self.assertNotIn("continue-on-error", step, f"{job_id}: {step.get('name') or step.get('uses')}")
+                # The build's tag guard is pinned in TestUnchanged; the publish jobs run only after the job they need.
+                self.assertNotIn("if", jobs[test_id])
+                self.assertNotIn("if", jobs[prod_id])
+                self.assertEqual(jobs[REPUBLISH]["if"], REPUBLISH_IF)
+                steps = _expected_steps(workflow)
+                expected = {
+                    "build": ["github.run_attempt != '1'"] + [REUSE_IF] * (len(steps["build"]) - 1),
+                    test_id: [None] * len(steps[test_id]),
+                    prod_id: [None] * len(steps[prod_id]),
+                    REPUBLISH: [None, FETCH_ORIGINAL_IF, None, None, None, None],
+                }
+                self.assertEqual({job_id: [step.get("if") for step in job.get("steps") or []] for job_id, job in jobs.items()}, expected)
 
     def test_only_the_jobs_that_upload_hold_id_token_write(self) -> None:
         for workflow, (_, _, test_id, prod_id) in sorted(PUBLISHERS.items()):
@@ -410,6 +483,7 @@ class TestWiring(unittest.TestCase):
                 self.assertEqual([p.strip() for p in upload["path"].splitlines() if p.strip()], [DIST_INPUT, "SHA256SUMS"])
                 self.assertEqual(upload["if-no-files-found"], "error")
                 self.assertGreater(int(upload["retention-days"]), GATE_APPROVAL_DAYS)
+                self.assertEqual(int(upload["retention-days"]), ARTIFACT_RETENTION_DAYS)
                 self.assertLess(_index(jobs["build"], RECORD), _index(jobs["build"], UPLOAD))
                 for job_id in (test_id, prod_id):
                     self.assertEqual(_step(jobs[job_id], DOWNLOAD)["with"], {"name": ARTIFACT, "path": "${{ github.workspace }}"})

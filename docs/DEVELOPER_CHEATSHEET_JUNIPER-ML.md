@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.70
-**Date**: 2026-11-15
+**Version**: 1.0.71
+**Date**: 2026-11-16
 **Project**: juniper-ml
 
 ---
@@ -388,7 +388,7 @@ Tip: `csv_import` refuses sources over 128 MiB with HTTP **422** until `dataset.
 | Post-merge main-verify | Auto on every `push:main` (`.github/workflows/main-verify.yml`); see tip below              |
 | Publish `juniper-ml`   | Create GitHub Release with `vX.Y.Z` tag (OIDC; Gate 1 = three TestPyPI installs)            |
 | Publish shared package | Create GitHub Release with a `juniper-<pkg>-vX.Y.Z` tag → `publish-<pkg>.yml` (six packages)|
-| Retry shared publish   | `gh workflow run publish-<pkg>.yml --repo pcalnon/juniper-ml --ref juniper-<pkg>-vX.Y.Z`    |
+| Recover a publish      | Only after a TestPyPI job (install check included) that passed or failed only for index lag: (1) `gh workflow run publish-<pkg>.yml --repo pcalnon/juniper-ml --ref juniper-<pkg>-vX.Y.Z -f republish_from_testpypi=true` (meta: `publish.yml`, `--ref vX.Y.Z`); (2) within 30 days, `gh run rerun <run-id> --repo pcalnon/juniper-ml --failed`, never "Re-run all jobs"; (3) a new patch version. [REFERENCE — the ladder](REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi) |
 | Weekly security scan   | Actions → Scheduled Security Scan (`pip-audit --strict --desc on` after `pip install -e .`) |
 | CodeQL Analysis        | `.github/workflows/codeql.yml` — required context `Analyze (python)`; see tip below         |
 | Weekly lockfile refresh| Actions → Update Lockfiles (`juniper-generate-dep-docs` → PR on `chore/lockfile-update`)    |
@@ -846,7 +846,7 @@ Tip: meta publish Gate 1 polls TestPyPI 10×6s (~60s ceiling) for the just-uploa
 Tip: the six shared `publish-*.yml` are Release-only (`release: published`; no `push: tags` — the #555 double-publish race); a bare `git push <tag>` starts **no run**. Each is tag-prefix-guarded, with a `--no-deps` TestPyPI-only 5×10s verify. Do not resurrect a `Require a GitHub Release for this tag` step under `if: github.event_name == 'push'` — that condition is unreachable (#1310). See [REFERENCE — Build and Release](REFERENCE.md#build-and-release).
 
 Tip: all seven publishers build once and check by sha256 (juniper-cascor#763 / #767's one-artifact template): both publish jobs upload the build job's artifact (dist and `SHA256SUMS`, 90 days), TestPyPI's JSON must list exactly those sha256 after the TestPyPI upload and again before the PyPI one, and PyPI's after; no `skip-existing`; only the uploading jobs hold `id-token: write`.
-A release that did not reach PyPI: dispatch its workflow from the tag with `-f republish_from_testpypi=true` (copies TestPyPI's files, builds nothing); if that fails, within 30 days **Re-run failed jobs**, never "Re-run all jobs"; otherwise cut a new patch version. See [REFERENCE — One artifact, and recovering a release that did not reach PyPI](REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi).
+A release that did not reach PyPI, after a TestPyPI job (install check included) that passed or failed only for a transient index lag: dispatch its workflow from the tag with `-f republish_from_testpypi=true` (copies TestPyPI's files, builds nothing); if that fails, within 30 days **Re-run failed jobs**, never "Re-run all jobs"; otherwise cut a new patch version. A real install-check failure is a broken package: cut a new patch version, never republish it. See [REFERENCE — One artifact, and recovering a release that did not reach PyPI](REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi).
 
 Tip: shared-package `ci-*.yml` (six sub-packages) must keep path self-inclusion, matrix floors, `--cov-fail-under`, and a blocking `juniper-coverage-gap-map --enforce`. Dropping the workflow self-path or `--enforce` ships green while the package suite stops running or stops enforcing gaps; service-core installs sibling `juniper-model-core` from the monorepo root (no test-job `working-directory`). Full table: [REFERENCE — Shared-Package CI](REFERENCE.md#shared-package-ci-workflows).
 
@@ -1295,6 +1295,6 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 
 ---
 
-**Last Updated:** 2026-11-15
-**Version:** 1.0.70
+**Last Updated:** 2026-11-16
+**Version:** 1.0.71
 **Maintainer:** Paul Calnon

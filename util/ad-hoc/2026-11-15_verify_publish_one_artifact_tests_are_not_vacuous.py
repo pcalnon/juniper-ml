@@ -17,7 +17,8 @@ A test that passes against both the fixed and the broken workflow pins nothing. 
 and the test file into a scratch directory, checks that the copy passes, then applies each mutation below: one
 exact-match edit, to one file, or to every copy of a template step (so that the byte-identity case cannot be what
 catches it). It runs the test file under unittest after each, restores the files, and reports any mutation the tests
-still pass. The repository itself is never written.
+still pass. Two more (``ADDITIONS``) each add an eighth publisher, a copy of one under a new name, which the tests must
+refuse because no case would read it; it is deleted after the run. The repository itself is never written.
 
 The test file also pins each template step's sha256 to juniper-cascor's (``PIN`` below), which would catch every edit
 to a template step's Python by itself. So a mutation of that Python runs WITHOUT the pin: something else, a rehearsal or
@@ -59,6 +60,7 @@ STEP_5 = "      # One-artifact publish template, step 5: after the TestPyPI uplo
 META_GUARD = "(github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')) || (github.event_name == 'workflow_dispatch' && !inputs.republish_from_testpypi)"
 DISPATCH_ARM = " || (github.event_name == 'workflow_dispatch' && !inputs.republish_from_testpypi)\n"
 PYPI_GRANT = "      id-token: write  # trusted publishing to PyPI; this job checks out nothing\n"
+TESTPYPI_URL = "          repository-url: https://test.pypi.org/legacy/\n"
 PIN = "TestTemplate.test_the_template_steps_are_juniper_cascors_byte_for_byte"
 WITHOUT_PIN = (PIN,)
 #: The test classes that read the workflows, run first so that a caught mutation stops early (failfast).
@@ -144,6 +146,22 @@ MUTATIONS = (
     ("the republish job accepts a branch named like a tag", WORKFLOWS, 'if os.environ.get("GITHUB_REF_TYPE") == "tag" and tag.startswith("v"):', 'if tag.startswith("v"):', "all", WITHOUT_PIN),
     ("the republish job takes a foreign file from TestPyPI", WORKFLOWS, "if normalized(project) != normalized(package) or file_version != version:", "if False:", "all", WITHOUT_PIN),
     ("the republish job skips the dist check", WORKFLOWS, STEP_4, "      # One-artifact publish template, step 4: before every upload.\n      - name: Verify the dist\n", "last", ()),
+    # Conditions, continue-on-error, the retention, the workflow names and the exact steps (the review of
+    # juniper-ml#2593): none of these moves a step's order or its Python, so only the cases that pin them catch them.
+    ("a check step may fail without failing its job", (PUBLISH,), "      - name: Verify TestPyPI serves exactly these files\n", "      - name: Verify TestPyPI serves exactly these files\n        continue-on-error: true\n", "one", ()),
+    ("a sub-package's TestPyPI job may fail without failing the run", (SERVICE_CORE,), "    name: Publish to TestPyPI\n", "    name: Publish to TestPyPI\n    continue-on-error: true\n", "one", ()),
+    ("a check step runs whatever came before it", (OBSERVABILITY,), "      - name: Verify PyPI serves exactly these files\n", "      - name: Verify PyPI serves exactly these files\n        if: always()\n", 0, ()),
+    ("the TestPyPI upload never runs", (PUBLISH,), "      - name: Publish to TestPyPI\n", "      - name: Publish to TestPyPI\n        if: false\n", "one", ()),
+    ("a sub-package's PyPI job runs whatever came before it", (MODEL_CORE,), "    name: Publish to PyPI\n", "    name: Publish to PyPI\n    if: always()\n", "one", ()),
+    ("a sub-package's artifact is kept 31 days", (DOC_TOOLS,), "          retention-days: 90\n", "          retention-days: 31\n", "one", ()),
+    ("a publisher's name no longer ends in 'to PyPI', so the release train drops its runs", (OBSERVABILITY,), "name: Publish juniper-observability to PyPI\n", "name: Publish juniper-observability\n", "one", ()),
+    ("a step adds a file to the dist after the PyPI job's sha256 check", (CONFIG_TOOLS,), "      - name: Verify TestPyPI still serves exactly these files\n", '      - name: Add a late file to the dist\n        run: touch "${PUBLISH_DIST_DIR}/late.whl"\n\n      - name: Verify TestPyPI still serves exactly these files\n', "one", ()),
+)
+#: (label, new workflow, the publisher it copies, old, new): an eighth publisher, made by copying one under a new name with
+#: one exact-match edit (skip-existing back on its TestPyPI upload), which no case reading PUBLISHERS would see.
+ADDITIONS = (
+    ("an eighth publish*.yml, whose TestPyPI upload skips existing files", ".github/workflows/publish-extra.yml", CI_TOOLS, TESTPYPI_URL, TESTPYPI_URL + "          skip-existing: true\n"),
+    ("a workflow not named publish*.yml uploads to an index", ".github/workflows/ship-extra.yml", CI_TOOLS, TESTPYPI_URL, TESTPYPI_URL + "          skip-existing: true\n"),
 )
 
 
@@ -208,7 +226,22 @@ def main(argv: "list[str] | None" = None) -> int:
         print(f"{'caught' if code != 0 else 'SURVIVED'}: {label}{' (without the sha256 pin)' if skip else ''} (unittest exit {code})")
         if code == 0:
             survivors.append(label)
-    print(f"{len(MUTATIONS) - len(survivors)} of {len(MUTATIONS)} mutations caught")
+    for label, rel, source, old, new in ADDITIONS:
+        target = args.scratch / rel
+        if target.exists() or originals[source].count(old) != 1:
+            print(f"DID NOT APPLY: {label}")
+            survivors.append(label)
+            continue
+        try:
+            target.write_text(originals[source].replace(old, new), encoding="utf-8")
+            code = run_tests(args.python, args.scratch)
+        finally:
+            target.unlink(missing_ok=True)
+        print(f"{'caught' if code != 0 else 'SURVIVED'}: {label} (unittest exit {code})")
+        if code == 0:
+            survivors.append(label)
+    total = len(MUTATIONS) + len(ADDITIONS)
+    print(f"{total - len(survivors)} of {total} mutations caught")
     return 1 if survivors else 0
 
 

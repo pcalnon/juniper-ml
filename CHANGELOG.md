@@ -373,26 +373,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the release tag with `-f republish_from_testpypi=true`, which runs only `Republish the tested files (dispatch
     only)`: behind the same `pypi` gate it copies TestPyPI's files for the version to PyPI, checked against TestPyPI's
     JSON and the release run's `SHA256SUMS`, and builds nothing; (2) if that fails, within 30 days of the release run,
-    "Re-run failed jobs" on it, never "Re-run all jobs"; (3) otherwise, a new patch version. A dispatch without the
-    input still re-fires the whole publish from the tag; it builds again, so it works only while TestPyPI does not hold
-    the version yet.
-  - Unchanged: the `release: published` trigger and the tag guards, the job names `Publish to TestPyPI` and
-    `Publish to PyPI` (`util/release_train/ceremony.py` tells the jobs apart by them; the republish job's name carries
-    no "pypi", and the ceremony reads release-event runs only), the environments, `publish.yml`'s two-phase install
-    check and `attestations: true`, and the sub-packages' concurrency groups, environment URLs, `verbose` uploads and
-    install checks.
-  - Pins: `tests/test_publish_one_artifact.py` (new, 57 cases, unittest; wired into `ci.yml` and the
-    `main-verify.yml` battery) pins that wiring in all seven workflows, what each kept, and every template step
+    "Re-run failed jobs" on it, never "Re-run all jobs"; (3) otherwise, a new patch version. Rungs 1 and 2 apply only
+    when the release run's TestPyPI job, install check included, succeeded or failed only for a transient index lag; a
+    real install-check failure means a broken package, which ships fixed as a new patch version and never through
+    rung 1. A dispatch without the input still re-fires the whole publish from the tag; it builds again, so it works
+    only while TestPyPI does not hold the version yet.
+  - Unchanged: the `release: published` trigger and the tag guards, the workflow names (each ends in "to PyPI", which
+    the ceremony's monitor requires since juniper-ml#2592), the job names `Publish to TestPyPI` and `Publish to PyPI`
+    (`util/release_train/ceremony.py` tells the jobs apart by them; the republish job's name carries no "pypi", so a
+    republish dispatch, which the monitor also reads since juniper-ml#2592, is classified by its run's status alone),
+    the environments, `publish.yml`'s two-phase install check and `attestations: true`, and the sub-packages'
+    concurrency groups, environment URLs, `verbose` uploads and install checks.
+  - Pins: `tests/test_publish_one_artifact.py` (new, 60 cases, unittest; wired into `ci.yml` and the
+    `main-verify.yml` battery) pins that wiring in all seven workflows, each job's exact steps and conditions (no
+    `if:` beyond the template's, no `continue-on-error`), the 90-day artifact, the workflow and job names the release
+    train reads, that `publish*.yml` holds no eighth publisher, what each workflow kept, and every template step
     byte-identical to the others and to juniper-cascor's. Its rehearsals run each template step's own Python against a
-    stand-in index and GitHub API on 127.0.0.1. `tests/test_publish_subpackage_workflows.py` and
+    stand-in index and GitHub API on 127.0.0.1. The old pins in `tests/test_publish_subpackage_workflows.py` and
     `tests/test_publish_testpypi_verify.py` now pin no `skip-existing` and the per-job permissions. The negative
-    control, `util/ad-hoc/2026-11-15_verify_publish_one_artifact_tests_are_not_vacuous.py`, makes 55 edits to
-    a copy of the workflows, each undoing one property, and the tests catch every one.
+    control, `util/ad-hoc/2026-11-15_verify_publish_one_artifact_tests_are_not_vacuous.py`, makes 65
+    mutations of a copy of the workflows, each undoing one property (two add an eighth publisher), and the tests catch
+    every one.
   - Docs: `docs/REFERENCE.md` (§ Meta-Package Publish Pipeline and § Independent Sibling Package Publish Pipelines, with
     each workflow's republish command), `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` (§10.3
     and the new §11.8: the contract and the ladder for every Juniper repository),
-    `notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md` §5.5, and
-    `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`.
+    `notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md` (§5.5, and the responses in §4,
+    §4.1 and §5.3, which said to fix and re-cut: a transient failure is "Re-run failed jobs", a broken package a new
+    patch version), and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (the ladder replaces its plain re-fire row).
 
 ## [0.11.5] - 2026-11-13
 
