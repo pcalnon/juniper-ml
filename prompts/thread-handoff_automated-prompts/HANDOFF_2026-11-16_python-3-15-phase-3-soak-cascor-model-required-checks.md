@@ -1,6 +1,9 @@
 # Handoff: Python 3.15 -- phase 3 soaks until 2026-11-23; cascor-model's `Model required checks` is required
 
-**Date**: 2026-11-16 (facts read 07:54Z to 16:03Z; an owner dialog was open from about 08:07Z to 15:20Z)
+**Date**: 2026-11-16 (facts read 07:54Z to 21:53Z; owner dialogs were open from about 08:07Z to 15:20Z and from
+16:05Z to 21:52Z)
+**Status**: **PAUSED at 21:53Z by the owner, for the weekly Claude Code token limit.** Resume from Remaining work,
+in order.
 **Session**: host yamaguchi, juniper-ml worktree `.claude/worktrees/serialized-snuggling-gadget` (session 3a7c12fe).
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-15_python-3-15-phase-2-complete-dill-drift-nightly-markers-cleanup.md`
 (on `main` through juniper-ml#2590). It was checked item by item against source. Its three remaining items and its
@@ -31,6 +34,19 @@ PRs was granted in this session (2026-11-16). It does not carry to a new session
      the five nightly lanes keep informational 3.15 legs.
 3. **cascor-model required check**: "Recurrence's pattern". It is done; see juniper-cascor#771 below.
 4. "merge approval granted" (the session's opening message).
+
+From the second dialog (answered at 21:52Z; findings 1, 4 and 5 below are the evidence each one was asked on):
+
+5. **recurrence "in line"**: "Unique names + step skips". Give each lane's legs a unique name (`App Test (Python 3.12)`,
+   `Client …`, `Model …`, `Bench smoke …`), and move the `changes` skip from the job's `if:` into its steps, so
+   every leg always runs and posts its own expanded name. Then require all 16 (4 lanes × 3.12-3.15). This is phase 3
+   work.
+6. **harcot "in line"**: "CI gate only, unenforced". Phase 3 makes harcot's 3.15 leg blocking in its `required-checks`
+   gate, and harcot PRs merge only through `util/safe_merge.py`. No ruleset, because the plan's 403 stands.
+7. **recurrence's fail-open detectors (finding 1)**: "Fix now". One recurrence PR applies #771's detector form to all
+   four workflows, plus a CHANGELOG entry, and nothing else changes. **NOT started: paused.**
+8. **The 3.15 Pre-commit leg**: "Soak it now". Add an informational 3.15 leg to the eight Pre-commit matrices, in
+   eight PRs started by a fresh session from this handoff. **NOT started: paused.**
 
 ## Done
 
@@ -127,6 +143,35 @@ PRs was granted in this session (2026-11-16). It does not carry to a new session
 
 ## Remaining work
 
+Do items A and B first; neither waits for the soak. The owner's merge approval of 2026-11-16 does not carry over, so
+confirm it before merging.
+
+- **A. The recurrence detector fix (ruling 7).** In `ci-recurrence-{app,bench,client,model}.yml`, in job `changes`,
+  step `id: filter`, replace
+  `elif git diff --name-only "origin/${BASE_REF}...HEAD" | grep -qE '<pattern>'; then`
+  with the form juniper-cascor's `ci-cascor-model.yml` has used since #771:
+  - capture `files="$(git diff --name-only "origin/${BASE_REF}...HEAD")"` inside an `else` branch;
+  - then test `if grep -qE '<pattern>' <<<"${files}"; then`.
+
+  Keep each workflow's pattern byte-identical, and add a CHANGELOG `### Fixed` entry.
+  - Verify with `util/ad-hoc/2026-11-16_cascor_model_gate_logic_check.py` as the model. It extracts the step and
+    runs it against a stub `git`. Each recurrence workflow needs its own touched and untouched paths.
+  - Read the workflow through a script or a checkout root, because the session isolation refuses `.github` in a
+    command.
+  - Land it with `util/ad-hoc/2026-11-16_open_signed_pr_from_paths.bash`.
+- **B. The informational 3.15 Pre-commit soak (ruling 8)**, in the eight repos whose rulesets require
+  `Pre-commit (Python 3.12-3.14)`: ml, cascor, canopy, data, deploy, data-client, cascor-client and cascor-worker.
+  - Add a `{python-version: "3.15", experimental: true}` include and the job-level
+    `continue-on-error: ${{ matrix.experimental == true }}`. Then apply
+    `util/ad-hoc/2026-11-15_py315_informational_green_legs.py <workflow> pre-commit`, which gives every step an `id`
+    and the same expression, and adds the report step.
+  - Check that the leg's check concludes green while a hook fails, and that every job with `needs: pre-commit` still
+    runs. `HANDOFF_2026-11-15_python-3-15-informational-checks-phase-1-rolled-out.md` § "Design A, measured" has the
+    method.
+  - Do not add `Pre-commit (Python 3.15)` to any ruleset: that is phase 3.
+  - deploy's matrix posts its 3.12 leg as `Pre-commit` through an expression name, so keep that.
+  - juniper-ml's `tests/test_python_version_matrix_drift.py` pins its matrices, so update it with them.
+
 1. **On or after 2026-11-23**: the soak re-count (Goal statement), then phase 3 with the owner's scope. One PR per
    repo, plus ruleset PUTs:
    - **PR legs + rulesets.** On every PR-path 3.15 leg, drop `experimental: true`, each step's
@@ -151,30 +196,17 @@ PRs was granted in this session (2026-11-16). It does not carry to a new session
      `Pre-commit (Python 3.12-3.14)`, and add `Pre-commit (Python 3.15)` to each ruleset (8 more contexts).
      - Phase 1 excluded it. Its hooks (black, flake8, mypy and others) are untested on 3.15.
      - A failed pre-commit leg skips every job that `needs: pre-commit`.
-   - **recurrence and harcot "in line"**: blocked on open owner questions 1 and 2. Findings 4 and 5 are why.
+   - **recurrence and harcot "in line"**: follow rulings 5 and 6. For recurrence, rename the legs and move the skips
+     into the steps first, then require the 16 contexts once the new names post on `main`.
 2. **dill floor**: unchanged from the predecessor. Raise cascor's and cascor-model's dill floors when a release after
    0.4.1 ships with 3.15 support. Do not cite the upstream PR number in a PR body. The owner's merge approval is
    needed again.
 3. **cascor's skip path**: read #770's `CI — juniper-cascor-model` run once #770 is updated (Done, "Ruleset
    15081045").
-4. **Put the open owner questions below to the owner** if this session's dialog did not settle them. The answers, if
-   any, are recorded where this file is archived, or in its successor.
-
 ## Open owner questions
 
-Each was asked at the end of this session, after this file was written.
-
-1. **recurrence "in line" (finding 4)**: which design?
-   - Give each lane's legs a unique name (`App Test (Python 3.12)` and so on), move the `changes` skip from the
-     job's `if:` into its steps so every leg always reports its expanded name, and require all 16 (4 lanes × 3.12-3.15).
-   - Or keep the four `… required checks` gates, which already fail on any red leg once 3.15 stops being
-     experimental.
-2. **harcot "in line" (finding 5)**: should the owner upgrade the plan so harcot can carry a ruleset? Or should
-   harcot keep its CI gate unenforced and merge through `util/safe_merge.py`? Or should phase 3 leave harcot out?
-3. **recurrence's fail-open detectors (finding 1)**: fix all four now (#771's form, one recurrence PR), fold the fix
-   into phase 3, or leave them?
-4. **The 3.15 Pre-commit leg**: give it an informational soak now in the eight repos, so it has data by 2026-11-23?
-   Or add it blocking at phase 3 with no soak?
+None. The second dialog answered all four questions it asked, as rulings 5 to 8. Finding 2 (fail-closed, low risk)
+and finding 3 (phase 3 removes the cause) were reported and not asked.
 
 ## Key context / traps
 
@@ -206,14 +238,15 @@ python3 util/ad-hoc/2026-11-16_py315_leg_warning_history.py --since 2026-11-16T0
 
 ## Git status
 
-- The juniper-ml worktree `serialized-snuggling-gadget` is on `worktree-serialized-snuggling-gadget` at `edea2eb1`,
-  with nothing committed. The provenance PR, on branch `docs/handoff-py315-phase3-soak-cascor-model`, adds this file
-  and the session's six `util/ad-hoc/2026-11-16_*` scripts:
+- **juniper-ml#2599 merged at 21:53:19Z as `e63a2f5a`.** It added the first version of this file and the session's six
+  `util/ad-hoc/2026-11-16_*` scripts:
   - `py315_phase3_scope_survey.py`, `py315_leg_warning_history.py`;
   - `cascor_model_gate_logic_check.py`, `cascor_ruleset_require_model_checks.py`;
   - `open_signed_pr_from_paths.bash`, `piped_grep_q_failopen_scan.py`.
-
-  It adds only those files, so it cannot revert anything.
+- This version, with the paused status and rulings 5 to 8, lands through a one-file PR on branch
+  `docs/handoff-py315-paused-owner-rulings`.
+- The juniper-ml worktree `serialized-snuggling-gadget` is on `worktree-serialized-snuggling-gadget` at `edea2eb1`,
+  with nothing committed. Its `tmp/` is already copied (next bullet), so the worktree can be removed.
 - The session's evidence comes to 35 files and 1.1 MB:
   - logs and survey outputs;
   - #771's commit message, PR body, CI-result and probe outputs;
